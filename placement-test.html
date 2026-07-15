@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Placement Test — Lumio English</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  body{opacity:0;animation:ptFadeIn .4s ease forwards}
+  @keyframes ptFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  .btn{transition:transform .16s cubic-bezier(.22,1,.36,1),box-shadow .16s ease}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(0,0,0,.12)}
+  .btn:active{transform:translateY(0) scale(.96)}
+
+  .pt-wrap{max-width:560px;margin:0 auto;padding:28px 20px 60px}
+  .pt-card{background:#fff;border-radius:24px;padding:28px 26px;box-shadow:0 6px 20px rgba(0,0,0,.08)}
+  .pt-card h1{font-size:1.4rem;margin:0 0 6px;text-align:center}
+  .pt-card p.lead{color:var(--cocoa-soft,#8A7160);font-weight:700;font-size:.88rem;text-align:center;margin:0 0 22px}
+
+  .pt-field{margin-bottom:16px}
+  .pt-field label{display:block;font-weight:800;font-size:.85rem;margin-bottom:6px}
+  .pt-field input{width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid #eee;font-size:1rem;font-family:inherit}
+  .pt-field input:focus{outline:2px solid rgba(255,138,61,.35);border-color:var(--orange,#FF8A3D)}
+  .pt-error{color:var(--coral,#F43F5E);font-weight:800;font-size:.85rem;min-height:20px;margin-top:-8px}
+
+  .pt-progress-row{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+  .pt-progressbar{flex:1;height:10px;background:#F3EEE4;border-radius:999px;overflow:hidden}
+  .pt-progressbar>div{height:100%;background:linear-gradient(90deg,#FF8A3D,#F97316);border-radius:999px;transition:width .3s ease}
+  .pt-progress-label{font-weight:800;font-size:.8rem;color:var(--cocoa-soft,#8A7160);white-space:nowrap}
+
+  .pt-question{text-align:center;margin-bottom:20px}
+  .pt-question h2{font-size:1.15rem;line-height:1.4}
+  .pt-options{display:flex;flex-direction:column;gap:10px}
+  .pt-opt{
+    padding:14px 16px;border-radius:14px;border:2px solid #eee;background:#fff;font-weight:700;font-size:.95rem;
+    cursor:pointer;text-align:left;font-family:inherit;transition:transform .12s ease,border-color .15s ease,background .15s ease;
+  }
+  .pt-opt:hover{border-color:var(--orange,#FF8A3D);transform:translateY(-1px)}
+  .pt-opt:active{transform:translateY(0) scale(.98)}
+  .pt-opt.correct{background:var(--green-soft,#EAFBEF);border-color:var(--green,#22C55E)}
+  .pt-opt.wrong{background:#FCEBEA;border-color:var(--coral,#F43F5E)}
+
+  .pt-result-icon{font-size:3rem;text-align:center;margin-bottom:8px}
+  .pt-result-level{text-align:center;font-family:var(--font-display,'Baloo 2',sans-serif);font-size:1.6rem;color:var(--orange,#F97316);margin-bottom:6px}
+  .pt-result-sub{text-align:center;color:var(--cocoa-soft,#8A7160);font-weight:700;font-size:.9rem;margin-bottom:20px}
+  .pt-result-score{background:var(--paper,#FFFBF5);border-radius:14px;padding:14px;text-align:center;font-weight:800;margin-bottom:20px}
+  .pt-note{background:#FFF3D6;border-radius:14px;padding:14px 16px;font-size:.85rem;font-weight:700;color:#7A4E00;text-align:center;margin-bottom:8px}
+
+  .pt-step{display:none}
+  .pt-step.show{display:block}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a href="index.html"><img class="logo-mini" src="assets/logo/lumio-logo.png" alt="Lumio English logo" onerror="this.style.display='none'"></a>
+  <div class="brand">Lumio <span>English</span></div>
+</header>
+
+<main class="pt-wrap">
+
+  <!-- Step 1: personal info -->
+  <div class="pt-step show" id="stepInfo">
+    <div class="pt-card">
+      <h1>🎯 Free Placement Test</h1>
+      <p class="lead">Answer a few quick questions and we'll suggest the right starting level — takes about 5 minutes.</p>
+      <div class="pt-field">
+        <label for="ptName">Student's name</label>
+        <input type="text" id="ptName" placeholder="e.g. Salem" maxlength="40" autocomplete="off">
+      </div>
+      <div class="pt-field">
+        <label for="ptPhone">Parent/guardian phone number</label>
+        <input type="tel" id="ptPhone" placeholder="e.g. 0123456789" maxlength="20" autocomplete="off">
+      </div>
+      <div class="pt-field">
+        <label for="ptAge">Age</label>
+        <input type="number" id="ptAge" placeholder="e.g. 8" min="3" max="99">
+      </div>
+      <div class="pt-error" id="infoError"></div>
+      <button class="btn btn-primary btn-big" id="startTestBtn" style="width:100%">Start the test →</button>
+    </div>
+  </div>
+
+  <!-- Step 2: test -->
+  <div class="pt-step" id="stepTest">
+    <div class="pt-card">
+      <div class="pt-progress-row">
+        <div class="pt-progressbar"><div id="ptBar" style="width:0%"></div></div>
+        <div class="pt-progress-label" id="ptCounter">1/11</div>
+      </div>
+      <div class="pt-question">
+        <h2 id="ptQuestionText"></h2>
+      </div>
+      <div class="pt-options" id="ptOptions"></div>
+    </div>
+  </div>
+
+  <!-- Step 3: results -->
+  <div class="pt-step" id="stepResults">
+    <div class="pt-card">
+      <div class="pt-result-icon">🎉</div>
+      <div class="pt-result-level" id="resultLevel"></div>
+      <p class="pt-result-sub">is the level we'd suggest starting at</p>
+      <div class="pt-result-score" id="resultScore"></div>
+      <div class="pt-note">✅ Thanks! Your teacher has received your details and will contact you soon to get started.</div>
+      <a class="btn btn-primary btn-big" href="index.html" style="width:100%;display:block;text-align:center;box-sizing:border-box">Back to homepage</a>
+    </div>
+  </div>
+
+</main>
+
+<script src="js/app.js"></script>
+<script src="js/lumio-leads.js"></script>
+<script>
+(() => {
+  // ================= Test question bank =================
+  // Starting point only — one question per level, roughly increasing
+  // difficulty. Written generically since the actual curriculum content
+  // is yours to define; edit freely to match what each level really
+  // covers. Each question is tagged with the Lumio.LEVELS id it maps to.
+  const TEST_QUESTIONS = [
+    { level: "pre-a",  q: "Which word means 🐱?", options: ["Cat", "Dog", "Sun"], answer: "Cat" },
+    { level: "level1", q: "Choose the correct sentence.", options: ["I am happy", "I happy am", "Happy I am"], answer: "I am happy" },
+    { level: "level2", q: "Complete: My name ___ Ahmed.", options: ["is", "am", "are"], answer: "is" },
+    { level: "level3", q: "Choose the opposite of \"big\".", options: ["small", "tall", "fast"], answer: "small" },
+    { level: "level4", q: "Choose the correct sentence.", options: ["I wake up at 7 o'clock.", "I wake up 7 o'clock in.", "At I wake up 7."], answer: "I wake up at 7 o'clock." },
+    { level: "level5", q: "Choose the correct word: Yesterday, I ___ to the park.", options: ["go", "went", "going"], answer: "went" },
+    { level: "level6", q: "Choose the correct word: She is taller ___ her brother.", options: ["than", "then", "that"], answer: "than" },
+    { level: "level7", q: "Choose the correct word: Tomorrow, I ___ visit my grandmother.", options: ["will", "would", "was"], answer: "will" },
+    { level: "level8", q: "Choose the best word: If I ___ more time, I would travel the world.", options: ["have", "had", "has"], answer: "had" },
+    { level: "level9", q: "Choose the correct word: She said that she ___ finished her homework.", options: ["has", "had", "have"], answer: "had" },
+    { level: "level10", q: "Choose the correct word: The report, ___ was submitted late, contained several errors.", options: ["which", "who", "whom"], answer: "which" },
+  ];
+
+  function shuffled(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+
+  const stepInfo = document.getElementById("stepInfo");
+  const stepTest = document.getElementById("stepTest");
+  const stepResults = document.getElementById("stepResults");
+  const infoError = document.getElementById("infoError");
+
+  let studentInfo = null;
+  let qIndex = 0;
+  let correctCount = 0;
+
+  document.getElementById("startTestBtn").addEventListener("click", () => {
+    const name = document.getElementById("ptName").value.trim();
+    const phone = document.getElementById("ptPhone").value.trim();
+    const age = document.getElementById("ptAge").value.trim();
+    infoError.textContent = "";
+    if (!name) { infoError.textContent = "Please enter the student's name."; return; }
+    if (!phone) { infoError.textContent = "Please enter a phone number so the teacher can contact you."; return; }
+    studentInfo = { name, phone, age };
+    stepInfo.classList.remove("show");
+    stepTest.classList.add("show");
+    qIndex = 0;
+    correctCount = 0;
+    renderQuestion();
+  });
+
+  function renderQuestion() {
+    const total = TEST_QUESTIONS.length;
+    document.getElementById("ptBar").style.width = Math.round((qIndex / total) * 100) + "%";
+    document.getElementById("ptCounter").textContent = `${qIndex + 1}/${total}`;
+    const item = TEST_QUESTIONS[qIndex];
+    document.getElementById("ptQuestionText").textContent = item.q;
+    const optsEl = document.getElementById("ptOptions");
+    optsEl.innerHTML = "";
+    shuffled(item.options).forEach(opt => {
+      const btn = document.createElement("button");
+      btn.className = "pt-opt";
+      btn.type = "button";
+      btn.textContent = opt;
+      btn.onclick = () => handleAnswer(btn, opt, item.answer);
+      optsEl.appendChild(btn);
+    });
+  }
+
+  function handleAnswer(btn, chosen, correctAnswer) {
+    const allBtns = document.querySelectorAll("#ptOptions .pt-opt");
+    allBtns.forEach(b => { b.disabled = true; b.onclick = null; });
+    if (chosen === correctAnswer) {
+      btn.classList.add("correct");
+      correctCount++;
+    } else {
+      btn.classList.add("wrong");
+      allBtns.forEach(b => { if (b.textContent === correctAnswer) b.classList.add("correct"); });
+    }
+    setTimeout(() => {
+      qIndex++;
+      if (qIndex < TEST_QUESTIONS.length) {
+        renderQuestion();
+      } else {
+        finishTest();
+      }
+    }, 700);
+  }
+
+  async function finishTest() {
+    document.getElementById("ptBar").style.width = "100%";
+    const total = TEST_QUESTIONS.length;
+    const levelIndex = Math.max(0, Math.min(correctCount, TEST_QUESTIONS.length - 1));
+    const suggestedLevel = TEST_QUESTIONS[levelIndex].level;
+    const levelMeta = (typeof Lumio !== "undefined" && Lumio.LEVELS ? Lumio.LEVELS : []).find(l => l.id === suggestedLevel);
+    const levelName = levelMeta ? levelMeta.name : suggestedLevel;
+
+    document.getElementById("resultLevel").textContent = levelName;
+    document.getElementById("resultScore").textContent = `Score: ${correctCount}/${total} correct`;
+
+    try {
+      if (window.LumioLeads) {
+        LumioLeads.addLead({
+          name: studentInfo.name,
+          phone: studentInfo.phone,
+          age: studentInfo.age,
+          suggestedLevel,
+          testScore: correctCount,
+          testTotal: total,
+        });
+      }
+    } catch (e) {
+      console.error("Lumio lead save error:", e);
+    }
+
+    stepTest.classList.remove("show");
+    stepResults.classList.add("show");
+  }
+})();
+</script>
+</body>
+</html>

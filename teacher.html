@@ -119,6 +119,40 @@
   .td-class-acts button:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark);transform:translateY(-1px)}
   .td-class-acts button:active{transform:translateY(0) scale(.95)}
   .td-class-acts button.danger:hover{border-color:var(--td-coral);color:var(--td-coral)}
+
+  /* ---------- Leads ---------- */
+  .td-lead-row{
+    display:flex;align-items:center;gap:14px;background:var(--td-bg);border:1px solid var(--td-border);
+    border-radius:12px;padding:13px 16px;margin-bottom:8px;
+  }
+  .td-lead-row.dismissed{opacity:.5}
+  .td-lead-info{flex:1;min-width:0}
+  .td-lead-info .who{font-weight:700;font-size:.9rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .td-lead-info .meta{font-size:.78rem;color:var(--td-muted);font-weight:600;margin-top:2px}
+  .td-lead-info .meta a{color:var(--td-indigo);font-weight:700}
+  .td-lead-score{
+    background:var(--td-surface);border:1px solid var(--td-border);border-radius:10px;padding:6px 12px;
+    text-align:center;flex-shrink:0;
+  }
+  .td-lead-score b{display:block;font-size:.95rem;font-weight:800}
+  .td-lead-score span{font-size:.66rem;color:var(--td-muted);font-weight:700;text-transform:uppercase}
+  .td-lead-acts{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap}
+  .td-lead-acts button{
+    padding:7px 12px;border-radius:8px;border:1px solid var(--td-border);background:#fff;
+    font-weight:700;font-size:.76rem;cursor:pointer;color:var(--td-ink-soft);
+    transition:transform .12s ease,border-color .15s ease,color .15s ease;
+  }
+  .td-lead-acts button:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark);transform:translateY(-1px)}
+  .td-lead-acts button:active{transform:translateY(0) scale(.95)}
+  .td-lead-acts button.primary{background:var(--td-indigo);border-color:var(--td-indigo);color:#fff}
+  .td-lead-acts button.primary:hover{background:var(--td-indigo-dark);color:#fff}
+  .td-lead-acts button.danger:hover{border-color:var(--td-coral);color:var(--td-coral)}
+  .td-lead-status{font-size:.68rem;font-weight:800;padding:2px 9px;border-radius:99px;text-transform:uppercase}
+  .td-lead-status.new{background:var(--td-coral-soft);color:var(--td-coral)}
+  .td-lead-status.contacted{background:var(--td-amber-soft);color:#B87A16}
+  .td-lead-status.enrolled{background:var(--td-teal-soft);color:var(--td-teal)}
+  .td-lead-status.dismissed{background:var(--td-border-soft);color:var(--td-muted)}
+
   .td-nav{display:flex;flex-direction:column;gap:2px}
   .td-navitem{
     display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;
@@ -381,6 +415,13 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18"/><path d="M8 3v3"/><path d="M16 3v3"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/></svg>
       Schedule
     </button>
+    <button class="td-navitem" data-view="leads" style="justify-content:space-between">
+      <span style="display:flex;align-items:center;gap:10px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        Leads
+      </span>
+      <span id="leadsNavBadge" style="display:none;background:var(--td-coral);color:#fff;font-size:.68rem;font-weight:800;padding:1px 7px;border-radius:99px"></span>
+    </button>
     <button class="td-navitem" data-view="materials">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H14l5 5v11.5A1.5 1.5 0 0 1 17.5 21h-12A1.5 1.5 0 0 1 4 19.5v-15Z"/><path d="M14 3v5h5"/></svg>
       Materials
@@ -542,6 +583,25 @@
       </div>
       <div id="scheduleAgenda" class="mt"></div>
       <div class="td-empty" id="scheduleEmpty" style="display:none">No classes booked in this range yet.</div>
+    </div>
+  </div>
+
+  <!-- ===== Leads view ===== -->
+  <div id="viewLeads" style="display:none">
+    <div class="td-panel">
+      <div class="td-roster-head">
+        <h2 style="flex:1">Prospective students</h2>
+        <select class="td-select" id="leadsStatusFilter">
+          <option value="" selected>All statuses</option>
+          <option value="new">New</option>
+          <option value="contacted">Contacted</option>
+          <option value="enrolled">Enrolled</option>
+          <option value="dismissed">Dismissed</option>
+        </select>
+      </div>
+      <p class="sub" style="margin-top:4px">People who took the placement test on your public site but aren't enrolled yet — reach out, then convert them straight into a student.</p>
+      <div id="leadsList" class="mt"></div>
+      <div class="td-empty" id="leadsEmpty" style="display:none">No leads in this status yet.</div>
     </div>
   </div>
 
@@ -719,6 +779,7 @@
 <script src="js/app.js"></script>
 <script src="js/lumio-profiles.js"></script>
 <script src="js/lumio-schedule.js"></script>
+<script src="js/lumio-leads.js"></script>
 <script src="js/lumio-backup.js"></script>
 <script>
 (() => {
@@ -1076,6 +1137,7 @@
   const stuPinInput = document.getElementById("stuPin");
   const stuNameError = document.getElementById("stuNameError");
   let editingId = null;
+  let convertingLeadId = null;
   let selectedAvatar = (window.LumioProfiles ? LumioProfiles.AVATARS[0] : "🦊");
 
   const stuLevelPlaceholder = document.createElement("option");
@@ -1171,11 +1233,11 @@
     });
   }
 
-  function openStudentModal(profile) {
+  function openStudentModal(profile, prefill) {
     editingId = profile ? profile.id : null;
     document.getElementById("studentModalTitle").textContent = profile ? "Edit student" : "Add student";
-    stuNameInput.value = profile ? profile.name : "";
-    stuLevelSelect.value = profile ? profile.level : "";
+    stuNameInput.value = profile ? profile.name : (prefill && prefill.name) || "";
+    stuLevelSelect.value = profile ? profile.level : (prefill && prefill.level) || "";
     stuPinInput.value = profile ? profile.pin : (window.LumioProfiles ? LumioProfiles.randomPin() : "1234");
     selectedAvatar = profile ? profile.avatar : (window.LumioProfiles ? LumioProfiles.AVATARS[Math.floor(Math.random() * LumioProfiles.AVATARS.length)] : "🦊");
     stuNameError.textContent = "";
@@ -1189,7 +1251,7 @@
     studentModalOverlay.classList.add("show");
     stuNameInput.focus();
   }
-  function closeStudentModal() { studentModalOverlay.classList.remove("show"); }
+  function closeStudentModal() { studentModalOverlay.classList.remove("show"); convertingLeadId = null; }
 
   document.getElementById("addStudentBtn").onclick = () => openStudentModal(null);
   document.getElementById("studentModalCancel").onclick = closeStudentModal;
@@ -1212,6 +1274,7 @@
     const pinVal = stuPinInput.value.length === 4 ? stuPinInput.value : LumioProfiles.randomPin();
     const teacherIdVal = document.getElementById("stuTeacher").value || null;
     const wasEditing = !!editingId;
+    const leadIdToResolve = convertingLeadId;
     await withLoading(e.currentTarget, async () => {
       try {
         if (editingId) {
@@ -1225,6 +1288,10 @@
         renderTeamGrid();
         document.getElementById("kpiRoster").textContent = LumioProfiles.listStudents().length;
         showToast(wasEditing ? `${name} updated.` : `${name} added to the roster.`, "success");
+        if (leadIdToResolve && window.LumioLeads) {
+          try { LumioLeads.updateLead(leadIdToResolve, { status: "enrolled" }); } catch (err2) {}
+          renderLeads();
+        }
       } catch (err) {
         stuNameError.textContent = err.message || "Couldn't save that student.";
       }
@@ -1559,6 +1626,79 @@
   scheduleScope.addEventListener("change", renderSchedule);
   renderSchedule();
 
+  // ================= Leads (placement test submissions) =================
+  const leadsList = document.getElementById("leadsList");
+  const leadsEmpty = document.getElementById("leadsEmpty");
+  const leadsStatusFilter = document.getElementById("leadsStatusFilter");
+  const leadsNavBadge = document.getElementById("leadsNavBadge");
+
+  function fmtLeadDate(iso) {
+    if (!iso) return "—";
+    const d = new Date(iso);
+    return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  }
+  function updateLeadsBadge() {
+    if (!window.LumioLeads) return;
+    const n = LumioLeads.countNew();
+    leadsNavBadge.style.display = n > 0 ? "inline-block" : "none";
+    leadsNavBadge.textContent = n;
+  }
+  function renderLeads() {
+    if (!window.LumioLeads) { leadsList.innerHTML = ""; return; }
+    const status = leadsStatusFilter.value;
+    const leads = LumioLeads.listLeads(status ? { status } : {});
+    leadsList.innerHTML = "";
+    leadsEmpty.style.display = leads.length ? "none" : "block";
+    leads.forEach(lead => {
+      const row = document.createElement("div");
+      row.className = "td-lead-row" + (lead.status === "dismissed" ? " dismissed" : "");
+      const scoreLabel = (lead.testScore !== null && lead.testTotal) ? `${lead.testScore}/${lead.testTotal}` : "—";
+      row.innerHTML = `
+        <div class="td-lead-info">
+          <div class="who">${lead.name}
+            <span class="td-lead-status ${lead.status}">${lead.status}</span>
+            ${lead.suggestedLevel ? `<span class="td-badge teal">${levelName(lead.suggestedLevel)}</span>` : ""}
+          </div>
+          <div class="meta">📞 <a href="tel:${lead.phone}">${lead.phone}</a>${lead.age ? ` · Age ${lead.age}` : ""} · Submitted ${fmtLeadDate(lead.createdAt)}</div>
+        </div>
+        <div class="td-lead-score"><b>${scoreLabel}</b><span>Test score</span></div>
+        <div class="td-lead-acts">
+          ${lead.status === "new" ? `<button type="button" data-act="contacted">Mark contacted</button>` : ""}
+          ${lead.status !== "enrolled" ? `<button type="button" class="primary" data-act="convert">Convert to student</button>` : ""}
+          ${lead.status !== "dismissed" && lead.status !== "enrolled" ? `<button type="button" class="danger" data-act="dismiss">Dismiss</button>` : ""}
+          <button type="button" class="danger" data-act="remove">Remove</button>
+        </div>`;
+      const contactedBtn = row.querySelector('[data-act="contacted"]');
+      if (contactedBtn) contactedBtn.onclick = () => {
+        LumioLeads.updateLead(lead.id, { status: "contacted" });
+        renderLeads(); updateLeadsBadge();
+        showToast(`${lead.name} marked as contacted.`, "success");
+      };
+      const convertBtn = row.querySelector('[data-act="convert"]');
+      if (convertBtn) convertBtn.onclick = () => {
+        convertingLeadId = lead.id;
+        openStudentModal(null, { name: lead.name, level: lead.suggestedLevel || "" });
+      };
+      const dismissBtn = row.querySelector('[data-act="dismiss"]');
+      if (dismissBtn) dismissBtn.onclick = () => {
+        LumioLeads.updateLead(lead.id, { status: "dismissed" });
+        renderLeads(); updateLeadsBadge();
+      };
+      row.querySelector('[data-act="remove"]').onclick = async () => {
+        const ok = await confirmDialog(`Remove ${lead.name} from leads? This can't be undone.`, "Remove");
+        if (ok) {
+          LumioLeads.removeLead(lead.id);
+          renderLeads(); updateLeadsBadge();
+          showToast("Lead removed.");
+        }
+      };
+      leadsList.appendChild(row);
+    });
+  }
+  leadsStatusFilter.addEventListener("change", renderLeads);
+  renderLeads();
+  updateLeadsBadge();
+
   // ---------- switch teacher (log out of this teacher account only) ----------
   document.getElementById("switchTeacherLink").onclick = (e) => {
     e.preventDefault();
@@ -1672,6 +1812,7 @@
       syncStatus.textContent = "Syncing…";
       const rosterRes = await LumioProfiles.syncNow();
       const scheduleRes = window.LumioSchedule ? await LumioSchedule.syncNow() : { ok: true };
+      const leadsRes = window.LumioLeads ? await LumioLeads.syncNow() : { ok: true };
       let progressSynced = false;
       try {
         const cfg = LumioProfiles.getSyncConfig();
@@ -1688,9 +1829,9 @@
         }
       } catch (e2) { /* progress sync is best-effort; roster/schedule already reported below */ }
 
-      if (rosterRes.ok && scheduleRes.ok) {
-        syncStatus.textContent = "Synced just now" + (progressSynced ? " (roster, schedule & progress)." : " (roster & schedule).");
-        renderRosterCards(); renderTable(); renderTeamGrid(); renderSchedule();
+      if (rosterRes.ok && scheduleRes.ok && leadsRes.ok) {
+        syncStatus.textContent = "Synced just now" + (progressSynced ? " (roster, schedule, leads & progress)." : " (roster, schedule & leads).");
+        renderRosterCards(); renderTable(); renderTeamGrid(); renderSchedule(); renderLeads(); updateLeadsBadge();
         showToast("Synced successfully.", "success");
       } else if (rosterRes.reason === "not-configured") {
         syncStatus.textContent = "Add a Web App URL first.";
@@ -1767,12 +1908,13 @@
   document.getElementById("matSearch").addEventListener("input", e => renderMaterials(e.target.value));
 
   // ---------- nav ----------
-  const views = { overview: "viewOverview", students: "viewStudents", team: "viewTeam", schedule: "viewSchedule", materials: "viewMaterials" };
+  const views = { overview: "viewOverview", students: "viewStudents", team: "viewTeam", schedule: "viewSchedule", leads: "viewLeads", materials: "viewMaterials" };
   const titles = {
     overview: ["Overview", "A snapshot of how your students are doing right now."],
     students: ["Students", "Manage your roster and dig into individual progress."],
     team: ["Team", "Manage teacher accounts and see who's assigned to whom."],
     schedule: ["Schedule", "Book classes and see who's up next."],
+    leads: ["Leads", "People who took the placement test but aren't enrolled yet."],
     materials: ["Materials", "Present or download your Zoom-ready decks."]
   };
   document.querySelectorAll(".td-navitem").forEach(btn => {

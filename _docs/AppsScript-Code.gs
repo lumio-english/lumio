@@ -44,6 +44,12 @@ var SCHEDULE_COLUMNS = [
 var PROGRESS_SHEET = "Progress";
 var PROGRESS_COLUMNS = ["studentName", "level", "lesson", "stars", "score", "total", "date"];
 
+var LEADS_SHEET = "Leads";
+var LEADS_COLUMNS = [
+  "id", "name", "phone", "age", "suggestedLevel", "testScore", "testTotal",
+  "status", "notes", "createdAt", "updatedAt"
+];
+
 // ---------- sheet helpers ----------
 
 function getOrCreateSheet_(name, columns) {
@@ -164,6 +170,17 @@ function pullProgress_() {
   return { rows: readRows_(PROGRESS_SHEET, PROGRESS_COLUMNS) };
 }
 
+// ---------- leads ----------
+
+function pullLeads_() {
+  return { leads: readRows_(LEADS_SHEET, LEADS_COLUMNS) };
+}
+
+function pushLeads_(body) {
+  if (Array.isArray(body.leads)) writeRows_(LEADS_SHEET, LEADS_COLUMNS, body.leads);
+  return { ok: true };
+}
+
 // ---------- HTTP entry points ----------
 
 function doGet(e) {
@@ -172,7 +189,8 @@ function doGet(e) {
     if (action === "pullRoster") return jsonResponse_(pullRoster_());
     if (action === "pullSchedule") return jsonResponse_(pullSchedule_());
     if (action === "pullProgress") return jsonResponse_(pullProgress_());
-    return jsonResponse_({ ok: true, message: "Lumio sync backend is running. Pass ?action=pullRoster / pullSchedule / pullProgress." });
+    if (action === "pullLeads") return jsonResponse_(pullLeads_());
+    return jsonResponse_({ ok: true, message: "Lumio sync backend is running. Pass ?action=pullRoster / pullSchedule / pullProgress / pullLeads." });
   } catch (err) {
     return jsonResponse_({ ok: false, error: String(err) });
   }
@@ -188,6 +206,7 @@ function doPost(e) {
     if (action === "pushRoster") return jsonResponse_(pushRoster_(body));
     if (action === "pushSchedule") return jsonResponse_(pushSchedule_(body));
     if (action === "pushProgress") return jsonResponse_(pushProgress_(body));
+    if (action === "pushLeads") return jsonResponse_(pushLeads_(body));
     return jsonResponse_({ ok: false, error: "Unknown action: " + action });
   } catch (err) {
     return jsonResponse_({ ok: false, error: String(err) });
