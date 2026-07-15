@@ -309,6 +309,24 @@
         recordedUrl = URL.createObjectURL(blob);
         cleanupStream();
         showPlayback();
+        // Best-effort save so a teacher can play this back later from the
+        // dashboard — see js/lumio-recordings.js for why this is local-
+        // device-only. Never blocks the lesson if it fails (storage full,
+        // module missing, etc.) — the student already heard their own
+        // playback either way.
+        if (window.LumioRecordings) {
+          const wordNow = words[r];
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            try {
+              LumioRecordings.saveRecording({
+                studentName: user.name, level, lessonNum: num,
+                wordEn: wordNow.en, wordAr: wordNow.ar, audioDataUrl: reader.result,
+              });
+            } catch (e) { /* non-fatal */ }
+          };
+          try { reader.readAsDataURL(blob); } catch (e) { /* non-fatal */ }
+        }
       };
       recorder.start();
       let secondsLeft = 5;

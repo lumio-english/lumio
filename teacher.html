@@ -259,6 +259,15 @@
   .td-mini-track{width:64px;height:6px;background:var(--td-bg);border-radius:99px;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:6px}
   .td-mini-fill{height:100%;background:var(--td-teal);border-radius:99px}
   .td-empty{padding:34px 10px;text-align:center;color:var(--td-muted);font-size:.85rem;font-weight:500}
+  .td-rec-row{
+    display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--td-border-soft);
+  }
+  .td-rec-row:last-child{border-bottom:none}
+  .td-rec-word{flex-shrink:0;min-width:74px}
+  .td-rec-word .en{font-weight:700;font-size:.82rem;display:block}
+  .td-rec-word .ar{font-size:.72rem;color:var(--td-muted);direction:rtl}
+  .td-rec-row audio{flex:1;height:32px;min-width:0}
+  .td-rec-date{font-size:.68rem;color:var(--td-muted);flex-shrink:0;white-space:nowrap}
 
   /* roster cards */
   .td-roster-head{display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap}
@@ -643,6 +652,13 @@
       </div>
     </div>
     <div id="drawerBody"></div>
+
+    <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--td-border-soft)">
+      <h4 style="font-size:.85rem;margin:0 0 4px;display:flex;align-items:center;gap:6px">🎤 Pronunciation recordings</h4>
+      <p class="sub" style="margin:0 0 10px;font-size:.72rem">Only recordings made on this device show up here.</p>
+      <div id="drawerRecordings"></div>
+    </div>
+
     <button class="td-btn td-btn-primary" id="drawerReportBtn" style="width:100%;margin-top:16px">📄 Download performance report</button>
   </div>
 </div>
@@ -780,6 +796,7 @@
 <script src="js/lumio-profiles.js"></script>
 <script src="js/lumio-schedule.js"></script>
 <script src="js/lumio-leads.js"></script>
+<script src="js/lumio-recordings.js"></script>
 <script src="js/lumio-backup.js"></script>
 <script>
 (() => {
@@ -1024,7 +1041,33 @@
         body.appendChild(row);
       });
     if (!r.lessons || !r.lessons.length) body.innerHTML = `<div class="td-empty">No lessons recorded yet.</div>`;
+    renderDrawerRecordings(r);
     drawerOverlay.classList.add("show");
+  }
+
+  function fmtRecDate(iso) {
+    if (!iso) return "";
+    const d = new Date(iso);
+    return d.toLocaleDateString(undefined, { month: "short", day: "numeric" }) + " " +
+      d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+  }
+  function renderDrawerRecordings(r) {
+    const el = document.getElementById("drawerRecordings");
+    if (!window.LumioRecordings) { el.innerHTML = ""; return; }
+    const recs = LumioRecordings.listForStudent(r.name, r.lvl);
+    if (!recs.length) {
+      el.innerHTML = `<div class="td-empty" style="padding:14px 6px">No recordings on this device yet — they'll appear here once ${r.name} completes a "Speak It" activity.</div>`;
+      return;
+    }
+    el.innerHTML = recs.map(rec => `
+      <div class="td-rec-row">
+        <div class="td-rec-word">
+          <span class="en">${rec.wordEn}</span>
+          <span class="ar">${rec.wordAr || ""}</span>
+        </div>
+        <audio controls preload="none" src="${rec.audioDataUrl}"></audio>
+        <span class="td-rec-date">${fmtRecDate(rec.recordedAt)}</span>
+      </div>`).join("");
   }
   drawerOverlay.onclick = e => { if (e.target === drawerOverlay) drawerOverlay.classList.remove("show"); };
   document.getElementById("drawerClose").onclick = () => drawerOverlay.classList.remove("show");
