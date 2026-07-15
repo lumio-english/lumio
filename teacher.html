@@ -24,7 +24,9 @@
     background:var(--td-bg); color:var(--td-ink);
     font-family:'Inter',system-ui,sans-serif; font-size:14px; line-height:1.5;
     display:flex; min-height:100vh;
+    opacity:0; animation:tdFadeIn .35s ease forwards;
   }
+  @keyframes tdFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
   a{color:inherit;text-decoration:none}
   button{font-family:inherit}
 
@@ -47,8 +49,10 @@
   .td-chip{
     padding:7px 14px;border-radius:999px;border:1px solid var(--td-border);background:var(--td-surface);
     font-weight:700;font-size:.8rem;color:var(--td-ink-soft);cursor:pointer;
+    transition:transform .12s ease,background .15s ease,border-color .15s ease,color .15s ease;
   }
-  .td-chip:hover{border-color:var(--td-indigo)}
+  .td-chip:hover{border-color:var(--td-indigo);transform:translateY(-1px)}
+  .td-chip:active{transform:translateY(0) scale(.95)}
   .td-chip.active{background:var(--td-indigo);border-color:var(--td-indigo);color:#fff}
   .td-agenda-day{margin-top:20px}
   .td-agenda-day:first-child{margin-top:0}
@@ -67,16 +71,21 @@
   .td-class-acts button{
     padding:6px 11px;border-radius:8px;border:1px solid var(--td-border);background:#fff;
     font-weight:700;font-size:.74rem;cursor:pointer;color:var(--td-ink-soft);
+    transition:transform .12s ease,border-color .15s ease,color .15s ease;
   }
-  .td-class-acts button:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark)}
+  .td-class-acts button:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark);transform:translateY(-1px)}
+  .td-class-acts button:active{transform:translateY(0) scale(.95)}
   .td-class-acts button.danger:hover{border-color:var(--td-coral);color:var(--td-coral)}
   .td-nav{display:flex;flex-direction:column;gap:2px}
   .td-navitem{
     display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;
     font-weight:600;color:var(--td-ink-soft);cursor:pointer;font-size:.88rem;border:none;background:none;width:100%;text-align:left;
+    transition:background .15s ease,color .15s ease,transform .1s ease;
   }
   .td-navitem svg{width:17px;height:17px;flex-shrink:0}
   .td-navitem:hover{background:var(--td-bg);color:var(--td-ink)}
+  .td-navitem:active{transform:scale(.98)}
+  .td-navitem:focus-visible{outline:3px solid rgba(79,95,232,.3);outline-offset:-2px}
   .td-navitem.active{background:var(--td-indigo-soft);color:var(--td-indigo-dark)}
   .td-sidebar-foot{margin-top:auto;padding-top:16px;border-top:1px solid var(--td-border-soft)}
   .td-exit{
@@ -94,11 +103,13 @@
   .td-btn{
     display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:10px;font-weight:700;
     font-size:.85rem;border:1px solid var(--td-border);background:var(--td-surface);color:var(--td-ink);cursor:pointer;
-    transition:.15s;
+    transition:transform .15s cubic-bezier(.22,1,.36,1),box-shadow .15s ease,border-color .15s ease,color .15s ease,background .15s ease;
   }
-  .td-btn:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark)}
+  .td-btn:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark);transform:translateY(-1px);box-shadow:0 6px 14px rgba(79,95,232,.12)}
+  .td-btn:active{transform:translateY(0) scale(.96);box-shadow:0 2px 5px rgba(79,95,232,.1)}
+  .td-btn:focus-visible{outline:3px solid rgba(79,95,232,.35);outline-offset:2px}
   .td-btn-primary{background:var(--td-indigo);border-color:var(--td-indigo);color:#fff}
-  .td-btn-primary:hover{background:var(--td-indigo-dark);color:#fff}
+  .td-btn-primary:hover{background:var(--td-indigo-dark);color:#fff;box-shadow:0 8px 18px rgba(79,95,232,.3)}
 
   /* ---------- KPI cards ---------- */
   .td-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px}
@@ -190,8 +201,10 @@
   .td-roster-card .acts button{
     flex:1;padding:6px 0;border-radius:8px;border:1px solid var(--td-border);background:#fff;
     font-weight:700;font-size:.74rem;cursor:pointer;color:var(--td-ink-soft);
+    transition:transform .12s ease,border-color .15s ease,color .15s ease;
   }
-  .td-roster-card .acts button:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark)}
+  .td-roster-card .acts button:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark);transform:translateY(-1px)}
+  .td-roster-card .acts button:active{transform:translateY(0) scale(.95)}
   .td-roster-card .acts button.danger:hover{border-color:var(--td-coral);color:var(--td-coral)}
 
   /* ---------- Modal (add/edit student) ---------- */
@@ -619,7 +632,7 @@
 <script src="js/lumio-backup.js"></script>
 <script>
 (() => {
-  if (sessionStorage && !sessionStorage.getItem("lumio_teacher")) { location.href = "login.html?role=teacher"; return; }
+  if (sessionStorage && !sessionStorage.getItem("lumio_teacher")) { location.href = "teacher-portal.html"; return; }
 
  try {
   // ---------- teacher greeting ----------
@@ -1044,7 +1057,7 @@
           try {
             LumioProfiles.removeTeacher(t.id);
             renderTeamGrid(); renderRosterCards(); renderTable(); renderTeacherOptions();
-            if (t.id === activeId) location.href = "login.html?role=teacher";
+            if (t.id === activeId) location.href = "teacher-portal.html";
           } catch (e) {
             alert(e.message || "Couldn't remove that teacher.");
           }
@@ -1290,7 +1303,7 @@
     e.preventDefault();
     if (window.LumioProfiles) LumioProfiles.clearCurrentTeacher();
     try { sessionStorage.removeItem("lumio_teacher"); } catch (err) {}
-    location.href = "login.html?role=teacher";
+    location.href = "teacher-portal.html";
   };
 
   // ---------- demo/sample data ----------

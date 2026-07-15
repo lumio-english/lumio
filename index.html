@@ -7,6 +7,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<style>
+  body{opacity:0;animation:pageFadeIn .45s ease forwards}
+  @keyframes pageFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  .btn{transition:transform .16s cubic-bezier(.22,1,.36,1),box-shadow .16s ease,filter .16s ease}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(0,0,0,.12)}
+  .btn:active{transform:translateY(0) scale(.96);box-shadow:0 3px 8px rgba(0,0,0,.1)}
+  .btn:focus-visible{outline:3px solid rgba(255,138,61,.45);outline-offset:2px}
+  .cf-card:focus-visible{outline:3px solid rgba(255,138,61,.45);outline-offset:3px}
+</style>
 </head>
 <body>
 
@@ -25,7 +34,6 @@
       <p class="lead">Join Lumi on a journey of games, songs and stories — made for young learners, with Arabic support every step of the way.</p>
       <div class="row">
         <a class="btn btn-primary btn-big" href="login.html">I'm a student</a>
-        <a class="btn btn-teal" href="login.html?role=teacher">I'm a teacher</a>
       </div>
     </div>
     <div class="hero-visual">

@@ -7,12 +7,22 @@
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <style>
+  body{opacity:0;animation:pageFadeIn .45s ease forwards}
+  @keyframes pageFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+  .btn{transition:transform .16s cubic-bezier(.22,1,.36,1),box-shadow .16s ease}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(0,0,0,.12)}
+  .btn:active{transform:translateY(0) scale(.96);box-shadow:0 3px 8px rgba(0,0,0,.1)}
+  .btn:focus-visible{outline:3px solid rgba(255,138,61,.45);outline-offset:2px}
+
   .lg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:12px;margin:14px 0}
   .lg-profile{
     background:#fff;border:2px solid var(--line,#eee);border-radius:16px;padding:14px 8px;text-align:center;
-    cursor:pointer;transition:.12s;
+    cursor:pointer;transition:transform .16s cubic-bezier(.22,1,.36,1),box-shadow .16s ease,border-color .16s ease;
   }
-  .lg-profile:hover{border-color:var(--orange,#FF8A3D);transform:translateY(-2px)}
+  .lg-profile:hover{border-color:var(--orange,#FF8A3D);transform:translateY(-3px);box-shadow:0 8px 18px rgba(0,0,0,.09)}
+  .lg-profile:active{transform:translateY(-1px) scale(.97)}
+  .lg-profile:focus-visible{outline:3px solid rgba(255,138,61,.45);outline-offset:2px}
   .lg-profile.selected{border-color:var(--orange,#FF8A3D);background:#FFF6EC}
   .lg-avatar{font-size:2.1rem;line-height:1}
   .lg-name{font-weight:800;margin-top:6px;font-size:.88rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -20,26 +30,30 @@
     text-align:center;color:var(--cocoa-soft,#8A7160);font-weight:700;padding:18px 10px;
     background:#FBF6EC;border-radius:14px;font-size:.9rem;
   }
-  .lg-pinwrap{display:none;text-align:center;margin-top:6px}
+  .lg-pinwrap{display:none;text-align:center;margin-top:6px;animation:lgPinIn .25s ease}
   .lg-pinwrap.show{display:block}
+  @keyframes lgPinIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
   .lg-pin-dots{display:flex;gap:10px;justify-content:center;margin:14px 0}
-  .lg-pin-dot{width:16px;height:16px;border-radius:50%;background:#ECE4D6;border:2px solid #DCD2BE}
-  .lg-pin-dot.filled{background:var(--orange,#FF8A3D);border-color:var(--orange,#FF8A3D)}
+  .lg-pin-dot{width:16px;height:16px;border-radius:50%;background:#ECE4D6;border:2px solid #DCD2BE;transition:transform .15s ease,background .15s ease}
+  .lg-pin-dot.filled{background:var(--orange,#FF8A3D);border-color:var(--orange,#FF8A3D);transform:scale(1.15)}
   .lg-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:220px;margin:0 auto}
   .lg-pad button{
     padding:12px 0;border-radius:12px;border:1px solid var(--line,#eee);background:#fff;font-weight:800;
-    font-size:1.05rem;cursor:pointer;font-family:inherit;
+    font-size:1.05rem;cursor:pointer;font-family:inherit;transition:transform .12s ease,background .12s ease,box-shadow .12s ease;
   }
-  .lg-pad button:active{background:#FFF1E0}
+  .lg-pad button:hover{box-shadow:0 4px 10px rgba(0,0,0,.08);transform:translateY(-1px)}
+  .lg-pad button:active{background:#FFF1E0;transform:translateY(0) scale(.94)}
   .lg-pin-error{color:var(--coral,#FF6B6B);font-weight:800;font-size:.85rem;text-align:center;height:18px;margin-top:6px}
   .lg-pin-error.shake{animation:lgshake .3s}
   @keyframes lgshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-  .lg-back{background:none;border:none;color:var(--cocoa-soft,#8A7160);font-weight:700;cursor:pointer;font-size:.82rem;margin-bottom:8px}
+  .lg-back{background:none;border:none;color:var(--cocoa-soft,#8A7160);font-weight:700;cursor:pointer;font-size:.82rem;margin-bottom:8px;transition:opacity .15s ease}
+  .lg-back:hover{opacity:.7}
   .lg-toggle-advanced{
     display:block;text-align:center;margin-top:14px;font-size:.8rem;color:var(--cocoa-soft,#8A7160);
-    font-weight:700;cursor:pointer;background:none;border:none;text-decoration:underline;width:100%;
+    font-weight:700;cursor:pointer;background:none;border:none;text-decoration:underline;width:100%;transition:opacity .15s ease;
   }
-  #advancedStudent{display:none;margin-top:14px;padding-top:14px;border-top:1px dashed var(--line,#eee)}
+  .lg-toggle-advanced:hover{opacity:.7}
+  #advancedStudent{display:none;margin-top:14px;padding-top:14px;border-top:1px dashed var(--line,#eee);animation:lgPinIn .25s ease}
   #advancedStudent.show{display:block}
 </style>
 </head>
@@ -52,19 +66,14 @@
 
 <main class="wrap" style="max-width:560px">
 
-  <div class="row mt mb" style="justify-content:center">
-    <button class="btn btn-sun" id="tabStudent">Student</button>
-    <button class="btn" id="tabTeacher">Teacher</button>
-  </div>
-
-  <!-- Student login -->
+  <!-- Student login (the only visible path on this page) -->
   <div class="card" id="paneStudent">
     <h2 class="center" id="studentHeading">Hi friend! Who are you?</h2>
 
     <div id="rosterView">
       <div class="lg-grid" id="rosterGrid"></div>
       <div class="lg-empty" id="rosterEmpty" style="display:none">
-        No profiles yet! Ask your teacher to add you on the Teacher Dashboard 🙂
+        No profiles yet! Ask your teacher to add you 🙂
       </div>
     </div>
 
@@ -89,40 +98,20 @@
     </div>
   </div>
 
-  <!-- Teacher login -->
-  <div class="card" id="paneTeacher" style="display:none">
-    <h2 class="center">Who's teaching?</h2>
-
-    <div id="teacherRosterView">
-      <div class="lg-grid" id="teacherGrid"></div>
-      <button class="lg-toggle-advanced" id="addTeacherToggle" style="margin-top:8px">+ Add another teacher</button>
-      <div id="addTeacherBox" style="display:none;margin-top:12px;text-align:left">
-        <label for="newTeacherName">Name</label>
-        <input type="text" id="newTeacherName" placeholder="e.g. Ms. Sara" maxlength="30" autocomplete="off">
-        <button class="btn btn-teal mt" style="width:100%" id="newTeacherSave">Add teacher</button>
-        <div class="lg-pin-error" id="newTeacherError"></div>
-      </div>
+  <!--
+    Hidden compatibility placeholders below. js/auth.js (unmodified) expects
+    #tabStudent, #tabTeacher, #paneTeacher, #tpin, and #goTeacher to exist —
+    this page has no teacher UI at all, so these stay empty and invisible.
+    Teachers use a completely separate page (teacher-portal.html), not
+    linked from anywhere on the public site.
+  -->
+  <div style="display:none" aria-hidden="true">
+    <button id="tabStudent"></button>
+    <button id="tabTeacher"></button>
+    <div id="paneTeacher">
+      <input type="password" id="tpin">
+      <button id="goTeacher"></button>
     </div>
-
-    <div class="lg-pinwrap" id="teacherPinView">
-      <button class="lg-back" id="teacherPinBack">← Not me</button>
-      <p class="center" style="font-weight:800;margin:4px 0">
-        <span id="teacherPinAvatar" style="font-size:1.6rem"></span><br>
-        Enter your PIN, <span id="teacherPinName"></span>
-      </p>
-      <div class="lg-pin-dots" id="teacherPinDots"></div>
-      <div class="lg-pad" id="teacherPinPad"></div>
-      <div class="lg-pin-error" id="teacherPinError"></div>
-    </div>
-
-    <div style="margin-top:16px;padding-top:16px;border-top:1px dashed var(--line,#eee)">
-      <label for="tpin">Classroom PIN</label>
-      <input type="password" id="tpin" placeholder="••••" inputmode="numeric">
-      <p class="mt" style="font-size:.85rem;color:var(--cocoa-soft,#8A7160)">This unlocks the dashboard itself. Default is <b>2026</b> — change it in <code>js/auth.js</code>.</p>
-      <button class="btn btn-teal btn-big mt" style="width:100%" id="goTeacher">Open dashboard</button>
-    </div>
-    <!-- kept for backward compatibility with any code still reading #tname -->
-    <input type="hidden" id="tname">
   </div>
 
 </main>
@@ -159,8 +148,10 @@
       students.forEach(s => {
         const el = document.createElement("div");
         el.className = "lg-profile";
+        el.tabIndex = 0;
         el.innerHTML = `<div class="lg-avatar">${s.avatar || "🙂"}</div><div class="lg-name">${s.name}</div>`;
         el.onclick = () => openPinFor(s);
+        el.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openPinFor(s); } };
         grid.appendChild(el);
       });
     }
@@ -247,129 +238,6 @@
       ? "Hide this"
       : "Not on the list? Start without a profile";
   });
-
-  // ================= Teacher picker (mirrors the student flow) =================
-  try {
-    const tGrid = document.getElementById("teacherGrid");
-    const tRosterView = document.getElementById("teacherRosterView");
-    const tPinView = document.getElementById("teacherPinView");
-    const tPinDots = document.getElementById("teacherPinDots");
-    const tPinPad = document.getElementById("teacherPinPad");
-    const tPinError = document.getElementById("teacherPinError");
-    const tnameHidden = document.getElementById("tname");
-
-    let teachers = (window.LumioProfiles && LumioProfiles.listTeachers()) || [];
-    let activeTeacher = null;
-    let tPinBuffer = "";
-    let selectedTeacherId = (window.LumioProfiles && LumioProfiles.getCurrentTeacherId())
-      || (teachers[0] && teachers[0].id) || null;
-
-    function renderTeacherGrid() {
-      tGrid.innerHTML = "";
-      teachers.forEach(t => {
-        const el = document.createElement("div");
-        el.className = "lg-profile" + (t.id === selectedTeacherId ? " selected" : "");
-        el.innerHTML = `<div class="lg-avatar">${t.avatar || "🙂"}</div><div class="lg-name">${t.name}</div>`;
-        el.onclick = () => openTeacherPinFor(t);
-        tGrid.appendChild(el);
-      });
-    }
-    function renderTeacherDots() {
-      tPinDots.innerHTML = "";
-      for (let i = 0; i < 4; i++) {
-        const d = document.createElement("div");
-        d.className = "lg-pin-dot" + (i < tPinBuffer.length ? " filled" : "");
-        tPinDots.appendChild(d);
-      }
-    }
-    function renderTeacherPad() {
-      tPinPad.innerHTML = "";
-      const keys = ["1","2","3","4","5","6","7","8","9","","0","⌫"];
-      keys.forEach(k => {
-        const btn = document.createElement("button");
-        if (k === "") { btn.style.visibility = "hidden"; tPinPad.appendChild(btn); return; }
-        btn.textContent = k;
-        btn.type = "button";
-        btn.onclick = () => {
-          if (k === "⌫") { tPinBuffer = tPinBuffer.slice(0, -1); }
-          else if (tPinBuffer.length < 4) { tPinBuffer += k; }
-          renderTeacherDots();
-          tPinError.textContent = "";
-          if (tPinBuffer.length === 4) tryTeacherLogin();
-        };
-        tPinPad.appendChild(btn);
-      });
-    }
-    function openTeacherPinFor(t) {
-      activeTeacher = t;
-      tPinBuffer = "";
-      document.getElementById("teacherPinAvatar").textContent = t.avatar || "🙂";
-      document.getElementById("teacherPinName").textContent = t.name;
-      tRosterView.style.display = "none";
-      tPinView.classList.add("show");
-      renderTeacherDots();
-      tPinError.textContent = "";
-    }
-    function closeTeacherPinView() {
-      activeTeacher = null;
-      tPinBuffer = "";
-      tRosterView.style.display = "block";
-      tPinView.classList.remove("show");
-    }
-    async function tryTeacherLogin() {
-      const ok = window.LumioProfiles && await LumioProfiles.verifyTeacherLogin(activeTeacher.name, tPinBuffer);
-      if (!ok) {
-        tPinError.textContent = "That PIN doesn't match — try again.";
-        tPinError.classList.remove("shake"); void tPinError.offsetWidth; tPinError.classList.add("shake");
-        tPinBuffer = "";
-        renderTeacherDots();
-        return;
-      }
-      selectedTeacherId = ok.id;
-      if (window.LumioProfiles) LumioProfiles.setCurrentTeacherId(ok.id);
-      tnameHidden.value = ok.name;
-      closeTeacherPinView();
-      renderTeacherGrid();
-    }
-    document.getElementById("teacherPinBack").onclick = closeTeacherPinView;
-
-    // Selecting who's teaching just marks them "pending" — no PIN needed to
-    // *choose* an identity; the personal PIN only confirms it. If they never
-    // tap a card, the previously-selected (or first) teacher stays selected,
-    // so a single-teacher setup needs zero extra taps here.
-    renderTeacherGrid();
-    renderTeacherPad();
-
-    // Add-teacher inline shortcut
-    const addToggle = document.getElementById("addTeacherToggle");
-    const addBox = document.getElementById("addTeacherBox");
-    addToggle.addEventListener("click", () => {
-      addBox.style.display = addBox.style.display === "block" ? "none" : "block";
-    });
-    document.getElementById("newTeacherSave").addEventListener("click", async () => {
-      const nameInput = document.getElementById("newTeacherName");
-      const err = document.getElementById("newTeacherError");
-      try {
-        const t = await LumioProfiles.addTeacher({ name: nameInput.value });
-        teachers = LumioProfiles.listTeachers();
-        selectedTeacherId = t.id;
-        nameInput.value = "";
-        err.textContent = "";
-        addBox.style.display = "none";
-        renderTeacherGrid();
-      } catch (e) {
-        err.textContent = e.message || "Couldn't add that teacher.";
-      }
-    });
-
-    // Ensure the classroom-PIN button still records whichever teacher was
-    // last confirmed (or the default) before your existing auth.js runs.
-    document.getElementById("goTeacher").addEventListener("click", () => {
-      if (window.LumioProfiles && selectedTeacherId) LumioProfiles.setCurrentTeacherId(selectedTeacherId);
-    });
-  } catch (e) {
-    console.error("Lumio teacher picker error:", e);
-  }
 })();
 </script>
 <script src="js/auth.js"></script>
