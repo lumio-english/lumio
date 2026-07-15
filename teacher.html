@@ -119,6 +119,16 @@
   .td-class-acts button:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark);transform:translateY(-1px)}
   .td-class-acts button:active{transform:translateY(0) scale(.95)}
   .td-class-acts button.danger:hover{border-color:var(--td-coral);color:var(--td-coral)}
+  .td-class-acts button.att-present:hover{border-color:var(--td-teal);color:var(--td-teal)}
+  .td-class-acts button.att-absent:hover{border-color:var(--td-coral);color:var(--td-coral)}
+  .td-class-acts button.att-noshow:hover{border-color:var(--td-amber);color:#B87A16}
+  .td-badge.present{background:var(--td-teal-soft);color:var(--td-teal)}
+  .td-badge.absent{background:var(--td-coral-soft);color:var(--td-coral)}
+  .td-badge.noshow{background:var(--td-amber-soft);color:#B87A16}
+  #needsAttendanceCount{
+    display:inline-flex;align-items:center;justify-content:center;min-width:16px;height:16px;padding:0 4px;
+    background:var(--td-coral);color:#fff;border-radius:99px;font-size:.65rem;font-weight:800;margin-left:4px;
+  }
 
   /* ---------- Leads ---------- */
   .td-lead-row{
@@ -577,6 +587,7 @@
           <button class="td-chip active" data-range="upcoming">Upcoming</button>
           <button class="td-chip" data-range="today">Today</button>
           <button class="td-chip" data-range="week">This week</button>
+          <button class="td-chip" data-range="needs-attendance">Needs attendance <span id="needsAttendanceCount" style="display:none"></span></button>
           <button class="td-chip" data-range="past">Past</button>
           <button class="td-chip" data-range="all">All</button>
         </div>
@@ -643,6 +654,11 @@
       </div>
     </div>
     <div id="drawerBody"></div>
+
+    <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--td-border-soft)">
+      <h4 style="font-size:.85rem;margin:0 0 8px">📅 Attendance</h4>
+      <div id="drawerAttendance"></div>
+    </div>
 
     <button class="td-btn td-btn-primary" id="drawerReportBtn" style="width:100%;margin-top:16px">📄 Download performance report</button>
   </div>
@@ -1025,7 +1041,35 @@
         body.appendChild(row);
       });
     if (!r.lessons || !r.lessons.length) body.innerHTML = `<div class="td-empty">No lessons recorded yet.</div>`;
+    renderDrawerAttendance(r);
     drawerOverlay.classList.add("show");
+  }
+
+  function renderDrawerAttendance(r) {
+    const el = document.getElementById("drawerAttendance");
+    if (!window.LumioSchedule) { el.innerHTML = ""; return; }
+    const stats = LumioSchedule.attendanceStatsForStudent(r.name);
+    if (!stats.total) {
+      el.innerHTML = `<div class="td-empty" style="padding:12px 6px">No classes marked yet.</div>`;
+      return;
+    }
+    const pct = Math.round((stats.present / stats.total) * 100);
+    el.innerHTML = `
+      <div class="pv-stats-row" style="display:flex;gap:8px;margin-bottom:2px">
+        <div style="flex:1;background:var(--td-teal-soft);border-radius:10px;padding:8px;text-align:center">
+          <b style="display:block;font-size:1rem;color:var(--td-teal)">${stats.present}</b>
+          <span style="font-size:.65rem;font-weight:700;color:var(--td-teal);text-transform:uppercase">Present</span>
+        </div>
+        <div style="flex:1;background:var(--td-coral-soft);border-radius:10px;padding:8px;text-align:center">
+          <b style="display:block;font-size:1rem;color:var(--td-coral)">${stats.absent}</b>
+          <span style="font-size:.65rem;font-weight:700;color:var(--td-coral);text-transform:uppercase">Absent</span>
+        </div>
+        <div style="flex:1;background:var(--td-amber-soft);border-radius:10px;padding:8px;text-align:center">
+          <b style="display:block;font-size:1rem;color:#B87A16">${stats["no-show"]}</b>
+          <span style="font-size:.65rem;font-weight:700;color:#B87A16;text-transform:uppercase">No-show</span>
+        </div>
+      </div>
+      <p class="sub" style="margin-top:8px">${pct}% attendance across ${stats.total} marked class${stats.total === 1 ? "" : "es"}.</p>`;
   }
 
   drawerOverlay.onclick = e => { if (e.target === drawerOverlay) drawerOverlay.classList.remove("show"); };
@@ -1480,17 +1524,41 @@
     return { from: "0000-01-01", to: "9999-12-31" };
   }
 
+  function attendanceBadge(c) {
+    if (c.attendance === "present") return '<span class="td-badge present">✓ present</span>';
+    if (c.attendance === "absent") return '<span class="td-badge absent">✕ absent</span>';
+    if (c.attendance === "no-show") return '<span class="td-badge noshow">⚠ no-show</span>';
+    return "";
+  }
+
+  function updateNeedsAttendanceBadge() {
+    if (!window.LumioSchedule || !window.LumioProfiles) return;
+    const scope = scheduleScope.value;
+    const activeTeacherId = LumioProfiles.getCurrentTeacherId();
+    let needs = LumioSchedule.needsAttendance({});
+    if (scope === "mine" && activeTeacherId) needs = needs.filter(c => c.teacherId === activeTeacherId);
+    const badge = document.getElementById("needsAttendanceCount");
+    if (needs.length) { badge.style.display = "inline-flex"; badge.textContent = needs.length; }
+    else { badge.style.display = "none"; }
+  }
+
   function renderSchedule() {
     if (!window.LumioSchedule || !window.LumioProfiles) { scheduleAgenda.innerHTML = ""; return; }
     const scope = scheduleScope.value;
     const activeTeacherId = LumioProfiles.getCurrentTeacherId();
-    const { from, to } = rangeToDates(scheduleRange);
-    let classes = LumioSchedule.listClasses({ from, to });
+    let classes;
+    if (scheduleRange === "needs-attendance") {
+      classes = LumioSchedule.needsAttendance({});
+    } else {
+      const { from, to } = rangeToDates(scheduleRange);
+      classes = LumioSchedule.listClasses({ from, to });
+    }
     if (scope === "mine" && activeTeacherId) classes = classes.filter(c => c.teacherId === activeTeacherId);
     if (scheduleRange === "past") classes = classes.slice().reverse();
 
     scheduleAgenda.innerHTML = "";
     scheduleEmpty.style.display = classes.length ? "none" : "block";
+    updateNeedsAttendanceBadge();
 
     let lastDate = null;
     let dayWrap = null;
@@ -1506,6 +1574,7 @@
         scheduleAgenda.appendChild(dayWrap);
       }
       const teacher = c.teacherId ? LumioProfiles.getTeacher(c.teacherId) : null;
+      const needsMarking = c.status !== "cancelled" && !c.attendance && c.date <= LumioSchedule.todayStr();
       const row = document.createElement("div");
       row.className = "td-class-row" + (c.status === "cancelled" ? " cancelled" : "");
       row.innerHTML = `
@@ -1513,21 +1582,28 @@
         <div class="td-class-info">
           <div class="who">${c.studentName}
             ${c.status === "cancelled" ? '<span class="td-badge grey">cancelled</span>' : ""}
-            ${c.status === "completed" ? '<span class="td-badge teal">completed</span>' : ""}
+            ${attendanceBadge(c)}
           </div>
           <div class="meta">${teacher ? teacher.name : (c.teacherName || "Unassigned")}${c.notes ? " · " + c.notes : ""}</div>
         </div>
         <div class="td-class-acts">
-          ${c.status === "scheduled" ? `<button type="button" data-act="complete">Mark done</button>` : ""}
+          ${needsMarking ? `
+            <button type="button" class="att-present" data-act="present" title="Mark present">✓ Present</button>
+            <button type="button" class="att-absent" data-act="absent" title="Mark absent">✕ Absent</button>
+            <button type="button" class="att-noshow" data-act="no-show" title="Mark no-show">⚠ No-show</button>
+          ` : ""}
           <button type="button" data-act="edit">Edit</button>
           <button type="button" class="danger" data-act="remove">Remove</button>
         </div>`;
-      if (c.status === "scheduled") {
-        row.querySelector('[data-act="complete"]').onclick = () => {
-          LumioSchedule.completeClass(c.id);
-          renderSchedule();
-          showToast(`Marked ${c.studentName}'s class as done.`, "success");
-        };
+      if (needsMarking) {
+        ["present", "absent", "no-show"].forEach(val => {
+          row.querySelector(`[data-act="${val}"]`).onclick = () => {
+            LumioSchedule.markAttendance(c.id, val);
+            renderSchedule();
+            const labels = { present: "present ✓", absent: "absent", "no-show": "a no-show" };
+            showToast(`Marked ${c.studentName} ${labels[val]}.`, val === "present" ? "success" : "error");
+          };
+        });
       }
       row.querySelector('[data-act="edit"]').onclick = () => openClassModal(c);
       row.querySelector('[data-act="remove"]').onclick = async () => {

@@ -38,7 +38,7 @@ var ROSTER_COLUMNS = ["id", "name", "level", "avatar", "pinHash", "teacherId", "
 var SCHEDULE_SHEET = "Schedule";
 var SCHEDULE_COLUMNS = [
   "id", "studentId", "studentName", "teacherId", "teacherName",
-  "date", "startTime", "durationMinutes", "level", "notes", "status", "createdAt", "updatedAt"
+  "date", "startTime", "durationMinutes", "level", "notes", "status", "createdAt", "updatedAt", "attendance"
 ];
 
 var PROGRESS_SHEET = "Progress";

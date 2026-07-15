@@ -98,6 +98,7 @@
       level: level || "",
       notes: notes || "",
       status: "scheduled",
+      attendance: null, // null | "present" | "absent" | "no-show"
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -109,7 +110,7 @@
     const data = load();
     const c = data.classes.find(x => x.id === id);
     if (!c) throw new Error("Class not found.");
-    ["studentId", "studentName", "teacherId", "teacherName", "date", "startTime", "notes", "level", "status"].forEach(k => {
+    ["studentId", "studentName", "teacherId", "teacherName", "date", "startTime", "notes", "level", "status", "attendance"].forEach(k => {
       if (patch[k] !== undefined) c[k] = patch[k];
     });
     if (patch.durationMinutes !== undefined) c.durationMinutes = Number(patch.durationMinutes) || c.durationMinutes;
@@ -127,6 +128,22 @@
   }
   function completeClass(id) {
     return updateClass(id, { status: "completed" });
+  }
+  // Marking attendance is the real "this class happened" signal now —
+  // it also flips status to "completed" so it drops out of "Upcoming".
+  function markAttendance(id, value) {
+    if (["present", "absent", "no-show"].indexOf(value) === -1) {
+      throw new Error('Attendance must be "present", "absent", or "no-show".');
+    }
+    return updateClass(id, { attendance: value, status: "completed" });
+  }
+  // Classes whose date has passed, weren't cancelled, and still have no
+  // attendance marked — the teacher's "catch up on this" list.
+  function needsAttendance(filter) {
+    const today = todayStr();
+    return listClasses(filter).filter(c =>
+      c.status !== "cancelled" && !c.attendance && c.date <= today
+    );
   }
 
   function todayStr() {
@@ -189,9 +206,17 @@
     }
   }
 
+  function attendanceStatsForStudent(studentName) {
+    const classes = listClasses({ studentName }).filter(c => c.attendance);
+    const stats = { present: 0, absent: 0, "no-show": 0, total: classes.length };
+    classes.forEach(c => { stats[c.attendance] = (stats[c.attendance] || 0) + 1; });
+    return stats;
+  }
+
   global.LumioSchedule = {
     listClasses, getClass,
     addClass, updateClass, removeClass, cancelClass, completeClass,
+    markAttendance, needsAttendance, attendanceStatsForStudent,
     upcomingForStudent, upcomingForTeacher, todayStr,
     getSyncConfig, syncNow,
   };
