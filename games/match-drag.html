@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Match It — Lumio English</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  body { min-height: 100vh; background: var(--paper); }
+  .board { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; max-width: 900px; margin: 20px auto; padding: 0 20px; }
+  .col h3 { text-align: center; font-family: var(--font-display); color: var(--muted); margin-bottom: 14px; }
+  .pic-slot {
+    background: #fff; border: 3px dashed #EADFCE; border-radius: 22px;
+    height: 110px; position: relative; overflow: hidden; margin-bottom: 16px; transition: border-color .2s, background .2s;
+  }
+  .pic-slot .pic-fill, .pic-slot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 19px; }
+  .pic-slot .pic-fill { overflow: hidden; }
+  .pic-slot.over { border-color: var(--orange); background: var(--sun-soft); }
+  .pic-slot.filled { border-style: solid; border-color: var(--green); }
+  .word-chip {
+    background: var(--card); border-radius: 999px; padding: 14px 26px;
+    font-family: var(--font-display); font-weight: 800; font-size: 1.15rem;
+    box-shadow: var(--sh-sm); cursor: grab; margin-bottom: 16px; text-align: center;
+    user-select: none; touch-action: none;
+  }
+  .word-chip.placed { opacity: .35; cursor: default; }
+  .word-chip.dragging { opacity: .5; }
+  .ghost {
+    position: fixed; z-index: 100; pointer-events: none;
+    background: var(--orange); color: #fff; border-radius: 999px; padding: 14px 26px;
+    font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; box-shadow: var(--sh-lg);
+  }
+  #hud { display: flex; align-items: center; gap: 14px; padding: 14px 20px; }
+  #hud .pill { background: #fff; border-radius: 999px; padding: 8px 18px; font-family: var(--font-display); font-weight: 800; box-shadow: var(--sh-sm); }
+  #endcard {
+    position: fixed; inset: 0; z-index: 60; display: none;
+    align-items: center; justify-content: center; background: rgba(60,40,20,.5);
+  }
+  #endcard .box { background: #fff; border-radius: 28px; padding: 40px 50px; text-align: center; box-shadow: var(--sh-lg); }
+</style>
+</head>
+<body>
+
+<div id="hud">
+  <a class="btn btn-ghost" href="../present.html">Exit</a>
+  <span class="pill">Matched <span id="matched">0</span>/<span id="total">0</span></span>
+</div>
+
+<h1 style="text-align:center;font-family:var(--font-display);color:var(--cocoa)">Drag the word to its picture!</h1>
+
+<div class="board">
+  <div class="col"><h3>Pictures</h3><div id="pics"></div></div>
+  <div class="col"><h3>Words</h3><div id="words"></div></div>
+</div>
+
+<div id="endcard">
+  <div class="box">
+    <h1 style="font-family:var(--font-display)">All matched!</h1>
+    <p style="font-weight:800;font-size:1.2rem;margin:14px 0">Great job matching every word!</p>
+    <div class="row" style="justify-content:center">
+      <button class="btn btn-primary" onclick="location.reload()">↺ Play again</button>
+      <a class="btn btn-teal" href="../present.html">Back to lesson</a>
+    </div>
+  </div>
+</div>
+
+<script src="../js/app.js"></script>
+<script src="../js/lessons-data.js"></script>
+<script>
+const level = Lumio.qs("level") || "pre-a";
+const num = parseInt(Lumio.qs("n") || "1", 10);
+const lesson = window.LUMIO_LESSONS?.[level]?.[num];
+const vocab = (lesson ? Lumio.shuffle([...lesson.vocab]) : []).slice(0, 6);
+document.getElementById("total").textContent = vocab.length;
+
+const picsEl = document.getElementById("pics");
+const wordsEl = document.getElementById("words");
+let matched = 0;
+
+const picOrder = Lumio.shuffle(vocab.map((v, i) => i));
+picOrder.forEach(i => {
+  const v = vocab[i];
+  const slot = document.createElement("div");
+  slot.className = "pic-slot";
+  slot.dataset.answer = v.en;
+  const slug = v.en.toLowerCase().replace(/ /g, "-");
+  slot.innerHTML = `<div class="pic-fill">${Lumio.letterTile(v.en)}</div><img src="../assets/vocab/${slug}.jpg" alt="${v.en}" onerror="this.remove()">`;
+  picsEl.appendChild(slot);
+});
+
+const wordOrder = Lumio.shuffle(vocab.map((v, i) => i));
+wordOrder.forEach(i => {
+  const v = vocab[i];
+  const chip = document.createElement("div");
+  chip.className = "word-chip";
+  chip.textContent = v.en;
+  chip.draggable = true;
+  chip.dataset.word = v.en;
+  wordsEl.appendChild(chip);
+});
+
+let dragged = null;
+let ghost = null;
+
+function startDrag(chip, clientX, clientY) {
+  if (chip.classList.contains("placed")) return;
+  dragged = chip;
+  chip.classList.add("dragging");
+  ghost = document.createElement("div");
+  ghost.className = "ghost";
+  ghost.textContent = chip.dataset.word;
+  document.body.appendChild(ghost);
+  moveGhost(clientX, clientY);
+  Lumio.speak(chip.dataset.word);
+}
+function moveGhost(x, y) {
+  if (ghost) { ghost.style.left = (x - 60) + "px"; ghost.style.top = (y - 24) + "px"; }
+}
+function endDrag(clientX, clientY) {
+  if (!dragged) return;
+  const el = document.elementFromPoint(clientX, clientY);
+  const slot = el ? el.closest(".pic-slot") : null;
+  if (slot && !slot.classList.contains("filled")) {
+    if (slot.dataset.answer === dragged.dataset.word) {
+      slot.classList.add("filled", "correct-pop");
+      slot.innerHTML += `<div style="position:absolute;bottom:-8px;font-size:.85rem;font-weight:800;color:var(--green)">${dragged.dataset.word}</div>`;
+      dragged.classList.add("placed");
+      matched++;
+      document.getElementById("matched").textContent = matched;
+      Lumio.beep(true);
+      if (matched === vocab.length) {
+        setTimeout(() => { Lumio.confetti(90); Lumio.speak("Amazing! You matched them all!"); document.getElementById("endcard").style.display = "flex"; }, 400);
+      }
+    } else {
+      slot.classList.add("wrong-shake");
+      Lumio.beep(false);
+      setTimeout(() => slot.classList.remove("wrong-shake"), 400);
+    }
+  }
+  dragged.classList.remove("dragging");
+  ghost?.remove(); ghost = null; dragged = null;
+}
+
+// mouse + touch support
+document.querySelectorAll(".word-chip").forEach(chip => {
+  chip.addEventListener("mousedown", e => startDrag(chip, e.clientX, e.clientY));
+  chip.addEventListener("touchstart", e => { const t = e.touches[0]; startDrag(chip, t.clientX, t.clientY); }, { passive: true });
+});
+document.addEventListener("mousemove", e => moveGhost(e.clientX, e.clientY));
+document.addEventListener("touchmove", e => { if (dragged) { const t = e.touches[0]; moveGhost(t.clientX, t.clientY); } }, { passive: true });
+document.addEventListener("mouseup", e => endDrag(e.clientX, e.clientY));
+document.addEventListener("touchend", e => { const t = e.changedTouches[0]; endDrag(t.clientX, t.clientY); });
+
+document.querySelectorAll(".pic-slot").forEach(slot => {
+  slot.addEventListener("mouseover", () => { if (dragged) slot.classList.add("over"); });
+  slot.addEventListener("mouseout", () => slot.classList.remove("over"));
+});
+</script>
+</body>
+</html>
