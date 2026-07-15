@@ -301,12 +301,13 @@
   }
   .td-sync-status{font-size:.78rem;font-weight:700;color:var(--td-muted)}
 
-  /* ---------- Print cards ---------- */
-  #printCards{display:none}
+  /* ---------- Print cards + performance report ---------- */
+  #printCards, #printReport{display:none}
   @media print{
     body *{visibility:hidden}
-    #printCards, #printCards *{visibility:visible}
+    #printCards, #printCards *, #printReport, #printReport *{visibility:visible}
     #printCards{display:block !important;position:absolute;top:0;left:0;width:100%}
+    #printReport{display:block !important;position:absolute;top:0;left:0;width:100%}
     .pc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;padding:20px}
     .pc-card{border:2px dashed #999;border-radius:14px;padding:16px;text-align:center;font-family:'Baloo 2',sans-serif}
     .pc-card .av{font-size:2.4rem}
@@ -315,6 +316,32 @@
     .pc-card .pin{font-size:1.6rem;font-weight:800;letter-spacing:6px;font-family:monospace}
     .pc-card .lbl{font-size:.7rem;color:#888;text-transform:uppercase;letter-spacing:1px}
   }
+
+  .pr-page{padding:28px;font-family:'Inter',system-ui,sans-serif;color:#1B2233;max-width:760px;margin:0 auto}
+  .pr-head{display:flex;align-items:center;gap:14px;border-bottom:3px solid #F97316;padding-bottom:16px;margin-bottom:20px}
+  .pr-head img{width:42px;height:42px;border-radius:10px}
+  .pr-head .brand{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.2rem}
+  .pr-head .brand span{color:#F97316}
+  .pr-head .sub{color:#8891A3;font-size:.8rem;font-weight:600}
+  .pr-student{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+  .pr-student .av{width:52px;height:52px;border-radius:50%;background:#FFF1E0;display:flex;align-items:center;justify-content:center;font-size:1.7rem}
+  .pr-student h1{font-size:1.3rem;margin:0}
+  .pr-student p{margin:2px 0 0;color:#6B5D4E;font-weight:700;font-size:.85rem}
+  .pr-stats{display:flex;gap:10px;margin-bottom:22px}
+  .pr-stat{flex:1;background:#FAF8F4;border-radius:12px;padding:12px;text-align:center;border:1px solid #EAE3D8}
+  .pr-stat b{display:block;font-size:1.4rem;font-family:'Baloo 2',sans-serif}
+  .pr-stat span{font-size:.68rem;color:#8891A3;font-weight:800;text-transform:uppercase}
+  .pr-section{margin-bottom:20px}
+  .pr-section h2{font-size:.95rem;margin:0 0 10px;display:flex;align-items:center;gap:6px}
+  .pr-table{width:100%;border-collapse:collapse;font-size:.82rem}
+  .pr-table th{text-align:left;padding:6px 8px;border-bottom:2px solid #EAE3D8;color:#8891A3;font-size:.72rem;text-transform:uppercase}
+  .pr-table td{padding:7px 8px;border-bottom:1px solid #F1ECE2}
+  .pr-note-box{border-radius:12px;padding:12px 14px;font-size:.85rem;line-height:1.6;margin-bottom:8px}
+  .pr-note-box.strong{background:#E6FAF7;border-left:4px solid #14B8A6}
+  .pr-note-box.weak{background:#FCEBEA;border-left:4px solid #E8635F}
+  .pr-note-box.info{background:#FAF8F4;border-left:4px solid #948573}
+  .pr-note-box b{display:block;margin-bottom:4px}
+  .pr-foot{margin-top:24px;padding-top:14px;border-top:1px solid #EAE3D8;font-size:.72rem;color:#948573;text-align:center}
 
   @media (max-width:760px){
     .td-sidebar{position:fixed;left:-236px;z-index:80;transition:.2s}
@@ -556,6 +583,7 @@
       </div>
     </div>
     <div id="drawerBody"></div>
+    <button class="td-btn td-btn-primary" id="drawerReportBtn" style="width:100%;margin-top:16px">📄 Download performance report</button>
   </div>
 </div>
 
@@ -684,6 +712,9 @@
 <div id="printCards">
   <div class="pc-grid" id="printCardsGrid"></div>
 </div>
+
+<!-- ===== Printable performance report ===== -->
+<div id="printReport"></div>
 
 <script src="js/app.js"></script>
 <script src="js/lumio-profiles.js"></script>
@@ -911,7 +942,9 @@
 
   // ---------- student detail drawer ----------
   const drawerOverlay = document.getElementById("drawerOverlay");
+  let currentDrawerRow = null;
   function openDrawer(r) {
+    currentDrawerRow = r;
     document.getElementById("drawerName").textContent = r.name;
     document.getElementById("drawerLevel").textContent = levelName(r.lvl);
     document.getElementById("drawerDone").textContent = r.done;
@@ -934,6 +967,91 @@
   }
   drawerOverlay.onclick = e => { if (e.target === drawerOverlay) drawerOverlay.classList.remove("show"); };
   document.getElementById("drawerClose").onclick = () => drawerOverlay.classList.remove("show");
+
+  // ---------- performance report (strong/weak points, per student per level) ----------
+  function scorePct(res) {
+    if (res.total) return Math.round((res.score / res.total) * 100);
+    return Math.round(((res.stars || 0) / 3) * 100);
+  }
+  function buildReportHtml(r) {
+    const total = LEVEL_LESSON_COUNT[r.lvl] || 20;
+    const lessons = (r.lessons || []).slice().sort((a, b) => Number(a[0]) - Number(b[0]));
+    const attemptedNums = new Set(lessons.map(([id]) => Number(id)));
+    const notStarted = [];
+    for (let n = 1; n <= total; n++) if (!attemptedNums.has(n)) notStarted.push(n);
+
+    const strong = lessons.filter(([, res]) => (res.stars || 0) >= 3 || scorePct(res) >= 85);
+    const weak = lessons.filter(([, res]) => (res.stars || 0) <= 1 || scorePct(res) < 60);
+
+    const avgStars = lessons.length ? (lessons.reduce((s, [, res]) => s + (res.stars || 0), 0) / lessons.length) : 0;
+    let summary;
+    if (!lessons.length) summary = `${r.name} hasn't started ${levelName(r.lvl)} yet.`;
+    else if (avgStars >= 2.5) summary = `${r.name} is performing consistently well in ${levelName(r.lvl)} — great work overall, with most lessons earning 3 stars.`;
+    else if (avgStars <= 1.5) summary = `${r.name} may benefit from extra practice and review in ${levelName(r.lvl)} — several lessons scored low, see notes below.`;
+    else summary = `${r.name} is making solid progress in ${levelName(r.lvl)}, with some lessons stronger than others — see notes below for where to focus.`;
+
+    const rowsHtml = lessons.map(([id, res]) => `
+      <tr>
+        <td>Lesson ${id}</td>
+        <td>${"★".repeat(res.stars || 0)}${"☆".repeat(3 - (res.stars || 0))}</td>
+        <td>${res.total ? `${res.score}/${res.total} (${scorePct(res)}%)` : "—"}</td>
+        <td>${res.date || "—"}</td>
+      </tr>`).join("");
+
+    const strongHtml = strong.length
+      ? `<div class="pr-note-box strong"><b>💪 Strong points</b>${strong.map(([id, res]) => `Lesson ${id} (${res.stars || 0}★${res.total ? `, ${scorePct(res)}%` : ""})`).join(" · ")}</div>`
+      : "";
+    const weakHtml = weak.length
+      ? `<div class="pr-note-box weak"><b>📌 Needs practice</b>${weak.map(([id, res]) => `Lesson ${id} (${res.stars || 0}★${res.total ? `, ${scorePct(res)}%` : ""})`).join(" · ")}</div>`
+      : "";
+    const notStartedHtml = notStarted.length
+      ? `<div class="pr-note-box info"><b>⏳ Not started yet</b>Lesson${notStarted.length > 1 ? "s" : ""} ${notStarted.join(", ")}</div>`
+      : "";
+
+    const teacherName = (window.LumioProfiles && LumioProfiles.getCurrentTeacher()) ? LumioProfiles.getCurrentTeacher().name : "Lumio English";
+    const today = new Date().toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" });
+
+    return `
+      <div class="pr-page">
+        <div class="pr-head">
+          <img src="assets/logo/lumio-logo.png" alt="Lumio English logo" onerror="this.style.display='none'">
+          <div>
+            <div class="brand">Lumio <span>English</span></div>
+            <div class="sub">Performance Report · generated ${today} by ${teacherName}</div>
+          </div>
+        </div>
+        <div class="pr-student">
+          <div class="av">${r.avatar || r.name.slice(0, 2).toUpperCase()}</div>
+          <div>
+            <h1>${r.name}</h1>
+            <p>${levelName(r.lvl)}</p>
+          </div>
+        </div>
+        <div class="pr-stats">
+          <div class="pr-stat"><b>${r.done}/${total}</b><span>Lessons done</span></div>
+          <div class="pr-stat"><b>★ ${r.stars}</b><span>Stars earned</span></div>
+          <div class="pr-stat"><b>${r.avg}%</b><span>Avg score</span></div>
+        </div>
+        <div class="pr-section">
+          <h2>📝 Summary</h2>
+          <div class="pr-note-box info">${summary}</div>
+        </div>
+        ${strongHtml || weakHtml || notStartedHtml ? `<div class="pr-section"><h2>🔍 Highlights</h2>${strongHtml}${weakHtml}${notStartedHtml}</div>` : ""}
+        <div class="pr-section">
+          <h2>📋 Lesson-by-lesson</h2>
+          ${lessons.length
+            ? `<table class="pr-table"><thead><tr><th>Lesson</th><th>Stars</th><th>Score</th><th>Date</th></tr></thead><tbody>${rowsHtml}</tbody></table>`
+            : `<p style="color:#8891A3;font-size:.85rem">No lessons recorded yet.</p>`}
+        </div>
+        <div class="pr-foot">Lumio English · Learn · Speak · Grow</div>
+      </div>`;
+  }
+  document.getElementById("drawerReportBtn").onclick = () => {
+    if (!currentDrawerRow) return;
+    document.getElementById("printReport").innerHTML = buildReportHtml(currentDrawerRow);
+    showToast(`Preparing ${currentDrawerRow.name}'s report…`);
+    setTimeout(() => window.print(), 150);
+  };
 
   // ---------- export ----------
   document.getElementById("exportBtn").onclick = () => {
