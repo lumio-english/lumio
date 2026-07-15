@@ -410,7 +410,7 @@
 
       await fetch(cfg.url + "?action=pushRoster", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify({
           students: data.students.map(stripPin),
           teachers: data.teachers.map(stripPin),

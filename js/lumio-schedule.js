@@ -168,7 +168,7 @@
       }
       await fetch(cfg.url + "?action=pushSchedule", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify({ classes: data.classes }),
       });
       return { ok: true, at: new Date().toISOString() };

@@ -86,6 +86,14 @@ you want kept in sync — each one needs the same Web App URL.
 - **"Sync failed"** — double check the URL was pasted in full,
   including `/exec` at the end, and that you chose "Anyone" for access
   when deploying.
+- **The URL works fine in a browser tab, but "Sync now" still fails** —
+  this was an actual bug we hit and fixed: Apps Script Web Apps don't
+  handle the CORS preflight request that browsers send before a `POST`
+  with `Content-Type: application/json`. The sync code now sends
+  `text/plain;charset=utf-8` instead (Apps Script still parses the body
+  as JSON fine either way) — if you're on an older copy of
+  `lumio-profiles.js` / `lumio-schedule.js` / `teacher.html`, update to
+  the latest version to pick up this fix.
 - **Re-deploying after editing the script** — if you ever change the
   Apps Script code, you need to **Deploy → Manage deployments → Edit
   (pencil icon) → New version → Deploy** for the changes to actually
