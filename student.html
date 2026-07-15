@@ -36,6 +36,18 @@
   .sd-fade-up{animation:sdFadeUp .5s ease both}
   .sd-anim-d1{animation-delay:.05s} .sd-anim-d2{animation-delay:.12s} .sd-anim-d3{animation-delay:.19s} .sd-anim-d4{animation-delay:.26s}
 
+  /* ---------- Toasts ---------- */
+  #sd-toast-stack{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:400;display:flex;flex-direction:column-reverse;gap:8px;pointer-events:none;width:100%;max-width:340px;padding:0 16px}
+  .sd-toast{
+    display:flex;align-items:center;gap:10px;background:#fff;color:var(--sd-cocoa);padding:13px 18px;border-radius:16px;
+    font-weight:800;font-size:.88rem;box-shadow:0 10px 28px rgba(0,0,0,.16);pointer-events:auto;
+    animation:sdToastIn .3s cubic-bezier(.22,1,.36,1) forwards;border:2px solid var(--sd-teal);
+  }
+  .sd-toast.out{animation:sdToastOut .2s ease forwards}
+  .sd-toast .ic{font-size:1.15rem;flex-shrink:0}
+  @keyframes sdToastIn{from{opacity:0;transform:translateY(14px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
+  @keyframes sdToastOut{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(8px) scale(.96)}}
+
   /* ---------- Header ---------- */
   .sd-topbar{
     display:flex;align-items:center;gap:12px;padding:14px 22px;
@@ -429,12 +441,27 @@
   </div>
 </div>
 
+<div id="sd-toast-stack" aria-live="polite"></div>
+
 <script src="js/app.js"></script>
 <script src="js/lumio-profiles.js"></script>
 <script src="js/lumio-schedule.js"></script>
 <script>
 (() => {
  try {
+  // ---------- toast helper ----------
+  const sdToastStack = document.getElementById("sd-toast-stack");
+  function showToast(message, icon) {
+    const el = document.createElement("div");
+    el.className = "sd-toast";
+    el.innerHTML = `<span class="ic">${icon || "🎉"}</span><span>${message}</span>`;
+    sdToastStack.appendChild(el);
+    setTimeout(() => {
+      el.classList.add("out");
+      setTimeout(() => el.remove(), 220);
+    }, 2600);
+  }
+
   const u = Lumio.requireUser();
 
   // ---------- roster membership guard ----------
@@ -628,6 +655,7 @@
     }
     document.getElementById("avatarBtn").textContent = currentAvatar;
     document.getElementById("avatarOverlay").classList.remove("show");
+    showToast("Avatar updated!", currentAvatar);
   };
   document.getElementById("avatarOverlay").addEventListener("click", e => {
     if (e.target.id === "avatarOverlay") document.getElementById("avatarOverlay").classList.remove("show");

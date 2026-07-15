@@ -30,6 +30,49 @@
   a{color:inherit;text-decoration:none}
   button{font-family:inherit}
 
+  /* ---------- Toasts ---------- */
+  #td-toast-stack{position:fixed;bottom:20px;right:20px;z-index:400;display:flex;flex-direction:column-reverse;gap:8px;pointer-events:none}
+  .td-toast{
+    display:flex;align-items:center;gap:10px;background:var(--td-ink);color:#fff;padding:12px 18px;border-radius:12px;
+    font-weight:700;font-size:.85rem;box-shadow:0 10px 30px rgba(0,0,0,.22);max-width:340px;
+    animation:tdToastIn .25s cubic-bezier(.22,1,.36,1) forwards;pointer-events:auto;
+  }
+  .td-toast.out{animation:tdToastOut .2s ease forwards}
+  .td-toast.success{background:#1F7A4D}
+  .td-toast.error{background:var(--td-coral)}
+  .td-toast .ic{font-size:1.05rem;flex-shrink:0}
+  @keyframes tdToastIn{from{opacity:0;transform:translateY(10px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+  @keyframes tdToastOut{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(6px) scale(.96)}}
+
+  /* ---------- Custom confirm dialog (replaces native confirm()) ---------- */
+  #td-confirm-overlay{
+    position:fixed;inset:0;background:rgba(20,25,45,.4);z-index:410;display:none;
+    align-items:center;justify-content:center;padding:20px;
+  }
+  #td-confirm-overlay.show{display:flex}
+  .td-confirm-box{
+    background:var(--td-surface);border-radius:18px;padding:22px;max-width:360px;width:100%;
+    box-shadow:0 24px 60px rgba(20,25,45,.28);transform:scale(.94);opacity:0;
+    animation:tdConfirmIn .18s cubic-bezier(.22,1,.36,1) forwards;
+  }
+  @keyframes tdConfirmIn{to{transform:scale(1);opacity:1}}
+  .td-confirm-box p{font-size:.9rem;font-weight:600;color:var(--td-ink);line-height:1.5;margin:0 0 18px}
+  .td-confirm-actions{display:flex;gap:10px}
+  .td-confirm-actions button{flex:1}
+
+  /* ---------- Async button loading state ---------- */
+  .td-btn.is-loading{position:relative;color:transparent !important;pointer-events:none}
+  .td-btn.is-loading::after{
+    content:"";position:absolute;top:50%;left:50%;width:15px;height:15px;margin:-7.5px 0 0 -7.5px;
+    border:2px solid rgba(255,255,255,.5);border-top-color:#fff;border-radius:50%;animation:tdSpin .6s linear infinite;
+  }
+  .td-btn:not(.td-btn-primary).is-loading::after{border-color:rgba(79,95,232,.25);border-top-color:var(--td-indigo)}
+  @keyframes tdSpin{to{transform:rotate(360deg)}}
+
+  /* ---------- Smoother modal open/close ---------- */
+  .td-overlay .td-modal-box{transition:transform .18s cubic-bezier(.22,1,.36,1),opacity .18s ease}
+
+
   /* ---------- Sidebar ---------- */
   .td-sidebar{
     width:236px; flex-shrink:0; background:var(--td-surface); border-right:1px solid var(--td-border);
@@ -243,10 +286,13 @@
   .td-mat-row{display:flex;align-items:center;gap:10px;background:var(--td-surface);border:1px solid var(--td-border);border-radius:12px;padding:10px 12px}
   .td-mat-row .num{width:30px;height:30px;border-radius:8px;background:var(--td-bg);color:var(--td-ink-soft);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.72rem;flex-shrink:0}
   .td-mat-row b{flex:1;font-size:.85rem;font-weight:700}
-  .td-mat-row a.act{padding:7px 14px;font-size:.8rem;border-radius:9px;font-weight:700}
+  .td-mat-row a.act{padding:7px 14px;font-size:.8rem;border-radius:9px;font-weight:700;transition:transform .12s ease,background .15s ease,box-shadow .15s ease;display:inline-block}
+  .td-mat-row a.act:hover{transform:translateY(-1px)}
+  .td-mat-row a.act:active{transform:translateY(0) scale(.95)}
   .td-mat-row a.present{background:var(--td-indigo);color:#fff}
-  .td-mat-row a.present:hover{background:var(--td-indigo-dark)}
+  .td-mat-row a.present:hover{background:var(--td-indigo-dark);box-shadow:0 6px 14px rgba(249,115,22,.25)}
   .td-mat-row a.pptx{background:var(--td-bg);color:var(--td-ink-soft);border:1px solid var(--td-border)}
+  .td-mat-row a.pptx:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark)}
 
   /* ---------- Sync settings ---------- */
   .td-sync-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -622,6 +668,18 @@
   </div>
 </div>
 
+<!-- ===== Toasts + confirm dialog ===== -->
+<div id="td-toast-stack" aria-live="polite"></div>
+<div id="td-confirm-overlay">
+  <div class="td-confirm-box">
+    <p id="td-confirm-message">Are you sure?</p>
+    <div class="td-confirm-actions">
+      <button class="td-btn" id="td-confirm-cancel">Cancel</button>
+      <button class="td-btn td-btn-primary" id="td-confirm-ok">Confirm</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===== Printable login cards ===== -->
 <div id="printCards">
   <div class="pc-grid" id="printCardsGrid"></div>
@@ -636,6 +694,55 @@
   if (sessionStorage && !sessionStorage.getItem("lumio_teacher")) { location.href = "teacher-portal.html"; return; }
 
  try {
+  // ================= Shared UI helpers (toasts, confirm dialog, button loading) =================
+  const toastStack = document.getElementById("td-toast-stack");
+  function showToast(message, type) {
+    const el = document.createElement("div");
+    el.className = "td-toast" + (type ? " " + type : "");
+    const icon = type === "success" ? "✓" : type === "error" ? "✕" : "ℹ";
+    el.innerHTML = `<span class="ic">${icon}</span><span>${message}</span>`;
+    toastStack.appendChild(el);
+    setTimeout(() => {
+      el.classList.add("out");
+      setTimeout(() => el.remove(), 220);
+    }, 2800);
+  }
+
+  const confirmOverlay = document.getElementById("td-confirm-overlay");
+  const confirmMessage = document.getElementById("td-confirm-message");
+  const confirmOkBtn = document.getElementById("td-confirm-ok");
+  const confirmCancelBtn = document.getElementById("td-confirm-cancel");
+  function confirmDialog(message, okLabel) {
+    return new Promise(resolve => {
+      confirmMessage.textContent = message;
+      confirmOkBtn.textContent = okLabel || "Confirm";
+      confirmOverlay.classList.add("show");
+      const cleanup = (result) => {
+        confirmOverlay.classList.remove("show");
+        confirmOkBtn.onclick = null;
+        confirmCancelBtn.onclick = null;
+        resolve(result);
+      };
+      confirmOkBtn.onclick = () => cleanup(true);
+      confirmCancelBtn.onclick = () => cleanup(false);
+      confirmOverlay.onclick = e => { if (e.target === confirmOverlay) cleanup(false); };
+    });
+  }
+
+  // Wraps an async click handler so the button shows a spinner and can't
+  // be double-clicked while the work is in flight.
+  async function withLoading(button, fn) {
+    if (!button || button.classList.contains("is-loading")) return;
+    button.classList.add("is-loading");
+    button.disabled = true;
+    try {
+      await fn();
+    } finally {
+      button.classList.remove("is-loading");
+      button.disabled = false;
+    }
+  }
+
   // ---------- teacher greeting ----------
   const IS_OWNER = window.LumioProfiles ? LumioProfiles.isCurrentTeacherOwner() : false;
   try {
@@ -837,6 +944,7 @@
     a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
     a.download = "lumio-progress.csv";
     a.click();
+    showToast("CSV downloaded.", "success");
   };
 
   // ================= Roster management =================
@@ -915,15 +1023,20 @@
         };
       }
       card.querySelector('[data-act="edit"]').onclick = () => openStudentModal(p);
-      card.querySelector('[data-act="pin"]').onclick = async () => {
-        const newPin = LumioProfiles.randomPin();
-        await LumioProfiles.updateStudent(p.id, { pin: newPin });
-        renderRosterCards(); renderTable();
+      card.querySelector('[data-act="pin"]').onclick = async (e) => {
+        await withLoading(e.currentTarget, async () => {
+          const newPin = LumioProfiles.randomPin();
+          await LumioProfiles.updateStudent(p.id, { pin: newPin });
+          renderRosterCards(); renderTable();
+          showToast(`New PIN set for ${p.name}.`, "success");
+        });
       };
-      card.querySelector('[data-act="remove"]').onclick = () => {
-        if (confirm(`Remove ${p.name} from the roster? They won't be able to log in until re-added.`)) {
+      card.querySelector('[data-act="remove"]').onclick = async () => {
+        const ok = await confirmDialog(`Remove ${p.name} from the roster? They won't be able to log in until re-added.`, "Remove");
+        if (ok) {
           LumioProfiles.removeStudent(p.id);
           renderRosterCards(); renderTable();
+          showToast(`${p.name} removed from the roster.`);
         }
       };
       rosterGrid.appendChild(card);
@@ -970,7 +1083,7 @@
     stuPinInput.value = stuPinInput.value.replace(/\D/g, "").slice(0, 4);
   });
 
-  document.getElementById("studentModalSave").onclick = async () => {
+  document.getElementById("studentModalSave").onclick = async (e) => {
     if (!window.LumioProfiles) { closeStudentModal(); return; }
     const name = stuNameInput.value.trim();
     stuLevelError.textContent = "";
@@ -980,20 +1093,24 @@
     }
     const pinVal = stuPinInput.value.length === 4 ? stuPinInput.value : LumioProfiles.randomPin();
     const teacherIdVal = document.getElementById("stuTeacher").value || null;
-    try {
-      if (editingId) {
-        await LumioProfiles.updateStudent(editingId, { name, level: stuLevelSelect.value, avatar: selectedAvatar, pin: pinVal, teacherId: teacherIdVal });
-      } else {
-        await LumioProfiles.addStudent({ name, level: stuLevelSelect.value, avatar: selectedAvatar, pin: pinVal, teacherId: teacherIdVal });
+    const wasEditing = !!editingId;
+    await withLoading(e.currentTarget, async () => {
+      try {
+        if (editingId) {
+          await LumioProfiles.updateStudent(editingId, { name, level: stuLevelSelect.value, avatar: selectedAvatar, pin: pinVal, teacherId: teacherIdVal });
+        } else {
+          await LumioProfiles.addStudent({ name, level: stuLevelSelect.value, avatar: selectedAvatar, pin: pinVal, teacherId: teacherIdVal });
+        }
+        closeStudentModal();
+        renderRosterCards();
+        renderTable();
+        renderTeamGrid();
+        document.getElementById("kpiRoster").textContent = LumioProfiles.listStudents().length;
+        showToast(wasEditing ? `${name} updated.` : `${name} added to the roster.`, "success");
+      } catch (err) {
+        stuNameError.textContent = err.message || "Couldn't save that student.";
       }
-      closeStudentModal();
-      renderRosterCards();
-      renderTable();
-      renderTeamGrid();
-      document.getElementById("kpiRoster").textContent = LumioProfiles.listStudents().length;
-    } catch (e) {
-      stuNameError.textContent = e.message || "Couldn't save that student.";
-    }
+    });
   };
 
   renderRosterCards();
@@ -1060,18 +1177,23 @@
       }
       if (IS_OWNER) {
         card.querySelector('[data-act="edit"]').onclick = () => openTeacherModal(t);
-        card.querySelector('[data-act="pin"]').onclick = async () => {
-          await LumioProfiles.updateTeacher(t.id, { pin: LumioProfiles.randomPin() });
-          renderTeamGrid();
+        card.querySelector('[data-act="pin"]').onclick = async (e) => {
+          await withLoading(e.currentTarget, async () => {
+            await LumioProfiles.updateTeacher(t.id, { pin: LumioProfiles.randomPin() });
+            renderTeamGrid();
+            showToast(`New PIN set for ${t.name}.`, "success");
+          });
         };
-        card.querySelector('[data-act="remove"]').onclick = () => {
-          if (!confirm(`Remove ${t.name}? Their students will become unassigned, not deleted.`)) return;
+        card.querySelector('[data-act="remove"]').onclick = async () => {
+          const ok = await confirmDialog(`Remove ${t.name}? Their students will become unassigned, not deleted.`, "Remove");
+          if (!ok) return;
           try {
             LumioProfiles.removeTeacher(t.id);
             renderTeamGrid(); renderRosterCards(); renderTable(); renderTeacherOptions();
+            showToast(`${t.name} removed.`);
             if (t.id === activeId) location.href = "teacher-portal.html";
           } catch (e) {
-            alert(e.message || "Couldn't remove that teacher.");
+            showToast(e.message || "Couldn't remove that teacher.", "error");
           }
         };
       }
@@ -1102,25 +1224,29 @@
   tchPinInput.addEventListener("input", () => {
     tchPinInput.value = tchPinInput.value.replace(/\D/g, "").slice(0, 4);
   });
-  document.getElementById("teacherModalSave").onclick = async () => {
+  document.getElementById("teacherModalSave").onclick = async (e) => {
     if (!window.LumioProfiles) { closeTeacherModal(); return; }
     const name = tchNameInput.value.trim();
     const pinVal = tchPinInput.value.length === 4 ? tchPinInput.value : LumioProfiles.randomPin();
     const isOwnerVal = document.getElementById("tchIsOwner").checked;
-    try {
-      if (editingTeacherId) {
-        await LumioProfiles.updateTeacher(editingTeacherId, { name, avatar: selectedTeacherAvatar, pin: pinVal, isOwner: isOwnerVal });
-      } else {
-        await LumioProfiles.addTeacher({ name, avatar: selectedTeacherAvatar, pin: pinVal, isOwner: isOwnerVal });
+    const wasEditing = !!editingTeacherId;
+    await withLoading(e.currentTarget, async () => {
+      try {
+        if (editingTeacherId) {
+          await LumioProfiles.updateTeacher(editingTeacherId, { name, avatar: selectedTeacherAvatar, pin: pinVal, isOwner: isOwnerVal });
+        } else {
+          await LumioProfiles.addTeacher({ name, avatar: selectedTeacherAvatar, pin: pinVal, isOwner: isOwnerVal });
+        }
+        closeTeacherModal();
+        renderTeamGrid();
+        renderTeacherOptions();
+        showToast(wasEditing ? `${name} updated.` : `${name} added as a teacher.`, "success");
+      } catch (err) {
+        const msg = err.message || "Couldn't save that teacher.";
+        if (msg.indexOf("owner") !== -1) document.getElementById("tchOwnerError").textContent = msg;
+        else tchNameError.textContent = msg;
       }
-      closeTeacherModal();
-      renderTeamGrid();
-      renderTeacherOptions();
-    } catch (e) {
-      const msg = e.message || "Couldn't save that teacher.";
-      if (msg.indexOf("owner") !== -1) document.getElementById("tchOwnerError").textContent = msg;
-      else tchNameError.textContent = msg;
-    }
+    });
   };
   renderTeamGrid();
 
@@ -1213,13 +1339,16 @@
         row.querySelector('[data-act="complete"]').onclick = () => {
           LumioSchedule.completeClass(c.id);
           renderSchedule();
+          showToast(`Marked ${c.studentName}'s class as done.`, "success");
         };
       }
       row.querySelector('[data-act="edit"]').onclick = () => openClassModal(c);
-      row.querySelector('[data-act="remove"]').onclick = () => {
-        if (confirm(`Remove this class with ${c.studentName}?`)) {
+      row.querySelector('[data-act="remove"]').onclick = async () => {
+        const ok = await confirmDialog(`Remove this class with ${c.studentName}?`, "Remove");
+        if (ok) {
           LumioSchedule.removeClass(c.id);
           renderSchedule();
+          showToast("Class removed.");
         }
       };
       dayWrap.appendChild(row);
@@ -1275,6 +1404,7 @@
     const student = studentId ? LumioProfiles.getStudent(studentId) : null;
     if (!student) { clsStudentError.textContent = "Pick a student for this class."; return; }
     const activeTeacher = LumioProfiles.getCurrentTeacher();
+    const wasEditing = !!editingClassId;
     const payload = {
       studentId: student.id,
       studentName: student.name,
@@ -1294,6 +1424,7 @@
       }
       closeClassModal();
       renderSchedule();
+      showToast(wasEditing ? "Class updated." : `Class booked with ${student.name}.`, "success");
     } catch (e) {
       clsStudentError.textContent = e.message || "Couldn't save that class.";
     }
@@ -1319,22 +1450,25 @@
   };
 
   // ---------- demo/sample data ----------
-  document.getElementById("seedDemoBtn").onclick = async () => {
+  document.getElementById("seedDemoBtn").onclick = async (e) => {
     if (!window.LumioProfiles) return;
-    let sara;
-    try { sara = await LumioProfiles.addTeacher({ name: "Teacher Sara", avatar: "👩‍🏫", pin: "1111" }); }
-    catch (e) { sara = LumioProfiles.findTeacherByName("Teacher Sara"); }
-    const demoLevel = (LEVEL_NAMES[0] || {}).id || "pre-a";
-    for (const s of [{ name: "Noor", avatar: "🧕" }, { name: "Omar", avatar: "👦" }]) {
-      try {
-        await LumioProfiles.addStudent({ name: s.name, avatar: s.avatar, level: demoLevel, teacherId: sara ? sara.id : null });
-      } catch (e) { /* already exists — skip */ }
-    }
-    renderTeamGrid();
-    renderRosterCards();
-    renderTable();
-    renderTeacherOptions();
-    document.getElementById("kpiRoster").textContent = LumioProfiles.listStudents().length;
+    await withLoading(e.currentTarget, async () => {
+      let sara;
+      try { sara = await LumioProfiles.addTeacher({ name: "Teacher Sara", avatar: "👩‍🏫", pin: "1111" }); }
+      catch (err) { sara = LumioProfiles.findTeacherByName("Teacher Sara"); }
+      const demoLevel = (LEVEL_NAMES[0] || {}).id || "pre-a";
+      for (const s of [{ name: "Noor", avatar: "🧕" }, { name: "Omar", avatar: "👦" }]) {
+        try {
+          await LumioProfiles.addStudent({ name: s.name, avatar: s.avatar, level: demoLevel, teacherId: sara ? sara.id : null });
+        } catch (err) { /* already exists — skip */ }
+      }
+      renderTeamGrid();
+      renderRosterCards();
+      renderTable();
+      renderTeacherOptions();
+      document.getElementById("kpiRoster").textContent = LumioProfiles.listStudents().length;
+      showToast("Sample data added.", "success");
+    });
   };
 
   // ---------- print login cards ----------
@@ -1356,6 +1490,7 @@
       alert(`${skipped} student${skipped === 1 ? "" : "s"} were set up on another device, so this one doesn't know their PIN — give them a new PIN here first if you need to print their card.`);
     }
     if (!printable.length) return;
+    showToast(`Printing ${printable.length} login card${printable.length === 1 ? "" : "s"}…`);
     window.print();
   };
 
@@ -1372,6 +1507,7 @@
     if (!window.LumioProfiles) return;
     const cfg = LumioProfiles.configureSync({ url: syncUrlInput.value });
     syncStatus.textContent = cfg.enabled ? 'Saved. Click "Sync now" to test it.' : "Not configured yet.";
+    if (cfg.enabled) showToast("Sync URL saved.", "success");
   };
   // Progress lives in localStorage["lumio_progress"] as
   //   { studentName: { levelId: { lessonNum: {stars, score, total, date} } } }
@@ -1412,35 +1548,40 @@
     return merged;
   }
 
-  document.getElementById("syncNowBtn").onclick = async () => {
+  document.getElementById("syncNowBtn").onclick = async (e) => {
     if (!window.LumioProfiles) return;
-    syncStatus.textContent = "Syncing…";
-    const rosterRes = await LumioProfiles.syncNow();
-    const scheduleRes = window.LumioSchedule ? await LumioSchedule.syncNow() : { ok: true };
-    let progressSynced = false;
-    try {
-      const cfg = LumioProfiles.getSyncConfig();
-      if (cfg.enabled && cfg.url && typeof Lumio !== "undefined" && Lumio.progressAll) {
-        // pull + merge first, same reasoning as roster/schedule: never let
-        // an empty/behind local copy push over what's already shared
-        await pullAndMergeProgress(cfg);
-        await fetch(cfg.url + "?action=pushProgress", {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ progress: Lumio.progressAll() }),
-        });
-        progressSynced = true;
-      }
-    } catch (e) { /* progress sync is best-effort; roster/schedule already reported below */ }
+    await withLoading(e.currentTarget, async () => {
+      syncStatus.textContent = "Syncing…";
+      const rosterRes = await LumioProfiles.syncNow();
+      const scheduleRes = window.LumioSchedule ? await LumioSchedule.syncNow() : { ok: true };
+      let progressSynced = false;
+      try {
+        const cfg = LumioProfiles.getSyncConfig();
+        if (cfg.enabled && cfg.url && typeof Lumio !== "undefined" && Lumio.progressAll) {
+          // pull + merge first, same reasoning as roster/schedule: never let
+          // an empty/behind local copy push over what's already shared
+          await pullAndMergeProgress(cfg);
+          await fetch(cfg.url + "?action=pushProgress", {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({ progress: Lumio.progressAll() }),
+          });
+          progressSynced = true;
+        }
+      } catch (e2) { /* progress sync is best-effort; roster/schedule already reported below */ }
 
-    if (rosterRes.ok && scheduleRes.ok) {
-      syncStatus.textContent = "Synced just now" + (progressSynced ? " (roster, schedule & progress)." : " (roster & schedule).");
-      renderRosterCards(); renderTable(); renderTeamGrid(); renderSchedule();
-    } else if (rosterRes.reason === "not-configured") {
-      syncStatus.textContent = "Add a Web App URL first.";
-    } else {
-      syncStatus.textContent = "Sync failed — check the URL and that your Apps Script is deployed as a Web App.";
-    }
+      if (rosterRes.ok && scheduleRes.ok) {
+        syncStatus.textContent = "Synced just now" + (progressSynced ? " (roster, schedule & progress)." : " (roster & schedule).");
+        renderRosterCards(); renderTable(); renderTeamGrid(); renderSchedule();
+        showToast("Synced successfully.", "success");
+      } else if (rosterRes.reason === "not-configured") {
+        syncStatus.textContent = "Add a Web App URL first.";
+        showToast("Add a Web App URL first.", "error");
+      } else {
+        syncStatus.textContent = "Sync failed — check the URL and that your Apps Script is deployed as a Web App.";
+        showToast("Sync failed.", "error");
+      }
+    });
   };
 
   // ---------- backup & restore ----------
@@ -1450,6 +1591,7 @@
     if (!window.LumioBackup) return;
     LumioBackup.downloadBackup();
     backupStatus.textContent = "Downloaded.";
+    showToast("Backup downloaded.", "success");
   };
   document.getElementById("restoreBackupBtn").onclick = () => {
     document.getElementById("restoreFileInput").click();
@@ -1457,17 +1599,25 @@
   document.getElementById("restoreFileInput").addEventListener("change", async (e) => {
     const file = e.target.files[0];
     if (!file || !window.LumioBackup) return;
-    if (!confirm("This will overwrite everything currently on this device (roster, schedule, and progress) with the backup file. Continue?")) {
+    const ok = await confirmDialog(
+      "This will overwrite everything currently on this device (roster, schedule, and progress) with the backup file. Continue?",
+      "Restore"
+    );
+    if (!ok) {
       e.target.value = "";
       return;
     }
-    try {
-      const result = await LumioBackup.restoreFromFile(file);
-      backupStatus.textContent = `Restored ${result.restored} item(s). Reloading…`;
-      setTimeout(() => location.reload(), 900);
-    } catch (err) {
-      backupStatus.textContent = err.message || "Couldn't restore that file.";
-    }
+    await withLoading(document.getElementById("restoreBackupBtn"), async () => {
+      try {
+        const result = await LumioBackup.restoreFromFile(file);
+        backupStatus.textContent = `Restored ${result.restored} item(s). Reloading…`;
+        showToast(`Restored ${result.restored} item(s). Reloading…`, "success");
+        setTimeout(() => location.reload(), 900);
+      } catch (err) {
+        backupStatus.textContent = err.message || "Couldn't restore that file.";
+        showToast(err.message || "Couldn't restore that file.", "error");
+      }
+    });
     e.target.value = "";
   });
 
