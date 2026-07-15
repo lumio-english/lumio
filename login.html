@@ -48,13 +48,6 @@
   @keyframes lgshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
   .lg-back{background:none;border:none;color:var(--cocoa-soft,#8A7160);font-weight:700;cursor:pointer;font-size:.82rem;margin-bottom:8px;transition:opacity .15s ease}
   .lg-back:hover{opacity:.7}
-  .lg-toggle-advanced{
-    display:block;text-align:center;margin-top:14px;font-size:.8rem;color:var(--cocoa-soft,#8A7160);
-    font-weight:700;cursor:pointer;background:none;border:none;text-decoration:underline;width:100%;transition:opacity .15s ease;
-  }
-  .lg-toggle-advanced:hover{opacity:.7}
-  #advancedStudent{display:none;margin-top:14px;padding-top:14px;border-top:1px dashed var(--line,#eee);animation:lgPinIn .25s ease}
-  #advancedStudent.show{display:block}
 </style>
 </head>
 <body>
@@ -88,26 +81,24 @@
       <div class="lg-pin-error" id="pinError"></div>
     </div>
 
-    <button class="lg-toggle-advanced" id="toggleAdvanced">Not on the list? Start without a profile</button>
-    <div id="advancedStudent">
-      <label for="sname">My name</label>
-      <input type="text" id="sname" placeholder="e.g. Salem" maxlength="24" autocomplete="off">
-      <label for="slevel">My level</label>
-      <select id="slevel"></select>
-      <button class="btn btn-primary btn-big mt" style="width:100%" id="goStudent">Start my adventure!</button>
-    </div>
   </div>
 
   <!--
     Hidden compatibility placeholders below. js/auth.js (unmodified) expects
-    #tabStudent, #tabTeacher, #paneTeacher, #tpin, and #goTeacher to exist —
-    this page has no teacher UI at all, so these stay empty and invisible.
-    Teachers use a completely separate page (teacher-portal.html), not
-    linked from anywhere on the public site.
+    #tabStudent, #tabTeacher, #paneTeacher, #sname, #slevel, #goStudent,
+    #tpin, and #goTeacher to exist. There is deliberately no visible
+    "start without a profile" option any more — a student can only reach
+    student.html by picking their roster avatar and entering the correct
+    PIN, which is what fills these hidden fields and clicks #goStudent
+    programmatically. Teachers use a completely separate page
+    (teacher-portal.html), not linked from anywhere on the public site.
   -->
   <div style="display:none" aria-hidden="true">
     <button id="tabStudent"></button>
     <button id="tabTeacher"></button>
+    <input type="text" id="sname">
+    <select id="slevel"></select>
+    <button id="goStudent"></button>
     <div id="paneTeacher">
       <input type="password" id="tpin">
       <button id="goTeacher"></button>
@@ -228,16 +219,6 @@
   } catch (e) {
     console.error("Lumio roster login error:", e);
   }
-
-  // ================= Advanced (no-profile) toggle =================
-  const advToggle = document.getElementById("toggleAdvanced");
-  const advBox = document.getElementById("advancedStudent");
-  advToggle.addEventListener("click", () => {
-    advBox.classList.toggle("show");
-    advToggle.textContent = advBox.classList.contains("show")
-      ? "Hide this"
-      : "Not on the list? Start without a profile";
-  });
 })();
 </script>
 <script src="js/auth.js"></script>

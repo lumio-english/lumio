@@ -523,8 +523,9 @@
       <div class="td-field-error" id="stuNameError"></div>
     </div>
     <div class="td-field">
-      <label for="stuLevel">Starting level</label>
+      <label for="stuLevel">Starting level <span style="color:var(--td-coral)">*</span></label>
       <select id="stuLevel"></select>
+      <div class="td-field-error" id="stuLevelError"></div>
     </div>
     <div class="td-field">
       <label for="stuTeacher">Assign to teacher</label>
@@ -844,12 +845,17 @@
   const studentModalOverlay = document.getElementById("studentModalOverlay");
   const stuNameInput = document.getElementById("stuName");
   const stuLevelSelect = document.getElementById("stuLevel");
+  const stuLevelError = document.getElementById("stuLevelError");
   const stuAvatarGrid = document.getElementById("stuAvatarGrid");
   const stuPinInput = document.getElementById("stuPin");
   const stuNameError = document.getElementById("stuNameError");
   let editingId = null;
   let selectedAvatar = (window.LumioProfiles ? LumioProfiles.AVATARS[0] : "🦊");
 
+  const stuLevelPlaceholder = document.createElement("option");
+  stuLevelPlaceholder.value = "";
+  stuLevelPlaceholder.textContent = "Choose a level…";
+  stuLevelSelect.appendChild(stuLevelPlaceholder);
   LEVEL_NAMES.forEach(l => {
     const opt = document.createElement("option");
     opt.value = l.id; opt.textContent = l.name;
@@ -938,10 +944,11 @@
     editingId = profile ? profile.id : null;
     document.getElementById("studentModalTitle").textContent = profile ? "Edit student" : "Add student";
     stuNameInput.value = profile ? profile.name : "";
-    stuLevelSelect.value = profile ? profile.level : (LEVEL_NAMES[0] || {}).id || "pre-a";
+    stuLevelSelect.value = profile ? profile.level : "";
     stuPinInput.value = profile ? profile.pin : (window.LumioProfiles ? LumioProfiles.randomPin() : "1234");
     selectedAvatar = profile ? profile.avatar : (window.LumioProfiles ? LumioProfiles.AVATARS[Math.floor(Math.random() * LumioProfiles.AVATARS.length)] : "🦊");
     stuNameError.textContent = "";
+    stuLevelError.textContent = "";
     renderAvatarGrid();
     renderTeacherOptions();
     const stuTeacherSelect = document.getElementById("stuTeacher");
@@ -966,6 +973,11 @@
   document.getElementById("studentModalSave").onclick = async () => {
     if (!window.LumioProfiles) { closeStudentModal(); return; }
     const name = stuNameInput.value.trim();
+    stuLevelError.textContent = "";
+    if (!stuLevelSelect.value) {
+      stuLevelError.textContent = "Pick a level — this decides which lessons, games, and materials match this student.";
+      return;
+    }
     const pinVal = stuPinInput.value.length === 4 ? stuPinInput.value : LumioProfiles.randomPin();
     const teacherIdVal = document.getElementById("stuTeacher").value || null;
     try {

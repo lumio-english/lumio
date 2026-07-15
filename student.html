@@ -436,6 +436,40 @@
 (() => {
  try {
   const u = Lumio.requireUser();
+
+  // ---------- roster membership guard ----------
+  // Every real student got here by picking their roster avatar and
+  // entering the correct PIN on login.html — that flow fills #sname/
+  // #slevel and clicks the real login button, so a legitimate session
+  // always corresponds to a roster entry. This check exists purely as a
+  // safety net against someone bypassing the login UI directly (e.g. via
+  // devtools), since "only students the teacher added can reach this
+  // dashboard" should hold even against that.
+  let rosterEntry = null;
+  if (window.LumioProfiles) {
+    rosterEntry = LumioProfiles.findByName(u.name);
+    if (!rosterEntry) {
+      try { localStorage.removeItem("lumio_user"); } catch (e) {}
+      location.href = "login.html";
+      throw new Error("Not a roster student — redirecting to login.");
+    }
+  }
+
+  // The roster is the source of truth for level — if a teacher changes a
+  // student's level after they'd already logged in once, this keeps their
+  // dashboard (and which lessons/games/materials match them) correct
+  // without needing them to log out and back in first.
+  if (rosterEntry && rosterEntry.level) {
+    u.level = rosterEntry.level;
+    try {
+      const raw = JSON.parse(localStorage.getItem("lumio_user") || "null");
+      if (raw && raw.level !== rosterEntry.level) {
+        raw.level = rosterEntry.level;
+        localStorage.setItem("lumio_user", JSON.stringify(raw));
+      }
+    } catch (e) {}
+  }
+
   const level = u.level || "pre-a";
   const meta = (Lumio.LEVELS || []).find(l => l.id === level) || { name: "Pre-A", lessons: 20 };
   const progAll = Lumio.progressFor(u.name) || {};
