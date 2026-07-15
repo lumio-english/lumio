@@ -175,6 +175,7 @@
       pinHash: await hashPin(finalPin),
       teacherId: teacherId || getCurrentTeacherId() || (data.teachers[0] && data.teachers[0].id) || null,
       createdAt: new Date().toISOString().slice(0, 10),
+      updatedAt: new Date().toISOString(),
     };
     data.students.push(record);
     save(data);
@@ -199,6 +200,7 @@
       s.pinHash = await hashPin(newPin);
     }
     if (patch.teacherId !== undefined) s.teacherId = patch.teacherId;
+    s.updatedAt = new Date().toISOString();
     save(data);
     return s;
   }
@@ -256,6 +258,7 @@
       pinHash: await hashPin(finalPin),
       isOwner: !!isOwner,
       createdAt: new Date().toISOString().slice(0, 10),
+      updatedAt: new Date().toISOString(),
     };
     data.teachers.push(record);
     save(data);
@@ -283,6 +286,7 @@
       if (wouldRemoveLastOwner) throw new Error("There must always be at least one owner.");
       t.isOwner = !!patch.isOwner;
     }
+    t.updatedAt = new Date().toISOString();
     save(data);
     return t;
   }
@@ -369,12 +373,28 @@
   // trade-off for v1: syncing should never be able to silently wipe data
   // just because one device's local copy happened to be empty (e.g. the
   // very first sync from a brand-new device).
+  //
+  // Conflict resolution uses each record's `updatedAt` timestamp: whichever
+  // side was edited more recently wins. This matters specifically for a
+  // just-changed PIN — without this, syncing shortly after an edit (before
+  // that edit had been pushed anywhere) would silently revert it back to
+  // whatever was already on the Sheet, since the old code always preferred
+  // "remote" on any mismatch regardless of which side was actually newer.
   function mergeById(localList, remoteList) {
     const byId = {};
     localList.forEach(r => { byId[r.id] = Object.assign({}, r); });
     remoteList.forEach(r => {
       const local = byId[r.id];
-      if (local && local.pin && local.pinHash && local.pinHash === r.pinHash) {
+      if (!local) { byId[r.id] = r; return; }
+      const localTime = local.updatedAt ? Date.parse(local.updatedAt) : 0;
+      const remoteTime = r.updatedAt ? Date.parse(r.updatedAt) : 0;
+      if (localTime > remoteTime) {
+        // this device's edit is newer than what's on the Sheet — keep it,
+        // and it'll get pushed up right after this merge step runs.
+        byId[r.id] = local;
+      } else if (local.pin && local.pinHash && local.pinHash === r.pinHash) {
+        // remote is newer or tied, but this device still knows the
+        // matching plaintext PIN — keep that for local reveal/print.
         byId[r.id] = Object.assign({}, r, { pin: local.pin });
       } else {
         byId[r.id] = r;

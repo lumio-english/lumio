@@ -99,6 +99,7 @@
       notes: notes || "",
       status: "scheduled",
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
     data.classes.push(record);
     save(data);
@@ -112,6 +113,7 @@
       if (patch[k] !== undefined) c[k] = patch[k];
     });
     if (patch.durationMinutes !== undefined) c.durationMinutes = Number(patch.durationMinutes) || c.durationMinutes;
+    c.updatedAt = new Date().toISOString();
     save(data);
     return c;
   }
@@ -149,10 +151,20 @@
     try { return JSON.parse(safeGet(SYNC_KEY) || "null") || { url: "", enabled: false }; }
     catch (e) { return { url: "", enabled: false }; }
   }
+  // Same "whoever edited more recently wins" rule as lumio-profiles.js —
+  // without this, syncing shortly after editing a class (before that edit
+  // had been pushed anywhere) would silently revert it back to whatever
+  // was already on the Sheet.
   function mergeById(localList, remoteList) {
     const byId = {};
     localList.forEach(r => { byId[r.id] = r; });
-    remoteList.forEach(r => { byId[r.id] = r; }); // remote wins on conflicts, nothing local is dropped
+    remoteList.forEach(r => {
+      const local = byId[r.id];
+      if (!local) { byId[r.id] = r; return; }
+      const localTime = local.updatedAt ? Date.parse(local.updatedAt) : 0;
+      const remoteTime = r.updatedAt ? Date.parse(r.updatedAt) : 0;
+      byId[r.id] = localTime > remoteTime ? local : r;
+    });
     return Object.values(byId);
   }
   async function syncNow() {

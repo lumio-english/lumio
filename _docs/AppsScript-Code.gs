@@ -30,15 +30,15 @@
 // ---------- tab + column definitions ----------
 
 var TEACHERS_SHEET = "Teachers";
-var TEACHERS_COLUMNS = ["id", "name", "avatar", "pinHash", "isOwner", "createdAt"];
+var TEACHERS_COLUMNS = ["id", "name", "avatar", "pinHash", "isOwner", "createdAt", "updatedAt"];
 
 var ROSTER_SHEET = "Roster";
-var ROSTER_COLUMNS = ["id", "name", "level", "avatar", "pinHash", "teacherId", "createdAt"];
+var ROSTER_COLUMNS = ["id", "name", "level", "avatar", "pinHash", "teacherId", "createdAt", "updatedAt"];
 
 var SCHEDULE_SHEET = "Schedule";
 var SCHEDULE_COLUMNS = [
   "id", "studentId", "studentName", "teacherId", "teacherName",
-  "date", "startTime", "durationMinutes", "level", "notes", "status", "createdAt"
+  "date", "startTime", "durationMinutes", "level", "notes", "status", "createdAt", "updatedAt"
 ];
 
 var PROGRESS_SHEET = "Progress";
@@ -53,6 +53,18 @@ function getOrCreateSheet_(name, columns) {
     sheet = ss.insertSheet(name);
     sheet.appendRow(columns);
     sheet.setFrozenRows(1);
+    return sheet;
+  }
+  // Migration: if this sheet was created by an older version of this
+  // script with fewer columns (e.g. before "updatedAt" existed), extend
+  // the header row rather than requiring anyone to edit the Sheet by
+  // hand. Existing rows just get blank cells for the new column(s),
+  // which the client treats as "unknown / very old" — safe default.
+  var lastCol = sheet.getLastColumn();
+  var existingHeader = lastCol > 0 ? sheet.getRange(1, 1, 1, lastCol).getValues()[0] : [];
+  if (existingHeader.length < columns.length) {
+    sheet.getRange(1, existingHeader.length + 1, 1, columns.length - existingHeader.length)
+      .setValues([columns.slice(existingHeader.length)]);
   }
   return sheet;
 }
