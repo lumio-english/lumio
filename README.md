@@ -48,6 +48,7 @@ Lesson files are plain JSON — no code changes needed:
   ],
   "activities": [
     { "type": "vocab" },
+    { "type": "speak", "rounds": 3 },
     { "type": "listen-choose", "rounds": 5 },
     { "type": "match" },
     { "type": "quiz", "rounds": 4, "questions": [
@@ -57,9 +58,24 @@ Lesson files are plain JSON — no code changes needed:
 }
 ```
 
+**`speak`** (new): student records themselves saying each word, then plays
+it back next to the native pronunciation to self-compare. It's
+practice-only, not graded — real pronunciation scoring would need a
+speech-recognition API this project doesn't have — so it never drags a
+lesson's star rating down. If the browser has no microphone or the
+student doesn't allow access, it shows a friendly "just listen and
+repeat out loud" fallback instead of blocking the lesson. `rounds`
+controls how many vocab words it picks.
+
 1. Put `lesson01.json … lesson20.json` in `lessons/{level-id}/`.
 2. Add the level id to `AVAILABLE_LEVELS` in `js/app.js`.
 3. It appears unlocked in the login level picker automatically.
+4. **If you're testing locally by double-clicking `index.html`** (no
+   server), lessons load from the bundled `js/lessons-data.js` instead
+   of the raw JSON files — that bundle needs regenerating whenever you
+   edit a lesson, or your changes won't show up locally (they'll still
+   work fine on GitHub Pages either way, since that reads the JSON
+   files directly).
 
 The full lesson-by-lesson plan for all 11 levels is in `teacher-guide/curriculum-map.md`.
 
@@ -77,7 +93,7 @@ v1 stores progress in each device's **localStorage**, so the teacher dashboard o
 
 ## 📁 Not built yet (planned)
 
-`profile.html`, `progress.html` (the map covers this for now), standalone `games/`, `homework/`, `workbook/`, `flashcards/`, `tests/`, speaking activities with recording, and levels Pre-B → Level 9 content.
+`profile.html`, `progress.html` (the map covers this for now), standalone `homework/`, `workbook/`, `flashcards/`, `tests/`, and levels Pre-B → Level 9 content.
 
 ## 🖥️ Teaching live on Zoom / Google Meet
 

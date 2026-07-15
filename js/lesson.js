@@ -243,6 +243,115 @@
   }
 
   /* ============================================================
+     ACTIVITY 6 — SPEAK IT (record yourself, compare to the native
+     speaker, no pass/fail — real pronunciation scoring needs a speech
+     API this project doesn't have, so this is deliberately practice-
+     only. A round counts once the student actually records something;
+     rounds where the mic isn't available/allowed don't count toward
+     score at all, so they can't skew the lesson's star rating either
+     way.)
+     ============================================================ */
+  function actSpeak(a) {
+    const words = Lumio.shuffle([...lesson.vocab]).slice(0, a.rounds || 3);
+    let r = 0;
+    const supported = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
+    let mediaStream = null;
+    let recorder = null;
+    let chunks = [];
+    let recordedUrl = null;
+    let roundCounted = false;
+
+    const cleanupStream = () => {
+      if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
+    };
+    const showFallback = (message) => {
+      document.getElementById("recordZone").innerHTML = `<p class="mt" style="font-weight:700;color:var(--coral)">${message}</p>`;
+      const after = document.getElementById("afterZone");
+      after.innerHTML = `<button class="btn btn-primary btn-big" id="spNext">${r < words.length - 1 ? "Next →" : "Let's continue!"}</button>`;
+      document.getElementById("spNext").onclick = advance;
+    };
+
+    const draw = () => {
+      const w = words[r];
+      recordedUrl = null;
+      roundCounted = false;
+      stage.innerHTML = `
+        <div class="card center">
+          <span class="chip chip-teal">Speak it · ${r + 1}/${words.length}</span>
+          <div style="height:110px;border-radius:16px;overflow:hidden;max-width:200px;margin:12px auto">${Lumio.letterTile(w.en)}</div>
+          <h1 style="font-size:2.2rem">${w.en}</h1>
+          <p class="ar" style="font-size:1.3rem;font-weight:800;color:var(--cocoa-soft)">${w.ar}</p>
+          <div class="row mt" style="justify-content:center">${speakBtn(w.en, true)}</div>
+          <div class="mt" id="recordZone"></div>
+          <div class="row mt" style="justify-content:center" id="afterZone"></div>
+        </div>`;
+      if (!supported) {
+        showFallback("🎤 We couldn't reach a microphone here — that's okay, just listen and repeat out loud!");
+        return;
+      }
+      document.getElementById("recordZone").innerHTML = `<button class="btn btn-teal btn-big" id="spRecord">🎤 Tap to record</button>`;
+      document.getElementById("spRecord").onclick = startRecording;
+    };
+
+    async function startRecording() {
+      const zone = document.getElementById("recordZone");
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      } catch (e) {
+        showFallback("🎤 Microphone access wasn't allowed — no problem, just listen and repeat out loud!");
+        return;
+      }
+      chunks = [];
+      recorder = new MediaRecorder(mediaStream);
+      recorder.ondataavailable = (e) => chunks.push(e.data);
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: "audio/webm" });
+        recordedUrl = URL.createObjectURL(blob);
+        cleanupStream();
+        showPlayback();
+      };
+      recorder.start();
+      let secondsLeft = 5;
+      const stopBtn = document.createElement("button");
+      stopBtn.className = "btn btn-sun btn-big";
+      stopBtn.textContent = `⏺ Recording… ${secondsLeft}s (tap to stop)`;
+      zone.innerHTML = "";
+      zone.appendChild(stopBtn);
+      const stopNow = () => { clearInterval(timer); if (recorder.state !== "inactive") recorder.stop(); };
+      stopBtn.onclick = stopNow;
+      const timer = setInterval(() => {
+        secondsLeft--;
+        if (secondsLeft <= 0) { stopNow(); return; }
+        stopBtn.textContent = `⏺ Recording… ${secondsLeft}s (tap to stop)`;
+      }, 1000);
+    }
+
+    function showPlayback() {
+      const zone = document.getElementById("recordZone");
+      zone.innerHTML = `
+        <audio id="spPlayback" src="${recordedUrl}"></audio>
+        <div class="row" style="justify-content:center">
+          <button class="btn btn-sun" id="spPlay">▶ Play my voice</button>
+          <button class="btn btn-ghost" id="spRedo">🔁 Record again</button>
+        </div>`;
+      document.getElementById("spPlay").onclick = () => document.getElementById("spPlayback").play();
+      document.getElementById("spRedo").onclick = startRecording;
+      if (!roundCounted) { total++; score++; roundCounted = true; }
+      const after = document.getElementById("afterZone");
+      after.innerHTML = `<button class="btn btn-primary btn-big" id="spNext">${r < words.length - 1 ? "Next →" : "Let's continue!"}</button>`;
+      document.getElementById("spNext").onclick = advance;
+    }
+
+    function advance() {
+      if (recordedUrl) URL.revokeObjectURL(recordedUrl);
+      r++;
+      r < words.length ? draw() : next();
+    }
+
+    draw();
+  }
+
+  /* ============================================================
      RESULTS
      ============================================================ */
   function showResults() {
@@ -276,6 +385,7 @@
       case "match": return actMatch();
       case "quiz": return actQuiz(a);
       case "spell": return actSpell(a);
+      case "speak": return actSpeak(a);
       default: return next();
     }
   }
