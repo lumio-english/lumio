@@ -34,7 +34,7 @@
   const SYNC_KEY = "lumio_sync_cfg_v1";
   const CURRENT_TEACHER_KEY = "lumio_current_teacher_id";
 
-  const AVATARS = ["🦊", "🐼", "🦁", "🐸", "🐵", "🐨", "🦄", "🐯", "🐰", "🐶", "🐱", "🐷"];
+  const AVATARS = ["🦊", "🐼", "🦁", "🐸", "🐵", "🐨", "🦄", "🐯", "🐰", "🐶", "🐱"];
   const TEACHER_AVATARS = ["🦉", "🎓", "📚", "🍎", "⭐", "🧑‍🏫", "👩‍🏫", "👨‍🏫", "✏️", "🌟", "💡", "🏆"];
 
   // ---- storage helpers (never let a blocked/opaque-origin storage crash the page) ----
@@ -402,6 +402,38 @@
     });
     return Object.values(byId);
   }
+  // Collapses teacher name collisions after a merge — specifically the
+  // "brand-new device auto-seeded its own placeholder before syncing"
+  // case. Prefers whichever record actually came from the Sheet over a
+  // local-only one, and reports id replacements so the caller can
+  // repoint the active session if it was pointed at a dropped duplicate.
+  function dedupeTeachersByName(mergedTeachers, remoteTeachers) {
+    const remoteIds = new Set(remoteTeachers.map(t => t.id));
+    const seenByName = {};
+    const replacements = {};
+    const result = [];
+    mergedTeachers.forEach(t => {
+      const key = (t.name || "").trim().toLowerCase();
+      if (!seenByName[key]) {
+        seenByName[key] = t;
+        result.push(t);
+        return;
+      }
+      const existing = seenByName[key];
+      if (existing.id === t.id) return; // same record, nothing to do
+      const existingIsRemote = remoteIds.has(existing.id);
+      const thisIsRemote = remoteIds.has(t.id);
+      if (!existingIsRemote && thisIsRemote) {
+        const idx = result.indexOf(existing);
+        result[idx] = t;
+        seenByName[key] = t;
+        replacements[existing.id] = t.id;
+      } else {
+        replacements[t.id] = existing.id;
+      }
+    });
+    return { teachers: result, replacements };
+  }
   async function backfillMissingHashes(data) {
     for (const t of data.teachers) {
       if (!t.pinHash && t.pin) t.pinHash = await hashPin(t.pin);
@@ -423,7 +455,19 @@
         data.students = mergeById(data.students, remote.students);
       }
       if (remote && Array.isArray(remote.teachers) && remote.teachers.length) {
-        data.teachers = mergeById(data.teachers, remote.teachers);
+        const merged = mergeById(data.teachers, remote.teachers);
+        // A brand-new device auto-seeds its own local-only "Teacher Lumi"
+        // placeholder (see load() below) before anyone's had a chance to
+        // sync — so the very first sync would otherwise end up with two
+        // teachers named "Teacher Lumi" with different ids. Collapse any
+        // name collision down to whichever record actually came from the
+        // Sheet, and if the browser's current session was pointed at the
+        // placeholder that just got dropped, repoint it to the real one
+        // so this tab doesn't lose owner access mid-session.
+        const { teachers: deduped, replacements } = dedupeTeachersByName(merged, remote.teachers);
+        data.teachers = deduped;
+        const curId = getCurrentTeacherId();
+        if (curId && replacements[curId]) setCurrentTeacherId(replacements[curId]);
       }
       await backfillMissingHashes(data);
       save(data);
