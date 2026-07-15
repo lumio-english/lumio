@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher Dashboard — Lumio English</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Baloo+2:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  :root{
+    --td-bg:#F4F6FA; --td-surface:#FFFFFF; --td-border:#E4E8F0; --td-border-soft:#EDF0F6;
+    --td-ink:#1B2233; --td-ink-soft:#5B6478; --td-muted:#8891A3;
+    --td-indigo:#4F5FE8; --td-indigo-soft:#EEF0FE; --td-indigo-dark:#3A47C4;
+    --td-teal:#0EA5A0; --td-teal-soft:#E7FAF8;
+    --td-amber:#E8A23D; --td-amber-soft:#FDF3E3;
+    --td-coral:#E8635F; --td-coral-soft:#FCEBEA;
+    --td-radius:14px; --td-radius-lg:20px;
+    --td-shadow:0 1px 2px rgba(20,25,45,.04), 0 8px 24px -12px rgba(20,25,45,.10);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--td-bg); color:var(--td-ink);
+    font-family:'Inter',system-ui,sans-serif; font-size:14px; line-height:1.5;
+    display:flex; min-height:100vh;
+  }
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit}
+
+  /* ---------- Sidebar ---------- */
+  .td-sidebar{
+    width:236px; flex-shrink:0; background:var(--td-surface); border-right:1px solid var(--td-border);
+    display:flex; flex-direction:column; padding:22px 16px; position:sticky; top:0; height:100vh;
+  }
+  .td-brand{display:flex;align-items:center;gap:10px;padding:0 8px 14px;border-bottom:1px solid var(--td-border-soft);margin-bottom:8px}
+  .td-brand img{width:32px;height:32px;border-radius:9px}
+  .td-brand b{font-family:'Baloo 2',sans-serif;font-size:1.05rem;letter-spacing:.2px}
+  .td-brand span{color:var(--td-indigo)}
+  .td-teacher-tag{font-size:.74rem;font-weight:700;color:var(--td-muted);padding:0 8px 16px}
+  .td-owner-crown{font-size:.85rem;vertical-align:-1px}
+  .td-owner-badge{display:inline-flex;align-items:center;gap:3px;font-size:.68rem;font-weight:800;color:#B87A16;background:var(--td-amber-soft);padding:2px 7px;border-radius:99px;margin-left:6px}
+  .td-locked-note{background:var(--td-bg);border:1px dashed var(--td-border);border-radius:12px;padding:14px;color:var(--td-muted);font-size:.83rem;font-weight:600;text-align:center}
+
+  /* ---------- Schedule ---------- */
+  .td-chip-row{display:flex;gap:8px;flex-wrap:wrap}
+  .td-chip{
+    padding:7px 14px;border-radius:999px;border:1px solid var(--td-border);background:var(--td-surface);
+    font-weight:700;font-size:.8rem;color:var(--td-ink-soft);cursor:pointer;
+  }
+  .td-chip:hover{border-color:var(--td-indigo)}
+  .td-chip.active{background:var(--td-indigo);border-color:var(--td-indigo);color:#fff}
+  .td-agenda-day{margin-top:20px}
+  .td-agenda-day:first-child{margin-top:0}
+  .td-agenda-daylabel{font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--td-muted);margin-bottom:8px}
+  .td-class-row{
+    display:flex;align-items:center;gap:12px;background:var(--td-bg);border:1px solid var(--td-border);
+    border-radius:12px;padding:11px 14px;margin-bottom:8px;
+  }
+  .td-class-row.cancelled{opacity:.55}
+  .td-class-time{width:64px;flex-shrink:0;font-weight:800;font-size:.85rem}
+  .td-class-time span{display:block;font-size:.68rem;font-weight:700;color:var(--td-muted)}
+  .td-class-info{flex:1;min-width:0}
+  .td-class-info .who{font-weight:700;font-size:.86rem;display:flex;align-items:center;gap:6px}
+  .td-class-info .meta{font-size:.76rem;color:var(--td-muted);font-weight:600}
+  .td-class-acts{display:flex;gap:6px;flex-shrink:0}
+  .td-class-acts button{
+    padding:6px 11px;border-radius:8px;border:1px solid var(--td-border);background:#fff;
+    font-weight:700;font-size:.74rem;cursor:pointer;color:var(--td-ink-soft);
+  }
+  .td-class-acts button:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark)}
+  .td-class-acts button.danger:hover{border-color:var(--td-coral);color:var(--td-coral)}
+  .td-nav{display:flex;flex-direction:column;gap:2px}
+  .td-navitem{
+    display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;
+    font-weight:600;color:var(--td-ink-soft);cursor:pointer;font-size:.88rem;border:none;background:none;width:100%;text-align:left;
+  }
+  .td-navitem svg{width:17px;height:17px;flex-shrink:0}
+  .td-navitem:hover{background:var(--td-bg);color:var(--td-ink)}
+  .td-navitem.active{background:var(--td-indigo-soft);color:var(--td-indigo-dark)}
+  .td-sidebar-foot{margin-top:auto;padding-top:16px;border-top:1px solid var(--td-border-soft)}
+  .td-exit{
+    display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:10px;font-weight:600;
+    font-size:.85rem;color:var(--td-muted);
+  }
+  .td-exit:hover{color:var(--td-coral)}
+
+  /* ---------- Main ---------- */
+  .td-main{flex:1;min-width:0;padding:26px 34px 60px;max-width:1320px}
+  .td-topbar{display:flex;align-items:center;gap:14px;margin-bottom:26px;flex-wrap:wrap}
+  .td-topbar h1{font-size:1.4rem;font-weight:800;margin:0;letter-spacing:-.2px}
+  .td-topbar p{margin:2px 0 0;color:var(--td-muted);font-size:.85rem;font-weight:500}
+  .td-spacer{flex:1}
+  .td-btn{
+    display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:10px;font-weight:700;
+    font-size:.85rem;border:1px solid var(--td-border);background:var(--td-surface);color:var(--td-ink);cursor:pointer;
+    transition:.15s;
+  }
+  .td-btn:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark)}
+  .td-btn-primary{background:var(--td-indigo);border-color:var(--td-indigo);color:#fff}
+  .td-btn-primary:hover{background:var(--td-indigo-dark);color:#fff}
+
+  /* ---------- KPI cards ---------- */
+  .td-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px}
+  @media (max-width:1100px){.td-kpis{grid-template-columns:repeat(2,1fr)}}
+  .td-kpi{
+    background:var(--td-surface);border:1px solid var(--td-border);border-radius:var(--td-radius);
+    padding:16px 18px;box-shadow:var(--td-shadow);
+  }
+  .td-kpi .lbl{font-size:.76rem;font-weight:700;color:var(--td-muted);text-transform:uppercase;letter-spacing:.4px}
+  .td-kpi .val{font-size:1.65rem;font-weight:800;margin-top:6px;letter-spacing:-.5px}
+
+  /* ---------- Panels ---------- */
+  .td-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:16px;margin-bottom:16px}
+  @media (max-width:980px){.td-grid{grid-template-columns:1fr}}
+  .td-panel{
+    background:var(--td-surface);border:1px solid var(--td-border);border-radius:var(--td-radius-lg);
+    padding:20px 22px;box-shadow:var(--td-shadow);
+  }
+  .td-panel h2{font-size:1rem;font-weight:800;margin:0 0 2px;letter-spacing:-.2px}
+  .td-panel .sub{color:var(--td-muted);font-size:.8rem;font-weight:500;margin:0 0 16px}
+  .td-panel-head{display:flex;align-items:center;gap:10px;margin-bottom:2px}
+
+  /* level bar chart */
+  .td-chart-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+  .td-chart-row .lvl-lbl{width:64px;flex-shrink:0;font-weight:700;font-size:.8rem;color:var(--td-ink-soft)}
+  .td-chart-track{flex:1;height:10px;background:var(--td-bg);border-radius:99px;overflow:hidden}
+  .td-chart-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--td-indigo),#7C8CFF)}
+  .td-chart-val{width:54px;text-align:right;font-weight:700;font-size:.8rem;color:var(--td-ink-soft)}
+
+  /* activity list */
+  .td-activity{display:flex;flex-direction:column;gap:2px;max-height:280px;overflow-y:auto}
+  .td-arow{display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid var(--td-border-soft)}
+  .td-arow:last-child{border-bottom:none}
+  .td-avatar{
+    width:30px;height:30px;border-radius:9px;background:var(--td-indigo-soft);color:var(--td-indigo-dark);
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;flex-shrink:0;
+  }
+  .td-arow .who{font-weight:700;font-size:.82rem}
+  .td-arow .what{color:var(--td-muted);font-size:.76rem}
+  .td-arow .when{margin-left:auto;color:var(--td-muted);font-size:.72rem;flex-shrink:0}
+
+  /* ---------- Students view: table + roster ---------- */
+  .td-tools{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+  .td-search{position:relative;flex:1;min-width:200px;max-width:320px}
+  .td-search input{
+    width:100%;padding:9px 12px 9px 34px;border-radius:10px;border:1px solid var(--td-border);
+    font-size:.85rem;font-family:inherit;background:var(--td-bg);
+  }
+  .td-search input:focus{outline:2px solid var(--td-indigo-soft);border-color:var(--td-indigo)}
+  .td-search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--td-muted)}
+  .td-select{
+    padding:9px 30px 9px 12px;border-radius:10px;border:1px solid var(--td-border);font-size:.83rem;
+    font-family:inherit;background:var(--td-bg);font-weight:600;color:var(--td-ink-soft);cursor:pointer;
+  }
+  table.td-table{width:100%;border-collapse:collapse}
+  table.td-table th{
+    text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.4px;color:var(--td-muted);
+    padding:0 10px 10px;border-bottom:1px solid var(--td-border);cursor:pointer;user-select:none;font-weight:700;
+  }
+  table.td-table th:hover{color:var(--td-ink)}
+  table.td-table th .arrow{opacity:.5;margin-left:2px}
+  table.td-table td{padding:11px 10px;border-bottom:1px solid var(--td-border-soft);font-size:.85rem;vertical-align:middle}
+  table.td-table tr.td-clickable{cursor:pointer}
+  table.td-table tr.td-clickable:hover td{background:var(--td-indigo-soft)}
+  .td-name-cell{display:flex;align-items:center;gap:9px}
+  .td-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:99px;font-weight:700;font-size:.72rem}
+  .td-badge.teal{background:var(--td-teal-soft);color:var(--td-teal)}
+  .td-badge.amber{background:var(--td-amber-soft);color:#B87A16}
+  .td-badge.grey{background:var(--td-bg);color:var(--td-muted)}
+  .td-mini-track{width:64px;height:6px;background:var(--td-bg);border-radius:99px;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:6px}
+  .td-mini-fill{height:100%;background:var(--td-teal);border-radius:99px}
+  .td-empty{padding:34px 10px;text-align:center;color:var(--td-muted);font-size:.85rem;font-weight:500}
+
+  /* roster cards */
+  .td-roster-head{display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap}
+  .td-roster-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-top:16px}
+  .td-roster-card{background:var(--td-bg);border:1px solid var(--td-border);border-radius:14px;padding:14px}
+  .td-roster-card .top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .td-roster-card .av{
+    width:38px;height:38px;border-radius:11px;background:#fff;border:1px solid var(--td-border);
+    display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;
+  }
+  .td-roster-card .nm{font-weight:800;font-size:.9rem}
+  .td-roster-card .lv{font-size:.72rem;font-weight:700;color:var(--td-teal)}
+  .td-roster-card .pinrow{display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--td-ink-soft);font-weight:600;margin-bottom:10px}
+  .td-roster-card .pinval{font-family:monospace;font-weight:800;letter-spacing:2px;color:var(--td-ink)}
+  .td-roster-card .pintoggle{background:none;border:none;cursor:pointer;color:var(--td-indigo);font-weight:700;font-size:.72rem;padding:0}
+  .td-roster-card .acts{display:flex;gap:6px}
+  .td-roster-card .acts button{
+    flex:1;padding:6px 0;border-radius:8px;border:1px solid var(--td-border);background:#fff;
+    font-weight:700;font-size:.74rem;cursor:pointer;color:var(--td-ink-soft);
+  }
+  .td-roster-card .acts button:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark)}
+  .td-roster-card .acts button.danger:hover{border-color:var(--td-coral);color:var(--td-coral)}
+
+  /* ---------- Modal (add/edit student) ---------- */
+  .td-overlay{position:fixed;inset:0;background:rgba(20,25,45,.35);z-index:90;opacity:0;pointer-events:none;transition:.2s;display:flex;align-items:center;justify-content:center;padding:20px}
+  .td-overlay.show{opacity:1;pointer-events:auto}
+  .td-modal-box{
+    background:var(--td-surface);border-radius:20px;padding:24px;max-width:400px;width:100%;
+    box-shadow:0 24px 60px rgba(20,25,45,.25);transform:scale(.96);transition:.15s;
+  }
+  .td-overlay.show .td-modal-box{transform:scale(1)}
+  .td-modal-box h3{margin:0 0 16px;font-size:1.05rem}
+  .td-field{margin-bottom:12px}
+  .td-field label{display:block;font-weight:700;font-size:.8rem;margin-bottom:5px;color:var(--td-ink-soft)}
+  .td-field input[type=text], .td-field select{
+    width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--td-border);font-size:.88rem;font-family:inherit;
+  }
+  .td-avatar-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}
+  .td-avatar-opt{
+    aspect-ratio:1;border-radius:10px;border:2px solid var(--td-border);background:var(--td-bg);font-size:1.2rem;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;
+  }
+  .td-avatar-opt.selected{border-color:var(--td-indigo);background:var(--td-indigo-soft)}
+  .td-pin-field{display:flex;align-items:center;gap:8px}
+  .td-pin-field input{
+    flex:1;padding:9px 12px;border-radius:10px;border:1px solid var(--td-border);font-family:monospace;
+    font-weight:800;letter-spacing:3px;font-size:.95rem;
+  }
+  .td-modal-actions{display:flex;gap:10px;margin-top:18px}
+  .td-modal-actions button{flex:1}
+  .td-field-error{color:var(--td-coral);font-size:.78rem;font-weight:700;min-height:16px;margin-top:2px}
+
+  /* ---------- Materials view ---------- */
+  #viewMaterials{display:none}
+  .td-mat-tools{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+  .td-mat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+  .td-mat-row{display:flex;align-items:center;gap:10px;background:var(--td-surface);border:1px solid var(--td-border);border-radius:12px;padding:10px 12px}
+  .td-mat-row .num{width:30px;height:30px;border-radius:8px;background:var(--td-bg);color:var(--td-ink-soft);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.72rem;flex-shrink:0}
+  .td-mat-row b{flex:1;font-size:.85rem;font-weight:700}
+  .td-mat-row a.act{padding:7px 14px;font-size:.8rem;border-radius:9px;font-weight:700}
+  .td-mat-row a.present{background:var(--td-indigo);color:#fff}
+  .td-mat-row a.present:hover{background:var(--td-indigo-dark)}
+  .td-mat-row a.pptx{background:var(--td-bg);color:var(--td-ink-soft);border:1px solid var(--td-border)}
+
+  /* ---------- Sync settings ---------- */
+  .td-sync-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .td-sync-row input[type=text]{
+    flex:1;min-width:220px;padding:9px 12px;border-radius:10px;border:1px solid var(--td-border);font-size:.83rem;font-family:inherit;
+  }
+  .td-sync-status{font-size:.78rem;font-weight:700;color:var(--td-muted)}
+
+  /* ---------- Print cards ---------- */
+  #printCards{display:none}
+  @media print{
+    body *{visibility:hidden}
+    #printCards, #printCards *{visibility:visible}
+    #printCards{display:block !important;position:absolute;top:0;left:0;width:100%}
+    .pc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;padding:20px}
+    .pc-card{border:2px dashed #999;border-radius:14px;padding:16px;text-align:center;font-family:'Baloo 2',sans-serif}
+    .pc-card .av{font-size:2.4rem}
+    .pc-card .nm{font-size:1.2rem;font-weight:800;margin:6px 0 2px}
+    .pc-card .lv{font-size:.8rem;color:#666;margin-bottom:10px}
+    .pc-card .pin{font-size:1.6rem;font-weight:800;letter-spacing:6px;font-family:monospace}
+    .pc-card .lbl{font-size:.7rem;color:#888;text-transform:uppercase;letter-spacing:1px}
+  }
+
+  @media (max-width:760px){
+    .td-sidebar{position:fixed;left:-236px;z-index:80;transition:.2s}
+    .td-sidebar.show{left:0}
+    .td-main{padding:18px 16px 60px}
+    .td-kpis{grid-template-columns:repeat(2,1fr)}
+  }
+  .td-menu-btn{display:none}
+  @media (max-width:760px){.td-menu-btn{display:inline-flex}}
+</style>
+</head>
+<body>
+
+<aside class="td-sidebar" id="sidebar">
+  <div class="td-brand">
+    <img src="assets/logo/lumio-logo.png" alt="Lumio English logo" onerror="this.style.display='none'">
+    <b>Lumio <span>Teach</span></b>
+  </div>
+  <div class="td-teacher-tag" id="teacherTag" style="display:flex;align-items:center;gap:8px">
+    <span id="teacherTagAvatar" style="font-size:1.3rem"></span>
+    <span id="teacherTagName">Welcome back!</span>
+  </div>
+  <nav class="td-nav">
+    <button class="td-navitem active" data-view="overview">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+      Overview
+    </button>
+    <button class="td-navitem" data-view="students">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2s6.5 2.6 6.5 6.2"/><circle cx="17.5" cy="9" r="2.4"/><path d="M15.8 13.6c2.9.4 4.7 2.6 4.7 5.7"/></svg>
+      Students
+    </button>
+    <button class="td-navitem" data-view="team">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="3"/><circle cx="17" cy="8" r="3"/><path d="M2 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><path d="M13 14.8c.9-.7 2-1.1 3-1.1 3.3 0 6 2.2 6 5.5"/></svg>
+      Team
+    </button>
+    <button class="td-navitem" data-view="schedule">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18"/><path d="M8 3v3"/><path d="M16 3v3"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/></svg>
+      Schedule
+    </button>
+    <button class="td-navitem" data-view="materials">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H14l5 5v11.5A1.5 1.5 0 0 1 17.5 21h-12A1.5 1.5 0 0 1 4 19.5v-15Z"/><path d="M14 3v5h5"/></svg>
+      Materials
+    </button>
+  </nav>
+  <div class="td-sidebar-foot">
+    <a class="td-exit" href="#" id="switchTeacherLink">↔ Switch teacher</a>
+    <a class="td-exit" href="index.html">← Exit to site</a>
+  </div>
+</aside>
+
+<div class="td-main">
+
+  <div class="td-topbar">
+    <button class="td-btn td-menu-btn" id="menuBtn">☰</button>
+    <div>
+      <h1 id="pageTitle">Overview</h1>
+      <p id="pageSub">A snapshot of how your students are doing right now.</p>
+    </div>
+    <div class="td-spacer"></div>
+    <button class="td-btn" id="exportBtn">⬇ Export CSV</button>
+  </div>
+
+  <!-- ===== Overview + Students share this KPI strip ===== -->
+  <div class="td-kpis">
+    <div class="td-kpi"><div class="lbl">Roster</div><div class="val" id="kpiRoster">0</div></div>
+    <div class="td-kpi"><div class="lbl">Lessons completed</div><div class="val" id="kpiLessons">0</div></div>
+    <div class="td-kpi"><div class="lbl">Stars earned</div><div class="val" id="kpiStars">0</div></div>
+    <div class="td-kpi"><div class="lbl">Average score</div><div class="val" id="kpiAvg">–</div></div>
+    <div class="td-kpi"><div class="lbl">Active this week</div><div class="val" id="kpiActive">0</div></div>
+  </div>
+
+  <!-- ===== Overview view ===== -->
+  <div id="viewOverview">
+    <div class="td-grid">
+      <div class="td-panel">
+        <div class="td-panel-head"><h2>Progress by level</h2></div>
+        <p class="sub">Lessons completed per level, across all students on this device.</p>
+        <div id="levelChart"></div>
+      </div>
+      <div class="td-panel">
+        <div class="td-panel-head"><h2>Recent activity</h2></div>
+        <p class="sub">Latest lessons finished.</p>
+        <div class="td-activity" id="activityList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Students view ===== -->
+  <div id="viewStudents" style="display:none">
+
+    <div class="td-panel" style="margin-bottom:16px">
+      <div class="td-roster-head">
+        <h2 style="flex:1">Class roster</h2>
+        <select class="td-select" id="rosterScope">
+          <option value="mine">My students</option>
+          <option value="all">All students</option>
+        </select>
+        <button class="td-btn" id="seedDemoBtn">✨ Try sample data</button>
+        <button class="td-btn" id="printCardsBtn">🖨 Print login cards</button>
+        <button class="td-btn td-btn-primary" id="addStudentBtn">+ Add student</button>
+      </div>
+      <p class="sub" style="margin-top:4px">Add each student once — they'll pick their avatar and enter this PIN to log in from now on.</p>
+      <div class="td-roster-grid" id="rosterGrid"></div>
+      <div class="td-empty" id="rosterEmpty" style="display:none">No students yet — add your first one to get started.</div>
+
+      <details style="margin-top:18px" id="syncDetails">
+        <summary style="cursor:pointer;font-weight:700;font-size:.83rem;color:var(--td-muted)">🔄 Sync settings (optional) <span class="td-owner-badge">👑 Owner only</span></summary>
+        <div class="mt" style="margin-top:10px">
+          <p class="sub" style="margin-bottom:8px">
+            Paste your Apps Script Web App URL to sync the roster, schedule, and progress to a shared Google Sheet — so every teacher's device sees the same data. Student and teacher PINs are hashed before they ever leave this device; the Sheet never sees a PIN in the clear. See the setup guide that came with this update for how to create the Sheet and deploy the script.
+          </p>
+          <div class="td-sync-row">
+            <input type="text" id="syncUrl" placeholder="https://script.google.com/macros/s/.../exec">
+            <button class="td-btn" id="saveSyncBtn">Save</button>
+            <button class="td-btn" id="syncNowBtn">Sync now</button>
+          </div>
+          <div class="td-sync-status mt" id="syncStatus">Not configured yet.</div>
+        </div>
+      </details>
+
+      <details style="margin-top:12px" id="backupDetails">
+        <summary style="cursor:pointer;font-weight:700;font-size:.83rem;color:var(--td-muted)">💾 Backup &amp; restore <span class="td-owner-badge">👑 Owner only</span></summary>
+        <div class="mt" style="margin-top:10px">
+          <p class="sub" style="margin-bottom:8px">
+            Download everything on this device (roster, schedule, and lesson progress) as one file — good insurance against a cleared browser or a device switch, independent of whether Sync is set up.
+          </p>
+          <div class="td-sync-row">
+            <button class="td-btn" id="downloadBackupBtn">⬇ Download backup</button>
+            <button class="td-btn" id="restoreBackupBtn">⬆ Restore from backup</button>
+            <input type="file" id="restoreFileInput" accept="application/json" style="display:none">
+          </div>
+          <div class="td-sync-status mt" id="backupStatus"></div>
+        </div>
+      </details>
+    </div>
+
+    <div class="td-panel">
+      <div class="td-tools">
+        <div class="td-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" id="searchInput" placeholder="Search students…">
+        </div>
+        <select class="td-select" id="levelFilter"><option value="">All levels</option></select>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="td-table" id="tbl">
+          <thead><tr>
+            <th data-sort="name">Student <span class="arrow"></span></th>
+            <th data-sort="lvl">Level <span class="arrow"></span></th>
+            <th data-sort="done">Progress <span class="arrow"></span></th>
+            <th data-sort="stars">Stars <span class="arrow"></span></th>
+            <th data-sort="avg">Avg score <span class="arrow"></span></th>
+            <th data-sort="last">Last active <span class="arrow"></span></th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="sub mt" style="margin-top:14px">
+        ℹ️ Lesson progress is stored on each device (localStorage). To see all students from anywhere, connect the Google Sheets backend described in the README.
+      </p>
+    </div>
+  </div>
+
+  <!-- ===== Team view ===== -->
+  <div id="viewTeam" style="display:none">
+    <div class="td-panel">
+      <div class="td-roster-head">
+        <h2 style="flex:1">Teacher accounts</h2>
+        <button class="td-btn td-btn-primary" id="addTeacherBtn">+ Add teacher</button>
+      </div>
+      <p class="sub" style="margin-top:4px">Each teacher gets their own login and roster. Removing a teacher unassigns (not deletes) their students.</p>
+      <div class="td-locked-note" id="teamLockedNote" style="display:none">
+        👑 Only the platform owner can manage teacher accounts. Ask your owner to make changes here.
+      </div>
+      <div class="td-roster-grid" id="teamGrid"></div>
+    </div>
+  </div>
+
+  <!-- ===== Schedule view ===== -->
+  <div id="viewSchedule" style="display:none">
+    <div class="td-panel">
+      <div class="td-roster-head">
+        <h2 style="flex:1">Class schedule</h2>
+        <select class="td-select" id="scheduleScope">
+          <option value="mine">My classes</option>
+          <option value="all">All classes</option>
+        </select>
+        <button class="td-btn td-btn-primary" id="bookClassBtn">+ Book a class</button>
+      </div>
+      <div class="td-tools" style="margin-top:12px">
+        <div class="td-chip-row" id="scheduleRangeChips">
+          <button class="td-chip active" data-range="upcoming">Upcoming</button>
+          <button class="td-chip" data-range="today">Today</button>
+          <button class="td-chip" data-range="week">This week</button>
+          <button class="td-chip" data-range="past">Past</button>
+          <button class="td-chip" data-range="all">All</button>
+        </div>
+      </div>
+      <div id="scheduleAgenda" class="mt"></div>
+      <div class="td-empty" id="scheduleEmpty" style="display:none">No classes booked in this range yet.</div>
+    </div>
+  </div>
+
+  <!-- ===== Materials view ===== -->
+  <div id="viewMaterials">
+    <div class="td-panel">
+      <div class="td-panel-head"><h2>Teaching materials</h2><span class="td-badge teal" style="margin-left:8px">Pre-A · 20 lessons</span></div>
+      <p class="sub">"Present" opens the lesson full-screen with your PowerPoint slides, plus on-demand audio and quick links to games — perfect for Zoom/Meet screen share. "PPTX" downloads the file itself.</p>
+      <div class="td-mat-tools">
+        <div class="td-search" style="max-width:280px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" id="matSearch" placeholder="Search lessons…">
+        </div>
+      </div>
+      <div class="td-mat-grid" id="matGrid"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== Student detail drawer (click a table row) ===== -->
+<div class="td-overlay" id="drawerOverlay" style="justify-content:flex-end;align-items:stretch">
+  <div class="td-modal-box" id="drawerBox" style="max-width:380px;width:100%;border-radius:0;height:100%;overflow-y:auto;transform:none">
+    <button class="td-btn" id="drawerClose" style="float:right">✕</button>
+    <h3 id="drawerName" style="clear:both">Student</h3>
+    <div style="color:var(--td-muted);font-size:.8rem;font-weight:600;margin-top:-10px;margin-bottom:14px" id="drawerLevel">Level</div>
+    <div style="display:flex;gap:10px;margin-bottom:16px">
+      <div style="flex:1;background:var(--td-bg);border-radius:12px;padding:10px;text-align:center">
+        <b style="display:block;font-size:1.1rem;font-weight:800" id="drawerDone">0</b>
+        <span style="font-size:.7rem;color:var(--td-muted);font-weight:700;text-transform:uppercase">Done</span>
+      </div>
+      <div style="flex:1;background:var(--td-bg);border-radius:12px;padding:10px;text-align:center">
+        <b style="display:block;font-size:1.1rem;font-weight:800" id="drawerStars">0</b>
+        <span style="font-size:.7rem;color:var(--td-muted);font-weight:700;text-transform:uppercase">Stars</span>
+      </div>
+      <div style="flex:1;background:var(--td-bg);border-radius:12px;padding:10px;text-align:center">
+        <b style="display:block;font-size:1.1rem;font-weight:800" id="drawerAvg">0%</b>
+        <span style="font-size:.7rem;color:var(--td-muted);font-weight:700;text-transform:uppercase">Avg</span>
+      </div>
+    </div>
+    <div id="drawerBody"></div>
+  </div>
+</div>
+
+<!-- ===== Add / Edit student modal ===== -->
+<div class="td-overlay" id="studentModalOverlay">
+  <div class="td-modal-box">
+    <h3 id="studentModalTitle">Add student</h3>
+    <div class="td-field">
+      <label for="stuName">Name</label>
+      <input type="text" id="stuName" placeholder="e.g. Salem" maxlength="24">
+      <div class="td-field-error" id="stuNameError"></div>
+    </div>
+    <div class="td-field">
+      <label for="stuLevel">Starting level</label>
+      <select id="stuLevel"></select>
+    </div>
+    <div class="td-field">
+      <label for="stuTeacher">Assign to teacher</label>
+      <select id="stuTeacher"></select>
+    </div>
+    <div class="td-field">
+      <label>Avatar</label>
+      <div class="td-avatar-grid" id="stuAvatarGrid"></div>
+    </div>
+    <div class="td-field">
+      <label for="stuPin">4-digit PIN</label>
+      <div class="td-pin-field">
+        <input type="text" id="stuPin" maxlength="4" inputmode="numeric" placeholder="1234">
+        <button class="td-btn" id="stuPinRandom" type="button">🎲 Random</button>
+      </div>
+    </div>
+    <div class="td-modal-actions">
+      <button class="td-btn" id="studentModalCancel">Cancel</button>
+      <button class="td-btn td-btn-primary" id="studentModalSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Add / Edit teacher modal ===== -->
+<div class="td-overlay" id="teacherModalOverlay">
+  <div class="td-modal-box">
+    <h3 id="teacherModalTitle">Add teacher</h3>
+    <div class="td-field">
+      <label for="tchName">Name</label>
+      <input type="text" id="tchName" placeholder="e.g. Ms. Sara" maxlength="30">
+      <div class="td-field-error" id="tchNameError"></div>
+    </div>
+    <div class="td-field">
+      <label>Avatar</label>
+      <div class="td-avatar-grid" id="tchAvatarGrid"></div>
+    </div>
+    <div class="td-field">
+      <label for="tchPin">4-digit PIN</label>
+      <div class="td-pin-field">
+        <input type="text" id="tchPin" maxlength="4" inputmode="numeric" placeholder="1234">
+        <button class="td-btn" id="tchPinRandom" type="button">🎲 Random</button>
+      </div>
+    </div>
+    <div class="td-field">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:600;color:var(--td-ink-soft)">
+        <input type="checkbox" id="tchIsOwner" style="width:auto">
+        👑 Owner — can manage all teachers, students, and platform settings
+      </label>
+      <div class="td-field-error" id="tchOwnerError"></div>
+    </div>
+    <div class="td-modal-actions">
+      <button class="td-btn" id="teacherModalCancel">Cancel</button>
+      <button class="td-btn td-btn-primary" id="teacherModalSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Book / Edit class modal ===== -->
+<div class="td-overlay" id="classModalOverlay">
+  <div class="td-modal-box">
+    <h3 id="classModalTitle">Book a class</h3>
+    <div class="td-field">
+      <label for="clsStudent">Student</label>
+      <select id="clsStudent"></select>
+      <div class="td-field-error" id="clsStudentError"></div>
+    </div>
+    <div class="td-field" style="display:flex;gap:10px">
+      <div style="flex:1">
+        <label for="clsDate">Date</label>
+        <input type="date" id="clsDate">
+      </div>
+      <div style="flex:1">
+        <label for="clsTime">Start time</label>
+        <input type="time" id="clsTime">
+      </div>
+    </div>
+    <div class="td-field">
+      <label for="clsDuration">Duration</label>
+      <select id="clsDuration">
+        <option value="15">15 minutes</option>
+        <option value="30" selected>30 minutes</option>
+        <option value="45">45 minutes</option>
+        <option value="60">60 minutes</option>
+      </select>
+    </div>
+    <div class="td-field">
+      <label for="clsNotes">Notes <span style="font-weight:600;color:var(--td-muted)">(optional)</span></label>
+      <input type="text" id="clsNotes" placeholder="e.g. Focus on Lesson 5 vocabulary">
+    </div>
+    <div class="td-modal-actions">
+      <button class="td-btn" id="classModalCancel">Cancel</button>
+      <button class="td-btn td-btn-primary" id="classModalSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Printable login cards ===== -->
+<div id="printCards">
+  <div class="pc-grid" id="printCardsGrid"></div>
+</div>
+
+<script src="js/app.js"></script>
+<script src="js/lumio-profiles.js"></script>
+<script src="js/lumio-schedule.js"></script>
+<script src="js/lumio-backup.js"></script>
+<script>
+(() => {
+  if (sessionStorage && !sessionStorage.getItem("lumio_teacher")) { location.href = "login.html?role=teacher"; return; }
+
+ try {
+  // ---------- teacher greeting ----------
+  const IS_OWNER = window.LumioProfiles ? LumioProfiles.isCurrentTeacherOwner() : false;
+  try {
+    const activeTeacher = window.LumioProfiles ? LumioProfiles.getCurrentTeacher() : null;
+    document.getElementById("teacherTagAvatar").textContent = activeTeacher ? activeTeacher.avatar : "👋";
+    document.getElementById("teacherTagName").innerHTML = activeTeacher
+      ? `Hi, ${activeTeacher.name}!` + (IS_OWNER ? ' <span class="td-owner-crown" title="Platform owner">👑</span>' : "")
+      : "Welcome back!";
+  } catch (e) {}
+
+  // ---------- data ----------
+  const LEVEL_NAMES = (typeof Lumio !== "undefined" && Lumio.LEVELS) ? Lumio.LEVELS : [{id:"pre-a", name:"Pre-A", lessons:20}];
+  const LEVEL_LESSON_COUNT = {};
+  LEVEL_NAMES.forEach(l => LEVEL_LESSON_COUNT[l.id] = l.lessons || 20);
+  const levelName = id => (LEVEL_NAMES.find(l => l.id === id) || {}).name || id;
+
+  const all = ((typeof Lumio !== "undefined" && Lumio.progressAll) ? Lumio.progressAll() : {}) || {};
+  const rows = [];
+  const activity = [];
+  let totLessons = 0, totStars = 0, scoreSum = 0, scoreN = 0;
+  const levelTotals = {};
+  const oneWeekAgo = new Date(Date.now() - 7*24*60*60*1000);
+  const activeStudents = new Set();
+
+  Object.entries(all).forEach(([name, levels]) => {
+    Object.entries(levels).forEach(([lvl, lessons]) => {
+      const entries = Object.entries(lessons);
+      const done = entries.length;
+      const stars = entries.reduce((s, [,r]) => s + (r.stars || 0), 0);
+      const avg = entries.length
+        ? Math.round(entries.reduce((s, [,r]) => s + (r.total ? r.score / r.total : 1), 0) / entries.length * 100) : 0;
+      const last = entries.map(([,r]) => r.date).filter(Boolean).sort().pop() || "–";
+      totLessons += done; totStars += stars; scoreSum += avg; scoreN++;
+      levelTotals[lvl] = (levelTotals[lvl] || 0) + done;
+      rows.push({ name, lvl, done, stars, avg, last, lessons: entries });
+
+      entries.forEach(([lessonId, r]) => {
+        if (r.date) {
+          activity.push({ name, lvl, lessonId, stars: r.stars || 0, date: r.date });
+          if (new Date(r.date) >= oneWeekAgo) activeStudents.add(name);
+        }
+      });
+    });
+  });
+
+  const rosterCount = (window.LumioProfiles ? LumioProfiles.listStudents().length : 0);
+  document.getElementById("kpiRoster").textContent = rosterCount || Object.keys(all).length;
+  document.getElementById("kpiLessons").textContent = totLessons;
+  document.getElementById("kpiStars").textContent = totStars;
+  document.getElementById("kpiAvg").textContent = scoreN ? Math.round(scoreSum / scoreN) + "%" : "–";
+  document.getElementById("kpiActive").textContent = activeStudents.size;
+
+  // ---------- level chart ----------
+  const chartEl = document.getElementById("levelChart");
+  const maxLevelTotal = Math.max(1, ...Object.values(levelTotals));
+  const levelIdsWithData = Object.keys(levelTotals).length ? Object.keys(levelTotals) : ["pre-a"];
+  levelIdsWithData.forEach(id => {
+    const v = levelTotals[id] || 0;
+    const pct = Math.round((v / maxLevelTotal) * 100);
+    const row = document.createElement("div");
+    row.className = "td-chart-row";
+    row.innerHTML = `<div class="lvl-lbl">${levelName(id)}</div>
+      <div class="td-chart-track"><div class="td-chart-fill" style="width:${pct}%"></div></div>
+      <div class="td-chart-val">${v} done</div>`;
+    chartEl.appendChild(row);
+  });
+  if (!totLessons) chartEl.innerHTML = `<div class="td-empty">No lesson activity yet.</div>`;
+
+  // ---------- recent activity ----------
+  const activityList = document.getElementById("activityList");
+  activity.sort((a, b) => (b.date || "").localeCompare(a.date || "")).slice(0, 8).forEach(a => {
+    const row = document.createElement("div");
+    row.className = "td-arow";
+    const initials = a.name.slice(0, 2).toUpperCase();
+    row.innerHTML = `<div class="td-avatar">${initials}</div>
+      <div><div class="who">${a.name}</div><div class="what">finished a lesson in ${levelName(a.lvl)} · ★${a.stars}</div></div>
+      <div class="when">${a.date}</div>`;
+    activityList.appendChild(row);
+  });
+  if (!activity.length) activityList.innerHTML = `<div class="td-empty">No activity yet — this fills in as students finish lessons.</div>`;
+
+  // ---------- level filter options ----------
+  const levelFilter = document.getElementById("levelFilter");
+  const allLevelIds = new Set([...rows.map(r => r.lvl), ...LEVEL_NAMES.map(l => l.id)]);
+  [...allLevelIds].forEach(id => {
+    const opt = document.createElement("option");
+    opt.value = id; opt.textContent = levelName(id);
+    levelFilter.appendChild(opt);
+  });
+
+  // ---------- students table (progress-based, merged with roster) ----------
+  const tb = document.querySelector("#tbl tbody");
+  let sortKey = "done", sortDir = -1;
+
+  function buildTableRows() {
+    const byName = {};
+    rows.forEach(r => { byName[r.name.toLowerCase()] = Object.assign({ teacherId: null }, r); });
+    const rosterList = window.LumioProfiles ? LumioProfiles.listStudents() : [];
+    rosterList.forEach(s => {
+      const key = s.name.toLowerCase();
+      if (!byName[key]) {
+        byName[key] = { name: s.name, lvl: s.level, done: 0, stars: 0, avg: 0, last: "–", lessons: [], onRoster: true, teacherId: s.teacherId || null };
+      } else {
+        byName[key].onRoster = true;
+        byName[key].teacherId = s.teacherId || null;
+      }
+    });
+    return Object.values(byName);
+  }
+
+  function renderTable() {
+    const merged = buildTableRows();
+    const q = (document.getElementById("searchInput").value || "").toLowerCase().trim();
+    const lvl = levelFilter.value;
+    const scope = document.getElementById("rosterScope").value;
+    const activeTeacherId = window.LumioProfiles ? LumioProfiles.getCurrentTeacherId() : null;
+    let filtered = merged.filter(r =>
+      (!q || r.name.toLowerCase().includes(q)) &&
+      (!lvl || r.lvl === lvl) &&
+      (scope !== "mine" || !activeTeacherId || r.teacherId === activeTeacherId)
+    );
+    filtered.sort((a, b) => {
+      let av = a[sortKey], bv = b[sortKey];
+      if (typeof av === "string") { av = av.toLowerCase(); bv = bv.toLowerCase(); }
+      if (av < bv) return -1 * sortDir;
+      if (av > bv) return 1 * sortDir;
+      return 0;
+    });
+
+    tb.innerHTML = "";
+    if (!filtered.length) {
+      tb.innerHTML = `<tr><td colspan="6"><div class="td-empty">${merged.length ? "No students match your search." : "No students yet. Add your first one above."}</div></td></tr>`;
+      return;
+    }
+    filtered.forEach(r => {
+      const total = LEVEL_LESSON_COUNT[r.lvl] || 20;
+      const pct = Math.round((r.done / total) * 100);
+      const tr = document.createElement("tr");
+      tr.className = "td-clickable";
+      tr.innerHTML = `
+        <td><div class="td-name-cell"><div class="td-avatar">${r.name.slice(0,2).toUpperCase()}</div><b>${r.name}</b>${r.onRoster ? "" : ' <span class="td-badge grey" title="Finished a lesson but is not on your roster yet">guest</span>'}</div></td>
+        <td><span class="td-badge teal">${levelName(r.lvl)}</span></td>
+        <td><span class="td-mini-track"><span class="td-mini-fill" style="width:${pct}%"></span></span>${r.done}/${total}</td>
+        <td><span class="td-badge amber">★ ${r.stars}</span></td>
+        <td>${r.avg}%</td>
+        <td>${r.last}</td>`;
+      tr.onclick = () => openDrawer(r);
+      tb.appendChild(tr);
+    });
+  }
+
+  document.getElementById("searchInput").addEventListener("input", renderTable);
+  levelFilter.addEventListener("change", renderTable);
+  if (IS_OWNER) document.getElementById("rosterScope").value = "all";
+  document.getElementById("rosterScope").addEventListener("change", () => { renderTable(); renderRosterCards(); });
+  document.querySelectorAll("#tbl th[data-sort]").forEach(th => {
+    th.addEventListener("click", () => {
+      const key = th.dataset.sort;
+      if (sortKey === key) sortDir *= -1; else { sortKey = key; sortDir = -1; }
+      document.querySelectorAll("#tbl th .arrow").forEach(a => a.textContent = "");
+      th.querySelector(".arrow").textContent = sortDir === -1 ? "↓" : "↑";
+      renderTable();
+    });
+  });
+  renderTable();
+
+  // ---------- student detail drawer ----------
+  const drawerOverlay = document.getElementById("drawerOverlay");
+  function openDrawer(r) {
+    document.getElementById("drawerName").textContent = r.name;
+    document.getElementById("drawerLevel").textContent = levelName(r.lvl);
+    document.getElementById("drawerDone").textContent = r.done;
+    document.getElementById("drawerStars").textContent = r.stars;
+    document.getElementById("drawerAvg").textContent = r.avg + "%";
+    const body = document.getElementById("drawerBody");
+    body.innerHTML = "";
+    (r.lessons || [])
+      .sort((a, b) => Number(a[0]) - Number(b[0]))
+      .forEach(([lessonId, res]) => {
+        const row = document.createElement("div");
+        row.style.cssText = "display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--td-border-soft);font-size:.82rem";
+        row.innerHTML = `<div style="width:26px;height:26px;border-radius:8px;background:var(--td-indigo-soft);color:var(--td-indigo-dark);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.72rem;flex-shrink:0">${lessonId}</div>
+          <div style="flex:1;font-weight:600">Lesson ${lessonId}</div>
+          <div style="color:var(--td-amber);font-weight:700">★ ${res.stars || 0}</div>`;
+        body.appendChild(row);
+      });
+    if (!r.lessons || !r.lessons.length) body.innerHTML = `<div class="td-empty">No lessons recorded yet.</div>`;
+    drawerOverlay.classList.add("show");
+  }
+  drawerOverlay.onclick = e => { if (e.target === drawerOverlay) drawerOverlay.classList.remove("show"); };
+  document.getElementById("drawerClose").onclick = () => drawerOverlay.classList.remove("show");
+
+  // ---------- export ----------
+  document.getElementById("exportBtn").onclick = () => {
+    const merged = buildTableRows();
+    const csv = ["Student,Level,Lessons done,Stars,Avg score,Last active",
+      ...merged.map(r => `${r.name},${r.lvl},${r.done},${r.stars},${r.avg}%,${r.last}`)].join("\n");
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+    a.download = "lumio-progress.csv";
+    a.click();
+  };
+
+  // ================= Roster management =================
+  const rosterGrid = document.getElementById("rosterGrid");
+  const rosterEmpty = document.getElementById("rosterEmpty");
+  const studentModalOverlay = document.getElementById("studentModalOverlay");
+  const stuNameInput = document.getElementById("stuName");
+  const stuLevelSelect = document.getElementById("stuLevel");
+  const stuAvatarGrid = document.getElementById("stuAvatarGrid");
+  const stuPinInput = document.getElementById("stuPin");
+  const stuNameError = document.getElementById("stuNameError");
+  let editingId = null;
+  let selectedAvatar = (window.LumioProfiles ? LumioProfiles.AVATARS[0] : "🦊");
+
+  LEVEL_NAMES.forEach(l => {
+    const opt = document.createElement("option");
+    opt.value = l.id; opt.textContent = l.name;
+    stuLevelSelect.appendChild(opt);
+  });
+
+  function renderAvatarGrid() {
+    stuAvatarGrid.innerHTML = "";
+    (window.LumioProfiles ? LumioProfiles.AVATARS : ["🦊"]).forEach(a => {
+      const opt = document.createElement("div");
+      opt.className = "td-avatar-opt" + (a === selectedAvatar ? " selected" : "");
+      opt.textContent = a;
+      opt.onclick = () => {
+        selectedAvatar = a;
+        stuAvatarGrid.querySelectorAll(".td-avatar-opt").forEach(o => o.classList.remove("selected"));
+        opt.classList.add("selected");
+      };
+      stuAvatarGrid.appendChild(opt);
+    });
+  }
+
+  function renderRosterCards() {
+    if (!window.LumioProfiles) { rosterGrid.innerHTML = ""; rosterEmpty.style.display = "block"; return; }
+    const scope = document.getElementById("rosterScope").value;
+    const activeTeacherId = LumioProfiles.getCurrentTeacherId();
+    let roster = LumioProfiles.listStudents();
+    if (scope === "mine" && activeTeacherId) roster = roster.filter(p => p.teacherId === activeTeacherId);
+    rosterGrid.innerHTML = "";
+    rosterEmpty.style.display = roster.length ? "none" : "block";
+    roster.forEach(p => {
+      const teacher = p.teacherId ? LumioProfiles.getTeacher(p.teacherId) : null;
+      const teacherLabel = teacher ? teacher.name : "Unassigned";
+      const pinKnown = !!p.pin;
+      const card = document.createElement("div");
+      card.className = "td-roster-card";
+      card.innerHTML = `
+        <div class="top">
+          <div class="av">${p.avatar}</div>
+          <div><div class="nm">${p.name}</div><div class="lv">${levelName(p.level)} · ${teacherLabel}</div></div>
+        </div>
+        <div class="pinrow">PIN: ${pinKnown
+          ? `<span class="pinval" data-pin="${p.pin}">••••</span><button class="pintoggle" type="button">show</button>`
+          : `<span class="pinval" style="opacity:.6">set on another device</span>`}
+        </div>
+        <div class="acts">
+          <button type="button" data-act="edit">Edit</button>
+          <button type="button" data-act="pin">New PIN</button>
+          <button type="button" class="danger" data-act="remove">Remove</button>
+        </div>`;
+      const pinVal = card.querySelector(".pinval");
+      const pinToggle = card.querySelector(".pintoggle");
+      if (pinToggle) {
+        pinToggle.onclick = () => {
+          const shown = pinVal.textContent !== "••••";
+          pinVal.textContent = shown ? "••••" : pinVal.dataset.pin;
+          pinToggle.textContent = shown ? "show" : "hide";
+        };
+      }
+      card.querySelector('[data-act="edit"]').onclick = () => openStudentModal(p);
+      card.querySelector('[data-act="pin"]').onclick = async () => {
+        const newPin = LumioProfiles.randomPin();
+        await LumioProfiles.updateStudent(p.id, { pin: newPin });
+        renderRosterCards(); renderTable();
+      };
+      card.querySelector('[data-act="remove"]').onclick = () => {
+        if (confirm(`Remove ${p.name} from the roster? They won't be able to log in until re-added.`)) {
+          LumioProfiles.removeStudent(p.id);
+          renderRosterCards(); renderTable();
+        }
+      };
+      rosterGrid.appendChild(card);
+    });
+  }
+
+  function renderTeacherOptions() {
+    const sel = document.getElementById("stuTeacher");
+    sel.innerHTML = '<option value="">Unassigned</option>';
+    (window.LumioProfiles ? LumioProfiles.listTeachers() : []).forEach(t => {
+      const opt = document.createElement("option");
+      opt.value = t.id; opt.textContent = t.name;
+      sel.appendChild(opt);
+    });
+  }
+
+  function openStudentModal(profile) {
+    editingId = profile ? profile.id : null;
+    document.getElementById("studentModalTitle").textContent = profile ? "Edit student" : "Add student";
+    stuNameInput.value = profile ? profile.name : "";
+    stuLevelSelect.value = profile ? profile.level : (LEVEL_NAMES[0] || {}).id || "pre-a";
+    stuPinInput.value = profile ? profile.pin : (window.LumioProfiles ? LumioProfiles.randomPin() : "1234");
+    selectedAvatar = profile ? profile.avatar : (window.LumioProfiles ? LumioProfiles.AVATARS[Math.floor(Math.random() * LumioProfiles.AVATARS.length)] : "🦊");
+    stuNameError.textContent = "";
+    renderAvatarGrid();
+    renderTeacherOptions();
+    const stuTeacherSelect = document.getElementById("stuTeacher");
+    stuTeacherSelect.value = profile
+      ? (profile.teacherId || "")
+      : (window.LumioProfiles ? (LumioProfiles.getCurrentTeacherId() || "") : "");
+    studentModalOverlay.classList.add("show");
+    stuNameInput.focus();
+  }
+  function closeStudentModal() { studentModalOverlay.classList.remove("show"); }
+
+  document.getElementById("addStudentBtn").onclick = () => openStudentModal(null);
+  document.getElementById("studentModalCancel").onclick = closeStudentModal;
+  studentModalOverlay.onclick = e => { if (e.target === studentModalOverlay) closeStudentModal(); };
+  document.getElementById("stuPinRandom").onclick = () => {
+    stuPinInput.value = window.LumioProfiles ? LumioProfiles.randomPin() : "1234";
+  };
+  stuPinInput.addEventListener("input", () => {
+    stuPinInput.value = stuPinInput.value.replace(/\D/g, "").slice(0, 4);
+  });
+
+  document.getElementById("studentModalSave").onclick = async () => {
+    if (!window.LumioProfiles) { closeStudentModal(); return; }
+    const name = stuNameInput.value.trim();
+    const pinVal = stuPinInput.value.length === 4 ? stuPinInput.value : LumioProfiles.randomPin();
+    const teacherIdVal = document.getElementById("stuTeacher").value || null;
+    try {
+      if (editingId) {
+        await LumioProfiles.updateStudent(editingId, { name, level: stuLevelSelect.value, avatar: selectedAvatar, pin: pinVal, teacherId: teacherIdVal });
+      } else {
+        await LumioProfiles.addStudent({ name, level: stuLevelSelect.value, avatar: selectedAvatar, pin: pinVal, teacherId: teacherIdVal });
+      }
+      closeStudentModal();
+      renderRosterCards();
+      renderTable();
+      renderTeamGrid();
+      document.getElementById("kpiRoster").textContent = LumioProfiles.listStudents().length;
+    } catch (e) {
+      stuNameError.textContent = e.message || "Couldn't save that student.";
+    }
+  };
+
+  renderRosterCards();
+
+  // ================= Team (teacher accounts) management =================
+  const teamGrid = document.getElementById("teamGrid");
+  const teacherModalOverlay = document.getElementById("teacherModalOverlay");
+  const tchNameInput = document.getElementById("tchName");
+  const tchAvatarGrid = document.getElementById("tchAvatarGrid");
+  const tchPinInput = document.getElementById("tchPin");
+  const tchNameError = document.getElementById("tchNameError");
+  let editingTeacherId = null;
+  let selectedTeacherAvatar = (window.LumioProfiles ? LumioProfiles.TEACHER_AVATARS[0] : "🐥");
+
+  function renderTeacherAvatarGrid() {
+    tchAvatarGrid.innerHTML = "";
+    (window.LumioProfiles ? LumioProfiles.TEACHER_AVATARS : ["🐥"]).forEach(a => {
+      const opt = document.createElement("div");
+      opt.className = "td-avatar-opt" + (a === selectedTeacherAvatar ? " selected" : "");
+      opt.textContent = a;
+      opt.onclick = () => {
+        selectedTeacherAvatar = a;
+        tchAvatarGrid.querySelectorAll(".td-avatar-opt").forEach(o => o.classList.remove("selected"));
+        opt.classList.add("selected");
+      };
+      tchAvatarGrid.appendChild(opt);
+    });
+  }
+
+  function renderTeamGrid() {
+    if (!window.LumioProfiles) { teamGrid.innerHTML = ""; return; }
+    const teachers = LumioProfiles.listTeachers();
+    const activeId = LumioProfiles.getCurrentTeacherId();
+    document.getElementById("addTeacherBtn").style.display = IS_OWNER ? "inline-flex" : "none";
+    document.getElementById("teamLockedNote").style.display = IS_OWNER ? "none" : "block";
+    teamGrid.innerHTML = "";
+    teachers.forEach(t => {
+      const studentCount = LumioProfiles.listStudents().filter(s => s.teacherId === t.id).length;
+      const pinKnown = !!t.pin;
+      const card = document.createElement("div");
+      card.className = "td-roster-card";
+      card.innerHTML = `
+        <div class="top">
+          <div class="av">${t.avatar}</div>
+          <div><div class="nm">${t.name}${t.isOwner ? ' <span class="td-owner-crown" title="Platform owner">👑</span>' : ""}${t.id === activeId ? ' <span class="td-badge teal">you</span>' : ""}</div><div class="lv">${studentCount} student${studentCount === 1 ? "" : "s"}</div></div>
+        </div>
+        <div class="pinrow">PIN: ${pinKnown
+          ? `<span class="pinval" data-pin="${t.pin}">••••</span><button class="pintoggle" type="button">show</button>`
+          : `<span class="pinval" style="opacity:.6">set on another device</span>`}
+        </div>
+        ${IS_OWNER ? `<div class="acts">
+          <button type="button" data-act="edit">Edit</button>
+          <button type="button" data-act="pin">New PIN</button>
+          <button type="button" class="danger" data-act="remove">Remove</button>
+        </div>` : ""}`;
+      const pinVal = card.querySelector(".pinval");
+      const pinToggle = card.querySelector(".pintoggle");
+      if (pinToggle) {
+        pinToggle.onclick = () => {
+          const shown = pinVal.textContent !== "••••";
+          pinVal.textContent = shown ? "••••" : pinVal.dataset.pin;
+          pinToggle.textContent = shown ? "show" : "hide";
+        };
+      }
+      if (IS_OWNER) {
+        card.querySelector('[data-act="edit"]').onclick = () => openTeacherModal(t);
+        card.querySelector('[data-act="pin"]').onclick = async () => {
+          await LumioProfiles.updateTeacher(t.id, { pin: LumioProfiles.randomPin() });
+          renderTeamGrid();
+        };
+        card.querySelector('[data-act="remove"]').onclick = () => {
+          if (!confirm(`Remove ${t.name}? Their students will become unassigned, not deleted.`)) return;
+          try {
+            LumioProfiles.removeTeacher(t.id);
+            renderTeamGrid(); renderRosterCards(); renderTable(); renderTeacherOptions();
+            if (t.id === activeId) location.href = "login.html?role=teacher";
+          } catch (e) {
+            alert(e.message || "Couldn't remove that teacher.");
+          }
+        };
+      }
+      teamGrid.appendChild(card);
+    });
+  }
+
+  function openTeacherModal(t) {
+    editingTeacherId = t ? t.id : null;
+    document.getElementById("teacherModalTitle").textContent = t ? "Edit teacher" : "Add teacher";
+    tchNameInput.value = t ? t.name : "";
+    tchPinInput.value = t ? t.pin : (window.LumioProfiles ? LumioProfiles.randomPin() : "1234");
+    selectedTeacherAvatar = t ? t.avatar : (window.LumioProfiles ? LumioProfiles.TEACHER_AVATARS[Math.floor(Math.random() * LumioProfiles.TEACHER_AVATARS.length)] : "🐥");
+    tchNameError.textContent = "";
+    document.getElementById("tchOwnerError").textContent = "";
+    document.getElementById("tchIsOwner").checked = t ? !!t.isOwner : false;
+    renderTeacherAvatarGrid();
+    teacherModalOverlay.classList.add("show");
+    tchNameInput.focus();
+  }
+  function closeTeacherModal() { teacherModalOverlay.classList.remove("show"); }
+  document.getElementById("addTeacherBtn").onclick = () => openTeacherModal(null);
+  document.getElementById("teacherModalCancel").onclick = closeTeacherModal;
+  teacherModalOverlay.onclick = e => { if (e.target === teacherModalOverlay) closeTeacherModal(); };
+  document.getElementById("tchPinRandom").onclick = () => {
+    tchPinInput.value = window.LumioProfiles ? LumioProfiles.randomPin() : "1234";
+  };
+  tchPinInput.addEventListener("input", () => {
+    tchPinInput.value = tchPinInput.value.replace(/\D/g, "").slice(0, 4);
+  });
+  document.getElementById("teacherModalSave").onclick = async () => {
+    if (!window.LumioProfiles) { closeTeacherModal(); return; }
+    const name = tchNameInput.value.trim();
+    const pinVal = tchPinInput.value.length === 4 ? tchPinInput.value : LumioProfiles.randomPin();
+    const isOwnerVal = document.getElementById("tchIsOwner").checked;
+    try {
+      if (editingTeacherId) {
+        await LumioProfiles.updateTeacher(editingTeacherId, { name, avatar: selectedTeacherAvatar, pin: pinVal, isOwner: isOwnerVal });
+      } else {
+        await LumioProfiles.addTeacher({ name, avatar: selectedTeacherAvatar, pin: pinVal, isOwner: isOwnerVal });
+      }
+      closeTeacherModal();
+      renderTeamGrid();
+      renderTeacherOptions();
+    } catch (e) {
+      const msg = e.message || "Couldn't save that teacher.";
+      if (msg.indexOf("owner") !== -1) document.getElementById("tchOwnerError").textContent = msg;
+      else tchNameError.textContent = msg;
+    }
+  };
+  renderTeamGrid();
+
+  // ================= Schedule =================
+  const scheduleAgenda = document.getElementById("scheduleAgenda");
+  const scheduleEmpty = document.getElementById("scheduleEmpty");
+  const scheduleScope = document.getElementById("scheduleScope");
+  const classModalOverlay = document.getElementById("classModalOverlay");
+  const clsStudentSelect = document.getElementById("clsStudent");
+  const clsDateInput = document.getElementById("clsDate");
+  const clsTimeInput = document.getElementById("clsTime");
+  const clsDurationSelect = document.getElementById("clsDuration");
+  const clsNotesInput = document.getElementById("clsNotes");
+  const clsStudentError = document.getElementById("clsStudentError");
+  let editingClassId = null;
+  let scheduleRange = "upcoming";
+
+  if (IS_OWNER) scheduleScope.value = "all";
+
+  function fmtDayLabel(dateStr) {
+    const today = LumioSchedule.todayStr();
+    const d = new Date(dateStr + "T00:00:00");
+    const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toISOString().slice(0, 10);
+    if (dateStr === today) return "Today";
+    if (dateStr === tomorrowStr) return "Tomorrow";
+    return d.toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
+  }
+  function fmtTime(hm) {
+    const [h, m] = hm.split(":").map(Number);
+    const ampm = h >= 12 ? "PM" : "AM";
+    const h12 = h % 12 === 0 ? 12 : h % 12;
+    return `${h12}:${String(m).padStart(2, "0")} ${ampm}`;
+  }
+  function rangeToDates(range) {
+    const today = LumioSchedule.todayStr();
+    if (range === "today") return { from: today, to: today };
+    if (range === "week") {
+      const end = new Date(); end.setDate(end.getDate() + 7);
+      return { from: today, to: end.toISOString().slice(0, 10) };
+    }
+    if (range === "past") return { from: "0000-01-01", to: today };
+    if (range === "upcoming") return { from: today, to: "9999-12-31" };
+    return { from: "0000-01-01", to: "9999-12-31" };
+  }
+
+  function renderSchedule() {
+    if (!window.LumioSchedule || !window.LumioProfiles) { scheduleAgenda.innerHTML = ""; return; }
+    const scope = scheduleScope.value;
+    const activeTeacherId = LumioProfiles.getCurrentTeacherId();
+    const { from, to } = rangeToDates(scheduleRange);
+    let classes = LumioSchedule.listClasses({ from, to });
+    if (scope === "mine" && activeTeacherId) classes = classes.filter(c => c.teacherId === activeTeacherId);
+    if (scheduleRange === "past") classes = classes.slice().reverse();
+
+    scheduleAgenda.innerHTML = "";
+    scheduleEmpty.style.display = classes.length ? "none" : "block";
+
+    let lastDate = null;
+    let dayWrap = null;
+    classes.forEach(c => {
+      if (c.date !== lastDate) {
+        lastDate = c.date;
+        dayWrap = document.createElement("div");
+        dayWrap.className = "td-agenda-day";
+        const label = document.createElement("div");
+        label.className = "td-agenda-daylabel";
+        label.textContent = fmtDayLabel(c.date);
+        dayWrap.appendChild(label);
+        scheduleAgenda.appendChild(dayWrap);
+      }
+      const teacher = c.teacherId ? LumioProfiles.getTeacher(c.teacherId) : null;
+      const row = document.createElement("div");
+      row.className = "td-class-row" + (c.status === "cancelled" ? " cancelled" : "");
+      row.innerHTML = `
+        <div class="td-class-time">${fmtTime(c.startTime)}<span>${c.durationMinutes} min</span></div>
+        <div class="td-class-info">
+          <div class="who">${c.studentName}
+            ${c.status === "cancelled" ? '<span class="td-badge grey">cancelled</span>' : ""}
+            ${c.status === "completed" ? '<span class="td-badge teal">completed</span>' : ""}
+          </div>
+          <div class="meta">${teacher ? teacher.name : (c.teacherName || "Unassigned")}${c.notes ? " · " + c.notes : ""}</div>
+        </div>
+        <div class="td-class-acts">
+          ${c.status === "scheduled" ? `<button type="button" data-act="complete">Mark done</button>` : ""}
+          <button type="button" data-act="edit">Edit</button>
+          <button type="button" class="danger" data-act="remove">Remove</button>
+        </div>`;
+      if (c.status === "scheduled") {
+        row.querySelector('[data-act="complete"]').onclick = () => {
+          LumioSchedule.completeClass(c.id);
+          renderSchedule();
+        };
+      }
+      row.querySelector('[data-act="edit"]').onclick = () => openClassModal(c);
+      row.querySelector('[data-act="remove"]').onclick = () => {
+        if (confirm(`Remove this class with ${c.studentName}?`)) {
+          LumioSchedule.removeClass(c.id);
+          renderSchedule();
+        }
+      };
+      dayWrap.appendChild(row);
+    });
+  }
+
+  function renderClsStudentOptions() {
+    clsStudentSelect.innerHTML = "";
+    const scope = scheduleScope.value;
+    const activeTeacherId = LumioProfiles.getCurrentTeacherId();
+    let students = window.LumioProfiles ? LumioProfiles.listStudents() : [];
+    if (scope === "mine" && activeTeacherId) students = students.filter(s => s.teacherId === activeTeacherId);
+    if (!students.length) {
+      const opt = document.createElement("option");
+      opt.value = ""; opt.textContent = "No students available";
+      clsStudentSelect.appendChild(opt);
+      return;
+    }
+    students.forEach(s => {
+      const opt = document.createElement("option");
+      opt.value = s.id; opt.textContent = `${s.avatar} ${s.name}`;
+      clsStudentSelect.appendChild(opt);
+    });
+  }
+
+  function openClassModal(c) {
+    editingClassId = c ? c.id : null;
+    document.getElementById("classModalTitle").textContent = c ? "Edit class" : "Book a class";
+    renderClsStudentOptions();
+    clsStudentError.textContent = "";
+    if (c) {
+      clsStudentSelect.value = c.studentId || "";
+      clsDateInput.value = c.date;
+      clsTimeInput.value = c.startTime;
+      clsDurationSelect.value = String(c.durationMinutes);
+      clsNotesInput.value = c.notes || "";
+    } else {
+      clsDateInput.value = LumioSchedule.todayStr();
+      clsTimeInput.value = "16:00";
+      clsDurationSelect.value = "30";
+      clsNotesInput.value = "";
+    }
+    classModalOverlay.classList.add("show");
+  }
+  function closeClassModal() { classModalOverlay.classList.remove("show"); }
+  document.getElementById("bookClassBtn").onclick = () => openClassModal(null);
+  document.getElementById("classModalCancel").onclick = closeClassModal;
+  classModalOverlay.onclick = e => { if (e.target === classModalOverlay) closeClassModal(); };
+
+  document.getElementById("classModalSave").onclick = () => {
+    if (!window.LumioSchedule || !window.LumioProfiles) { closeClassModal(); return; }
+    const studentId = clsStudentSelect.value;
+    const student = studentId ? LumioProfiles.getStudent(studentId) : null;
+    if (!student) { clsStudentError.textContent = "Pick a student for this class."; return; }
+    const activeTeacher = LumioProfiles.getCurrentTeacher();
+    const payload = {
+      studentId: student.id,
+      studentName: student.name,
+      teacherId: student.teacherId || (activeTeacher ? activeTeacher.id : null),
+      teacherName: activeTeacher ? activeTeacher.name : "",
+      date: clsDateInput.value,
+      startTime: clsTimeInput.value,
+      durationMinutes: clsDurationSelect.value,
+      level: student.level,
+      notes: clsNotesInput.value.trim(),
+    };
+    try {
+      if (editingClassId) {
+        LumioSchedule.updateClass(editingClassId, payload);
+      } else {
+        LumioSchedule.addClass(payload);
+      }
+      closeClassModal();
+      renderSchedule();
+    } catch (e) {
+      clsStudentError.textContent = e.message || "Couldn't save that class.";
+    }
+  };
+
+  document.querySelectorAll("#scheduleRangeChips .td-chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+      document.querySelectorAll("#scheduleRangeChips .td-chip").forEach(c => c.classList.remove("active"));
+      chip.classList.add("active");
+      scheduleRange = chip.dataset.range;
+      renderSchedule();
+    });
+  });
+  scheduleScope.addEventListener("change", renderSchedule);
+  renderSchedule();
+
+  // ---------- switch teacher (log out of this teacher account only) ----------
+  document.getElementById("switchTeacherLink").onclick = (e) => {
+    e.preventDefault();
+    if (window.LumioProfiles) LumioProfiles.clearCurrentTeacher();
+    try { sessionStorage.removeItem("lumio_teacher"); } catch (err) {}
+    location.href = "login.html?role=teacher";
+  };
+
+  // ---------- demo/sample data ----------
+  document.getElementById("seedDemoBtn").onclick = async () => {
+    if (!window.LumioProfiles) return;
+    let sara;
+    try { sara = await LumioProfiles.addTeacher({ name: "Teacher Sara", avatar: "👩‍🏫", pin: "1111" }); }
+    catch (e) { sara = LumioProfiles.findTeacherByName("Teacher Sara"); }
+    const demoLevel = (LEVEL_NAMES[0] || {}).id || "pre-a";
+    for (const s of [{ name: "Noor", avatar: "🧕" }, { name: "Omar", avatar: "👦" }]) {
+      try {
+        await LumioProfiles.addStudent({ name: s.name, avatar: s.avatar, level: demoLevel, teacherId: sara ? sara.id : null });
+      } catch (e) { /* already exists — skip */ }
+    }
+    renderTeamGrid();
+    renderRosterCards();
+    renderTable();
+    renderTeacherOptions();
+    document.getElementById("kpiRoster").textContent = LumioProfiles.listStudents().length;
+  };
+
+  // ---------- print login cards ----------
+  document.getElementById("printCardsBtn").onclick = () => {
+    if (!window.LumioProfiles) return;
+    const roster = LumioProfiles.listStudents();
+    const printable = roster.filter(p => !!p.pin);
+    const skipped = roster.length - printable.length;
+    const grid = document.getElementById("printCardsGrid");
+    grid.innerHTML = printable.map(p => `
+      <div class="pc-card">
+        <div class="av">${p.avatar}</div>
+        <div class="nm">${p.name}</div>
+        <div class="lv">${levelName(p.level)} · your Lumio site</div>
+        <div class="lbl">Your PIN</div>
+        <div class="pin">${p.pin}</div>
+      </div>`).join("");
+    if (skipped > 0) {
+      alert(`${skipped} student${skipped === 1 ? "" : "s"} were set up on another device, so this one doesn't know their PIN — give them a new PIN here first if you need to print their card.`);
+    }
+    if (!printable.length) return;
+    window.print();
+  };
+
+  // ---------- sync settings ----------
+  const syncUrlInput = document.getElementById("syncUrl");
+  const syncStatus = document.getElementById("syncStatus");
+  document.getElementById("syncDetails").style.display = IS_OWNER ? "block" : "none";
+  if (window.LumioProfiles) {
+    const cfg = LumioProfiles.getSyncConfig();
+    syncUrlInput.value = cfg.url || "";
+    syncStatus.textContent = cfg.enabled ? "Configured — not yet synced." : "Not configured yet.";
+  }
+  document.getElementById("saveSyncBtn").onclick = () => {
+    if (!window.LumioProfiles) return;
+    const cfg = LumioProfiles.configureSync({ url: syncUrlInput.value });
+    syncStatus.textContent = cfg.enabled ? 'Saved. Click "Sync now" to test it.' : "Not configured yet.";
+  };
+  // Progress lives in localStorage["lumio_progress"] as
+  //   { studentName: { levelId: { lessonNum: {stars, score, total, date} } } }
+  // — confirmed directly from your real js/app.js. Pulling merges using the
+  // exact same rule Lumio.saveResult() uses locally (keep whichever score
+  // has more stars), so a sync can never downgrade a student's best result.
+  function loadLocalProgress() {
+    try { return JSON.parse(localStorage.getItem("lumio_progress") || "{}") || {}; }
+    catch (e) { return {}; }
+  }
+  function saveLocalProgress(data) {
+    try { localStorage.setItem("lumio_progress", JSON.stringify(data)); } catch (e) {}
+  }
+  async function pullAndMergeProgress(cfg) {
+    const res = await fetch(cfg.url + "?action=pullProgress");
+    const remote = await res.json();
+    if (!remote || !Array.isArray(remote.rows)) return 0;
+    const local = loadLocalProgress();
+    let merged = 0;
+    remote.rows.forEach(row => {
+      const name = row.studentName, level = row.level, lesson = row.lesson;
+      if (!name || !level || lesson === undefined || lesson === "") return;
+      local[name] = local[name] || {};
+      local[name][level] = local[name][level] || {};
+      const prev = local[name][level][lesson];
+      const incomingStars = Number(row.stars) || 0;
+      if (!prev || incomingStars >= Number(prev.stars || 0)) {
+        local[name][level][lesson] = {
+          stars: incomingStars,
+          score: Number(row.score) || 0,
+          total: Number(row.total) || 0,
+          date: row.date || "",
+        };
+        merged++;
+      }
+    });
+    saveLocalProgress(local);
+    return merged;
+  }
+
+  document.getElementById("syncNowBtn").onclick = async () => {
+    if (!window.LumioProfiles) return;
+    syncStatus.textContent = "Syncing…";
+    const rosterRes = await LumioProfiles.syncNow();
+    const scheduleRes = window.LumioSchedule ? await LumioSchedule.syncNow() : { ok: true };
+    let progressSynced = false;
+    try {
+      const cfg = LumioProfiles.getSyncConfig();
+      if (cfg.enabled && cfg.url && typeof Lumio !== "undefined" && Lumio.progressAll) {
+        // pull + merge first, same reasoning as roster/schedule: never let
+        // an empty/behind local copy push over what's already shared
+        await pullAndMergeProgress(cfg);
+        await fetch(cfg.url + "?action=pushProgress", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ progress: Lumio.progressAll() }),
+        });
+        progressSynced = true;
+      }
+    } catch (e) { /* progress sync is best-effort; roster/schedule already reported below */ }
+
+    if (rosterRes.ok && scheduleRes.ok) {
+      syncStatus.textContent = "Synced just now" + (progressSynced ? " (roster, schedule & progress)." : " (roster & schedule).");
+      renderRosterCards(); renderTable(); renderTeamGrid(); renderSchedule();
+    } else if (rosterRes.reason === "not-configured") {
+      syncStatus.textContent = "Add a Web App URL first.";
+    } else {
+      syncStatus.textContent = "Sync failed — check the URL and that your Apps Script is deployed as a Web App.";
+    }
+  };
+
+  // ---------- backup & restore ----------
+  document.getElementById("backupDetails").style.display = IS_OWNER ? "block" : "none";
+  const backupStatus = document.getElementById("backupStatus");
+  document.getElementById("downloadBackupBtn").onclick = () => {
+    if (!window.LumioBackup) return;
+    LumioBackup.downloadBackup();
+    backupStatus.textContent = "Downloaded.";
+  };
+  document.getElementById("restoreBackupBtn").onclick = () => {
+    document.getElementById("restoreFileInput").click();
+  };
+  document.getElementById("restoreFileInput").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file || !window.LumioBackup) return;
+    if (!confirm("This will overwrite everything currently on this device (roster, schedule, and progress) with the backup file. Continue?")) {
+      e.target.value = "";
+      return;
+    }
+    try {
+      const result = await LumioBackup.restoreFromFile(file);
+      backupStatus.textContent = `Restored ${result.restored} item(s). Reloading…`;
+      setTimeout(() => location.reload(), 900);
+    } catch (err) {
+      backupStatus.textContent = err.message || "Couldn't restore that file.";
+    }
+    e.target.value = "";
+  });
+
+  // ---------- materials ----------
+  const LESSONS = [
+    "Hello","My Name","ABC Part 1 (A–I)","ABC Part 2 (J–R)","ABC Part 3 (S–Z)",
+    "Numbers 1–5","Numbers 6–10","Colors Part 1","Colors Part 2","My Family",
+    "My Body","Animals Part 1","Animals Part 2","Food Part 1","Food Part 2",
+    "My School","My Toys","Actions","Feelings","Big Review"
+  ];
+  const matGrid = document.getElementById("matGrid");
+  function renderMaterials(filter) {
+    const q = (filter || "").toLowerCase().trim();
+    matGrid.innerHTML = "";
+    LESSONS.forEach((title, i) => {
+      const n = i + 1;
+      if (q && !title.toLowerCase().includes(q) && !("l" + String(n).padStart(2,"0")).includes(q)) return;
+      const num = String(n).padStart(2, "0");
+      const row = document.createElement("div");
+      row.className = "td-mat-row";
+      row.innerHTML = `<div class="num">L${num}</div><b>${title}</b>
+        <a class="act present" href="present.html?level=pre-a&n=${n}">Present</a>
+        <a class="act pptx" href="powerpoints/pre-a/Lesson ${num} - ${title}.pptx" download title="Download PowerPoint">PPTX</a>`;
+      matGrid.appendChild(row);
+    });
+    if (!matGrid.children.length) matGrid.innerHTML = `<div class="td-empty">No lessons match your search.</div>`;
+  }
+  renderMaterials();
+  document.getElementById("matSearch").addEventListener("input", e => renderMaterials(e.target.value));
+
+  // ---------- nav ----------
+  const views = { overview: "viewOverview", students: "viewStudents", team: "viewTeam", schedule: "viewSchedule", materials: "viewMaterials" };
+  const titles = {
+    overview: ["Overview", "A snapshot of how your students are doing right now."],
+    students: ["Students", "Manage your roster and dig into individual progress."],
+    team: ["Team", "Manage teacher accounts and see who's assigned to whom."],
+    schedule: ["Schedule", "Book classes and see who's up next."],
+    materials: ["Materials", "Present or download your Zoom-ready decks."]
+  };
+  document.querySelectorAll(".td-navitem").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".td-navitem").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const view = btn.dataset.view;
+      Object.values(views).forEach(id => document.getElementById(id).style.display = "none");
+      document.getElementById(views[view]).style.display = "block";
+      document.querySelector(".td-kpis").style.display = (view === "overview" || view === "students") ? "grid" : "none";
+      document.getElementById("pageTitle").textContent = titles[view][0];
+      document.getElementById("pageSub").textContent = titles[view][1];
+      document.getElementById("sidebar").classList.remove("show");
+    });
+  });
+  document.getElementById("menuBtn").onclick = () => document.getElementById("sidebar").classList.toggle("show");
+ } catch (e) {
+   console.error("Lumio teacher dashboard error:", e);
+ }
+})();
+</script>
+</body>
+</html>

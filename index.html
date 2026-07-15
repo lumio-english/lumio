@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumio English — Learn · Speak · Grow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <img class="logo-mini" src="assets/logo/lumio-logo.png" alt="Lumio English logo">
+  <div class="brand">Lumio <span>English</span></div>
+  <div class="spacer"></div>
+  <a class="btn btn-sun" href="login.html">Start learning</a>
+</header>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div>
+      <h1>Let's learn English <span class="hl">the fun way!</span></h1>
+      <p class="lead">Join Lumi on a journey of games, songs and stories — made for young learners, with Arabic support every step of the way.</p>
+      <div class="row">
+        <a class="btn btn-primary btn-big" href="login.html">I'm a student</a>
+        <a class="btn btn-teal" href="login.html?role=teacher">I'm a teacher</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <span class="float-chip a">★ 3-star lessons</span>
+      <span class="float-chip b">Listen &amp; speak</span>
+      <img class="hero-art" src="assets/characters/cut/lumi-hero.png" alt="Lumi the mascot waving with a book">
+    </div>
+  </section>
+
+  <section class="feature-grid">
+    <div class="card"><span class="emoji-badge">P</span><h3>Learn by playing</h3><p>Matching, listening and spelling games in every lesson.</p></div>
+    <div class="card"><span class="emoji-badge">L</span><h3>Listen &amp; speak</h3><p>Every word is spoken aloud so you learn real pronunciation.</p></div>
+    <div class="card"><span class="emoji-badge">S</span><h3>Earn stars</h3><p>Collect 3 stars in every lesson and climb the level map.</p></div>
+    <div class="card"><span class="emoji-badge">ع</span><h3>عربي + English</h3><p class="ar">كل كلمة معها الترجمة العربية لتفهم بسهولة.</p></div>
+  </section>
+
+  <section class="mt cf-section" id="friendsSection">
+    <h2 class="center mb">Meet your learning friends</h2>
+    <p class="center cf-sub">Tap a friend to say hi! 👋</p>
+    <div class="char-strip cf-strip">
+      <figure class="cf-card" data-en="Yay! Let's learn together!" data-ar="هيا نتعلم معًا!">
+        <div class="cf-bubble" aria-hidden="true"></div>
+        <div class="cf-imgwrap">
+          <img src="assets/characters/cut/lumi-celebrate.png" alt="Lumi celebrating">
+          <span class="cf-sparkle a">✨</span><span class="cf-sparkle b">⭐</span><span class="cf-sparkle c">✨</span>
+        </div>
+        <figcaption>Lumi</figcaption>
+      </figure>
+      <figure class="cf-card" data-en="Ready for today's lesson?" data-ar="هل أنت مستعد لدرس اليوم؟">
+        <div class="cf-bubble" aria-hidden="true"></div>
+        <div class="cf-imgwrap">
+          <img src="assets/characters/cut/sara-teach-board.png" alt="Teacher Sara at the board">
+          <span class="cf-sparkle a">✨</span><span class="cf-sparkle b">⭐</span><span class="cf-sparkle c">✨</span>
+        </div>
+        <figcaption>Teacher Sara</figcaption>
+      </figure>
+      <figure class="cf-card" data-en="I love learning new words!" data-ar="أحب تعلم كلمات جديدة!">
+        <div class="cf-bubble" aria-hidden="true"></div>
+        <div class="cf-imgwrap">
+          <img src="assets/characters/cut/noor-backpack.png" alt="Noor with her backpack">
+          <span class="cf-sparkle a">✨</span><span class="cf-sparkle b">⭐</span><span class="cf-sparkle c">✨</span>
+        </div>
+        <figcaption>Noor</figcaption>
+      </figure>
+      <figure class="cf-card" data-en="Let's read a story together!" data-ar="هيا نقرأ قصة معًا!">
+        <div class="cf-bubble" aria-hidden="true"></div>
+        <div class="cf-imgwrap">
+          <img src="assets/characters/cut/omar-read.png" alt="Omar reading a book">
+          <span class="cf-sparkle a">✨</span><span class="cf-sparkle b">⭐</span><span class="cf-sparkle c">✨</span>
+        </div>
+        <figcaption>Omar</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <style>
+    .cf-sub{color:var(--cocoa-soft,#8A7160);font-weight:700;margin-top:-6px}
+    .cf-strip{display:flex;flex-wrap:wrap;gap:22px;justify-content:center;perspective:900px}
+    .cf-card{
+      position:relative;background:#fff;border-radius:22px;padding:18px 16px 14px;
+      box-shadow:0 6px 18px rgba(0,0,0,.07);cursor:pointer;text-align:center;list-style:none;
+      width:160px;margin:0;border:1px solid rgba(0,0,0,.03);
+      opacity:0;transform:translateY(26px) scale(.94);
+      transition:transform .45s cubic-bezier(.22,1.4,.4,1), box-shadow .25s, opacity .45s;
+    }
+    .cf-section.cf-in .cf-card{opacity:1;transform:translateY(0) scale(1)}
+    .cf-section.cf-in .cf-card:nth-child(1){transition-delay:.05s}
+    .cf-section.cf-in .cf-card:nth-child(2){transition-delay:.16s}
+    .cf-section.cf-in .cf-card:nth-child(3){transition-delay:.27s}
+    .cf-section.cf-in .cf-card:nth-child(4){transition-delay:.38s}
+    .cf-card:hover{box-shadow:0 16px 30px rgba(0,0,0,.14);transform:translateY(-6px) scale(1.06) rotate(-2deg)}
+    .cf-card:nth-child(even):hover{transform:translateY(-6px) scale(1.06) rotate(2deg)}
+
+    .cf-imgwrap{position:relative;animation:cfFloat 3.4s ease-in-out infinite}
+    .cf-card:nth-child(2) .cf-imgwrap{animation-delay:.3s}
+    .cf-card:nth-child(3) .cf-imgwrap{animation-delay:.6s}
+    .cf-card:nth-child(4) .cf-imgwrap{animation-delay:.9s}
+    .cf-imgwrap img{width:100%;max-width:120px;display:block;margin:0 auto;pointer-events:none;user-select:none}
+    @keyframes cfFloat{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-9px) rotate(-1.5deg)}}
+
+    .cf-imgwrap.cf-pop img{animation:cfPop .55s ease}
+    @keyframes cfPop{
+      0%{transform:scale(1) rotate(0deg)}
+      30%{transform:scale(1.22) rotate(-8deg)}
+      55%{transform:scale(.92) rotate(6deg)}
+      75%{transform:scale(1.08) rotate(-3deg)}
+      100%{transform:scale(1) rotate(0deg)}
+    }
+
+    .cf-sparkle{position:absolute;font-size:1rem;opacity:0;animation:cfTwinkle 2.6s ease-in-out infinite}
+    .cf-sparkle.a{top:-4px;left:2px;animation-delay:.2s}
+    .cf-sparkle.b{top:8px;right:-6px;font-size:.8rem;animation-delay:1.1s}
+    .cf-sparkle.c{bottom:14px;left:-8px;font-size:.75rem;animation-delay:1.8s}
+    @keyframes cfTwinkle{
+      0%,100%{opacity:0;transform:scale(.5) rotate(0deg)}
+      50%{opacity:1;transform:scale(1.1) rotate(20deg)}
+    }
+
+    .cf-card figcaption{font-weight:800;margin-top:8px;font-family:var(--font-display,'Baloo 2',sans-serif)}
+
+    .cf-bubble{
+      position:absolute;left:50%;bottom:100%;transform:translate(-50%,8px) scale(.85);
+      margin-bottom:10px;min-width:170px;max-width:220px;background:#fff;border-radius:16px;
+      padding:10px 14px;font-weight:800;font-size:.82rem;line-height:1.35;color:var(--cocoa,#5C4433);
+      box-shadow:0 10px 24px rgba(0,0,0,.16);opacity:0;pointer-events:none;
+      transition:opacity .2s, transform .2s;z-index:5;
+    }
+    .cf-bubble::after{
+      content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);
+      border:8px solid transparent;border-top-color:#fff;
+    }
+    .cf-bubble .ar{display:block;color:var(--cocoa-soft,#8A7160);font-weight:700;margin-top:4px;direction:rtl}
+    .cf-card.cf-talking .cf-bubble{opacity:1;transform:translate(-50%,0) scale(1);pointer-events:auto}
+  </style>
+
+  <script>
+  (function () {
+    // Scroll-in entrance for the character strip (progressive enhancement).
+    var section = document.getElementById("friendsSection");
+    if (section) {
+      if ("IntersectionObserver" in window) {
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              section.classList.add("cf-in");
+              io.disconnect();
+            }
+          });
+        }, { threshold: 0.25 });
+        io.observe(section);
+      } else {
+        section.classList.add("cf-in");
+      }
+    }
+
+    // Click-for-greeting speech bubbles + a little bounce pop.
+    var cards = document.querySelectorAll(".cf-card");
+    var hideTimer = null;
+    cards.forEach(function (card) {
+      card.addEventListener("click", function () {
+        var wasTalking = card.classList.contains("cf-talking");
+        cards.forEach(function (c) { c.classList.remove("cf-talking"); });
+        clearTimeout(hideTimer);
+        if (wasTalking) return; // tapping the same one again just closes it
+
+        var bubble = card.querySelector(".cf-bubble");
+        bubble.innerHTML = card.dataset.en + '<span class="ar">' + card.dataset.ar + "</span>";
+        card.classList.add("cf-talking");
+
+        var imgwrap = card.querySelector(".cf-imgwrap");
+        imgwrap.classList.remove("cf-pop");
+        void imgwrap.offsetWidth; // restart animation
+        imgwrap.classList.add("cf-pop");
+
+        hideTimer = setTimeout(function () { card.classList.remove("cf-talking"); }, 3000);
+      });
+    });
+    document.addEventListener("click", function (e) {
+      if (!e.target.closest(".cf-card")) {
+        cards.forEach(function (c) { c.classList.remove("cf-talking"); });
+      }
+    });
+  })();
+  </script>
+
+  <section class="card card-sun center mt mb">
+    <h2>Ready to start your adventure?</h2>
+    <p class="mt mb" style="font-weight:700">Pre-A level is open now — 20 fun lessons from "Hello!" to your first big review.</p>
+    <a class="btn btn-primary btn-big" href="login.html">Let's go!</a>
+  </section>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Map — Lumio English</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  :root{
+    --sd-sun:#FFC93C; --sd-orange:#FF8A3D; --sd-orange-deep:#F9720C;
+    --sd-coral:#FF6B6B; --sd-teal:#2DD4BF; --sd-teal-deep:#0D9488;
+    --sd-purple:#8B7CF6; --sd-sky:#38BDF8; --sd-pink:#F472B6;
+    --sd-cream:#FFF8EC; --sd-cocoa:#5C4433; --sd-cocoa-soft:#8A7160;
+    --sd-radius:24px;
+  }
+  *{box-sizing:border-box}
+  body{
+    font-family:'Nunito',sans-serif; color:var(--sd-cocoa);
+    background:
+      radial-gradient(circle at 8% 6%, rgba(255,201,60,.28), transparent 40%),
+      radial-gradient(circle at 96% 18%, rgba(45,212,191,.22), transparent 42%),
+      radial-gradient(circle at 50% 100%, rgba(139,124,246,.16), transparent 45%),
+      var(--sd-cream);
+    min-height:100vh;
+  }
+  h1,h2,h3,.sd-display{font-family:'Baloo 2',sans-serif}
+
+  @keyframes sdFadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes sdPop{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+  @keyframes sdPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+  @keyframes sdFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  .sd-fade-up{animation:sdFadeUp .5s ease both}
+  .sd-anim-d1{animation-delay:.05s} .sd-anim-d2{animation-delay:.12s} .sd-anim-d3{animation-delay:.19s} .sd-anim-d4{animation-delay:.26s}
+
+  /* ---------- Header ---------- */
+  .sd-topbar{
+    display:flex;align-items:center;gap:12px;padding:14px 22px;
+    background:rgba(255,255,255,.75);backdrop-filter:blur(6px);
+    border-bottom:3px solid rgba(255,255,255,.9);position:sticky;top:0;z-index:30;
+  }
+  .sd-logo{width:38px;height:38px;border-radius:11px}
+  .sd-brand{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.2rem}
+  .sd-brand span{color:var(--sd-orange-deep)}
+  .sd-spacer{flex:1}
+  .sd-streak{
+    display:flex;align-items:center;gap:6px;background:#fff;border-radius:999px;padding:7px 14px 7px 10px;
+    font-weight:800;font-size:.9rem;box-shadow:0 3px 10px rgba(0,0,0,.06);
+  }
+  .sd-streak .flame{display:inline-block;animation:sdPulse 1.6s ease-in-out infinite}
+  .sd-avatar-btn{
+    width:42px;height:42px;border-radius:50%;border:3px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,.1);
+    display:flex;align-items:center;justify-content:center;font-size:1.4rem;cursor:pointer;background:var(--sd-sun);
+    transition:.15s;
+  }
+  .sd-avatar-btn:hover{transform:scale(1.08)}
+  .sd-logout{
+    background:#fff;border:none;border-radius:999px;padding:9px 16px;font-weight:800;font-size:.85rem;
+    color:var(--sd-cocoa-soft);cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.06);
+  }
+  .sd-logout:hover{color:var(--sd-coral)}
+
+  .sd-wrap{max-width:1080px;margin:0 auto;padding:22px 20px 60px}
+
+  /* ---------- Hero / mission card ---------- */
+  .sd-hero{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;margin-bottom:18px}
+  @media (max-width:820px){.sd-hero{grid-template-columns:1fr}}
+  .sd-hero-card{
+    background:linear-gradient(135deg,var(--sd-orange),var(--sd-orange-deep));
+    border-radius:var(--sd-radius);padding:24px 26px;color:#fff;position:relative;overflow:hidden;
+    box-shadow:0 14px 30px -12px rgba(249,114,12,.5);
+  }
+  .sd-hero-card::after{
+    content:"";position:absolute;right:-30px;bottom:-30px;width:160px;height:160px;border-radius:50%;
+    background:rgba(255,255,255,.14);
+  }
+  .sd-hero-eyebrow{font-weight:800;font-size:.8rem;text-transform:uppercase;letter-spacing:.5px;opacity:.9}
+  .sd-hero-title{font-size:1.6rem;font-weight:800;margin:6px 0 4px}
+  .sd-hero-sub{font-weight:700;opacity:.95;font-size:.95rem;margin-bottom:16px}
+  .sd-hero-btn{
+    display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--sd-orange-deep);
+    padding:11px 22px;border-radius:999px;font-weight:800;font-size:1rem;box-shadow:0 6px 14px rgba(0,0,0,.15);
+    position:relative;z-index:2;
+  }
+
+  .sd-side-stats{display:flex;flex-direction:column;gap:12px}
+  .sd-stat-card{
+    background:#fff;border-radius:18px;padding:14px 16px;display:flex;align-items:center;gap:12px;
+    box-shadow:0 4px 14px rgba(0,0,0,.05);flex:1;
+  }
+  .sd-stat-icon{
+    width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;
+    font-size:1.3rem;flex-shrink:0;
+  }
+  .sd-stat-card b{display:block;font-size:1.25rem;font-weight:800;font-family:'Baloo 2',sans-serif}
+  .sd-stat-card span{font-size:.76rem;color:var(--sd-cocoa-soft);font-weight:800;text-transform:uppercase}
+
+  /* ---------- Level progress ---------- */
+  .sd-level-card{background:#fff;border-radius:var(--sd-radius);padding:20px 24px;margin-bottom:18px;box-shadow:0 4px 16px rgba(0,0,0,.05)}
+  .sd-level-top{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .sd-level-top h2{font-size:1.3rem;margin:0}
+  .sd-level-top p{margin:2px 0 0;font-weight:700;color:var(--sd-cocoa-soft);font-size:.88rem}
+  .sd-level-right{margin-left:auto;text-align:right}
+  .sd-level-count{font-weight:800;font-size:.95rem}
+  .sd-progressbar{width:100%;height:14px;background:#F3EEE4;border-radius:999px;overflow:hidden;margin-top:12px}
+  .sd-progressbar > div{height:100%;background:linear-gradient(90deg,var(--sd-teal),var(--sd-teal-deep));border-radius:999px;transition:width .8s cubic-bezier(.22,1,.36,1)}
+  .sd-cert-link{
+    display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-weight:800;font-size:.85rem;
+    background:var(--sd-sun);color:#7A4E00;padding:9px 18px;border-radius:999px;
+  }
+
+  /* ---------- Section headers ---------- */
+  .sd-section-title{display:flex;align-items:center;gap:8px;margin:26px 0 12px}
+  .sd-section-title h3{margin:0;font-size:1.15rem}
+
+  /* ---------- Badges ---------- */
+  .sd-badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:8px}
+  .sd-badge{
+    background:#fff;border-radius:18px;padding:16px 10px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.05);
+    opacity:.4;filter:grayscale(.6);transition:.2s;
+  }
+  .sd-badge.earned{opacity:1;filter:none;box-shadow:0 6px 16px rgba(0,0,0,.08);animation:sdPop .5s ease both}
+  .sd-badge .ic{font-size:1.9rem;line-height:1}
+  .sd-badge.earned .ic{animation:sdFloat 2.4s ease-in-out infinite}
+  .sd-badge .t{font-weight:800;font-size:.8rem;margin-top:6px}
+  .sd-badge .d{font-size:.68rem;color:var(--sd-cocoa-soft);font-weight:700;margin-top:2px}
+
+  /* ---------- Mini-games ---------- */
+  .sd-games-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+  .sd-game-tile{
+    background:#fff;border-radius:20px;padding:18px;box-shadow:0 4px 16px rgba(0,0,0,.05);
+    display:flex;flex-direction:column;gap:8px;transition:.15s;
+  }
+  .sd-game-tile:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(0,0,0,.09)}
+  .sd-game-icon{
+    width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.7rem;
+  }
+  .sd-game-tile h4{margin:0;font-family:'Baloo 2',sans-serif;font-size:1.05rem}
+  .sd-game-tile p{margin:0;font-size:.82rem;color:var(--sd-cocoa-soft);font-weight:700;flex:1}
+  .sd-game-play{
+    align-self:flex-start;background:var(--sd-teal-deep);color:#fff;border:none;border-radius:999px;
+    padding:8px 18px;font-weight:800;font-size:.85rem;cursor:pointer;font-family:inherit;
+  }
+  .sd-game-play:hover{background:#0b7d78}
+
+  /* ---------- Path ---------- */
+  .sd-path-card{background:#fff;border-radius:var(--sd-radius);padding:20px 24px;box-shadow:0 4px 16px rgba(0,0,0,.05)}
+
+  /* ---------- My Schedule ---------- */
+  .sd-schedule-card{background:#fff;border-radius:var(--sd-radius);padding:20px 24px;box-shadow:0 4px 16px rgba(0,0,0,.05)}
+  .sd-next-class{
+    display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,var(--sd-teal),var(--sd-teal-deep));
+    color:#fff;border-radius:18px;padding:16px 18px;margin-bottom:14px;
+  }
+  .sd-next-class .ic{font-size:1.8rem}
+  .sd-next-class .when{font-weight:800;font-size:1.05rem}
+  .sd-next-class .sub{font-weight:700;opacity:.9;font-size:.85rem}
+  .sd-class-row{
+    display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid #F3EEE4;
+  }
+  .sd-class-row:last-child{border-bottom:none}
+  .sd-class-row .dt{width:76px;flex-shrink:0;font-weight:800;font-size:.82rem;color:var(--sd-cocoa-soft)}
+  .sd-class-row .dt span{display:block;font-size:.72rem;font-weight:700;color:var(--sd-cocoa-soft);opacity:.75}
+  .sd-class-row .who{font-weight:700;font-size:.88rem}
+  .sd-class-row .meta{font-size:.76rem;color:var(--sd-cocoa-soft);font-weight:600}
+  .sd-empty-note{text-align:center;color:var(--sd-cocoa-soft);font-weight:700;font-size:.88rem;padding:10px 0}
+  .path{display:flex;flex-wrap:wrap;gap:14px;justify-content:flex-start}
+
+  /* ---------- Generic modal shell ---------- */
+  .sd-modal-overlay{position:fixed;inset:0;background:rgba(60,40,20,.45);display:none;align-items:center;justify-content:center;z-index:100;padding:16px}
+  .sd-modal-overlay.show{display:flex}
+  .sd-modal{background:#fff;border-radius:22px;padding:22px;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.25);animation:sdPop .25s ease both}
+  .sd-modal.wide{max-width:560px}
+  .sd-modal h3{margin:0 0 4px}
+  .sd-modal p.sd-hint{color:var(--sd-cocoa-soft);font-weight:700;font-size:.85rem;margin:0 0 16px}
+  .sd-modal-close-x{position:absolute;top:14px;right:14px;background:#F3EEE4;border:none;border-radius:50%;width:30px;height:30px;font-weight:800;cursor:pointer;color:var(--sd-cocoa-soft)}
+
+  /* avatar picker */
+  .sd-avatar-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:18px}
+  .sd-avatar-opt{
+    aspect-ratio:1;border-radius:14px;border:3px solid transparent;background:#F7F1E6;font-size:1.6rem;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;
+  }
+  .sd-avatar-opt.selected{border-color:var(--sd-orange);background:#FFF1E0}
+  .sd-modal-close{
+    width:100%;padding:11px;border-radius:999px;border:none;background:var(--sd-orange);color:#fff;
+    font-weight:800;font-size:.95rem;cursor:pointer;
+  }
+
+  /* ---------- Memory Match ---------- */
+  .mm-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-weight:800;font-size:.85rem;color:var(--sd-cocoa-soft)}
+  .mm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .mm-card{
+    aspect-ratio:1;border-radius:12px;background:linear-gradient(135deg,var(--sd-purple),#6D5AE0);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:#fff;user-select:none;
+    transform-style:preserve-3d;transition:transform .3s;
+  }
+  .mm-card.flipped{background:#fff;color:var(--sd-cocoa);border:2px solid var(--sd-teal);transform:rotateY(180deg) scaleX(-1)}
+  .mm-card.matched{background:#E7FAF8;border:2px solid var(--sd-teal-deep);opacity:.7;cursor:default}
+  .mm-word{font-size:.72rem;font-weight:800}
+
+  /* ---------- Word Pop ---------- */
+  .wp-target{
+    background:var(--sd-cream);border-radius:16px;padding:14px;text-align:center;margin-bottom:14px;font-weight:800;
+  }
+  .wp-target .em{font-size:2.4rem}
+  .wp-target .ar{font-size:1.1rem;color:var(--sd-cocoa-soft);direction:rtl}
+  .wp-bubbles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .wp-bubble{
+    background:linear-gradient(135deg,var(--sd-sky),#0EA5E9);color:#fff;border:none;border-radius:14px;padding:16px 8px;
+    font-weight:800;font-size:1.05rem;cursor:pointer;font-family:inherit;transition:.12s;
+  }
+  .wp-bubble:hover{transform:scale(1.03)}
+  .wp-bubble.wrong{background:linear-gradient(135deg,var(--sd-coral),#E14F4F);animation:sdFloat .2s}
+  .wp-bubble.correct{background:linear-gradient(135deg,var(--sd-teal),var(--sd-teal-deep))}
+  .wp-hud{display:flex;justify-content:space-between;font-weight:800;margin-bottom:12px;font-size:.9rem;color:var(--sd-cocoa-soft)}
+  .wp-hearts{color:var(--sd-coral)}
+
+  /* ---------- Word Builder ---------- */
+  .wb-slots{display:flex;gap:8px;justify-content:center;margin:18px 0;flex-wrap:wrap}
+  .wb-slot{
+    width:44px;height:52px;border-radius:10px;border:2px dashed #DCD2BE;background:#FBF6EC;
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.3rem;color:var(--sd-cocoa);
+  }
+  .wb-slot.filled{border-style:solid;border-color:var(--sd-teal-deep);background:#fff}
+  .wb-letters{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+  .wb-letter{
+    width:44px;height:44px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--sd-orange),var(--sd-orange-deep));
+    color:#fff;font-weight:800;font-size:1.15rem;cursor:pointer;font-family:inherit;transition:.12s;
+  }
+  .wb-letter:hover{transform:translateY(-2px)}
+  .wb-letter:disabled{opacity:.25;cursor:default;transform:none}
+  .wb-letter.wrong{animation:lgshake .3s}
+  @keyframes lgshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+  /* ---------- Color Sequence ---------- */
+  .cs-status{text-align:center;font-weight:700;color:var(--sd-cocoa-soft);margin-bottom:14px;min-height:20px}
+  .cs-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:280px;margin:0 auto}
+  .cs-pad{
+    aspect-ratio:1;border-radius:16px;border:none;cursor:pointer;opacity:.55;transition:opacity .15s, transform .1s;
+  }
+  .cs-pad.lit{opacity:1;transform:scale(1.04)}
+  .cs-pad.p0{background:#FF6B6B} .cs-pad.p1{background:#2DD4BF} .cs-pad.p2{background:#FFC93C} .cs-pad.p3{background:#8B7CF6}
+  .cs-pad:disabled{cursor:default}
+
+  .sd-game-end{padding:10px 0}
+  .sd-game-end .stars{font-size:2.2rem;color:var(--sd-amber,#E8A23D);margin:8px 0}
+  .sd-game-again{background:var(--sd-orange);color:#fff;border:none;border-radius:999px;padding:10px 22px;font-weight:800;cursor:pointer;font-family:inherit;margin-top:10px}
+
+  /* confetti */
+  .sd-confetti-piece{position:fixed;top:-10px;border-radius:2px;pointer-events:none;z-index:200;animation:sdConfettiFall linear forwards}
+  @keyframes sdConfettiFall{to{transform:translateY(110vh) rotate(540deg);opacity:.3}}
+</style>
+</head>
+<body>
+
+<header class="sd-topbar">
+  <img class="sd-logo" src="assets/logo/lumio-logo.png" alt="Lumio English logo" onerror="this.style.display='none'">
+  <div class="sd-brand">Lumio <span>English</span></div>
+  <div class="sd-spacer"></div>
+  <span id="helloChip" style="display:none"></span>
+  <div class="sd-streak" id="streakChip"><span class="flame">🔥</span> <span id="streakVal">0</span> day streak</div>
+  <button class="sd-avatar-btn" id="avatarBtn">🦊</button>
+  <button class="sd-logout" onclick="Lumio.logout()">Log out</button>
+</header>
+
+<main class="sd-wrap">
+
+  <!-- Hero: today's mission + quick stats -->
+  <div class="sd-hero">
+    <div class="sd-hero-card sd-fade-up">
+      <div class="sd-hero-eyebrow">Today's mission</div>
+      <div class="sd-hero-title" id="missionTitle">Let's play!</div>
+      <div class="sd-hero-sub" id="missionSub">Pick up right where you left off.</div>
+      <a class="sd-hero-btn" id="missionBtn" href="#">▶ Continue</a>
+    </div>
+    <div class="sd-side-stats">
+      <div class="sd-stat-card sd-fade-up sd-anim-d1">
+        <div class="sd-stat-icon" style="background:#FFF1D6;color:#C9860B">★</div>
+        <div><b id="starCount">0</b><span>Stars earned</span></div>
+      </div>
+      <div class="sd-stat-card sd-fade-up sd-anim-d2">
+        <div class="sd-stat-icon" style="background:#E4FBF8;color:#0D9488">✓</div>
+        <div><b id="doneCount">0/20</b><span>Lessons done</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Level progress -->
+  <div class="sd-level-card sd-fade-up sd-anim-d2">
+    <div class="sd-level-top">
+      <div>
+        <h2 id="levelTitle">Pre-A adventure map</h2>
+        <p id="levelSub">Finish each lesson to unlock the next one!</p>
+      </div>
+      <div class="sd-level-right">
+        <div class="sd-level-count" id="levelPct">0%</div>
+      </div>
+    </div>
+    <div class="sd-progressbar"><div id="levelBar" style="width:0%"></div></div>
+    <a class="sd-cert-link" href="certificates.html">🏆 My certificate</a>
+  </div>
+
+  <!-- My Schedule -->
+  <div class="sd-section-title"><h3>My schedule</h3></div>
+  <div class="sd-schedule-card">
+    <div id="scheduleNext"></div>
+    <div id="scheduleList"></div>
+    <div class="sd-empty-note" id="scheduleEmptyNote" style="display:none">No classes booked yet — ask your teacher! 🙂</div>
+  </div>
+
+  <!-- Badges -->
+  <div class="sd-section-title"><h3>My badges</h3></div>
+  <div class="sd-badges" id="badgeGrid"></div>
+
+  <!-- Mini-games -->
+  <div class="sd-section-title"><h3>Mini-games</h3></div>
+  <div class="sd-games-grid">
+    <div class="sd-game-tile">
+      <div class="sd-game-icon" style="background:#EFE9FE;color:#6D5AE0">🧠</div>
+      <h4>Memory Match</h4>
+      <p>Flip cards and find the matching pairs before you run out of tries!</p>
+      <button class="sd-game-play" id="playMemory">Play</button>
+    </div>
+    <div class="sd-game-tile">
+      <div class="sd-game-icon" style="background:#E2F4FF;color:#0EA5E9">🎈</div>
+      <h4>Word Pop</h4>
+      <p>Pop the bubble with the right word before your hearts run out!</p>
+      <button class="sd-game-play" id="playWordPop">Play</button>
+    </div>
+    <div class="sd-game-tile">
+      <div class="sd-game-icon" style="background:#FFEFE0;color:#F9720C">🔤</div>
+      <h4>Word Builder</h4>
+      <p>Put the mixed-up letters in the right order to spell the word!</p>
+      <button class="sd-game-play" id="playBuilder">Play</button>
+    </div>
+    <div class="sd-game-tile">
+      <div class="sd-game-icon" style="background:#FDE8F3;color:#DB2777">🎨</div>
+      <h4>Color Sequence</h4>
+      <p>Watch the pattern light up, then repeat it back — how far can you go?</p>
+      <button class="sd-game-play" id="playSequence">Play</button>
+    </div>
+  </div>
+
+  <!-- Adventure path -->
+  <div class="sd-section-title"><h3>Adventure map</h3></div>
+  <div class="sd-path-card">
+    <div class="path" id="path"></div>
+  </div>
+
+</main>
+
+<!-- Avatar picker -->
+<div class="sd-modal-overlay" id="avatarOverlay">
+  <div class="sd-modal">
+    <h3>Pick your avatar!</h3>
+    <p class="sd-hint">You can change this anytime.</p>
+    <div class="sd-avatar-grid" id="avatarGrid"></div>
+    <button class="sd-modal-close" id="avatarSave">Save</button>
+  </div>
+</div>
+
+<!-- Memory Match modal -->
+<div class="sd-modal-overlay" id="memoryOverlay">
+  <div class="sd-modal wide" style="position:relative">
+    <button class="sd-modal-close-x" id="memoryClose">✕</button>
+    <h3>Memory Match</h3>
+    <div class="mm-topbar"><span id="mmMoves">Moves: 0</span><span id="mmPairs">Pairs: 0/6</span></div>
+    <div class="mm-grid" id="mmGrid"></div>
+    <div id="mmEnd" style="display:none"></div>
+  </div>
+</div>
+
+<!-- Word Pop modal -->
+<div class="sd-modal-overlay" id="wordpopOverlay">
+  <div class="sd-modal wide" style="position:relative">
+    <button class="sd-modal-close-x" id="wordpopClose">✕</button>
+    <h3>Word Pop</h3>
+    <div class="wp-hud"><span id="wpScore">Score: 0</span><span class="wp-hearts" id="wpHearts">❤️❤️❤️</span></div>
+    <div id="wpPlayArea">
+      <div class="wp-target" id="wpTarget"></div>
+      <div class="wp-bubbles" id="wpBubbles"></div>
+    </div>
+    <div id="wpEnd" style="display:none"></div>
+  </div>
+</div>
+
+<!-- Word Builder modal -->
+<div class="sd-modal-overlay" id="builderOverlay">
+  <div class="sd-modal wide" style="position:relative">
+    <button class="sd-modal-close-x" id="builderClose">✕</button>
+    <h3>Word Builder</h3>
+    <div class="wp-hud"><span id="wbRound">Word 1/8</span><span id="wbScore">Score: 0</span></div>
+    <div id="wbPlayArea">
+      <div class="wp-target" id="wbTarget"></div>
+      <div class="wb-slots" id="wbSlots"></div>
+      <div class="wb-letters" id="wbLetters"></div>
+      <div style="text-align:center;margin-top:10px">
+        <button class="sd-game-again" id="wbClear" style="background:#F3EEE4;color:var(--sd-cocoa)">Clear</button>
+      </div>
+    </div>
+    <div id="wbEnd" style="display:none"></div>
+  </div>
+</div>
+
+<!-- Color Sequence modal -->
+<div class="sd-modal-overlay" id="sequenceOverlay">
+  <div class="sd-modal" style="position:relative">
+    <button class="sd-modal-close-x" id="sequenceClose">✕</button>
+    <h3>Color Sequence</h3>
+    <div class="wp-hud"><span id="csLevel">Round 1</span><span id="csBest">Best: 0</span></div>
+    <div id="csStatus" class="cs-status">Watch closely!</div>
+    <div class="cs-grid" id="csGrid"></div>
+    <div id="csEnd" style="display:none"></div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script src="js/lumio-profiles.js"></script>
+<script src="js/lumio-schedule.js"></script>
+<script>
+(() => {
+ try {
+  const u = Lumio.requireUser();
+  const level = u.level || "pre-a";
+  const meta = (Lumio.LEVELS || []).find(l => l.id === level) || { name: "Pre-A", lessons: 20 };
+  const progAll = Lumio.progressFor(u.name) || {};
+  const prog = progAll[level] || {};
+  const entries = Object.entries(prog);
+  const done = entries.length;
+  const total = meta.lessons || 20;
+  const stars = entries.reduce((s, [,r]) => s + (r.stars || 0), 0);
+  const pct = Math.round((done / total) * 100);
+
+  document.getElementById("doneCount").textContent = `${done}/${total} lessons`;
+  document.getElementById("starCount").textContent = stars;
+  document.getElementById("levelTitle").textContent = `${meta.name} adventure map`;
+  document.getElementById("levelBar").style.width = pct + "%";
+  document.getElementById("levelPct").textContent = pct + "%";
+
+  // ---------- today's mission ----------
+  const nextLessonNum = done + 1;
+  if (done >= total) {
+    document.getElementById("missionTitle").textContent = "Level complete! 🎉";
+    document.getElementById("missionSub").textContent = "You finished every lesson — go check your certificate!";
+    document.getElementById("missionBtn").textContent = "🏆 See certificate";
+    document.getElementById("missionBtn").href = "certificates.html";
+  } else {
+    document.getElementById("missionTitle").textContent = `Lesson ${nextLessonNum}`;
+    document.getElementById("missionSub").textContent = done === 0
+      ? "Ready to start your very first lesson?"
+      : "Keep your streak going — one more lesson today!";
+    document.getElementById("missionBtn").textContent = "▶ Continue";
+    document.getElementById("missionBtn").href = `lesson.html?level=${level}&n=${nextLessonNum}`;
+  }
+
+  // ---------- my schedule ----------
+  try {
+    if (window.LumioSchedule) {
+      const upcoming = LumioSchedule.upcomingForStudent(u.name, 10);
+      const nextEl = document.getElementById("scheduleNext");
+      const listEl = document.getElementById("scheduleList");
+      const emptyNote = document.getElementById("scheduleEmptyNote");
+
+      function fmtSchedDay(dateStr) {
+        const today = LumioSchedule.todayStr();
+        const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+        const tomorrowStr = tomorrow.toISOString().slice(0, 10);
+        if (dateStr === today) return "Today";
+        if (dateStr === tomorrowStr) return "Tomorrow";
+        const d = new Date(dateStr + "T00:00:00");
+        return d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+      }
+      function fmtSchedTime(hm) {
+        const [h, m] = hm.split(":").map(Number);
+        const ampm = h >= 12 ? "PM" : "AM";
+        const h12 = h % 12 === 0 ? 12 : h % 12;
+        return `${h12}:${String(m).padStart(2, "0")} ${ampm}`;
+      }
+
+      if (!upcoming.length) {
+        emptyNote.style.display = "block";
+      } else {
+        const next = upcoming[0];
+        nextEl.innerHTML = `
+          <div class="sd-next-class">
+            <div class="ic">🎥</div>
+            <div>
+              <div class="when">${fmtSchedDay(next.date)} at ${fmtSchedTime(next.startTime)}</div>
+              <div class="sub">Next class with ${next.teacherName || "your teacher"} · ${next.durationMinutes} min</div>
+            </div>
+          </div>`;
+        listEl.innerHTML = upcoming.slice(1).map(c => `
+          <div class="sd-class-row">
+            <div class="dt">${fmtSchedDay(c.date)}<span>${fmtSchedTime(c.startTime)}</span></div>
+            <div>
+              <div class="who">${c.teacherName || "Your teacher"}</div>
+              <div class="meta">${c.durationMinutes} min${c.notes ? " · " + c.notes : ""}</div>
+            </div>
+          </div>`).join("");
+      }
+    }
+  } catch (e) {
+    console.error("Lumio schedule render error:", e);
+  }
+
+  // ---------- streak ----------
+  function computeStreak() {
+    const dates = new Set();
+    Object.values(progAll).forEach(levelProg => {
+      Object.values(levelProg).forEach(r => { if (r.date) dates.add(r.date); });
+    });
+    if (!dates.size) return 0;
+    const fmt = d => d.toISOString().slice(0, 10);
+    let streak = 0;
+    let cursor = new Date();
+    if (!dates.has(fmt(cursor))) cursor.setDate(cursor.getDate() - 1);
+    while (dates.has(fmt(cursor))) {
+      streak++;
+      cursor.setDate(cursor.getDate() - 1);
+    }
+    return streak;
+  }
+  const streakVal = computeStreak();
+  document.getElementById("streakVal").textContent = streakVal;
+
+  // ---------- badges ----------
+  const totalStarsAllLevels = Object.values(progAll).reduce((sum, lvlProg) =>
+    sum + Object.values(lvlProg).reduce((s, r) => s + (r.stars || 0), 0), 0);
+  const totalDoneAllLevels = Object.values(progAll).reduce((sum, lvlProg) =>
+    sum + Object.keys(lvlProg).length, 0);
+  const perfectLessons = entries.filter(([,r]) => (r.stars || 0) >= 3).length;
+
+  const badgeDefs = [
+    { ic: "👋", t: "First step", d: "Finish 1 lesson", earned: totalDoneAllLevels >= 1 },
+    { ic: "🔥", t: "On a roll", d: "3-day streak", earned: streakVal >= 3 },
+    { ic: "⭐", t: "Star collector", d: "10 stars", earned: totalStarsAllLevels >= 10 },
+    { ic: "🌟", t: "Super star", d: "30 stars", earned: totalStarsAllLevels >= 30 },
+    { ic: "💯", t: "Perfectionist", d: "3-star a lesson", earned: perfectLessons >= 1 },
+    { ic: "📚", t: "Halfway there", d: `${Math.ceil(total/2)} lessons`, earned: done >= Math.ceil(total/2) },
+    { ic: "🏆", t: "Level up!", d: `Finish ${meta.name}`, earned: done >= total },
+    { ic: "🎯", t: "Dedicated", d: "10 lessons total", earned: totalDoneAllLevels >= 10 },
+  ];
+  const badgeGrid = document.getElementById("badgeGrid");
+  badgeDefs.forEach(b => {
+    const el = document.createElement("div");
+    el.className = "sd-badge" + (b.earned ? " earned" : "");
+    el.innerHTML = `<div class="ic">${b.ic}</div><div class="t">${b.t}</div><div class="d">${b.d}</div>`;
+    badgeGrid.appendChild(el);
+  });
+
+  // ---------- avatar (synced with roster when possible) ----------
+  const memory = {};
+  function safeGet(key) { try { return localStorage.getItem(key); } catch (e) { return memory[key] || null; } }
+  function safeSet(key, val) { try { localStorage.setItem(key, val); } catch (e) { memory[key] = val; } }
+
+  const AVATARS = (window.LumioProfiles ? LumioProfiles.AVATARS : ["🦊","🐼","🦁","🐸","🐵","🐨","🦄","🐯","🐰","🐶"]);
+  const avatarKey = "lumio_avatar_" + u.name;
+  const rosterProfile = window.LumioProfiles ? LumioProfiles.findByName(u.name) : null;
+  let currentAvatar = (rosterProfile && rosterProfile.avatar) || safeGet(avatarKey) || "🦊";
+  document.getElementById("avatarBtn").textContent = currentAvatar;
+
+  const avatarGrid = document.getElementById("avatarGrid");
+  AVATARS.forEach(a => {
+    const opt = document.createElement("div");
+    opt.className = "sd-avatar-opt" + (a === currentAvatar ? " selected" : "");
+    opt.textContent = a;
+    opt.onclick = () => {
+      document.querySelectorAll(".sd-avatar-opt").forEach(o => o.classList.remove("selected"));
+      opt.classList.add("selected");
+      currentAvatar = a;
+    };
+    avatarGrid.appendChild(opt);
+  });
+  document.getElementById("avatarBtn").onclick = () => document.getElementById("avatarOverlay").classList.add("show");
+  document.getElementById("avatarSave").onclick = async () => {
+    safeSet(avatarKey, currentAvatar);
+    if (window.LumioProfiles && rosterProfile) {
+      try { await LumioProfiles.updateStudent(rosterProfile.id, { avatar: currentAvatar }); } catch (e) {}
+    }
+    document.getElementById("avatarBtn").textContent = currentAvatar;
+    document.getElementById("avatarOverlay").classList.remove("show");
+  };
+  document.getElementById("avatarOverlay").addEventListener("click", e => {
+    if (e.target.id === "avatarOverlay") document.getElementById("avatarOverlay").classList.remove("show");
+  });
+
+  // ================= Confetti =================
+  function confettiBurst(count) {
+    const colors = ["#FF8A3D","#2DD4BF","#8B7CF6","#FFC93C","#F472B6"];
+    for (let i = 0; i < (count || 60); i++) {
+      const p = document.createElement("div");
+      p.className = "sd-confetti-piece";
+      const size = 6 + Math.random() * 6;
+      p.style.width = size + "px";
+      p.style.height = (size * 0.4) + "px";
+      p.style.left = Math.random() * 100 + "vw";
+      p.style.background = colors[Math.floor(Math.random() * colors.length)];
+      p.style.animationDuration = (2 + Math.random() * 1.5) + "s";
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 3600);
+    }
+  }
+
+  // ================= Word bank for mini-games =================
+  const WORD_BANK = [
+    { en: "Cat", ar: "قطة", em: "🐱" }, { en: "Dog", ar: "كلب", em: "🐶" },
+    { en: "Sun", ar: "شمس", em: "☀️" }, { en: "Moon", ar: "قمر", em: "🌙" },
+    { en: "Apple", ar: "تفاحة", em: "🍎" }, { en: "Banana", ar: "موزة", em: "🍌" },
+    { en: "Red", ar: "أحمر", em: "🔴" }, { en: "Blue", ar: "أزرق", em: "🔵" },
+    { en: "One", ar: "واحد", em: "1️⃣" }, { en: "Two", ar: "اثنان", em: "2️⃣" },
+    { en: "Star", ar: "نجمة", em: "⭐" }, { en: "Book", ar: "كتاب", em: "📚" },
+    { en: "Fish", ar: "سمكة", em: "🐟" }, { en: "Bird", ar: "طائر", em: "🐦" },
+    { en: "House", ar: "بيت", em: "🏠" }, { en: "Ball", ar: "كرة", em: "⚽" },
+    { en: "Tree", ar: "شجرة", em: "🌳" }, { en: "Car", ar: "سيارة", em: "🚗" },
+  ];
+  function shuffled(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+  function pickWords(n) { return shuffled(WORD_BANK).slice(0, n); }
+
+  function gameStars(scoreRatio) {
+    if (scoreRatio >= 0.85) return 3;
+    if (scoreRatio >= 0.5) return 2;
+    return 1;
+  }
+
+  // ================= Memory Match =================
+  const memoryOverlay = document.getElementById("memoryOverlay");
+  const mmGrid = document.getElementById("mmGrid");
+  const mmMoves = document.getElementById("mmMoves");
+  const mmPairs = document.getElementById("mmPairs");
+  const mmEnd = document.getElementById("mmEnd");
+  let mmState = null;
+
+  function startMemory() {
+    mmEnd.style.display = "none";
+    mmGrid.style.display = "grid";
+    const words = pickWords(6);
+    const cards = shuffled([
+      ...words.map(w => ({ key: w.en, face: w.em, kind: "emoji" })),
+      ...words.map(w => ({ key: w.en, face: w.en, kind: "word" })),
+    ]);
+    mmState = { cards, flipped: [], matched: new Set(), moves: 0, busy: false };
+    mmMoves.textContent = "Moves: 0";
+    mmPairs.textContent = `Pairs: 0/${words.length}`;
+    mmGrid.innerHTML = "";
+    cards.forEach((c, i) => {
+      const el = document.createElement("div");
+      el.className = "mm-card";
+      el.dataset.index = i;
+      el.innerHTML = `<span style="display:none">${c.kind === "emoji" ? c.face : ""}</span>`;
+      el.onclick = () => flipCard(i);
+      mmGrid.appendChild(el);
+    });
+  }
+
+  function renderCard(i) {
+    const el = mmGrid.children[i];
+    const c = mmState.cards[i];
+    const isFlipped = mmState.flipped.includes(i) || mmState.matched.has(i);
+    el.className = "mm-card" + (isFlipped ? " flipped" : "") + (mmState.matched.has(i) ? " matched" : "");
+    el.innerHTML = isFlipped
+      ? (c.kind === "emoji" ? `<span>${c.face}</span>` : `<span class="mm-word">${c.face}</span>`)
+      : "";
+  }
+
+  function flipCard(i) {
+    if (mmState.busy || mmState.matched.has(i) || mmState.flipped.includes(i)) return;
+    mmState.flipped.push(i);
+    renderCard(i);
+    if (mmState.flipped.length === 2) {
+      mmState.busy = true;
+      mmState.moves++;
+      mmMoves.textContent = "Moves: " + mmState.moves;
+      const [a, b] = mmState.flipped;
+      const match = mmState.cards[a].key === mmState.cards[b].key;
+      setTimeout(() => {
+        if (match) {
+          mmState.matched.add(a); mmState.matched.add(b);
+          renderCard(a); renderCard(b);
+          const totalPairs = mmState.cards.length / 2;
+          mmPairs.textContent = `Pairs: ${mmState.matched.size / 2}/${totalPairs}`;
+          if (mmState.matched.size === mmState.cards.length) endMemory();
+        } else {
+          renderCard(a); renderCard(b);
+        }
+        mmState.flipped = [];
+        mmState.busy = false;
+      }, match ? 450 : 700);
+    }
+  }
+
+  function endMemory() {
+    const totalPairs = mmState.cards.length / 2;
+    const efficiency = totalPairs / mmState.moves; // 1.0 = perfect
+    const st = gameStars(Math.min(1, efficiency));
+    mmGrid.style.display = "none";
+    mmEnd.style.display = "block";
+    mmEnd.innerHTML = `
+      <div class="sd-game-end">
+        <h3>Great job! 🎉</h3>
+        <div class="stars">${"★".repeat(st)}${"☆".repeat(3 - st)}</div>
+        <p style="font-weight:700;color:var(--sd-cocoa-soft)">Finished in ${mmState.moves} moves</p>
+        <button class="sd-game-again" id="mmAgain">Play again</button>
+      </div>`;
+    confettiBurst(50);
+    document.getElementById("mmAgain").onclick = startMemory;
+  }
+
+  document.getElementById("playMemory").onclick = () => { memoryOverlay.classList.add("show"); startMemory(); };
+  document.getElementById("memoryClose").onclick = () => memoryOverlay.classList.remove("show");
+  memoryOverlay.addEventListener("click", e => { if (e.target === memoryOverlay) memoryOverlay.classList.remove("show"); });
+
+  // ================= Word Pop =================
+  const wordpopOverlay = document.getElementById("wordpopOverlay");
+  const wpTarget = document.getElementById("wpTarget");
+  const wpBubbles = document.getElementById("wpBubbles");
+  const wpScoreEl = document.getElementById("wpScore");
+  const wpHeartsEl = document.getElementById("wpHearts");
+  const wpEnd = document.getElementById("wpEnd");
+  const wpPlayArea = document.getElementById("wpPlayArea");
+  let wpState = null;
+  const WP_ROUNDS = 8;
+
+  function startWordPop() {
+    wpEnd.style.display = "none";
+    wpPlayArea.style.display = "block";
+    wpState = { round: 0, score: 0, lives: 3, total: WP_ROUNDS };
+    wpScoreEl.textContent = "Score: 0";
+    updateHearts();
+    nextWpRound();
+  }
+  function updateHearts() {
+    wpHeartsEl.textContent = "❤️".repeat(wpState.lives) + "🤍".repeat(3 - wpState.lives);
+  }
+  function nextWpRound() {
+    if (wpState.round >= wpState.total || wpState.lives <= 0) { endWordPop(); return; }
+    wpState.round++;
+    const words = pickWords(4);
+    const correct = words[0];
+    wpTarget.innerHTML = `<div class="em">${correct.em}</div><div class="ar">${correct.ar}</div>`;
+    wpBubbles.innerHTML = "";
+    shuffled(words).forEach(w => {
+      const btn = document.createElement("button");
+      btn.className = "wp-bubble";
+      btn.textContent = w.en;
+      btn.onclick = () => handleWpPick(btn, w.en === correct.en);
+      wpBubbles.appendChild(btn);
+    });
+  }
+  function handleWpPick(btn, isCorrect) {
+    [...wpBubbles.children].forEach(b => b.disabled = true);
+    if (isCorrect) {
+      btn.classList.add("correct");
+      wpState.score++;
+      wpScoreEl.textContent = "Score: " + wpState.score;
+    } else {
+      btn.classList.add("wrong");
+      wpState.lives--;
+      updateHearts();
+    }
+    setTimeout(nextWpRound, 550);
+  }
+  function endWordPop() {
+    const st = gameStars(wpState.score / wpState.total);
+    wpPlayArea.style.display = "none";
+    wpEnd.style.display = "block";
+    const won = wpState.lives > 0;
+    wpEnd.innerHTML = `
+      <div class="sd-game-end">
+        <h3>${won ? "Nice popping! 🎈" : "Out of hearts!"}</h3>
+        <div class="stars">${"★".repeat(st)}${"☆".repeat(3 - st)}</div>
+        <p style="font-weight:700;color:var(--sd-cocoa-soft)">Score: ${wpState.score}/${wpState.total}</p>
+        <button class="sd-game-again" id="wpAgain">Play again</button>
+      </div>`;
+    if (won) confettiBurst(40);
+    document.getElementById("wpAgain").onclick = startWordPop;
+  }
+
+  document.getElementById("playWordPop").onclick = () => { wordpopOverlay.classList.add("show"); startWordPop(); };
+  document.getElementById("wordpopClose").onclick = () => wordpopOverlay.classList.remove("show");
+  wordpopOverlay.addEventListener("click", e => { if (e.target === wordpopOverlay) wordpopOverlay.classList.remove("show"); });
+
+  // ================= Word Builder =================
+  const builderOverlay = document.getElementById("builderOverlay");
+  const wbTarget = document.getElementById("wbTarget");
+  const wbSlots = document.getElementById("wbSlots");
+  const wbLetters = document.getElementById("wbLetters");
+  const wbRoundEl = document.getElementById("wbRound");
+  const wbScoreEl = document.getElementById("wbScore");
+  const wbEnd = document.getElementById("wbEnd");
+  const wbPlayArea = document.getElementById("wbPlayArea");
+  const WB_ROUNDS = 8;
+  let wbState = null;
+  let currentBuild = null;
+
+  function startBuilder() {
+    wbEnd.style.display = "none";
+    wbPlayArea.style.display = "block";
+    const words = pickWords(WB_ROUNDS);
+    wbState = { words, round: 0, mistakes: 0, totalLetters: words.reduce((s, w) => s + w.en.length, 0) };
+    nextBuilderRound();
+  }
+  function nextBuilderRound() {
+    if (wbState.round >= wbState.words.length) { endBuilder(); return; }
+    const w = wbState.words[wbState.round];
+    wbState.round++;
+    wbRoundEl.textContent = `Word ${wbState.round}/${wbState.words.length}`;
+    wbScoreEl.textContent = "Mistakes: " + wbState.mistakes;
+    wbTarget.innerHTML = `<div class="em">${w.em}</div><div class="ar">${w.ar}</div>`;
+    const letters = w.en.toUpperCase().split("");
+    currentBuild = { word: letters, placed: [], letterEls: [] };
+    wbSlots.innerHTML = "";
+    letters.forEach(() => {
+      const slot = document.createElement("div");
+      slot.className = "wb-slot";
+      wbSlots.appendChild(slot);
+    });
+    wbLetters.innerHTML = "";
+    shuffled(letters.map((_, i) => i)).forEach(idx => {
+      const btn = document.createElement("button");
+      btn.className = "wb-letter";
+      btn.type = "button";
+      btn.textContent = letters[idx];
+      btn.onclick = () => handleLetterClick(btn, idx, letters);
+      wbLetters.appendChild(btn);
+      currentBuild.letterEls.push(btn);
+    });
+  }
+  function handleLetterClick(btn, idx, letters) {
+    if (btn.disabled || !currentBuild) return;
+    const nextPos = currentBuild.placed.length;
+    if (letters[idx] === currentBuild.word[nextPos]) {
+      currentBuild.placed.push(idx);
+      btn.disabled = true;
+      const slot = wbSlots.children[nextPos];
+      slot.textContent = letters[idx];
+      slot.classList.add("filled");
+      if (currentBuild.placed.length === letters.length) {
+        setTimeout(nextBuilderRound, 500);
+      }
+    } else {
+      wbState.mistakes++;
+      wbScoreEl.textContent = "Mistakes: " + wbState.mistakes;
+      btn.classList.remove("wrong"); void btn.offsetWidth; btn.classList.add("wrong");
+    }
+  }
+  document.getElementById("wbClear").onclick = () => {
+    if (!currentBuild) return;
+    currentBuild.placed = [];
+    wbSlots.querySelectorAll(".wb-slot").forEach(s => { s.textContent = ""; s.classList.remove("filled"); });
+    currentBuild.letterEls.forEach(b => b.disabled = false);
+  };
+  function endBuilder() {
+    const efficiency = wbState.totalLetters / (wbState.totalLetters + wbState.mistakes);
+    const st = gameStars(efficiency);
+    wbPlayArea.style.display = "none";
+    wbEnd.style.display = "block";
+    wbEnd.innerHTML = `
+      <div class="sd-game-end">
+        <h3>Great spelling! ✏️</h3>
+        <div class="stars">${"★".repeat(st)}${"☆".repeat(3 - st)}</div>
+        <p style="font-weight:700;color:var(--sd-cocoa-soft)">${wbState.mistakes} mistake${wbState.mistakes === 1 ? "" : "s"} total</p>
+        <button class="sd-game-again" id="wbAgain">Play again</button>
+      </div>`;
+    if (st >= 2) confettiBurst(45);
+    document.getElementById("wbAgain").onclick = startBuilder;
+  }
+  document.getElementById("playBuilder").onclick = () => { builderOverlay.classList.add("show"); startBuilder(); };
+  document.getElementById("builderClose").onclick = () => builderOverlay.classList.remove("show");
+  builderOverlay.addEventListener("click", e => { if (e.target === builderOverlay) builderOverlay.classList.remove("show"); });
+
+  // ================= Color Sequence =================
+  const sequenceOverlay = document.getElementById("sequenceOverlay");
+  const csGrid = document.getElementById("csGrid");
+  const csStatus = document.getElementById("csStatus");
+  const csLevelEl = document.getElementById("csLevel");
+  const csBestEl = document.getElementById("csBest");
+  const csEnd = document.getElementById("csEnd");
+  const CS_COLORS = 4;
+  let csState = null;
+
+  function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+  function renderCsGrid() {
+    csGrid.innerHTML = "";
+    csGrid.style.display = "grid";
+    for (let i = 0; i < CS_COLORS; i++) {
+      const btn = document.createElement("button");
+      btn.className = "cs-pad p" + i;
+      btn.type = "button";
+      btn.onclick = () => handlePadClick(i);
+      csGrid.appendChild(btn);
+    }
+  }
+  function litPad(idx) {
+    return new Promise(resolve => {
+      const pad = csGrid.children[idx];
+      pad.classList.add("lit");
+      setTimeout(() => { pad.classList.remove("lit"); resolve(); }, 450);
+    });
+  }
+  async function playSequence() {
+    csState.accepting = false;
+    csStatus.textContent = "Watch closely!";
+    for (const idx of csState.sequence) {
+      await litPad(idx);
+      await wait(220);
+    }
+    csStatus.textContent = "Your turn!";
+    csState.accepting = true;
+  }
+  function nextSequenceRound() {
+    csState.level++;
+    csState.playerIndex = 0;
+    csLevelEl.textContent = "Round " + csState.level;
+    csState.sequence.push(Math.floor(Math.random() * CS_COLORS));
+    playSequence();
+  }
+  function handlePadClick(i) {
+    if (!csState || !csState.accepting) return;
+    const pad = csGrid.children[i];
+    pad.classList.add("lit"); setTimeout(() => pad.classList.remove("lit"), 200);
+    if (csState.sequence[csState.playerIndex] === i) {
+      csState.playerIndex++;
+      if (csState.playerIndex === csState.sequence.length) {
+        csState.accepting = false;
+        setTimeout(nextSequenceRound, 500);
+      }
+    } else {
+      csState.accepting = false;
+      endSequence();
+    }
+  }
+  function endSequence() {
+    const reached = csState.level - 1;
+    const best = Math.max(reached, csState.best);
+    safeSet("lumio_cs_best", String(best));
+    const st = reached >= 8 ? 3 : reached >= 4 ? 2 : 1;
+    csGrid.style.display = "none";
+    csEnd.style.display = "block";
+    csEnd.innerHTML = `
+      <div class="sd-game-end">
+        <h3>${reached >= 1 ? "Nice memory! 🎨" : "Let's try again!"}</h3>
+        <div class="stars">${"★".repeat(st)}${"☆".repeat(3 - st)}</div>
+        <p style="font-weight:700;color:var(--sd-cocoa-soft)">You reached round ${reached}${best > reached ? " · Best: " + best : (best === reached && reached > 0 ? " · New best!" : "")}</p>
+        <button class="sd-game-again" id="csAgain">Play again</button>
+      </div>`;
+    if (st >= 2) confettiBurst(35);
+    document.getElementById("csAgain").onclick = startSequence;
+  }
+  function startSequence() {
+    csEnd.style.display = "none";
+    renderCsGrid();
+    csState = { sequence: [], playerIndex: 0, level: 0, accepting: false, best: Number(safeGet("lumio_cs_best") || 0) };
+    csBestEl.textContent = "Best: " + csState.best;
+    nextSequenceRound();
+  }
+  document.getElementById("playSequence").onclick = () => { sequenceOverlay.classList.add("show"); startSequence(); };
+  document.getElementById("sequenceClose").onclick = () => sequenceOverlay.classList.remove("show");
+  sequenceOverlay.addEventListener("click", e => { if (e.target === sequenceOverlay) sequenceOverlay.classList.remove("show"); });
+
+ } catch (e) {
+   console.error("Lumio student dashboard error:", e);
+
+ }
+})();
+</script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>
