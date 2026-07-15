@@ -9,14 +9,14 @@
 <link rel="stylesheet" href="css/style.css">
 <style>
   :root{
-    --td-bg:#F4F6FA; --td-surface:#FFFFFF; --td-border:#E4E8F0; --td-border-soft:#EDF0F6;
-    --td-ink:#1B2233; --td-ink-soft:#5B6478; --td-muted:#8891A3;
-    --td-indigo:#4F5FE8; --td-indigo-soft:#EEF0FE; --td-indigo-dark:#3A47C4;
-    --td-teal:#0EA5A0; --td-teal-soft:#E7FAF8;
-    --td-amber:#E8A23D; --td-amber-soft:#FDF3E3;
+    --td-bg:#FAF8F4; --td-surface:#FFFFFF; --td-border:#EAE3D8; --td-border-soft:#F1ECE2;
+    --td-ink:#2A2118; --td-ink-soft:#6B5D4E; --td-muted:#948573;
+    --td-indigo:#F97316; --td-indigo-soft:#FFF1E0; --td-indigo-dark:#C2530A;
+    --td-teal:#14B8A6; --td-teal-soft:#E6FAF7;
+    --td-amber:#D89A2A; --td-amber-soft:#FBF1DD;
     --td-coral:#E8635F; --td-coral-soft:#FCEBEA;
     --td-radius:14px; --td-radius-lg:20px;
-    --td-shadow:0 1px 2px rgba(20,25,45,.04), 0 8px 24px -12px rgba(20,25,45,.10);
+    --td-shadow:0 1px 2px rgba(42,33,24,.04), 0 8px 24px -12px rgba(42,33,24,.10);
   }
   *{box-sizing:border-box}
   html,body{margin:0}
@@ -85,7 +85,7 @@
   .td-navitem svg{width:17px;height:17px;flex-shrink:0}
   .td-navitem:hover{background:var(--td-bg);color:var(--td-ink)}
   .td-navitem:active{transform:scale(.98)}
-  .td-navitem:focus-visible{outline:3px solid rgba(79,95,232,.3);outline-offset:-2px}
+  .td-navitem:focus-visible{outline:3px solid rgba(249,115,22,.3);outline-offset:-2px}
   .td-navitem.active{background:var(--td-indigo-soft);color:var(--td-indigo-dark)}
   .td-sidebar-foot{margin-top:auto;padding-top:16px;border-top:1px solid var(--td-border-soft)}
   .td-exit{
@@ -105,11 +105,11 @@
     font-size:.85rem;border:1px solid var(--td-border);background:var(--td-surface);color:var(--td-ink);cursor:pointer;
     transition:transform .15s cubic-bezier(.22,1,.36,1),box-shadow .15s ease,border-color .15s ease,color .15s ease,background .15s ease;
   }
-  .td-btn:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark);transform:translateY(-1px);box-shadow:0 6px 14px rgba(79,95,232,.12)}
-  .td-btn:active{transform:translateY(0) scale(.96);box-shadow:0 2px 5px rgba(79,95,232,.1)}
-  .td-btn:focus-visible{outline:3px solid rgba(79,95,232,.35);outline-offset:2px}
+  .td-btn:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark);transform:translateY(-1px);box-shadow:0 6px 14px rgba(249,115,22,.12)}
+  .td-btn:active{transform:translateY(0) scale(.96);box-shadow:0 2px 5px rgba(249,115,22,.1)}
+  .td-btn:focus-visible{outline:3px solid rgba(249,115,22,.35);outline-offset:2px}
   .td-btn-primary{background:var(--td-indigo);border-color:var(--td-indigo);color:#fff}
-  .td-btn-primary:hover{background:var(--td-indigo-dark);color:#fff;box-shadow:0 8px 18px rgba(79,95,232,.3)}
+  .td-btn-primary:hover{background:var(--td-indigo-dark);color:#fff;box-shadow:0 8px 18px rgba(249,115,22,.3)}
 
   /* ---------- KPI cards ---------- */
   .td-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px}

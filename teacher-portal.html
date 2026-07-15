@@ -10,9 +10,9 @@
 <link rel="stylesheet" href="css/style.css">
 <style>
   :root{
-    --tp-bg:#F4F6FA; --tp-surface:#FFFFFF; --tp-border:#E4E8F0;
-    --tp-ink:#1B2233; --tp-ink-soft:#5B6478; --tp-muted:#8891A3;
-    --tp-indigo:#4F5FE8; --tp-indigo-soft:#EEF0FE; --tp-indigo-dark:#3A47C4;
+    --tp-bg:#FAF8F4; --tp-surface:#FFFFFF; --tp-border:#EAE3D8;
+    --tp-ink:#2A2118; --tp-ink-soft:#6B5D4E; --tp-muted:#948573;
+    --tp-indigo:#F97316; --tp-indigo-soft:#FFF1E0; --tp-indigo-dark:#C2530A;
     --tp-coral:#E8635F;
   }
   *{box-sizing:border-box}
@@ -38,14 +38,21 @@
   .tp-card h1{font-size:1.15rem;font-weight:800;margin:0 0 4px;letter-spacing:-.2px;text-align:center}
   .tp-card p.tp-sub{color:var(--tp-muted);font-size:.85rem;font-weight:500;text-align:center;margin:0 0 20px}
 
+  .tp-example{
+    background:var(--tp-indigo-soft); border:1px solid rgba(249,115,22,.18); border-radius:12px;
+    padding:11px 14px; font-size:.8rem; color:var(--tp-ink-soft); line-height:1.5; margin-bottom:18px;
+  }
+  .tp-example b{color:var(--tp-ink)}
+  .tp-example code{background:rgba(255,255,255,.7); padding:1px 6px; border-radius:5px; font-size:.78rem; color:var(--tp-indigo-dark); font-weight:700}
+
   .tp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(94px,1fr));gap:10px;margin-bottom:6px}
   .tp-profile{
     background:var(--tp-bg); border:1.5px solid var(--tp-border); border-radius:14px; padding:14px 8px;
     text-align:center; cursor:pointer; transition:transform .15s cubic-bezier(.22,1,.36,1), box-shadow .15s ease, border-color .15s ease;
   }
-  .tp-profile:hover{border-color:var(--tp-indigo); transform:translateY(-2px); box-shadow:0 8px 16px rgba(79,95,232,.12)}
+  .tp-profile:hover{border-color:var(--tp-indigo); transform:translateY(-2px); box-shadow:0 8px 16px rgba(249,115,22,.12)}
   .tp-profile:active{transform:translateY(0) scale(.97)}
-  .tp-profile:focus-visible{outline:3px solid rgba(79,95,232,.35); outline-offset:2px}
+  .tp-profile:focus-visible{outline:3px solid rgba(249,115,22,.35); outline-offset:2px}
   .tp-profile.selected{border-color:var(--tp-indigo); background:var(--tp-indigo-soft)}
   .tp-avatar{font-size:1.8rem; line-height:1}
   .tp-name{font-weight:700; margin-top:6px; font-size:.8rem; color:var(--tp-ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
@@ -94,9 +101,9 @@
     background:var(--tp-indigo); color:#fff; font-weight:700; font-size:.92rem; cursor:pointer;
     font-family:inherit; transition:transform .15s cubic-bezier(.22,1,.36,1), background .15s ease, box-shadow .15s ease;
   }
-  .tp-submit:hover{background:var(--tp-indigo-dark); transform:translateY(-2px); box-shadow:0 10px 20px rgba(79,95,232,.28)}
+  .tp-submit:hover{background:var(--tp-indigo-dark); transform:translateY(-2px); box-shadow:0 10px 20px rgba(249,115,22,.28)}
   .tp-submit:active{transform:translateY(0) scale(.97)}
-  .tp-submit:focus-visible{outline:3px solid rgba(79,95,232,.4); outline-offset:2px}
+  .tp-submit:focus-visible{outline:3px solid rgba(249,115,22,.4); outline-offset:2px}
 
   .tp-footer{text-align:center; margin-top:18px}
   .tp-footer a{color:var(--tp-muted); font-size:.78rem; font-weight:600; text-decoration:none}
@@ -117,6 +124,10 @@
   <div class="tp-card">
     <h1 id="teacherHeading">Who's teaching?</h1>
     <p class="tp-sub">Select your profile to continue</p>
+    <div class="tp-example">
+      👋 <b>New here?</b> Tap your avatar below, enter your personal PIN (e.g. <code>1234</code>),
+      then enter the classroom PIN to open the dashboard.
+    </div>
 
     <div id="teacherRosterView">
       <div class="tp-grid" id="teacherGrid"></div>
@@ -144,7 +155,7 @@
     <div class="tp-divider">
       <label for="tpin">Classroom PIN</label>
       <input type="password" id="tpin" placeholder="••••" inputmode="numeric">
-      <p class="tp-hint">This unlocks the dashboard itself.</p>
+      <p class="tp-hint">This unlocks the dashboard itself. Ask your school admin if you don't have it.</p>
       <button class="tp-submit" id="goTeacher">Open dashboard</button>
     </div>
     <!-- kept for backward compatibility with any code still reading #tname -->
