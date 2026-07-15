@@ -59,17 +59,7 @@
 
   .tp-empty{text-align:center; color:var(--tp-muted); font-weight:600; font-size:.85rem; padding:16px 8px}
 
-  .tp-toggle-advanced{
-    display:block; width:100%; text-align:center; margin-top:12px; font-size:.78rem; color:var(--tp-muted);
-    font-weight:700; cursor:pointer; background:none; border:none; padding:6px 0; transition:color .15s ease;
-  }
-  .tp-toggle-advanced:hover{color:var(--tp-indigo)}
-  #addTeacherBox{display:none; margin-top:12px; padding-top:12px; border-top:1px dashed var(--tp-border); text-align:left; animation:tpSlideIn .2s ease}
-  #addTeacherBox.show{display:block}
   @keyframes tpSlideIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-  #addTeacherBox label{display:block; font-weight:700; font-size:.78rem; color:var(--tp-ink-soft); margin-bottom:5px}
-  #addTeacherBox input{width:100%; padding:9px 12px; border-radius:10px; border:1px solid var(--tp-border); font-size:.88rem; font-family:inherit; margin-bottom:8px}
-
   .tp-pinwrap{display:none; text-align:center; margin-top:4px; animation:tpSlideIn .2s ease}
   .tp-pinwrap.show{display:block}
   .tp-back{background:none; border:none; color:var(--tp-muted); font-weight:700; cursor:pointer; font-size:.8rem; margin-bottom:6px; transition:color .15s ease}
@@ -125,19 +115,13 @@
     <h1 id="teacherHeading">Who's teaching?</h1>
     <p class="tp-sub">Select your profile to continue</p>
     <div class="tp-example">
-      👋 <b>New here?</b> Tap your avatar below, enter your personal PIN (e.g. <code>1234</code>),
-      then enter the classroom PIN to open the dashboard.
+      👋 <b>New here?</b> Tap your avatar below, then enter your personal PIN, then the classroom PIN to open the dashboard.
     </div>
 
     <div id="teacherRosterView">
       <div class="tp-grid" id="teacherGrid"></div>
-      <div class="tp-empty" id="teacherEmpty" style="display:none">No teacher profiles found yet.</div>
-      <button class="tp-toggle-advanced" id="addTeacherToggle">+ Add another teacher</button>
-      <div id="addTeacherBox">
-        <label for="newTeacherName">Name</label>
-        <input type="text" id="newTeacherName" placeholder="e.g. Ms. Sara" maxlength="30" autocomplete="off">
-        <button class="tp-submit" id="newTeacherSave" type="button">Add teacher</button>
-        <div class="tp-pin-error" id="newTeacherError"></div>
+      <div class="tp-empty" id="teacherEmpty" style="display:none">
+        No teacher profiles found yet. Ask the platform owner to add you from the dashboard's Team tab.
       </div>
     </div>
 
@@ -289,27 +273,11 @@
     renderTeacherGrid();
     renderTeacherPad();
 
-    // Add-teacher inline shortcut
-    const addToggle = document.getElementById("addTeacherToggle");
-    const addBox = document.getElementById("addTeacherBox");
-    addToggle.addEventListener("click", () => {
-      addBox.classList.toggle("show");
-    });
-    document.getElementById("newTeacherSave").addEventListener("click", async () => {
-      const nameInput = document.getElementById("newTeacherName");
-      const err = document.getElementById("newTeacherError");
-      try {
-        const t = await LumioProfiles.addTeacher({ name: nameInput.value });
-        teachers = LumioProfiles.listTeachers();
-        selectedTeacherId = t.id;
-        nameInput.value = "";
-        err.textContent = "";
-        addBox.classList.remove("show");
-        renderTeacherGrid();
-      } catch (e) {
-        err.textContent = e.message || "Couldn't add that teacher.";
-      }
-    });
+    // Note: there is deliberately no self-service "add teacher" shortcut
+    // here — creating teacher accounts is an owner-only action, done from
+    // the dashboard's Team tab (see teacher.html), so it stays gated
+    // behind the classroom PIN + owner login rather than being reachable
+    // from this public-facing portal before anyone has signed in.
 
     // Ensure the classroom-PIN button still records whichever teacher was
     // last confirmed (or the default) before your existing auth.js runs.
