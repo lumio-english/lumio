@@ -78,7 +78,6 @@
             <button class="btn btn-primary btn-big" id="nx">${i < words.length - 1 ? "Next →" : "Let's play!"}</button>
           </div>
         </div>`;
-      Lumio.speak(w.en);
       document.getElementById("nx").onclick = () => { i++; i < words.length ? draw() : next(); };
     };
     draw();
@@ -104,7 +103,6 @@
               <div style="font-size:1rem;font-weight:800;padding:8px">${o.en}</div></button>`).join("")}
           </div>
         </div>`;
-      setTimeout(() => Lumio.speak(target.en), 400);
       document.querySelectorAll(".btn-opt").forEach(b => b.onclick = () => {
         total++;
         if (b.dataset.en === target.en) {
