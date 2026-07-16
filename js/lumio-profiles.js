@@ -160,7 +160,7 @@
     if (!n) return null;
     return load().students.find(s => s.name.trim().toLowerCase() === n) || null;
   }
-  async function addStudent({ name, level, avatar, pin, teacherId } = {}) {
+  async function addStudent({ name, level, avatar, pin, teacherId, phone } = {}) {
     const data = load();
     name = (name || "").trim();
     if (!name) throw new Error("A student needs a name.");
@@ -174,6 +174,7 @@
       pin: finalPin,
       pinHash: await hashPin(finalPin),
       teacherId: teacherId || getCurrentTeacherId() || (data.teachers[0] && data.teachers[0].id) || null,
+      phone: (phone || "").trim(), // optional — parent/guardian contact, used for the inactivity check-in shortcut
       createdAt: new Date().toISOString().slice(0, 10),
       updatedAt: new Date().toISOString(),
     };
@@ -200,6 +201,7 @@
       s.pinHash = await hashPin(newPin);
     }
     if (patch.teacherId !== undefined) s.teacherId = patch.teacherId;
+    if (patch.phone !== undefined) s.phone = (patch.phone || "").trim();
     s.updatedAt = new Date().toISOString();
     save(data);
     return s;

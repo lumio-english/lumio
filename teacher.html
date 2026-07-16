@@ -110,6 +110,13 @@
   .td-class-info{flex:1;min-width:0}
   .td-class-info .who{font-weight:700;font-size:.86rem;display:flex;align-items:center;gap:6px}
   .td-class-info .meta{font-size:.76rem;color:var(--td-muted);font-weight:600}
+  .td-session-notes{
+    width:100%;margin-top:6px;padding:6px 9px;border-radius:8px;border:1px solid var(--td-border);
+    background:#fff;font-family:inherit;font-size:.78rem;color:var(--td-ink);resize:vertical;min-height:32px;
+    transition:border-color .15s ease;
+  }
+  .td-session-notes:focus{outline:none;border-color:var(--td-indigo)}
+  .td-session-notes::placeholder{color:var(--td-muted)}
   .td-class-acts{display:flex;gap:6px;flex-shrink:0}
   .td-class-acts button{
     padding:6px 11px;border-radius:8px;border:1px solid var(--td-border);background:#fff;
@@ -139,6 +146,13 @@
   .td-lead-info{flex:1;min-width:0}
   .td-lead-info .who{font-weight:700;font-size:.9rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
   .td-lead-info .meta{font-size:.78rem;color:var(--td-muted);font-weight:600;margin-top:2px}
+  .td-lead-notes{
+    width:100%;margin-top:6px;padding:6px 9px;border-radius:8px;border:1px solid var(--td-border);
+    background:#fff;font-family:inherit;font-size:.78rem;color:var(--td-ink);resize:vertical;min-height:32px;
+    transition:border-color .15s ease;
+  }
+  .td-lead-notes:focus{outline:none;border-color:var(--td-indigo)}
+  .td-lead-notes::placeholder{color:var(--td-muted)}
   .td-lead-info .meta a{color:var(--td-indigo);font-weight:700}
   .td-lead-score{
     background:var(--td-surface);border:1px solid var(--td-border);border-radius:10px;padding:6px 12px;
@@ -162,6 +176,21 @@
   .td-lead-status.contacted{background:var(--td-amber-soft);color:#B87A16}
   .td-lead-status.enrolled{background:var(--td-teal-soft);color:var(--td-teal)}
   .td-lead-status.dismissed{background:var(--td-border-soft);color:var(--td-muted)}
+
+  .td-inactive-row{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;
+    border-bottom:1px solid var(--td-border-soft);
+  }
+  .td-inactive-row:last-child{border-bottom:none}
+  .td-inactive-row .who{font-weight:700;font-size:.86rem}
+  .td-inactive-row .meta{font-size:.75rem;color:var(--td-muted);font-weight:600;margin-top:2px}
+  .td-wa-btn{
+    display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:8px;border:1px solid var(--td-teal);
+    background:var(--td-teal-soft);color:var(--td-teal);font-weight:700;font-size:.78rem;text-decoration:none;
+    flex-shrink:0;transition:transform .12s ease,background .15s ease;
+  }
+  .td-wa-btn:hover{background:var(--td-teal);color:#fff;transform:translateY(-1px)}
+  .td-wa-btn:active{transform:translateY(0) scale(.96)}
 
   .td-nav{display:flex;flex-direction:column;gap:2px}
   .td-navitem{
@@ -466,6 +495,11 @@
 
   <!-- ===== Overview view ===== -->
   <div id="viewOverview">
+    <div class="td-panel" id="inactivityPanel" style="display:none;margin-bottom:16px">
+      <div class="td-panel-head"><h2>⚠️ Needs a check-in</h2></div>
+      <p class="sub">Students who haven't practiced in a while — a quick message might help them get back on track.</p>
+      <div id="inactivityList"></div>
+    </div>
     <div class="td-grid">
       <div class="td-panel">
         <div class="td-panel-head"><h2>Progress by level</h2></div>
@@ -619,9 +653,10 @@
   <!-- ===== Materials view ===== -->
   <div id="viewMaterials">
     <div class="td-panel">
-      <div class="td-panel-head"><h2>Teaching materials</h2><span class="td-badge teal" style="margin-left:8px">Pre-A · 20 lessons</span></div>
-      <p class="sub">"Present" opens the lesson full-screen with your PowerPoint slides, plus on-demand audio and quick links to games — perfect for Zoom/Meet screen share. "PPTX" downloads the file itself.</p>
+      <div class="td-panel-head"><h2>Teaching materials</h2><span class="td-badge teal" style="margin-left:8px" id="matBadge">Pre-A · 20 lessons</span></div>
+      <p class="sub">"Present" opens the lesson full-screen with your PowerPoint slides, plus on-demand audio and quick links to games — perfect for Zoom/Meet screen share. "PPTX" downloads the file itself. Levels without slides yet link straight to the live online lesson instead.</p>
       <div class="td-mat-tools">
+        <select class="td-select" id="matLevelSelect" style="max-width:180px"></select>
         <div class="td-search" style="max-width:280px">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
           <input type="text" id="matSearch" placeholder="Search lessons…">
@@ -681,6 +716,10 @@
     <div class="td-field">
       <label for="stuTeacher">Assign to teacher</label>
       <select id="stuTeacher"></select>
+    </div>
+    <div class="td-field">
+      <label for="stuPhone">Parent/guardian phone <span style="color:var(--td-muted);font-weight:600">(optional)</span></label>
+      <input type="tel" id="stuPhone" placeholder="e.g. 0123456789" maxlength="20">
     </div>
     <div class="td-field">
       <label>Avatar</label>
@@ -933,6 +972,65 @@
   });
   if (!activity.length) activityList.innerHTML = `<div class="td-empty">No activity yet — this fills in as students finish lessons.</div>`;
 
+  // ---------- inactivity alerts ----------
+  // Flags students who've gone quiet, so a teacher can reach out before it
+  // turns into a dropped student instead of only finding out when a parent
+  // asks. Deliberately checks activity across ALL of a student's levels,
+  // not just their current one, and gives brand-new adds a few days'
+  // grace period before flagging "hasn't started yet."
+  function daysSince(dateStr) {
+    const then = new Date(dateStr + "T00:00:00");
+    const diff = Date.now() - then.getTime();
+    return Math.max(0, Math.floor(diff / 86400000));
+  }
+  function lastActiveDateForStudent(name) {
+    if (typeof Lumio === "undefined" || !Lumio.progressAll) return null;
+    const studentProg = Lumio.progressAll()[name];
+    if (!studentProg) return null;
+    let latest = null;
+    Object.values(studentProg).forEach(levelProg => {
+      Object.values(levelProg).forEach(res => {
+        if (res.date && (!latest || res.date > latest)) latest = res.date;
+      });
+    });
+    return latest;
+  }
+  function renderInactivity() {
+    const panel = document.getElementById("inactivityPanel");
+    const list = document.getElementById("inactivityList");
+    if (!window.LumioProfiles) { panel.style.display = "none"; return; }
+    const INACTIVE_DAYS = 7;
+    const GRACE_DAYS = 3; // don't flag a student added just a few days ago
+    const flagged = [];
+    LumioProfiles.listStudents().forEach(s => {
+      const lastActive = lastActiveDateForStudent(s.name);
+      if (lastActive) {
+        const inactiveDays = daysSince(lastActive);
+        if (inactiveDays >= INACTIVE_DAYS) flagged.push({ student: s, days: inactiveDays, never: false });
+      } else {
+        const addedDays = daysSince(s.createdAt);
+        if (addedDays >= GRACE_DAYS) flagged.push({ student: s, days: addedDays, never: true });
+      }
+    });
+    flagged.sort((a, b) => b.days - a.days);
+    if (!flagged.length) { panel.style.display = "none"; return; }
+    panel.style.display = "block";
+    list.innerHTML = flagged.map(f => {
+      const label = f.never ? `Added ${f.days}d ago, hasn't started yet` : `${f.days} days since last lesson`;
+      const message = f.never
+        ? `Hi! Just checking in — we haven't seen ${f.student.name} start their English lessons on Lumio yet. Happy to help if you need a hand getting set up! 🌟`
+        : `Hi! Just checking in on ${f.student.name}'s English lessons — it's been a little while since their last one. Let us know if there's anything we can help with! 🌟`;
+      const action = f.student.phone
+        ? `<a class="td-wa-btn" target="_blank" rel="noopener" href="https://wa.me/${f.student.phone.replace(/\D/g, "")}?text=${encodeURIComponent(message)}">💬 WhatsApp</a>`
+        : `<span class="sub" style="font-size:.72rem;flex-shrink:0">No phone on file</span>`;
+      return `<div class="td-inactive-row">
+        <div><div class="who">${f.student.avatar || ""} ${f.student.name}</div><div class="meta">${label} · ${levelName(f.student.level)}</div></div>
+        ${action}
+      </div>`;
+    }).join("");
+  }
+  renderInactivity();
+
   // ---------- level filter options ----------
   const levelFilter = document.getElementById("levelFilter");
   const allLevelIds = new Set([...rows.map(r => r.lvl), ...LEVEL_NAMES.map(l => l.id)]);
@@ -1181,6 +1279,7 @@
   const stuLevelError = document.getElementById("stuLevelError");
   const stuAvatarGrid = document.getElementById("stuAvatarGrid");
   const stuPinInput = document.getElementById("stuPin");
+  const stuPhoneInput = document.getElementById("stuPhone");
   const stuNameError = document.getElementById("stuNameError");
   let editingId = null;
   let convertingLeadId = null;
@@ -1261,7 +1360,7 @@
         const ok = await confirmDialog(`Remove ${p.name} from the roster? They won't be able to log in until re-added.`, "Remove");
         if (ok) {
           LumioProfiles.removeStudent(p.id);
-          renderRosterCards(); renderTable();
+          renderRosterCards(); renderTable(); renderInactivity();
           showToast(`${p.name} removed from the roster.`);
         }
       };
@@ -1285,6 +1384,7 @@
     stuNameInput.value = profile ? profile.name : (prefill && prefill.name) || "";
     stuLevelSelect.value = profile ? profile.level : (prefill && prefill.level) || "";
     stuPinInput.value = profile ? profile.pin : (window.LumioProfiles ? LumioProfiles.randomPin() : "1234");
+    stuPhoneInput.value = profile ? (profile.phone || "") : (prefill && prefill.phone) || "";
     selectedAvatar = profile ? profile.avatar : (window.LumioProfiles ? LumioProfiles.AVATARS[Math.floor(Math.random() * LumioProfiles.AVATARS.length)] : "🦊");
     stuNameError.textContent = "";
     stuLevelError.textContent = "";
@@ -1319,19 +1419,21 @@
     }
     const pinVal = stuPinInput.value.length === 4 ? stuPinInput.value : LumioProfiles.randomPin();
     const teacherIdVal = document.getElementById("stuTeacher").value || null;
+    const phoneVal = stuPhoneInput.value.trim();
     const wasEditing = !!editingId;
     const leadIdToResolve = convertingLeadId;
     await withLoading(e.currentTarget, async () => {
       try {
         if (editingId) {
-          await LumioProfiles.updateStudent(editingId, { name, level: stuLevelSelect.value, avatar: selectedAvatar, pin: pinVal, teacherId: teacherIdVal });
+          await LumioProfiles.updateStudent(editingId, { name, level: stuLevelSelect.value, avatar: selectedAvatar, pin: pinVal, teacherId: teacherIdVal, phone: phoneVal });
         } else {
-          await LumioProfiles.addStudent({ name, level: stuLevelSelect.value, avatar: selectedAvatar, pin: pinVal, teacherId: teacherIdVal });
+          await LumioProfiles.addStudent({ name, level: stuLevelSelect.value, avatar: selectedAvatar, pin: pinVal, teacherId: teacherIdVal, phone: phoneVal });
         }
         closeStudentModal();
         renderRosterCards();
         renderTable();
         renderTeamGrid();
+        renderInactivity();
         document.getElementById("kpiRoster").textContent = LumioProfiles.listStudents().length;
         showToast(wasEditing ? `${name} updated.` : `${name} added to the roster.`, "success");
         if (leadIdToResolve && window.LumioLeads) {
@@ -1585,6 +1687,7 @@
             ${attendanceBadge(c)}
           </div>
           <div class="meta">${teacher ? teacher.name : (c.teacherName || "Unassigned")}${c.notes ? " · " + c.notes : ""}</div>
+          ${c.status === "completed" ? `<textarea class="td-session-notes" placeholder="What did you cover this session? Any homework given?">${c.sessionNotes || ""}</textarea>` : ""}
         </div>
         <div class="td-class-acts">
           ${needsMarking ? `
@@ -1595,6 +1698,14 @@
           <button type="button" data-act="edit">Edit</button>
           <button type="button" class="danger" data-act="remove">Remove</button>
         </div>`;
+      const sessionNotesEl = row.querySelector(".td-session-notes");
+      if (sessionNotesEl) {
+        sessionNotesEl.addEventListener("blur", () => {
+          if (sessionNotesEl.value === (c.sessionNotes || "")) return;
+          LumioSchedule.updateClass(c.id, { sessionNotes: sessionNotesEl.value });
+          showToast(`Session notes saved for ${c.studentName}.`, "success");
+        });
+      }
       if (needsMarking) {
         ["present", "absent", "no-show"].forEach(val => {
           row.querySelector(`[data-act="${val}"]`).onclick = () => {
@@ -1738,6 +1849,7 @@
             ${lead.suggestedLevel ? `<span class="td-badge teal">${levelName(lead.suggestedLevel)}</span>` : ""}
           </div>
           <div class="meta">📞 <a href="tel:${lead.phone}">${lead.phone}</a>${lead.age ? ` · Age ${lead.age}` : ""} · Submitted ${fmtLeadDate(lead.createdAt)}</div>
+          <textarea class="td-lead-notes" placeholder="Add a note — e.g. spoke to mom, wants to start next week…">${lead.notes || ""}</textarea>
         </div>
         <div class="td-lead-score"><b>${scoreLabel}</b><span>Test score</span></div>
         <div class="td-lead-acts">
@@ -1746,6 +1858,12 @@
           ${lead.status !== "dismissed" && lead.status !== "enrolled" ? `<button type="button" class="danger" data-act="dismiss">Dismiss</button>` : ""}
           <button type="button" class="danger" data-act="remove">Remove</button>
         </div>`;
+      const notesEl = row.querySelector(".td-lead-notes");
+      notesEl.addEventListener("blur", () => {
+        if (notesEl.value === (lead.notes || "")) return; // nothing actually changed
+        LumioLeads.updateLead(lead.id, { notes: notesEl.value });
+        showToast(`Note saved for ${lead.name}.`, "success");
+      });
       const contactedBtn = row.querySelector('[data-act="contacted"]');
       if (contactedBtn) contactedBtn.onclick = () => {
         LumioLeads.updateLead(lead.id, { status: "contacted" });
@@ -1755,7 +1873,7 @@
       const convertBtn = row.querySelector('[data-act="convert"]');
       if (convertBtn) convertBtn.onclick = () => {
         convertingLeadId = lead.id;
-        openStudentModal(null, { name: lead.name, level: lead.suggestedLevel || "" });
+        openStudentModal(null, { name: lead.name, level: lead.suggestedLevel || "", phone: lead.phone || "" });
       };
       const dismissBtn = row.querySelector('[data-act="dismiss"]');
       if (dismissBtn) dismissBtn.onclick = () => {
@@ -1802,6 +1920,7 @@
       renderRosterCards();
       renderTable();
       renderTeacherOptions();
+      renderInactivity();
       document.getElementById("kpiRoster").textContent = LumioProfiles.listStudents().length;
       showToast("Sample data added.", "success");
     });
@@ -1909,7 +2028,7 @@
 
       if (rosterRes.ok && scheduleRes.ok && leadsRes.ok) {
         syncStatus.textContent = "Synced just now" + (progressSynced ? " (roster, schedule, leads & progress)." : " (roster, schedule & leads).");
-        renderRosterCards(); renderTable(); renderTeamGrid(); renderSchedule(); renderLeads(); updateLeadsBadge();
+        renderRosterCards(); renderTable(); renderTeamGrid(); renderSchedule(); renderLeads(); updateLeadsBadge(); renderInactivity();
         showToast("Synced successfully.", "success");
       } else if (rosterRes.reason === "not-configured") {
         syncStatus.textContent = "Add a Web App URL first.";
@@ -1959,31 +2078,79 @@
   });
 
   // ---------- materials ----------
-  const LESSONS = [
-    "Hello","My Name","ABC Part 1 (A–I)","ABC Part 2 (J–R)","ABC Part 3 (S–Z)",
-    "Numbers 1–5","Numbers 6–10","Colors Part 1","Colors Part 2","My Family",
-    "My Body","Animals Part 1","Animals Part 2","Food Part 1","Food Part 2",
-    "My School","My Toys","Actions","Feelings","Big Review"
-  ];
+  // Which levels actually have real lesson content — same source of
+  // truth the login page uses to decide what's unlocked.
+  const MATERIALS_LEVELS = (typeof Lumio !== "undefined" && Lumio.AVAILABLE_LEVELS) ? Lumio.AVAILABLE_LEVELS : ["pre-a"];
+  // Which of those levels also have presentation slides + PowerPoint
+  // decks ready (assets/slides/{level}/, powerpoints/{level}/). There's
+  // no reliable way to detect this from the client without a manifest,
+  // so this needs updating by hand as more decks get produced.
+  const LEVELS_WITH_SLIDES = ["pre-a"];
+
+  let currentMatLevel = MATERIALS_LEVELS[0] || "pre-a";
   const matGrid = document.getElementById("matGrid");
-  function renderMaterials(filter) {
+  const matBadge = document.getElementById("matBadge");
+  const matLevelSelect = document.getElementById("matLevelSelect");
+  MATERIALS_LEVELS.forEach(lv => {
+    const meta = LEVEL_NAMES.find(l => l.id === lv);
+    const opt = document.createElement("option");
+    opt.value = lv;
+    opt.textContent = meta ? meta.name : lv;
+    matLevelSelect.appendChild(opt);
+  });
+  matLevelSelect.value = currentMatLevel;
+
+  async function getLessonTitles(level) {
+    const count = (LEVEL_NAMES.find(l => l.id === level) || {}).lessons || 20;
+    const titles = [];
+    for (let n = 1; n <= count; n++) {
+      let data = (typeof window.LUMIO_LESSONS !== "undefined" && window.LUMIO_LESSONS[level]) ? window.LUMIO_LESSONS[level][n] : null;
+      if (!data) {
+        try {
+          const nn = String(n).padStart(2, "0");
+          const res = await fetch(`lessons/${level}/lesson${nn}.json`);
+          if (res.ok) data = await res.json();
+        } catch (e) { /* falls back to a generic label below */ }
+      }
+      titles.push(data ? data.title : `Lesson ${n}`);
+    }
+    return titles;
+  }
+
+  let matRenderToken = 0;
+  async function renderMaterials(filter) {
     const q = (filter || "").toLowerCase().trim();
+    const level = currentMatLevel;
+    const hasSlides = LEVELS_WITH_SLIDES.includes(level);
+    const meta = LEVEL_NAMES.find(l => l.id === level);
+    matBadge.textContent = `${meta ? meta.name : level} · ${(meta && meta.lessons) || 20} lessons`;
+    const token = ++matRenderToken; // guards against an older fetch resolving after a newer level switch
+    matGrid.innerHTML = `<div class="td-empty">Loading…</div>`;
+    const titles = await getLessonTitles(level);
+    if (token !== matRenderToken) return;
     matGrid.innerHTML = "";
-    LESSONS.forEach((title, i) => {
+    titles.forEach((title, i) => {
       const n = i + 1;
-      if (q && !title.toLowerCase().includes(q) && !("l" + String(n).padStart(2,"0")).includes(q)) return;
+      if (q && !title.toLowerCase().includes(q) && !("l" + String(n).padStart(2, "0")).includes(q)) return;
       const num = String(n).padStart(2, "0");
       const row = document.createElement("div");
       row.className = "td-mat-row";
       row.innerHTML = `<div class="num">L${num}</div><b>${title}</b>
-        <a class="act present" href="present.html?level=pre-a&n=${n}">Present</a>
-        <a class="act pptx" href="powerpoints/pre-a/Lesson ${num} - ${title}.pptx" download title="Download PowerPoint">PPTX</a>`;
+        ${hasSlides
+          ? `<a class="act present" href="present.html?level=${level}&n=${n}">Present</a>
+             <a class="act pptx" href="powerpoints/${level}/Lesson ${num} - ${title}.pptx" download title="Download PowerPoint">PPTX</a>`
+          : `<a class="act pptx" href="lesson.html?level=${level}&n=${n}" target="_blank" title="No slides yet — try the live lesson instead">Try lesson</a>`
+        }`;
       matGrid.appendChild(row);
     });
     if (!matGrid.children.length) matGrid.innerHTML = `<div class="td-empty">No lessons match your search.</div>`;
   }
   renderMaterials();
   document.getElementById("matSearch").addEventListener("input", e => renderMaterials(e.target.value));
+  matLevelSelect.addEventListener("change", e => {
+    currentMatLevel = e.target.value;
+    renderMaterials(document.getElementById("matSearch").value);
+  });
 
   // ---------- nav ----------
   const views = { overview: "viewOverview", students: "viewStudents", team: "viewTeam", schedule: "viewSchedule", leads: "viewLeads", materials: "viewMaterials" };

@@ -96,7 +96,8 @@
       startTime,
       durationMinutes: Number(durationMinutes) || 30,
       level: level || "",
-      notes: notes || "",
+      notes: notes || "", // set when booking — plans/context going into the class
+      sessionNotes: "", // set after the class — what was actually covered, homework, etc.
       status: "scheduled",
       attendance: null, // null | "present" | "absent" | "no-show"
       createdAt: new Date().toISOString(),
@@ -110,7 +111,7 @@
     const data = load();
     const c = data.classes.find(x => x.id === id);
     if (!c) throw new Error("Class not found.");
-    ["studentId", "studentName", "teacherId", "teacherName", "date", "startTime", "notes", "level", "status", "attendance"].forEach(k => {
+    ["studentId", "studentName", "teacherId", "teacherName", "date", "startTime", "notes", "sessionNotes", "level", "status", "attendance"].forEach(k => {
       if (patch[k] !== undefined) c[k] = patch[k];
     });
     if (patch.durationMinutes !== undefined) c.durationMinutes = Number(patch.durationMinutes) || c.durationMinutes;

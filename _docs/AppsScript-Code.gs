@@ -33,12 +33,12 @@ var TEACHERS_SHEET = "Teachers";
 var TEACHERS_COLUMNS = ["id", "name", "avatar", "pinHash", "isOwner", "createdAt", "updatedAt"];
 
 var ROSTER_SHEET = "Roster";
-var ROSTER_COLUMNS = ["id", "name", "level", "avatar", "pinHash", "teacherId", "createdAt", "updatedAt"];
+var ROSTER_COLUMNS = ["id", "name", "level", "avatar", "pinHash", "teacherId", "createdAt", "updatedAt", "phone"];
 
 var SCHEDULE_SHEET = "Schedule";
 var SCHEDULE_COLUMNS = [
   "id", "studentId", "studentName", "teacherId", "teacherName",
-  "date", "startTime", "durationMinutes", "level", "notes", "status", "createdAt", "updatedAt", "attendance"
+  "date", "startTime", "durationMinutes", "level", "notes", "status", "createdAt", "updatedAt", "attendance", "sessionNotes"
 ];
 
 var PROGRESS_SHEET = "Progress";
