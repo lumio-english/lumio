@@ -83,7 +83,7 @@ const Lumio = (() => {
       if (speechSynthesis.paused && speechSynthesis.speaking) speechSynthesis.resume();
     }, 4000);
   }
-  const speak = (text, rate = 0.92) => {
+  const speakSynth = (text, rate = 0.92) => {
     if (!("speechSynthesis" in window)) return;
     const doSpeak = () => {
       speechSynthesis.cancel();
@@ -94,6 +94,26 @@ const Lumio = (() => {
     };
     if (voicesReady || !speechSynthesis.getVoices().length) doSpeak();
     else { pickVoice(); doSpeak(); }
+  };
+
+  // ---- Real pre-generated audio (assets/audio/) with automatic fallback ----
+  // Not every word has a real recording yet — only what's been generated so
+  // far for the lessons that exist. slugify() must exactly match the naming
+  // used when the files were generated (see _docs/generate-audio.py).
+  const slugify = (text) => String(text).toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  let currentAudio = null;
+  const speak = (text, rate = 0.92) => {
+    if (currentAudio) { try { currentAudio.pause(); } catch (e) {} currentAudio = null; }
+    if ("speechSynthesis" in window) speechSynthesis.cancel();
+    const slug = slugify(text);
+    if (!slug) { speakSynth(text, rate); return; }
+    const audio = new Audio(`assets/audio/${slug}.mp3`);
+    currentAudio = audio;
+    let fellBack = false;
+    const fallback = () => { if (fellBack) return; fellBack = true; speakSynth(text, rate); };
+    audio.addEventListener("error", fallback);
+    const playResult = audio.play();
+    if (playResult && typeof playResult.catch === "function") playResult.catch(fallback);
   };
 
   /* ---------- Sounds ---------- */
