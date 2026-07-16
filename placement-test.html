@@ -72,7 +72,11 @@
       </div>
       <div class="pt-field">
         <label for="ptPhone">Parent/guardian phone number</label>
-        <input type="tel" id="ptPhone" placeholder="e.g. 0123456789" maxlength="20" autocomplete="off">
+        <div style="display:flex;gap:8px">
+          <select id="ptPhoneCountry" style="flex:0 0 108px;padding:12px 8px;border-radius:12px;border:1.5px solid #eee;font-size:.95rem;font-family:inherit"></select>
+          <input type="tel" id="ptPhone" placeholder="1055556666" maxlength="15" autocomplete="off" style="flex:1">
+        </div>
+        <p style="margin:4px 0 0;font-size:.72rem;color:var(--cocoa-soft,#8A7160)">Without the leading 0 — e.g. for 010 5555 6666, type 1055556666.</p>
       </div>
       <div class="pt-field">
         <label for="ptAge">Age</label>
@@ -145,13 +149,25 @@
   let qIndex = 0;
   let correctCount = 0;
 
+  const ptPhoneCountry = document.getElementById("ptPhoneCountry");
+  const COUNTRY_CODES = (typeof Lumio !== "undefined" && Lumio.COUNTRY_CODES) ? Lumio.COUNTRY_CODES : [{ code: "20", name: "Egypt", flag: "🇪🇬" }];
+  COUNTRY_CODES.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c.code;
+    opt.textContent = `${c.flag} +${c.code}`;
+    ptPhoneCountry.appendChild(opt);
+  });
+
   document.getElementById("startTestBtn").addEventListener("click", () => {
     const name = document.getElementById("ptName").value.trim();
-    const phone = document.getElementById("ptPhone").value.trim();
+    const phoneLocal = document.getElementById("ptPhone").value.trim();
     const age = document.getElementById("ptAge").value.trim();
     infoError.textContent = "";
     if (!name) { infoError.textContent = "Please enter the student's name."; return; }
-    if (!phone) { infoError.textContent = "Please enter a phone number so the teacher can contact you."; return; }
+    if (!phoneLocal) { infoError.textContent = "Please enter a phone number so the teacher can contact you."; return; }
+    const phone = (typeof Lumio !== "undefined" && Lumio.combinePhone)
+      ? Lumio.combinePhone(ptPhoneCountry.value, phoneLocal)
+      : phoneLocal;
     studentInfo = { name, phone, age };
     stepInfo.classList.remove("show");
     stepTest.classList.add("show");

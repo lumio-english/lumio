@@ -719,7 +719,11 @@
     </div>
     <div class="td-field">
       <label for="stuPhone">Parent/guardian phone <span style="color:var(--td-muted);font-weight:600">(optional)</span></label>
-      <input type="tel" id="stuPhone" placeholder="e.g. 0123456789" maxlength="20">
+      <div style="display:flex;gap:8px">
+        <select id="stuPhoneCountry" style="flex:0 0 108px"></select>
+        <input type="tel" id="stuPhone" placeholder="1055556666" maxlength="15" style="flex:1">
+      </div>
+      <p class="sub" style="margin:4px 0 0;font-size:.72rem">Enter the number without the leading 0 — e.g. for 010 5555 6666, type 1055556666.</p>
     </div>
     <div class="td-field">
       <label>Avatar</label>
@@ -1280,10 +1284,34 @@
   const stuAvatarGrid = document.getElementById("stuAvatarGrid");
   const stuPinInput = document.getElementById("stuPin");
   const stuPhoneInput = document.getElementById("stuPhone");
+  const stuPhoneCountry = document.getElementById("stuPhoneCountry");
   const stuNameError = document.getElementById("stuNameError");
   let editingId = null;
   let convertingLeadId = null;
   let selectedAvatar = (window.LumioProfiles ? LumioProfiles.AVATARS[0] : "🦊");
+
+  // Same list/logic as placement-test.html — shared via Lumio.COUNTRY_CODES
+  // / Lumio.combinePhone / Lumio.splitPhone (js/app.js) so a phone number
+  // is stored in exactly one format everywhere, not two slightly-different
+  // ones depending on which page saved it.
+  const COUNTRY_CODES = (typeof Lumio !== "undefined" && Lumio.COUNTRY_CODES) ? Lumio.COUNTRY_CODES : [{ code: "20", flag: "🇪🇬", name: "Egypt" }];
+  COUNTRY_CODES.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c.code;
+    opt.textContent = `${c.flag} +${c.code}`;
+    opt.title = c.name;
+    stuPhoneCountry.appendChild(opt);
+  });
+  function combinePhone(countryCode, localNumber) {
+    return (typeof Lumio !== "undefined" && Lumio.combinePhone) ? Lumio.combinePhone(countryCode, localNumber) : localNumber;
+  }
+  function splitPhone(fullPhone) {
+    if (typeof Lumio !== "undefined" && Lumio.splitPhone) {
+      const s = Lumio.splitPhone(fullPhone);
+      return { countryCode: s.countryCode, localNumber: s.local };
+    }
+    return { countryCode: "20", localNumber: fullPhone || "" };
+  }
 
   const stuLevelPlaceholder = document.createElement("option");
   stuLevelPlaceholder.value = "";
@@ -1384,7 +1412,12 @@
     stuNameInput.value = profile ? profile.name : (prefill && prefill.name) || "";
     stuLevelSelect.value = profile ? profile.level : (prefill && prefill.level) || "";
     stuPinInput.value = profile ? profile.pin : (window.LumioProfiles ? LumioProfiles.randomPin() : "1234");
-    stuPhoneInput.value = profile ? (profile.phone || "") : (prefill && prefill.phone) || "";
+    {
+      const existingPhone = profile ? (profile.phone || "") : (prefill && prefill.phone) || "";
+      const split = splitPhone(existingPhone);
+      stuPhoneCountry.value = split.countryCode;
+      stuPhoneInput.value = split.localNumber;
+    }
     selectedAvatar = profile ? profile.avatar : (window.LumioProfiles ? LumioProfiles.AVATARS[Math.floor(Math.random() * LumioProfiles.AVATARS.length)] : "🦊");
     stuNameError.textContent = "";
     stuLevelError.textContent = "";
@@ -1419,7 +1452,7 @@
     }
     const pinVal = stuPinInput.value.length === 4 ? stuPinInput.value : LumioProfiles.randomPin();
     const teacherIdVal = document.getElementById("stuTeacher").value || null;
-    const phoneVal = stuPhoneInput.value.trim();
+    const phoneVal = combinePhone(stuPhoneCountry.value, stuPhoneInput.value);
     const wasEditing = !!editingId;
     const leadIdToResolve = convertingLeadId;
     await withLoading(e.currentTarget, async () => {
@@ -1848,7 +1881,7 @@
             <span class="td-lead-status ${lead.status}">${lead.status}</span>
             ${lead.suggestedLevel ? `<span class="td-badge teal">${levelName(lead.suggestedLevel)}</span>` : ""}
           </div>
-          <div class="meta">📞 <a href="tel:${lead.phone}">${lead.phone}</a>${lead.age ? ` · Age ${lead.age}` : ""} · Submitted ${fmtLeadDate(lead.createdAt)}</div>
+          <div class="meta">📞 <a href="tel:+${lead.phone}">+${lead.phone}</a>${lead.age ? ` · Age ${lead.age}` : ""} · Submitted ${fmtLeadDate(lead.createdAt)}</div>
           <textarea class="td-lead-notes" placeholder="Add a note — e.g. spoke to mom, wants to start next week…">${lead.notes || ""}</textarea>
         </div>
         <div class="td-lead-score"><b>${scoreLabel}</b><span>Test score</span></div>

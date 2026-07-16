@@ -180,6 +180,44 @@ const Lumio = (() => {
   const shuffle = (arr) => arr.map(v => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map(p => p[1]);
   const qs = (k) => new URLSearchParams(location.search).get(k);
 
+  /* ---------- Phone numbers with country code ---------- */
+  // Curated for this platform's actual market (Egypt + GCC), not an
+  // exhaustive world list — easy to extend if that changes.
+  const COUNTRY_CODES = [
+    { code: "20", name: "Egypt", flag: "🇪🇬" },
+    { code: "966", name: "Saudi Arabia", flag: "🇸🇦" },
+    { code: "971", name: "UAE", flag: "🇦🇪" },
+    { code: "965", name: "Kuwait", flag: "🇰🇼" },
+    { code: "974", name: "Qatar", flag: "🇶🇦" },
+    { code: "973", name: "Bahrain", flag: "🇧🇭" },
+    { code: "968", name: "Oman", flag: "🇴🇲" },
+    { code: "962", name: "Jordan", flag: "🇯🇴" },
+    { code: "961", name: "Lebanon", flag: "🇱🇧" },
+  ];
+  // Combines a country code + locally-typed number into the single
+  // digits-only format WhatsApp's wa.me links actually need — country
+  // code, no leading zero on the local part, no "+", no spaces. Without
+  // this, a plain local number like "01055556666" produces a wa.me link
+  // that doesn't resolve to anyone.
+  const combinePhone = (countryCode, local) => {
+    const digits = String(local || "").replace(/\D/g, "").replace(/^0+/, "");
+    if (!digits) return "";
+    return String(countryCode || "").replace(/\D/g, "") + digits;
+  };
+  // Best-effort split of an already-combined phone back into
+  // {countryCode, local} for editing — matches the longest known country
+  // code prefix. Falls back to Egypt with the whole number as local if
+  // nothing matches (e.g. a number saved before this existed).
+  const splitPhone = (fullPhone) => {
+    const digits = String(fullPhone || "").replace(/\D/g, "");
+    const byLongestCode = [...COUNTRY_CODES].sort((a, b) => b.code.length - a.code.length);
+    for (const c of byLongestCode) {
+      if (digits.startsWith(c.code)) return { countryCode: c.code, local: digits.slice(c.code.length) };
+    }
+    return { countryCode: "20", local: digits };
+  };
+
   return { LEVELS, AVAILABLE_LEVELS, login, user, logout, requireUser,
-           progressAll, progressFor, saveResult, speak, beep, confetti, toast, shuffle, qs, letterTile };
+           progressAll, progressFor, saveResult, speak, beep, confetti, toast, shuffle, qs, letterTile,
+           COUNTRY_CODES, combinePhone, splitPhone };
 })();
