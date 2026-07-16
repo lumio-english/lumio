@@ -347,6 +347,19 @@
   <div class="sd-section-title"><h3>My badges</h3></div>
   <div class="sd-badges" id="badgeGrid"></div>
 
+  <!-- Review weak words -->
+  <div id="reviewSection" style="display:none">
+    <div class="sd-section-title"><h3>🔄 Review your tricky words</h3></div>
+    <div class="sd-schedule-card">
+      <p class="sd-hint" style="margin:0 0 10px;font-weight:700;color:var(--sd-cocoa-soft);font-size:.85rem" id="reviewSub"></p>
+      <div class="row" style="gap:8px;flex-wrap:wrap">
+        <button class="sd-game-play" id="reviewMemory" style="background:#6D5AE0">🧠 Memory Match</button>
+        <button class="sd-game-play" id="reviewWordPop" style="background:#0EA5E9">🎈 Word Pop</button>
+        <button class="sd-game-play" id="reviewBuilder" style="background:#F9720C">🔤 Word Builder</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Mini-games -->
   <div class="sd-section-title"><h3>Mini-games</h3></div>
   <p class="sd-hint" style="margin:-6px 0 12px;font-weight:700;color:var(--sd-cocoa-soft);font-size:.85rem">Uses words from your current lesson — play well and it can boost that lesson's stars! 🌟</p>
@@ -707,8 +720,56 @@
   let gamesLessonNum = null;   // which lesson's vocab is currently loaded, if any
   let gamesUsingRealVocab = false;
 
+  // ---------- Review mode: practice words from lessons the student scored low on ----------
+  // Spans multiple lessons, so unlike the normal per-lesson games, a review
+  // session never blends its result back into any single lesson's stars —
+  // it's pure practice. Same "weak" criteria as the teacher's performance
+  // report (stars <= 1 or score% < 60), so what a student can practice here
+  // matches what shows up as "needs practice" on the teacher's side.
+  let reviewMode = false;
+  let reviewWordBank = [];
+  let reviewLessonNums = [];
+
+  function scorePct(res) {
+    if (res.total) return Math.round((res.score / res.total) * 100);
+    return Math.round(((res.stars || 0) / 3) * 100);
+  }
+
+  async function fetchLessonVocab(lessonNum) {
+    let lessonData = (typeof window.LUMIO_LESSONS !== "undefined" && window.LUMIO_LESSONS[level])
+      ? window.LUMIO_LESSONS[level][lessonNum]
+      : null;
+    if (!lessonData) {
+      try {
+        const nn = String(lessonNum).padStart(2, "0");
+        const res = await fetch(`lessons/${level}/lesson${nn}.json`);
+        if (res.ok) lessonData = await res.json();
+      } catch (e) { /* skip this lesson if it can't be loaded */ }
+    }
+    return lessonData && Array.isArray(lessonData.vocab) ? lessonData.vocab : [];
+  }
+
+  async function loadWeakWordsForReview() {
+    const weakNums = entries
+      .filter(([, res]) => (res.stars || 0) <= 1 || scorePct(res) < 60)
+      .map(([n]) => Number(n));
+    if (!weakNums.length) return { words: [], lessonNums: [] };
+
+    const seen = new Set();
+    const words = [];
+    for (const n of weakNums) {
+      const vocab = await fetchLessonVocab(n);
+      vocab.forEach(v => {
+        if (!v.en || seen.has(v.en)) return;
+        seen.add(v.en);
+        words.push({ en: v.en, ar: v.ar || "", em: v.emoji || "🔤" });
+      });
+    }
+    return { words, lessonNums: weakNums };
+  }
+
   function shuffled(arr) { return [...arr].sort(() => Math.random() - 0.5); }
-  function pickWords(n) { return shuffled(WORD_BANK).slice(0, Math.min(n, WORD_BANK.length)); }
+  function pickWords(n, source) { const bank = source || WORD_BANK; return shuffled(bank).slice(0, Math.min(n, bank.length)); }
 
   async function loadLessonVocabForGames() {
     // Target the student's most recently ATTEMPTED lesson in this level,
@@ -741,6 +802,22 @@
   // Kick this off in the background — games work immediately with the
   // fallback bank and quietly upgrade to real vocab once this resolves.
   loadLessonVocabForGames().catch(() => {});
+
+  // Populate the Review section once we know which lessons (if any) need it.
+  loadWeakWordsForReview().then(({ words, lessonNums }) => {
+    if (!words.length) return; // nothing weak yet — section stays hidden
+    reviewWordBank = words;
+    reviewLessonNums = lessonNums;
+    const label = lessonNums.length === 1
+      ? `Lesson ${lessonNums[0]}`
+      : `Lessons ${lessonNums.join(", ")}`;
+    document.getElementById("reviewSub").textContent =
+      `Practice words from ${label} — playing here won't change those lessons' stars, it's just extra practice.`;
+    document.getElementById("reviewSection").style.display = "block";
+    document.getElementById("reviewMemory").onclick = () => { reviewMode = true; memoryOverlay.classList.add("show"); startMemory(reviewWordBank); };
+    document.getElementById("reviewWordPop").onclick = () => { reviewMode = true; wordpopOverlay.classList.add("show"); startWordPop(reviewWordBank); };
+    document.getElementById("reviewBuilder").onclick = () => { reviewMode = true; builderOverlay.classList.add("show"); startBuilder(reviewWordBank); };
+  }).catch(() => {});
 
   // Blends a mini-game result into that lesson's saved progress, using
   // the exact same "keep the best" rule Lumio.saveResult() already uses,
@@ -780,6 +857,9 @@
     if (scoreRatio >= 0.6) return 2;
     return 1;
   }
+  function reviewResultNote() {
+    return `<p style="font-weight:800;color:var(--sd-teal-deep);font-size:.85rem">🔄 Nice practice! Keep reviewing to make these words stick.</p>`;
+  }
 
   // ================= Memory Match =================
   const memoryOverlay = document.getElementById("memoryOverlay");
@@ -789,15 +869,15 @@
   const mmEnd = document.getElementById("mmEnd");
   let mmState = null;
 
-  function startMemory() {
+  function startMemory(source) {
     mmEnd.style.display = "none";
     mmGrid.style.display = "grid";
-    const words = pickWords(6);
+    const words = pickWords(6, source);
     const cards = shuffled([
       ...words.map(w => ({ key: w.en, face: w.em, kind: "emoji" })),
       ...words.map(w => ({ key: w.en, face: w.en, kind: "word" })),
     ]);
-    mmState = { cards, flipped: [], matched: new Set(), moves: 0, busy: false };
+    mmState = { cards, flipped: [], matched: new Set(), moves: 0, busy: false, source };
     mmMoves.textContent = "Moves: 0";
     mmPairs.textContent = `Pairs: 0/${words.length}`;
     mmGrid.innerHTML = "";
@@ -854,20 +934,20 @@
     const st = gameStars(ratio);
     mmGrid.style.display = "none";
     mmEnd.style.display = "block";
-    const blended = saveGameResultToLesson(st, Math.round(ratio * 10), 10);
+    const note = reviewMode ? reviewResultNote() : gameResultNote(saveGameResultToLesson(st, Math.round(ratio * 10), 10));
     mmEnd.innerHTML = `
       <div class="sd-game-end">
         <h3>Great job! 🎉</h3>
         <div class="stars">${"★".repeat(st)}${"☆".repeat(3 - st)}</div>
         <p style="font-weight:700;color:var(--sd-cocoa-soft)">Finished in ${mmState.moves} moves</p>
-        ${gameResultNote(blended)}
+        ${note}
         <button class="sd-game-again" id="mmAgain">Play again</button>
       </div>`;
     confettiBurst(50);
-    document.getElementById("mmAgain").onclick = startMemory;
+    document.getElementById("mmAgain").onclick = () => startMemory(mmState.source);
   }
 
-  document.getElementById("playMemory").onclick = () => { memoryOverlay.classList.add("show"); startMemory(); };
+  document.getElementById("playMemory").onclick = () => { reviewMode = false; memoryOverlay.classList.add("show"); startMemory(); };
   document.getElementById("memoryClose").onclick = () => memoryOverlay.classList.remove("show");
   memoryOverlay.addEventListener("click", e => { if (e.target === memoryOverlay) memoryOverlay.classList.remove("show"); });
 
@@ -882,10 +962,10 @@
   let wpState = null;
   const WP_ROUNDS = 8;
 
-  function startWordPop() {
+  function startWordPop(source) {
     wpEnd.style.display = "none";
     wpPlayArea.style.display = "block";
-    wpState = { round: 0, score: 0, lives: 3, total: WP_ROUNDS };
+    wpState = { round: 0, score: 0, lives: 3, total: WP_ROUNDS, source };
     wpScoreEl.textContent = "Score: 0";
     updateHearts();
     nextWpRound();
@@ -896,7 +976,7 @@
   function nextWpRound() {
     if (wpState.round >= wpState.total || wpState.lives <= 0) { endWordPop(); return; }
     wpState.round++;
-    const words = pickWords(4);
+    const words = pickWords(4, wpState.source);
     const correct = words[0];
     wpTarget.innerHTML = `<div class="em">${correct.em}</div><div class="ar">${correct.ar}</div>`;
     wpBubbles.innerHTML = "";
@@ -927,20 +1007,20 @@
     wpPlayArea.style.display = "none";
     wpEnd.style.display = "block";
     const won = wpState.lives > 0;
-    const blended = saveGameResultToLesson(st, wpState.score, wpState.total);
+    const note = reviewMode ? reviewResultNote() : gameResultNote(saveGameResultToLesson(st, wpState.score, wpState.total));
     wpEnd.innerHTML = `
       <div class="sd-game-end">
         <h3>${won ? "Nice popping! 🎈" : "Out of hearts!"}</h3>
         <div class="stars">${"★".repeat(st)}${"☆".repeat(3 - st)}</div>
         <p style="font-weight:700;color:var(--sd-cocoa-soft)">Score: ${wpState.score}/${wpState.total}</p>
-        ${gameResultNote(blended)}
+        ${note}
         <button class="sd-game-again" id="wpAgain">Play again</button>
       </div>`;
     if (won) confettiBurst(40);
-    document.getElementById("wpAgain").onclick = startWordPop;
+    document.getElementById("wpAgain").onclick = () => startWordPop(wpState.source);
   }
 
-  document.getElementById("playWordPop").onclick = () => { wordpopOverlay.classList.add("show"); startWordPop(); };
+  document.getElementById("playWordPop").onclick = () => { reviewMode = false; wordpopOverlay.classList.add("show"); startWordPop(); };
   document.getElementById("wordpopClose").onclick = () => wordpopOverlay.classList.remove("show");
   wordpopOverlay.addEventListener("click", e => { if (e.target === wordpopOverlay) wordpopOverlay.classList.remove("show"); });
 
@@ -958,17 +1038,18 @@
   let wbState = null;
   let currentBuild = null;
 
-  function startBuilder() {
+  function startBuilder(source) {
     wbEnd.style.display = "none";
     wbPlayArea.style.display = "block";
     // Letter-scrambling only makes sense for single words — real lesson
     // vocab sometimes includes short phrases (e.g. "good morning"), same
     // constraint lesson.js's own Spell activity already applies.
-    let pool = WORD_BANK.filter(w => !w.en.includes(" ") && w.en.length <= 10);
-    wbUsedRealVocabThisRound = gamesUsingRealVocab && pool.length >= 3;
+    const baseBank = source || WORD_BANK;
+    let pool = baseBank.filter(w => !w.en.includes(" ") && w.en.length <= 10);
+    wbUsedRealVocabThisRound = !source && gamesUsingRealVocab && pool.length >= 3;
     if (pool.length < 3) pool = FALLBACK_WORD_BANK;
     const words = shuffled(pool).slice(0, Math.min(WB_ROUNDS, pool.length));
-    wbState = { words, round: 0, mistakes: 0, totalLetters: words.reduce((s, w) => s + w.en.length, 0) };
+    wbState = { words, round: 0, mistakes: 0, totalLetters: words.reduce((s, w) => s + w.en.length, 0), source };
     nextBuilderRound();
   }
   function nextBuilderRound() {
@@ -1026,21 +1107,21 @@
     const st = gameStars(efficiency);
     wbPlayArea.style.display = "none";
     wbEnd.style.display = "block";
-    const blended = wbUsedRealVocabThisRound
-      ? saveGameResultToLesson(st, Math.round(efficiency * 10), 10)
-      : { counted: false, reason: "no-lesson" };
+    const note = reviewMode
+      ? reviewResultNote()
+      : gameResultNote(wbUsedRealVocabThisRound ? saveGameResultToLesson(st, Math.round(efficiency * 10), 10) : { counted: false, reason: "no-lesson" });
     wbEnd.innerHTML = `
       <div class="sd-game-end">
         <h3>Great spelling! ✏️</h3>
         <div class="stars">${"★".repeat(st)}${"☆".repeat(3 - st)}</div>
         <p style="font-weight:700;color:var(--sd-cocoa-soft)">${wbState.mistakes} mistake${wbState.mistakes === 1 ? "" : "s"} total</p>
-        ${gameResultNote(blended)}
+        ${note}
         <button class="sd-game-again" id="wbAgain">Play again</button>
       </div>`;
     if (st >= 2) confettiBurst(45);
-    document.getElementById("wbAgain").onclick = startBuilder;
+    document.getElementById("wbAgain").onclick = () => startBuilder(wbState.source);
   }
-  document.getElementById("playBuilder").onclick = () => { builderOverlay.classList.add("show"); startBuilder(); };
+  document.getElementById("playBuilder").onclick = () => { reviewMode = false; builderOverlay.classList.add("show"); startBuilder(); };
   document.getElementById("builderClose").onclick = () => builderOverlay.classList.remove("show");
   builderOverlay.addEventListener("click", e => { if (e.target === builderOverlay) builderOverlay.classList.remove("show"); });
 
