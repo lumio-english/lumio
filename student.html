@@ -85,6 +85,14 @@
   /* ---------- Hero / mission card ---------- */
   .sd-hero{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;margin-bottom:18px}
   @media (max-width:820px){.sd-hero{grid-template-columns:1fr}}
+  @media (max-width:420px){
+    .sd-topbar{padding:10px 12px;gap:8px}
+    .sd-brand{font-size:1rem}
+    .sd-streak{padding:6px 10px 6px 8px;font-size:.78rem}
+    .sd-streak-label{display:none}
+    .sd-avatar-btn{width:36px;height:36px;font-size:1.15rem}
+    .sd-logout{padding:7px 11px;font-size:.78rem}
+  }
   .sd-hero-card{
     background:linear-gradient(135deg,var(--sd-orange),var(--sd-orange-deep));
     border-radius:var(--sd-radius);padding:24px 26px;color:#fff;position:relative;overflow:hidden;
@@ -285,7 +293,7 @@
   <div class="sd-brand">Lumio <span>English</span></div>
   <div class="sd-spacer"></div>
   <span id="helloChip" style="display:none"></span>
-  <div class="sd-streak" id="streakChip"><span class="flame">🔥</span> <span id="streakVal">0</span> day streak</div>
+  <div class="sd-streak" id="streakChip"><span class="flame">🔥</span> <span id="streakVal">0</span><span class="sd-streak-label"> day streak</span></div>
   <button class="sd-avatar-btn" id="avatarBtn">🦊</button>
   <button class="sd-logout" onclick="Lumio.logout()">Log out</button>
 </header>

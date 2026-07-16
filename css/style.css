@@ -39,7 +39,7 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; overflow-x: hidden; }
 
 body {
   font-family: var(--font-body);
@@ -51,6 +51,7 @@ body {
   min-height: 100vh;
   font-size: 16.5px;
   line-height: 1.55;
+  overflow-x: hidden; /* safety net for decorative elements (floating chips, sparkles) that intentionally bleed slightly past their container's edge */
 }
 
 h1, h2, h3, .display { font-family: var(--font-display); font-weight: 700; letter-spacing: -.01em; color: var(--cocoa); }
