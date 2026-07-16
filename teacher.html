@@ -2037,32 +2037,40 @@
     return merged;
   }
 
-  document.getElementById("syncNowBtn").onclick = async (e) => {
+  // Shared by the manual "Sync now" button and the periodic background
+  // sync below — one tested code path either way. `silent` skips the
+  // loading spinner/toasts/status text for the background timer, so it
+  // never interrupts whatever the teacher is doing; the manual button
+  // still gets full visible feedback.
+  async function performFullSync(silent) {
     if (!window.LumioProfiles) return;
-    await withLoading(e.currentTarget, async () => {
-      syncStatus.textContent = "Syncing…";
-      const rosterRes = await LumioProfiles.syncNow();
-      const scheduleRes = window.LumioSchedule ? await LumioSchedule.syncNow() : { ok: true };
-      const leadsRes = window.LumioLeads ? await LumioLeads.syncNow() : { ok: true };
-      let progressSynced = false;
-      try {
-        const cfg = LumioProfiles.getSyncConfig();
-        if (cfg.enabled && cfg.url && typeof Lumio !== "undefined" && Lumio.progressAll) {
-          // pull + merge first, same reasoning as roster/schedule: never let
-          // an empty/behind local copy push over what's already shared
-          await pullAndMergeProgress(cfg);
-          await fetch(cfg.url + "?action=pushProgress", {
-            method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify({ progress: Lumio.progressAll() }),
-          });
-          progressSynced = true;
-        }
-      } catch (e2) { /* progress sync is best-effort; roster/schedule already reported below */ }
+    if (!silent) syncStatus.textContent = "Syncing…";
+    const rosterRes = await LumioProfiles.syncNow();
+    const scheduleRes = window.LumioSchedule ? await LumioSchedule.syncNow() : { ok: true };
+    const leadsRes = window.LumioLeads ? await LumioLeads.syncNow() : { ok: true };
+    let progressSynced = false;
+    try {
+      const cfg = LumioProfiles.getSyncConfig();
+      if (cfg.enabled && cfg.url && typeof Lumio !== "undefined" && Lumio.progressAll) {
+        // pull + merge first, same reasoning as roster/schedule: never let
+        // an empty/behind local copy push over what's already shared
+        await pullAndMergeProgress(cfg);
+        await fetch(cfg.url + "?action=pushProgress", {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ progress: Lumio.progressAll() }),
+        });
+        progressSynced = true;
+      }
+    } catch (e2) { /* progress sync is best-effort; roster/schedule already reported below */ }
 
-      if (rosterRes.ok && scheduleRes.ok && leadsRes.ok) {
+    const ok = rosterRes.ok && scheduleRes.ok && leadsRes.ok;
+    if (ok) {
+      renderRosterCards(); renderTable(); renderTeamGrid(); renderSchedule(); renderLeads(); updateLeadsBadge(); renderInactivity();
+    }
+    if (!silent) {
+      if (ok) {
         syncStatus.textContent = "Synced just now" + (progressSynced ? " (roster, schedule, leads & progress)." : " (roster, schedule & leads).");
-        renderRosterCards(); renderTable(); renderTeamGrid(); renderSchedule(); renderLeads(); updateLeadsBadge(); renderInactivity();
         showToast("Synced successfully.", "success");
       } else if (rosterRes.reason === "not-configured") {
         syncStatus.textContent = "Add a Web App URL first.";
@@ -2071,8 +2079,28 @@
         syncStatus.textContent = "Sync failed — check the URL and that your Apps Script is deployed as a Web App.";
         showToast("Sync failed.", "error");
       }
-    });
+    }
+    return ok;
+  }
+
+  document.getElementById("syncNowBtn").onclick = async (e) => {
+    await withLoading(e.currentTarget, () => performFullSync(false));
   };
+
+  // Auto-sync every 5 minutes while this tab is open and visible, so a
+  // teacher who leaves the dashboard open during a teaching session sees
+  // changes made on other devices without needing to click "Sync now"
+  // themselves. Skips entirely while the tab is in the background (saves
+  // battery/bandwidth on a device just sitting on another tab) and never
+  // shows any loading state or toast — it should be invisible when it
+  // works and only matter because the data on screen quietly updates.
+  const AUTO_SYNC_INTERVAL_MS = 5 * 60 * 1000;
+  setInterval(() => {
+    if (document.hidden) return;
+    if (window.LumioProfiles && LumioProfiles.getSyncConfig().enabled) {
+      performFullSync(true).catch(() => {});
+    }
+  }, AUTO_SYNC_INTERVAL_MS);
 
   // ---------- backup & restore ----------
   document.getElementById("backupDetails").style.display = IS_OWNER ? "block" : "none";

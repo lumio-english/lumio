@@ -283,8 +283,10 @@
     // deployed site, so this needs zero manual setup on this specific
     // device. Renders instantly with whatever's cached first, then
     // quietly re-renders if a fresher team list comes in. Never blocks
-    // login or shows an error if it fails.
-    if (window.LumioProfiles) {
+    // login or shows an error if it fails. Repeats every 5 minutes,
+    // skipping while the tab isn't visible.
+    function refreshTeachersInBackground() {
+      if (!window.LumioProfiles) return;
       LumioProfiles.syncNow().then(res => {
         if (res && res.ok) {
           teachers = LumioProfiles.listTeachers();
@@ -292,6 +294,8 @@
         }
       }).catch(() => {});
     }
+    refreshTeachersInBackground();
+    setInterval(() => { if (!document.hidden) refreshTeachersInBackground(); }, 5 * 60 * 1000);
 
     // Ensure the classroom-PIN button still records whichever teacher was
     // last confirmed (or the default) before your existing auth.js runs.

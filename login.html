@@ -228,7 +228,11 @@
     // cached first, then quietly re-renders if a fresher roster comes in.
     // Never blocks login or shows an error if it fails — a student on a
     // flaky connection should still be able to log in with cached data.
-    if (window.LumioProfiles) {
+    // Repeats every 5 minutes so a shared device left sitting on this
+    // screen (e.g. a classroom tablet) stays current without anyone
+    // touching it, skipping entirely while the tab isn't visible.
+    function refreshRosterInBackground() {
+      if (!window.LumioProfiles) return;
       LumioProfiles.syncNow().then(res => {
         if (res && res.ok) {
           students = LumioProfiles.listStudents();
@@ -236,6 +240,8 @@
         }
       }).catch(() => {});
     }
+    refreshRosterInBackground();
+    setInterval(() => { if (!document.hidden) refreshRosterInBackground(); }, 5 * 60 * 1000);
   } catch (e) {
     console.error("Lumio roster login error:", e);
   }
