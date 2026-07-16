@@ -221,6 +221,21 @@
     document.getElementById("pinBack").onclick = closePinView;
     renderRoster();
     renderPad();
+
+    // Auto-refresh in the background — the roster URL is baked into the
+    // deployed site (see js/lumio-profiles.js), so this needs zero manual
+    // setup on this specific device. Renders instantly with whatever's
+    // cached first, then quietly re-renders if a fresher roster comes in.
+    // Never blocks login or shows an error if it fails — a student on a
+    // flaky connection should still be able to log in with cached data.
+    if (window.LumioProfiles) {
+      LumioProfiles.syncNow().then(res => {
+        if (res && res.ok) {
+          students = LumioProfiles.listStudents();
+          if (!activeStudent) renderRoster();
+        }
+      }).catch(() => {});
+    }
   } catch (e) {
     console.error("Lumio roster login error:", e);
   }

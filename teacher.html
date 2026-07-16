@@ -533,16 +533,17 @@
       <div class="td-empty" id="rosterEmpty" style="display:none">No students yet — add your first one to get started.</div>
 
       <details style="margin-top:18px" id="syncDetails">
-        <summary style="cursor:pointer;font-weight:700;font-size:.83rem;color:var(--td-muted)">🔄 Sync settings (optional) <span class="td-owner-badge">👑 Owner only</span></summary>
+        <summary style="cursor:pointer;font-weight:700;font-size:.83rem;color:var(--td-muted)">🔄 Sync settings <span class="td-owner-badge">👑 Owner only</span></summary>
         <div class="mt" style="margin-top:10px">
           <p class="sub" style="margin-bottom:8px">
-            Paste your Apps Script Web App URL to sync the roster, schedule, and progress to a shared Google Sheet — so every teacher's device sees the same data. Student and teacher PINs are hashed before they ever leave this device; the Sheet never sees a PIN in the clear. See the setup guide that came with this update for how to create the Sheet and deploy the script.
+            Every device syncing with the roster, schedule, leads, and progress automatically — no setup needed per device, the Sheet URL is already built into the site. The field below only matters if you ever redeploy the Apps Script to a new URL and need to point somewhere else; leave it alone otherwise. Student and teacher PINs are hashed before they ever leave this device; the Sheet never sees a PIN in the clear.
           </p>
           <div class="td-sync-row">
             <input type="text" id="syncUrl" placeholder="https://script.google.com/macros/s/.../exec">
             <button class="td-btn" id="saveSyncBtn">Save</button>
             <button class="td-btn" id="syncNowBtn">Sync now</button>
           </div>
+          <p class="sub" style="margin-top:6px;font-size:.72rem">"Sync now" still forces an immediate refresh in both directions — handy right after making a change you want other devices to see sooner.</p>
           <div class="td-sync-status mt" id="syncStatus">Not configured yet.</div>
         </div>
       </details>

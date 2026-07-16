@@ -279,6 +279,20 @@
     // behind the classroom PIN + owner login rather than being reachable
     // from this public-facing portal before anyone has signed in.
 
+    // Auto-refresh in the background — the sync URL is baked into the
+    // deployed site, so this needs zero manual setup on this specific
+    // device. Renders instantly with whatever's cached first, then
+    // quietly re-renders if a fresher team list comes in. Never blocks
+    // login or shows an error if it fails.
+    if (window.LumioProfiles) {
+      LumioProfiles.syncNow().then(res => {
+        if (res && res.ok) {
+          teachers = LumioProfiles.listTeachers();
+          if (!activeTeacher) renderTeacherGrid();
+        }
+      }).catch(() => {});
+    }
+
     // Ensure the classroom-PIN button still records whichever teacher was
     // last confirmed (or the default) before your existing auth.js runs.
     document.getElementById("goTeacher").addEventListener("click", () => {

@@ -38,6 +38,9 @@
 
   const SCHEDULE_KEY = "lumio_schedule_v1";
   const SYNC_KEY = "lumio_sync_cfg_v1"; // same key lumio-profiles.js uses
+  // Same baked-in default as lumio-profiles.js — keep these in sync if the
+  // Apps Script is ever redeployed to a new URL.
+  const DEFAULT_SYNC_URL = "https://script.google.com/macros/s/AKfycbxlKY07coAR_Uj6UQf2bvy6yi6I3cG9WsnTROvKI5v_l9MhhXIbP3Ke8jxbYx5btZzAGA/exec";
 
   const memory = {};
   function safeGet(key) {
@@ -166,8 +169,11 @@
   }
 
   function getSyncConfig() {
-    try { return JSON.parse(safeGet(SYNC_KEY) || "null") || { url: "", enabled: false }; }
-    catch (e) { return { url: "", enabled: false }; }
+    try {
+      const saved = JSON.parse(safeGet(SYNC_KEY) || "null");
+      if (saved && saved.url) return saved;
+    } catch (e) { /* fall through to default below */ }
+    return DEFAULT_SYNC_URL ? { url: DEFAULT_SYNC_URL, enabled: true } : { url: "", enabled: false };
   }
   // Same "whoever edited more recently wins" rule as lumio-profiles.js —
   // without this, syncing shortly after editing a class (before that edit

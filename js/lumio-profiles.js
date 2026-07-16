@@ -32,6 +32,13 @@
 
   const ROSTER_KEY = "lumio_roster_v1";
   const SYNC_KEY = "lumio_sync_cfg_v1";
+  // Baked into the deployed site so every device automatically knows where
+  // to sync from, with zero per-device setup. A locally-saved override (via
+  // Sync Settings in the dashboard) still takes priority if one exists —
+  // this is just the fallback so a brand-new device isn't blind until a
+  // teacher manually pastes the URL there. Update this if you ever
+  // redeploy the Apps Script to a new URL.
+  const DEFAULT_SYNC_URL = "https://script.google.com/macros/s/AKfycbxlKY07coAR_Uj6UQf2bvy6yi6I3cG9WsnTROvKI5v_l9MhhXIbP3Ke8jxbYx5btZzAGA/exec";
   const CURRENT_TEACHER_KEY = "lumio_current_teacher_id";
 
   const AVATARS = ["🦊", "🐼", "🦁", "🐸", "🐵", "🐨", "🦄", "🐯", "🐰", "🐶", "🐱"];
@@ -349,10 +356,13 @@
     return addTeacher({ name }).name;
   }
 
-  // ---- sync (prep only, safe no-op until configured) ----
+  // ---- sync ----
   function getSyncConfig() {
-    try { return JSON.parse(safeGet(SYNC_KEY) || "null") || { url: "", enabled: false }; }
-    catch (e) { return { url: "", enabled: false }; }
+    try {
+      const saved = JSON.parse(safeGet(SYNC_KEY) || "null");
+      if (saved && saved.url) return saved;
+    } catch (e) { /* fall through to default below */ }
+    return DEFAULT_SYNC_URL ? { url: DEFAULT_SYNC_URL, enabled: true } : { url: "", enabled: false };
   }
   function configureSync({ url } = {}) {
     const cfg = { url: (url || "").trim(), enabled: !!(url && url.trim()) };
