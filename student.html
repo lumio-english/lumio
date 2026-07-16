@@ -341,6 +341,7 @@
 
   <!-- Mini-games -->
   <div class="sd-section-title"><h3>Mini-games</h3></div>
+  <p class="sd-hint" style="margin:-6px 0 12px;font-weight:700;color:var(--sd-cocoa-soft);font-size:.85rem">Uses words from your current lesson — play well and it can boost that lesson's stars! 🌟</p>
   <div class="sd-games-grid">
     <div class="sd-game-tile">
       <div class="sd-game-icon" style="background:#EFE9FE;color:#6D5AE0">🧠</div>
@@ -363,7 +364,7 @@
     <div class="sd-game-tile">
       <div class="sd-game-icon" style="background:#FDE8F3;color:#DB2777">🎨</div>
       <h4>Color Sequence</h4>
-      <p>Watch the pattern light up, then repeat it back — how far can you go?</p>
+      <p>Watch the pattern light up, then repeat it back — how far can you go? (just for fun, doesn't use lesson words)</p>
       <button class="sd-game-play" id="playSequence">Play</button>
     </div>
   </div>
@@ -444,6 +445,7 @@
 <div id="sd-toast-stack" aria-live="polite"></div>
 
 <script src="js/app.js"></script>
+<script src="js/lessons-data.js"></script>
 <script src="js/lumio-profiles.js"></script>
 <script src="js/lumio-schedule.js"></script>
 <script>
@@ -679,7 +681,10 @@
   }
 
   // ================= Word bank for mini-games =================
-  const WORD_BANK = [
+  // Starts as this generic fallback list so games are playable right
+  // away; loadLessonVocabForGames() below swaps it for the real words
+  // from whatever lesson the student is currently on, if available.
+  const FALLBACK_WORD_BANK = [
     { en: "Cat", ar: "قطة", em: "🐱" }, { en: "Dog", ar: "كلب", em: "🐶" },
     { en: "Sun", ar: "شمس", em: "☀️" }, { en: "Moon", ar: "قمر", em: "🌙" },
     { en: "Apple", ar: "تفاحة", em: "🍎" }, { en: "Banana", ar: "موزة", em: "🍌" },
@@ -690,12 +695,81 @@
     { en: "House", ar: "بيت", em: "🏠" }, { en: "Ball", ar: "كرة", em: "⚽" },
     { en: "Tree", ar: "شجرة", em: "🌳" }, { en: "Car", ar: "سيارة", em: "🚗" },
   ];
-  function shuffled(arr) { return [...arr].sort(() => Math.random() - 0.5); }
-  function pickWords(n) { return shuffled(WORD_BANK).slice(0, n); }
+  let WORD_BANK = FALLBACK_WORD_BANK;
+  let gamesLessonNum = null;   // which lesson's vocab is currently loaded, if any
+  let gamesUsingRealVocab = false;
 
+  function shuffled(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+  function pickWords(n) { return shuffled(WORD_BANK).slice(0, Math.min(n, WORD_BANK.length)); }
+
+  async function loadLessonVocabForGames() {
+    // Target the student's most recently ATTEMPTED lesson in this level,
+    // not the not-yet-started "next" one — the whole point is practicing
+    // and improving a lesson they've already had a go at. (nextLessonNum
+    // by definition means "no progress recorded yet," so there'd never
+    // be anything for a game to actually improve if we targeted that
+    // instead.) Before their very first attempt at anything, falls back
+    // to lesson 1 as a preview — real words to warm up with, even though
+    // nothing can count toward stars yet since there's no record to
+    // blend into.
+    const attemptedNums = entries.map(([n]) => Number(n));
+    const targetNum = attemptedNums.length ? Math.max(...attemptedNums) : 1;
+    let lessonData = (typeof window.LUMIO_LESSONS !== "undefined" && window.LUMIO_LESSONS[level])
+      ? window.LUMIO_LESSONS[level][targetNum]
+      : null;
+    if (!lessonData) {
+      try {
+        const nn = String(targetNum).padStart(2, "0");
+        const res = await fetch(`lessons/${level}/lesson${nn}.json`);
+        if (res.ok) lessonData = await res.json();
+      } catch (e) { /* fine — falls back to the generic word bank below */ }
+    }
+    const vocab = lessonData && Array.isArray(lessonData.vocab) ? lessonData.vocab : [];
+    if (vocab.length < 3) return; // too few real words to make a decent game — keep the fallback bank
+    WORD_BANK = vocab.map(v => ({ en: v.en, ar: v.ar || "", em: v.emoji || "🔤" }));
+    gamesLessonNum = targetNum;
+    gamesUsingRealVocab = true;
+  }
+  // Kick this off in the background — games work immediately with the
+  // fallback bank and quietly upgrade to real vocab once this resolves.
+  loadLessonVocabForGames().catch(() => {});
+
+  // Blends a mini-game result into that lesson's saved progress, using
+  // the exact same "keep the best" rule Lumio.saveResult() already uses,
+  // so a game can never make a lesson's star rating worse. Deliberately
+  // only touches a lesson that's ALREADY been attempted for real — a
+  // mini-game alone can't unlock or "complete" a lesson the student
+  // hasn't actually done, only improve one they have.
+  function saveGameResultToLesson(stars, score, total) {
+    if (!gamesUsingRealVocab || !gamesLessonNum) return { counted: false, reason: "no-lesson" };
+    let all;
+    try { all = JSON.parse(localStorage.getItem("lumio_progress") || "{}"); } catch (e) { all = {}; }
+    const existing = ((all[u.name] || {})[level] || {})[gamesLessonNum];
+    if (!existing) return { counted: false, reason: "not-attempted" };
+    if (stars < existing.stars) return { counted: false, reason: "not-better", lessonNum: gamesLessonNum };
+    all[u.name] = all[u.name] || {};
+    all[u.name][level] = all[u.name][level] || {};
+    all[u.name][level][gamesLessonNum] = { stars, score, total, date: new Date().toISOString().slice(0, 10) };
+    try { localStorage.setItem("lumio_progress", JSON.stringify(all)); } catch (e) { return { counted: false, reason: "storage-failed" }; }
+    return { counted: true, lessonNum: gamesLessonNum };
+  }
+  function gameResultNote(blended) {
+    if (blended.counted) {
+      return `<p style="font-weight:800;color:var(--sd-teal-deep);font-size:.85rem">🎯 Counted toward Lesson ${blended.lessonNum}'s stars!</p>`;
+    }
+    if (blended.reason === "not-attempted") {
+      return `<p style="font-weight:700;color:var(--sd-cocoa-soft);font-size:.82rem">Finish Lesson ${blended.lessonNum} first, then this game can boost its stars!</p>`;
+    }
+    if (blended.reason === "not-better") {
+      return `<p style="font-weight:700;color:var(--sd-cocoa-soft);font-size:.82rem">Your Lesson ${blended.lessonNum} score is already this good — try beating it!</p>`;
+    }
+    return "";
+  }
   function gameStars(scoreRatio) {
+    // Matches lesson.js's own threshold exactly (pct >= 85 -> 3, >= 60 -> 2,
+    // else 1) so "3 stars" means the same thing everywhere in the app.
     if (scoreRatio >= 0.85) return 3;
-    if (scoreRatio >= 0.5) return 2;
+    if (scoreRatio >= 0.6) return 2;
     return 1;
   }
 
@@ -768,14 +842,17 @@
   function endMemory() {
     const totalPairs = mmState.cards.length / 2;
     const efficiency = totalPairs / mmState.moves; // 1.0 = perfect
-    const st = gameStars(Math.min(1, efficiency));
+    const ratio = Math.min(1, efficiency);
+    const st = gameStars(ratio);
     mmGrid.style.display = "none";
     mmEnd.style.display = "block";
+    const blended = saveGameResultToLesson(st, Math.round(ratio * 10), 10);
     mmEnd.innerHTML = `
       <div class="sd-game-end">
         <h3>Great job! 🎉</h3>
         <div class="stars">${"★".repeat(st)}${"☆".repeat(3 - st)}</div>
         <p style="font-weight:700;color:var(--sd-cocoa-soft)">Finished in ${mmState.moves} moves</p>
+        ${gameResultNote(blended)}
         <button class="sd-game-again" id="mmAgain">Play again</button>
       </div>`;
     confettiBurst(50);
@@ -837,15 +914,18 @@
     setTimeout(nextWpRound, 550);
   }
   function endWordPop() {
-    const st = gameStars(wpState.score / wpState.total);
+    const ratio = wpState.score / wpState.total;
+    const st = gameStars(ratio);
     wpPlayArea.style.display = "none";
     wpEnd.style.display = "block";
     const won = wpState.lives > 0;
+    const blended = saveGameResultToLesson(st, wpState.score, wpState.total);
     wpEnd.innerHTML = `
       <div class="sd-game-end">
         <h3>${won ? "Nice popping! 🎈" : "Out of hearts!"}</h3>
         <div class="stars">${"★".repeat(st)}${"☆".repeat(3 - st)}</div>
         <p style="font-weight:700;color:var(--sd-cocoa-soft)">Score: ${wpState.score}/${wpState.total}</p>
+        ${gameResultNote(blended)}
         <button class="sd-game-again" id="wpAgain">Play again</button>
       </div>`;
     if (won) confettiBurst(40);
@@ -866,13 +946,20 @@
   const wbEnd = document.getElementById("wbEnd");
   const wbPlayArea = document.getElementById("wbPlayArea");
   const WB_ROUNDS = 8;
+  let wbUsedRealVocabThisRound = false;
   let wbState = null;
   let currentBuild = null;
 
   function startBuilder() {
     wbEnd.style.display = "none";
     wbPlayArea.style.display = "block";
-    const words = pickWords(WB_ROUNDS);
+    // Letter-scrambling only makes sense for single words — real lesson
+    // vocab sometimes includes short phrases (e.g. "good morning"), same
+    // constraint lesson.js's own Spell activity already applies.
+    let pool = WORD_BANK.filter(w => !w.en.includes(" ") && w.en.length <= 10);
+    wbUsedRealVocabThisRound = gamesUsingRealVocab && pool.length >= 3;
+    if (pool.length < 3) pool = FALLBACK_WORD_BANK;
+    const words = shuffled(pool).slice(0, Math.min(WB_ROUNDS, pool.length));
     wbState = { words, round: 0, mistakes: 0, totalLetters: words.reduce((s, w) => s + w.en.length, 0) };
     nextBuilderRound();
   }
@@ -931,11 +1018,15 @@
     const st = gameStars(efficiency);
     wbPlayArea.style.display = "none";
     wbEnd.style.display = "block";
+    const blended = wbUsedRealVocabThisRound
+      ? saveGameResultToLesson(st, Math.round(efficiency * 10), 10)
+      : { counted: false, reason: "no-lesson" };
     wbEnd.innerHTML = `
       <div class="sd-game-end">
         <h3>Great spelling! ✏️</h3>
         <div class="stars">${"★".repeat(st)}${"☆".repeat(3 - st)}</div>
         <p style="font-weight:700;color:var(--sd-cocoa-soft)">${wbState.mistakes} mistake${wbState.mistakes === 1 ? "" : "s"} total</p>
+        ${gameResultNote(blended)}
         <button class="sd-game-again" id="wbAgain">Play again</button>
       </div>`;
     if (st >= 2) confettiBurst(45);
