@@ -184,8 +184,13 @@ function pushLeads_(body) {
 // ---------- HTTP entry points ----------
 
 function doGet(e) {
-  var action = e.parameter.action;
   try {
+    // e is undefined if this is run manually from the Apps Script editor
+    // (clicking "Run" on doGet) instead of through a real web request —
+    // that's not a bug, just not how this function is meant to be
+    // invoked. Open the deployed /exec URL in a browser tab to test it
+    // for real.
+    var action = (e && e.parameter) ? e.parameter.action : null;
     if (action === "pullRoster") return jsonResponse_(pullRoster_());
     if (action === "pullSchedule") return jsonResponse_(pullSchedule_());
     if (action === "pullProgress") return jsonResponse_(pullProgress_());
@@ -197,10 +202,10 @@ function doGet(e) {
 }
 
 function doPost(e) {
-  var action = e.parameter.action;
   try {
+    var action = (e && e.parameter) ? e.parameter.action : null;
     var body = {};
-    if (e.postData && e.postData.contents) {
+    if (e && e.postData && e.postData.contents) {
       body = JSON.parse(e.postData.contents);
     }
     if (action === "pushRoster") return jsonResponse_(pushRoster_(body));
