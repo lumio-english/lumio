@@ -41,4 +41,5 @@ const TEACHER_PIN = "2026";
       location.href = "teacher.html";
     } else Lumio.toast("Wrong PIN");
   };
+  $("tpin").addEventListener("keydown", e => { if (e.key === "Enter") $("goTeacher").click(); });
 })();
