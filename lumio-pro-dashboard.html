@@ -430,21 +430,56 @@ const ADMINS = {
 // ══════════════════════════════════════════
 //  LOGIN
 // ══════════════════════════════════════════
-function resolveLogin(user, pass) {
+// Same hashing approach as roster PINs elsewhere in Lumio (js/lumio-
+// profiles.js's hashPin) — SHA-256 via the browser's Web Crypto API,
+// with a salted prefix, and a fallback for non-HTTPS contexts where
+// crypto.subtle isn't available. Different salt than the roster PIN
+// hash so the two hash domains can't collide meaningfully.
+async function hashAdminPwd(pwd) {
+  const p = String(pwd || '');
+  try {
+    if (window.crypto && window.crypto.subtle && window.crypto.subtle.digest) {
+      const bytes = new TextEncoder().encode('lumio-admin:' + p);
+      const digest = await window.crypto.subtle.digest('SHA-256', bytes);
+      return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+  } catch (e) { /* fall through to the simple hash below */ }
+  let h = 0x811c9dc5;
+  const s = 'lumio-admin:' + p;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = (h * 0x01000193) >>> 0; }
+  return 'fnv1a-' + h.toString(16).padStart(8, '0');
+}
+
+async function resolveLogin(user, pass) {
   const u = user.trim().toLowerCase();
   const p = pass.trim();
 
-  const savedAdmins    = getSavedAdmins();
+  const savedAdmins    = getSavedAdmins(); // custom admins: values are HASHES, not plain text
   const savedGroupPwds = getSavedGroupPwds();
   const savedAgentPwds = getSavedAgentPwds();
   const agentPass      = localStorage.getItem(DASH_LS_KEY + '_agent_pass') || '1234';
   const groupPass       = localStorage.getItem(DASH_LS_KEY + '_grp_default') || 'team1234';
 
   // ── Super admin / admin ──
-  const adminPwd = savedAdmins[u] || ADMINS[u];
-  if (adminPwd && adminPwd === p) {
-    const isSuperAdmin = (u === 'lumio_admin' || (savedAdmins[u] && u !== 'admin' && u !== 'manager'));
-    const role = isSuperAdmin ? 'super_admin' : 'admin';
+  // Fixed defaults (ADMINS below) are compared in plain text — they're
+  // already sitting in this file's source as a readable constant, so
+  // hashing that specific comparison wouldn't add real protection.
+  // Custom admins (and password overrides for the fixed accounts,
+  // saved via Settings) are genuinely hashed, since those get
+  // persisted to local storage and synced to the Google Sheet, where
+  // plain text would actually be exposed. A saved override takes
+  // priority over the fixed default — changing lumio_admin's password
+  // should actually retire the old one, not just add a second valid
+  // password alongside it.
+  if (savedAdmins[u]) {
+    const enteredHash = await hashAdminPwd(p);
+    if (enteredHash === savedAdmins[u]) {
+      const isSuperAdmin = (u === 'lumio_admin' || (u !== 'admin' && u !== 'manager'));
+      const role = isSuperAdmin ? 'super_admin' : 'admin';
+      return { role, display: u === 'lumio_admin' ? 'Super Admin' : 'Admin', username: u, studentIds: null, groupKey: null };
+    }
+  } else if (ADMINS[u] && ADMINS[u] === p) {
+    const role = u === 'lumio_admin' ? 'super_admin' : 'admin';
     return { role, display: u === 'lumio_admin' ? 'Super Admin' : 'Admin', username: u, studentIds: null, groupKey: null };
   }
 
@@ -477,10 +512,10 @@ function resolveLogin(user, pass) {
 
 let CU = null; // current user
 
-function doLogin() {
+async function doLogin() {
   const uEl=document.getElementById('lu'), pEl=document.getElementById('lp'), eEl=document.getElementById('le');
   uEl.classList.remove('err'); pEl.classList.remove('err'); eEl.style.display='none';
-  const acc = resolveLogin(uEl.value, pEl.value);
+  const acc = await resolveLogin(uEl.value, pEl.value);
   if (!acc) {
     eEl.textContent = 'Not recognised. Agents: use your CRM name + password 1234. Admin: use admin credentials.';
     eEl.style.display='block'; uEl.classList.add('err'); pEl.classList.add('err');
@@ -1165,9 +1200,9 @@ function loadSettingsView(){
         </div>
       </div></div></div>
     <div class="tc" style="margin-bottom:16px"><div class="tto"><div class="tt">👥 Group Passwords</div></div><div style="padding:16px 20px"><div style="font-size:.84rem;color:var(--mu);margin-bottom:10px">Default: <strong>${gp}</strong> <button class="btn bg btn-sm" onclick="copyPwd('${gp}',this)" title="Copy">📋</button><div style="display:flex;gap:8px;margin-top:7px"><input id="grp-default-pass" class="si2" placeholder="New default" style="width:180px"/><button class="btn bp" onclick="saveGroupDefaultPass()">💾</button></div></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"><input id="custom-grp-name" class="si2" placeholder="Group key e.g. me-egss01" style="width:190px"/><input id="custom-grp-pass" class="si2" placeholder="Password" style="width:130px"/><button class="btn bp" onclick="setGroupPwd()">💾 Set</button></div><div id="group-pwd-list" style="max-height:160px;overflow-y:auto"></div></div></div>
-    <div style="background:var(--yellow-light);border-radius:var(--r);padding:12px 16px;font-size:.83rem;color:#7a5c00">⚠️ Changes saved in this browser only.</div>`;
+    <div style="background:var(--yellow-light);border-radius:var(--r);padding:12px 16px;font-size:.83rem;color:#7a5c00">✅ Admin accounts sync across your devices automatically. Passwords are hashed before they're stored or synced — nobody, including you, can look up a forgotten password; set a new one instead.</div>`;
     const al=document.getElementById('admin-pwd-list');
-    if(al)al.innerHTML=Object.entries(allAdmins).map(([u,p])=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:9px;padding:9px 12px;background:var(--g);border-radius:7px"><div style="font-weight:800;font-size:.86rem;color:var(--b);width:120px">${h(u)}</div><input class="si2" id="pwd-${h(u)}" value="${h(p)}" style="flex:1;font-family:monospace"/><button class="btn bg btn-sm" onclick="copyPwd('${h(p)}',this)" title="Copy password">📋</button><button class="btn bp btn-sm" onclick="saveAdminPwd('${h(u)}')">💾</button>${!ADMINS[u]?`<button class="btn bd btn-sm" onclick="removeAdminUser('${h(u)}')">🗑</button>`:''}</div>`).join('');
+    if(al)al.innerHTML=Object.entries(allAdmins).map(([u,p])=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:9px;padding:9px 12px;background:var(--g);border-radius:7px"><div style="font-weight:800;font-size:.86rem;color:var(--b);width:120px">${h(u)}</div><input class="si2" id="pwd-${h(u)}" type="password" placeholder="${ADMINS[u]?'Fixed default password':'Enter a new password to change it'}" style="flex:1"/><button class="btn bp btn-sm" onclick="saveAdminPwd('${h(u)}')">💾</button>${!ADMINS[u]?`<button class="btn bd btn-sm" onclick="removeAdminUser('${h(u)}')">🗑</button>`:''}</div>`).join('');
     renderAgentPwds('');renderGroupPwdList();
   } else {
     // Group manager / SS / LP / both agents — can only change their OWN password
@@ -1242,13 +1277,19 @@ function setGroupPwd(){const k=(document.getElementById('custom-grp-name')?.valu
 function updateGroupPwd(k){const i=document.getElementById('grppwd-'+k);if(!i||!i.value.trim())return;const s=getSavedGroupPwds();s[k]=i.value.trim();localStorage.setItem(DASH_LS_KEY+'_group_pwds',JSON.stringify(s));showT('✅ Updated: '+k);renderGroupPwdList();}
 function removeGroupPwd(k){const s=getSavedGroupPwds();delete s[k];localStorage.setItem(DASH_LS_KEY+'_group_pwds',JSON.stringify(s));showT('🗑 Removed: '+k);renderGroupPwdList();}
 
-function saveAdminPwd(u){const i=document.getElementById('pwd-'+u);if(!i||!i.value.trim())return;const s=getSavedAdmins();s[u]=i.value.trim();localStorage.setItem(DASH_LS_KEY+'_admins',JSON.stringify(s));pushProAdminsToBackend();showT('✅ Saved for: '+u);loadSettingsView();}
+async function saveAdminPwd(u){
+  const i=document.getElementById('pwd-'+u);if(!i||!i.value.trim())return;
+  const s=getSavedAdmins();s[u]=await hashAdminPwd(i.value.trim());localStorage.setItem(DASH_LS_KEY+'_admins',JSON.stringify(s));
+  pushProAdminsToBackend();showT('✅ Saved for: '+u);loadSettingsView();
+}
 
 // ---- admin account sync (across devices, including mobile) ----
-// getSavedAdmins() stays a simple {username: password} map locally —
-// that's the format the rest of this file already expects — but on
+// getSavedAdmins() stays a simple {username: passwordHash} map locally
+// — that's the format the rest of this file already expects — but on
 // the wire it's an array of {username, password, updatedAt}, matching
-// how every other synced list in Lumio works.
+// how every other synced list in Lumio works. "password" here is
+// always already a hash by the time it's stored or sent — see
+// addAdminUser/saveAdminPwd, which hash before writing anywhere.
 async function pullAndMergeProAdmins(){
   if(!SCRIPT_URL) return;
   try{
@@ -1271,11 +1312,11 @@ function pushProAdminsToBackend(){
   }).then(()=>{}).catch(()=>{});
 }
 
-function addAdminUser(){
+async function addAdminUser(){
   var u=(document.getElementById('new-admin-user')?.value||'').trim().toLowerCase();
   var p=(document.getElementById('new-admin-pass')?.value||'').trim();
   if(!u||!p){showT('⚠️ Enter username and password');return;}
-  var s=getSavedAdmins();s[u]=p;localStorage.setItem(DASH_LS_KEY+'_admins',JSON.stringify(s));
+  var s=getSavedAdmins();s[u]=await hashAdminPwd(p);localStorage.setItem(DASH_LS_KEY+'_admins',JSON.stringify(s));
   if(SCRIPT_URL){
     const admins = Object.keys(s).map(k => ({ username:k, password:s[k], updatedAt:new Date().toISOString() }));
     fetch(SCRIPT_URL+'?action=pushProAdmins',{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
