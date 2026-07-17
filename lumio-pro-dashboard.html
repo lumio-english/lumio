@@ -450,6 +450,44 @@ async function hashAdminPwd(pwd) {
   return 'fnv1a-' + h.toString(16).padStart(8, '0');
 }
 
+// Exact same algorithm as js/lumio-profiles.js's hashPin — needed so a
+// teacher account created in the main Lumio dashboard's Team tab
+// (name + 4-digit PIN) can also log into this dashboard with the same
+// credentials, without this being loaded as a module.
+function normalizeRosterPin(pin) {
+  const p = String(pin || '').replace(/\D/g, '').slice(0, 4);
+  return p.length === 4 ? p : null;
+}
+async function hashRosterPin(pin) {
+  const p = normalizeRosterPin(pin) || '';
+  try {
+    if (window.crypto && window.crypto.subtle && window.crypto.subtle.digest) {
+      const bytes = new TextEncoder().encode('lumio:' + p);
+      const digest = await window.crypto.subtle.digest('SHA-256', bytes);
+      return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+  } catch (e) { /* fall through to the simple hash below */ }
+  let h = 0x811c9dc5;
+  const s = 'lumio:' + p;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = (h * 0x01000193) >>> 0; }
+  return 'fnv1a-' + h.toString(16).padStart(8, '0');
+}
+
+// Cache of {name, pinHash, isOwner} from the main Lumio teacher roster
+// — one teacher account (created once, in the Team tab) now works for
+// logging into both the main dashboard and this one. Pulled fresh on
+// every page load so a teacher added or removed on another device
+// takes effect here too, same as everything else that syncs.
+let LUMIO_TEACHERS_CACHE = [];
+async function pullLumioTeachersForLogin() {
+  if (!SCRIPT_URL) return;
+  try {
+    const res = await fetch(SCRIPT_URL + '?action=pullRoster');
+    const data = await res.json();
+    if (data && Array.isArray(data.teachers)) LUMIO_TEACHERS_CACHE = data.teachers;
+  } catch (e) { /* offline is fine — falls back to admin-only login below */ }
+}
+
 async function resolveLogin(user, pass) {
   const u = user.trim().toLowerCase();
   const p = pass.trim();
@@ -481,6 +519,23 @@ async function resolveLogin(user, pass) {
   } else if (ADMINS[u] && ADMINS[u] === p) {
     const role = u === 'lumio_admin' ? 'super_admin' : 'admin';
     return { role, display: u === 'lumio_admin' ? 'Super Admin' : 'Admin', username: u, studentIds: null, groupKey: null };
+  }
+
+  // ── Main Lumio teacher account (created once in the Team tab) ──
+  // Same name + 4-digit PIN that already logs into the main teacher
+  // dashboard also works here — no separate account needed. Owners get
+  // full access here (matching super_admin); regular teachers get
+  // view-only, same tier a regular teacher gets in the main dashboard.
+  const pinEntered = normalizeRosterPin(p);
+  if (pinEntered) {
+    const teacher = LUMIO_TEACHERS_CACHE.find(t => (t.name || '').trim().toLowerCase() === u);
+    if (teacher && teacher.pinHash) {
+      const enteredPinHash = await hashRosterPin(pinEntered);
+      if (enteredPinHash === teacher.pinHash) {
+        const role = teacher.isOwner === true || teacher.isOwner === 'true' ? 'super_admin' : 'admin';
+        return { role, display: teacher.name, username: teacher.name.toLowerCase(), studentIds: null, groupKey: null };
+      }
+    }
   }
 
   // ── Group login (team leader / sales manager) ──
@@ -626,6 +681,7 @@ const DASH_LS_KEY  = 'lumio_test_results'; // MUST match TEST_LS_KEY in lumio-pr
 // this specific device before. (Function is defined further down;
 // declarations are hoisted, so this call is valid here.)
 pullAndMergeProAdmins();
+pullLumioTeachersForLogin();
 
 function loadR() {
   // Fully standalone — always reads from this browser's local storage,
