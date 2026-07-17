@@ -50,6 +50,16 @@ var LEADS_COLUMNS = [
   "status", "notes", "createdAt", "updatedAt"
 ];
 
+// Admin accounts for lumio-pro-dashboard.html (a separate tool from the
+// main teacher dashboard — its own login system for reviewing
+// professional-test results). Kept as its own sheet since these
+// usernames/passwords are unrelated to student/teacher roster accounts.
+// Note: unlike roster PINs, these are stored as plain text here — same
+// as how this dashboard's login already worked before it was connected
+// to a shared backend. Worth knowing if that matters to you.
+var PRO_ADMINS_SHEET = "ProDashboardAdmins";
+var PRO_ADMINS_COLUMNS = ["username", "password", "updatedAt"];
+
 // ---------- sheet helpers ----------
 
 function getOrCreateSheet_(name, columns) {
@@ -181,6 +191,17 @@ function pushLeads_(body) {
   return { ok: true };
 }
 
+// ---------- pro dashboard admins ----------
+
+function pullProAdmins_() {
+  return { admins: readRows_(PRO_ADMINS_SHEET, PRO_ADMINS_COLUMNS) };
+}
+
+function pushProAdmins_(body) {
+  if (Array.isArray(body.admins)) writeRows_(PRO_ADMINS_SHEET, PRO_ADMINS_COLUMNS, body.admins);
+  return { ok: true };
+}
+
 // ---------- HTTP entry points ----------
 
 function doGet(e) {
@@ -195,7 +216,8 @@ function doGet(e) {
     if (action === "pullSchedule") return jsonResponse_(pullSchedule_());
     if (action === "pullProgress") return jsonResponse_(pullProgress_());
     if (action === "pullLeads") return jsonResponse_(pullLeads_());
-    return jsonResponse_({ ok: true, message: "Lumio sync backend is running. Pass ?action=pullRoster / pullSchedule / pullProgress / pullLeads." });
+    if (action === "pullProAdmins") return jsonResponse_(pullProAdmins_());
+    return jsonResponse_({ ok: true, message: "Lumio sync backend is running. Pass ?action=pullRoster / pullSchedule / pullProgress / pullLeads / pullProAdmins." });
   } catch (err) {
     return jsonResponse_({ ok: false, error: String(err) });
   }
@@ -212,6 +234,7 @@ function doPost(e) {
     if (action === "pushSchedule") return jsonResponse_(pushSchedule_(body));
     if (action === "pushProgress") return jsonResponse_(pushProgress_(body));
     if (action === "pushLeads") return jsonResponse_(pushLeads_(body));
+    if (action === "pushProAdmins") return jsonResponse_(pushProAdmins_(body));
     return jsonResponse_({ ok: false, error: "Unknown action: " + action });
   } catch (err) {
     return jsonResponse_({ ok: false, error: String(err) });
