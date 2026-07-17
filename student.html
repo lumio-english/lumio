@@ -173,6 +173,42 @@
     padding:8px 18px;font-weight:800;font-size:.85rem;cursor:pointer;font-family:inherit;
     transition:transform .13s cubic-bezier(.22,1,.36,1),background .15s ease;
   }
+
+  /* ---------- English Hub ---------- */
+  .sd-hub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}
+  .sd-hub-tile{
+    background:#fff;border-radius:20px;padding:18px;box-shadow:0 4px 16px rgba(0,0,0,.05);
+    display:flex;flex-direction:column;gap:6px;transition:.15s;border:none;font-family:inherit;
+    text-align:left;cursor:pointer;
+  }
+  .sd-hub-tile:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(0,0,0,.09)}
+  .sd-hub-tile.sd-hub-soon{cursor:default;opacity:.6}
+  .sd-hub-tile.sd-hub-soon:hover{transform:none;box-shadow:0 4px 16px rgba(0,0,0,.05)}
+  .sd-hub-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.5rem}
+  .sd-hub-tile h4{margin:0;font-family:'Baloo 2',sans-serif;font-size:1rem;color:var(--sd-cocoa)}
+  .sd-hub-tile p{margin:0;font-size:.78rem;color:var(--sd-cocoa-soft);font-weight:700}
+
+  .sd-vocab-level-select{
+    width:100%;padding:11px 14px;border-radius:12px;border:1.5px solid #EAE0D5;
+    font-family:inherit;font-size:16px;font-weight:700;color:var(--sd-cocoa);margin-bottom:16px;background:#fff;
+  }
+  .sd-vocab-theme{margin-bottom:18px}
+  .sd-vocab-theme-title{font-family:'Baloo 2',sans-serif;font-size:1rem;color:var(--sd-cocoa);margin:0 0 10px;display:flex;align-items:center;gap:8px}
+  .sd-vocab-theme-title .ar{font-size:.82rem;color:var(--sd-cocoa-soft);font-weight:700}
+  .sd-vocab-word-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+  .sd-vocab-word-card{
+    background:var(--sd-cream);border-radius:14px;padding:12px 10px;text-align:center;
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+  }
+  .sd-vocab-word-card .em{font-size:1.8rem}
+  .sd-vocab-word-card .en{font-weight:800;font-size:.92rem;color:var(--sd-cocoa)}
+  .sd-vocab-word-card .ar{font-size:.86rem;color:var(--sd-cocoa-soft);font-weight:700}
+  .sd-vocab-word-card .sd-vocab-listen{
+    margin-top:2px;background:var(--sd-teal-deep);color:#fff;border:none;border-radius:999px;
+    width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:.85rem;
+    cursor:pointer;transition:transform .13s ease;
+  }
+  .sd-vocab-word-card .sd-vocab-listen:active{transform:scale(.9)}
   .sd-game-play:hover{background:#0b7d78;transform:translateY(-1px)}
   .sd-game-play:active{transform:translateY(0) scale(.94)}
   .sd-game-play:focus-visible{outline:3px solid rgba(13,148,136,.4);outline-offset:2px}
@@ -390,6 +426,36 @@
     </div>
   </div>
 
+  <!-- English Hub -->
+  <div class="sd-section-title"><h3>🌐 English Hub</h3></div>
+  <div class="sd-hub-grid">
+    <button class="sd-hub-tile" id="hubVocab">
+      <div class="sd-hub-icon" style="background:#FFF3D6;color:#C2530A">📔</div>
+      <h4>Vocabulary</h4>
+      <p>Study words by topic, with pictures and Arabic</p>
+    </button>
+    <div class="sd-hub-tile sd-hub-soon">
+      <div class="sd-hub-icon" style="background:#E6FAF7;color:#0F766E">📐</div>
+      <h4>Grammar</h4>
+      <p>Coming soon</p>
+    </div>
+    <div class="sd-hub-tile sd-hub-soon">
+      <div class="sd-hub-icon" style="background:#FFF3D6;color:#C2530A">📖</div>
+      <h4>Stories</h4>
+      <p>Coming soon</p>
+    </div>
+    <div class="sd-hub-tile sd-hub-soon">
+      <div class="sd-hub-icon" style="background:#E6FAF7;color:#0F766E">🔤</div>
+      <h4>Phonics</h4>
+      <p>Coming soon</p>
+    </div>
+    <div class="sd-hub-tile sd-hub-soon">
+      <div class="sd-hub-icon" style="background:#FFF3D6;color:#C2530A">✍️</div>
+      <h4>Writing &amp; speaking</h4>
+      <p>Coming soon</p>
+    </div>
+  </div>
+
   <!-- Adventure path -->
   <div class="sd-section-title"><h3>Adventure map</h3></div>
   <div class="sd-path-card">
@@ -416,6 +482,16 @@
     <div class="mm-topbar"><span id="mmMoves">Moves: 0</span><span id="mmPairs">Pairs: 0/6</span></div>
     <div class="mm-grid" id="mmGrid"></div>
     <div id="mmEnd" style="display:none"></div>
+  </div>
+</div>
+
+<!-- Vocab Hub modal -->
+<div class="sd-modal-overlay" id="vocabOverlay">
+  <div class="sd-modal wide" style="position:relative">
+    <button class="sd-modal-close-x" id="vocabClose">✕</button>
+    <h3>📔 Vocabulary</h3>
+    <select class="sd-vocab-level-select" id="vocabLevelSelect"></select>
+    <div id="vocabThemes"></div>
   </div>
 </div>
 
@@ -860,6 +936,59 @@
   function reviewResultNote() {
     return `<p style="font-weight:800;color:var(--sd-teal-deep);font-size:.85rem">🔄 Nice practice! Keep reviewing to make these words stick.</p>`;
   }
+
+  // ================= English Hub: Vocabulary =================
+  const vocabOverlay = document.getElementById("vocabOverlay");
+  const vocabLevelSelect = document.getElementById("vocabLevelSelect");
+  const vocabThemes = document.getElementById("vocabThemes");
+  // Separate curated study list, not the same words as the lessons —
+  // organized by everyday theme rather than lesson order.
+  const VOCAB_HUB_LEVELS = [
+    { id: "pre-a", label: "Level 0 · First Words" },
+    { id: "level1", label: "Level 1 · First Sentences" },
+  ];
+  const vocabDataCache = {};
+  VOCAB_HUB_LEVELS.forEach(lv => {
+    const opt = document.createElement("option");
+    opt.value = lv.id;
+    opt.textContent = lv.label;
+    vocabLevelSelect.appendChild(opt);
+  });
+  vocabLevelSelect.value = VOCAB_HUB_LEVELS.some(lv => lv.id === level) ? level : VOCAB_HUB_LEVELS[0].id;
+
+  async function loadVocabHubLevel(levelId) {
+    if (vocabDataCache[levelId]) return vocabDataCache[levelId];
+    try {
+      const res = await fetch(`vocab-hub/${levelId}.json`);
+      if (!res.ok) return null;
+      const data = await res.json();
+      vocabDataCache[levelId] = data;
+      return data;
+    } catch (e) { return null; }
+  }
+  async function renderVocabHub() {
+    const levelId = vocabLevelSelect.value;
+    vocabThemes.innerHTML = `<p style="text-align:center;color:var(--sd-cocoa-soft);padding:20px">Loading…</p>`;
+    const data = await loadVocabHubLevel(levelId);
+    if (!data) { vocabThemes.innerHTML = `<p style="text-align:center;color:var(--sd-cocoa-soft);padding:20px">Not available yet for this level.</p>`; return; }
+    vocabThemes.innerHTML = data.themes.map(theme => `
+      <div class="sd-vocab-theme">
+        <h4 class="sd-vocab-theme-title">${theme.theme} <span class="ar">${theme.themeAr}</span></h4>
+        <div class="sd-vocab-word-grid">
+          ${theme.words.map(w => `
+            <div class="sd-vocab-word-card">
+              <div class="em">${w.emoji}</div>
+              <div class="en">${w.en}</div>
+              <div class="ar">${w.ar}</div>
+              <button class="sd-vocab-listen" onclick="Lumio.speak('${w.en.replace(/'/g, "\\'")}')">🔊</button>
+            </div>`).join("")}
+        </div>
+      </div>`).join("");
+  }
+  document.getElementById("hubVocab").onclick = () => { vocabOverlay.classList.add("show"); renderVocabHub(); };
+  document.getElementById("vocabClose").onclick = () => vocabOverlay.classList.remove("show");
+  vocabOverlay.addEventListener("click", e => { if (e.target === vocabOverlay) vocabOverlay.classList.remove("show"); });
+  vocabLevelSelect.addEventListener("change", renderVocabHub);
 
   // ================= Memory Match =================
   const memoryOverlay = document.getElementById("memoryOverlay");
