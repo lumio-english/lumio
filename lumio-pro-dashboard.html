@@ -401,8 +401,9 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxlKY07coAR_Uj6UQf2b
 let FULL_CRM = null;
 async function loadFullCRM() {
   if (FULL_CRM) return FULL_CRM;
+  const b64 = document.getElementById('CRMD').value;
+  if (!b64) return null; // nothing to decompress — no real student data loaded (expected for a fresh deployment)
   try {
-    const b64 = document.getElementById('CRMD').value;
     const bin = atob(b64);
     const bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
     const ds = new DecompressionStream('gzip');
@@ -640,18 +641,7 @@ let allR=[], filtR=[], curP=1, aiN=0;
 const PS=12;
 const LL=['Pre-A1','A1 Beginner','A1 Elementary','A1+','A2 Pre-Int','A2 Intermediate','A2+','B1 Intermediate','B1+','B1 Advanced'];
 
-const CRM_DATA = [
-  {id:'57570136',ss:'Unassigned',lp:'EGLP-mahmoudragab',level:0,lastMonth:0,thisMonth:0,cards:0,package:'Missing'},
-  {id:'57571949',ss:'JOSS-rahaf02',lp:'EGLP-zeyad',level:1,lastMonth:0,thisMonth:0,cards:0,package:'Missing'},
-  {id:'57577461',ss:'JOSS-Weam',lp:'EGLP-ibrahemharidy',level:2,lastMonth:4,thisMonth:6,cards:132,package:'باقة فايف ون توك 90'},
-  {id:'57580099',ss:'EGLP-mohamed05',lp:'Unassigned',level:3,lastMonth:12,thisMonth:0,cards:73,package:'2 levels Package'},
-  {id:'57597485',ss:'EGSS-ahmedmido',lp:'EGLP-gehanibrahim',level:0,lastMonth:1,thisMonth:3,cards:47,package:'75 - باقه فايف ون توك الخاصة'},
-  {id:'57608862',ss:'EGSS-mohamedsafwat',lp:'EGLP-ahmedmuhammed',level:1,lastMonth:13,thisMonth:6,cards:101,package:'80- باقة العروض البيضاء'},
-  {id:'57610340',ss:'EGSS-galal',lp:'EGLP-mahmoudmo',level:5,lastMonth:0,thisMonth:0,cards:164,package:'باقة رحلة الإنجاز-90'},
-  {id:'57631422',ss:'51hamdan',lp:'EGLP-mahmoudsamy',level:4,lastMonth:12,thisMonth:2,cards:111,package:'half year package 72Classes'},
-  {id:'57632033',ss:'EGSS-ahmedhassan',lp:'EGSS-mai01',level:2,lastMonth:12,thisMonth:3,cards:138,package:'Family package 60'},
-  {id:'57636124',ss:'EGSS-mahmoudsalah',lp:'EGLP-ayaam',level:3,lastMonth:16,thisMonth:7,cards:67,package:'Basic Package-36classes'},
-];
+const CRM_DATA = []; // No demo data — this section only ever shows real students once you have real test results. (Previously had 10 hardcoded sample rows with realistic-looking agent names left over from development — removed entirely, not just emptied, since this is a real product now.)
 
 // ══════════════════════════════════════════
 //  VIEWS
@@ -979,7 +969,8 @@ function renderCRMPaged(data) {
   const page = filtered.slice(start, start + CRM_PS);
 
   if (!page.length) {
-    document.getElementById('crm-tb').innerHTML = '<div class="em"><div class="em-i">👥</div><div class="em-t">No matches</div></div>';
+    const msg = crmFilter ? 'No matches' : 'No students yet — they\'ll show up here once someone completes the test';
+    document.getElementById('crm-tb').innerHTML = `<div class="em"><div class="em-i">👥</div><div class="em-t">${msg}</div></div>`;
     document.getElementById('crm-pg').innerHTML = '';
     return;
   }
