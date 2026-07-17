@@ -421,6 +421,12 @@
     .td-sidebar.show{left:0}
     .td-main{padding:18px 16px 60px}
     .td-kpis{grid-template-columns:repeat(2,1fr)}
+    /* iOS Safari auto-zooms the whole page when focusing any text input
+       under 16px — not a layout bug, a native browser behavior, but it
+       looks exactly like "the width is wrong" until you pinch back out.
+       Bumping every text-input-capable field to 16px here prevents it. */
+    .td-search input, .td-select, .td-field input[type=text], .td-field input[type=tel], .td-field select,
+    .td-pin-field input, .td-sync-row input[type=text] { font-size:16px; }
   }
   .td-menu-btn{display:none}
   @media (max-width:760px){.td-menu-btn{display:inline-flex}}

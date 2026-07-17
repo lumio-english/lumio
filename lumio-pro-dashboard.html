@@ -145,6 +145,12 @@ tbody tr:last-child td{border-bottom:none;}
 .perf-table tr:hover td{background:#f8fafc}
 .kpi-pill{display:inline-block;padding:3px 10px;border-radius:6px;font-weight:800;font-size:.8rem}
 .perf-card{background:#fff;border-radius:14px;box-shadow:0 1px 4px rgba(0,0,0,.07);padding:16px 20px;margin-bottom:14px}
+@media (max-width:760px){
+  /* iOS Safari auto-zooms the whole page when focusing any text input
+     under 16px — not a layout bug, a native browser behavior, but it
+     looks exactly like "the width is wrong" until you pinch back out. */
+  .li, .si2 { font-size:16px; }
+}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
