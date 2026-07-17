@@ -12,6 +12,14 @@ body{font-family:'Nunito',sans-serif;background:var(--g);color:var(--t);min-heig
 /* LOGIN */
 #LS{position:fixed;inset:0;background:linear-gradient(135deg,var(--b),var(--bm),#2A2118);display:flex;align-items:center;justify-content:center;z-index:9999;}
 #LS.gone{display:none;}
+/* Hidden until login succeeds — previously only visually covered by
+   the login screen's z-index, but still counted toward the page's
+   actual layout width even while hidden behind it, causing real
+   horizontal overflow on mobile during login regardless of what's
+   visible on screen. */
+.sb,.mn{display:none;}
+.sb.on{display:flex;}
+.mn.on{display:block;}
 .lc{background:#fff;border-radius:20px;padding:38px 42px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
 .ll{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:22px;}
 .lm{width:50px;height:50px;border-radius:50%;object-fit:cover;border:3px solid var(--y);}
@@ -589,6 +597,8 @@ async function doLogin() {
 
 function applySession() {
   document.getElementById('LS').classList.add('gone');
+  document.querySelector('.sb').classList.add('on');
+  document.querySelector('.mn').classList.add('on');
   document.getElementById('sb-un').textContent = CU.display || CU.username;
   const roleDisplay = CU.role === 'super_admin' ? '⭐ Super Admin'
     : CU.role === 'admin' ? '👁 View Only'
@@ -617,6 +627,8 @@ function doLogout() {
   CU=null; allR=[]; filtR=[];
   try{sessionStorage.removeItem('lumio_dash_sess');}catch(e){}
   document.getElementById('LS').classList.remove('gone');
+  document.querySelector('.sb').classList.remove('on');
+  document.querySelector('.mn').classList.remove('on');
   document.getElementById('lu').value=''; document.getElementById('lp').value='';
   document.getElementById('le').style.display='none';
 }

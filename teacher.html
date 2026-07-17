@@ -2209,12 +2209,16 @@
       const n = i + 1;
       if (q && !title.toLowerCase().includes(q) && !("l" + String(n).padStart(2, "0")).includes(q)) return;
       const num = String(n).padStart(2, "0");
+      // The actual .pptx files on disk drop trailing "!" from titles that
+      // have one (e.g. "Hello!" -> "Lesson 01 - Hello.pptx") — matching
+      // that here so the download link doesn't 404 for those lessons.
+      const fileTitle = title.replace(/!+$/, "");
       const row = document.createElement("div");
       row.className = "td-mat-row";
       row.innerHTML = `<div class="num">L${num}</div><b>${title}</b>
         ${hasSlides
           ? `<a class="act present" href="present.html?level=${level}&n=${n}">Present</a>
-             <a class="act pptx" href="powerpoints/${level}/Lesson ${num} - ${title}.pptx" download title="Download PowerPoint">PPTX</a>`
+             <a class="act pptx" href="powerpoints/${level}/Lesson ${num} - ${fileTitle}.pptx" download title="Download PowerPoint">PPTX</a>`
           : `<a class="act pptx" href="lesson.html?level=${level}&n=${n}" target="_blank" title="No slides yet — try the live lesson instead">Try lesson</a>`
         }`;
       matGrid.appendChild(row);
