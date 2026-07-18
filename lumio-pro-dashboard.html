@@ -763,28 +763,18 @@ async function runAI(si,wi,btn){
   const w=(r.answers_writing||[])[wi]; if(!w)return;
   const el=document.getElementById('ar-'+si+'-'+wi); if(!el)return;
   el.style.display='block';
-  if(!SCRIPT_URL){
-    el.innerHTML='<div style="background:#FFF3D6;border:1px solid #F97316;border-radius:8px;padding:10px 12px;font-size:.8rem;color:#43301F">ℹ️ AI feedback needs a backend to hold an API key securely — not connected in this standalone version. Ask to have this wired up to a real backend if you want it.</div>';
-    return;
-  }
   btn.disabled=true; btn.textContent='⏳ AI reviewing…';
   el.innerHTML='<div style="color:var(--mu);font-style:italic;font-size:.81rem;padding:8px 0">🤖 Getting AI feedback via Groq…</div>';
   try{
-    // Route through Apps Script (keeps API key secure)
-    const payload = {
-      secret: '51talk_secret_2024',
-      action: 'writing_feedback',
-      prompt: w.prompt||'',
-      answer: w.text||'',
-      min_words: String(w.minWords||0)
-    };
-    const rs = await fetch(SCRIPT_URL, {
+    // Route through Apps Script (keeps the Groq API key secure, never
+    // sent to or stored in the browser)
+    const rs = await fetch(SCRIPT_URL + '?action=writingFeedback', {
       method: 'POST',
-      headers: {'Content-Type':'application/x-www-form-urlencoded'},
-      body: Object.keys(payload).map(k=>encodeURIComponent(k)+'='+encodeURIComponent(payload[k])).join('&')
+      headers: {'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({ prompt: w.prompt||'', answer: w.text||'', minWords: w.minWords||0 })
     });
     const d = await rs.json();
-    if(d.status !== 'ok') throw new Error(d.message||'API error');
+    if(!d.ok) throw new Error(d.error||'API error');
     el.innerHTML = '<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 14px;font-size:.82rem;color:#374151;line-height:1.7;white-space:pre-wrap">'+h(d.feedback)+'</div>';
     aiN++; updStats(); btn.textContent='🔄 Re-run';
   }catch(e){
@@ -795,7 +785,6 @@ async function runAI(si,wi,btn){
 }
 
 // ══════════════════════════════════════════
-//  ANALYTICS// ══════════════════════════════════════════
 //  ANALYTICS
 // ══════════════════════════════════════════
 function renderA(){
