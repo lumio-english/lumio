@@ -167,8 +167,6 @@ tbody tr:last-child td{border-bottom:none;}
 <!-- ▌ AGENTS DATA — stored as plain text, never parsed as JS until we call JSON.parse() -->
 <textarea id="AD" style="display:none">{}</textarea><!-- stripped of real 51Talk agent data -->
 <textarea id="GD" style="display:none">{}</textarea><!-- stripped of real 51Talk group data -->
-<textarea id="CRMD" style="display:none"></textarea><!-- stripped of real 51Talk CRM data -->
-
 <!-- ▌ LOGIN -->
 <div id="LS">
   <div class="lc">
@@ -202,9 +200,6 @@ tbody tr:last-child td{border-bottom:none;}
     <div class="sb-sec">Main</div>
     <div class="sb-it on" onclick="V('results')" id="nv-results">📊 &nbsp;Test Results</div>
     <div class="sb-it" onclick="V('analytics')" id="nv-analytics">📈 &nbsp;Analytics</div>
-    <div class="sb-sec" id="crm-sec">Management</div>
-    <div class="sb-it" onclick="V('students')" id="nv-students">👥 &nbsp;Students CRM</div>
-    <div class="sb-it" onclick="V('addlead')" id="nv-addlead" style="display:none">➕ &nbsp;Add Lead</div>
     <div class="sb-it" onclick="V('compare')" id="nv-compare">🔀 &nbsp;Level Comparison</div>
 
     <div class="sb-sec" id="sb-admin-sec">Admin</div>
@@ -257,14 +252,6 @@ tbody tr:last-child td{border-bottom:none;}
       </div>
     </div>
     <!-- STUDENTS -->
-    <div id="vw-students" style="display:none">
-      <div class="tc">
-        <div class="tto"><div class="tt">Students — SS &amp; LP</div><input class="si2" placeholder="🔍  ID, SS or LP…" oninput="filterCRM(this.value)"/></div>
-        <div id="crm-tb"></div>
-        <div class="pg" id="crm-pg"></div>
-      </div>
-    </div>
-
     <!-- COMPARE -->
     <div id="vw-compare" style="display:none">
       <div class="tc" style="margin-bottom:16px">
@@ -284,61 +271,6 @@ tbody tr:last-child td{border-bottom:none;}
         <div id="cmp-stats" style="display:grid;grid-template-columns:repeat(5,1fr);gap:0;border-bottom:1px solid #f0f2f5"></div>
         <div id="cmp-body"></div>
         <div class="pg" id="cmp-pg"></div>
-      </div>
-    </div>
-
-    <!-- ADD LEAD -->
-    <div id="vw-addlead" style="display:none">
-      <div style="max-width:600px">
-        <div class="tc">
-          <div class="tto"><div class="tt">➕ Add Student Manually</div></div>
-          <div style="padding:20px">
-            <div style="font-size:.85rem;color:var(--mu);margin-bottom:16px;line-height:1.6">
-              Add a student who isn't in the CRM spreadsheet yet. Once added, they can take the test using the Student ID below.
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-              <div>
-                <label style="font-size:.75rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px">Student ID *</label>
-                <input id="al-id" class="si2" placeholder="e.g. 99999001" style="width:100%"/>
-              </div>
-              <div>
-                <label style="font-size:.75rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px">Name (optional)</label>
-                <input id="al-name" class="si2" placeholder="Student name" style="width:100%"/>
-              </div>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-              <div id="al-ss-wrap">
-                <label style="font-size:.75rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px">SS Agent</label>
-                <input id="al-ss" class="si2" placeholder="e.g. EGSS-mido" style="width:100%"/>
-              </div>
-              <div id="al-lp-wrap">
-                <label style="font-size:.75rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px">LP Agent</label>
-                <input id="al-lp" class="si2" placeholder="e.g. EGLP-zeyad" style="width:100%"/>
-              </div>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
-              <div>
-                <label style="font-size:.75rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px">CRM Level (0-9)</label>
-                <input id="al-level" class="si2" type="number" min="0" max="9" placeholder="e.g. 2" style="width:100%"/>
-              </div>
-              <div>
-                <label style="font-size:.75rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px">Package</label>
-                <input id="al-package" class="si2" placeholder="e.g. Basic Package 36" style="width:100%"/>
-              </div>
-            </div>
-            <button class="btn bp" onclick="addManualLead()" style="width:100%;padding:11px">➕ Add Student</button>
-            <div id="al-msg" style="font-size:.84rem;font-weight:700;margin-top:10px;display:none"></div>
-          </div>
-        </div>
-
-        <div class="tc" style="margin-top:16px">
-          <div class="tto"><div class="tt">📋 Manually Added Students</div></div>
-          <div style="padding:16px 20px" id="manual-leads-list"></div>
-        </div>
-
-        <div style="background:var(--yellow-light);border-radius:var(--r);padding:12px 16px;font-size:.83rem;color:#7a5c00;margin-top:14px;line-height:1.6">
-          ⚠️ Manually added students are saved in this browser. For them to work on the student's device too, share their Student ID — when the student opens the test, it checks the same shared list. Refresh this page to sync the latest list across devices via Google Sheets.
-        </div>
       </div>
     </div>
 
@@ -396,40 +328,6 @@ try {
 // admin account sync. AI writing feedback still needs a dedicated
 // endpoint holding an API key and remains disabled below regardless.
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxlKY07coAR_Uj6UQf2bvy6yi6I3cG9WsnTROvKI5v_l9MhhXlbP3Ke8jxbYx5btZzAGA/exec';
-
-// Full CRM data — decompressed lazily when admin opens CRM tab
-let FULL_CRM = null;
-async function loadFullCRM() {
-  if (FULL_CRM) return FULL_CRM;
-  const b64 = document.getElementById('CRMD').value;
-  if (!b64) return null; // nothing to decompress — no real student data loaded (expected for a fresh deployment)
-  try {
-    const bin = atob(b64);
-    const bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
-    const ds = new DecompressionStream('gzip');
-    const writer = ds.writable.getWriter();
-    const reader = ds.readable.getReader();
-    writer.write(bytes);
-    writer.close();
-    let chunks = [];
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      chunks.push(value);
-    }
-    const total = chunks.reduce((a, c) => a + c.length, 0);
-    const out = new Uint8Array(total);
-    let offset = 0;
-    for (const c of chunks) { out.set(c, offset); offset += c.length; }
-    const text = new TextDecoder().decode(out);
-    FULL_CRM = JSON.parse(text);
-    console.log('Full CRM loaded:', FULL_CRM.length, 'students');
-    return FULL_CRM;
-  } catch(e) {
-    console.error('Failed to load full CRM:', e);
-    return null;
-  }
-}
 
 // ══════════════════════════════════════════
 //  FIXED ADMIN ACCOUNTS
@@ -611,16 +509,11 @@ function applySession() {
   const isGroupManager = CU.role === 'group_manager';
   const isViewOnly      = CU.role === 'admin';
   const isAgent         = CU.role === 'ss' || CU.role === 'lp' || CU.role === 'both';
-  const showCRM         = true; // every role can see their own Students CRM
-  const canAddLead       = true; // every role can add their own leads
 
   document.getElementById('btn-clr').style.display = isSuperAdmin ? 'inline-block' : 'none';
   document.getElementById('nv-settings').style.display = 'flex'; // everyone can access settings to change their own password
   document.getElementById('sb-admin-sec').style.display = isSuperAdmin ? 'block' : 'none'; // section label only for super admin styling
   loadSettingsView(); // always load — content adapts per role
-  document.getElementById('nv-students').style.display = showCRM ? 'flex' : 'none';
-  document.getElementById('nv-addlead').style.display = canAddLead ? 'flex' : 'none';
-  document.getElementById('crm-sec').style.display = showCRM ? 'block' : 'none';
   loadR(); initSync();
 }
 
@@ -639,40 +532,19 @@ function doLogout() {
 // ══════════════════════════════════════════
 let allR=[], filtR=[], curP=1, aiN=0;
 const PS=12;
-const LL=['Pre-A1','A1 Beginner','A1 Elementary','A1+','A2 Pre-Int','A2 Intermediate','A2+','B1 Intermediate','B1+','B1 Advanced'];
-
-const CRM_DATA = []; // No demo data — this section only ever shows real students once you have real test results. (Previously had 10 hardcoded sample rows with realistic-looking agent names left over from development — removed entirely, not just emptied, since this is a real product now.)
 
 // ══════════════════════════════════════════
 //  VIEWS
 // ══════════════════════════════════════════
 function V(name) {
-  ['results','analytics','students','compare','settings','addlead'].forEach(v=>{
+  ['results','analytics','compare','settings'].forEach(v=>{
     document.getElementById('vw-'+v).style.display=v===name?'block':'none';
     const n=document.getElementById('nv-'+v); if(n)n.classList.toggle('on',v===name);
   });
-  const titles={results:'Test Results',analytics:'Analytics & Insights',students:'Students CRM',compare:'Level Comparison',settings:'Settings & Passwords',addlead:'Add Student Manually'};
+  const titles={results:'Test Results',analytics:'Analytics & Insights',compare:'Level Comparison',settings:'Settings & Passwords'};
   document.getElementById('tb-ti').textContent=titles[name]||name;
   if(name==='analytics') renderA();
   if(name==='settings') loadSettingsView();
-  if(name==='addlead') {
-    renderManualLeads();
-    // Lock SS/LP fields and pre-fill for non-admin agents
-    const ssWrap = document.getElementById('al-ss-wrap');
-    const lpWrap = document.getElementById('al-lp-wrap');
-    if (CU.role === 'ss' || CU.role === 'lp' || CU.role === 'both') {
-      if (CU.role !== 'lp') { document.getElementById('al-ss').value = CU.display||''; document.getElementById('al-ss').disabled = true; }
-      else { ssWrap.style.display = 'none'; }
-      if (CU.role !== 'ss') { document.getElementById('al-lp').value = CU.display||''; document.getElementById('al-lp').disabled = true; }
-      else { lpWrap.style.display = 'none'; }
-    } else {
-      ssWrap.style.display = '';
-      lpWrap.style.display = '';
-      document.getElementById('al-ss').disabled = false;
-      document.getElementById('al-lp').disabled = false;
-    }
-  }
-  if(name==='students') openCRMView();
   if(name==='compare') renderCompare();
 }
 
@@ -923,123 +795,7 @@ async function runAI(si,wi,btn){
 }
 
 // ══════════════════════════════════════════
-//  CRM TABLE
-// ══════════════════════════════════════════
-async function openCRMView() {
-  const el = document.getElementById('crm-tb');
-  el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--mu)">⏳ Loading student database…</div>';
-
-  // Always load full dataset — needed for both admin and agents
-  const full = await loadFullCRM();
-  const source = full || CRM_DATA;
-
-  if (CU && (CU.role === 'admin' || CU.role === 'super_admin')) {
-    // Admin / Super Admin sees everyone
-    CRM_PAGE_DATA = source;
-  } else {
-    // Group manager / SS / LP agent sees only their assigned students
-    if (CU && CU.studentIds && CU.studentIds.length > 0) {
-      const allowed = new Set(CU.studentIds.map(String));
-      CRM_PAGE_DATA = source.filter(s => allowed.has(String(s.id)));
-    } else {
-      CRM_PAGE_DATA = [];
-    }
-  }
-
-  crmPage = 1;
-  crmFilter = '';
-  renderCRMPaged(CRM_PAGE_DATA);
-}
-
-let CRM_PAGE_DATA = [];
-let crmPage = 1;
-let crmFilter = '';
-const CRM_PS = 50;
-
-function renderCRMPaged(data) {
-  const filtered = !crmFilter ? data : data.filter(s =>
-    s.id.includes(crmFilter) ||
-    (s.ss||'').toLowerCase().includes(crmFilter) ||
-    (s.lp||'').toLowerCase().includes(crmFilter) ||
-    (s.ss_grp||'').toLowerCase().includes(crmFilter) ||
-    (s.lp_grp||'').toLowerCase().includes(crmFilter)
-  );
-  const total = Math.ceil(filtered.length / CRM_PS);
-  const start = (crmPage - 1) * CRM_PS;
-  const page = filtered.slice(start, start + CRM_PS);
-
-  if (!page.length) {
-    const msg = crmFilter ? 'No matches' : 'No students yet — they\'ll show up here once someone completes the test';
-    document.getElementById('crm-tb').innerHTML = `<div class="em"><div class="em-i">👥</div><div class="em-t">${msg}</div></div>`;
-    document.getElementById('crm-pg').innerHTML = '';
-    return;
-  }
-
-  const rows = page.map(s => {
-    const tr = allR.find(r => r.student_id === s.id);
-    const lvlBadge = s.level >= 0 ? `L${s.level}` : '—';
-    return `<tr>
-      <td><strong>${h(s.id)}</strong></td>
-      <td style="font-size:.76rem">${h(s.ss||'—')}</td>
-      <td style="font-size:.76rem">${h(s.ss_grp||'—')}</td>
-      <td style="font-size:.76rem">${h(s.lp||'—')}</td>
-      <td style="font-size:.76rem">${h(s.lp_grp||'—')}</td>
-      <td>${lvlBadge}</td>
-      <td>${s.lm||0}</td>
-      <td>${s.tm||0}</td>
-      <td>${s.cards||0}</td>
-      <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.75rem">${h(s.pkg||'—')}</td>
-      <td style="font-size:.75rem;color:var(--mu)">${h(s.reg||'—')}</td>
-      <td>${tr ? `<span class="bx bn">${h(tr.level||'?')} · ${h(tr.total||'?')}</span>` : '<span class="bx bga">Not tested</span>'}</td>
-    </tr>`;
-  }).join('');
-
-  document.getElementById('crm-tb').innerHTML = `
-    <div style="padding:8px 16px;font-size:.78rem;color:var(--mu);border-bottom:1px solid #f0f2f5">
-      Showing ${start+1}–${Math.min(start+CRM_PS, filtered.length)} of <strong>${filtered.length.toLocaleString()}</strong> students
-      ${CU&&(CU.role==='admin'||CU.role==='super_admin')?' (full database)':''}
-    </div>
-    <div style="overflow-x:auto"><table>
-      <thead><tr>
-        <th>Student ID</th><th>SS Agent</th><th>SS Group</th><th>LP Agent</th><th>LP Group</th>
-        <th>Level</th><th>Last Mo.</th><th>This Mo.</th><th>Cards</th><th>Package</th><th>Reg. Date</th><th>Test Result</th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-    </table></div>`;
-
-  // Pagination
-  let pgHtml = `<span class="pg-i">${filtered.length.toLocaleString()} students</span>`;
-  const showPages = [];
-  for (let i = 1; i <= total; i++) {
-    if (i === 1 || i === total || Math.abs(i - crmPage) <= 2) showPages.push(i);
-    else if (showPages[showPages.length-1] !== '…') showPages.push('…');
-  }
-  showPages.forEach(p => {
-    if (p === '…') { pgHtml += '<span style="color:var(--mu);padding:0 3px">…</span>'; return; }
-    pgHtml += `<button class="pg-b${p===crmPage?' on':''}" onclick="goCRMPg(${p})">${p}</button>`;
-  });
-  document.getElementById('crm-pg').innerHTML = pgHtml;
-}
-
-function goCRMPg(n) { crmPage = n; renderCRMPaged(CRM_PAGE_DATA); scrollTo(0,0); }
-
-function filterCRM(q) {
-  crmFilter = q.toLowerCase().trim();
-  crmPage = 1;
-  renderCRMPaged(CRM_PAGE_DATA);
-}
-
-function renderCRM(data){
-  if(!data.length){document.getElementById('crm-tb').innerHTML='<div class="em"><div class="em-i">👥</div><div class="em-t">No matches</div></div>';return;}
-  const rows=data.map(s=>{
-    const tr=allR.find(r=>r.student_id===s.id);
-    return `<tr><td><strong>${h(s.id)}</strong></td><td><span class="bx bb">${h(s.ss||'—')}</span></td><td><span class="bx by">${h(s.lp||'—')}</span></td><td>L${s.level}</td><td>${s.lastMonth}</td><td>${s.thisMonth}</td><td>${s.cards}</td><td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.77rem">${h(s.package||'—')}</td><td>${tr?`<span class="bx bn">${h(tr.level||'?')} · ${h(tr.total||'?')}</span>`:'<span class="bx bga">Not tested</span>'}</td></tr>`;
-  }).join('');
-  document.getElementById('crm-tb').innerHTML=`<div style="overflow-x:auto"><table><thead><tr><th>ID</th><th>SS</th><th>LP</th><th>Level</th><th>Last Mo.</th><th>This Mo.</th><th>Cards</th><th>Package</th><th>Test</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-}
-// filterCRM replaced by renderCRMPaged
-
-// ══════════════════════════════════════════
+//  ANALYTICS// ══════════════════════════════════════════
 //  ANALYTICS
 // ══════════════════════════════════════════
 function renderA(){
@@ -1410,111 +1166,6 @@ function renderAgentPwds(search){const cp=getSavedAgentPwds(),def=localStorage.g
 function setAgentPwd(){let n=(document.getElementById('custom-agent-name')?.value||'').trim().toLowerCase(),p=(document.getElementById('custom-agent-pass')?.value||'').trim();if(!n||!p){showT('⚠️ Enter agent name and password');return;}const agentKey=Object.keys(AGENTS).find(k=>k.toLowerCase()===n)||n;if(!AGENTS[agentKey]){showT('⚠️ Agent "'+n+'" not found');return;}n=agentKey;const s=getSavedAgentPwds();s[n]=p;localStorage.setItem(DASH_LS_KEY+'_agent_pwds',JSON.stringify(s));showT('✅ Set for: '+n);loadSettingsView();}
 function updateAgentPwd(k){const i=document.getElementById('agpwd-'+k);if(!i||!i.value.trim())return;const s=getSavedAgentPwds();s[k]=i.value.trim();localStorage.setItem(DASH_LS_KEY+'_agent_pwds',JSON.stringify(s));showT('✅ Updated: '+k);renderAgentPwds(document.getElementById('agent-search')?.value||'');}
 function removeAgentPwd(k){const s=getSavedAgentPwds();delete s[k];localStorage.setItem(DASH_LS_KEY+'_agent_pwds',JSON.stringify(s));showT('🗑 Removed: '+k);renderAgentPwds(document.getElementById('agent-search')?.value||'');}
-
-// ══════════════════════════════════════════
-//  MANUAL LEADS (students not in CRM spreadsheet)
-// ══════════════════════════════════════════
-function getManualLeads() {
-  try { return JSON.parse(localStorage.getItem('lumio_manual_leads') || '{}'); } catch(e) { return {}; }
-}
-
-function addManualLead() {
-  const id    = (document.getElementById('al-id')?.value||'').trim();
-  const name  = (document.getElementById('al-name')?.value||'').trim();
-  let   ss    = (document.getElementById('al-ss')?.value||'').trim();
-  let   lp    = (document.getElementById('al-lp')?.value||'').trim();
-  const level = (document.getElementById('al-level')?.value||'').trim();
-  const pkg   = (document.getElementById('al-package')?.value||'').trim();
-  const msgEl = document.getElementById('al-msg');
-
-  if (!id) {
-    msgEl.style.display='block'; msgEl.style.color='var(--er)';
-    msgEl.textContent='⚠️ Student ID is required.';
-    return;
-  }
-
-  // Non-admin agents: auto-assign themselves as SS/LP so this lead belongs to them
-  if (CU.role === 'ss')   ss = CU.display || ss;
-  if (CU.role === 'lp')   lp = CU.display || lp;
-  if (CU.role === 'both') { ss = CU.display || ss; lp = CU.display || lp; }
-
-  const leads = getManualLeads();
-  leads[id] = {
-    ss_agent: ss, ss: '', lp_agent: lp, lp: '',
-    crm_level: level !== '' ? parseInt(level) : -1,
-    package: pkg, cards: 0, name: name
-  };
-  localStorage.setItem('lumio_manual_leads', JSON.stringify(leads));
-
-  // Sync to Google Sheets so the lead works on any device
-  syncManualLeadToSheet(id, leads[id]);
-
-  msgEl.style.display='block'; msgEl.style.color='var(--ok)';
-  msgEl.textContent = '✅ Student ' + id + ' added! They can now take the test.';
-  document.getElementById('al-id').value='';
-  document.getElementById('al-name').value='';
-  if (CU.role !== 'ss' && CU.role !== 'lp' && CU.role !== 'both') {
-    document.getElementById('al-ss').value='';
-    document.getElementById('al-lp').value='';
-  }
-  document.getElementById('al-level').value='';
-  document.getElementById('al-package').value='';
-  renderManualLeads();
-}
-
-function syncManualLeadToSheet(id, data) {
-  // No-op in this standalone version — was a hardcoded 51Talk Apps
-  // Script URL. Also worth knowing: this whole "Manual Leads" feature
-  // is vestigial now regardless, since lumio-pro-test.html no longer
-  // checks a student ID against any lead/CRM list at all (anyone can
-  // just fill in their own name/phone/age and start) — "adding a
-  // lead" here doesn't actually gate anything in the test anymore.
-}
-
-function renderManualLeads() {
-  const el = document.getElementById('manual-leads-list');
-  if (!el) return;
-  const leads = getManualLeads();
-  let entries = Object.entries(leads);
-
-  // Non-admin: only show leads they personally added (matched by their own SS/LP name)
-  if (CU.role !== 'super_admin' && CU.role !== 'group_manager') {
-    const myName = (CU.display||'').toLowerCase();
-    entries = entries.filter(([id,d]) =>
-      (d.ss_agent||'').toLowerCase() === myName || (d.lp_agent||'').toLowerCase() === myName
-    );
-  } else if (CU.role === 'group_manager') {
-    const myAgents = (CU.groupAgents||[]).map(a=>a.toLowerCase());
-    entries = entries.filter(([id,d]) =>
-      myAgents.includes((d.ss_agent||'').toLowerCase()) || myAgents.includes((d.lp_agent||'').toLowerCase())
-    );
-  }
-
-  if (!entries.length) {
-    el.innerHTML = '<div style="color:var(--mu);font-size:.85rem">No manually added students yet.</div>';
-    return;
-  }
-  el.innerHTML = entries.map(([id, d]) => `
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;padding:10px 12px;background:var(--g);border-radius:8px">
-      <div style="flex:1">
-        <div style="font-weight:800;font-size:.85rem;color:var(--b)">${h(id)} ${d.name?'— '+h(d.name):''}</div>
-        <div style="font-size:.76rem;color:var(--mu);margin-top:2px">
-          ${d.ss_agent?'SS: '+h(d.ss_agent)+' · ':''}${d.lp_agent?'LP: '+h(d.lp_agent)+' · ':''}${d.crm_level>=0?'Level '+d.crm_level+' · ':''}${d.package?h(d.package):''}
-        </div>
-      </div>
-      <button class="btn bd btn-sm" onclick="removeManualLead('${h(id)}')">🗑</button>
-    </div>
-  `).join('');
-}
-
-function removeManualLead(id) {
-  if (!confirm('Remove manually added student ' + id + '?')) return;
-  const leads = getManualLeads();
-  delete leads[id];
-  localStorage.setItem('lumio_manual_leads', JSON.stringify(leads));
-  showT('🗑 Removed: ' + id);
-  renderManualLeads();
-}
 
 // ══════════════════════════════════════════
 //  PARENT REPORT — BILINGUAL DATA (EN / AR)
