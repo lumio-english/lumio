@@ -204,6 +204,19 @@
     cursor:pointer;transition:transform .13s ease;
   }
   .sd-vocab-word-card .sd-vocab-listen:active{transform:scale(.9)}
+
+  .sd-grammar-topic{
+    background:var(--sd-cream);border-radius:16px;padding:16px 18px;margin-bottom:14px;
+  }
+  .sd-grammar-topic h4{margin:0 0 4px;font-family:'Baloo 2',sans-serif;font-size:1.02rem;color:var(--sd-cocoa)}
+  .sd-grammar-topic .titleAr{font-size:.82rem;color:var(--sd-cocoa-soft);font-weight:700;margin-bottom:10px}
+  .sd-grammar-explain{font-size:.88rem;color:var(--sd-cocoa);line-height:1.6;margin-bottom:4px}
+  .sd-grammar-explain-ar{font-size:.84rem;color:var(--sd-cocoa-soft);line-height:1.6;margin-bottom:12px;direction:rtl;text-align:right}
+  .sd-grammar-examples{display:flex;flex-direction:column;gap:8px}
+  .sd-grammar-example{background:#fff;border-radius:10px;padding:9px 12px}
+  .sd-grammar-example .en{font-size:.86rem;color:var(--sd-cocoa);font-weight:700}
+  .sd-grammar-example .ar{font-size:.82rem;color:var(--sd-cocoa-soft);margin-top:3px;direction:rtl;text-align:right}
+
   .sd-game-play:hover{background:#0b7d78;transform:translateY(-1px)}
   .sd-game-play:active{transform:translateY(0) scale(.94)}
   .sd-game-play:focus-visible{outline:3px solid rgba(13,148,136,.4);outline-offset:2px}
@@ -427,13 +440,13 @@
     <button class="sd-hub-tile" id="hubVocab">
       <div class="sd-hub-icon" style="background:#FFF3D6;color:#C2530A">📔</div>
       <h4>Vocabulary</h4>
-      <p>Study words by topic, with pictures and Arabic</p>
+      <p>Study words by topic, with Arabic and audio</p>
     </button>
-    <div class="sd-hub-tile sd-hub-soon">
+    <button class="sd-hub-tile" id="hubGrammar">
       <div class="sd-hub-icon" style="background:#E6FAF7;color:#0F766E">📐</div>
       <h4>Grammar</h4>
-      <p>Coming soon</p>
-    </div>
+      <p>Rules and examples, with Arabic</p>
+    </button>
     <div class="sd-hub-tile sd-hub-soon">
       <div class="sd-hub-icon" style="background:#FFF3D6;color:#C2530A">📖</div>
       <h4>Stories</h4>
@@ -487,6 +500,16 @@
     <h3>📔 Vocabulary</h3>
     <p id="vocabTitle" style="margin:-8px 0 16px;font-weight:700;color:var(--sd-cocoa-soft);font-size:.88rem"></p>
     <div id="vocabThemes"></div>
+  </div>
+</div>
+
+<!-- Grammar Hub modal -->
+<div class="sd-modal-overlay" id="grammarOverlay">
+  <div class="sd-modal wide" style="position:relative">
+    <button class="sd-modal-close-x" id="grammarClose">✕</button>
+    <h3>📐 Grammar</h3>
+    <p id="grammarTitle" style="margin:-8px 0 16px;font-weight:700;color:var(--sd-cocoa-soft);font-size:.88rem"></p>
+    <div id="grammarTopics"></div>
   </div>
 </div>
 
@@ -977,6 +1000,56 @@
   document.getElementById("hubVocab").onclick = () => { vocabOverlay.classList.add("show"); renderVocabHub(); };
   document.getElementById("vocabClose").onclick = () => vocabOverlay.classList.remove("show");
   vocabOverlay.addEventListener("click", e => { if (e.target === vocabOverlay) vocabOverlay.classList.remove("show"); });
+
+  // ================= English Hub: Grammar =================
+  const grammarOverlay = document.getElementById("grammarOverlay");
+  const grammarTitle = document.getElementById("grammarTitle");
+  const grammarTopics = document.getElementById("grammarTopics");
+  const GRAMMAR_HUB_LEVELS = {
+    "level3": "Level 3 · My World", "level4": "Level 4 · Every Day", "level5": "Level 5 · Stories Begin",
+    "level6": "Level 6 · Growing Up", "level7": "Level 7 · Wide World", "level8": "Level 8 · Think & Talk",
+    "level9": "Level 9 · Express Yourself",
+  };
+  const grammarDataCache = {};
+
+  async function loadGrammarHubLevel(levelId) {
+    if (grammarDataCache[levelId]) return grammarDataCache[levelId];
+    try {
+      const res = await fetch(`grammar-hub/${levelId}.json`);
+      if (!res.ok) return null;
+      const data = await res.json();
+      grammarDataCache[levelId] = data;
+      return data;
+    } catch (e) { return null; }
+  }
+  const GRAMMAR_STARTS_AT = ["pre-a", "level1", "level2"]; // levels before grammar content begins
+  async function renderGrammarHub() {
+    grammarTitle.textContent = GRAMMAR_HUB_LEVELS[level] || "";
+    grammarTopics.innerHTML = `<p style="text-align:center;color:var(--sd-cocoa-soft);padding:20px">Loading…</p>`;
+    if (GRAMMAR_STARTS_AT.includes(level)) {
+      grammarTopics.innerHTML = `<p style="text-align:center;color:var(--sd-cocoa-soft);padding:20px">Grammar lessons start from Level 3 — keep going and you'll get there! 🌟</p>`;
+      return;
+    }
+    const data = await loadGrammarHubLevel(level);
+    if (!data) { grammarTopics.innerHTML = `<p style="text-align:center;color:var(--sd-cocoa-soft);padding:20px">Grammar for your level isn't ready yet — check back soon!</p>`; return; }
+    grammarTopics.innerHTML = data.topics.map(t => `
+      <div class="sd-grammar-topic">
+        <h4>${t.title}</h4>
+        <div class="titleAr">${t.titleAr}</div>
+        <div class="sd-grammar-explain">${t.explanation}</div>
+        <div class="sd-grammar-explain-ar">${t.explanationAr}</div>
+        <div class="sd-grammar-examples">
+          ${t.examples.map(ex => `
+            <div class="sd-grammar-example">
+              <div class="en">${ex.en}</div>
+              <div class="ar">${ex.ar}</div>
+            </div>`).join("")}
+        </div>
+      </div>`).join("");
+  }
+  document.getElementById("hubGrammar").onclick = () => { grammarOverlay.classList.add("show"); renderGrammarHub(); };
+  document.getElementById("grammarClose").onclick = () => grammarOverlay.classList.remove("show");
+  grammarOverlay.addEventListener("click", e => { if (e.target === grammarOverlay) grammarOverlay.classList.remove("show"); });
 
   // ================= Memory Match =================
   const memoryOverlay = document.getElementById("memoryOverlay");
