@@ -305,7 +305,12 @@
       recorder = new MediaRecorder(mediaStream);
       recorder.ondataavailable = (e) => chunks.push(e.data);
       recorder.onstop = () => {
-        const blob = new Blob(chunks, { type: "audio/webm" });
+        // Use whatever format the browser actually recorded in — iOS
+        // Safari doesn't support webm at all and records in its own
+        // format (typically mp4/aac); hardcoding "audio/webm" here
+        // mislabels the file and breaks playback specifically on
+        // iPhone, even though the recording itself succeeds fine.
+        const blob = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
         recordedUrl = URL.createObjectURL(blob);
         cleanupStream();
         showPlayback();
