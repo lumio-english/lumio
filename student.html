@@ -188,10 +188,6 @@
   .sd-hub-tile h4{margin:0;font-family:'Baloo 2',sans-serif;font-size:1rem;color:var(--sd-cocoa)}
   .sd-hub-tile p{margin:0;font-size:.78rem;color:var(--sd-cocoa-soft);font-weight:700}
 
-  .sd-vocab-level-select{
-    width:100%;padding:11px 14px;border-radius:12px;border:1.5px solid #EAE0D5;
-    font-family:inherit;font-size:16px;font-weight:700;color:var(--sd-cocoa);margin-bottom:16px;background:#fff;
-  }
   .sd-vocab-theme{margin-bottom:18px}
   .sd-vocab-theme-title{font-family:'Baloo 2',sans-serif;font-size:1rem;color:var(--sd-cocoa);margin:0 0 10px;display:flex;align-items:center;gap:8px}
   .sd-vocab-theme-title .ar{font-size:.82rem;color:var(--sd-cocoa-soft);font-weight:700}
@@ -200,7 +196,6 @@
     background:var(--sd-cream);border-radius:14px;padding:12px 10px;text-align:center;
     display:flex;flex-direction:column;align-items:center;gap:4px;
   }
-  .sd-vocab-word-card .em{font-size:1.8rem}
   .sd-vocab-word-card .en{font-weight:800;font-size:.92rem;color:var(--sd-cocoa)}
   .sd-vocab-word-card .ar{font-size:.86rem;color:var(--sd-cocoa-soft);font-weight:700}
   .sd-vocab-word-card .sd-vocab-listen{
@@ -490,7 +485,7 @@
   <div class="sd-modal wide" style="position:relative">
     <button class="sd-modal-close-x" id="vocabClose">✕</button>
     <h3>📔 Vocabulary</h3>
-    <select class="sd-vocab-level-select" id="vocabLevelSelect"></select>
+    <p id="vocabTitle" style="margin:-8px 0 16px;font-weight:700;color:var(--sd-cocoa-soft);font-size:.88rem"></p>
     <div id="vocabThemes"></div>
   </div>
 </div>
@@ -939,22 +934,17 @@
 
   // ================= English Hub: Vocabulary =================
   const vocabOverlay = document.getElementById("vocabOverlay");
-  const vocabLevelSelect = document.getElementById("vocabLevelSelect");
+  const vocabTitle = document.getElementById("vocabTitle");
   const vocabThemes = document.getElementById("vocabThemes");
   // Separate curated study list, not the same words as the lessons —
-  // organized by everyday theme rather than lesson order.
-  const VOCAB_HUB_LEVELS = [
-    { id: "pre-a", label: "Level 0 · First Words" },
-    { id: "level1", label: "Level 1 · First Sentences" },
-  ];
+  // organized by everyday theme rather than lesson order. Always
+  // shows the student's own current level, matching the rest of their
+  // dashboard — no separate level picker to keep it simple.
+  const VOCAB_HUB_LEVELS = {
+    "pre-a": "Level 0 · First Words",
+    "level1": "Level 1 · First Sentences",
+  };
   const vocabDataCache = {};
-  VOCAB_HUB_LEVELS.forEach(lv => {
-    const opt = document.createElement("option");
-    opt.value = lv.id;
-    opt.textContent = lv.label;
-    vocabLevelSelect.appendChild(opt);
-  });
-  vocabLevelSelect.value = VOCAB_HUB_LEVELS.some(lv => lv.id === level) ? level : VOCAB_HUB_LEVELS[0].id;
 
   async function loadVocabHubLevel(levelId) {
     if (vocabDataCache[levelId]) return vocabDataCache[levelId];
@@ -967,17 +957,16 @@
     } catch (e) { return null; }
   }
   async function renderVocabHub() {
-    const levelId = vocabLevelSelect.value;
+    vocabTitle.textContent = VOCAB_HUB_LEVELS[level] || "";
     vocabThemes.innerHTML = `<p style="text-align:center;color:var(--sd-cocoa-soft);padding:20px">Loading…</p>`;
-    const data = await loadVocabHubLevel(levelId);
-    if (!data) { vocabThemes.innerHTML = `<p style="text-align:center;color:var(--sd-cocoa-soft);padding:20px">Not available yet for this level.</p>`; return; }
+    const data = await loadVocabHubLevel(level);
+    if (!data) { vocabThemes.innerHTML = `<p style="text-align:center;color:var(--sd-cocoa-soft);padding:20px">Vocabulary for your level isn't ready yet — check back soon!</p>`; return; }
     vocabThemes.innerHTML = data.themes.map(theme => `
       <div class="sd-vocab-theme">
         <h4 class="sd-vocab-theme-title">${theme.theme} <span class="ar">${theme.themeAr}</span></h4>
         <div class="sd-vocab-word-grid">
           ${theme.words.map(w => `
             <div class="sd-vocab-word-card">
-              <div class="em">${w.emoji}</div>
               <div class="en">${w.en}</div>
               <div class="ar">${w.ar}</div>
               <button class="sd-vocab-listen" onclick="Lumio.speak('${w.en.replace(/'/g, "\\'")}')">🔊</button>
@@ -988,7 +977,6 @@
   document.getElementById("hubVocab").onclick = () => { vocabOverlay.classList.add("show"); renderVocabHub(); };
   document.getElementById("vocabClose").onclick = () => vocabOverlay.classList.remove("show");
   vocabOverlay.addEventListener("click", e => { if (e.target === vocabOverlay) vocabOverlay.classList.remove("show"); });
-  vocabLevelSelect.addEventListener("change", renderVocabHub);
 
   // ================= Memory Match =================
   const memoryOverlay = document.getElementById("memoryOverlay");
