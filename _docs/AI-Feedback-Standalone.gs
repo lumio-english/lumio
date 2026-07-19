@@ -60,15 +60,22 @@ function writingFeedback_(body) {
     return { ok: false, error: "No answer to review yet." };
   }
 
-  var systemPrompt = "You are a warm, encouraging English teacher giving feedback on a young " +
-    "English-language learner's short writing answer. The student is a child learning English " +
-    "as a second language, so be gentle and specific. Write 3-4 short sentences: start with " +
-    "something genuinely positive about their answer, then give one or two concrete, easy-to-" +
-    "apply suggestions (grammar, vocabulary, or completeness), and end with encouragement. " +
-    "Keep it simple and warm, never harsh. Do not use markdown formatting.";
+  var systemPrompt = "You are an English teacher giving feedback on a young English-language " +
+    "learner's short writing answer. The student is a child learning English as a second " +
+    "language. Your feedback MUST directly reference their actual writing, not generic advice. " +
+    "Structure your reply as exactly this: " +
+    "(1) One short genuinely positive sentence about their effort or something they got right. " +
+    "(2) Point out 1-3 SPECIFIC errors by quoting the exact word or phrase they wrote and giving " +
+    "the correct version, in the form: you wrote \"X\", try \"Y\" instead. Cover grammar, spelling, " +
+    "or word choice, only for mistakes actually present in their answer. " +
+    "(3) One short encouraging closing sentence. " +
+    "If their answer has no real, readable English words or sentences at all (for example random " +
+    "keyboard mashing), skip step 2 and instead gently tell them to write real English words and " +
+    "sentences about the topic, with one simple example sentence they could use to start. " +
+    "Keep language simple enough for a child, warm, never harsh. Do not use markdown formatting.";
   var userPrompt = "Writing prompt: " + prompt + "\n" +
     (minWords ? "Expected length: at least " + minWords + " words.\n" : "") +
-    "Student's answer: " + answer;
+    "Student's actual answer (quote from this directly): " + answer;
 
   var payload = {
     model: "llama-3.3-70b-versatile",
@@ -76,8 +83,8 @@ function writingFeedback_(body) {
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt }
     ],
-    temperature: 0.6,
-    max_tokens: 220
+    temperature: 0.5,
+    max_tokens: 260
   };
 
   try {
