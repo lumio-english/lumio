@@ -217,6 +217,28 @@
   .sd-grammar-example .en{font-size:.86rem;color:var(--sd-cocoa);font-weight:700}
   .sd-grammar-example .ar{font-size:.82rem;color:var(--sd-cocoa-soft);margin-top:3px;direction:rtl;text-align:right}
 
+  .sd-story-title-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+  .sd-story-title-row h4{margin:0;font-family:'Baloo 2',sans-serif;font-size:1.15rem;color:var(--sd-cocoa)}
+  .sd-story-title-row .titleAr{font-size:.86rem;color:var(--sd-cocoa-soft);font-weight:700}
+  .sd-story-play{
+    background:var(--sd-teal-deep);color:#fff;border:none;border-radius:999px;padding:9px 18px;
+    font-weight:800;font-size:.85rem;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+    transition:transform .13s ease;
+  }
+  .sd-story-play:active{transform:scale(.95)}
+  .sd-story-text{
+    background:var(--sd-cream);border-radius:16px;padding:18px 20px;font-size:1rem;line-height:1.9;
+    color:var(--sd-cocoa);margin-bottom:18px;
+  }
+  .sd-story-keywords-title{font-family:'Baloo 2',sans-serif;font-size:.95rem;color:var(--sd-cocoa);margin:0 0 10px}
+  .sd-story-keyword-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+  .sd-story-keyword-card{
+    background:#fff;border:1.5px solid #EAE0D5;border-radius:12px;padding:10px 12px;
+    display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;
+  }
+  .sd-story-keyword-card .en{font-weight:800;font-size:.86rem;color:var(--sd-cocoa)}
+  .sd-story-keyword-card .ar{font-size:.8rem;color:var(--sd-cocoa-soft);font-weight:700}
+
   .sd-game-play:hover{background:#0b7d78;transform:translateY(-1px)}
   .sd-game-play:active{transform:translateY(0) scale(.94)}
   .sd-game-play:focus-visible{outline:3px solid rgba(13,148,136,.4);outline-offset:2px}
@@ -447,11 +469,11 @@
       <h4>Grammar</h4>
       <p>Rules and examples, with Arabic</p>
     </button>
-    <div class="sd-hub-tile sd-hub-soon">
+    <button class="sd-hub-tile" id="hubStories">
       <div class="sd-hub-icon" style="background:#FFF3D6;color:#C2530A">📖</div>
       <h4>Stories</h4>
-      <p>Coming soon</p>
-    </div>
+      <p>Read along with real narration</p>
+    </button>
     <div class="sd-hub-tile sd-hub-soon">
       <div class="sd-hub-icon" style="background:#E6FAF7;color:#0F766E">🔤</div>
       <h4>Phonics</h4>
@@ -510,6 +532,15 @@
     <h3>📐 Grammar</h3>
     <p id="grammarTitle" style="margin:-8px 0 16px;font-weight:700;color:var(--sd-cocoa-soft);font-size:.88rem"></p>
     <div id="grammarTopics"></div>
+  </div>
+</div>
+
+<!-- Stories Hub modal -->
+<div class="sd-modal-overlay" id="storiesOverlay">
+  <div class="sd-modal wide" style="position:relative">
+    <button class="sd-modal-close-x" id="storiesClose">✕</button>
+    <h3>📖 Stories</h3>
+    <div id="storiesContent"></div>
   </div>
 </div>
 
@@ -1050,6 +1081,62 @@
   document.getElementById("hubGrammar").onclick = () => { grammarOverlay.classList.add("show"); renderGrammarHub(); };
   document.getElementById("grammarClose").onclick = () => grammarOverlay.classList.remove("show");
   grammarOverlay.addEventListener("click", e => { if (e.target === grammarOverlay) grammarOverlay.classList.remove("show"); });
+
+  // ================= English Hub: Stories =================
+  const storiesOverlay = document.getElementById("storiesOverlay");
+  const storiesContent = document.getElementById("storiesContent");
+  // Real narrated audio per story lives in assets/audio/stories/{level}.mp3
+  // — a separate folder from the word-level audio elsewhere, since these
+  // are full-paragraph narrations, not single words.
+  const storiesDataCache = {};
+  let currentStoryAudio = null;
+
+  async function loadStoryLevel(levelId) {
+    if (storiesDataCache[levelId]) return storiesDataCache[levelId];
+    try {
+      const res = await fetch(`stories-hub/${levelId}.json`);
+      if (!res.ok) return null;
+      const data = await res.json();
+      storiesDataCache[levelId] = data;
+      return data;
+    } catch (e) { return null; }
+  }
+  function playStoryNarration(levelId, btn) {
+    if (currentStoryAudio) { try { currentStoryAudio.pause(); } catch (e) {} }
+    const audio = new Audio(`assets/audio/stories/${levelId}.mp3`);
+    currentStoryAudio = audio;
+    const original = btn.textContent;
+    btn.textContent = "⏸ Playing…";
+    audio.addEventListener("ended", () => { btn.textContent = original; });
+    audio.addEventListener("error", () => { btn.textContent = "⚠️ Audio unavailable"; });
+    const playResult = audio.play();
+    if (playResult && typeof playResult.catch === "function") {
+      playResult.catch(() => { btn.textContent = "⚠️ Audio unavailable"; });
+    }
+  }
+  async function renderStoriesHub() {
+    storiesContent.innerHTML = `<p style="text-align:center;color:var(--sd-cocoa-soft);padding:20px">Loading…</p>`;
+    const data = await loadStoryLevel(level);
+    if (!data) { storiesContent.innerHTML = `<p style="text-align:center;color:var(--sd-cocoa-soft);padding:20px">A story for your level isn't ready yet — check back soon!</p>`; return; }
+    storiesContent.innerHTML = `
+      <div class="sd-story-title-row">
+        <div><h4>${data.title}</h4><span class="titleAr">${data.titleAr}</span></div>
+        <button class="sd-story-play" id="storyPlayBtn">🔊 Play narration</button>
+      </div>
+      <div class="sd-story-text">${data.story}</div>
+      <h4 class="sd-story-keywords-title">Tricky words in this story</h4>
+      <div class="sd-story-keyword-grid">
+        ${data.keyWords.map(w => `
+          <div class="sd-story-keyword-card">
+            <div class="en">${w.en}</div>
+            <div class="ar">${w.ar}</div>
+          </div>`).join("")}
+      </div>`;
+    document.getElementById("storyPlayBtn").onclick = (e) => playStoryNarration(level, e.currentTarget);
+  }
+  document.getElementById("hubStories").onclick = () => { storiesOverlay.classList.add("show"); renderStoriesHub(); };
+  document.getElementById("storiesClose").onclick = () => { storiesOverlay.classList.remove("show"); if (currentStoryAudio) { try { currentStoryAudio.pause(); } catch (e) {} } };
+  storiesOverlay.addEventListener("click", e => { if (e.target === storiesOverlay) { storiesOverlay.classList.remove("show"); if (currentStoryAudio) { try { currentStoryAudio.pause(); } catch (e) {} } } });
 
   // ================= Memory Match =================
   const memoryOverlay = document.getElementById("memoryOverlay");
