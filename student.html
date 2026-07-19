@@ -238,6 +238,35 @@
   }
   .sd-story-keyword-card .en{font-weight:800;font-size:.86rem;color:var(--sd-cocoa)}
   .sd-story-keyword-card .ar{font-size:.8rem;color:var(--sd-cocoa-soft);font-weight:700}
+
+  .sd-wr-prompt-picker{display:flex;flex-direction:column;gap:10px}
+  .sd-wr-prompt-item{
+    background:#fff;border:1.5px solid #EAE0D5;border-radius:12px;padding:14px 16px;text-align:left;
+    cursor:pointer;transition:transform .13s ease;
+  }
+  .sd-wr-prompt-item:hover{transform:translateX(3px);border-color:var(--sd-teal)}
+  .sd-wr-prompt-item .en{font-weight:800;font-size:.92rem;color:var(--sd-cocoa)}
+  .sd-wr-prompt-item .ar{font-size:.82rem;color:var(--sd-cocoa-soft);margin-top:3px}
+  .sd-wr-back{background:none;border:none;color:var(--sd-teal-deep);font-weight:800;font-size:.85rem;cursor:pointer;padding:0;margin-bottom:14px}
+  .sd-wr-prompt-box{background:var(--sd-cream);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+  .sd-wr-prompt-box .en{font-weight:800;font-size:.98rem;color:var(--sd-cocoa)}
+  .sd-wr-prompt-box .ar{font-size:.85rem;color:var(--sd-cocoa-soft);margin-top:4px}
+  .sd-wr-tabs{display:flex;gap:8px;margin-bottom:16px}
+  .sd-wr-tab{
+    flex:1;padding:10px;border-radius:10px;border:1.5px solid #EAE0D5;background:#fff;
+    font-weight:800;font-size:.86rem;color:var(--sd-cocoa-soft);cursor:pointer;
+  }
+  .sd-wr-tab.on{background:var(--sd-teal-deep);color:#fff;border-color:var(--sd-teal-deep)}
+  .sd-wr-textarea{
+    width:100%;min-height:130px;padding:14px;border-radius:12px;border:1.5px solid #EAE0D5;
+    font-family:inherit;font-size:16px;color:var(--sd-cocoa);resize:vertical;box-sizing:border-box;
+  }
+  .sd-wr-save-row{display:flex;align-items:center;gap:10px;margin-top:10px}
+  .sd-wr-save-btn{
+    background:var(--sd-teal-deep);color:#fff;border:none;border-radius:999px;padding:9px 20px;
+    font-weight:800;font-size:.85rem;cursor:pointer;
+  }
+  .sd-wr-saved-note{font-size:.8rem;color:var(--sd-cocoa-soft);font-weight:700}
   .sd-story-list-item{
     width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;
     background:var(--sd-cream);border:none;border-radius:14px;padding:16px 18px;margin-bottom:10px;
@@ -492,11 +521,11 @@
       <h4>Phonics</h4>
       <p>Coming soon</p>
     </div>
-    <div class="sd-hub-tile sd-hub-soon">
+    <button class="sd-hub-tile" id="hubWriting">
       <div class="sd-hub-icon" style="background:#FFF3D6;color:#C2530A">✍️</div>
       <h4>Writing &amp; speaking</h4>
-      <p>Coming soon</p>
-    </div>
+      <p>Answer prompts by typing or recording</p>
+    </button>
   </div>
 
   <!-- Adventure path -->
@@ -554,6 +583,15 @@
     <button class="sd-modal-close-x" id="storiesClose">✕</button>
     <h3>📖 Stories</h3>
     <div id="storiesContent"></div>
+  </div>
+</div>
+
+<!-- Writing & Speaking Hub modal -->
+<div class="sd-modal-overlay" id="writingOverlay">
+  <div class="sd-modal wide" style="position:relative">
+    <button class="sd-modal-close-x" id="writingClose">✕</button>
+    <h3>✍️ Writing &amp; Speaking</h3>
+    <div id="writingContent"></div>
   </div>
 </div>
 
@@ -1175,6 +1213,143 @@
   document.getElementById("hubStories").onclick = () => { storiesOverlay.classList.add("show"); renderStoriesHub(); };
   document.getElementById("storiesClose").onclick = () => { storiesOverlay.classList.remove("show"); stopStoryAudio(); };
   storiesOverlay.addEventListener("click", e => { if (e.target === storiesOverlay) { storiesOverlay.classList.remove("show"); stopStoryAudio(); } });
+
+  // ================= English Hub: Writing & Speaking =================
+  const writingOverlay = document.getElementById("writingOverlay");
+  const writingContent = document.getElementById("writingContent");
+  const writingDataCache = {};
+  const WR_STORAGE_KEY = "lumio_writing_answers";
+  let wrMediaStream = null, wrRecorder = null, wrChunks = [], wrRecordedUrl = null;
+
+  function getWritingAnswers() { try { return JSON.parse(localStorage.getItem(WR_STORAGE_KEY) || "{}"); } catch (e) { return {}; } }
+  function saveWritingAnswer(key, text) {
+    const all = getWritingAnswers();
+    all[key] = { text, savedAt: Date.now() };
+    localStorage.setItem(WR_STORAGE_KEY, JSON.stringify(all));
+  }
+  async function loadWritingLevel(levelId) {
+    if (writingDataCache[levelId]) return writingDataCache[levelId];
+    try {
+      const res = await fetch(`writing-hub/${levelId}.json`);
+      if (!res.ok) return null;
+      const data = await res.json();
+      writingDataCache[levelId] = data;
+      return data;
+    } catch (e) { return null; }
+  }
+  function wrCleanupStream() {
+    if (wrMediaStream) { wrMediaStream.getTracks().forEach(t => t.stop()); wrMediaStream = null; }
+  }
+  function renderWritingTab(promptKey) {
+    const saved = getWritingAnswers()[promptKey];
+    return `
+      <textarea class="sd-wr-textarea" id="wrTextarea" placeholder="Type your answer here...">${saved ? saved.text : ""}</textarea>
+      <div class="sd-wr-save-row">
+        <button class="sd-wr-save-btn" id="wrSaveBtn">💾 Save</button>
+        <span class="sd-wr-saved-note" id="wrSavedNote">${saved ? "Saved" : ""}</span>
+      </div>`;
+  }
+  function renderSpeakingTab() {
+    const supported = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
+    if (!supported) return `<p style="color:var(--sd-cocoa-soft)">🎤 We couldn't reach a microphone here — that's okay, just speak your answer out loud!</p>`;
+    return `<div id="wrRecordZone"><button class="sd-story-play" id="wrRecordBtn">🎤 Tap to record</button></div>`;
+  }
+  function wireSpeakingTab() {
+    const btn = document.getElementById("wrRecordBtn");
+    if (!btn) return;
+    btn.onclick = async () => {
+      const zone = document.getElementById("wrRecordZone");
+      try { wrMediaStream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
+      catch (e) { zone.innerHTML = `<p style="color:var(--sd-coral,#FF6B6B);font-weight:700">🎤 Microphone access wasn't allowed — no problem, just speak your answer out loud!</p>`; return; }
+      wrChunks = [];
+      wrRecorder = new MediaRecorder(wrMediaStream);
+      wrRecorder.ondataavailable = e => wrChunks.push(e.data);
+      wrRecorder.onstop = () => {
+        // Match the browser's actual recording format — hardcoding one
+        // (like webm) breaks playback on browsers that record in a
+        // different format, notably iOS Safari.
+        const blob = new Blob(wrChunks, { type: wrRecorder.mimeType || "audio/webm" });
+        wrRecordedUrl = URL.createObjectURL(blob);
+        wrCleanupStream();
+        zone.innerHTML = `
+          <audio id="wrPlayback" src="${wrRecordedUrl}"></audio>
+          <div class="row" style="justify-content:center;gap:8px">
+            <button class="sd-story-play" id="wrPlayBtn">▶ Play my voice</button>
+            <button class="sd-wr-tab" id="wrRedoBtn" style="flex:0 0 auto">🔁 Record again</button>
+          </div>`;
+        document.getElementById("wrPlayBtn").onclick = () => document.getElementById("wrPlayback").play();
+        document.getElementById("wrRedoBtn").onclick = () => { if (wrRecordedUrl) URL.revokeObjectURL(wrRecordedUrl); renderPromptDetail(currentWrData, currentWrPromptIndex); };
+      };
+      wrRecorder.start();
+      let secondsLeft = 30;
+      zone.innerHTML = `<button class="sd-story-play" id="wrStopBtn" style="background:#F97316">⏺ Recording… ${secondsLeft}s (tap to stop)</button>`;
+      const stopNow = () => { clearInterval(timer); if (wrRecorder.state !== "inactive") wrRecorder.stop(); };
+      document.getElementById("wrStopBtn").onclick = stopNow;
+      const timer = setInterval(() => {
+        secondsLeft--;
+        if (secondsLeft <= 0) { stopNow(); return; }
+        const sb = document.getElementById("wrStopBtn");
+        if (sb) sb.textContent = `⏺ Recording… ${secondsLeft}s (tap to stop)`;
+      }, 1000);
+    };
+  }
+  let currentWrData = null, currentWrPromptIndex = 0, currentWrMode = "write";
+  function renderPromptDetail(data, promptIndex) {
+    if (wrRecordedUrl) { URL.revokeObjectURL(wrRecordedUrl); wrRecordedUrl = null; }
+    wrCleanupStream();
+    currentWrData = data; currentWrPromptIndex = promptIndex; currentWrMode = "write";
+    const prompt = data.prompts[promptIndex];
+    const promptKey = `${data.level}_${promptIndex}`;
+    writingContent.innerHTML = `
+      <button class="sd-wr-back" id="wrBackBtn">← All prompts</button>
+      <div class="sd-wr-prompt-box"><div class="en">${prompt.en}</div><div class="ar">${prompt.ar}</div></div>
+      <div class="sd-wr-tabs">
+        <button class="sd-wr-tab on" id="wrTabWrite">✍️ Write</button>
+        <button class="sd-wr-tab" id="wrTabSpeak">🎤 Speak</button>
+      </div>
+      <div id="wrTabContent">${renderWritingTab(promptKey)}</div>`;
+    document.getElementById("wrBackBtn").onclick = () => renderPromptPicker(data);
+    document.getElementById("wrSaveBtn").onclick = () => {
+      saveWritingAnswer(promptKey, document.getElementById("wrTextarea").value);
+      document.getElementById("wrSavedNote").textContent = "Saved ✓";
+    };
+    const tabWrite = document.getElementById("wrTabWrite"), tabSpeak = document.getElementById("wrTabSpeak");
+    tabWrite.onclick = () => {
+      if (currentWrMode === "write") return;
+      currentWrMode = "write"; tabWrite.classList.add("on"); tabSpeak.classList.remove("on");
+      document.getElementById("wrTabContent").innerHTML = renderWritingTab(promptKey);
+      document.getElementById("wrSaveBtn").onclick = () => {
+        saveWritingAnswer(promptKey, document.getElementById("wrTextarea").value);
+        document.getElementById("wrSavedNote").textContent = "Saved ✓";
+      };
+    };
+    tabSpeak.onclick = () => {
+      if (currentWrMode === "speak") return;
+      currentWrMode = "speak"; tabSpeak.classList.add("on"); tabWrite.classList.remove("on");
+      document.getElementById("wrTabContent").innerHTML = renderSpeakingTab();
+      wireSpeakingTab();
+    };
+  }
+  function renderPromptPicker(data) {
+    if (wrRecordedUrl) { URL.revokeObjectURL(wrRecordedUrl); wrRecordedUrl = null; }
+    wrCleanupStream();
+    writingContent.innerHTML = `<div class="sd-wr-prompt-picker">${data.prompts.map((p, i) => `
+      <button class="sd-wr-prompt-item" data-i="${i}">
+        <div class="en">${p.en}</div><div class="ar">${p.ar}</div>
+      </button>`).join("")}</div>`;
+    writingContent.querySelectorAll(".sd-wr-prompt-item").forEach(btn => {
+      btn.onclick = () => renderPromptDetail(data, Number(btn.dataset.i));
+    });
+  }
+  async function renderWritingHub() {
+    writingContent.innerHTML = `<p style="text-align:center;color:var(--sd-cocoa-soft);padding:20px">Loading…</p>`;
+    const data = await loadWritingLevel(level);
+    if (!data) { writingContent.innerHTML = `<p style="text-align:center;color:var(--sd-cocoa-soft);padding:20px">Prompts for your level aren't ready yet — check back soon!</p>`; return; }
+    renderPromptPicker(data);
+  }
+  document.getElementById("hubWriting").onclick = () => { writingOverlay.classList.add("show"); renderWritingHub(); };
+  document.getElementById("writingClose").onclick = () => { writingOverlay.classList.remove("show"); wrCleanupStream(); };
+  writingOverlay.addEventListener("click", e => { if (e.target === writingOverlay) { writingOverlay.classList.remove("show"); wrCleanupStream(); } });
 
   // ================= Memory Match =================
   const memoryOverlay = document.getElementById("memoryOverlay");
