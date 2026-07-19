@@ -235,71 +235,9 @@ function doPost(e) {
     if (action === "pushProgress") return jsonResponse_(pushProgress_(body));
     if (action === "pushLeads") return jsonResponse_(pushLeads_(body));
     if (action === "pushProAdmins") return jsonResponse_(pushProAdmins_(body));
-    if (action === "writingFeedback") return jsonResponse_(writingFeedback_(body));
     return jsonResponse_({ ok: false, error: "Unknown action: " + action });
   } catch (err) {
     return jsonResponse_({ ok: false, error: String(err) });
   }
 }
 
-// ---------- AI writing feedback (professional dashboard) ----------
-// Uses Groq's API (OpenAI-compatible) for fast, free-tier feedback on a
-// student's short writing answer. The API key is read from this
-// project's Script Properties — never hardcoded here, never sent to or
-// stored in the browser. Set it once: in the Apps Script editor, go to
-// Project Settings (gear icon) -> Script Properties -> Add property,
-// name it GROQ_API_KEY, paste your key from console.groq.com as the
-// value. Free tier is enough for this — no billing needed to start.
-function writingFeedback_(body) {
-  var apiKey = PropertiesService.getScriptProperties().getProperty("GROQ_API_KEY");
-  if (!apiKey) {
-    return { ok: false, error: "No Groq API key set up yet. In the Apps Script editor: Project Settings -> Script Properties -> add GROQ_API_KEY with your key from console.groq.com." };
-  }
-  var prompt = String(body.prompt || "").slice(0, 500);
-  var answer = String(body.answer || "").slice(0, 1000);
-  var minWords = Number(body.minWords) || 0;
-  if (!answer.trim()) {
-    return { ok: false, error: "No answer to review yet." };
-  }
-
-  var systemPrompt = "You are a warm, encouraging English teacher giving feedback on a young " +
-    "English-language learner's short writing answer. The student is a child learning English " +
-    "as a second language, so be gentle and specific. Write 3-4 short sentences: start with " +
-    "something genuinely positive about their answer, then give one or two concrete, easy-to-" +
-    "apply suggestions (grammar, vocabulary, or completeness), and end with encouragement. " +
-    "Keep it simple and warm, never harsh. Do not use markdown formatting.";
-  var userPrompt = "Writing prompt: " + prompt + "\n" +
-    (minWords ? "Expected length: at least " + minWords + " words.\n" : "") +
-    "Student's answer: " + answer;
-
-  var payload = {
-    model: "llama-3.3-70b-versatile",
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: userPrompt }
-    ],
-    temperature: 0.6,
-    max_tokens: 220
-  };
-
-  try {
-    var res = UrlFetchApp.fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "post",
-      contentType: "application/json",
-      headers: { "Authorization": "Bearer " + apiKey },
-      payload: JSON.stringify(payload),
-      muteHttpExceptions: true
-    });
-    var code = res.getResponseCode();
-    var data = JSON.parse(res.getContentText());
-    if (code !== 200) {
-      var msg = (data.error && data.error.message) ? data.error.message : ("Groq API returned status " + code);
-      return { ok: false, error: msg };
-    }
-    var feedback = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
-    if (!feedback) return { ok: false, error: "Empty response from Groq." };
-    return { ok: true, feedback: feedback.trim() };
-  } catch (err) {
-    return { ok: false, error: "Request to Groq failed: " + String(err) };
-  }
-}

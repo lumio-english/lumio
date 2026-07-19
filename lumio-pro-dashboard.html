@@ -323,11 +323,17 @@ try {
 // Connected to your real Lumio backend — same one the main teacher
 // dashboard and lumio-pro-test.html use — specifically so admin
 // accounts (added/removed here) sync across every device, not just
-// the one they were added on. Test results stay local-only by
-// design (see loadR() below); this URL is currently only used for
-// admin account sync. AI writing feedback still needs a dedicated
-// endpoint holding an API key and remains disabled below regardless.
+// the one they were added on. Test results stay local-only by design
+// (see loadR() below); this URL is only used for admin account sync.
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxlKY07coAR_Uj6UQf2bvy6yi6I3cG9WsnTROvKI5v_l9MhhXlbP3Ke8jxbYx5btZzAGA/exec';
+
+// AI writing feedback uses a SEPARATE, standalone Apps Script project
+// (see _docs/AI-Feedback-Standalone.gs) — kept isolated from the main
+// backend above so a broken authorization state on one never affects
+// the other. Paste your deployed URL here once you've set that
+// project up; leave blank to keep the feature showing a clear
+// "not set up yet" message instead of failing silently.
+const AI_FEEDBACK_URL = '';
 
 // ══════════════════════════════════════════
 //  FIXED ADMIN ACCOUNTS
@@ -763,12 +769,16 @@ async function runAI(si,wi,btn){
   const w=(r.answers_writing||[])[wi]; if(!w)return;
   const el=document.getElementById('ar-'+si+'-'+wi); if(!el)return;
   el.style.display='block';
+  if(!AI_FEEDBACK_URL){
+    el.innerHTML='<div style="background:#FFF3D6;border:1px solid #F97316;border-radius:8px;padding:10px 12px;font-size:.8rem;color:#43301F">ℹ️ AI feedback isn\'t set up yet — deploy the standalone backend (_docs/AI-Feedback-Standalone.gs) and paste its URL into AI_FEEDBACK_URL near the top of this file.</div>';
+    return;
+  }
   btn.disabled=true; btn.textContent='⏳ AI reviewing…';
   el.innerHTML='<div style="color:var(--mu);font-style:italic;font-size:.81rem;padding:8px 0">🤖 Getting AI feedback via Groq…</div>';
   try{
-    // Route through Apps Script (keeps the Groq API key secure, never
-    // sent to or stored in the browser)
-    const rs = await fetch(SCRIPT_URL + '?action=writingFeedback', {
+    // Route through the standalone Apps Script (keeps the Groq API key
+    // secure, never sent to or stored in the browser)
+    const rs = await fetch(AI_FEEDBACK_URL + '?action=writingFeedback', {
       method: 'POST',
       headers: {'Content-Type':'text/plain;charset=utf-8'},
       body: JSON.stringify({ prompt: w.prompt||'', answer: w.text||'', minWords: w.minWords||0 })
