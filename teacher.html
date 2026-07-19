@@ -2161,7 +2161,7 @@
   // decks ready (assets/slides/{level}/, powerpoints/{level}/). There's
   // no reliable way to detect this from the client without a manifest,
   // so this needs updating by hand as more decks get produced.
-  const LEVELS_WITH_SLIDES = ["pre-a"];
+  const LEVELS_WITH_SLIDES = ["pre-a", "level1"];
 
   let currentMatLevel = MATERIALS_LEVELS[0] || "pre-a";
   const matGrid = document.getElementById("matGrid");
@@ -2209,10 +2209,11 @@
       const n = i + 1;
       if (q && !title.toLowerCase().includes(q) && !("l" + String(n).padStart(2, "0")).includes(q)) return;
       const num = String(n).padStart(2, "0");
-      // The actual .pptx files on disk drop trailing "!" from titles that
-      // have one (e.g. "Hello!" -> "Lesson 01 - Hello.pptx") — matching
-      // that here so the download link doesn't 404 for those lessons.
-      const fileTitle = title.replace(/!+$/, "");
+      // The actual .pptx files on disk drop filesystem-unsafe characters
+      // from titles: trailing "!"/"?" and any "/" are removed (e.g.
+      // "Hello!" -> "Hello", "I am / You are" -> "I am  You are") —
+      // matching that here so the download link doesn't 404.
+      const fileTitle = title.replace(/[!?]+$/, "").replace(/\//g, "");
       const row = document.createElement("div");
       row.className = "td-mat-row";
       row.innerHTML = `<div class="num">L${num}</div><b>${title}</b>
