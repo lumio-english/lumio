@@ -41,11 +41,16 @@
   i += questionsN;
   const TOTAL_COMPUTED = i + 1; // + reward (+ homework counted by actual file count below)
 
-  /* ---------- load actual slide count ---------- */
-  fetch(`assets/slides/${level}/manifest.json`).then(r => r.json()).then(manifest => {
-    const total = manifest[nn] || TOTAL_COMPUTED;
+  /* ---------- load actual slide count + quiz answer key ---------- */
+  let quizData = {};
+  Promise.all([
+    fetch(`assets/slides/${level}/manifest.json`).then(r => r.json()).catch(() => null),
+    fetch(`${SLIDE_DIR}/quiz-data.json`).then(r => r.json()).catch(() => ({})),
+  ]).then(([manifest, qd]) => {
+    quizData = qd || {};
+    const total = (manifest && manifest[nn]) || TOTAL_COMPUTED;
     start(total);
-  }).catch(() => start(TOTAL_COMPUTED));
+  });
 
   function start(total) {
     let cur = 1;
@@ -84,6 +89,50 @@
           btn.style.background = "linear-gradient(135deg,#4ADE80,#16A34A)";
         };
         wrap.appendChild(btn);
+      }
+      if (quizData[cur]) {
+        // Real clickable answer zones, positioned to align exactly with
+        // the option boxes drawn into the slide image itself (fixed
+        // layout: QUIZ_OPTION_BOXES in the Python generator).
+        const q = quizData[cur];
+        const boxes = [
+          { left: 610, top: 260, width: 260, height: 84 },
+          { left: 890, top: 260, width: 260, height: 84 },
+          { left: 610, top: 364, width: 260, height: 84 },
+          { left: 890, top: 364, width: 260, height: 84 },
+        ];
+        let answered = false;
+        q.options.forEach((opt, idx) => {
+          const b = boxes[idx];
+          const zone = document.createElement("button");
+          zone.className = "quiz-zone";
+          zone.style.cssText = `position:absolute;left:${(b.left/1467*100).toFixed(2)}%;top:${(b.top/825*100).toFixed(2)}%;
+            width:${(b.width/1467*100).toFixed(2)}%;height:${(b.height/825*100).toFixed(2)}%;
+            border-radius:16px;border:2.5px solid transparent;background:transparent;cursor:pointer;pointer-events:auto`;
+          zone.onclick = (e) => {
+            e.stopPropagation();
+            if (answered) return;
+            answered = true;
+            const correct = opt === q.correct;
+            zone.style.background = correct ? "rgba(74,222,128,.28)" : "rgba(248,113,113,.28)";
+            zone.style.borderColor = correct ? "#16A34A" : "#DC2626";
+            zone.textContent = correct ? "\u2713" : "\u2717";
+            zone.style.fontSize = "1.8rem"; zone.style.fontWeight = "800";
+            zone.style.color = correct ? "#16A34A" : "#DC2626";
+            if (correct) { Lumio.confetti(50); Lumio.speak(q.correct); }
+            else {
+              // also mark the correct one so the class sees the right answer
+              const correctIdx = q.options.indexOf(q.correct);
+              const cz = wrap.querySelectorAll(".quiz-zone")[correctIdx];
+              if (cz) {
+                cz.style.background = "rgba(74,222,128,.28)";
+                cz.style.borderColor = "#16A34A";
+                cz.textContent = "\u2713"; cz.style.fontSize = "1.8rem"; cz.style.fontWeight = "800"; cz.style.color = "#16A34A";
+              }
+            }
+          };
+          wrap.appendChild(zone);
+        });
       }
       if (cur >= gameStartSlide - 1 && cur <= total) {
         const gwrap = document.createElement("div");

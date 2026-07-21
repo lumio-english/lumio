@@ -369,6 +369,8 @@
   .td-mat-row a.present:hover{background:var(--td-indigo-dark);box-shadow:0 6px 14px rgba(249,115,22,.25)}
   .td-mat-row a.pptx{background:var(--td-bg);color:var(--td-ink-soft);border:1px solid var(--td-border)}
   .td-mat-row a.pptx:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark)}
+  .td-mat-row a.worksheet{background:#ECFDF5;color:#0D9488;border:1px solid #A7E8D8}
+  .td-mat-row a.worksheet:hover{border-color:#0D9488;background:#DDF6F0}
 
   /* ---------- Sync settings ---------- */
   .td-sync-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -2224,7 +2226,8 @@
           ? `<a class="act present" href="present.html?level=${level}&n=${n}">Present</a>
              <a class="act pptx" href="powerpoints/${level}/Lesson ${num} - ${fileTitle}.pptx" download title="Download PowerPoint">PPTX</a>`
           : `<a class="act pptx" href="lesson.html?level=${level}&n=${n}" target="_blank" title="No slides yet — try the live lesson instead">Try lesson</a>`
-        }`;
+        }
+        <a class="act worksheet" href="worksheets/${level}/lesson${num}-homework.pdf" download title="Download homework worksheet">Worksheet</a>`;
       matGrid.appendChild(row);
     });
     if (!matGrid.children.length) matGrid.innerHTML = `<div class="td-empty">No lessons match your search.</div>`;

@@ -418,6 +418,7 @@
       <div class="sd-hero-title" id="missionTitle">Let's play!</div>
       <div class="sd-hero-sub" id="missionSub">Pick up right where you left off.</div>
       <a class="sd-hero-btn" id="missionBtn" href="#">▶ Continue</a>
+      <a class="sd-hero-btn" id="worksheetBtn" href="#" download style="background:#0D9488;margin-top:10px">📄 Homework Sheet</a>
     </div>
     <div class="sd-side-stats">
       <div class="sd-stat-card sd-fade-up sd-anim-d1">
@@ -722,6 +723,7 @@
     document.getElementById("missionSub").textContent = "You finished every lesson — go check your certificate!";
     document.getElementById("missionBtn").textContent = "🏆 See certificate";
     document.getElementById("missionBtn").href = "certificates.html";
+    document.getElementById("worksheetBtn").style.display = "none";
   } else {
     document.getElementById("missionTitle").textContent = `Lesson ${nextLessonNum}`;
     document.getElementById("missionSub").textContent = done === 0
@@ -729,6 +731,7 @@
       : "Keep your streak going — one more lesson today!";
     document.getElementById("missionBtn").textContent = "▶ Continue";
     document.getElementById("missionBtn").href = `lesson.html?level=${level}&n=${nextLessonNum}`;
+    document.getElementById("worksheetBtn").href = `worksheets/${level}/lesson${String(nextLessonNum).padStart(2,"0")}-homework.pdf`;
   }
 
   // ---------- my schedule ----------
