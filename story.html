@@ -88,7 +88,8 @@ const PARTS = [
 
 function getDoneCount() {
   try {
-    const u = Lumio.requireUser();
+    const u = Lumio.user();
+    if (!u) return 0;
     const levelProgress = Lumio.progressFor(u.name)[u.level || "pre-a"] || {};
     return Object.keys(levelProgress).length;
   } catch (e) { return 0; }
@@ -100,7 +101,7 @@ let currentPage = 1;
 
 if (!part) {
   document.getElementById("stageContent").innerHTML = "<p style='padding:40px'>Story part not found.</p>";
-} else if (doneCount < part.unlockLesson) {
+} else if (doneCount < part.unlockLesson && qs("preview") !== "1") {
   document.getElementById("stage").insertAdjacentHTML("beforeend", `
     <div id="lockScreen">
       <div class="icon">🔒</div>
