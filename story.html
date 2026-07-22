@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lumi's Magic Map — Lumio English</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/logo/favicon-32.png">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@600;700;800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-font-smoothing:antialiased; }
+  html,body { height:100%; background:#2B2118; font-family:'Nunito',sans-serif; overflow:hidden; }
+  #topbar { position:fixed; top:0; left:0; right:0; height:56px; background:rgba(43,33,24,.9); z-index:100;
+    display:flex; align-items:center; justify-content:space-between; padding:0 18px; }
+  #topbar .brand { color:#fff; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1.1rem; }
+  #exitBtn { background:rgba(255,255,255,.15); color:#fff; border:none; border-radius:999px; padding:8px 18px;
+    font-weight:800; font-size:.85rem; cursor:pointer; }
+  #stageWrap { position:absolute; top:56px; left:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center; }
+  #stage { width:1600px; height:900px; position:relative; background:#FFF3D6; transform-origin: center center; overflow:hidden;
+    border-radius:12px; box-shadow:0 30px 70px rgba(0,0,0,.4); }
+  #stageContent { position:absolute; inset:0; }
+
+  .partbadge { position:absolute; left:40px; top:36px; z-index:10; background:linear-gradient(135deg,#F97316,#EA580C);
+    color:#fff; font-family:'Baloo 2',sans-serif; font-weight:800; padding:10px 24px; border-radius:999px;
+    font-size:1.1rem; box-shadow:0 8px 18px rgba(194,83,10,.35); }
+  .pagedots { position:absolute; right:40px; top:44px; z-index:10; display:flex; gap:8px; }
+  .pagedots div { width:11px; height:11px; border-radius:50%; background:rgba(255,255,255,.5); }
+  .pagedots div.on { background:#fff; width:30px; border-radius:6px; }
+  .caption { position:absolute; left:60px; right:60px; bottom:48px; background:#fff; border-radius:26px;
+    padding:28px 40px; box-shadow:0 20px 46px rgba(67,48,31,.28); z-index:10; }
+  .caption p { font-family:'Baloo 2',sans-serif; font-weight:700; font-size:1.55rem; color:#43301F; line-height:1.5; margin:0; }
+  .caption p.ar { direction:rtl; text-align:right; color:#8A7160; font-size:1.15rem; margin-top:10px; }
+  .char { position:absolute; z-index:5; filter:drop-shadow(0 18px 24px rgba(67,48,31,.32)); }
+  .spark { position:absolute; color:#fff; opacity:.85; }
+
+  #navRow { position:absolute; bottom:0; left:0; right:0; height:56px; z-index:50;
+    display:flex; align-items:center; justify-content:space-between; padding:0 30px; pointer-events:none; }
+  .navbtn { pointer-events:auto; background:rgba(255,255,255,.92); border:none; border-radius:999px; width:110px; height:44px;
+    font-weight:800; font-size:.95rem; color:#43301F; cursor:pointer; box-shadow:0 10px 20px rgba(0,0,0,.25);
+    display:flex; align-items:center; justify-content:center; gap:6px; }
+  .navbtn:disabled { opacity:0; pointer-events:none; }
+  .navbtn.next { background:linear-gradient(135deg,#F97316,#EA580C); color:#fff; }
+
+  #colorGame .swatch { width:78px; height:78px; border-radius:50%; cursor:pointer; border:5px solid #fff;
+    box-shadow:0 10px 20px rgba(67,48,31,.25); transition:transform .15s ease; display:flex; align-items:center; justify-content:center;
+    font-size:1.8rem; }
+  #colorGame .swatch:active { transform:scale(.92); }
+  #colorGame .swatch.done { border-color:#4ADE80; box-shadow:0 0 0 4px rgba(74,222,128,.5), 0 10px 20px rgba(67,48,31,.25); }
+  #colorGame .swatch.shake { animation: shakeAnim .4s; }
+  @keyframes shakeAnim { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-10px)} 75%{transform:translateX(10px)} }
+
+  #lockScreen { position:absolute; inset:0; background:linear-gradient(160deg,#FFF3D6,#FDE8CC); z-index:200;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:40px }
+  #lockScreen .icon { font-size:4.5rem; margin-bottom:10px }
+  #lockScreen h2 { font-family:'Baloo 2',sans-serif; color:#43301F; font-size:2rem; margin-bottom:10px }
+  #lockScreen p { color:#8A7160; font-weight:700; font-size:1.1rem; max-width:520px }
+  #lockScreen button { margin-top:26px; background:linear-gradient(135deg,#F97316,#EA580C); color:#fff; border:none;
+    border-radius:999px; padding:14px 34px; font-weight:800; font-size:1.05rem; cursor:pointer }
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <div class="brand">📖 Lumi's Magic Map</div>
+  <button id="exitBtn" onclick="location.href='student.html'">✕ Exit Story</button>
+</div>
+
+<div id="stageWrap">
+  <div id="stage">
+    <div id="stageContent"></div>
+    <div id="navRow">
+      <button class="navbtn" id="prevBtn">← Back</button>
+      <button class="navbtn next" id="nextBtn">Next →</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+const qs = k => new URLSearchParams(location.search).get(k);
+const partNum = parseInt(qs("part") || "1", 10);
+
+const PARTS = [
+  { id: 1, name: "The Mysterious Map", unlockLesson: 5, pages: 4 },
+  { id: 2, name: "The Whispering Forest", unlockLesson: 10, pages: 5 },
+  { id: 3, name: "The Family Picnic Village", unlockLesson: 15, pages: 5 },
+  { id: 4, name: "The Treasure Celebration", unlockLesson: 20, pages: 5 },
+];
+
+function getDoneCount() {
+  try {
+    const u = Lumio.requireUser();
+    const levelProgress = Lumio.progressFor(u.name)[u.level || "pre-a"] || {};
+    return Object.keys(levelProgress).length;
+  } catch (e) { return 0; }
+}
+
+const part = PARTS.find(p => p.id === partNum);
+const doneCount = getDoneCount();
+let currentPage = 1;
+
+if (!part) {
+  document.getElementById("stageContent").innerHTML = "<p style='padding:40px'>Story part not found.</p>";
+} else if (doneCount < part.unlockLesson) {
+  document.getElementById("stage").insertAdjacentHTML("beforeend", `
+    <div id="lockScreen">
+      <div class="icon">🔒</div>
+      <h2>Part ${part.id} is locked</h2>
+      <p>Finish ${part.unlockLesson} lessons to unlock "${part.name}"! You've completed ${doneCount} so far — keep going!</p>
+      <button onclick="location.href='student.html'">Back to my lessons</button>
+    </div>`);
+} else {
+  startPart(part);
+}
+
+function startPart(part) {
+  loadPage(part.id, currentPage);
+  document.getElementById("prevBtn").onclick = () => { if (currentPage > 1) { currentPage--; loadPage(part.id, currentPage); } };
+  document.getElementById("nextBtn").onclick = () => {
+    if (currentPage < part.pages) { currentPage++; loadPage(part.id, currentPage); }
+    else { finishPart(part); }
+  };
+}
+
+function loadPage(partId, pageNum) {
+  fetch(`story-content/part${partId}-page${pageNum}.html`)
+    .then(r => r.text())
+    .then(html => {
+      document.getElementById("stageContent").innerHTML = html;
+      document.getElementById("prevBtn").disabled = pageNum === 1;
+      if (partId === 1 && pageNum === 3) setupColorGame();
+    });
+}
+
+function finishPart(part) {
+  try {
+    const key = "lumio_story_progress";
+    const prog = JSON.parse(localStorage.getItem(key) || "{}");
+    prog[part.id] = true;
+    localStorage.setItem(key, JSON.stringify(prog));
+  } catch (e) {}
+  document.getElementById("stageContent").innerHTML = `
+    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+                background:linear-gradient(160deg,#FFF3D6,#FDE8CC);text-align:center">
+      <div style="font-size:4.5rem;margin-bottom:10px">🎉</div>
+      <h2 style="font-family:'Baloo 2',sans-serif;color:#43301F;font-size:2.2rem;margin-bottom:12px">Part ${part.id} complete!</h2>
+      <p style="color:#8A7160;font-weight:700;font-size:1.15rem">Great reading! Come back after more lessons for the next part.</p>
+      <button onclick="location.href='student.html'" style="margin-top:26px;background:linear-gradient(135deg,#F97316,#EA580C);
+        color:#fff;border:none;border-radius:999px;padding:14px 34px;font-weight:800;font-size:1.05rem;cursor:pointer">
+        Back to my lessons</button>
+    </div>`;
+}
+
+// ---- Part 1, Page 3: tap the rainbow colors in order ----
+function setupColorGame() {
+  const colors = [
+    { name: "red", hex: "#EF4444" }, { name: "orange", hex: "#F97316" }, { name: "yellow", hex: "#FACC15" },
+    { name: "green", hex: "#22C55E" }, { name: "blue", hex: "#3B82F6" }, { name: "purple", hex: "#A855F7" },
+  ];
+  const shuffled = [...colors].sort(() => Math.random() - 0.5);
+  let nextIndex = 0;
+  const gameEl = document.getElementById("colorGame");
+  gameEl.style.top = "480px";
+  gameEl.style.zIndex = "20";
+  gameEl.innerHTML = shuffled.map((c, i) =>
+    `<div class="swatch" data-name="${c.name}" style="background:${c.hex}"></div>`).join("");
+  const swatches = gameEl.querySelectorAll(".swatch");
+  swatches.forEach(sw => {
+    sw.onclick = () => {
+      if (sw.classList.contains("done")) return;
+      if (sw.dataset.name === colors[nextIndex].name) {
+        sw.classList.add("done");
+        sw.innerHTML = "✓";
+        nextIndex++;
+        if (window.Lumio && Lumio.speak) Lumio.speak(sw.dataset.name);
+        if (nextIndex === colors.length) {
+          if (window.Lumio && Lumio.confetti) Lumio.confetti(60);
+          document.getElementById("p3text").innerHTML = '<b>"You did it!"</b> The compass glowed with every color at once — red, orange, yellow, green, blue, and purple!';
+          document.getElementById("p3textAr").textContent = "لقد نجحتم! توهجت البوصلة بكل الألوان معًا — أحمر، وبرتقالي، وأصفر، وأخضر، وأزرق، وبنفسجي!";
+        }
+      } else {
+        sw.classList.add("shake");
+        setTimeout(() => sw.classList.remove("shake"), 400);
+      }
+    };
+  });
+}
+
+// ---- responsive scaling ----
+function fitStage() {
+  const stage = document.getElementById("stage");
+  const wrap = document.getElementById("stageWrap");
+  const scale = Math.min(wrap.clientWidth / 1600, wrap.clientHeight / 900);
+  stage.style.transform = `scale(${scale})`;
+}
+window.addEventListener("resize", fitStage);
+fitStage();
+</script>
+</body>
+</html>

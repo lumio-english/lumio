@@ -129,6 +129,31 @@
   .sd-stat-card b{display:block;font-size:1.25rem;font-weight:800;font-family:'Baloo 2',sans-serif}
   .sd-stat-card span{font-size:.76rem;color:var(--sd-cocoa-soft);font-weight:800;text-transform:uppercase}
 
+  /* ---------- Story banner ---------- */
+  .sd-story-banner{
+    background:linear-gradient(120deg,#2B2118 0%,#43301F 55%,#5A4028 100%);border-radius:22px;padding:20px 26px;
+    margin-bottom:18px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;box-shadow:0 14px 30px rgba(43,33,24,.28);
+    position:relative;overflow:hidden;
+  }
+  .sd-story-banner::before{content:'';position:absolute;right:-40px;top:-60px;width:220px;height:220px;border-radius:50%;
+    background:radial-gradient(circle,rgba(249,115,22,.25),transparent 70%)}
+  .sd-story-banner-left{display:flex;align-items:center;gap:14px;flex:1;min-width:220px;position:relative;z-index:2}
+  .sd-story-icon{width:54px;height:54px;border-radius:16px;background:rgba(255,255,255,.12);display:flex;align-items:center;
+    justify-content:center;font-size:1.7rem;flex-shrink:0}
+  .sd-story-title{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.15rem;color:#fff}
+  .sd-story-sub{font-size:.84rem;color:rgba(255,255,255,.65);font-weight:700;margin-top:2px}
+  .sd-story-trail{display:flex;align-items:center;gap:6px;position:relative;z-index:2}
+  .sd-story-stop{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:.9rem;font-weight:800;flex-shrink:0}
+  .sd-story-stop.done{background:#22C55E;color:#fff}
+  .sd-story-stop.current{background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;box-shadow:0 0 0 4px rgba(249,115,22,.3)}
+  .sd-story-stop.locked{background:rgba(255,255,255,.12);color:rgba(255,255,255,.5)}
+  .sd-story-line{width:20px;height:3px;background:rgba(255,255,255,.18);flex-shrink:0}
+  .sd-story-btn{background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;font-size:.9rem;
+    padding:11px 26px;border-radius:999px;text-decoration:none;box-shadow:0 8px 18px rgba(194,83,10,.35);position:relative;z-index:2}
+  @media (max-width:760px){.sd-story-banner{flex-direction:column;align-items:stretch;text-align:center}
+    .sd-story-banner-left{justify-content:center}.sd-story-trail{justify-content:center}.sd-story-btn{text-align:center}}
+
   /* ---------- Level progress ---------- */
   .sd-level-card{background:#fff;border-radius:var(--sd-radius);padding:20px 24px;margin-bottom:18px;box-shadow:0 4px 16px rgba(0,0,0,.05)}
   .sd-level-top{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
@@ -432,6 +457,19 @@
     </div>
   </div>
 
+  <!-- Lumi's Magic Map story banner -->
+  <div class="sd-story-banner sd-fade-up sd-anim-d2" id="storyBanner">
+    <div class="sd-story-banner-left">
+      <div class="sd-story-icon">📖</div>
+      <div>
+        <div class="sd-story-title">Lumi's Magic Map</div>
+        <div class="sd-story-sub" id="storySub">A four-part adventure story!</div>
+      </div>
+    </div>
+    <div class="sd-story-trail" id="storyTrail"></div>
+    <a class="sd-story-btn" id="storyPlayBtn" href="#">Play</a>
+  </div>
+
   <!-- Level progress -->
   <div class="sd-level-card sd-fade-up sd-anim-d2">
     <div class="sd-level-top">
@@ -715,6 +753,45 @@
   document.getElementById("levelTitle").textContent = `${meta.name} adventure map`;
   document.getElementById("levelBar").style.width = pct + "%";
   document.getElementById("levelPct").textContent = pct + "%";
+
+  // Lumi's Magic Map story banner — only for Pre-A, since the story
+  // is written around that level's vocabulary
+  const storyBanner = document.getElementById("storyBanner");
+  if (level !== "pre-a") {
+    storyBanner.style.display = "none";
+  } else {
+    const STORY_PARTS = [
+      { id: 1, unlockAt: 5 }, { id: 2, unlockAt: 10 }, { id: 3, unlockAt: 15 }, { id: 4, unlockAt: 20 },
+    ];
+    let storyProg = {};
+    try { storyProg = JSON.parse(localStorage.getItem("lumio_story_progress") || "{}"); } catch (e) {}
+    const trail = document.getElementById("storyTrail");
+    let currentPart = null;
+    trail.innerHTML = STORY_PARTS.map((p, i) => {
+      const isDone = !!storyProg[p.id];
+      const isUnlocked = done >= p.unlockAt;
+      const cls = isDone ? "done" : (isUnlocked ? "current" : "locked");
+      if (isUnlocked && !isDone && !currentPart) currentPart = p;
+      const line = i < STORY_PARTS.length - 1 ? '<div class="sd-story-line"></div>' : "";
+      return `<div class="sd-story-stop ${cls}">${isDone ? "✓" : p.id}</div>${line}`;
+    }).join("");
+    if (!currentPart) currentPart = [...STORY_PARTS].reverse().find(p => done >= p.unlockAt) || STORY_PARTS[0];
+    const nextLocked = STORY_PARTS.find(p => done < p.unlockAt);
+    const btn = document.getElementById("storyPlayBtn");
+    if (done < 5) {
+      document.getElementById("storySub").textContent = `Unlocks after Lesson 5 — ${done}/5 so far!`;
+      btn.textContent = "🔒 Locked";
+      btn.href = "#";
+      btn.style.opacity = ".6";
+    } else {
+      const allDone = STORY_PARTS.every(p => storyProg[p.id]);
+      document.getElementById("storySub").textContent = allDone
+        ? "You finished the whole story! 🎉"
+        : (nextLocked ? `Part ${currentPart.id} unlocked! Next part after Lesson ${nextLocked.unlockAt}.` : `Part ${currentPart.id} unlocked!`);
+      btn.textContent = allDone ? "Read Again" : `Play Part ${currentPart.id}`;
+      btn.href = `story.html?part=${currentPart.id}`;
+    }
+  }
 
   // ---------- today's mission ----------
   const nextLessonNum = done + 1;
