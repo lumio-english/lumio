@@ -14,8 +14,9 @@
     background: #fff; border: 3px dashed #EADFCE; border-radius: 22px;
     height: 110px; position: relative; overflow: hidden; margin-bottom: 16px; transition: border-color .2s, background .2s;
   }
-  .pic-slot .pic-fill, .pic-slot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 19px; }
+  .pic-slot .pic-fill, .pic-slot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; border-radius: 19px; background: #fff; }
   .pic-slot .pic-fill { overflow: hidden; }
+  .pic-slot img { padding: 6px; box-sizing: border-box; }
   .pic-slot.over { border-color: var(--orange); background: var(--sun-soft); }
   .pic-slot.filled { border-style: solid; border-color: var(--green); }
   .word-chip {
