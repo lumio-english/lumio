@@ -35,6 +35,7 @@
     map.vocab[i] = v; i++; // vocabulary slide
     i++; // practice slide
   });
+  i++; // dialogue slide
   i++; // listen & repeat
   lesson.vocab.slice(0, yourTurnN).forEach((v, k) => { map.yourTurn[i] = v; i++; });
   const gameStartSlide = i; // first quiz slide — natural point to also offer games
