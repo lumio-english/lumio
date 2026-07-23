@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Presentation — Lumio English</title>
+<link rel="icon" type="image/png" sizes="32x32" href="assets/logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/logo/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/logo/favicon-180.png">
+<style>
+  html, body { height: 100%; margin: 0; overflow: hidden; background: #1a1310; font-family: 'Baloo 2', sans-serif; }
+  #wrap { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+  #deck { position: relative; width: 100%; max-width: 177.78vh; aspect-ratio: 16/9; background: #fff;
+    box-shadow: 0 20px 60px rgba(0,0,0,.5); overflow: hidden; }
+  #slideImg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; user-select: none; }
+
+  .overlay-btn {
+    position: absolute; z-index: 20; border: none; cursor: pointer; border-radius: 999px;
+    background: linear-gradient(135deg,#FB923C,#F97316); color: #fff; font-family: 'Baloo 2', sans-serif;
+    font-weight: 800; display: inline-flex; align-items: center; gap: 6px;
+    padding: 1.1vh 2.2vh; font-size: 1.7vh; box-shadow: 0 6px 16px rgba(249,115,22,.4);
+  }
+  .overlay-btn:active { transform: scale(.96); }
+  .game-btn { background: linear-gradient(135deg,#2DD4BF,#0D9488); }
+
+  .hud {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    display: flex; align-items: center; gap: 12px; padding: 10px 16px; opacity: 0; transition: opacity .25s;
+  }
+  #wrap:hover .hud, .hud:focus-within { opacity: 1; }
+  .hud .bar { flex: 1; height: 6px; border-radius: 99px; background: rgba(255,255,255,.35); overflow: hidden; }
+  .hud .bar > div { height: 100%; background: #F97316; transition: width .3s; }
+  .hud .hbtn { background: rgba(20,14,8,.65); color: #fff; border: none; border-radius: 999px;
+    padding: 8px 16px; font-family: 'Baloo 2', sans-serif; font-weight: 700; cursor: pointer; font-size: .9rem; text-decoration: none; }
+  .nav-zone { position: fixed; top: 0; bottom: 0; width: 16%; z-index: 15; cursor: pointer; }
+  .nav-zone.left { left: 0; } .nav-zone.right { right: 0; }
+</style>
+</head>
+<body>
+<div id="wrap"><div id="deck"><img id="slideImg" src="" alt=""></div></div>
+<div class="hud">
+  <a class="hbtn" href="teacher.html">Exit</a>
+  <div class="bar"><div id="pbar"></div></div>
+  <span class="hbtn" id="counter">1/1</span>
+  <button class="hbtn" id="fsBtn">Fullscreen</button>
+</div>
+<div class="nav-zone left" id="zL" title="Previous"></div>
+<div class="nav-zone right" id="zR" title="Next"></div>
+
+<script src="js/app.js"></script>
+<script src="js/lessons-data.js"></script>
+<script src="js/present.js"></script>
+</body>
+</html>
