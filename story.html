@@ -95,13 +95,18 @@ function getDoneCount() {
   } catch (e) { return 0; }
 }
 
+function isTeacherSession() {
+  try { return sessionStorage.getItem("lumio_teacher") === "1"; } catch (e) { return false; }
+}
+const previewMode = qs("preview") === "1" && isTeacherSession();
+
 const part = PARTS.find(p => p.id === partNum);
 const doneCount = getDoneCount();
 let currentPage = 1;
 
 if (!part) {
   document.getElementById("stageContent").innerHTML = "<p style='padding:40px'>Story part not found.</p>";
-} else if (doneCount < part.unlockLesson && qs("preview") !== "1") {
+} else if (doneCount < part.unlockLesson && !previewMode) {
   document.getElementById("stage").insertAdjacentHTML("beforeend", `
     <div id="lockScreen">
       <div class="icon">🔒</div>

@@ -206,6 +206,7 @@
   .td-navitem:active{transform:scale(.98)}
   .td-navitem:focus-visible{outline:3px solid rgba(249,115,22,.3);outline-offset:-2px}
   .td-navitem.active{background:var(--td-indigo-soft);color:var(--td-indigo-dark)}
+  .td-story-tile:hover{border-color:#F97316 !important;box-shadow:0 8px 18px rgba(194,83,10,.15);transform:translateY(-2px)}
   .td-sidebar-foot{margin-top:auto;padding-top:16px;border-top:1px solid var(--td-border-soft)}
   .td-exit{
     display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:10px;font-weight:600;
@@ -476,6 +477,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H14l5 5v11.5A1.5 1.5 0 0 1 17.5 21h-12A1.5 1.5 0 0 1 4 19.5v-15Z"/><path d="M14 3v5h5"/></svg>
       Materials
     </button>
+    <button class="td-navitem" data-view="story">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      Story
+    </button>
   </nav>
   <div class="td-sidebar-foot">
     <a class="td-exit" href="#" id="switchTeacherLink">↔ Switch teacher</a>
@@ -683,6 +688,25 @@
         </div>
       </div>
       <div class="td-mat-grid" id="matGrid"></div>
+    </div>
+  </div>
+
+  <div id="viewStory">
+    <div class="td-panel">
+      <div class="td-panel-head"><h2>📖 Lumi's Magic Map</h2><span class="td-badge teal" style="margin-left:8px">Pre-A</span></div>
+      <p class="sub">Preview any part instantly — students unlock these gradually as they complete lessons, but you always have full access.</p>
+      <div id="storyPartsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:6px"></div>
+    </div>
+    <div class="td-panel" style="margin-top:16px">
+      <div class="td-panel-head"><h2>More levels</h2></div>
+      <p class="sub">Stories for other levels are in the works.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px">
+        <div style="background:var(--td-bg);border-radius:16px;padding:20px;text-align:center;opacity:.65">
+          <div style="font-size:1.8rem;margin-bottom:6px">📖</div>
+          <div style="font-weight:800;font-size:.92rem">Level 1 Story</div>
+          <div style="font-size:.75rem;color:var(--td-muted);font-weight:700;margin-top:4px">Coming soon</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2239,15 +2263,33 @@
     renderMaterials(document.getElementById("matSearch").value);
   });
 
+  // ---------- story ----------
+  const STORY_PARTS = [
+    { id: 1, name: "The Mysterious Map", pages: 4 },
+    { id: 2, name: "The Whispering Forest", pages: 5 },
+    { id: 3, name: "The Family Picnic Village", pages: 5 },
+    { id: 4, name: "The Treasure Celebration", pages: 5 },
+  ];
+  const storyGrid = document.getElementById("storyPartsGrid");
+  storyGrid.innerHTML = STORY_PARTS.map(p => `
+    <a href="story.html?part=${p.id}&preview=1" style="text-decoration:none;background:#fff;border:1px solid var(--td-border);
+        border-radius:16px;padding:18px;display:block;transition:.15s" class="td-story-tile">
+      <div style="font-size:.72rem;font-weight:800;color:#F97316;letter-spacing:.5px;text-transform:uppercase">Part ${p.id} of 4</div>
+      <div style="font-weight:800;font-size:1rem;color:var(--td-ink);margin:4px 0 8px">${p.name}</div>
+      <div style="font-size:.78rem;color:var(--td-muted);font-weight:600">${p.pages} pages &bull; Open →</div>
+    </a>
+  `).join("");
+
   // ---------- nav ----------
-  const views = { overview: "viewOverview", students: "viewStudents", team: "viewTeam", schedule: "viewSchedule", leads: "viewLeads", materials: "viewMaterials" };
+  const views = { overview: "viewOverview", students: "viewStudents", team: "viewTeam", schedule: "viewSchedule", leads: "viewLeads", materials: "viewMaterials", story: "viewStory" };
   const titles = {
     overview: ["Overview", "A snapshot of how your students are doing right now."],
     students: ["Students", "Manage your roster and dig into individual progress."],
     team: ["Team", "Manage teacher accounts and see who's assigned to whom."],
     schedule: ["Schedule", "Book classes and see who's up next."],
     leads: ["Leads", "People who took the placement test but aren't enrolled yet."],
-    materials: ["Materials", "Present or download your Zoom-ready decks."]
+    materials: ["Materials", "Present or download your Zoom-ready decks."],
+    story: ["Story", "Preview Lumi's Magic Map — full access, no lesson requirements."]
   };
   document.querySelectorAll(".td-navitem").forEach(btn => {
     btn.addEventListener("click", () => {
