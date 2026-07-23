@@ -372,6 +372,8 @@
   .td-mat-row a.pptx:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark)}
   .td-mat-row a.worksheet{background:#ECFDF5;color:#0D9488;border:1px solid #A7E8D8}
   .td-mat-row a.worksheet:hover{border-color:#0D9488;background:#DDF6F0}
+  .td-mat-row a.flashcards{background:#F3E8FF;color:#7C3AED;border:1px solid #DDD1FA}
+  .td-mat-row a.flashcards:hover{border-color:#7C3AED;background:#EBDCFF}
 
   /* ---------- Sync settings ---------- */
   .td-sync-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -679,8 +681,13 @@
   <div id="viewMaterials">
     <div class="td-panel">
       <div class="td-panel-head"><h2>Teaching materials</h2><span class="td-badge teal" style="margin-left:8px" id="matBadge">Pre-A · 20 lessons</span></div>
-      <p class="sub">"Present" opens the lesson full-screen with your PowerPoint slides, plus on-demand audio and quick links to games — perfect for Zoom/Meet screen share. "PPTX" downloads the file itself. Levels without slides yet link straight to the live online lesson instead.</p>
+      <p class="sub">"Present" opens the lesson full-screen as a live, interactive deck — audio, clickable quizzes, and quick links to games — perfect for Zoom/Meet screen share. Need the raw PowerPoint files? Grab them all at once on the left instead of one by one. Levels without slides yet link straight to the live online lesson instead.</p>
       <div class="td-mat-tools">
+        <a class="act pptx" id="downloadAllPptxBtn" href="downloads/pre-a-all-pptx.zip" download
+           style="white-space:nowrap;display:flex;align-items:center;gap:6px">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+          All PPTX (.zip)
+        </a>
         <select class="td-select" id="matLevelSelect" style="max-width:180px"></select>
         <div class="td-search" style="max-width:280px">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
@@ -2229,6 +2236,13 @@
     const hasSlides = LEVELS_WITH_SLIDES.includes(level);
     const meta = LEVEL_NAMES.find(l => l.id === level);
     matBadge.textContent = `${meta ? meta.name : level} · ${(meta && meta.lessons) || 20} lessons`;
+    const downloadAllBtn = document.getElementById("downloadAllPptxBtn");
+    if (hasSlides) {
+      downloadAllBtn.href = `downloads/${level}-all-pptx.zip`;
+      downloadAllBtn.style.display = "flex";
+    } else {
+      downloadAllBtn.style.display = "none";
+    }
     const token = ++matRenderToken; // guards against an older fetch resolving after a newer level switch
     matGrid.innerHTML = `<div class="td-empty">Loading…</div>`;
     const titles = await getLessonTitles(level);
@@ -2242,16 +2256,15 @@
       // from titles: trailing "!"/"?" and any "/" are removed (e.g.
       // "Hello!" -> "Hello", "I am / You are" -> "I am  You are") —
       // matching that here so the download link doesn't 404.
-      const fileTitle = title.replace(/[!?]+$/, "").replace(/\//g, "");
       const row = document.createElement("div");
       row.className = "td-mat-row";
       row.innerHTML = `<div class="num">L${num}</div><b>${title}</b>
         ${hasSlides
-          ? `<a class="act present" href="present.html?level=${level}&n=${n}">Present</a>
-             <a class="act pptx" href="powerpoints/${level}/Lesson ${num} - ${fileTitle}.pptx" download title="Download PowerPoint">PPTX</a>`
+          ? `<a class="act present" href="present.html?level=${level}&n=${n}">Present</a>`
           : `<a class="act pptx" href="lesson.html?level=${level}&n=${n}" target="_blank" title="No slides yet — try the live lesson instead">Try lesson</a>`
         }
-        <a class="act worksheet" href="worksheets/${level}/lesson${num}-homework.pdf" download title="Download homework worksheet">Worksheet</a>`;
+        <a class="act worksheet" href="worksheets/${level}/lesson${num}-homework.pdf" download title="Download homework worksheet">Worksheet</a>
+        <a class="act flashcards" href="flashcards/${level}/lesson${num}-flashcards.pdf" download title="Download printable flashcards">Flashcards</a>`;
       matGrid.appendChild(row);
     });
     if (!matGrid.children.length) matGrid.innerHTML = `<div class="td-empty">No lessons match your search.</div>`;

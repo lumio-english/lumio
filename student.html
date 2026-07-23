@@ -444,6 +444,7 @@
       <div class="sd-hero-sub" id="missionSub">Pick up right where you left off.</div>
       <a class="sd-hero-btn" id="missionBtn" href="#">▶ Continue</a>
       <a class="sd-hero-btn" id="worksheetBtn" href="#" download style="background:#0D9488;margin-top:10px">📄 Homework Sheet</a>
+      <a class="sd-hero-btn" id="flashcardsBtn" href="#" download style="background:#7C3AED;margin-top:10px">🃏 Flashcards</a>
     </div>
     <div class="sd-side-stats">
       <div class="sd-stat-card sd-fade-up sd-anim-d1">
@@ -801,6 +802,7 @@
     document.getElementById("missionBtn").textContent = "🏆 See certificate";
     document.getElementById("missionBtn").href = "certificates.html";
     document.getElementById("worksheetBtn").style.display = "none";
+    document.getElementById("flashcardsBtn").style.display = "none";
   } else {
     document.getElementById("missionTitle").textContent = `Lesson ${nextLessonNum}`;
     document.getElementById("missionSub").textContent = done === 0
@@ -809,6 +811,7 @@
     document.getElementById("missionBtn").textContent = "▶ Continue";
     document.getElementById("missionBtn").href = `lesson.html?level=${level}&n=${nextLessonNum}`;
     document.getElementById("worksheetBtn").href = `worksheets/${level}/lesson${String(nextLessonNum).padStart(2,"0")}-homework.pdf`;
+    document.getElementById("flashcardsBtn").href = `flashcards/${level}/lesson${String(nextLessonNum).padStart(2,"0")}-flashcards.pdf`;
   }
 
   // ---------- my schedule ----------
