@@ -74,8 +74,9 @@ fetch(`assets/slides/${level}/manifest.json`).then(r => r.json()).then(manifest 
   if (num === 1) i++;
   i++; i++; i++; i++; i++;
   i += vocabN * 2;
-  i++;
-  i++;
+  i++; // dialogue
+  i++; // sentence builder
+  i++; // turn
   i += yourTurnN;
   gameStartSlide = i;
   loadSlide(1);
@@ -122,6 +123,86 @@ window.checkQuizAnswer = function (el, chosen, correct) {
   } else {
     const correctBtn = container.querySelector(`[data-quiz-option="${correct}"]`);
     if (correctBtn) { correctBtn.style.background = "rgba(74,222,128,.28)"; correctBtn.style.borderColor = "#16A34A"; }
+  }
+};
+
+// ---- sentence builder drag-and-drop (global, works on whichever slide is currently shown) ----
+(function () {
+  let dragEl = null, offsetX = 0, offsetY = 0;
+  function onPointerDown(e) {
+    const tile = e.target.closest(".sb-tile");
+    if (!tile || tile.classList.contains("sb-punct")) return;
+    dragEl = tile;
+    try { dragEl.setPointerCapture(e.pointerId); } catch (err) {}
+    dragEl.classList.add("sb-dragging");
+    const r = dragEl.getBoundingClientRect();
+    offsetX = e.clientX - r.left; offsetY = e.clientY - r.top;
+  }
+  function onPointerMove(e) {
+    if (!dragEl) return;
+    dragEl.style.position = "fixed";
+    dragEl.style.zIndex = "999";
+    dragEl.style.left = (e.clientX - offsetX) + "px";
+    dragEl.style.top = (e.clientY - offsetY) + "px";
+    document.querySelectorAll(".sb-slot").forEach(s => {
+      const sr = s.getBoundingClientRect();
+      const over = e.clientX >= sr.left && e.clientX <= sr.right && e.clientY >= sr.top && e.clientY <= sr.bottom;
+      s.style.background = over ? "#FFF3D6" : "";
+    });
+  }
+  function onPointerUp(e) {
+    if (!dragEl) return;
+    dragEl.classList.remove("sb-dragging");
+    const tray = document.getElementById("sbTray");
+    let dropped = false;
+    document.querySelectorAll(".sb-slot").forEach(s => {
+      const sr = s.getBoundingClientRect();
+      const over = e.clientX >= sr.left && e.clientX <= sr.right && e.clientY >= sr.top && e.clientY <= sr.bottom;
+      s.style.background = "";
+      if (over && !dropped) {
+        if (s.firstChild && tray) tray.appendChild(s.firstChild);
+        dragEl.removeAttribute("style");
+        dragEl.className = "sb-tile";
+        s.appendChild(dragEl);
+        s.classList.add("sb-filled");
+        dropped = true;
+      }
+    });
+    if (!dropped && tray) {
+      dragEl.removeAttribute("style");
+      dragEl.className = "sb-tile";
+      tray.appendChild(dragEl);
+    }
+    document.querySelectorAll(".sb-slot").forEach(s => { if (!s.firstChild) s.classList.remove("sb-filled"); });
+    dragEl = null;
+  }
+  document.addEventListener("pointerdown", onPointerDown);
+  document.addEventListener("pointermove", onPointerMove);
+  document.addEventListener("pointerup", onPointerUp);
+})();
+
+window.checkSentenceBuilder = function () {
+  const slotsWrap = document.getElementById("sbSlots");
+  if (!slotsWrap) return;
+  const correctSentence = slotsWrap.dataset.correct;
+  const correctWords = correctSentence.replace(/[.!?]+$/, "").split(" ");
+  const slots = slotsWrap.querySelectorAll(".sb-slot");
+  const current = [...slots].map(s => s.firstChild ? s.firstChild.dataset.word : null);
+  const feedback = document.getElementById("sbFeedback");
+  if (current.includes(null)) {
+    feedback.textContent = "Fill in all the boxes first!";
+    feedback.style.color = "#C2530A";
+    return;
+  }
+  const isCorrect = current.every((w, i) => w === correctWords[i]);
+  if (isCorrect) {
+    feedback.textContent = "\u2713 Perfect! Well done!";
+    feedback.style.color = "#16A34A";
+    if (typeof Lumio !== 'undefined' && Lumio.confetti) Lumio.confetti(60);
+    if (typeof Lumio !== 'undefined' && Lumio.speak) Lumio.speak(correctSentence.replace(/[.!?]+$/, ""));
+  } else {
+    feedback.textContent = "Not quite — try again!";
+    feedback.style.color = "#DC2626";
   }
 };
 
