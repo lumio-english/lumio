@@ -705,15 +705,9 @@
       <div id="storyPartsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:6px"></div>
     </div>
     <div class="td-panel" style="margin-top:16px">
-      <div class="td-panel-head"><h2>More levels</h2></div>
-      <p class="sub">Stories for other levels are in the works.</p>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px">
-        <div style="background:var(--td-bg);border-radius:16px;padding:20px;text-align:center;opacity:.65">
-          <div style="font-size:1.8rem;margin-bottom:6px">📖</div>
-          <div style="font-weight:800;font-size:.92rem">Level 1 Story</div>
-          <div style="font-size:.75rem;color:var(--td-muted);font-weight:700;margin-top:4px">Coming soon</div>
-        </div>
-      </div>
+      <div class="td-panel-head"><h2>📖 The Treehouse Club</h2><span class="td-badge teal" style="margin-left:8px">Level 1</span></div>
+      <p class="sub">Same idea, Level 1 vocabulary — Lumi, Sara, Omar, and Noor build a backyard clubhouse together.</p>
+      <div id="storyPartsGridL1" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:6px"></div>
     </div>
   </div>
 
@@ -2283,15 +2277,24 @@
     { id: 3, name: "The Family Picnic Village", pages: 5 },
     { id: 4, name: "The Treasure Celebration", pages: 5 },
   ];
-  const storyGrid = document.getElementById("storyPartsGrid");
-  storyGrid.innerHTML = STORY_PARTS.map(p => `
-    <a href="story.html?part=${p.id}&preview=1" style="text-decoration:none;background:#fff;border:1px solid var(--td-border);
-        border-radius:16px;padding:18px;display:block;transition:.15s" class="td-story-tile">
-      <div style="font-size:.72rem;font-weight:800;color:#F97316;letter-spacing:.5px;text-transform:uppercase">Part ${p.id} of 4</div>
-      <div style="font-weight:800;font-size:1rem;color:var(--td-ink);margin:4px 0 8px">${p.name}</div>
-      <div style="font-size:.78rem;color:var(--td-muted);font-weight:600">${p.pages} pages &bull; Open →</div>
-    </a>
-  `).join("");
+  const STORY_PARTS_L1 = [
+    { id: 1, name: "The Big Idea", pages: 6 },
+    { id: 2, name: "Building Day", pages: 6 },
+    { id: 3, name: "Grand Opening Prep", pages: 6 },
+    { id: 4, name: "The Backyard Party", pages: 6 },
+  ];
+  function renderStoryGrid(elId, parts, level) {
+    document.getElementById(elId).innerHTML = parts.map(p => `
+      <a href="story.html?part=${p.id}&level=${level}&preview=1" style="text-decoration:none;background:#fff;border:1px solid var(--td-border);
+          border-radius:16px;padding:18px;display:block;transition:.15s" class="td-story-tile">
+        <div style="font-size:.72rem;font-weight:800;color:#F97316;letter-spacing:.5px;text-transform:uppercase">Part ${p.id} of 4</div>
+        <div style="font-weight:800;font-size:1rem;color:var(--td-ink);margin:4px 0 8px">${p.name}</div>
+        <div style="font-size:.78rem;color:var(--td-muted);font-weight:600">${p.pages} pages &bull; Open →</div>
+      </a>
+    `).join("");
+  }
+  renderStoryGrid("storyPartsGrid", STORY_PARTS, "pre-a");
+  renderStoryGrid("storyPartsGridL1", STORY_PARTS_L1, "level1");
 
   // ---------- nav ----------
   const views = { overview: "viewOverview", students: "viewStudents", team: "viewTeam", schedule: "viewSchedule", leads: "viewLeads", materials: "viewMaterials", story: "viewStory" };

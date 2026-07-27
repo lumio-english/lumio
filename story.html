@@ -79,18 +79,40 @@
 const qs = k => new URLSearchParams(location.search).get(k);
 const partNum = parseInt(qs("part") || "1", 10);
 
-const PARTS = [
-  { id: 1, name: "The Mysterious Map", unlockLesson: 5, pages: 4 },
-  { id: 2, name: "The Whispering Forest", unlockLesson: 10, pages: 5 },
-  { id: 3, name: "The Family Picnic Village", unlockLesson: 15, pages: 5 },
-  { id: 4, name: "The Treasure Celebration", unlockLesson: 20, pages: 5 },
-];
+const STORIES = {
+  "pre-a": {
+    title: "Lumi's Magic Map",
+    parts: [
+      { id: 1, name: "The Mysterious Map", unlockLesson: 5, pages: 4 },
+      { id: 2, name: "The Whispering Forest", unlockLesson: 10, pages: 5 },
+      { id: 3, name: "The Family Picnic Village", unlockLesson: 15, pages: 5 },
+      { id: 4, name: "The Treasure Celebration", unlockLesson: 20, pages: 5 },
+    ],
+  },
+  "level1": {
+    title: "The Treehouse Club",
+    parts: [
+      { id: 1, name: "The Big Idea", unlockLesson: 5, pages: 6 },
+      { id: 2, name: "Building Day", unlockLesson: 10, pages: 6 },
+      { id: 3, name: "Grand Opening Prep", unlockLesson: 15, pages: 6 },
+      { id: 4, name: "The Backyard Party", unlockLesson: 20, pages: 6 },
+    ],
+  },
+};
+
+function currentUserLevel() {
+  try { const u = Lumio.user(); return (u && u.level) || "pre-a"; } catch (e) { return "pre-a"; }
+}
+const storyLevel = qs("level") || currentUserLevel();
+const story = STORIES[storyLevel] || STORIES["pre-a"];
+const PARTS = story.parts;
+document.querySelector(".brand").textContent = `📖 ${story.title}`;
 
 function getDoneCount() {
   try {
     const u = Lumio.user();
     if (!u) return 0;
-    const levelProgress = Lumio.progressFor(u.name)[u.level || "pre-a"] || {};
+    const levelProgress = Lumio.progressFor(u.name)[storyLevel] || {};
     return Object.keys(levelProgress).length;
   } catch (e) { return 0; }
 }
@@ -128,12 +150,12 @@ function startPart(part) {
 }
 
 function loadPage(partId, pageNum) {
-  fetch(`story-content/part${partId}-page${pageNum}.html`)
+  fetch(`story-content/${storyLevel}/part${partId}-page${pageNum}.html`)
     .then(r => r.text())
     .then(html => {
       document.getElementById("stageContent").innerHTML = html;
       document.getElementById("prevBtn").disabled = pageNum === 1;
-      if (partId === 1 && pageNum === 3) setupColorGame();
+      if (storyLevel === "pre-a" && partId === 1 && pageNum === 3) setupColorGame();
     });
 }
 
@@ -141,7 +163,8 @@ function finishPart(part) {
   try {
     const key = "lumio_story_progress";
     const prog = JSON.parse(localStorage.getItem(key) || "{}");
-    prog[part.id] = true;
+    if (!prog[storyLevel]) prog[storyLevel] = {};
+    prog[storyLevel][part.id] = true;
     localStorage.setItem(key, JSON.stringify(prog));
   } catch (e) {}
   document.getElementById("stageContent").innerHTML = `

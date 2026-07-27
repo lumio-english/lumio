@@ -755,17 +755,20 @@
   document.getElementById("levelBar").style.width = pct + "%";
   document.getElementById("levelPct").textContent = pct + "%";
 
-  // Lumi's Magic Map story banner — only for Pre-A, since the story
-  // is written around that level's vocabulary
+  // Story banner — works for both Pre-A ("Lumi's Magic Map") and
+  // Level 1 ("The Treehouse Club"), each with its own vocabulary
   const storyBanner = document.getElementById("storyBanner");
-  if (level !== "pre-a") {
+  const STORY_TITLES = { "pre-a": "Lumi's Magic Map", "level1": "The Treehouse Club" };
+  if (!STORY_TITLES[level]) {
     storyBanner.style.display = "none";
   } else {
+    document.querySelector(".sd-story-title").textContent = STORY_TITLES[level];
     const STORY_PARTS = [
       { id: 1, unlockAt: 5 }, { id: 2, unlockAt: 10 }, { id: 3, unlockAt: 15 }, { id: 4, unlockAt: 20 },
     ];
-    let storyProg = {};
-    try { storyProg = JSON.parse(localStorage.getItem("lumio_story_progress") || "{}"); } catch (e) {}
+    let storyProgAll = {};
+    try { storyProgAll = JSON.parse(localStorage.getItem("lumio_story_progress") || "{}"); } catch (e) {}
+    const storyProg = storyProgAll[level] || {};
     const trail = document.getElementById("storyTrail");
     let currentPart = null;
     trail.innerHTML = STORY_PARTS.map((p, i) => {
@@ -790,7 +793,7 @@
         ? "You finished the whole story! 🎉"
         : (nextLocked ? `Part ${currentPart.id} unlocked! Next part after Lesson ${nextLocked.unlockAt}.` : `Part ${currentPart.id} unlocked!`);
       btn.textContent = allDone ? "Read Again" : `Play Part ${currentPart.id}`;
-      btn.href = `story.html?part=${currentPart.id}`;
+      btn.href = `story.html?part=${currentPart.id}&level=${level}`;
     }
   }
 
