@@ -154,6 +154,34 @@
   @media (max-width:760px){.sd-story-banner{flex-direction:column;align-items:stretch;text-align:center}
     .sd-story-banner-left{justify-content:center}.sd-story-trail{justify-content:center}.sd-story-btn{text-align:center}}
 
+  /* ---------- English Hub banners (same visual language as the story banner) ---------- */
+  .sd-hub-banners{display:flex;flex-direction:column;gap:12px}
+  .sd-hubb{
+    background:linear-gradient(120deg,#2B2118 0%,#43301F 55%,#5A4028 100%);border-radius:20px;padding:16px 22px;
+    display:flex;align-items:center;gap:18px;flex-wrap:wrap;box-shadow:0 10px 22px rgba(43,33,24,.22);
+    position:relative;overflow:hidden;border:none;font-family:inherit;text-align:left;cursor:pointer;width:100%;
+  }
+  .sd-hubb::before{content:'';position:absolute;right:-30px;top:-50px;width:170px;height:170px;border-radius:50%;
+    background:radial-gradient(circle,rgba(249,115,22,.2),transparent 70%)}
+  .sd-hubb:hover{transform:translateY(-2px);box-shadow:0 14px 28px rgba(43,33,24,.3)}
+  .sd-hubb.locked{cursor:default;opacity:.68}
+  .sd-hubb.locked:hover{transform:none}
+  .sd-hubb-left{display:flex;align-items:center;gap:14px;flex:1;min-width:200px;position:relative;z-index:2}
+  .sd-hubb-icon{width:46px;height:46px;border-radius:14px;background:rgba(255,255,255,.12);display:flex;align-items:center;
+    justify-content:center;font-size:1.4rem;flex-shrink:0}
+  .sd-hubb-title{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.05rem;color:#fff}
+  .sd-hubb-sub{font-size:.8rem;color:rgba(255,255,255,.65);font-weight:700;margin-top:2px}
+  .sd-hubb-trail{display:flex;align-items:center;gap:5px;position:relative;z-index:2;flex-wrap:wrap;max-width:260px}
+  .sd-hubb-stop{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:.76rem;font-weight:800;flex-shrink:0;background:linear-gradient(135deg,#F97316,#EA580C);color:#fff}
+  .sd-hubb-stop.locked{background:rgba(255,255,255,.12);color:rgba(255,255,255,.5)}
+  .sd-hubb-line{width:12px;height:2px;background:rgba(255,255,255,.18);flex-shrink:0}
+  .sd-hubb-btn{background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;font-size:.84rem;
+    padding:9px 20px;border-radius:999px;position:relative;z-index:2;flex-shrink:0}
+  .sd-hubb.locked .sd-hubb-btn{background:rgba(255,255,255,.12);color:rgba(255,255,255,.7)}
+  @media (max-width:760px){.sd-hubb{flex-direction:column;align-items:stretch;text-align:center}
+    .sd-hubb-left{justify-content:center}.sd-hubb-trail{justify-content:center;max-width:none}}
+
   /* ---------- Level progress ---------- */
   .sd-level-card{background:#fff;border-radius:var(--sd-radius);padding:20px 24px;margin-bottom:18px;box-shadow:0 4px 16px rgba(0,0,0,.05)}
   .sd-level-top{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
@@ -543,31 +571,60 @@
 
   <!-- English Hub -->
   <div class="sd-section-title"><h3>🌐 English Hub</h3></div>
-  <div class="sd-hub-grid">
-    <button class="sd-hub-tile" id="hubVocab">
-      <div class="sd-hub-icon" style="background:#FFF3D6;color:#C2530A">📔</div>
-      <h4>Vocabulary</h4>
-      <p>Study words by topic, with Arabic and audio</p>
+  <div class="sd-hub-banners">
+    <button class="sd-hubb" id="hubVocab">
+      <div class="sd-hubb-left">
+        <div class="sd-hubb-icon">📔</div>
+        <div>
+          <div class="sd-hubb-title">Vocabulary</div>
+          <div class="sd-hubb-sub" id="hubVocabSub">Study words by topic, with Arabic and audio</div>
+        </div>
+      </div>
+      <div class="sd-hubb-trail" id="hubVocabTrail"></div>
+      <span class="sd-hubb-btn">Open</span>
     </button>
-    <button class="sd-hub-tile" id="hubGrammar">
-      <div class="sd-hub-icon" style="background:#E6FAF7;color:#0F766E">📐</div>
-      <h4>Grammar</h4>
-      <p>Rules and examples, with Arabic</p>
+    <button class="sd-hubb" id="hubGrammar">
+      <div class="sd-hubb-left">
+        <div class="sd-hubb-icon">📐</div>
+        <div>
+          <div class="sd-hubb-title">Grammar</div>
+          <div class="sd-hubb-sub" id="hubGrammarSub">Rules and examples, with Arabic</div>
+        </div>
+      </div>
+      <div class="sd-hubb-trail" id="hubGrammarTrail"></div>
+      <span class="sd-hubb-btn" id="hubGrammarBtn">Open</span>
     </button>
-    <button class="sd-hub-tile" id="hubStories">
-      <div class="sd-hub-icon" style="background:#FFF3D6;color:#C2530A">📖</div>
-      <h4>Stories</h4>
-      <p>Read along with real narration</p>
+    <button class="sd-hubb" id="hubStories">
+      <div class="sd-hubb-left">
+        <div class="sd-hubb-icon">📖</div>
+        <div>
+          <div class="sd-hubb-title">Stories</div>
+          <div class="sd-hubb-sub" id="hubStoriesSub">Read along with real narration</div>
+        </div>
+      </div>
+      <div class="sd-hubb-trail" id="hubStoriesTrail"></div>
+      <span class="sd-hubb-btn">Open</span>
     </button>
-    <div class="sd-hub-tile sd-hub-soon">
-      <div class="sd-hub-icon" style="background:#E6FAF7;color:#0F766E">🔤</div>
-      <h4>Phonics</h4>
-      <p>Coming soon</p>
+    <div class="sd-hubb locked">
+      <div class="sd-hubb-left">
+        <div class="sd-hubb-icon">🔤</div>
+        <div>
+          <div class="sd-hubb-title">Phonics</div>
+          <div class="sd-hubb-sub">Coming soon</div>
+        </div>
+      </div>
+      <span class="sd-hubb-btn">🔒 Locked</span>
     </div>
-    <button class="sd-hub-tile" id="hubWriting">
-      <div class="sd-hub-icon" style="background:#FFF3D6;color:#C2530A">✍️</div>
-      <h4>Writing &amp; speaking</h4>
-      <p>Answer prompts by typing or recording</p>
+    <button class="sd-hubb" id="hubWriting">
+      <div class="sd-hubb-left">
+        <div class="sd-hubb-icon">✍️</div>
+        <div>
+          <div class="sd-hubb-title">Writing &amp; speaking</div>
+          <div class="sd-hubb-sub" id="hubWritingSub">Answer prompts by typing or recording</div>
+        </div>
+      </div>
+      <div class="sd-hubb-trail" id="hubWritingTrail"></div>
+      <span class="sd-hubb-btn">Open</span>
     </button>
   </div>
 
@@ -1440,6 +1497,74 @@
   document.getElementById("hubWriting").onclick = () => { writingOverlay.classList.add("show"); renderWritingHub(); };
   document.getElementById("writingClose").onclick = () => { writingOverlay.classList.remove("show"); wrCleanupStream(); };
   writingOverlay.addEventListener("click", e => { if (e.target === writingOverlay) { writingOverlay.classList.remove("show"); wrCleanupStream(); } });
+
+  // ================= English Hub banners (Magic-Map style) =================
+  // Builds the same trail-of-stops visual used by the story banner for each
+  // Hub section, sized to how many topics/themes/prompts/stories exist for
+  // this level, and greys the whole banner out when a section isn't
+  // available yet at this level (mirrors the story banner's lock state).
+  function renderHubTrail(elId, count, locked) {
+    const el = document.getElementById(elId);
+    if (!el) return;
+    if (locked || !count) { el.innerHTML = ""; return; }
+    const shown = Math.min(count, 6);
+    let html = "";
+    for (let i = 1; i <= shown; i++) {
+      html += `<div class="sd-hubb-stop${locked ? " locked" : ""}">${i}</div>`;
+      if (i < shown) html += '<div class="sd-hubb-line"></div>';
+    }
+    if (count > shown) html += `<div class="sd-hubb-stop locked">+${count - shown}</div>`;
+    el.innerHTML = html;
+  }
+  function lockHubBanner(id, subId, subText) {
+    const btn = document.getElementById(id);
+    if (btn) { btn.classList.add("locked"); btn.disabled = true; btn.onclick = null; btn.style.pointerEvents = "none"; }
+    const sub = document.getElementById(subId);
+    if (sub && subText) sub.textContent = subText;
+  }
+  async function initHubBanners() {
+    // Vocabulary
+    try {
+      const r = await fetch(`vocab-hub/${level}.json`);
+      const d = await r.json();
+      const n = (d.themes || []).length;
+      document.getElementById("hubVocabSub").textContent = `${n} topics · Arabic + audio`;
+      renderHubTrail("hubVocabTrail", n, false);
+    } catch (e) { renderHubTrail("hubVocabTrail", 0, true); }
+
+    // Grammar (gated behind GRAMMAR_STARTS_AT, same rule as the modal)
+    if (GRAMMAR_STARTS_AT.includes(level)) {
+      lockHubBanner("hubGrammar", "hubGrammarSub", "Unlocks at Level 3");
+      document.getElementById("hubGrammarBtn").textContent = "🔒 Locked";
+    } else {
+      try {
+        const r = await fetch(`grammar-hub/${level}.json`);
+        const d = await r.json();
+        const n = (d.topics || []).length;
+        document.getElementById("hubGrammarSub").textContent = `${n} grammar topics, with Arabic`;
+        renderHubTrail("hubGrammarTrail", n, false);
+      } catch (e) { renderHubTrail("hubGrammarTrail", 0, true); }
+    }
+
+    // Stories (mini read-along stories — separate from the big story banner above)
+    try {
+      const r = await fetch(`stories-hub/${level}.json`);
+      const d = await r.json();
+      const n = (d.stories || []).length;
+      document.getElementById("hubStoriesSub").textContent = `${n} read-along stories`;
+      renderHubTrail("hubStoriesTrail", n, false);
+    } catch (e) { renderHubTrail("hubStoriesTrail", 0, true); }
+
+    // Writing & speaking
+    try {
+      const r = await fetch(`writing-hub/${level}.json`);
+      const d = await r.json();
+      const n = (d.prompts || []).length;
+      document.getElementById("hubWritingSub").textContent = `${n} prompts to type or record`;
+      renderHubTrail("hubWritingTrail", n, false);
+    } catch (e) { renderHubTrail("hubWritingTrail", 0, true); }
+  }
+  initHubBanners();
 
   // ================= Memory Match =================
   const memoryOverlay = document.getElementById("memoryOverlay");
