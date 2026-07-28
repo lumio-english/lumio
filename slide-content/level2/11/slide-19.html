@@ -1,25 +1,31 @@
 <div class="wall"></div><div class="teal-band"></div><div class="window"><div class="cross-v"></div><div class="cross-h"></div></div><div class="spark" style="left:375px;top:135px;font-size:1.6rem">&#10022;</div><div class="spark" style="left:415px;top:105px;font-size:1.1rem">&#10022;</div><div class="spark" style="left:392px;top:178px;font-size:1.3rem">&#10022;</div><div class="header">
       <div class="brand"><img src="assets/logo/lumio-logo.png"><div class="name">Lumio<small>ENGLISH</small></div></div>
-      <div class="pagetitle">Your Turn &bull; Round 1 of 2</div>
-      <div class="counter">19 / 23</div>
+      <div class="pagetitle">Build the Sentence</div>
+      <div class="counter">19 / 25</div>
     </div><div class="colorstrip"><div class="c1"></div><div class="c2"></div><div class="c3"></div><div class="c4"></div><div class="c5"></div></div>
-    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:40px;padding-bottom:60px">
-      <div class="card" id="ytCard1" style="width:320px;height:320px;display:flex;align-items:center;justify-content:center;
-                  background:linear-gradient(135deg,#FFF3D6,#FFE0B8);position:relative;overflow:hidden">
-        <div id="ytMystery1" style="font-size:4rem">&#128266;</div>
-        <img id="ytImg1" src="assets/vocab/january.png" style="display:none;width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
-      </div>
-      <div class="card" style="width:400px;padding:40px 36px;text-align:center">
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.7rem;color:#43301F;margin-bottom:10px">Listen first!</div>
-        <div style="font-size:.95rem;color:#8A7160;font-weight:700">Play the sound, guess the word, then reveal the picture.</div>
-      </div>
+    <div style="position:absolute;left:0;right:0;top:190px;text-align:center">
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;color:#43301F;margin-bottom:8px">Put the words in the right order!</div>
+      <div style="font-size:.95rem;color:#8A7160;font-weight:700">Drag the tiles into the boxes below.</div>
     </div>
-    <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('January')"
+    <div id="sbSlots" data-correct="My birthday is in January." style="position:absolute;left:0;right:0;top:300px;display:flex;justify-content:center;gap:12px;min-height:80px;flex-wrap:wrap">
+      <div class="sb-slot" data-index="0"></div><div class="sb-slot" data-index="1"></div><div class="sb-slot" data-index="2"></div><div class="sb-slot" data-index="3"></div><div class="sb-slot" data-index="4"></div><div class="sb-tile sb-punct" style="cursor:default">.</div>
+    </div>
+    <div id="sbTray" style="position:absolute;left:0;right:0;top:430px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap;padding:0 60px">
+      <div class="sb-tile" draggable="false" data-word="is">is</div><div class="sb-tile" draggable="false" data-word="My">My</div><div class="sb-tile" draggable="false" data-word="birthday">birthday</div><div class="sb-tile" draggable="false" data-word="January">January</div><div class="sb-tile" draggable="false" data-word="in">in</div>
+    </div>
+    <div id="sbFeedback" style="position:absolute;left:0;right:0;top:560px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;min-height:40px"></div>
+    <button onclick="window.checkSentenceBuilder && checkSentenceBuilder()"
             style="position:absolute;left:46px;bottom:32px;z-index:20;cursor:pointer;border:none;font-family:inherit;
-            background:linear-gradient(135deg,#0D9488,#0B7A6F);color:#fff;font-weight:800;padding:13px 26px;border-radius:999px;
-            font-size:1.02rem;box-shadow:0 8px 18px rgba(13,148,136,.35)">&#9654; Play sound</button>
-    <button onclick="document.getElementById('ytMystery1').style.display='none'; document.getElementById('ytImg1').style.display='block'; this.textContent='January \u2014 يناير'; this.style.background='linear-gradient(135deg,#4ADE80,#16A34A)'"
-            style="position:absolute;left:230px;bottom:32px;z-index:20;cursor:pointer;border:none;font-family:inherit;
-            background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;padding:13px 26px;border-radius:999px;
-            font-size:1.02rem;box-shadow:0 8px 18px rgba(249,115,22,.35)">&#128064; Reveal picture</button>
-    <div class="floorshadow" style="right:95px;bottom:25px;width:230px;height:36px"></div><img class="char" src="assets/story/characters/omar-wave.png" style="right:95px;bottom:32px;height:250px">
+            background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;padding:13px 28px;border-radius:999px;
+            font-size:1.02rem;box-shadow:0 8px 18px rgba(249,115,22,.35)">&#10003; Check my sentence</button>
+    <div class="floorshadow" style="right:95px;bottom:17px;width:230px;height:36px"></div><img class="char" src="assets/story/characters/sara-teach-board.png" style="right:95px;bottom:24px;height:230px">
+    <style>
+      .sb-slot { width:120px; height:64px; border:3px dashed #E5DDD0; border-radius:14px; background:rgba(255,255,255,.5); }
+      .sb-slot.sb-filled { border-style:solid; border-color:#FFDCA8; background:#fff; }
+      .sb-tile { min-width:90px; height:64px; padding:0 18px; background:#fff; border-radius:14px; display:flex; align-items:center;
+                  justify-content:center; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1.25rem; color:#43301F;
+                  box-shadow:0 8px 16px rgba(67,48,31,.18); cursor:grab; touch-action:none; user-select:none; }
+      .sb-tile.sb-dragging { opacity:.4; }
+      .sb-tile.sb-punct { background:transparent; box-shadow:none; font-size:2rem; min-width:20px; padding:0; }
+    </style>
+    

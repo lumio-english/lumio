@@ -2,6 +2,10 @@
 import sys
 sys.path.insert(0, "lib")
 from deck_template_v2 import run
+import json
+
+phonics_data = json.load(open("phonics-hub/level2.json", encoding="utf-8"))
+PHONICS_UNITS = {2 * i - 1: u for i, u in enumerate(phonics_data["units"], 1)}
 
 DIALOGUES = {
   1: [("Hello! Nice to meet you!", "مرحبا! تشرفنا!"),
@@ -86,4 +90,4 @@ DIALOGUES = {
        ("Happy birthday, by the way! Look at the clock — time for class!", "عيد ميلاد سعيد بالمناسبة! انظر إلى الساعة — حان وقت الحصة!")],
 }
 
-run("level2", DIALOGUES)
+run("level2", DIALOGUES, PHONICS_UNITS)

@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
-import sys
+import sys, json
 sys.path.insert(0, "lib")
 from deck_template_v2 import run
+
+phonics_data = json.load(open("phonics-hub/level1.json", encoding="utf-8"))
+# unit N is taught in lesson (2N-1): 1,3,5,7,9,11,13,15
+PHONICS_UNITS = {2 * i - 1: u for i, u in enumerate(phonics_data["units"], 1)}
 
 DIALOGUES = {
   1: [("This is my friend.", "هذا صديقي."),
@@ -86,4 +90,4 @@ DIALOGUES = {
        ("I can run in a circle! Great job, everyone!", "أستطيع الجري في دائرة! أحسنتم جميعا!")],
 }
 
-run("level1", DIALOGUES)
+run("level1", DIALOGUES, PHONICS_UNITS)

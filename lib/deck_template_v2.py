@@ -286,6 +286,53 @@ def slide_quiz(target, distractors, idx, total_q, n, total, seed):
     {buttons}
     ''')
 
+def slide_phonics_rule(unit, n, total, ch):
+    sounds = unit.get("sounds", [])
+    if sounds:
+        tiles = ""
+        for s in sounds:
+            speak_token = s["letter"].split(",")[0].split("-")[0].strip()
+            tiles += f'''
+          <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(speak_token)}')"
+                  style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:14px;padding:14px 18px;min-width:100px;
+                        text-align:center;box-shadow:0 8px 16px rgba(67,48,31,.14)">
+            <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.6rem;color:#F97316">{esc(s["letter"])}</div>
+            <div style="font-size:.8rem;color:#8A7160;margin-top:2px">{esc(s["sound"])}</div>
+          </button>'''
+        tiles_block = f'<div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:18px">{tiles}</div>'
+    else:
+        tiles_block = ""
+    tip = unit.get("tip", "")
+    return (bg_study() + header("Phonics Time! &#128218;", n, total) + COLORSTRIP + f'''
+    <div class="card" style="position:absolute;left:46px;top:150px;width:820px;padding:30px 36px">
+      <div style="font-size:.78rem;font-weight:800;color:#0D9488;letter-spacing:1.5px;margin-bottom:8px">TEACHER: EXPLAIN THIS RULE</div>
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;color:#43301F;margin-bottom:4px">{esc(unit["unit"])}</div>
+      <div style="direction:rtl;text-align:right;font-size:.9rem;color:#8A7160;font-weight:700;margin-bottom:18px">{unit["unitAr"]}</div>
+      {tiles_block}
+      {f'<div style="background:#FFF3D6;border-radius:12px;padding:12px 16px;direction:rtl;text-align:right;font-size:.85rem;color:#43301F;line-height:1.6">{tip}</div>' if tip else ""}
+    </div>
+    ''' + char_img(ch, bottom=42, height=310))
+
+def slide_phonics_practice(unit, n, total, ch):
+    words = unit.get("words", [])
+    cards = ""
+    for w in words[:6]:
+        cards += f'''
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(w["en"])}')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:14px 10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:8px;width:160px">
+        {letter_tiles(w["en"]) or f'<div style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:1.4rem;color:#43301F">{esc(w["en"])}</div>'}
+        <div style="font-size:.85rem;color:#0D9488;font-weight:800">{w["ar"]}</div>
+      </button>'''
+    return (bg_plain() + header("Listen &amp; Spot", n, total) + COLORSTRIP + f'''
+    <div style="position:absolute;left:0;right:0;top:158px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:700;
+                font-size:1.05rem;color:#8A7160">Tap each word, sound it out, then say it together!</div>
+    <div style="position:absolute;left:0;right:380px;top:220px;display:flex;flex-wrap:wrap;gap:18px;justify-content:center;padding:0 30px">
+      {cards}
+    </div>
+    ''' + char_img(ch, right=90, bottom=40, height=320))
+
+
 def slide_reward_homework(lesson_num, n, total):
     items = [f"Play this lesson again on Lumio English", "Finish your homework sheet", "Say each word to your family"]
     rows = "".join(f'''
@@ -313,11 +360,14 @@ def slide_reward_homework(lesson_num, n, total):
     </div>''')
 
 
-def build_deck(lesson_num, lesson, prev_lesson):
+def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None):
     V = len(lesson["vocab"])
     plan = [("title", None), ("lets_learn", None)]
     if prev_lesson:
         plan.append(("recap", None))
+    if phonics_unit:
+        plan.append(("phonics_rule", phonics_unit))
+        plan.append(("phonics_practice", phonics_unit))
     for i, w in enumerate(lesson["vocab"]):
         plan.append(("vocab", (w, i)))
         plan.append(("practice_phonics", (w, i)))
@@ -338,6 +388,8 @@ def build_deck(lesson_num, lesson, prev_lesson):
         if kind == "title": slides.append(slide_title(lesson, V))
         elif kind == "lets_learn": slides.append(slide_lets_learn(lesson, n, total, V))
         elif kind == "recap": slides.append(slide_recap(prev_lesson["vocab"], n, total))
+        elif kind == "phonics_rule": slides.append(slide_phonics_rule(data, n, total, "sara-explain"))
+        elif kind == "phonics_practice": slides.append(slide_phonics_practice(data, n, total, "sara-clap"))
         elif kind == "vocab":
             w, i = data
             slides.append(slide_vocab(w, i, n, total, V, VOCAB_CHARS[i % len(VOCAB_CHARS)]))
@@ -362,9 +414,10 @@ def build_deck(lesson_num, lesson, prev_lesson):
     return slides
 
 
-def run(level, dialogues, out_root="slide-content", manifest_root="assets/slides"):
+def run(level, dialogues, phonics_units=None, out_root="slide-content", manifest_root="assets/slides"):
     global DIALOGUES
     DIALOGUES = dialogues
+    phonics_units = phonics_units or {}  # {lesson_num: unit_dict}
     lesson_files = sorted(glob.glob(f"lessons/{level}/lesson*.json"))
     lessons = {}
     for f in lesson_files:
@@ -380,7 +433,7 @@ def run(level, dialogues, out_root="slide-content", manifest_root="assets/slides
     for num in sorted(lessons):
         lesson = lessons[num]
         prev_lesson = lessons.get(num - 1)
-        slides = build_deck(num, lesson, prev_lesson)
+        slides = build_deck(num, lesson, prev_lesson, phonics_units.get(num))
         nn = f"{num:02d}"
         lesson_dir = os.path.join(out_dir, nn)
         os.makedirs(lesson_dir, exist_ok=True)
@@ -391,7 +444,7 @@ def run(level, dialogues, out_root="slide-content", manifest_root="assets/slides
             with open(os.path.join(lesson_dir, f"slide-{i:02d}.html"), "w", encoding="utf-8") as f:
                 f.write(html)
         manifest[nn] = len(slides)
-        print(f"{level} lesson {nn}: {len(slides)} slides")
+        print(f"{level} lesson {nn}: {len(slides)} slides" + (" [+ phonics]" if num in phonics_units else ""))
 
     with open(manifest_path, "w", encoding="utf-8") as f:
         json.dump(manifest, f, indent=0)
