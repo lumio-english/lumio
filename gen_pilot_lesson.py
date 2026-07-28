@@ -1,0 +1,401 @@
+# -*- coding: utf-8 -*-
+"""
+PILOT: redesigned deck for Level 1, Lesson 1 — richer, more efficient,
+more professional. Builds into an isolated preview path so it doesn't
+touch the live level1/01 deck:
+  slide-content/_pilot-level1-01/01/slide-XX.html
+  assets/slides/_pilot-level1-01/manifest.json
+Viewable via present.html?level=_pilot-level1-01&n=1
+"""
+import json, os, re
+
+LEVEL_ID = "_pilot-level1-01"
+OUT_DIR = f"slide-content/{LEVEL_ID}/01"
+MANIFEST_PATH = f"assets/slides/{LEVEL_ID}/manifest.json"
+os.makedirs(OUT_DIR, exist_ok=True)
+os.makedirs(f"assets/slides/{LEVEL_ID}", exist_ok=True)
+
+CHAR = "assets/story/characters"
+lesson = json.load(open("lessons/level1/lesson01.json", encoding="utf-8"))
+
+def esc(s):
+    return (s or "").replace("&", "&amp;").replace('"', "&quot;")
+def slug(w):
+    return w.lower().replace("'", "").replace(" ", "-")
+
+SPARKS = ('<div class="spark" style="left:375px;top:135px;font-size:1.6rem">&#10022;</div>'
+          '<div class="spark" style="left:415px;top:105px;font-size:1.1rem">&#10022;</div>'
+          '<div class="spark" style="left:392px;top:178px;font-size:1.3rem">&#10022;</div>')
+WINDOW = '<div class="window"><div class="cross-v"></div><div class="cross-h"></div></div>'
+SHELF_BOOKS = ('<div class="shelf"></div>'
+    '<div class="book" style="left:56px;width:32px;height:78px;background:#F97316"></div>'
+    '<div class="book" style="left:93px;width:28px;height:85px;background:#0D9488"></div>'
+    '<div class="book" style="left:126px;width:36px;height:92px;background:#F59E0B"></div>'
+    '<div class="book" style="left:167px;width:26px;height:99px;background:#2DD4BF"></div>'
+    '<div class="book" style="left:198px;width:32px;height:81px;background:#DC5C33"></div>')
+def bg_study(): return f'<div class="wall"></div><div class="teal-band"></div>{SHELF_BOOKS}{WINDOW}{SPARKS}'
+def bg_plain(): return f'<div class="wall"></div><div class="teal-band"></div>{WINDOW}{SPARKS}'
+def bg_bare(): return f'<div class="wall"></div><div class="teal-band"></div>{SPARKS}'
+
+def header(pagetitle, n, total):
+    return f'''<div class="header">
+      <div class="brand"><img src="assets/logo/lumio-logo.png"><div class="name">Lumio<small>ENGLISH</small></div></div>
+      <div class="pagetitle">{pagetitle}</div>
+      <div class="counter">{n} / {total}</div>
+    </div>'''
+COLORSTRIP = '<div class="colorstrip"><div class="c1"></div><div class="c2"></div><div class="c3"></div><div class="c4"></div><div class="c5"></div></div>'
+def dots(active_i, count):
+    cells = "".join(f'<div class="dot {"on" if i == active_i else ""}"></div>' for i in range(count))
+    return f'<div class="dots">{cells}</div>'
+def char_img(name, right=95, bottom=42, height=300):
+    return (f'<div class="floorshadow" style="right:{right}px;bottom:{bottom-7}px;width:230px;height:36px"></div>'
+            f'<img class="char" src="{CHAR}/{name}.png" style="right:{right}px;bottom:{bottom}px;height:{height}px">')
+LETTER_COLORS = ["#F97316", "#0D9488", "#F59E0B", "#2DD4BF", "#DC5C33"]
+def letter_tiles(word):
+    if " " in word or len(word) > 10: return ""
+    tiles = ""
+    for i, ch in enumerate(word):
+        color = LETTER_COLORS[i % len(LETTER_COLORS)]
+        tiles += f'''<div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:{color};
+                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">{ch.upper()}</div>'''
+    return f'<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">{tiles}</div>'
+
+# ============================================================
+# SLIDE 1 — Title (unchanged, already strong)
+# ============================================================
+def slide_title(num_words):
+    subtitle = " &bull; ".join(esc(v["en"]) for v in lesson["vocab"])
+    return f'''
+    <div style="position:absolute;inset:0;overflow:hidden">
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,#FFF3D6 0%,#FDF3E0 100%)"></div>
+    <div style="position:absolute;left:80px;top:110px;width:70px;height:70px;border-radius:50%;background:#FDD8351F;border:3px solid #FDD835;
+      display:flex;align-items:center;justify-content:center;font-size:1.8rem;box-shadow:0 10px 16px rgba(67,48,31,.14)">&#128512;</div>
+    <div style="position:absolute;left:1300px;top:90px;width:60px;height:60px;border-radius:50%;background:#1E88E51F;border:3px solid #1E88E5;
+      display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 10px 16px rgba(67,48,31,.14)">&#128075;</div>
+    </div>
+    {SPARKS}
+    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
+      <div style="position:relative;display:flex;align-items:center;gap:18px;margin-bottom:10px">
+        <div style="position:relative">
+          <div style="position:absolute;inset:-10px;border-radius:50%;background:radial-gradient(circle,rgba(249,115,22,.35),transparent 70%)"></div>
+          <img src="assets/logo/lumio-logo.png" style="position:relative;width:104px;height:104px;border-radius:50%;box-shadow:0 12px 28px rgba(67,48,31,.28);border:6px solid #fff">
+        </div>
+        <div style="text-align:left">
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:3rem;color:#43301F;line-height:1">Lumio</div>
+          <div style="display:inline-block;margin-top:6px;background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;
+                      font-weight:800;font-size:.82rem;letter-spacing:3px;padding:4px 14px;border-radius:999px">ENGLISH</div>
+        </div>
+      </div>
+      <div style="width:100%;background:linear-gradient(90deg,rgba(127,207,196,0) 0%,#7FCFC4 20%,#7FCFC4 80%,rgba(127,207,196,0) 100%);
+                  padding:14px 0;margin:16px 0">
+        <h1 style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:3.6rem;color:#43301F;margin:0">{esc(lesson["title"])}</h1>
+      </div>
+      <div style="font-size:1.25rem;color:#8A7160;font-weight:700;margin:10px 0">{subtitle}</div>
+    </div>
+    {char_img("noor-happy", right=95, bottom=40, height=340)}
+    '''
+
+# ============================================================
+# SLIDE 2 — "Let's Learn!" — MERGED goals + warmup into one slide
+# (replaces the old 3-slide Welcome / Goals / Warm-up sequence)
+# ============================================================
+def slide_lets_learn(n, total, num_words):
+    return (bg_study() + header("Let's Learn!", n, total) + COLORSTRIP + f'''
+    <div style="position:absolute;left:46px;top:150px;width:820px;display:flex;gap:20px">
+      <div class="card" style="flex:1;padding:26px 24px">
+        <div style="font-size:.78rem;font-weight:800;color:#F97316;letter-spacing:1.5px;margin-bottom:10px">TODAY'S GOAL</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#43301F;line-height:1.35">{esc(lesson["goal"])}</div>
+        <div style="margin-top:14px;display:inline-block;background:#FFF3D6;color:#C2530A;font-weight:800;font-size:.85rem;
+                    padding:6px 14px;border-radius:999px">{num_words} new words &bull; {esc(lesson["grammarFocus"])}</div>
+      </div>
+      <div class="card" style="flex:1;padding:26px 24px">
+        <div style="font-size:.78rem;font-weight:800;color:#0D9488;letter-spacing:1.5px;margin-bottom:10px">WARM-UP</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.1rem;color:#43301F;line-height:1.5">
+          Stand up, stretch, and say hello to a friend! &#10024;</div>
+      </div>
+    </div>
+    ''' + char_img("lumi-wave-book", bottom=42, height=310))
+
+# ============================================================
+# SLIDES — Vocabulary (unchanged design; it's already strong)
+# ============================================================
+def slide_vocab(w, idx, n, total, num_words, ch):
+    quote = w.get("example", w["en"])
+    return (bg_plain() + header(f"Vocabulary &bull; {esc(w['en'])}", n, total) + dots(idx, num_words) + COLORSTRIP + f'''
+    <div class="card" style="position:absolute;left:46px;top:180px;width:450px;padding:24px;background:#fff">
+      <div style="width:100%;aspect-ratio:1/1;border-radius:22px;overflow:hidden;margin-bottom:20px;
+                     box-shadow:0 12px 26px rgba(67,48,31,.22);border:7px solid #fff;outline:4px solid #FFDCA8;background:#fff">
+                     <img src="assets/vocab/{slug(w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.parentElement.style.background='#FFF3D6'; this.remove()"></div>
+      {letter_tiles(w["en"])}
+    </div>
+    <div class="card" style="position:absolute;left:518px;top:180px;width:620px;padding:36px 42px;">
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:3.1rem;color:#43301F">{esc(w["en"])}</div>
+      <div style="display:inline-block;margin-top:12px;padding:9px 24px;background:linear-gradient(135deg,#DDF6F0,#C8F0E7);color:#0D9488;
+                  border-radius:999px;font-weight:800;font-size:1.15rem">{w["ar"]}</div>
+      <div style="border-top:1.5px solid #F5EEE1;margin:24px 0 18px"></div>
+      <div style="font-size:.82rem;font-weight:800;color:#F97316;letter-spacing:1.8px;margin-bottom:8px">SAY IT</div>
+      <div style="font-family:'Baloo 2',sans-serif;font-style:italic;font-weight:700;font-size:1.4rem;color:#43301F;margin-bottom:24px">&ldquo;{esc(quote)}&rdquo;</div>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(w["en"])}')" style="cursor:pointer;border:none;display:inline-block;
+                  background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;font-family:inherit;
+                  padding:15px 32px;border-radius:999px;font-size:1.05rem;box-shadow:0 8px 18px rgba(249,115,22,.4)">&#9654; Listen &rarr; Repeat &times;3</button>
+    </div>
+    ''' + char_img(ch, right=84, bottom=28, height=250))
+
+# ============================================================
+# SLIDE — Practice+Phonics: NEW — ties each word to its opening
+# sound, cross-linking to the Phonics curriculum instead of being
+# a plain repeat of the vocab slide
+# ============================================================
+def slide_practice_phonics(w, n, total, ch):
+    quote = w.get("example", w["en"])
+    first_letter = w["en"][0].upper()
+    return (bg_plain() + header(f"Practice &bull; {esc(w['en'])}", n, total) + COLORSTRIP + f'''
+    <div style="position:absolute;left:0;right:0;top:180px;display:flex;justify-content:center;gap:30px">
+      <div class="card" style="width:260px;height:260px;overflow:hidden;padding:0"><img src="assets/vocab/{slug(w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+      <div class="card" style="width:520px;padding:30px 36px;display:flex;flex-direction:column;justify-content:center">
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;color:#43301F;margin-bottom:10px">Can you say it?</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-style:italic;font-weight:700;font-size:1.4rem;color:#F97316;margin-bottom:18px">&ldquo;{esc(quote)}&rdquo;</div>
+        <div style="display:flex;align-items:center;gap:12px;background:#FFF3D6;border-radius:14px;padding:10px 16px">
+          <div style="width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,#0D9488,#0B7A6F);color:#fff;
+                      display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.2rem">{first_letter}</div>
+          <div style="font-size:.85rem;color:#43301F;font-weight:700">&ldquo;{esc(w["en"])}&rdquo; starts with the <b>{first_letter.lower()}</b> sound &mdash; find more {first_letter.lower()} words in Phonics! &#128218;</div>
+        </div>
+      </div>
+    </div>
+    ''' + char_img(ch, bottom=32, height=260))
+
+# ============================================================
+# SLIDE — Dialogue (unchanged, already strong)
+# ============================================================
+def slide_dialogue(lines, n, total):
+    y_positions = [165, 271, 378, 484]
+    bubbles = ""
+    for i, (en, ar) in enumerate(lines):
+        left = i % 2 == 0
+        side = "left" if left else "right"
+        tri = "left" if left else "right"
+        bubbles += f'''
+        <div style="position:absolute;{side}:150px;top:{y_positions[i]}px;max-width:520px;background:#fff;border-radius:20px;
+                    padding:14px 20px;box-shadow:0 10px 22px rgba(67,48,31,.16);z-index:6">
+          <div style="position:absolute;top:20px;{tri}:-10px;border-{'right' if left else 'left'}-color:#fff;width:0;height:0;border:10px solid transparent"></div>
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.08rem;color:#43301F">{esc(en)}</div>
+          <div style="direction:rtl;text-align:right;font-size:.86rem;color:#8A7160;font-weight:700;margin-top:3px">{ar}</div>
+        </div>'''
+    return (bg_plain() + header("Dialogue &bull; Let's talk!", n, total) + COLORSTRIP + bubbles + f'''
+    <img class="char" src="{CHAR}/noor-wave.png" style="left:280px;bottom:0px;height:230px;position:absolute;z-index:5;filter:drop-shadow(0 16px 22px rgba(67,48,31,.3))">
+    <img class="char" src="{CHAR}/sara-clap.png" style="right:280px;bottom:0px;height:230px;position:absolute;z-index:5;filter:drop-shadow(0 16px 22px rgba(67,48,31,.3));transform:scaleX(-1)">
+    ''')
+
+# ============================================================
+# SLIDE — Build the Sentence (unchanged, already interactive/strong)
+# ============================================================
+def tokenize_sentence(sentence):
+    m = re.match(r"^(.*?)([.!?]+)$", sentence.strip())
+    if m: words, punct = m.group(1).strip(), m.group(2)
+    else: words, punct = sentence.strip(), ""
+    return words.split(" "), punct
+
+def slide_sentence_builder(sentence, n, total, ch):
+    words, punct = tokenize_sentence(sentence)
+    import random as _r
+    order = list(range(len(words)))
+    _r.Random(42).shuffle(order)
+    slots = "".join(f'<div class="sb-slot" data-index="{i}"></div>' for i in range(len(words)))
+    punct_tile = f'<div class="sb-tile sb-punct" style="cursor:default">{punct}</div>' if punct else ""
+    tray = "".join(f'<div class="sb-tile" draggable="false" data-word="{esc(words[i])}">{esc(words[i])}</div>' for i in order)
+    return (bg_plain() + header("Build the Sentence", n, total) + COLORSTRIP + f'''
+    <div style="position:absolute;left:0;right:0;top:190px;text-align:center">
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;color:#43301F;margin-bottom:8px">Put the words in the right order!</div>
+      <div style="font-size:.95rem;color:#8A7160;font-weight:700">Drag the tiles into the boxes below.</div>
+    </div>
+    <div id="sbSlots" data-correct="{esc(sentence.strip())}" style="position:absolute;left:0;right:0;top:300px;display:flex;justify-content:center;gap:12px;min-height:80px;flex-wrap:wrap">
+      {slots}{punct_tile}
+    </div>
+    <div id="sbTray" style="position:absolute;left:0;right:0;top:430px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap;padding:0 60px">
+      {tray}
+    </div>
+    <div id="sbFeedback" style="position:absolute;left:0;right:0;top:560px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;min-height:40px"></div>
+    <button onclick="window.checkSentenceBuilder && checkSentenceBuilder()"
+            style="position:absolute;left:46px;bottom:32px;z-index:20;cursor:pointer;border:none;font-family:inherit;
+            background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;padding:13px 28px;border-radius:999px;
+            font-size:1.02rem;box-shadow:0 8px 18px rgba(249,115,22,.35)">&#10003; Check my sentence</button>
+    ''' + char_img(ch, bottom=24, height=230) + '''
+    <style>
+      .sb-slot { width:120px; height:64px; border:3px dashed #E5DDD0; border-radius:14px; background:rgba(255,255,255,.5); }
+      .sb-slot.sb-filled { border-style:solid; border-color:#FFDCA8; background:#fff; }
+      .sb-tile { min-width:90px; height:64px; padding:0 18px; background:#fff; border-radius:14px; display:flex; align-items:center;
+                  justify-content:center; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1.25rem; color:#43301F;
+                  box-shadow:0 8px 16px rgba(67,48,31,.18); cursor:grab; touch-action:none; user-select:none; }
+      .sb-tile.sb-dragging { opacity:.4; }
+      .sb-tile.sb-punct { background:transparent; box-shadow:none; font-size:2rem; min-width:20px; padding:0; }
+    </style>
+    ''')
+
+# ============================================================
+# SLIDE — "Sound & Spot" — NEW, replaces the plain
+# "Listen and Repeat" numbered list with a tap-to-hear image grid
+# ============================================================
+def slide_sound_spot(n, total, ch):
+    cards = ""
+    for w in lesson["vocab"]:
+        cards += f'''
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(w["en"])}')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/{slug(w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">{esc(w["en"])}</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">{w["ar"]}</div>
+      </button>'''
+    return (bg_study() + header("Sound &amp; Spot", n, total) + COLORSTRIP + f'''
+    <div style="position:absolute;left:0;right:0;top:158px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:700;
+                font-size:1.05rem;color:#8A7160">Tap any word to hear it &mdash; can you say it before it plays?</div>
+    <div style="position:absolute;left:0;right:400px;top:210px;display:flex;flex-wrap:wrap;gap:16px;justify-content:center;padding:0 30px">
+      {cards}
+    </div>
+    ''' + char_img(ch, right=90, bottom=40, height=320))
+
+# ============================================================
+# SLIDE — Your Turn: NEW mechanic — "Listen First" (mystery audio
+# plays before the picture is revealed, instead of a static
+# reveal-answer card) — active listening rather than look-and-say
+# ============================================================
+def slide_your_turn_listen_first(w, idx, total_rounds, n, total, ch):
+    return (bg_plain() + header(f"Your Turn &bull; Round {idx} of {total_rounds}", n, total) + COLORSTRIP + f'''
+    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:40px;padding-bottom:60px">
+      <div class="card" id="ytCard{idx}" style="width:320px;height:320px;display:flex;align-items:center;justify-content:center;
+                  background:linear-gradient(135deg,#FFF3D6,#FFE0B8);position:relative;overflow:hidden">
+        <div id="ytMystery{idx}" style="font-size:4rem">&#128266;</div>
+        <img id="ytImg{idx}" src="assets/vocab/{slug(w['en'])}.png" style="display:none;width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
+      </div>
+      <div class="card" style="width:400px;padding:40px 36px;text-align:center">
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.7rem;color:#43301F;margin-bottom:10px">Listen first!</div>
+        <div style="font-size:.95rem;color:#8A7160;font-weight:700">Play the sound, guess the word, then reveal the picture.</div>
+      </div>
+    </div>
+    <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(w["en"])}')"
+            style="position:absolute;left:46px;bottom:32px;z-index:20;cursor:pointer;border:none;font-family:inherit;
+            background:linear-gradient(135deg,#0D9488,#0B7A6F);color:#fff;font-weight:800;padding:13px 26px;border-radius:999px;
+            font-size:1.02rem;box-shadow:0 8px 18px rgba(13,148,136,.35)">&#9654; Play sound</button>
+    <button onclick="document.getElementById('ytMystery{idx}').style.display='none'; document.getElementById('ytImg{idx}').style.display='block'; this.textContent='{esc(w["en"])} \\u2014 {w["ar"]}'; this.style.background='linear-gradient(135deg,#4ADE80,#16A34A)'"
+            style="position:absolute;left:230px;bottom:32px;z-index:20;cursor:pointer;border:none;font-family:inherit;
+            background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;padding:13px 26px;border-radius:999px;
+            font-size:1.02rem;box-shadow:0 8px 18px rgba(249,115,22,.35)">&#128064; Reveal picture</button>
+    ''' + char_img(ch, bottom=32, height=250))
+
+# ============================================================
+# SLIDE — Quiz (unchanged, already interactive/strong)
+# ============================================================
+def slide_quiz(target, distractors, idx, total_q, n, total):
+    import random as _r
+    opts = distractors + [target]
+    _r.Random(n * 7 + idx).shuffle(opts)
+    positions = [(610, 260), (890, 260), (610, 364), (890, 364)]
+    buttons = ""
+    for o, (l, t) in zip(opts, positions):
+        buttons += f'''
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{esc(o["en"])}', '{esc(target["en"])}')"
+              style="position:absolute;left:{l}px;top:{t}px;width:260px;height:84px;background:#fff;border:2.5px solid #F0E9DD;border-radius:16px;
+                  display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.25rem;
+                  color:#43301F;cursor:pointer" data-quiz-option="{esc(o["en"])}">{esc(o["en"])}</button>'''
+    return (bg_plain() + header(f"Quiz &bull; {idx}/{total_q}", n, total) + COLORSTRIP + f'''
+    <div class="card" style="position:absolute;left:280px;top:190px;width:280px;height:280px;overflow:hidden;padding:0"><img src="assets/vocab/{slug(target['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+    <div style="position:absolute;left:610px;top:190px;width:540px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.9rem;color:#43301F">What is this?</div>
+    {buttons}
+    ''')
+
+# ============================================================
+# SLIDE — Reward + Homework: MERGED into one closing slide
+# (was 2 slides: "Reward Time" then "Homework & Goodbye")
+# ============================================================
+def slide_reward_homework(n, total, lesson_num):
+    items = [f"Play this lesson again on Lumio English", "Finish your homework sheet", "Say each word to your family"]
+    rows = "".join(f'''
+      <div style="display:flex;align-items:center;gap:12px;padding:8px 0">
+        <span style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#DDF6F0,#C8F0E7);color:#0D9488;
+                     font-weight:800;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0">{i+1}</span>
+        <span style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.05rem;color:#43301F">{it}</span>
+      </div>''' for i, it in enumerate(items))
+    return (bg_bare() + header("Great Job! &bull; Homework", n, total) + COLORSTRIP + f'''
+    <div style="position:absolute;left:46px;top:150px;width:520px">
+      <div style="font-size:2.6rem;margin-bottom:6px">&#127881;</div>
+      <div style="font-size:1.7rem;letter-spacing:5px;margin-bottom:14px">&#11088;&#11088;&#11088;&#11088;&#11088;</div>
+      <div style="background:#fff;display:inline-block;padding:9px 22px;border-radius:999px;box-shadow:0 8px 18px rgba(67,48,31,.14);
+                  font-family:'Baloo 2',sans-serif;font-weight:800;color:#0D9488;font-size:1rem">You earned 5 stars!</div>
+    </div>
+    <div class="card" style="position:absolute;left:610px;top:150px;width:400px;padding:26px 30px">
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.15rem;color:#43301F;margin-bottom:10px">Before next time&hellip;</div>
+      {rows}
+    </div>
+    <div style="position:absolute;right:70px;bottom:30px;display:flex">
+      <div class="floorshadow" style="right:140px;bottom:-7px;width:230px;height:36px"></div>
+      <img class="char" src="{CHAR}/lumi-wave-book.png" style="right:140px;bottom:0px;height:250px">
+      <div class="floorshadow" style="right:10px;bottom:-7px;width:230px;height:36px"></div>
+      <img class="char" src="{CHAR}/omar-wave.png" style="right:10px;bottom:0px;height:250px">
+    </div>''')
+
+# ============================================================
+# ASSEMBLE
+# ============================================================
+def main():
+    V = len(lesson["vocab"])
+    VOCAB_CHARS = ["omar-wave", "noor-happy", "sara-clap", "omar-point", "noor-wave"]
+    plan = []
+    plan.append(("title", None))
+    plan.append(("lets_learn", None))
+    # (no recap slide -- this is lesson 1, nothing to recap yet, same rule as before)
+    for i, w in enumerate(lesson["vocab"]):
+        plan.append(("vocab", (w, i)))
+        plan.append(("practice_phonics", (w, i)))
+    plan.append(("dialogue", None))
+    plan.append(("sentence", None))
+    plan.append(("sound_spot", None))
+    your_turn_n = 2  # was 3 -- Sound & Spot already covers full-set listening practice
+    for i in range(your_turn_n):
+        plan.append(("your_turn", (lesson["vocab"][i], i + 1)))
+    plan.append(("quiz", 1))
+    plan.append(("quiz", 2))
+    plan.append(("reward_homework", None))
+
+    total = len(plan)
+    slides = []
+    for pos, (kind, data) in enumerate(plan):
+        n = pos + 1
+        if kind == "title": slides.append(slide_title(V))
+        elif kind == "lets_learn": slides.append(slide_lets_learn(n, total, V))
+        elif kind == "vocab":
+            w, i = data
+            slides.append(slide_vocab(w, i, n, total, V, VOCAB_CHARS[i % len(VOCAB_CHARS)]))
+        elif kind == "practice_phonics":
+            w, i = data
+            slides.append(slide_practice_phonics(w, n, total, VOCAB_CHARS[i % len(VOCAB_CHARS)]))
+        elif kind == "dialogue":
+            slides.append(slide_dialogue([
+                ("This is my friend.", "هذا صديقي."),
+                ("Nice to meet you! Who is this?", "تشرفنا! من هذا؟"),
+                ("This is my mom, and this is my dad.", "هذه أمي، وهذا أبي."),
+                ("Nice to meet your family!", "تشرفت بعائلتك!"),
+            ], n, total))
+        elif kind == "sentence": slides.append(slide_sentence_builder(lesson["vocab"][0]["example"], n, total, "sara-teach-board"))
+        elif kind == "sound_spot": slides.append(slide_sound_spot(n, total, "sara-clap"))
+        elif kind == "your_turn":
+            w, idx = data
+            slides.append(slide_your_turn_listen_first(w, idx, your_turn_n, n, total, "omar-wave"))
+        elif kind == "quiz":
+            idx = data
+            target = lesson["vocab"][1 if idx == 1 else min(3, V - 1)]
+            distractors = [x for x in lesson["vocab"] if x["en"] != target["en"]][:3]
+            slides.append(slide_quiz(target, distractors, idx, 2, n, total))
+        elif kind == "reward_homework": slides.append(slide_reward_homework(n, total, 1))
+
+    for i, html in enumerate(slides, start=1):
+        with open(os.path.join(OUT_DIR, f"slide-{i:02d}.html"), "w", encoding="utf-8") as f:
+            f.write(html)
+
+    with open(MANIFEST_PATH, "w", encoding="utf-8") as f:
+        json.dump({"01": len(slides)}, f)
+
+    print(f"Pilot deck: {len(slides)} slides (old deck was 29) -> {OUT_DIR}")
+
+if __name__ == "__main__":
+    main()
