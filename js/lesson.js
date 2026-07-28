@@ -357,6 +357,49 @@
   }
 
   /* ============================================================
+     ACTIVITY 7 — SEQUENCE (put the steps in order)
+     For routine/process lessons where lesson.vocab is already
+     authored in the correct real-world order (e.g. Daily Morning:
+     wake up → brush teeth → get dressed...). The student taps
+     tiles in order; a wrong tap just shakes red and waits for the
+     right one, so there's no way to get stuck or lose progress.
+     ============================================================ */
+  function actSequence(a) {
+    const correct = lesson.vocab.map(v => v.en);
+    const tiles = Lumio.shuffle(lesson.vocab.map(v => ({ ...v })));
+    let nextIdx = 0;
+    stage.innerHTML = `
+      <div class="card center">
+        <span class="chip chip-teal">Put it in order · what happens first?</span>
+        <div class="mt" id="seqBuilt" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;min-height:40px"></div>
+        <div class="feature-grid mt" id="seqTiles">
+          ${tiles.map(t => `<button class="card seq-tile" data-en="${t.en}"
+              style="cursor:pointer;font-size:1rem;font-weight:800;padding:14px;line-height:1.3">
+              ${t.en}<br><span class="ar" style="font-weight:700;font-size:.85rem">${t.ar}</span></button>`).join("")}
+        </div>
+      </div>`;
+    const builtEl = document.getElementById("seqBuilt");
+    document.querySelectorAll(".seq-tile").forEach(b => b.onclick = () => {
+      if (b.disabled) return;
+      total++;
+      if (b.dataset.en === correct[nextIdx]) {
+        score++; Lumio.beep(true); Lumio.speak(b.dataset.en);
+        b.disabled = true; b.style.opacity = ".35"; b.style.pointerEvents = "none";
+        const chip = document.createElement("span");
+        chip.className = "chip chip-orange";
+        chip.textContent = `${nextIdx + 1}. ${b.dataset.en}`;
+        builtEl.appendChild(chip);
+        nextIdx++;
+        if (nextIdx === correct.length) setTimeout(next, 900);
+      } else {
+        Lumio.beep(false);
+        b.style.background = "var(--coral)"; b.style.color = "#fff";
+        setTimeout(() => { b.style.background = ""; b.style.color = ""; }, 400);
+      }
+    });
+  }
+
+  /* ============================================================
      RESULTS
      ============================================================ */
   function showResults() {
@@ -391,6 +434,7 @@
       case "quiz": return actQuiz(a);
       case "spell": return actSpell(a);
       case "speak": return actSpeak(a);
+      case "sequence": return actSequence(a);
       default: return next();
     }
   }

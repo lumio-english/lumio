@@ -2187,11 +2187,16 @@
   // Which levels actually have real lesson content — same source of
   // truth the login page uses to decide what's unlocked.
   const MATERIALS_LEVELS = (typeof Lumio !== "undefined" && Lumio.AVAILABLE_LEVELS) ? Lumio.AVAILABLE_LEVELS : ["pre-a"];
-  // Which of those levels also have presentation slides + PowerPoint
-  // decks ready (assets/slides/{level}/, powerpoints/{level}/). There's
-  // no reliable way to detect this from the client without a manifest,
+  // Which of those levels also have presentation slides ready
+  // (assets/slides/{level}/, slide-content/{level}/). There's no
+  // reliable way to detect this from the client without a manifest,
   // so this needs updating by hand as more decks get produced.
-  const LEVELS_WITH_SLIDES = ["pre-a", "level1"];
+  const LEVELS_WITH_SLIDES = ["pre-a", "level1", "level2"];
+  // Separate from the above: which of those levels also have a
+  // downloadable All-PPTX .zip in downloads/ (raw PowerPoint files
+  // for teaching without the website). A level can have the live
+  // "Present" deck ready before its PPTX export exists.
+  const LEVELS_WITH_PPTX_ZIP = ["pre-a", "level1"];
 
   let currentMatLevel = MATERIALS_LEVELS[0] || "pre-a";
   const matGrid = document.getElementById("matGrid");
@@ -2231,7 +2236,7 @@
     const meta = LEVEL_NAMES.find(l => l.id === level);
     matBadge.textContent = `${meta ? meta.name : level} · ${(meta && meta.lessons) || 20} lessons`;
     const downloadAllBtn = document.getElementById("downloadAllPptxBtn");
-    if (hasSlides) {
+    if (LEVELS_WITH_PPTX_ZIP.includes(level)) {
       downloadAllBtn.href = `downloads/${level}-all-pptx.zip`;
       downloadAllBtn.style.display = "flex";
     } else {
