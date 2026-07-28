@@ -5,8 +5,12 @@ matching the exact template system already used by pre-a / level1
 (slide-content/{level}/{NN}/slide-XX.html + assets/slides/{level}/manifest.json).
 """
 import json, os, re, glob
+import sys
+sys.path.insert(0, "lib")
+from grammar_slides import compute_grammar_lesson_map, slide_grammar_rule, slide_grammar_practice
 
 LEVEL = "level3"
+GRAMMAR_UNITS = compute_grammar_lesson_map(LEVEL)
 OUT_DIR = f"slide-content/{LEVEL}"
 MANIFEST_PATH = f"assets/slides/{LEVEL}/manifest.json"
 os.makedirs(OUT_DIR, exist_ok=True)
@@ -516,6 +520,10 @@ def build_deck(lesson_num, lesson, prev_lesson):
     for i, w in enumerate(lesson["vocab"]):
         plan.append(("vocab", (w, i)))
         plan.append(("practice", (w, i)))
+    grammar_topic = GRAMMAR_UNITS.get(lesson_num)
+    if grammar_topic:
+        plan.append(("grammar_rule", grammar_topic))
+        plan.append(("grammar_practice", grammar_topic))
     plan.append(("dialogue", None))
     plan.append(("sentence", None))
     plan.append(("listen_repeat", None))
@@ -551,6 +559,10 @@ def build_deck(lesson_num, lesson, prev_lesson):
             w, i = data
             ch = VOCAB_CHARS[i % len(VOCAB_CHARS)]
             html_slides.append(slide_practice(w, n, total, ch))
+        elif kind == "grammar_rule":
+            html_slides.append(slide_grammar_rule(data, n, total, "sara-explain", header, COLORSTRIP, bg_study, char_img))
+        elif kind == "grammar_practice":
+            html_slides.append(slide_grammar_practice(data, n, total, "sara-clap", header, COLORSTRIP, bg_plain, char_img))
         elif kind == "dialogue":
             html_slides.append(slide_dialogue(DIALOGUES[lesson_num], n, total))
         elif kind == "sentence":
