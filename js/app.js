@@ -21,7 +21,7 @@ const Lumio = (() => {
     { id: "level10", name: "Level 10 · Ready for the World", lessons: 20 },
   ];
   // Levels with lesson JSON files actually available in /lessons/
-  const AVAILABLE_LEVELS = ["pre-a", "level1", "level2"];
+  const AVAILABLE_LEVELS = ["pre-a", "level1", "level2", "level3", "level4"];
 
   /* ---------- Storage ---------- */
   const get = (k, d = null) => {
