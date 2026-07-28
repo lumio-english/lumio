@@ -24,7 +24,7 @@ def slug(w):
     return w.lower().replace("'", "").replace(" ", "-")
 
 def vocab_image_path(en):
-    p = f"assets/vocab/{slug(en)}.jpg"
+    p = f"assets/vocab/{slug(en)}.png"
     return p if os.path.exists(p) else None
 
 # ================= WORKSHEETS =================

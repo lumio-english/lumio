@@ -86,7 +86,7 @@ picOrder.forEach(i => {
   slot.className = "pic-slot";
   slot.dataset.answer = v.en;
   const slug = v.en.toLowerCase().replace(/ /g, "-");
-  slot.innerHTML = `<div class="pic-fill">${Lumio.letterTile(v.en)}</div><img src="../assets/vocab/${slug}.jpg" alt="${v.en}" onerror="this.remove()">`;
+  slot.innerHTML = `<div class="pic-fill">${Lumio.letterTile(v.en)}</div><img src="../assets/vocab/${slug}.png" alt="${v.en}" onerror="this.remove()">`;
   picsEl.appendChild(slot);
 });
 

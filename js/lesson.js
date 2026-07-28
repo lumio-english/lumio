@@ -67,7 +67,7 @@
           <span class="chip chip-orange">New words · ${i + 1}/${words.length}</span>
           <div style="position:relative;width:min(320px,70vw);height:220px;margin:18px auto;border-radius:20px;overflow:hidden;background:#fff">
             <div style="position:absolute;inset:0">${Lumio.letterTile(w.en)}</div>
-            <img src="assets/vocab/${w.en.toLowerCase().replace(/ /g,'-')}.jpg" alt="${w.en}"
+            <img src="assets/vocab/${w.en.toLowerCase().replace(/ /g,"-")}.png" alt="${w.en}"
                  style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:8px;box-sizing:border-box" onerror="this.remove()">
           </div>
           <h1 style="font-size:2.6rem">${w.en}</h1>

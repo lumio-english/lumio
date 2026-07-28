@@ -121,7 +121,7 @@ for f in sorted(glob.glob("lessons/level2/lesson*.json")):
     d = json.load(open(f, encoding="utf-8"))
     LESSON_META.append((d["number"], d["title"], [w["en"] for w in d["vocab"]]))
 
-existing = set(os.path.splitext(f)[0] for f in os.listdir("assets/vocab") if f.endswith(".jpg"))
+existing = set(os.path.splitext(f)[0] for f in os.listdir("assets/vocab") if f.endswith(".png"))
 
 def slug(w):
     return w.lower().replace("'", "").replace(" ", "-")
@@ -165,7 +165,7 @@ for num, title, vocab_words in LESSON_META:
         if s in existing or w in seen:
             continue
         seen.add(w)
-        lesson_new.append((w, f"{s}.jpg"))
+        lesson_new.append((w, f"{s}.png"))
     if not lesson_new:
         continue
     out_lines.append(f"<!-- Lesson {num:02d}: {title} -->")
