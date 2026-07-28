@@ -273,6 +273,23 @@
   .sd-grammar-example .en{font-size:.86rem;color:var(--sd-cocoa);font-weight:700}
   .sd-grammar-example .ar{font-size:.82rem;color:var(--sd-cocoa-soft);margin-top:3px;direction:rtl;text-align:right}
 
+  .sd-phonics-unit{
+    background:var(--sd-cream);border-radius:16px;padding:16px 18px;margin-bottom:14px;
+  }
+  .sd-phonics-unit h4{margin:0 0 4px;font-family:'Baloo 2',sans-serif;font-size:1.02rem;color:var(--sd-cocoa)}
+  .sd-phonics-unit .titleAr{font-size:.82rem;color:var(--sd-cocoa-soft);font-weight:700;margin-bottom:10px}
+  .sd-phonics-sounds{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+  .sd-phonics-sound{background:#fff;border-radius:10px;padding:8px 12px;min-width:70px;text-align:center;cursor:pointer;border:none;font-family:inherit}
+  .sd-phonics-sound .letter{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.1rem;color:var(--sd-orange)}
+  .sd-phonics-sound .sound{font-size:.72rem;color:var(--sd-cocoa-soft);margin-top:2px}
+  .sd-phonics-sound .ar{font-size:.68rem;color:var(--sd-cocoa-soft);margin-top:2px;direction:rtl}
+  .sd-phonics-words{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+  .sd-phonics-word{background:#fff;border-radius:999px;padding:6px 14px;display:flex;align-items:center;gap:8px}
+  .sd-phonics-word .en{font-size:.86rem;color:var(--sd-cocoa);font-weight:700}
+  .sd-phonics-word .ar{font-size:.78rem;color:var(--sd-cocoa-soft);direction:rtl}
+  .sd-phonics-word button{border:none;background:none;cursor:pointer;font-size:.9rem;padding:0}
+  .sd-phonics-tip{font-size:.8rem;color:var(--sd-teal);line-height:1.6;direction:rtl;text-align:right;background:#fff;border-radius:10px;padding:9px 12px}
+
   .sd-story-title-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px}
   .sd-story-title-row h4{margin:0;font-family:'Baloo 2',sans-serif;font-size:1.15rem;color:var(--sd-cocoa)}
   .sd-story-title-row .titleAr{font-size:.86rem;color:var(--sd-cocoa-soft);font-weight:700}
@@ -605,16 +622,17 @@
       <div class="sd-hubb-trail" id="hubStoriesTrail"></div>
       <span class="sd-hubb-btn">Open</span>
     </button>
-    <div class="sd-hubb locked">
+    <button class="sd-hubb" id="hubPhonics">
       <div class="sd-hubb-left">
         <div class="sd-hubb-icon">🔤</div>
         <div>
           <div class="sd-hubb-title">Phonics</div>
-          <div class="sd-hubb-sub">Coming soon</div>
+          <div class="sd-hubb-sub" id="hubPhonicsSub">Letter sounds, blends, and sight words</div>
         </div>
       </div>
-      <span class="sd-hubb-btn">🔒 Locked</span>
-    </div>
+      <div class="sd-hubb-trail" id="hubPhonicsTrail"></div>
+      <span class="sd-hubb-btn" id="hubPhonicsBtn">Open</span>
+    </button>
     <button class="sd-hubb" id="hubWriting">
       <div class="sd-hubb-left">
         <div class="sd-hubb-icon">✍️</div>
@@ -664,6 +682,16 @@
     <h3>📔 Vocabulary</h3>
     <p id="vocabTitle" style="margin:-8px 0 16px;font-weight:700;color:var(--sd-cocoa-soft);font-size:.88rem"></p>
     <div id="vocabThemes"></div>
+  </div>
+</div>
+
+<!-- Phonics Hub modal -->
+<div class="sd-modal-overlay" id="phonicsOverlay">
+  <div class="sd-modal wide" style="position:relative">
+    <button class="sd-modal-close-x" id="phonicsClose">✕</button>
+    <h3>🔤 Phonics</h3>
+    <p id="phonicsTitle" style="margin:-8px 0 16px;font-weight:700;color:var(--sd-cocoa-soft);font-size:.88rem"></p>
+    <div id="phonicsUnits"></div>
   </div>
 </div>
 
@@ -1232,6 +1260,60 @@
   document.getElementById("vocabClose").onclick = () => vocabOverlay.classList.remove("show");
   vocabOverlay.addEventListener("click", e => { if (e.target === vocabOverlay) vocabOverlay.classList.remove("show"); });
 
+  // ================= English Hub: Phonics =================
+  const phonicsOverlay = document.getElementById("phonicsOverlay");
+  const phonicsTitle = document.getElementById("phonicsTitle");
+  const phonicsUnits = document.getElementById("phonicsUnits");
+  const PHONICS_AVAILABLE_AT = ["level1", "level2"]; // phonics curriculum currently covers these levels
+  const phonicsDataCache = {};
+
+  async function loadPhonicsLevel(levelId) {
+    if (phonicsDataCache[levelId]) return phonicsDataCache[levelId];
+    try {
+      const res = await fetch(`phonics-hub/${levelId}.json`);
+      if (!res.ok) return null;
+      const data = await res.json();
+      phonicsDataCache[levelId] = data;
+      return data;
+    } catch (e) { return null; }
+  }
+  async function renderPhonicsHub() {
+    phonicsUnits.innerHTML = `<p style="text-align:center;color:var(--sd-cocoa-soft);padding:20px">Loading…</p>`;
+    if (!PHONICS_AVAILABLE_AT.includes(level)) {
+      phonicsTitle.textContent = "";
+      phonicsUnits.innerHTML = `<p style="text-align:center;color:var(--sd-cocoa-soft);padding:20px">Phonics is ready for Level 1 and Level 2 so far — more levels are on the way! 🌟</p>`;
+      return;
+    }
+    const data = await loadPhonicsLevel(level);
+    if (!data) { phonicsUnits.innerHTML = `<p style="text-align:center;color:var(--sd-cocoa-soft);padding:20px">Phonics for your level isn't ready yet — check back soon!</p>`; return; }
+    phonicsTitle.textContent = data.levelName || "";
+    phonicsUnits.innerHTML = data.units.map(u => `
+      <div class="sd-phonics-unit">
+        <h4>${u.unit}</h4>
+        <div class="titleAr">${u.unitAr}</div>
+        ${u.sounds && u.sounds.length ? `<div class="sd-phonics-sounds">
+          ${u.sounds.map(s => `
+            <button class="sd-phonics-sound" onclick="Lumio.speak('${(s.letter.split(/[\s,-]/)[0]).replace(/'/g, "\\'")}')">
+              <div class="letter">${s.letter}</div>
+              <div class="sound">${s.sound}</div>
+              <div class="ar">${s.ar}</div>
+            </button>`).join("")}
+        </div>` : ""}
+        <div class="sd-phonics-words">
+          ${u.words.map(w => `
+            <div class="sd-phonics-word">
+              <span class="en">${w.en}</span>
+              <span class="ar">${w.ar}</span>
+              <button onclick="Lumio.speak('${w.en.replace(/'/g, "\\'")}')">🔊</button>
+            </div>`).join("")}
+        </div>
+        ${u.tip ? `<div class="sd-phonics-tip">${u.tip}</div>` : ""}
+      </div>`).join("");
+  }
+  document.getElementById("hubPhonics").onclick = () => { phonicsOverlay.classList.add("show"); renderPhonicsHub(); };
+  document.getElementById("phonicsClose").onclick = () => phonicsOverlay.classList.remove("show");
+  phonicsOverlay.addEventListener("click", e => { if (e.target === phonicsOverlay) phonicsOverlay.classList.remove("show"); });
+
   // ================= English Hub: Grammar =================
   const grammarOverlay = document.getElementById("grammarOverlay");
   const grammarTitle = document.getElementById("grammarTitle");
@@ -1525,6 +1607,20 @@
     if (sub && subText) sub.textContent = subText;
   }
   async function initHubBanners() {
+    // Phonics (available for level1-level2 only, so far)
+    if (PHONICS_AVAILABLE_AT.includes(level)) {
+      try {
+        const r = await fetch(`phonics-hub/${level}.json`);
+        const d = await r.json();
+        const n = (d.units || []).length;
+        document.getElementById("hubPhonicsSub").textContent = `${n} units \u00b7 sounds, blends, sight words`;
+        renderHubTrail("hubPhonicsTrail", n, false);
+      } catch (e) { renderHubTrail("hubPhonicsTrail", 0, true); }
+    } else {
+      lockHubBanner("hubPhonics", "hubPhonicsSub", "Available in Level 1-2 so far");
+      document.getElementById("hubPhonicsBtn").textContent = "\ud83d\udd12 Locked";
+    }
+
     // Vocabulary
     try {
       const r = await fetch(`vocab-hub/${level}.json`);
