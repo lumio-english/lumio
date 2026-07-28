@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>English Hub — Lumio English</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/logo/favicon-32.png">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@600;700;800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/slide-styles.css">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-font-smoothing:antialiased; }
+  html,body { height:100%; background:#2B2118; font-family:'Nunito',sans-serif; overflow:hidden; }
+  #topbar { position:fixed; top:0; left:0; right:0; height:52px; background:rgba(43,33,24,.92); z-index:100;
+    display:flex; align-items:center; justify-content:space-between; padding:0 16px; }
+  #topbar .brand { color:#fff; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1rem; display:flex; align-items:center; gap:8px }
+  #topbar .actions { display:flex; gap:8px; align-items:center }
+  #topbar button, #topbar a { background:rgba(255,255,255,.14); color:#fff; border:none; border-radius:999px; padding:7px 16px;
+    font-weight:800; font-size:.8rem; cursor:pointer; text-decoration:none; }
+  #stageWrap { position:absolute; top:52px; left:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center; }
+  .slideStage { transform-origin: center center; box-shadow:0 30px 70px rgba(0,0,0,.4); border-radius:8px; overflow:hidden; }
+  #navRow { position:absolute; bottom:0; left:0; right:0; height:52px; z-index:50;
+    display:flex; align-items:center; justify-content:space-between; padding:0 26px; pointer-events:none; }
+  .navbtn { pointer-events:auto; background:rgba(255,255,255,.92); border:none; border-radius:999px; width:100px; height:40px;
+    font-weight:800; font-size:.9rem; color:#43301F; cursor:pointer; box-shadow:0 10px 20px rgba(0,0,0,.25); }
+  .navbtn:disabled { opacity:0; pointer-events:none; }
+  .navbtn.next { background:linear-gradient(135deg,#F97316,#EA580C); color:#fff; }
+  #loadingMsg { color:#fff; font-family:'Baloo 2',sans-serif; font-weight:700; }
+  .wgrid-card { border:none; cursor:pointer; font-family:inherit; background:#fff; border-radius:16px; padding:12px;
+    box-shadow:0 8px 16px rgba(67,48,31,.14); display:flex; flex-direction:column; align-items:center; gap:6px; width:150px; }
+  .wgrid-card img { width:110px; height:110px; object-fit:contain; border-radius:12px; background:#FFFCF6; }
+  .wtxtinput { width:100%; min-height:110px; border-radius:14px; border:2px solid #F0E9DD; padding:14px 16px; font-family:'Nunito',sans-serif;
+    font-size:1rem; color:#43301F; resize:none; }
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <div class="brand" id="hubBrand">🌐 English Hub</div>
+  <div class="actions">
+    <button onclick="toggleFullscreen()">⛶ Fullscreen</button>
+    <a href="student.html">✕ Exit</a>
+  </div>
+</div>
+
+<div id="stageWrap">
+  <div class="slideStage" id="stage">
+    <div id="stageContent"><div id="loadingMsg">Loading…</div></div>
+    <div id="navRow">
+      <button class="navbtn" id="prevBtn">← Back</button>
+      <button class="navbtn next" id="nextBtn">Next →</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+const qs = k => new URLSearchParams(location.search).get(k);
+const type = qs("type") || "vocab";
+const level = qs("level") || "pre-a";
+let cur = 1, total = 1, slides = [];
+
+const TITLES = { vocab: "📔 Vocabulary", grammar: "📐 Grammar", stories: "📖 Stories", phonics: "🔤 Phonics", writing: "✍️ Writing & Speaking" };
+document.getElementById("hubBrand").textContent = `${TITLES[type] || "English Hub"} · ${level.toUpperCase()}`;
+
+/* ============================================================
+   Shared visual helpers — same design language as the Present
+   lesson decks (slide-content/*), so this feels like the same
+   material, not a separate plain list.
+   ============================================================ */
+function esc(s) { return (s == null ? "" : String(s)).replace(/&/g, "&amp;").replace(/"/g, "&quot;"); }
+function slug(w) { return w.toLowerCase().replace(/'/g, "").replace(/ /g, "-"); }
+
+const SPARKS = `<div class="spark" style="left:375px;top:135px;font-size:1.6rem">&#10022;</div>
+  <div class="spark" style="left:415px;top:105px;font-size:1.1rem">&#10022;</div>
+  <div class="spark" style="left:392px;top:178px;font-size:1.3rem">&#10022;</div>`;
+const WINDOW = `<div class="window"><div class="cross-v"></div><div class="cross-h"></div></div>`;
+const SHELF_BOOKS = `<div class="shelf"></div>
+  <div class="book" style="left:56px;width:32px;height:78px;background:#F97316"></div>
+  <div class="book" style="left:93px;width:28px;height:85px;background:#0D9488"></div>
+  <div class="book" style="left:126px;width:36px;height:92px;background:#F59E0B"></div>
+  <div class="book" style="left:167px;width:26px;height:99px;background:#2DD4BF"></div>
+  <div class="book" style="left:198px;width:32px;height:81px;background:#DC5C33"></div>`;
+function bgStudy() { return `<div class="wall"></div><div class="teal-band"></div>${SHELF_BOOKS}${WINDOW}${SPARKS}`; }
+function bgPlain() { return `<div class="wall"></div><div class="teal-band"></div>${WINDOW}${SPARKS}`; }
+function header(pagetitle, n, t) {
+  return `<div class="header">
+    <div class="brand"><img src="assets/logo/lumio-logo.png"><div class="name">Lumio<small>ENGLISH</small></div></div>
+    <div class="pagetitle">${pagetitle}</div>
+    <div class="counter">${n} / ${t}</div>
+  </div>`;
+}
+const COLORSTRIP = `<div class="colorstrip"><div class="c1"></div><div class="c2"></div><div class="c3"></div><div class="c4"></div><div class="c5"></div></div>`;
+function charImg(name, opts) {
+  opts = opts || {};
+  const right = opts.right ?? 95, bottom = opts.bottom ?? 42, height = opts.height ?? 300;
+  return `<div class="floorshadow" style="right:${right}px;bottom:${bottom - 7}px;width:230px;height:36px"></div>
+    <img class="char" src="assets/story/characters/${name}.png" style="right:${right}px;bottom:${bottom}px;height:${height}px">`;
+}
+const speakBtn = (word) => `onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('${esc(word).replace(/'/g, "\\'")}')"`;
+
+/* ============================================================
+   Per-type slide builders — one function per Hub tab, each
+   returning an array of full slide HTML strings.
+   ============================================================ */
+function buildVocabSlides(data) {
+  return (data.themes || []).map((theme, i) => {
+    const cards = (theme.words || []).map(w => `
+      <button class="wgrid-card" ${speakBtn(w.en)}>
+        <img src="assets/vocab/${slug(w.en)}.png" onerror="this.style.display='none'">
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">${esc(w.en)}</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">${w.ar}</div>
+      </button>`).join("");
+    return bgStudy() + header(`Vocabulary &bull; ${esc(theme.theme)}`, i + 1, (data.themes || []).length) + COLORSTRIP + `
+      <div style="position:absolute;left:0;right:380px;top:170px;text-align:center;font-family:'Baloo 2',sans-serif;
+                  font-weight:700;font-size:1.1rem;color:#43301F">${esc(theme.theme)} <span style="color:#8A7160;font-size:.9rem">${theme.themeAr}</span></div>
+      <div style="position:absolute;left:0;right:380px;top:215px;display:flex;flex-wrap:wrap;gap:16px;justify-content:center;padding:0 30px">
+        ${cards}
+      </div>
+      ${charImg(["omar-wave","noor-happy","sara-clap"][i % 3], { right: 90, bottom: 40, height: 320 })}`;
+  });
+}
+
+function buildGrammarSlides(data) {
+  return (data.topics || []).map((t, i) => {
+    const cards = (t.examples || []).map(ex => `
+      <div style="background:#fff;border-radius:12px;padding:10px 16px;margin-bottom:8px;cursor:pointer" ${speakBtn(ex.en)}>
+        <div style="font-size:.92rem;color:#43301F;font-weight:700">${esc(ex.en)}</div>
+        <div style="direction:rtl;text-align:right;font-size:.82rem;color:#8A7160;font-weight:700;margin-top:2px">${ex.ar}</div>
+      </div>`).join("");
+    return bgStudy() + header("Grammar", i + 1, (data.topics || []).length) + COLORSTRIP + `
+      <div class="card" style="position:absolute;left:46px;top:150px;width:820px;padding:30px 36px">
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;color:#43301F;margin-bottom:2px">${esc(t.title)}</div>
+        <div style="direction:rtl;text-align:right;font-size:.9rem;color:#8A7160;font-weight:700;margin-bottom:14px">${t.titleAr}</div>
+        <div style="font-size:.9rem;color:#43301F;line-height:1.6;margin-bottom:6px">${esc(t.explanation)}</div>
+        <div style="direction:rtl;text-align:right;font-size:.85rem;color:#8A7160;line-height:1.6;margin-bottom:16px">${t.explanationAr}</div>
+        ${cards}
+      </div>
+      ${charImg("sara-explain", { bottom: 42, height: 310 })}`;
+  });
+}
+
+function buildPhonicsSlides(data) {
+  return (data.units || []).map((u, i) => {
+    const sounds = (u.sounds || []).map(s => `
+      <button style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:14px;padding:14px 18px;min-width:100px;
+                    text-align:center;box-shadow:0 8px 16px rgba(67,48,31,.14)" ${speakBtn(s.letter.split(",")[0].split("-")[0].trim())}>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.6rem;color:#F97316">${esc(s.letter)}</div>
+        <div style="font-size:.8rem;color:#8A7160;margin-top:2px">${esc(s.sound)}</div>
+      </button>`).join("");
+    const words = (u.words || []).map(w => `
+      <button class="wgrid-card" style="width:120px" ${speakBtn(w.en)}>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.1rem;color:#43301F">${esc(w.en)}</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">${w.ar}</div>
+      </button>`).join("");
+    return bgPlain() + header("Phonics", i + 1, (data.units || []).length) + COLORSTRIP + `
+      <div class="card" style="position:absolute;left:46px;top:130px;width:820px;padding:24px 32px">
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#43301F;margin-bottom:2px">${esc(u.unit)}</div>
+        <div style="direction:rtl;text-align:right;font-size:.85rem;color:#8A7160;font-weight:700;margin-bottom:14px">${u.unitAr}</div>
+        ${sounds ? `<div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px">${sounds}</div>` : ""}
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px">${words}</div>
+        ${u.tip ? `<div style="background:#FFF3D6;border-radius:12px;padding:10px 14px;direction:rtl;text-align:right;font-size:.8rem;color:#43301F;line-height:1.6">${u.tip}</div>` : ""}
+      </div>
+      ${charImg("sara-clap", { bottom: 24, height: 290 })}`;
+  });
+}
+
+function buildStoriesSlides(data) {
+  return (data.stories || []).map((s, i) => {
+    const chips = (s.keyWords || []).map(w => `
+      <span style="background:#fff;border-radius:999px;padding:6px 14px;font-size:.82rem;font-weight:800;color:#0D9488;cursor:pointer" ${speakBtn(w.en)}>
+        ${esc(w.en)} <span style="color:#8A7160;font-weight:700">${w.ar}</span></span>`).join("");
+    return bgStudy() + header("Stories", i + 1, (data.stories || []).length) + COLORSTRIP + `
+      <div class="card" style="position:absolute;left:46px;top:140px;width:820px;padding:30px 36px">
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.6rem;color:#43301F;margin-bottom:2px">${esc(s.title)}</div>
+        <div style="direction:rtl;text-align:right;font-size:.9rem;color:#8A7160;font-weight:700;margin-bottom:16px">${s.titleAr}</div>
+        <div style="font-size:1rem;color:#43301F;line-height:1.8;margin-bottom:18px">${esc(s.story)}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">${chips}</div>
+      </div>
+      ${charImg("lumi-read", { bottom: 42, height: 300 })}`;
+  });
+}
+
+function buildWritingSlides(data) {
+  return (data.prompts || []).map((p, i) => {
+    return bgPlain() + header("Writing &amp; Speaking", i + 1, (data.prompts || []).length) + COLORSTRIP + `
+      <div class="card" style="position:absolute;left:0;right:0;margin:0 auto;top:170px;width:820px;padding:34px 40px">
+        <div style="font-size:.78rem;font-weight:800;color:#F97316;letter-spacing:1.5px;margin-bottom:10px">YOUR PROMPT</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;color:#43301F;margin-bottom:6px">${esc(p.en)}</div>
+        <div style="direction:rtl;text-align:right;font-size:.95rem;color:#8A7160;font-weight:700;margin-bottom:20px">${p.ar}</div>
+        <textarea class="wtxtinput" placeholder="Type your answer here, or say it out loud!"></textarea>
+        <button ${speakBtn(p.en)} style="margin-top:14px;cursor:pointer;border:none;background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;
+                    font-weight:800;font-family:inherit;padding:12px 26px;border-radius:999px;font-size:.95rem">&#9654; Hear the prompt</button>
+      </div>`;
+  });
+}
+
+const BUILDERS = { vocab: buildVocabSlides, grammar: buildGrammarSlides, phonics: buildPhonicsSlides, stories: buildStoriesSlides, writing: buildWritingSlides };
+const HUB_DIRS = { vocab: "vocab-hub", grammar: "grammar-hub", phonics: "phonics-hub", stories: "stories-hub", writing: "writing-hub" };
+
+fetch(`${HUB_DIRS[type] || "vocab-hub"}/${level}.json`)
+  .then(r => { if (!r.ok) throw new Error("not found"); return r.json(); })
+  .then(data => {
+    slides = (BUILDERS[type] || buildVocabSlides)(data);
+    total = slides.length || 1;
+    if (!slides.length) throw new Error("empty");
+    loadSlide(1);
+  })
+  .catch(() => {
+    document.getElementById("stageContent").innerHTML =
+      `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.3rem;color:#8A7160;padding:60px">
+        This isn't ready for your level yet — check back soon! 🌟</div>`;
+    document.getElementById("prevBtn").style.display = "none";
+    document.getElementById("nextBtn").style.display = "none";
+  });
+
+function loadSlide(n) {
+  cur = n;
+  document.getElementById("stageContent").innerHTML = slides[n - 1];
+  document.getElementById("prevBtn").disabled = n === 1;
+  document.getElementById("nextBtn").disabled = n === total;
+}
+document.getElementById("prevBtn").onclick = () => { if (cur > 1) loadSlide(cur - 1); };
+document.getElementById("nextBtn").onclick = () => { if (cur < total) loadSlide(cur + 1); };
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowRight") document.getElementById("nextBtn").click();
+  if (e.key === "ArrowLeft") document.getElementById("prevBtn").click();
+});
+function toggleFullscreen() {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+}
+function fitStage() {
+  const stage = document.getElementById("stage");
+  const wrap = document.getElementById("stageWrap");
+  const scale = Math.min(wrap.clientWidth / 1467, wrap.clientHeight / 825);
+  stage.style.width = "1467px"; stage.style.height = "825px";
+  stage.style.transform = `scale(${scale})`;
+}
+window.addEventListener("resize", fitStage);
+fitStage();
+</script>
+</body>
+</html>
