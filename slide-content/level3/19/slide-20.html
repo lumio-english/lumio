@@ -1,19 +1,53 @@
-<div class="wall"></div><div class="teal-band"></div><div class="window"><div class="cross-v"></div><div class="cross-h"></div></div><div class="spark" style="left:375px;top:135px;font-size:1.6rem">&#10022;</div><div class="spark" style="left:415px;top:105px;font-size:1.1rem">&#10022;</div><div class="spark" style="left:392px;top:178px;font-size:1.3rem">&#10022;</div><div class="header">
+<div class="wall"></div><div class="teal-band"></div><div class="shelf"></div><div class="book" style="left:56px;width:32px;height:78px;background:#F97316"></div><div class="book" style="left:93px;width:28px;height:85px;background:#0D9488"></div><div class="book" style="left:126px;width:36px;height:92px;background:#F59E0B"></div><div class="book" style="left:167px;width:26px;height:99px;background:#2DD4BF"></div><div class="book" style="left:198px;width:32px;height:81px;background:#DC5C33"></div><div class="window"><div class="cross-v"></div><div class="cross-h"></div></div><div class="spark" style="left:375px;top:135px;font-size:1.6rem">&#10022;</div><div class="spark" style="left:415px;top:105px;font-size:1.1rem">&#10022;</div><div class="spark" style="left:392px;top:178px;font-size:1.3rem">&#10022;</div><div class="header">
       <div class="brand"><img src="assets/logo/lumio-logo.png"><div class="name">Lumio<small>ENGLISH</small></div></div>
-      <div class="pagetitle">Grammar Practice &bull; Read &amp; Repeat</div>
-      <div class="counter">20 / 30</div>
+      <div class="pagetitle">Sound &amp; Spot</div>
+      <div class="counter">20 / 25</div>
     </div><div class="colorstrip"><div class="c1"></div><div class="c2"></div><div class="c3"></div><div class="c4"></div><div class="c5"></div></div>
-    <div style="position:absolute;left:0;right:0;top:180px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:700;
-                font-size:1.05rem;color:#8A7160;margin-bottom:10px">Read each sentence together, then say it on your own!</div>
-    <div style="position:absolute;left:0;right:0;top:250px;display:flex;flex-direction:column;gap:16px;align-items:center;padding:0 60px">
+    <div style="position:absolute;left:0;right:0;top:158px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:700;
+                font-size:1.05rem;color:#8A7160">Tap any word to hear it &mdash; can you say it before it plays?</div>
+    <div style="position:absolute;left:0;right:400px;top:210px;display:flex;flex-wrap:wrap;gap:16px;justify-content:center;padding:0 30px">
       
-      <div style="background:#fff;border-radius:16px;padding:20px 24px;box-shadow:0 8px 16px rgba(67,48,31,.14);max-width:560px">
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.1rem;color:#43301F">Don't run in the classroom.</div>
-        <div style="direction:rtl;text-align:right;font-size:.88rem;color:#8A7160;font-weight:700;margin-top:6px">لا تجرِ في الفصل.</div>
-      </div>
-      <div style="background:#fff;border-radius:16px;padding:20px 24px;box-shadow:0 8px 16px rgba(67,48,31,.14);max-width:560px">
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.1rem;color:#43301F">Please sit down.</div>
-        <div style="direction:rtl;text-align:right;font-size:.88rem;color:#8A7160;font-weight:700;margin-top:6px">من فضلك اجلس.</div>
-      </div>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('airport')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/airport.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">airport</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">مطار</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('restaurant')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/restaurant.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">restaurant</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">مطعم</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('full')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/full.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">full</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">ممتلئ</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('empty')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/empty.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">empty</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">فارغ</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('loud')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/loud.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">loud</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">صاخب</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('quiet')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/quiet.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">quiet</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">هادئ</div>
+      </button>
     </div>
-    <div class="floorshadow" style="right:95px;bottom:35px;width:230px;height:36px"></div><img class="char" src="assets/story/characters/sara-clap.png" style="right:95px;bottom:42px;height:300px">
+    <div class="floorshadow" style="right:90px;bottom:33px;width:230px;height:36px"></div><img class="char" src="assets/story/characters/sara-clap.png" style="right:90px;bottom:40px;height:320px">

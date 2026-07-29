@@ -5,6 +5,7 @@ generalized to run across a full level's 20 lessons. Overwrites the
 live slide-content/{level}/{NN}/ decks and assets/slides/{level}/manifest.json.
 """
 import json, os, re, glob, random
+import grammar_slides
 
 CHAR = "assets/story/characters"
 
@@ -149,20 +150,21 @@ def slide_vocab(w, idx, n, total, num_words, ch):
     </div>
     ''' + char_img(ch, right=84, bottom=28, height=250))
 
-def slide_practice_phonics(w, n, total, ch):
+def slide_practice_phonics(w, n, total, ch, show_phonics_link=True):
     quote = w.get("example", w["en"])
     first_letter = w["en"][0].upper()
+    callout = (f'''<div style="display:flex;align-items:center;gap:12px;background:#FFF3D6;border-radius:14px;padding:10px 16px">
+          <div style="width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,#0D9488,#0B7A6F);color:#fff;
+                      display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.2rem">{first_letter}</div>
+          <div style="font-size:.85rem;color:#43301F;font-weight:700">&ldquo;{esc(w["en"])}&rdquo; starts with the <b>{first_letter.lower()}</b> sound &mdash; find more {first_letter.lower()} words in Phonics! &#128218;</div>
+        </div>''' if show_phonics_link else "")
     return (bg_plain() + header(f"Practice &bull; {esc(w['en'])}", n, total) + COLORSTRIP + f'''
     <div style="position:absolute;left:0;right:0;top:180px;display:flex;justify-content:center;gap:30px">
       <div class="card" style="width:260px;height:260px;overflow:hidden;padding:0"><img src="assets/vocab/{slug(w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
       <div class="card" style="width:520px;padding:30px 36px;display:flex;flex-direction:column;justify-content:center">
         <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;color:#43301F;margin-bottom:10px">Can you say it?</div>
         <div style="font-family:'Baloo 2',sans-serif;font-style:italic;font-weight:700;font-size:1.4rem;color:#F97316;margin-bottom:18px">&ldquo;{esc(quote)}&rdquo;</div>
-        <div style="display:flex;align-items:center;gap:12px;background:#FFF3D6;border-radius:14px;padding:10px 16px">
-          <div style="width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,#0D9488,#0B7A6F);color:#fff;
-                      display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.2rem">{first_letter}</div>
-          <div style="font-size:.85rem;color:#43301F;font-weight:700">&ldquo;{esc(w["en"])}&rdquo; starts with the <b>{first_letter.lower()}</b> sound &mdash; find more {first_letter.lower()} words in Phonics! &#128218;</div>
-        </div>
+        {callout}
       </div>
     </div>
     ''' + char_img(ch, bottom=32, height=260))
@@ -360,7 +362,7 @@ def slide_reward_homework(lesson_num, n, total):
     </div>''')
 
 
-def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None):
+def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic=None, has_phonics=True):
     V = len(lesson["vocab"])
     plan = [("title", None), ("lets_learn", None)]
     if prev_lesson:
@@ -371,6 +373,9 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None):
     for i, w in enumerate(lesson["vocab"]):
         plan.append(("vocab", (w, i)))
         plan.append(("practice_phonics", (w, i)))
+    if grammar_topic:
+        plan.append(("grammar_rule", grammar_topic))
+        plan.append(("grammar_practice", grammar_topic))
     plan.append(("dialogue", None))
     plan.append(("sentence", None))
     plan.append(("sound_spot", None))
@@ -390,12 +395,16 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None):
         elif kind == "recap": slides.append(slide_recap(prev_lesson["vocab"], n, total))
         elif kind == "phonics_rule": slides.append(slide_phonics_rule(data, n, total, "sara-explain"))
         elif kind == "phonics_practice": slides.append(slide_phonics_practice(data, n, total, "sara-clap"))
+        elif kind == "grammar_rule":
+            slides.append(grammar_slides.slide_grammar_rule(data, n, total, "sara-explain", header, COLORSTRIP, bg_study, char_img))
+        elif kind == "grammar_practice":
+            slides.append(grammar_slides.slide_grammar_practice(data, n, total, "sara-clap", header, COLORSTRIP, bg_plain, char_img))
         elif kind == "vocab":
             w, i = data
             slides.append(slide_vocab(w, i, n, total, V, VOCAB_CHARS[i % len(VOCAB_CHARS)]))
         elif kind == "practice_phonics":
             w, i = data
-            slides.append(slide_practice_phonics(w, n, total, VOCAB_CHARS[i % len(VOCAB_CHARS)]))
+            slides.append(slide_practice_phonics(w, n, total, VOCAB_CHARS[i % len(VOCAB_CHARS)], has_phonics))
         elif kind == "dialogue":
             slides.append(slide_dialogue(DIALOGUES[lesson_num], n, total))
         elif kind == "sentence":
@@ -414,10 +423,11 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None):
     return slides
 
 
-def run(level, dialogues, phonics_units=None, out_root="slide-content", manifest_root="assets/slides"):
+def run(level, dialogues, phonics_units=None, grammar_units=None, has_phonics=True, out_root="slide-content", manifest_root="assets/slides"):
     global DIALOGUES
     DIALOGUES = dialogues
     phonics_units = phonics_units or {}  # {lesson_num: unit_dict}
+    grammar_units = grammar_units or {}  # {lesson_num: topic_dict}
     lesson_files = sorted(glob.glob(f"lessons/{level}/lesson*.json"))
     lessons = {}
     for f in lesson_files:
@@ -433,7 +443,7 @@ def run(level, dialogues, phonics_units=None, out_root="slide-content", manifest
     for num in sorted(lessons):
         lesson = lessons[num]
         prev_lesson = lessons.get(num - 1)
-        slides = build_deck(num, lesson, prev_lesson, phonics_units.get(num))
+        slides = build_deck(num, lesson, prev_lesson, phonics_units.get(num), grammar_units.get(num), has_phonics)
         nn = f"{num:02d}"
         lesson_dir = os.path.join(out_dir, nn)
         os.makedirs(lesson_dir, exist_ok=True)
@@ -444,7 +454,10 @@ def run(level, dialogues, phonics_units=None, out_root="slide-content", manifest
             with open(os.path.join(lesson_dir, f"slide-{i:02d}.html"), "w", encoding="utf-8") as f:
                 f.write(html)
         manifest[nn] = len(slides)
-        print(f"{level} lesson {nn}: {len(slides)} slides" + (" [+ phonics]" if num in phonics_units else ""))
+        tags = []
+        if num in phonics_units: tags.append("phonics")
+        if num in grammar_units: tags.append("grammar")
+        print(f"{level} lesson {nn}: {len(slides)} slides" + (f" [+ {', '.join(tags)}]" if tags else ""))
 
     with open(manifest_path, "w", encoding="utf-8") as f:
         json.dump(manifest, f, indent=0)
