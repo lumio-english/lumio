@@ -422,6 +422,9 @@
           <a class="btn btn-teal" href="student.html">My map</a>
           ${num < 20 ? `<a class="btn btn-primary" href="lesson.html?level=${level}&n=${num + 1}">Next lesson →</a>` : ""}
         </div>
+        <div class="mt" style="padding-top:14px;border-top:1.5px solid #F5EEE1">
+          <a class="btn" style="background:#FFF3D6;color:#C2530A" href="homework.html?level=${level}&n=${num}">📝 Do your homework</a>
+        </div>
       </div>`;
   }
 

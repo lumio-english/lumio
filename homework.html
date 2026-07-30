@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Homework — Lumio English</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/logo/favicon-32.png">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sun:#FFC93C; --orange:#FF8A3D; --orange-deep:#F9720C; --coral:#FF6B6B;
+    --teal:#2DD4BF; --teal-deep:#0D9488; --cream:#FFF8EC; --cocoa:#5C4433; --cocoa-soft:#8A7160;
+    --radius:22px;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; background:linear-gradient(180deg,#FFF3D6 0%,var(--cream) 40%); font-family:'Nunito',sans-serif; color:var(--cocoa); padding-bottom:60px; }
+  .hw-top { position:sticky; top:0; z-index:20; background:#2B2118; color:#fff; display:flex; align-items:center; justify-content:space-between; padding:12px 20px; }
+  .hw-top .brand { font-family:'Baloo 2',sans-serif; font-weight:800; display:flex; align-items:center; gap:8px }
+  .hw-top a { color:#fff; text-decoration:none; background:rgba(255,255,255,.14); padding:8px 16px; border-radius:999px; font-weight:800; font-size:.85rem }
+  .hw-wrap { max-width:760px; margin:0 auto; padding:26px 18px; }
+  .hw-header { text-align:center; margin-bottom:22px; }
+  .hw-header h1 { font-family:'Baloo 2',sans-serif; font-size:1.7rem; margin:6px 0 2px; }
+  .hw-header p { color:var(--cocoa-soft); font-weight:700; margin:0 }
+  .hw-steps { display:flex; justify-content:center; gap:8px; margin-bottom:24px; flex-wrap:wrap }
+  .hw-step { background:#fff; border-radius:999px; padding:8px 16px; font-weight:800; font-size:.82rem; color:var(--cocoa-soft); box-shadow:0 4px 10px rgba(67,48,31,.08) }
+  .hw-step.active { background:linear-gradient(135deg,var(--orange),var(--orange-deep)); color:#fff }
+  .hw-step.done { background:linear-gradient(135deg,#4ADE80,#16A34A); color:#fff }
+  .hw-card { background:#fff; border-radius:var(--radius); box-shadow:0 14px 30px rgba(67,48,31,.12); padding:26px 24px; margin-bottom:20px; }
+  .hw-card h2 { font-family:'Baloo 2',sans-serif; font-size:1.25rem; margin:0 0 4px; display:flex; align-items:center; gap:10px }
+  .hw-card .hw-sub { color:var(--cocoa-soft); font-weight:700; font-size:.88rem; margin-bottom:18px }
+  .hw-word-row { display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1.5px solid #F5EEE1; flex-wrap:wrap }
+  .hw-word-row:last-child { border-bottom:none }
+  .hw-word-img { width:64px; height:64px; border-radius:12px; background:var(--cream); flex-shrink:0; overflow:hidden; display:flex; align-items:center; justify-content:center }
+  .hw-word-img img { width:100%; height:100%; object-fit:contain }
+  .hw-word-ar { font-weight:800; color:var(--teal-deep); min-width:70px }
+  .hw-input { flex:1; min-width:120px; border:2px solid #F0E9DD; border-radius:12px; padding:10px 14px; font-size:1rem; font-family:inherit; color:var(--cocoa) }
+  .hw-input.correct { border-color:#4ADE80; background:#F0FDF4 }
+  .hw-input.wrong { border-color:var(--coral); background:#FFF1F1 }
+  .hw-check-btn { border:none; background:var(--cream); color:var(--cocoa-soft); font-weight:800; padding:10px 16px; border-radius:999px; cursor:pointer; font-size:.85rem }
+  .hw-check-btn.correct { background:#4ADE80; color:#fff }
+  .hw-listen-btn { border:none; background:none; cursor:pointer; font-size:1.3rem }
+  .hw-canvas-wrap { text-align:center }
+  canvas { border-radius:16px; border:3px dashed #F0E9DD; touch-action:none; background:#fff; max-width:100%; }
+  .hw-color-row { display:flex; justify-content:center; gap:8px; margin:14px 0 }
+  .hw-swatch { width:30px; height:30px; border-radius:50%; border:3px solid #fff; box-shadow:0 0 0 2px #F0E9DD; cursor:pointer }
+  .hw-swatch.active { box-shadow:0 0 0 3px var(--orange) }
+  .hw-btn { border:none; background:linear-gradient(135deg,var(--orange),var(--orange-deep)); color:#fff; font-weight:800; padding:11px 22px; border-radius:999px; cursor:pointer; font-size:.9rem; font-family:inherit }
+  .hw-btn.ghost { background:var(--cream); color:var(--cocoa) }
+  .hw-say-row { display:flex; align-items:center; gap:12px; padding:10px 0 }
+  .hw-say-row label { display:flex; align-items:center; gap:10px; font-weight:700; flex:1; cursor:pointer }
+  .hw-say-row input[type=checkbox] { width:22px; height:22px; accent-color:var(--teal-deep) }
+  .hw-quiz-q { margin-bottom:22px }
+  .hw-quiz-q .q-prompt { font-weight:800; margin-bottom:10px; display:flex; align-items:center; gap:10px }
+  .hw-quiz-opts { display:grid; grid-template-columns:1fr 1fr; gap:10px }
+  .hw-quiz-opt { border:2px solid #F0E9DD; background:#fff; border-radius:12px; padding:12px; font-weight:700; cursor:pointer; font-family:inherit; font-size:.95rem }
+  .hw-quiz-opt.selected-correct { border-color:#4ADE80; background:#F0FDF4 }
+  .hw-quiz-opt.selected-wrong { border-color:var(--coral); background:#FFF1F1 }
+  .hw-footer-nav { display:flex; justify-content:space-between; margin-top:6px }
+  .hw-done-screen { text-align:center; padding:40px 20px }
+  .hw-done-screen .stars { font-size:2.4rem; letter-spacing:8px; margin:14px 0 }
+  .hw-parent-box { background:var(--cream); border-radius:16px; padding:16px 18px; margin-top:6px; }
+  .hw-parent-box b { color:var(--orange-deep) }
+</style>
+</head>
+<body>
+<div class="hw-top">
+  <div class="brand">📝 Lumio Homework</div>
+  <a href="student.html">✕ Exit</a>
+</div>
+<div class="hw-wrap" id="hwWrap">
+  <div class="hw-header">
+    <p id="hwLevelLabel">Loading…</p>
+    <h1 id="hwTitle"></h1>
+  </div>
+  <div class="hw-steps" id="hwSteps"></div>
+  <div id="hwSections"></div>
+</div>
+
+<script src="js/app.js"></script>
+<script src="js/lessons-data.js"></script>
+<script>
+const qs = k => new URLSearchParams(location.search).get(k);
+const level = qs("level") || "pre-a";
+const num = parseInt(qs("n") || "1", 10);
+const nn = String(num).padStart(2, "0");
+const user = (typeof Lumio !== "undefined" && Lumio.user) ? Lumio.user() : null;
+const studentName = user ? user.name : "Guest";
+
+let lesson = null;
+const STEP_NAMES = ["Spelling", "Draw", "Say It", "Quiz", "Done"];
+let currentStep = 0;
+const results = { spelling: {}, drawingDataUrl: null, saidWords: {}, quiz: {} };
+
+function renderSteps() {
+  document.getElementById("hwSteps").innerHTML = STEP_NAMES.map((s, i) => {
+    const cls = i < currentStep ? "done" : (i === currentStep ? "active" : "");
+    return `<div class="hw-step ${cls}">${i + 1}. ${s}</div>`;
+  }).join("");
+}
+
+function esc(s) { return (s == null ? "" : String(s)).replace(/&/g, "&amp;").replace(/"/g, "&quot;"); }
+
+function renderSpelling() {
+  const rows = lesson.vocab.map((w, i) => `
+    <div class="hw-word-row">
+      <div class="hw-word-img"><img src="assets/vocab/${slugify(w.en)}.png" onerror="this.style.display='none'"></div>
+      <div class="hw-word-ar">${w.ar}</div>
+      <input class="hw-input" id="sp-${i}" placeholder="Type the word…" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <button class="hw-check-btn" id="spBtn-${i}" onclick="checkSpelling(${i})">Check</button>
+    </div>`).join("");
+  document.getElementById("hwSections").innerHTML = `
+    <div class="hw-card">
+      <h2>✏️ Spelling Practice</h2>
+      <div class="hw-sub">Look at the picture and the Arabic word, then type the English word.</div>
+      ${rows}
+      <div class="hw-footer-nav"><span></span><button class="hw-btn" onclick="goToStep(1)">Next: Draw It →</button></div>
+    </div>`;
+}
+function slugify(t) { return String(t).toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""); }
+function checkSpelling(i) {
+  const input = document.getElementById(`sp-${i}`);
+  const btn = document.getElementById(`spBtn-${i}`);
+  const correct = input.value.trim().toLowerCase() === lesson.vocab[i].en.toLowerCase();
+  input.classList.remove("correct", "wrong");
+  input.classList.add(correct ? "correct" : "wrong");
+  btn.classList.toggle("correct", correct);
+  btn.textContent = correct ? "✓ Correct!" : "Try again";
+  results.spelling[i] = correct;
+  if (typeof Lumio !== "undefined" && Lumio.beep) Lumio.beep(correct);
+}
+
+function renderDraw() {
+  const word = lesson.vocab[0].en;
+  document.getElementById("hwSections").innerHTML = `
+    <div class="hw-card hw-canvas-wrap">
+      <h2 style="justify-content:center">🎨 Draw It</h2>
+      <div class="hw-sub">Draw a picture of "${esc(word)}"!</div>
+      <canvas id="hwCanvas" width="320" height="320"></canvas>
+      <div class="hw-color-row" id="hwColors"></div>
+      <div style="margin-top:10px"><button class="hw-btn ghost" onclick="clearCanvas()">Clear</button></div>
+      <div class="hw-footer-nav">
+        <button class="hw-btn ghost" onclick="goToStep(0)">← Back</button>
+        <button class="hw-btn" onclick="finishDrawing()">Next: Say It →</button>
+      </div>
+    </div>`;
+  setupCanvas();
+}
+let ctx, drawing = false, curColor = "#43301F";
+function setupCanvas() {
+  const canvas = document.getElementById("hwCanvas");
+  ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.lineWidth = 6; ctx.lineCap = "round"; ctx.lineJoin = "round";
+  const colors = ["#43301F", "#F97316", "#0D9488", "#F59E0B", "#F43F5E", "#2563EB"];
+  document.getElementById("hwColors").innerHTML = colors.map(c =>
+    `<div class="hw-swatch ${c === curColor ? "active" : ""}" style="background:${c}" onclick="setColor('${c}', this)"></div>`).join("");
+  const pos = e => {
+    const r = canvas.getBoundingClientRect();
+    const p = e.touches ? e.touches[0] : e;
+    return { x: (p.clientX - r.left) * (canvas.width / r.width), y: (p.clientY - r.top) * (canvas.height / r.height) };
+  };
+  const start = e => { drawing = true; const p = pos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); e.preventDefault(); };
+  const move = e => { if (!drawing) return; const p = pos(e); ctx.strokeStyle = curColor; ctx.lineTo(p.x, p.y); ctx.stroke(); e.preventDefault(); };
+  const end = () => { drawing = false; };
+  canvas.addEventListener("mousedown", start); canvas.addEventListener("mousemove", move);
+  window.addEventListener("mouseup", end);
+  canvas.addEventListener("touchstart", start); canvas.addEventListener("touchmove", move); canvas.addEventListener("touchend", end);
+}
+function setColor(c, el) { curColor = c; document.querySelectorAll(".hw-swatch").forEach(s => s.classList.remove("active")); el.classList.add("active"); }
+function clearCanvas() { ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, 320, 320); }
+function finishDrawing() {
+  try { results.drawingDataUrl = document.getElementById("hwCanvas").toDataURL("image/png"); } catch (e) {}
+  goToStep(2);
+}
+
+function renderSayIt() {
+  const rows = lesson.vocab.map((w, i) => `
+    <div class="hw-say-row">
+      <label><input type="checkbox" onchange="results.saidWords[${i}] = this.checked"> ${esc(w.en)} <span style="color:var(--teal-deep);font-weight:800">${w.ar}</span></label>
+      <button class="hw-listen-btn" onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('${esc(w.en).replace(/'/g, "\\'")}')">🔊</button>
+    </div>`).join("");
+  document.getElementById("hwSections").innerHTML = `
+    <div class="hw-card">
+      <h2>🗣️ Say It</h2>
+      <div class="hw-sub">Listen to each word, then say it out loud to your family. Check it off when you're done!</div>
+      ${rows}
+      <div class="hw-parent-box">❤ <b>FOR PARENTS</b> — please listen to your child say each word above, then check the box together.</div>
+      <div class="hw-footer-nav">
+        <button class="hw-btn ghost" onclick="goToStep(1)">← Back</button>
+        <button class="hw-btn" onclick="goToStep(3)">Next: Quiz →</button>
+      </div>
+    </div>`;
+}
+
+function renderQuiz() {
+  const qWords = lesson.vocab.slice(0, Math.min(4, lesson.vocab.length));
+  const html = qWords.map((target, qi) => {
+    const distractors = lesson.vocab.filter(w => w.en !== target.en).sort(() => Math.random() - 0.5).slice(0, 3);
+    const opts = [...distractors, target].sort(() => Math.random() - 0.5);
+    const optsHtml = opts.map(o => `<button class="hw-quiz-opt" onclick="answerQuiz(${qi}, '${esc(o.en).replace(/'/g, "\\'")}', '${esc(target.en).replace(/'/g, "\\'")}', this)">${esc(o.en)}</button>`).join("");
+    return `
+      <div class="hw-quiz-q">
+        <div class="q-prompt"><div class="hw-word-img"><img src="assets/vocab/${slugify(target.en)}.png" onerror="this.style.display='none'"></div> What is this?</div>
+        <div class="hw-quiz-opts">${optsHtml}</div>
+      </div>`;
+  }).join("");
+  document.getElementById("hwSections").innerHTML = `
+    <div class="hw-card">
+      <h2>🧠 Quick Quiz</h2>
+      <div class="hw-sub">Tap the correct word for each picture.</div>
+      ${html}
+      <div class="hw-footer-nav">
+        <button class="hw-btn ghost" onclick="goToStep(2)">← Back</button>
+        <button class="hw-btn" onclick="submitHomework()">✓ Submit Homework</button>
+      </div>
+    </div>`;
+}
+function answerQuiz(qi, chosen, correct, btn) {
+  const correctAnswer = chosen === correct;
+  results.quiz[qi] = correctAnswer;
+  btn.parentElement.querySelectorAll(".hw-quiz-opt").forEach(b => b.style.pointerEvents = "none");
+  btn.classList.add(correctAnswer ? "selected-correct" : "selected-wrong");
+  if (typeof Lumio !== "undefined" && Lumio.beep) Lumio.beep(correctAnswer);
+}
+
+function submitHomework() {
+  const spellingCorrect = Object.values(results.spelling).filter(Boolean).length;
+  const quizCorrect = Object.values(results.quiz).filter(Boolean).length;
+  const said = Object.values(results.saidWords).filter(Boolean).length;
+  const totalPossible = lesson.vocab.length + Math.min(4, lesson.vocab.length);
+  const totalCorrect = spellingCorrect + quizCorrect;
+  const pct = totalPossible ? Math.round((totalCorrect / totalPossible) * 100) : 0;
+  const stars = pct >= 90 ? 3 : pct >= 60 ? 2 : 1;
+
+  const record = {
+    stars, score: totalCorrect, total: totalPossible, said, saidTotal: lesson.vocab.length,
+    hasDrawing: !!results.drawingDataUrl, drawingDataUrl: results.drawingDataUrl,
+    date: new Date().toISOString().slice(0, 10),
+  };
+  if (typeof Lumio !== "undefined" && Lumio.saveHomework) {
+    Lumio.saveHomework(studentName, level, num, record);
+  }
+  if (typeof Lumio !== "undefined" && Lumio.confetti) Lumio.confetti(70);
+
+  currentStep = 4;
+  renderSteps();
+  document.getElementById("hwSections").innerHTML = `
+    <div class="hw-card hw-done-screen">
+      <div style="font-size:3rem">🎉</div>
+      <h2 style="justify-content:center">Homework complete!</h2>
+      <div class="stars">${"⭐".repeat(stars)}${"☆".repeat(3 - stars)}</div>
+      <div class="hw-sub">Spelling: ${spellingCorrect}/${lesson.vocab.length} · Quiz: ${quizCorrect}/${qWordsCountSafe()} · Said out loud: ${said}/${lesson.vocab.length}</div>
+      <a class="hw-btn" style="display:inline-block;margin-top:16px;text-decoration:none" href="student.html">Back to my map</a>
+    </div>`;
+}
+function qWordsCountSafe() { return Math.min(4, lesson.vocab.length); }
+
+function goToStep(i) {
+  currentStep = i;
+  renderSteps();
+  [renderSpelling, renderDraw, renderSayIt, renderQuiz][i]();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+async function init() {
+  let lessonData = (typeof window.LUMIO_LESSONS !== "undefined" && window.LUMIO_LESSONS[level]) ? window.LUMIO_LESSONS[level][num] : null;
+  if (!lessonData) {
+    try {
+      const res = await fetch(`lessons/${level}/lesson${nn}.json`);
+      if (res.ok) lessonData = await res.json();
+    } catch (e) {}
+  }
+  if (!lessonData) {
+    document.getElementById("hwSections").innerHTML = `<div class="hw-card" style="text-align:center;color:var(--cocoa-soft)">This lesson's homework isn't ready yet — go back and pick another one.</div>`;
+    document.getElementById("hwLevelLabel").textContent = "";
+    return;
+  }
+  lesson = lessonData;
+  const meta = (typeof Lumio !== "undefined" && Lumio.LEVELS ? Lumio.LEVELS.find(l => l.id === level) : null) || { name: level };
+  document.getElementById("hwLevelLabel").textContent = `${meta.name} · Lesson ${num}`;
+  document.getElementById("hwTitle").textContent = `${lesson.title} — Homework`;
+  renderSteps();
+  renderSpelling();
+}
+
+document.addEventListener("DOMContentLoaded", init);
+</script>
+</body>
+</html>

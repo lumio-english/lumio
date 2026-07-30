@@ -371,6 +371,7 @@
   .td-mat-row a.pptx{background:var(--td-bg);color:var(--td-ink-soft);border:1px solid var(--td-border)}
   .td-mat-row a.pptx:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark)}
   .td-mat-row a.worksheet{background:#ECFDF5;color:#0D9488;border:1px solid #A7E8D8}
+  .td-mat-row a.homework{background:#FFF3D6;color:#C2530A;border:1px solid #FFDCA0}
   .td-mat-row a.worksheet:hover{border-color:#0D9488;background:#DDF6F0}
   .td-mat-row a.flashcards{background:#F3E8FF;color:#7C3AED;border:1px solid #DDD1FA}
   .td-mat-row a.flashcards:hover{border-color:#7C3AED;background:#EBDCFF}
@@ -978,7 +979,24 @@
 
       entries.forEach(([lessonId, r]) => {
         if (r.date) {
-          activity.push({ name, lvl, lessonId, stars: r.stars || 0, date: r.date });
+          activity.push({ name, lvl, lessonId, stars: r.stars || 0, date: r.date, type: "lesson" });
+          if (new Date(r.date) >= oneWeekAgo) activeStudents.add(name);
+        }
+      });
+    });
+  });
+
+  // ---------- homework (interactive) ----------
+  const homeworkAll = ((typeof Lumio !== "undefined" && Lumio.homeworkAll) ? Lumio.homeworkAll() : {}) || {};
+  const homeworkCounts = {}; // name -> {count, avgStars}
+  Object.entries(homeworkAll).forEach(([name, levels]) => {
+    Object.entries(levels).forEach(([lvl, lessons]) => {
+      Object.entries(lessons).forEach(([lessonId, r]) => {
+        homeworkCounts[name] = homeworkCounts[name] || { count: 0, starsSum: 0 };
+        homeworkCounts[name].count++;
+        homeworkCounts[name].starsSum += (r.stars || 0);
+        if (r.date) {
+          activity.push({ name, lvl, lessonId, stars: r.stars || 0, date: r.date, type: "homework" });
           if (new Date(r.date) >= oneWeekAgo) activeStudents.add(name);
         }
       });
@@ -1014,8 +1032,9 @@
     const row = document.createElement("div");
     row.className = "td-arow";
     const initials = a.name.slice(0, 2).toUpperCase();
+    const verb = a.type === "homework" ? "completed homework in" : "finished a lesson in";
     row.innerHTML = `<div class="td-avatar">${initials}</div>
-      <div><div class="who">${a.name}</div><div class="what">finished a lesson in ${levelName(a.lvl)} · ★${a.stars}</div></div>
+      <div><div class="who">${a.name}</div><div class="what">${a.type === "homework" ? "📝 " : ""}${verb} ${levelName(a.lvl)} · ★${a.stars}</div></div>
       <div class="when">${a.date}</div>`;
     activityList.appendChild(row);
   });
@@ -1395,6 +1414,7 @@
       const teacher = p.teacherId ? LumioProfiles.getTeacher(p.teacherId) : null;
       const teacherLabel = teacher ? teacher.name : "Unassigned";
       const pinKnown = !!p.pin;
+      const hw = (typeof homeworkCounts !== "undefined" && homeworkCounts[p.name]) || null;
       const card = document.createElement("div");
       card.className = "td-roster-card";
       card.innerHTML = `
@@ -1402,6 +1422,8 @@
           <div class="av">${p.avatar}</div>
           <div><div class="nm">${p.name}</div><div class="lv">${levelName(p.level)} · ${teacherLabel}</div></div>
         </div>
+        ${hw ? `<div class="hw-summary" style="font-size:.78rem;font-weight:800;color:#C2530A;background:#FFF3D6;
+                border-radius:8px;padding:5px 10px;margin:6px 0">📝 ${hw.count} homework${hw.count === 1 ? "" : "s"} done · avg ${(hw.starsSum / hw.count).toFixed(1)}★</div>` : ""}
         <div class="pinrow">PIN: ${pinKnown
           ? `<span class="pinval" data-pin="${p.pin}">••••</span><button class="pintoggle" type="button">show</button>`
           : `<span class="pinval" style="opacity:.6">set on another device</span>`}
@@ -2262,6 +2284,7 @@
           ? `<a class="act present" href="present.html?level=${level}&n=${n}">Present</a>`
           : `<a class="act pptx" href="lesson.html?level=${level}&n=${n}" target="_blank" title="No slides yet — try the live lesson instead">Try lesson</a>`
         }
+        <a class="act homework" href="homework.html?level=${level}&n=${n}" target="_blank" title="Open interactive homework">Homework</a>
         <a class="act worksheet" href="worksheets/${level}/lesson${num}-homework.pdf" download title="Download homework worksheet">Worksheet</a>
         <a class="act flashcards" href="flashcards/${level}/lesson${num}-flashcards.pdf" download title="Download printable flashcards">Flashcards</a>`;
       matGrid.appendChild(row);

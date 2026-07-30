@@ -55,6 +55,18 @@ const Lumio = (() => {
     set("lumio_progress", all);
   };
 
+  /* ---------- Homework (interactive) ----------
+     lumio_homework = { studentName: { levelId: { lessonNum: {stars, score, total, said, saidTotal, hasDrawing, drawingDataUrl, date} } } } */
+  const homeworkAll = () => get("lumio_homework", {});
+  const homeworkFor = (name) => homeworkAll()[name] || {};
+  const saveHomework = (name, levelId, lessonNum, record) => {
+    const all = homeworkAll();
+    all[name] = all[name] || {};
+    all[name][levelId] = all[name][levelId] || {};
+    all[name][levelId][lessonNum] = record;
+    set("lumio_homework", all);
+  };
+
   /* ---------- Text-to-Speech (clearer voice selection + iOS fixes) ---------- */
   let voice = null;
   const scoreVoice = (v) => {
@@ -232,6 +244,7 @@ const Lumio = (() => {
   };
 
   return { LEVELS, AVAILABLE_LEVELS, login, user, logout, requireUser,
-           progressAll, progressFor, saveResult, speak, speakPhonicsSound, beep, confetti, toast, shuffle, qs, letterTile,
+           progressAll, progressFor, saveResult, homeworkAll, homeworkFor, saveHomework,
+           speak, speakPhonicsSound, beep, confetti, toast, shuffle, qs, letterTile,
            COUNTRY_CODES, combinePhone, splitPhone };
 })();
