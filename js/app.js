@@ -116,6 +116,20 @@ const Lumio = (() => {
     if (playResult && typeof playResult.catch === "function") playResult.catch(fallback);
   };
 
+  const speakPhonicsSound = (token, rate = 0.92) => {
+    if (currentAudio) { try { currentAudio.pause(); } catch (e) {} currentAudio = null; }
+    if ("speechSynthesis" in window) speechSynthesis.cancel();
+    const slug = slugify(token);
+    if (!slug) { speakSynth(token, rate); return; }
+    const audio = new Audio(`assets/audio/phonics-sound-${slug}.mp3`);
+    currentAudio = audio;
+    let fellBack = false;
+    const fallback = () => { if (fellBack) return; fellBack = true; speakSynth(token, rate); };
+    audio.addEventListener("error", fallback);
+    const playResult = audio.play();
+    if (playResult && typeof playResult.catch === "function") playResult.catch(fallback);
+  };
+
   /* ---------- Sounds ---------- */
   const beep = (good = true) => {
     try {
@@ -218,6 +232,6 @@ const Lumio = (() => {
   };
 
   return { LEVELS, AVAILABLE_LEVELS, login, user, logout, requireUser,
-           progressAll, progressFor, saveResult, speak, beep, confetti, toast, shuffle, qs, letterTile,
+           progressAll, progressFor, saveResult, speak, speakPhonicsSound, beep, confetti, toast, shuffle, qs, letterTile,
            COUNTRY_CODES, combinePhone, splitPhone };
 })();

@@ -33,7 +33,7 @@ def draw_worksheet(c, lesson, num):
     y = PAGE_H - 56
     c.setFillColorRGB(*ORANGE)
     c.setFont("Helvetica-Bold", 10)
-    c.drawString(46, y, f"LEVEL2 \u2022 Lesson {num}")
+    c.drawString(46, y, f"{LEVEL.upper()} \u2022 Lesson {num}")
     y -= 20
     c.setFillColorRGB(*INK)
     c.setFont("Helvetica-Bold", 15)
@@ -179,7 +179,7 @@ def make_flashcards(lesson, num):
     def header(text):
         c.setFillColorRGB(*INK)
         c.setFont("Helvetica-Bold", 11)
-        c.drawString(margin_x, PAGE_H - 50, "Lumio English \u2014 LEVEL2 Lesson " + str(num) + " \u2014 print double-sided, flip on long edge")
+        c.drawString(margin_x, PAGE_H - 50, "Lumio English \u2014 " + LEVEL.upper() + " Lesson " + str(num) + " \u2014 print double-sided, flip on long edge")
 
     # grid positions (row-major, top to bottom)
     positions = []

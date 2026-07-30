@@ -295,7 +295,7 @@ def slide_phonics_rule(unit, n, total, ch):
         for s in sounds:
             speak_token = s["letter"].split(",")[0].split("-")[0].strip()
             tiles += f'''
-          <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(speak_token)}')"
+          <button onclick="typeof Lumio !== 'undefined' && Lumio.speakPhonicsSound && Lumio.speakPhonicsSound('{esc(speak_token)}')"
                   style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:14px;padding:14px 18px;min-width:100px;
                         text-align:center;box-shadow:0 8px 16px rgba(67,48,31,.14)">
             <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.6rem;color:#F97316">{esc(s["letter"])}</div>

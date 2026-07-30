@@ -1293,7 +1293,7 @@
         <div class="titleAr">${u.unitAr}</div>
         ${u.sounds && u.sounds.length ? `<div class="sd-phonics-sounds">
           ${u.sounds.map(s => `
-            <button class="sd-phonics-sound" onclick="Lumio.speak('${(s.letter.split(/[\s,-]/)[0]).replace(/'/g, "\\'")}')">
+            <button class="sd-phonics-sound" onclick="Lumio.speakPhonicsSound('${(s.letter.split(/[\s,-]/)[0]).replace(/'/g, "\\'")}')">
               <div class="letter">${s.letter}</div>
               <div class="sound">${s.sound}</div>
               <div class="ar">${s.ar}</div>
