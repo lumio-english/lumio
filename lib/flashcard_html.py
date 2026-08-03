@@ -115,13 +115,25 @@ def build_flashcard_pdf(level, num, vocab, out_path):
 
     tmp_front_pdf = out_path + ".front.pdf"
     tmp_back_pdf = out_path + ".back.pdf"
+    tmp_front_html = out_path + ".front.html"
+    tmp_back_html = out_path + ".back.html"
 
-    page.set_content(front_html, wait_until="load")
+    # page.set_content() serves the page with no real origin, so Chromium
+    # blocks file:// <img> loads from it ("Not allowed to load local
+    # resource"). Writing to a real file and navigating via file:// grants
+    # the page a proper file:// origin, which local <img> tags need.
+    with open(tmp_front_html, "w", encoding="utf-8") as f:
+        f.write(front_html)
+    page.goto(f"file://{os.path.abspath(tmp_front_html)}", wait_until="load")
     page.pdf(path=tmp_front_pdf, format="A4", print_background=True)
 
-    page.set_content(back_html, wait_until="load")
+    with open(tmp_back_html, "w", encoding="utf-8") as f:
+        f.write(back_html)
+    page.goto(f"file://{os.path.abspath(tmp_back_html)}", wait_until="load")
     page.pdf(path=tmp_back_pdf, format="A4", print_background=True)
     page.close()
+    os.remove(tmp_front_html)
+    os.remove(tmp_back_html)
 
     # merge front+back into the final 2-page PDF
     from pypdf import PdfWriter, PdfReader
