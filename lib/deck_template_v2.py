@@ -150,14 +150,24 @@ def slide_vocab(w, idx, n, total, num_words, ch):
     </div>
     ''' + char_img(ch, right=84, bottom=28, height=250))
 
-def slide_practice_phonics(w, n, total, ch, show_phonics_link=True):
+DISCUSSION_TEMPLATES = [
+    "Can you use \u201c{w}\u201d in your own sentence?",
+    "Tell me about \u201c{w}\u201d \u2014 what do you know about it?",
+    "Where or when have you seen \u201c{w}\u201d before?",
+]
+def discussion_question(word, seed):
+    tmpl = DISCUSSION_TEMPLATES[seed % len(DISCUSSION_TEMPLATES)]
+    return tmpl.format(w=word)
+
+def slide_practice_phonics(w, n, total, ch, show_phonics_link=True, seed=0):
     quote = w.get("example", w["en"])
     first_letter = w["en"][0].upper()
-    callout = (f'''<div style="display:flex;align-items:center;gap:12px;background:#FFF3D6;border-radius:14px;padding:10px 16px">
+    callout = (f'''<div style="display:flex;align-items:center;gap:12px;background:#FFF3D6;border-radius:14px;padding:10px 16px;margin-bottom:12px">
           <div style="width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,#0D9488,#0B7A6F);color:#fff;
                       display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.2rem">{first_letter}</div>
           <div style="font-size:.85rem;color:#43301F;font-weight:700">&ldquo;{esc(w["en"])}&rdquo; starts with the <b>{first_letter.lower()}</b> sound &mdash; find more {first_letter.lower()} words in Phonics! &#128218;</div>
         </div>''' if show_phonics_link else "")
+    question = discussion_question(w["en"], seed)
     return (bg_plain() + header(f"Practice &bull; {esc(w['en'])}", n, total) + COLORSTRIP + f'''
     <div style="position:absolute;left:0;right:0;top:180px;display:flex;justify-content:center;gap:30px">
       <div class="card" style="width:260px;height:260px;overflow:hidden;padding:0"><img src="assets/vocab/{slug(w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
@@ -165,6 +175,10 @@ def slide_practice_phonics(w, n, total, ch, show_phonics_link=True):
         <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;color:#43301F;margin-bottom:10px">Can you say it?</div>
         <div style="font-family:'Baloo 2',sans-serif;font-style:italic;font-weight:700;font-size:1.4rem;color:#F97316;margin-bottom:18px">&ldquo;{esc(quote)}&rdquo;</div>
         {callout}
+        <div style="display:flex;align-items:center;gap:10px;background:#E6FAF7;border-radius:14px;padding:10px 16px">
+          <span style="font-size:1.2rem">&#128172;</span>
+          <div style="font-size:.85rem;color:#0F766E;font-weight:800">TEACHER: ASK &mdash; {esc(question)}</div>
+        </div>
       </div>
     </div>
     ''' + char_img(ch, bottom=32, height=260))
@@ -335,6 +349,53 @@ def slide_phonics_practice(unit, n, total, ch):
     ''' + char_img(ch, right=90, bottom=40, height=320))
 
 
+def slide_today_i_learned(lesson, n, total):
+    chips = "".join(f'''
+      <div style="background:#fff;border-radius:14px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;
+                  box-shadow:0 6px 14px rgba(67,48,31,.1);width:110px">
+        <div style="width:70px;height:70px;border-radius:10px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/{slug(w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.8rem;color:#43301F;text-align:center">{esc(w["en"])}</div>
+      </div>''' for w in lesson["vocab"][:6])
+    return (bg_study() + header("Today I Learned! &#127775;", n, total) + COLORSTRIP + f'''
+    <div style="position:absolute;left:46px;top:150px;width:820px">
+      <div style="font-size:.78rem;font-weight:800;color:#F97316;letter-spacing:1.5px;margin-bottom:10px">KEY WORDS</div>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px">{chips}</div>
+      <div style="font-size:.78rem;font-weight:800;color:#0D9488;letter-spacing:1.5px;margin-bottom:8px">GRAMMAR</div>
+      <div class="card" style="padding:16px 20px">
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.05rem;color:#43301F">{esc(lesson.get("grammarFocus",""))}</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-style:italic;font-weight:700;font-size:1.1rem;color:#F97316;margin-top:6px">&ldquo;{esc(lesson["vocab"][0].get("example", ""))}&rdquo;</div>
+      </div>
+    </div>
+    ''' + char_img("noor-happy", bottom=42, height=310))
+
+
+def slide_unscramble(word, n, total, ch):
+    import random as _r
+    letters = list(word["en"].replace(" ", ""))
+    order = list(range(len(letters)))
+    _r.Random(sum(ord(c) for c in word["en"])).shuffle(order)
+    tiles = "".join(f'''<div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:{LETTER_COLORS[i % len(LETTER_COLORS)]};
+                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">{letters[order[i]].upper()}</div>''' for i in range(len(order)))
+    return (bg_plain() + header("Warm-Up &bull; Unscramble!", n, total) + COLORSTRIP + f'''
+    <div style="position:absolute;left:0;right:0;top:190px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:700;
+                font-size:1.1rem;color:#43301F">Can you guess the word before it's revealed?</div>
+    <div style="position:absolute;left:0;right:0;top:250px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding:0 60px">
+      {tiles}
+    </div>
+    <div id="unscrambleAnswer" style="position:absolute;left:0;right:0;top:360px;text-align:center;display:none">
+      <div class="card" style="display:inline-block;padding:16px 32px">
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.8rem;color:#43301F">{esc(word["en"])}</div>
+        <div style="color:#0D9488;font-weight:800;font-size:1.1rem;margin-top:4px">{word["ar"]}</div>
+      </div>
+    </div>
+    <button onclick="document.getElementById('unscrambleAnswer').style.display='block'; typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(word["en"]).replace(chr(39), chr(92)+chr(39))}')"
+            style="position:absolute;left:46px;bottom:32px;z-index:20;cursor:pointer;border:none;font-family:inherit;
+            background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;padding:13px 26px;border-radius:999px;
+            font-size:1.02rem;box-shadow:0 8px 18px rgba(249,115,22,.35)">&#128064; Reveal the word</button>
+    ''' + char_img(ch, bottom=32, height=270))
+
+
 def slide_reward_homework(lesson_num, n, total):
     items = [f"Play this lesson again on Lumio English", "Finish your homework sheet", "Say each word to your family"]
     rows = "".join(f'''
@@ -364,7 +425,7 @@ def slide_reward_homework(lesson_num, n, total):
 
 def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic=None, has_phonics=True):
     V = len(lesson["vocab"])
-    plan = [("title", None), ("lets_learn", None)]
+    plan = [("title", None), ("lets_learn", None), ("unscramble", lesson["vocab"][0])]
     if prev_lesson:
         plan.append(("recap", None))
     if phonics_unit:
@@ -384,6 +445,7 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
         plan.append(("your_turn", (lesson["vocab"][i], i + 1)))
     plan.append(("quiz", 1))
     plan.append(("quiz", 2))
+    plan.append(("today_i_learned", None))
     plan.append(("reward_homework", None))
 
     total = len(plan)
@@ -392,6 +454,7 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
         n = pos + 1
         if kind == "title": slides.append(slide_title(lesson, V))
         elif kind == "lets_learn": slides.append(slide_lets_learn(lesson, n, total, V))
+        elif kind == "unscramble": slides.append(slide_unscramble(data, n, total, "lumi-wave-book"))
         elif kind == "recap": slides.append(slide_recap(prev_lesson["vocab"], n, total))
         elif kind == "phonics_rule": slides.append(slide_phonics_rule(data, n, total, "sara-explain"))
         elif kind == "phonics_practice": slides.append(slide_phonics_practice(data, n, total, "sara-clap"))
@@ -404,7 +467,7 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
             slides.append(slide_vocab(w, i, n, total, V, VOCAB_CHARS[i % len(VOCAB_CHARS)]))
         elif kind == "practice_phonics":
             w, i = data
-            slides.append(slide_practice_phonics(w, n, total, VOCAB_CHARS[i % len(VOCAB_CHARS)], has_phonics))
+            slides.append(slide_practice_phonics(w, n, total, VOCAB_CHARS[i % len(VOCAB_CHARS)], has_phonics, seed=i))
         elif kind == "dialogue":
             slides.append(slide_dialogue(DIALOGUES[lesson_num], n, total))
         elif kind == "sentence":
@@ -414,6 +477,8 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
         elif kind == "your_turn":
             w, idx = data
             slides.append(slide_your_turn_listen_first(w, idx, your_turn_n, n, total, "omar-wave"))
+        elif kind == "today_i_learned":
+            slides.append(slide_today_i_learned(lesson, n, total))
         elif kind == "quiz":
             idx = data
             target = lesson["vocab"][1 if idx == 1 else min(3, V - 1)]
