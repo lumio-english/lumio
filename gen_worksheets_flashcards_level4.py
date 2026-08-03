@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-import json, os, glob, math
+import json, os, glob, math, sys
+sys.path.insert(0, "lib")
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase import pdfmetrics
@@ -172,54 +173,9 @@ def draw_card_back(c, x, y, w, h, word):
 
 def make_flashcards(lesson, num):
     nn = f"{num:02d}"
-    words = lesson["vocab"]
-    n = len(words)
-    cols = min(4, max(3, math.ceil(n / 2)))
-    rows = math.ceil(n / cols)
-    margin_x, margin_y, top = 40, 40, 90
-    gap = 12
-    grid_w = PAGE_W - margin_x * 2
-    grid_h = PAGE_H - top - margin_y
-    card_w = (grid_w - gap * (cols - 1)) / cols
-    card_h = (grid_h - gap * (rows - 1)) / rows
-
     path = f"flashcards/{LEVEL}/lesson{nn}-flashcards.pdf"
-    c = canvas.Canvas(path, pagesize=A4)
-
-    def header(text):
-        c.setFillColorRGB(*INK)
-        c.setFont("Helvetica-Bold", 11)
-        c.drawString(margin_x, PAGE_H - 50, "Lumio English \u2014 " + LEVEL.upper() + " Lesson " + str(num) + " \u2014 print double-sided, flip on long edge")
-
-    # grid positions (row-major, top to bottom)
-    positions = []
-    for r in range(rows):
-        for col in range(cols):
-            idx = r * cols + col
-            if idx >= n:
-                continue
-            x = margin_x + col * (card_w + gap)
-            y = PAGE_H - top - (r + 1) * card_h - r * gap
-            positions.append((idx, x, y))
-
-    # PAGE 1 — fronts (image + English)
-    header("front")
-    for idx, x, y in positions:
-        draw_card_front(c, x, y, card_w, card_h, words[idx])
-    c.showPage()
-
-    # PAGE 2 — backs (Arabic), each row mirrored so it lines up after a
-    # long-edge flip when printing double-sided
-    header("back")
-    for r in range(rows):
-        row_items = [(idx, x, y) for (idx, x, y) in positions if idx // cols == r]
-        n_in_row = len(row_items)
-        for pos_in_row, (idx, x, y) in enumerate(row_items):
-            mirrored_col = n_in_row - 1 - pos_in_row
-            mx = margin_x + mirrored_col * (card_w + gap)
-            draw_card_back(c, mx, y, card_w, card_h, words[idx])
-    c.showPage()
-    c.save()
+    from flashcard_html import build_flashcard_pdf
+    build_flashcard_pdf(LEVEL, num, lesson["vocab"], path)
     return path
 
 # ================= MAIN =================
@@ -234,3 +190,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+    from flashcard_html import close_browser
+    close_browser()
