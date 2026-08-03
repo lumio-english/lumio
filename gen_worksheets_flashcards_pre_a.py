@@ -9,6 +9,16 @@ from reportlab.lib.utils import ImageReader
 pdfmetrics.registerFont(TTFont("NotoArabic", "/usr/share/fonts/truetype/noto/NotoSansArabic-Regular.ttf"))
 pdfmetrics.registerFont(TTFont("NotoArabic-Bold", "/usr/share/fonts/truetype/noto/NotoSansArabic-Bold.ttf"))
 
+import arabic_reshaper
+from bidi.algorithm import get_display
+
+def ar_shape(text):
+    """ReportLab draws raw Unicode left-to-right with isolated glyph forms,
+    which renders Arabic backwards with disconnected letters. Reshape into
+    contextual joined forms, then apply the bidi algorithm to get the
+    correct visual (already-reversed) order for drawing."""
+    return get_display(arabic_reshaper.reshape(text))
+
 PAGE_W, PAGE_H = A4
 LEVEL = "pre-a"
 INK = (0x43/255, 0x30/255, 0x1F/255)
@@ -158,7 +168,7 @@ def draw_card_back(c, x, y, w, h, word):
     c.setDash()
     c.setFillColorRGB(*TEAL)
     c.setFont("NotoArabic-Bold", 20)
-    c.drawCentredString(x + w / 2, y + h / 2 - 8, word["ar"])
+    c.drawCentredString(x + w / 2, y + h / 2 - 8, ar_shape(word["ar"]))
 
 def make_flashcards(lesson, num):
     nn = f"{num:02d}"
