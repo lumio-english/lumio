@@ -67,6 +67,60 @@ const Lumio = (() => {
     set("lumio_homework", all);
   };
 
+  /* ---------- Voice recordings (homework "Say It") ----------
+     IndexedDB, not localStorage -- audio blobs are too large for
+     localStorage's ~5-10MB quota. Same-origin, so both homework.html
+     (writes) and teacher.html (reads) can access these as long as
+     they're opened in the same browser on the same device -- there's
+     no server here, so recordings don't sync across devices. */
+  const RECORDINGS_DB = "lumio_recordings";
+  const RECORDINGS_STORE = "recordings";
+  function openRecordingsDB() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(RECORDINGS_DB, 1);
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains(RECORDINGS_STORE)) {
+          db.createObjectStore(RECORDINGS_STORE, { keyPath: "id" });
+        }
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+  const saveRecording = async (studentName, levelId, lessonNum, wordIndex, wordEn, blob) => {
+    const db = await openRecordingsDB();
+    const id = `${studentName}__${levelId}__${lessonNum}__${wordIndex}`;
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(RECORDINGS_STORE, "readwrite");
+      tx.objectStore(RECORDINGS_STORE).put({
+        id, studentName, levelId, lessonNum: String(lessonNum), wordIndex, wordEn, blob,
+        date: new Date().toISOString(),
+      });
+      tx.oncomplete = () => resolve(id);
+      tx.onerror = () => reject(tx.error);
+    });
+  };
+  const listRecordingsFor = async (studentName, levelId, lessonNum) => {
+    const db = await openRecordingsDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(RECORDINGS_STORE, "readonly");
+      const req = tx.objectStore(RECORDINGS_STORE).getAll();
+      req.onsuccess = () => resolve(req.result.filter(r =>
+        r.studentName === studentName && r.levelId === levelId && r.lessonNum === String(lessonNum)));
+      req.onerror = () => reject(req.error);
+    });
+  };
+  const listAllRecordings = async () => {
+    const db = await openRecordingsDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(RECORDINGS_STORE, "readonly");
+      const req = tx.objectStore(RECORDINGS_STORE).getAll();
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  };
+
   /* ---------- Text-to-Speech (clearer voice selection + iOS fixes) ---------- */
   let voice = null;
   const scoreVoice = (v) => {
@@ -245,6 +299,7 @@ const Lumio = (() => {
 
   return { LEVELS, AVAILABLE_LEVELS, login, user, logout, requireUser,
            progressAll, progressFor, saveResult, homeworkAll, homeworkFor, saveHomework,
+           saveRecording, listRecordingsFor, listAllRecordings,
            speak, speakPhonicsSound, beep, confetti, toast, shuffle, qs, letterTile,
            COUNTRY_CODES, combinePhone, splitPhone };
 })();

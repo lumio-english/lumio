@@ -794,6 +794,18 @@
   </div>
 </div>
 
+<!-- ===== Recordings modal ===== -->
+<div class="td-overlay" id="recordingsOverlay">
+  <div class="td-modal-box" style="max-width:520px">
+    <h3 id="recordingsTitle">Recordings</h3>
+    <p class="sub" style="margin:-6px 0 14px;font-size:.78rem">From the "Say It" step of interactive homework — same browser/device as the student only.</p>
+    <div id="recordingsList" style="max-height:420px;overflow-y:auto"></div>
+    <div class="td-modal-actions">
+      <button class="td-btn" id="recordingsClose">Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===== Add / Edit teacher modal ===== -->
 <div class="td-overlay" id="teacherModalOverlay">
   <div class="td-modal-box">
@@ -961,6 +973,51 @@
   const LEVEL_LESSON_COUNT = {};
   LEVEL_NAMES.forEach(l => LEVEL_LESSON_COUNT[l.id] = l.lessons || 20);
   const levelName = id => (LEVEL_NAMES.find(l => l.id === id) || {}).name || id;
+
+  // ================= Recordings modal =================
+  const recordingsOverlay = document.getElementById("recordingsOverlay");
+  const recordingsList = document.getElementById("recordingsList");
+  let recordingsObjectUrls = [];
+  async function openRecordingsModal(studentName) {
+    document.getElementById("recordingsTitle").textContent = `${studentName} \u2014 Recordings`;
+    recordingsList.innerHTML = `<p class="sub">Loading\u2026</p>`;
+    recordingsOverlay.classList.add("show");
+    recordingsObjectUrls.forEach(u => URL.revokeObjectURL(u));
+    recordingsObjectUrls = [];
+    try {
+      const all = (typeof Lumio !== "undefined" && Lumio.listAllRecordings) ? await Lumio.listAllRecordings() : [];
+      const mine = all.filter(r => r.studentName === studentName).sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+      if (!mine.length) {
+        recordingsList.innerHTML = `<p class="sub">No recordings yet on this device. Recordings are made from the "Say It" step of interactive homework, and only show up here if the student did their homework on this same browser/device.</p>`;
+        return;
+      }
+      const byLesson = {};
+      mine.forEach(r => {
+        const key = `${r.levelId}__${r.lessonNum}`;
+        (byLesson[key] = byLesson[key] || []).push(r);
+      });
+      recordingsList.innerHTML = Object.entries(byLesson).map(([key, recs]) => {
+        const [lvl, lessonNum] = key.split("__");
+        const rows = recs.map(r => {
+          const url = URL.createObjectURL(r.blob);
+          recordingsObjectUrls.push(url);
+          return `<div style="display:flex;align-items:center;gap:10px;padding:6px 0">
+            <span style="font-weight:700;font-size:.85rem;min-width:90px">${r.wordEn}</span>
+            <audio controls src="${url}" style="height:32px;flex:1"></audio>
+          </div>`;
+        }).join("");
+        return `<div style="margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--td-border)">
+          <div style="font-weight:800;font-size:.85rem;margin-bottom:6px">${levelName(lvl)} \u00b7 Lesson ${lessonNum}</div>
+          ${rows}
+        </div>`;
+      }).join("");
+    } catch (e) {
+      recordingsList.innerHTML = `<p class="sub">Couldn't load recordings on this device.</p>`;
+    }
+  }
+  document.getElementById("recordingsClose").onclick = () => recordingsOverlay.classList.remove("show");
+  recordingsOverlay.addEventListener("click", e => { if (e.target === recordingsOverlay) recordingsOverlay.classList.remove("show"); });
+
 
   const all = ((typeof Lumio !== "undefined" && Lumio.progressAll) ? Lumio.progressAll() : {}) || {};
   const rows = [];
@@ -1436,6 +1493,7 @@
         <div class="acts">
           <button type="button" data-act="edit">Edit</button>
           <button type="button" data-act="pin">New PIN</button>
+          <button type="button" data-act="recordings">🎙️ Recordings</button>
           <button type="button" class="danger" data-act="remove">Remove</button>
         </div>`;
       const pinVal = card.querySelector(".pinval");
@@ -1448,6 +1506,7 @@
         };
       }
       card.querySelector('[data-act="edit"]').onclick = () => openStudentModal(p);
+      card.querySelector('[data-act="recordings"]').onclick = () => openRecordingsModal(p.name);
       card.querySelector('[data-act="pin"]').onclick = async (e) => {
         await withLoading(e.currentTarget, async () => {
           const newPin = LumioProfiles.randomPin();

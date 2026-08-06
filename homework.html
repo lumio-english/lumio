@@ -39,6 +39,11 @@
   .hw-check-btn { border:none; background:var(--cream); color:var(--cocoa-soft); font-weight:800; padding:10px 16px; border-radius:999px; cursor:pointer; font-size:.85rem }
   .hw-check-btn.correct { background:#4ADE80; color:#fff }
   .hw-listen-btn { border:none; background:none; cursor:pointer; font-size:1.3rem }
+  .hw-rec-btn { border:2px solid var(--coral); background:#fff; color:var(--coral); font-weight:800; font-size:.8rem;
+                padding:8px 14px; border-radius:999px; cursor:pointer; white-space:nowrap }
+  .hw-rec-btn.recording { background:var(--coral); color:#fff; animation:hwPulse 1s ease-in-out infinite }
+  .hw-rec-btn.done { border-color:#4ADE80; color:#16A34A }
+  @keyframes hwPulse { 0%,100% { opacity:1 } 50% { opacity:.6 } }
   .hw-canvas-wrap { text-align:center }
   canvas { border-radius:16px; border:3px dashed #F0E9DD; touch-action:none; background:#fff; max-width:100%; }
   .hw-color-row { display:flex; justify-content:center; gap:8px; margin:14px 0 }
@@ -87,18 +92,33 @@ const user = (typeof Lumio !== "undefined" && Lumio.user) ? Lumio.user() : null;
 const studentName = user ? user.name : "Guest";
 
 let lesson = null;
-const STEP_NAMES = ["Spelling", "Draw", "Say It", "Quiz", "Done"];
+let STEPS = []; // built in init(): each {key, label, render}
 let currentStep = 0;
-const results = { spelling: {}, drawingDataUrl: null, saidWords: {}, quiz: {} };
-
-function renderSteps() {
-  document.getElementById("hwSteps").innerHTML = STEP_NAMES.map((s, i) => {
-    const cls = i < currentStep ? "done" : (i === currentStep ? "active" : "");
-    return `<div class="hw-step ${cls}">${i + 1}. ${s}</div>`;
-  }).join("");
-}
+const results = { spelling: {}, drawingDataUrl: null, saidWords: {}, recorded: {}, skill: {}, quiz: {} };
+let skillType = null; // "phonics" | "grammar" | null
+let skillData = null; // the matched unit/topic object
 
 function esc(s) { return (s == null ? "" : String(s)).replace(/&/g, "&amp;").replace(/"/g, "&quot;"); }
+
+function renderSteps() {
+  document.getElementById("hwSteps").innerHTML = STEPS.map((s, i) => {
+    const cls = i < currentStep ? "done" : (i === currentStep ? "active" : "");
+    return `<div class="hw-step ${cls}">${i + 1}. ${s.label}</div>`;
+  }).join("");
+}
+function goToStep(i) {
+  currentStep = i;
+  renderSteps();
+  STEPS[i].render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+function navButtons(backLabel, nextLabel) {
+  const i = currentStep;
+  return `<div class="hw-footer-nav">
+    ${i > 0 ? `<button class="hw-btn ghost" onclick="goToStep(${i - 1})">${backLabel}</button>` : "<span></span>"}
+    ${i < STEPS.length - 1 ? `<button class="hw-btn" onclick="goToStep(${i + 1})">${nextLabel}</button>` : ""}
+  </div>`;
+}
 
 function renderSpelling() {
   const rows = lesson.vocab.map((w, i) => `
@@ -113,7 +133,7 @@ function renderSpelling() {
       <h2>✏️ Spelling Practice</h2>
       <div class="hw-sub">Look at the picture and the Arabic word, then type the English word.</div>
       ${rows}
-      <div class="hw-footer-nav"><span></span><button class="hw-btn" onclick="goToStep(1)">Next: Draw It →</button></div>
+      ${navButtons("← Back", "Next: Draw It →")}
     </div>`;
 }
 function slugify(t) { return String(t).toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""); }
@@ -131,6 +151,7 @@ function checkSpelling(i) {
 
 function renderDraw() {
   const word = lesson.vocab[0].en;
+  const i = currentStep;
   document.getElementById("hwSections").innerHTML = `
     <div class="hw-card hw-canvas-wrap">
       <h2 style="justify-content:center">🎨 Draw It</h2>
@@ -139,8 +160,8 @@ function renderDraw() {
       <div class="hw-color-row" id="hwColors"></div>
       <div style="margin-top:10px"><button class="hw-btn ghost" onclick="clearCanvas()">Clear</button></div>
       <div class="hw-footer-nav">
-        <button class="hw-btn ghost" onclick="goToStep(0)">← Back</button>
-        <button class="hw-btn" onclick="finishDrawing()">Next: Say It →</button>
+        <button class="hw-btn ghost" onclick="goToStep(${i - 1})">← Back</button>
+        <button class="hw-btn" onclick="finishDrawing(); goToStep(${i + 1})">Next: Say It →</button>
       </div>
     </div>`;
   setupCanvas();
@@ -170,26 +191,161 @@ function setColor(c, el) { curColor = c; document.querySelectorAll(".hw-swatch")
 function clearCanvas() { ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, 320, 320); }
 function finishDrawing() {
   try { results.drawingDataUrl = document.getElementById("hwCanvas").toDataURL("image/png"); } catch (e) {}
-  goToStep(2);
 }
 
+/* ---------- Say It, now with recording ---------- */
+let mediaRecorder = null, audioChunks = [], activeRecIdx = null, activeStream = null;
 function renderSayIt() {
+  const micSupported = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
   const rows = lesson.vocab.map((w, i) => `
-    <div class="hw-say-row">
-      <label><input type="checkbox" onchange="results.saidWords[${i}] = this.checked"> ${esc(w.en)} <span style="color:var(--teal-deep);font-weight:800">${w.ar}</span></label>
-      <button class="hw-listen-btn" onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('${esc(w.en).replace(/'/g, "\\'")}')">🔊</button>
+    <div class="hw-say-row" id="sayRow-${i}">
+      <label><input type="checkbox" onchange="results.saidWords[${i}] = this.checked" ${results.saidWords[i] ? "checked" : ""}> ${esc(w.en)} <span style="color:var(--teal-deep);font-weight:800">${w.ar}</span></label>
+      <button class="hw-listen-btn" title="Hear it" onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('${esc(w.en).replace(/'/g, "\\'")}')">🔊</button>
+      ${micSupported ? `<button class="hw-rec-btn ${results.recorded[i] ? "done" : ""}" id="recBtn-${i}" onclick="toggleRecording(${i})">
+        ${results.recorded[i] ? "✓ Recorded — tap to redo" : "🎙️ Record"}</button>` : ""}
     </div>`).join("");
   document.getElementById("hwSections").innerHTML = `
     <div class="hw-card">
       <h2>🗣️ Say It</h2>
-      <div class="hw-sub">Listen to each word, then say it out loud to your family. Check it off when you're done!</div>
+      <div class="hw-sub">Listen to each word, say it out loud${micSupported ? ", and record yourself" : ""}. Check it off when you're done!</div>
       ${rows}
+      ${!micSupported ? `<div class="hw-parent-box" style="margin-top:14px">Recording isn't supported on this browser/device — that's okay, just practice out loud with your family.</div>` : ""}
       <div class="hw-parent-box">❤ <b>FOR PARENTS</b> — please listen to your child say each word above, then check the box together.</div>
-      <div class="hw-footer-nav">
-        <button class="hw-btn ghost" onclick="goToStep(1)">← Back</button>
-        <button class="hw-btn" onclick="goToStep(3)">Next: Quiz →</button>
-      </div>
+      ${navButtons("← Back", `Next: ${STEPS[currentStep + 1] ? STEPS[currentStep + 1].label : ""} →`)}
     </div>`;
+}
+async function toggleRecording(i) {
+  const btn = document.getElementById(`recBtn-${i}`);
+  if (activeRecIdx === i && mediaRecorder && mediaRecorder.state === "recording") {
+    mediaRecorder.stop();
+    return;
+  }
+  if (activeRecIdx !== null) return; // one recording at a time
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    activeStream = stream;
+    audioChunks = [];
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+    mediaRecorder.onstop = async () => {
+      const blob = new Blob(audioChunks, { type: mediaRecorder.mimeType || "audio/webm" });
+      try {
+        if (typeof Lumio !== "undefined" && Lumio.saveRecording) {
+          await Lumio.saveRecording(studentName, level, num, i, lesson.vocab[i].en, blob);
+          results.recorded[i] = true;
+        }
+      } catch (e) { console.error("save recording failed", e); }
+      activeStream.getTracks().forEach(t => t.stop());
+      activeStream = null; activeRecIdx = null; mediaRecorder = null;
+      renderSayIt();
+    };
+    mediaRecorder.start();
+    activeRecIdx = i;
+    btn.textContent = "⏹ Stop recording";
+    btn.classList.add("recording");
+  } catch (e) {
+    alert("Microphone access is needed to record. Please allow microphone access in your browser and try again.");
+  }
+}
+
+/* ---------- Lesson-customized Skill Focus: Phonics OR Grammar ---------- */
+function computePhonicsLessonMap(units) {
+  const map = {};
+  units.forEach((u, i) => { map[2 * i + 1] = u; });
+  return map;
+}
+function computeGrammarLessonMap(topics, numLessons) {
+  const map = {};
+  const n = topics.length;
+  topics.forEach((t, i) => {
+    const lessonNum = n > 1 ? Math.round(1 + i * (numLessons - 1) / (n - 1)) : 1;
+    map[lessonNum] = t;
+  });
+  return map;
+}
+async function detectSkillFocus() {
+  try {
+    if (["level1", "level2"].includes(level)) {
+      const res = await fetch(`phonics-hub/${level}.json`);
+      if (res.ok) {
+        const data = await res.json();
+        const map = computePhonicsLessonMap(data.units || []);
+        if (map[num]) { skillType = "phonics"; skillData = map[num]; return; }
+      }
+    } else {
+      const res = await fetch(`grammar-hub/${level}.json`);
+      if (res.ok) {
+        const data = await res.json();
+        const map = computeGrammarLessonMap(data.topics || [], 20);
+        if (map[num]) { skillType = "grammar"; skillData = map[num]; return; }
+      }
+    }
+  } catch (e) { /* no skill focus for this lesson -- fine, it's optional */ }
+}
+function renderSkillFocus() {
+  if (skillType === "phonics") return renderPhonicsPractice();
+  if (skillType === "grammar") return renderGrammarPractice();
+}
+function renderPhonicsPractice() {
+  const words = (skillData.words || []).slice(0, 6);
+  const rows = words.map((w, i) => `
+    <div class="hw-word-row">
+      <div class="hw-word-ar" style="min-width:100px">${w.ar}</div>
+      <input class="hw-input" id="ph-${i}" placeholder="Type the word…" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <button class="hw-check-btn" id="phBtn-${i}" onclick="checkPhonics(${i}, '${esc(w.en).replace(/'/g, "\\'")}')">Check</button>
+    </div>`).join("");
+  document.getElementById("hwSections").innerHTML = `
+    <div class="hw-card">
+      <h2>🔤 Phonics Focus &mdash; ${esc(skillData.unit)}</h2>
+      <div class="hw-sub">${skillData.tip ? skillData.tip : "Practice spelling these sound words."}</div>
+      ${rows}
+      ${navButtons("← Back", "Next: Quiz →")}
+    </div>`;
+}
+function checkPhonics(i, correctWord) {
+  const input = document.getElementById(`ph-${i}`);
+  const btn = document.getElementById(`phBtn-${i}`);
+  const correct = input.value.trim().toLowerCase() === correctWord.toLowerCase();
+  input.classList.remove("correct", "wrong");
+  input.classList.add(correct ? "correct" : "wrong");
+  btn.classList.toggle("correct", correct);
+  btn.textContent = correct ? "✓ Correct!" : "Try again";
+  results.skill[i] = correct;
+  if (typeof Lumio !== "undefined" && Lumio.beep) Lumio.beep(correct);
+}
+function renderGrammarPractice() {
+  const examples = (skillData.examples || []).slice(0, 4);
+  const blanked = examples.map(ex => {
+    const words = ex.en.trim().split(" ");
+    const firstWord = words[0].replace(/[.,!?]/g, "");
+    const rest = words.slice(1).join(" ");
+    return { firstWord, rest, ar: ex.ar, full: ex.en };
+  });
+  const rows = blanked.map((b, i) => `
+    <div class="hw-word-row" style="flex-wrap:wrap">
+      <input class="hw-input" id="gr-${i}" style="max-width:140px" placeholder="?" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <div style="flex:1;min-width:160px;font-weight:700">${esc(b.rest)}</div>
+      <button class="hw-check-btn" id="grBtn-${i}" onclick="checkGrammar(${i}, '${esc(b.firstWord).replace(/'/g, "\\'")}')">Check</button>
+      <div style="width:100%;direction:rtl;text-align:right;color:var(--cocoa-soft);font-size:.85rem;font-weight:700">${b.ar}</div>
+    </div>`).join("");
+  document.getElementById("hwSections").innerHTML = `
+    <div class="hw-card">
+      <h2>📝 Grammar Focus &mdash; ${esc(skillData.title)}</h2>
+      <div class="hw-sub">${esc(skillData.explanation || "")} Fill in the missing first word of each sentence.</div>
+      ${rows}
+      ${navButtons("← Back", "Next: Quiz →")}
+    </div>`;
+}
+function checkGrammar(i, correctWord) {
+  const input = document.getElementById(`gr-${i}`);
+  const btn = document.getElementById(`grBtn-${i}`);
+  const correct = input.value.trim().toLowerCase() === correctWord.toLowerCase();
+  input.classList.remove("correct", "wrong");
+  input.classList.add(correct ? "correct" : "wrong");
+  btn.classList.toggle("correct", correct);
+  btn.textContent = correct ? "✓ Correct!" : "Try again";
+  results.skill[i] = correct;
+  if (typeof Lumio !== "undefined" && Lumio.beep) Lumio.beep(correct);
 }
 
 function renderQuiz() {
@@ -210,7 +366,7 @@ function renderQuiz() {
       <div class="hw-sub">Tap the correct word for each picture.</div>
       ${html}
       <div class="hw-footer-nav">
-        <button class="hw-btn ghost" onclick="goToStep(2)">← Back</button>
+        <button class="hw-btn ghost" onclick="goToStep(${currentStep - 1})">← Back</button>
         <button class="hw-btn" onclick="submitHomework()">✓ Submit Homework</button>
       </div>
     </div>`;
@@ -226,15 +382,20 @@ function answerQuiz(qi, chosen, correct, btn) {
 function submitHomework() {
   const spellingCorrect = Object.values(results.spelling).filter(Boolean).length;
   const quizCorrect = Object.values(results.quiz).filter(Boolean).length;
+  const skillCorrect = Object.values(results.skill).filter(Boolean).length;
+  const skillTotal = Object.keys(results.skill).length || (skillType ? (skillType === "phonics" ? (skillData.words || []).slice(0, 6).length : (skillData.examples || []).slice(0, 4).length) : 0);
   const said = Object.values(results.saidWords).filter(Boolean).length;
-  const totalPossible = lesson.vocab.length + Math.min(4, lesson.vocab.length);
-  const totalCorrect = spellingCorrect + quizCorrect;
+  const recorded = Object.values(results.recorded).filter(Boolean).length;
+  const totalPossible = lesson.vocab.length + qWordsCountSafe() + skillTotal;
+  const totalCorrect = spellingCorrect + quizCorrect + skillCorrect;
   const pct = totalPossible ? Math.round((totalCorrect / totalPossible) * 100) : 0;
   const stars = pct >= 90 ? 3 : pct >= 60 ? 2 : 1;
 
   const record = {
     stars, score: totalCorrect, total: totalPossible, said, saidTotal: lesson.vocab.length,
+    recorded, recordedTotal: lesson.vocab.length,
     hasDrawing: !!results.drawingDataUrl, drawingDataUrl: results.drawingDataUrl,
+    skillType, skillCorrect, skillTotal,
     date: new Date().toISOString().slice(0, 10),
   };
   if (typeof Lumio !== "undefined" && Lumio.saveHomework) {
@@ -242,25 +403,19 @@ function submitHomework() {
   }
   if (typeof Lumio !== "undefined" && Lumio.confetti) Lumio.confetti(70);
 
-  currentStep = 4;
+  currentStep = STEPS.length;
   renderSteps();
+  const skillLine = skillType ? ` · ${skillType === "phonics" ? "Phonics" : "Grammar"}: ${skillCorrect}/${skillTotal}` : "";
   document.getElementById("hwSections").innerHTML = `
     <div class="hw-card hw-done-screen">
       <div style="font-size:3rem">🎉</div>
       <h2 style="justify-content:center">Homework complete!</h2>
       <div class="stars">${"⭐".repeat(stars)}${"☆".repeat(3 - stars)}</div>
-      <div class="hw-sub">Spelling: ${spellingCorrect}/${lesson.vocab.length} · Quiz: ${quizCorrect}/${qWordsCountSafe()} · Said out loud: ${said}/${lesson.vocab.length}</div>
+      <div class="hw-sub">Spelling: ${spellingCorrect}/${lesson.vocab.length} · Quiz: ${quizCorrect}/${qWordsCountSafe()}${skillLine} · Said out loud: ${said}/${lesson.vocab.length}${recorded ? ` · Recorded: ${recorded}` : ""}</div>
       <a class="hw-btn" style="display:inline-block;margin-top:16px;text-decoration:none" href="student.html">Back to my map</a>
     </div>`;
 }
 function qWordsCountSafe() { return Math.min(4, lesson.vocab.length); }
-
-function goToStep(i) {
-  currentStep = i;
-  renderSteps();
-  [renderSpelling, renderDraw, renderSayIt, renderQuiz][i]();
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
 
 async function init() {
   let lessonData = (typeof window.LUMIO_LESSONS !== "undefined" && window.LUMIO_LESSONS[level]) ? window.LUMIO_LESSONS[level][num] : null;
@@ -276,11 +431,23 @@ async function init() {
     return;
   }
   lesson = lessonData;
+  await detectSkillFocus();
+
+  STEPS = [
+    { key: "spelling", label: "Spelling", render: renderSpelling },
+    { key: "draw", label: "Draw", render: renderDraw },
+    { key: "sayit", label: "Say It", render: renderSayIt },
+  ];
+  if (skillType) {
+    STEPS.push({ key: "skill", label: skillType === "phonics" ? "Phonics" : "Grammar", render: renderSkillFocus });
+  }
+  STEPS.push({ key: "quiz", label: "Quiz", render: renderQuiz });
+
   const meta = (typeof Lumio !== "undefined" && Lumio.LEVELS ? Lumio.LEVELS.find(l => l.id === level) : null) || { name: level };
   document.getElementById("hwLevelLabel").textContent = `${meta.name} · Lesson ${num}`;
   document.getElementById("hwTitle").textContent = `${lesson.title} — Homework`;
   renderSteps();
-  renderSpelling();
+  goToStep(0);
 }
 
 document.addEventListener("DOMContentLoaded", init);
