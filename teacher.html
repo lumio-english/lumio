@@ -359,11 +359,13 @@
   /* ---------- Materials view ---------- */
   #viewMaterials{display:none}
   .td-mat-tools{display:flex;align-items:center;gap:10px;margin-bottom:16px}
-  .td-mat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
-  .td-mat-row{display:flex;align-items:center;gap:10px;background:var(--td-surface);border:1px solid var(--td-border);border-radius:12px;padding:10px 12px}
+  .td-mat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;align-items:start}
+  .td-mat-row{display:flex;flex-direction:column;gap:10px;background:var(--td-surface);border:1px solid var(--td-border);border-radius:12px;padding:12px}
+  .td-mat-top{display:flex;align-items:center;gap:10px}
   .td-mat-row .num{width:30px;height:30px;border-radius:8px;background:var(--td-bg);color:var(--td-ink-soft);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.72rem;flex-shrink:0}
-  .td-mat-row b{flex:1;font-size:.85rem;font-weight:700}
-  .td-mat-row a.act{padding:7px 14px;font-size:.8rem;border-radius:9px;font-weight:700;transition:transform .12s ease,background .15s ease,box-shadow .15s ease;display:inline-block}
+  .td-mat-row b{flex:1;font-size:.85rem;font-weight:700;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .td-mat-actions{display:flex;flex-wrap:wrap;gap:8px}
+  .td-mat-row a.act{padding:7px 14px;font-size:.8rem;border-radius:9px;font-weight:700;transition:transform .12s ease,background .15s ease,box-shadow .15s ease;display:inline-block;white-space:nowrap}
   .td-mat-row a.act:hover{transform:translateY(-1px)}
   .td-mat-row a.act:active{transform:translateY(0) scale(.95)}
   .td-mat-row a.present{background:var(--td-indigo);color:#fff}
@@ -2279,14 +2281,16 @@
       // matching that here so the download link doesn't 404.
       const row = document.createElement("div");
       row.className = "td-mat-row";
-      row.innerHTML = `<div class="num">L${num}</div><b>${title}</b>
+      row.innerHTML = `<div class="td-mat-top"><div class="num">L${num}</div><b>${title}</b></div>
+        <div class="td-mat-actions">
         ${hasSlides
           ? `<a class="act present" href="present.html?level=${level}&n=${n}">Present</a>`
           : `<a class="act pptx" href="lesson.html?level=${level}&n=${n}" target="_blank" title="No slides yet — try the live lesson instead">Try lesson</a>`
         }
         <a class="act homework" href="homework.html?level=${level}&n=${n}" target="_blank" title="Open interactive homework">Homework</a>
         <a class="act worksheet" href="worksheets/${level}/lesson${num}-homework.pdf" download title="Download homework worksheet">Worksheet</a>
-        <a class="act flashcards" href="flashcards/${level}/lesson${num}-flashcards.pdf" download title="Download printable flashcards">Flashcards</a>`;
+        <a class="act flashcards" href="flashcards/${level}/lesson${num}-flashcards.pdf" download title="Download printable flashcards">Flashcards</a>
+        </div>`;
       matGrid.appendChild(row);
     });
     if (!matGrid.children.length) matGrid.innerHTML = `<div class="td-empty">No lessons match your search.</div>`;
