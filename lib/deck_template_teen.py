@@ -19,17 +19,19 @@ import grammar_slides
 
 CHAR = "assets/story/characters"
 
-INK = "#EAE6F5"
-INK_DIM = "#9C97B8"
-BG_DARK = "#1E1B2E"
-BG_DARKER = "#171526"
+INK = "#EDE9FB"
+INK_DIM = "#A79BD1"
+BG_DARK = "#2B1B52"
+BG_DARKER = "#1C1038"
 CARD_BG = "#FFFFFF"
 CARD_TEXT = "#2B2640"
+PURPLE = "#8B5CF6"
+PURPLE_DEEP = "#7C3AED"
 ORANGE = "#F97316"
 ORANGE_DEEP = "#EA580C"
 TEAL = "#14B8A6"
 TEAL_DEEP = "#0D9488"
-BORDER = "#332F4A"
+BORDER = "#4A3B7A"
 
 def esc(s):
     return (s or "").replace("&", "&amp;").replace('"', "&quot;")
@@ -38,25 +40,25 @@ def slug(w):
 
 def bg_base():
     return f'''<div style="position:absolute;inset:0;background:linear-gradient(160deg,{BG_DARK} 0%,{BG_DARKER} 100%)"></div>
-    <div style="position:absolute;left:-120px;top:-120px;width:340px;height:340px;border-radius:50%;
-                background:radial-gradient(circle,rgba(249,115,22,.12),transparent 70%)"></div>
-    <div style="position:absolute;right:-100px;bottom:-100px;width:300px;height:300px;border-radius:50%;
-                background:radial-gradient(circle,rgba(20,184,166,.12),transparent 70%)"></div>'''
+    <div style="position:absolute;left:-120px;top:-120px;width:380px;height:380px;border-radius:50%;
+                background:radial-gradient(circle,rgba(139,92,246,.22),transparent 70%)"></div>
+    <div style="position:absolute;right:-100px;bottom:-100px;width:320px;height:320px;border-radius:50%;
+                background:radial-gradient(circle,rgba(20,184,166,.14),transparent 70%)"></div>'''
 
 def header(pagetitle, n, total):
     pct = round(n / total * 100)
     return f'''<div style="position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:22px 40px 0">
       <div style="display:flex;align-items:center;gap:10px">
-        <div style="width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,{ORANGE},{ORANGE_DEEP});
+        <div style="width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,{PURPLE},{PURPLE_DEEP});
                     display:flex;align-items:center;justify-content:center;font-weight:800;font-family:'Fredoka',sans-serif;color:#fff;font-size:.85rem">L</div>
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:{INK};font-size:.85rem;letter-spacing:.5px">LUMIO ENGLISH</div>
       </div>
-      <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:{CARD_TEXT if False else INK};font-size:.95rem;background:rgba(255,255,255,.06);
+      <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:{CARD_TEXT if False else INK};font-size:.95rem;background:rgba(139,92,246,.14);
                   padding:6px 16px;border-radius:8px">{esc(pagetitle)}</div>
       <div style="font-family:'Nunito',sans-serif;font-weight:800;color:{INK_DIM};font-size:.8rem">{n} / {total}</div>
     </div>
     <div style="position:relative;z-index:5;margin:14px 40px 0;height:3px;background:{BORDER};border-radius:2px">
-      <div style="height:100%;width:{pct}%;background:linear-gradient(90deg,{ORANGE},{TEAL});border-radius:2px"></div>
+      <div style="height:100%;width:{pct}%;background:linear-gradient(90deg,{PURPLE},{ORANGE});border-radius:2px"></div>
     </div>'''
 
 def card_open(width=None, extra=""):
@@ -83,7 +85,7 @@ def slide_title(lesson, num_words):
     return f'''{bg_base()}
     <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;z-index:5">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
-        <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,{ORANGE},{ORANGE_DEEP});
+        <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,{PURPLE},{PURPLE_DEEP});
                     display:flex;align-items:center;justify-content:center;font-weight:800;font-family:'Fredoka',sans-serif;color:#fff;font-size:1.3rem">L</div>
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:{INK};font-size:1.1rem;letter-spacing:1px">LUMIO ENGLISH</div>
       </div>

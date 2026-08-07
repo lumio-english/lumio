@@ -1,54 +1,59 @@
-<div class="wall"></div><div class="teal-band"></div><div class="window"><div class="cross-v"></div><div class="cross-h"></div></div><div class="spark" style="left:375px;top:135px;font-size:1.6rem">&#10022;</div><div class="spark" style="left:415px;top:105px;font-size:1.1rem">&#10022;</div><div class="spark" style="left:392px;top:178px;font-size:1.3rem">&#10022;</div><div class="header">
-      <div class="brand"><img src="assets/logo/lumio-logo.png"><div class="name">Lumio<small>ENGLISH</small></div></div>
-      <div class="pagetitle">Quick Recap &bull; Do you remember?</div>
-      <div class="counter">4 / 27</div>
-    </div><div class="colorstrip"><div class="c1"></div><div class="c2"></div><div class="c3"></div><div class="c4"></div><div class="c5"></div></div>
-    <div style="position:absolute;left:0;right:0;top:190px;display:flex;justify-content:center;gap:28px">
-        <button onclick="this.querySelector('.recap-answer').style.display='flex';
-                       this.querySelector('.recap-question').style.display='none';
-                       typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('cash')" style="border:none;cursor:pointer;font-family:inherit;width:230px;height:270px;
-                    background:#fff;border-radius:22px;box-shadow:0 14px 28px rgba(67,48,31,.18);padding:18px;
-                    display:flex;flex-direction:column;align-items:center;position:relative">
-          <div style="width:100%;height:150px;border-radius:16px;overflow:hidden;background:#FFFCF6;border:4px solid #FFE0B8;margin-bottom:12px"><img src="assets/vocab/cash.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-          <div class="recap-question" style="display:flex;flex-direction:column;align-items:center;gap:6px">
-            <div style="font-size:.75rem;font-weight:800;color:#F97316;letter-spacing:1px">TAP TO REMEMBER</div>
-            <div style="font-size:1.6rem">&#129300;</div>
-          </div>
-          <div class="recap-answer" style="display:none;flex-direction:column;align-items:center;gap:4px">
-            <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;color:#43301F">cash</div>
-            <div style="color:#0D9488;font-weight:800;font-size:1rem">نقد</div>
-          </div>
-        </button>
-        <button onclick="this.querySelector('.recap-answer').style.display='flex';
-                       this.querySelector('.recap-question').style.display='none';
-                       typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('receipt')" style="border:none;cursor:pointer;font-family:inherit;width:230px;height:270px;
-                    background:#fff;border-radius:22px;box-shadow:0 14px 28px rgba(67,48,31,.18);padding:18px;
-                    display:flex;flex-direction:column;align-items:center;position:relative">
-          <div style="width:100%;height:150px;border-radius:16px;overflow:hidden;background:#FFFCF6;border:4px solid #FFE0B8;margin-bottom:12px"><img src="assets/vocab/receipt.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-          <div class="recap-question" style="display:flex;flex-direction:column;align-items:center;gap:6px">
-            <div style="font-size:.75rem;font-weight:800;color:#F97316;letter-spacing:1px">TAP TO REMEMBER</div>
-            <div style="font-size:1.6rem">&#129300;</div>
-          </div>
-          <div class="recap-answer" style="display:none;flex-direction:column;align-items:center;gap:4px">
-            <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;color:#43301F">receipt</div>
-            <div style="color:#0D9488;font-weight:800;font-size:1rem">إيصال</div>
-          </div>
-        </button>
-        <button onclick="this.querySelector('.recap-answer').style.display='flex';
-                       this.querySelector('.recap-question').style.display='none';
-                       typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('apples')" style="border:none;cursor:pointer;font-family:inherit;width:230px;height:270px;
-                    background:#fff;border-radius:22px;box-shadow:0 14px 28px rgba(67,48,31,.18);padding:18px;
-                    display:flex;flex-direction:column;align-items:center;position:relative">
-          <div style="width:100%;height:150px;border-radius:16px;overflow:hidden;background:#FFFCF6;border:4px solid #FFE0B8;margin-bottom:12px"><img src="assets/vocab/apples.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-          <div class="recap-question" style="display:flex;flex-direction:column;align-items:center;gap:6px">
-            <div style="font-size:.75rem;font-weight:800;color:#F97316;letter-spacing:1px">TAP TO REMEMBER</div>
-            <div style="font-size:1.6rem">&#129300;</div>
-          </div>
-          <div class="recap-answer" style="display:none;flex-direction:column;align-items:center;gap:4px">
-            <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;color:#43301F">apples</div>
-            <div style="color:#0D9488;font-weight:800;font-size:1rem">تفاح</div>
-          </div>
-        </button></div>
-    <div style="position:absolute;left:0;right:0;bottom:52px;text-align:center;font-family:'Baloo 2',sans-serif;
-                font-weight:700;font-size:1.05rem;color:#8A7160">From last lesson &mdash; tap each card to check!</div>
-    <div class="floorshadow" style="right:60px;bottom:243px;width:230px;height:36px"></div><img class="char" src="assets/story/characters/noor-think.png" style="right:60px;bottom:250px;height:200px">
+<div style="position:absolute;inset:0;background:linear-gradient(160deg,#2B1B52 0%,#1C1038 100%)"></div>
+    <div style="position:absolute;left:-120px;top:-120px;width:380px;height:380px;border-radius:50%;
+                background:radial-gradient(circle,rgba(139,92,246,.22),transparent 70%)"></div>
+    <div style="position:absolute;right:-100px;bottom:-100px;width:320px;height:320px;border-radius:50%;
+                background:radial-gradient(circle,rgba(20,184,166,.14),transparent 70%)"></div><div style="position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:22px 40px 0">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#8B5CF6,#7C3AED);
+                    display:flex;align-items:center;justify-content:center;font-weight:800;font-family:'Fredoka',sans-serif;color:#fff;font-size:.85rem">L</div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#EDE9FB;font-size:.85rem;letter-spacing:.5px">LUMIO ENGLISH</div>
+      </div>
+      <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#EDE9FB;font-size:.95rem;background:rgba(139,92,246,.14);
+                  padding:6px 16px;border-radius:8px">Quick Recap</div>
+      <div style="font-family:'Nunito',sans-serif;font-weight:800;color:#A79BD1;font-size:.8rem">4 / 27</div>
+    </div>
+    <div style="position:relative;z-index:5;margin:14px 40px 0;height:3px;background:#4A3B7A;border-radius:2px">
+      <div style="height:100%;width:15%;background:linear-gradient(90deg,#8B5CF6,#F97316);border-radius:2px"></div>
+    </div>
+    <div style="position:relative;z-index:5;display:flex;gap:20px;justify-content:center;margin-top:50px">
+      <button onclick="this.querySelector('.q').style.display='none'; this.querySelector('.a').style.display='flex';
+                       typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('cash')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#FFFFFF;border-radius:12px;padding:16px;width:190px;height:210px;
+                    display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 10px 22px rgba(0,0,0,.25)">
+        <div class="q" style="display:flex;flex-direction:column;align-items:center;gap:8px">
+          <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#A79BD1;font-size:.75rem;letter-spacing:1px">TAP TO CHECK</div>
+          <div style="font-size:1.4rem">?</div>
+        </div>
+        <div class="a" style="display:none;flex-direction:column;align-items:center;gap:4px">
+          <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.1rem;color:#2B2640">cash</div>
+          <div style="color:#0D9488;font-weight:800;font-size:.95rem">نقد</div>
+        </div>
+      </button>
+      <button onclick="this.querySelector('.q').style.display='none'; this.querySelector('.a').style.display='flex';
+                       typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('receipt')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#FFFFFF;border-radius:12px;padding:16px;width:190px;height:210px;
+                    display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 10px 22px rgba(0,0,0,.25)">
+        <div class="q" style="display:flex;flex-direction:column;align-items:center;gap:8px">
+          <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#A79BD1;font-size:.75rem;letter-spacing:1px">TAP TO CHECK</div>
+          <div style="font-size:1.4rem">?</div>
+        </div>
+        <div class="a" style="display:none;flex-direction:column;align-items:center;gap:4px">
+          <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.1rem;color:#2B2640">receipt</div>
+          <div style="color:#0D9488;font-weight:800;font-size:.95rem">إيصال</div>
+        </div>
+      </button>
+      <button onclick="this.querySelector('.q').style.display='none'; this.querySelector('.a').style.display='flex';
+                       typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('apples')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#FFFFFF;border-radius:12px;padding:16px;width:190px;height:210px;
+                    display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 10px 22px rgba(0,0,0,.25)">
+        <div class="q" style="display:flex;flex-direction:column;align-items:center;gap:8px">
+          <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#A79BD1;font-size:.75rem;letter-spacing:1px">TAP TO CHECK</div>
+          <div style="font-size:1.4rem">?</div>
+        </div>
+        <div class="a" style="display:none;flex-direction:column;align-items:center;gap:4px">
+          <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.1rem;color:#2B2640">apples</div>
+          <div style="color:#0D9488;font-weight:800;font-size:.95rem">تفاح</div>
+        </div>
+      </button></div>
+    <div style="position:relative;z-index:5;text-align:center;margin-top:24px;font-family:'Nunito',sans-serif;font-weight:700;color:#A79BD1;font-size:.9rem">From last lesson</div>
+    
