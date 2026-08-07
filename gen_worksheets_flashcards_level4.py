@@ -42,13 +42,17 @@ def vocab_image_path(en):
 def draw_worksheet(c, lesson, num):
     words = [w["en"] for w in lesson["vocab"]]
     y = PAGE_H - 56
+    import os as _os
+    logo_path = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "assets/logo/lumio-logo.png")
+    if _os.path.exists(logo_path):
+        c.drawImage(logo_path, 46, y - 34, width=34, height=34, mask="auto", preserveAspectRatio=True)
     c.setFillColorRGB(*ORANGE)
     c.setFont("Helvetica-Bold", 10)
-    c.drawString(46, y, f"{LEVEL.upper()} \u2022 Lesson {num}")
+    c.drawString(90, y, f"{LEVEL.upper()} \u2022 Lesson {num}")
     y -= 20
     c.setFillColorRGB(*INK)
     c.setFont("Helvetica-Bold", 15)
-    c.drawString(46, y, "Lumio English")
+    c.drawString(90, y, "Lumio English")
     y -= 26
     c.setFont("Helvetica-Bold", 20)
     c.drawString(46, y, lesson["title"])
