@@ -286,6 +286,74 @@ def slide_your_turn_listen_first(w, idx, total_rounds, n, total, ch):
             font-size:1.02rem;box-shadow:0 8px 18px rgba(249,115,22,.35)">&#128064; Reveal picture</button>
     ''' + char_img(ch, bottom=32, height=250))
 
+def slide_quick_check(target, distractors, idx, total_q, n, total, seed, tier="preA"):
+    """Age-calibrated live practice, one tier per Junior level:
+    - preA (4-5yo, pre-literacy): 2 big picture choices, no text at all,
+      minimal cognitive load, pure picture recognition
+    - level1 (5-6yo, beginning literacy): 3 choices, picture + word
+      together, reinforces letter/word recognition
+    - level2 (6-7yo, developing reader): 4 choices, word only, matches
+      the standard quiz mechanic (they're ready for it by now)"""
+    n_opts = {"preA": 2, "level1": 3, "level2": 4}.get(tier, 4)
+    opts = (distractors[:n_opts - 1] + [target])
+    random.Random(seed).shuffle(opts)
+
+    if tier == "preA":
+        # two large picture-only cards, side by side, no reading required
+        positions = [(500, 260), (860, 260)]
+        buttons = ""
+        for o, (l, t) in zip(opts, positions):
+            buttons += f'''
+          <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{esc(o["en"])}', '{esc(target["en"])}')"
+                  style="position:absolute;left:{l}px;top:{t}px;width:220px;height:220px;background:#fff;border:3px solid #F0E9DD;border-radius:20px;
+                      padding:10px;cursor:pointer" data-quiz-option="{esc(o["en"])}">
+            <img src="assets/vocab/{slug(o['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
+          </button>'''
+        prompt = "Which one is it?"
+    elif tier == "level1":
+        positions = [(560, 230), (790, 230), (1020, 230)]
+        buttons = ""
+        for o, (l, t) in zip(opts, positions):
+            buttons += f'''
+          <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{esc(o["en"])}', '{esc(target["en"])}')"
+                  style="position:absolute;left:{l}px;top:{t}px;width:180px;height:210px;background:#fff;border:3px solid #F0E9DD;border-radius:16px;
+                      padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px" data-quiz-option="{esc(o["en"])}">
+            <div style="width:100%;height:140px"><img src="assets/vocab/{slug(o['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+            <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1rem;color:#43301F">{esc(o["en"])}</div>
+          </button>'''
+        prompt = "Which word matches the picture?"
+    else:
+        positions = [(610, 260), (890, 260), (610, 364), (890, 364)]
+        buttons = ""
+        for o, (l, t) in zip(opts, positions):
+            buttons += f'''
+          <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{esc(o["en"])}', '{esc(target["en"])}')"
+                  style="position:absolute;left:{l}px;top:{t}px;width:260px;height:84px;background:#fff;border:2.5px solid #F0E9DD;border-radius:16px;
+                      display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.25rem;
+                      color:#43301F;cursor:pointer" data-quiz-option="{esc(o["en"])}">{esc(o["en"])}</button>'''
+        prompt = "What is this?"
+
+    img_block = "" if tier == "preA" else f'''<div class="card" style="position:absolute;left:280px;top:190px;width:280px;height:280px;overflow:hidden;padding:0">
+      <img src="assets/vocab/{slug(target['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>'''
+    prompt_pos = "left:280px;top:200px;width:600px;text-align:center" if tier == "preA" else "left:610px;top:190px;width:540px"
+    return (bg_plain() + header(f"Quick Check &bull; {idx}", n, total) + COLORSTRIP + f'''
+    {img_block}
+    <div style="position:absolute;{prompt_pos};font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.9rem;color:#43301F">{prompt}</div>
+    {buttons}
+    ''')
+
+def slide_tpr_activity(instruction, n, total, ch):
+    """Total Physical Response activity -- teacher-led, no reading or
+    clicking required. Appropriate for pre-literacy Pre-A students who
+    can't yet do text-based practice; builds the same vocabulary
+    through movement and pointing instead."""
+    return (bg_study() + header("Let's Move!", n, total) + COLORSTRIP + f'''
+    <div style="position:absolute;left:0;right:0;top:220px;text-align:center">
+      <div style="font-size:2.4rem;margin-bottom:20px">&#129323;</div>
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2rem;color:#43301F;padding:0 100px">{instruction}</div>
+    </div>
+    ''' + char_img(ch, bottom=42, height=280))
+
 def slide_quiz(target, distractors, idx, total_q, n, total, seed):
     opts = distractors + [target]
     random.Random(seed).shuffle(opts)
@@ -424,14 +492,17 @@ def slide_reward_homework(lesson_num, n, total):
     </div>''')
 
 
-def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic=None, has_phonics=True):
+def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic=None, has_phonics=True, level="pre-a"):
     V = len(lesson["vocab"])
+    tier = "preA" if level == "pre-a" else ("level1" if level == "level1" else "level2")
     plan = [("title", None), ("lets_learn", None), ("unscramble", lesson["vocab"][0])]
     if prev_lesson:
         plan.append(("recap", None))
     if phonics_unit:
         plan.append(("phonics_rule", phonics_unit))
         plan.append(("phonics_practice", phonics_unit))
+    if tier == "preA":
+        plan.append(("tpr", f"Stand up! Show me something that is a {esc(lesson['vocab'][0]['en'])}!"))
     for i, w in enumerate(lesson["vocab"]):
         plan.append(("vocab", (w, i)))
         plan.append(("practice_phonics", (w, i)))
@@ -441,9 +512,21 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
     plan.append(("dialogue", None))
     plan.append(("sentence", None))
     plan.append(("sound_spot", None))
+    if tier == "preA" and V > 1:
+        plan.append(("tpr", f"Point to your {esc(lesson['vocab'][1]['en'])}! Can you find it?"))
+    if tier == "preA" and V > 2:
+        plan.append(("tpr", f"Can you find something that is {esc(lesson['vocab'][2]['en'])}? Show me!"))
     your_turn_n = min(2, V)
     for i in range(your_turn_n):
         plan.append(("your_turn", (lesson["vocab"][i], i + 1)))
+    # Quick Check: live, age-calibrated in-class practice -- one round per
+    # vocab word (two rounds for Pre-A, since young pre-literacy learners
+    # benefit from more repetition, and smaller vocab lists need the extra
+    # coverage to fill a full class period anyway)
+    rounds = 3 if (tier == "preA" and V <= 4) else 2
+    for r in range(rounds):
+        for i in range(V):
+            plan.append(("quick_check", (i, r)))
     plan.append(("quiz", 1))
     plan.append(("quiz", 2))
     plan.append(("today_i_learned", None))
@@ -457,6 +540,13 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
         elif kind == "lets_learn": slides.append(slide_lets_learn(lesson, n, total, V))
         elif kind == "unscramble": slides.append(slide_unscramble(data, n, total, "lumi-wave-book"))
         elif kind == "recap": slides.append(slide_recap(prev_lesson["vocab"], n, total))
+        elif kind == "tpr": slides.append(slide_tpr_activity(data, n, total, "omar-wave"))
+        elif kind == "quick_check":
+            i, r = data
+            target = lesson["vocab"][i]
+            distractors = [x for x in lesson["vocab"] if x["en"] != target["en"]][:3]
+            label = f"{i + 1}/{V}" if r == 0 else f"{i + 1}/{V} &bull; Round {r + 1}"
+            slides.append(slide_quick_check(target, distractors, label, V, n, total, lesson_num * 11 + i + n, tier=tier))
         elif kind == "phonics_rule": slides.append(slide_phonics_rule(data, n, total, "sara-explain"))
         elif kind == "phonics_practice": slides.append(slide_phonics_practice(data, n, total, "sara-clap"))
         elif kind == "grammar_rule":
@@ -509,7 +599,7 @@ def run(level, dialogues, phonics_units=None, grammar_units=None, has_phonics=Tr
     for num in sorted(lessons):
         lesson = lessons[num]
         prev_lesson = lessons.get(num - 1)
-        slides = build_deck(num, lesson, prev_lesson, phonics_units.get(num), grammar_units.get(num), has_phonics)
+        slides = build_deck(num, lesson, prev_lesson, phonics_units.get(num), grammar_units.get(num), has_phonics, level)
         nn = f"{num:02d}"
         lesson_dir = os.path.join(out_dir, nn)
         os.makedirs(lesson_dir, exist_ok=True)
