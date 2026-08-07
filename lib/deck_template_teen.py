@@ -81,7 +81,7 @@ VOCAB_CHARS = ["omar-wave", "noor-happy", "sara-clap", "omar-point", "noor-wave"
 
 # ============================================================
 def slide_title(lesson, num_words):
-    subtitle = " &middot; ".join(esc(v["en"]) for v in lesson["vocab"])
+    subtitle = " · ".join(esc(v["en"]) for v in lesson["vocab"])
     return f'''{bg_base()}
     <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;z-index:5">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
@@ -101,7 +101,7 @@ def slide_goal(lesson, n, total, num_words):
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:{ORANGE_DEEP};font-size:.78rem;letter-spacing:1.5px;margin-bottom:10px">GOAL</div>
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.3rem;color:{CARD_TEXT};line-height:1.4">{esc(lesson.get("goal",""))}</div>
         <div style="margin-top:16px;display:inline-block;background:#F1F5F9;color:{CARD_TEXT};font-weight:700;font-size:.82rem;padding:6px 14px;border-radius:8px">
-          {num_words} words &middot; {esc(lesson.get("grammarFocus",""))}</div>
+          {num_words} words · {esc(lesson.get("grammarFocus",""))}</div>
       </div>
       {card_open(300, "padding:30px 34px")}
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:{TEAL_DEEP};font-size:.78rem;letter-spacing:1.5px;margin-bottom:10px">WARM-UP</div>
@@ -118,7 +118,7 @@ def slide_unscramble(word, n, total, ch):
     tiles = "".join(f'''<div style="width:50px;height:50px;border-radius:10px;display:flex;align-items:center;justify-content:center;
                   font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.3rem;color:#fff;background:{colors[i % len(colors)]}">{letters[order[i]].upper()}</div>'''
                  for i in range(len(order)))
-    return (bg_base() + header("Warm-Up &middot; Unscramble", n, total) + f'''
+    return (bg_base() + header("Warm-Up · Unscramble", n, total) + f'''
     <div style="position:relative;z-index:5;text-align:center;margin-top:50px;font-family:'Nunito',sans-serif;font-weight:700;color:{INK_DIM}">
       Guess the word before you reveal it.</div>
     <div style="position:relative;z-index:5;display:flex;gap:10px;justify-content:center;margin-top:26px">{tiles}</div>
@@ -155,7 +155,7 @@ def slide_recap(prev_words, n, total):
 
 def slide_vocab(w, idx, n, total, num_words, ch):
     quote = w.get("example", w["en"])
-    return (bg_base() + header(f"Vocabulary &middot; {esc(w['en'])}", n, total) + f'''
+    return (bg_base() + header(f"Vocabulary · {esc(w['en'])}", n, total) + f'''
     <div style="position:relative;z-index:5;display:flex;gap:22px;padding:44px 40px 0">
       {card_open(410, "padding:20px;text-align:center")}
         <div style="width:100%;aspect-ratio:1/1;border-radius:10px;overflow:hidden;background:#F8FAFC">
@@ -186,7 +186,7 @@ def discussion_question(word, seed):
 def slide_practice(w, n, total, ch, seed=0):
     quote = w.get("example", w["en"])
     question = discussion_question(w["en"], seed)
-    return (bg_base() + header(f"Practice &middot; {esc(w['en'])}", n, total) + f'''
+    return (bg_base() + header(f"Practice · {esc(w['en'])}", n, total) + f'''
     <div style="position:relative;z-index:5;display:flex;gap:22px;padding:50px 40px 0">
       {card_open(260, "padding:0;overflow:hidden;height:260px")}<img src="assets/vocab/{slug(w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
       {card_open(560, "padding:30px 34px")}
@@ -267,7 +267,7 @@ def slide_sound_spot(vocab, n, total, ch):
     ''')
 
 def slide_your_turn(w, idx, total_rounds, n, total, ch):
-    return (bg_base() + header(f"Your Turn &middot; {idx}/{total_rounds}", n, total) + f'''
+    return (bg_base() + header(f"Your Turn · {idx}/{total_rounds}", n, total) + f'''
     <div style="position:relative;z-index:5;display:flex;align-items:center;justify-content:center;gap:36px;margin-top:60px">
       {card_open(280, f"height:280px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;background:#232038")}
         <div id="ytMystery{idx}" style="font-size:3.2rem">&#128266;</div>
@@ -297,7 +297,7 @@ def slide_quiz(target, distractors, idx, total_q, n, total, seed):
               style="position:absolute;left:{l}px;top:{t}px;width:250px;height:76px;background:{CARD_BG};border:1px solid #EEF0F4;border-radius:10px;
                   display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.05rem;
                   color:{CARD_TEXT};cursor:pointer" data-quiz-option="{esc(o["en"])}">{esc(o["en"])}</button>'''
-    return (bg_base() + header(f"Quiz &middot; {idx}/{total_q}", n, total) + f'''
+    return (bg_base() + header(f"Quiz · {idx}/{total_q}", n, total) + f'''
     {card_open(260, "position:absolute;left:60px;top:200px;height:260px;overflow:hidden;padding:0")}<img src="assets/vocab/{slug(target['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
     <div style="position:absolute;left:600px;top:150px;font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.5rem;color:{INK}">What is this?</div>
     {buttons}
@@ -319,6 +319,127 @@ def slide_today_i_learned(lesson, n, total):
       </div>
     </div>
     ''')
+
+# ---------- Reading Adventure: procedural/narrative reading-comprehension slides ----------
+def slide_reading_warmup(prediction_q, n, total, ch):
+    return (bg_base() + header("Warm-Up", n, total) + f'''
+    <div style="position:relative;z-index:5;display:flex;justify-content:center;margin-top:70px">
+      {card_open(700, "padding:40px 44px;text-align:center")}
+        <div style="font-size:2.2rem;margin-bottom:16px">&#129300;</div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.3rem;color:{CARD_TEXT}">{esc(prediction_q)}</div>
+      </div>
+    </div>
+    ''' + char_badge(ch))
+
+def slide_reading_intro(intro_text, discussion_q, n, total, ch):
+    return (bg_base() + header("Let's Read", n, total) + f'''
+    <div style="position:relative;z-index:5;display:flex;justify-content:center;margin-top:60px">
+      {card_open(760, "padding:36px 40px")}
+        <div style="font-family:'Nunito',sans-serif;font-size:1.1rem;color:{CARD_TEXT};line-height:1.7;margin-bottom:20px">{esc(intro_text)}</div>
+        <div style="display:flex;align-items:center;gap:10px;background:#F1F5F9;border-radius:10px;padding:12px 16px">
+          <span style="font-size:1.1rem">&#128172;</span>
+          <div style="font-size:.85rem;color:{CARD_TEXT};font-weight:700">DISCUSS: {esc(discussion_q)}</div>
+        </div>
+      </div>
+    </div>
+    ''' + char_badge(ch))
+
+def slide_reading_passage(text, question, chunk_label, n, total):
+    return (bg_base() + header(f"Reading · {esc(chunk_label)}", n, total) + f'''
+    <div style="position:relative;z-index:5;display:flex;justify-content:center;margin-top:60px">
+      {card_open(760, "padding:36px 40px")}
+        <div style="font-family:'Nunito',sans-serif;font-size:1.15rem;color:{CARD_TEXT};line-height:1.8;margin-bottom:22px">{text}</div>
+        <div style="display:flex;align-items:center;gap:10px;background:#F1F5F9;border-radius:10px;padding:12px 16px">
+          <span style="font-size:1.1rem">&#10067;</span>
+          <div style="font-size:.85rem;color:{CARD_TEXT};font-weight:700">{esc(question)}</div>
+        </div>
+      </div>
+    </div>
+    ''')
+
+def slide_writing_prep(prompt, bullets, n, total):
+    bullet_html = "".join(f'<li style="margin-bottom:8px">{esc(b)}</li>' for b in bullets)
+    return (bg_base() + header("Writing Preparation", n, total) + f'''
+    <div style="position:relative;z-index:5;display:flex;justify-content:center;margin-top:60px">
+      {card_open(700, "padding:36px 40px")}
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.2rem;color:{CARD_TEXT};margin-bottom:16px">{esc(prompt)}</div>
+        <ul style="font-family:'Nunito',sans-serif;font-size:1rem;color:{CARD_TEXT};padding-left:20px">{bullet_html}</ul>
+        <div style="font-size:.82rem;color:#6B6580;font-weight:700;margin-top:10px">Talk it through out loud before you write.</div>
+      </div>
+    </div>
+    ''')
+
+def slide_writing_project(prompt, starters, n, total):
+    starter_html = "".join(f'<div style="background:#F1F5F9;border-radius:10px;padding:10px 14px;margin-bottom:8px;font-weight:700;color:{CARD_TEXT}">{esc(s)}</div>' for s in starters)
+    return (bg_base() + header("Writing Project", n, total) + f'''
+    <div style="position:relative;z-index:5;display:flex;justify-content:center;margin-top:60px">
+      {card_open(700, "padding:36px 40px")}
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.2rem;color:{CARD_TEXT};margin-bottom:16px">{esc(prompt)}</div>
+        {starter_html}
+        <div style="font-size:.82rem;color:#6B6580;font-weight:700;margin-top:10px">Write your passage after class.</div>
+      </div>
+    </div>
+    ''')
+
+
+def build_reading_adventure_deck(lesson_num, lesson, grammar_topic, story):
+    """story = {prediction_q, intro, intro_q, passages: [{text, question, label}],
+                post_q, writing_prep: {prompt, bullets}, writing_project: {prompt, starters}}"""
+    V = len(lesson["vocab"])
+    plan = [("title", None), ("goal", None), ("warmup", None)]
+    for i, w in enumerate(lesson["vocab"]):
+        plan.append(("vocab", (w, i)))
+        plan.append(("practice", (w, i)))
+    if grammar_topic:
+        plan.append(("grammar_rule", grammar_topic))
+        plan.append(("grammar_practice", grammar_topic))
+    plan.append(("reading_intro", None))
+    for idx, p in enumerate(story["passages"]):
+        plan.append(("reading_passage", (p, idx + 1, len(story["passages"]))))
+    plan.append(("writing_prep", None))
+    plan.append(("writing_project", None))
+    plan.append(("quiz", 1))
+    plan.append(("quiz", 2))
+    plan.append(("today_i_learned", None))
+    plan.append(("reward_homework", None))
+
+    total = len(plan)
+    slides = []
+    for pos, (kind, data) in enumerate(plan):
+        n = pos + 1
+        if kind == "title": slides.append(slide_title(lesson, V))
+        elif kind == "goal": slides.append(slide_goal(lesson, n, total, V))
+        elif kind == "warmup": slides.append(slide_reading_warmup(story["prediction_q"], n, total, "lumi-wave-book"))
+        elif kind == "grammar_rule":
+            slides.append(grammar_slides.slide_grammar_rule(data, n, total, "sara-explain", header, "", bg_base, lambda ch, **kw: char_badge(ch)))
+        elif kind == "grammar_practice":
+            slides.append(grammar_slides.slide_grammar_practice(data, n, total, "sara-clap", header, "", bg_base, lambda ch, **kw: char_badge(ch)))
+        elif kind == "vocab":
+            w, i = data
+            slides.append(slide_vocab(w, i, n, total, V, VOCAB_CHARS[i % len(VOCAB_CHARS)]))
+        elif kind == "practice":
+            w, i = data
+            slides.append(slide_practice(w, n, total, VOCAB_CHARS[i % len(VOCAB_CHARS)], seed=i))
+        elif kind == "reading_intro":
+            slides.append(slide_reading_intro(story["intro"], story["intro_q"], n, total, "noor-happy"))
+        elif kind == "reading_passage":
+            p, idx, tot = data
+            slides.append(slide_reading_passage(p["text"], p["question"], p["label"], n, total))
+        elif kind == "writing_prep":
+            slides.append(slide_writing_prep(story["writing_prep"]["prompt"], story["writing_prep"]["bullets"], n, total))
+        elif kind == "writing_project":
+            slides.append(slide_writing_project(story["writing_project"]["prompt"], story["writing_project"]["starters"], n, total))
+        elif kind == "today_i_learned":
+            slides.append(slide_today_i_learned(lesson, n, total))
+        elif kind == "quiz":
+            idx = data
+            target = lesson["vocab"][1 if idx == 1 else min(3, V - 1)]
+            distractors = [x for x in lesson["vocab"] if x["en"] != target["en"]][:3]
+            slides.append(slide_quiz(target, distractors, idx, 2, n, total, lesson_num * 7 + idx))
+        elif kind == "reward_homework":
+            slides.append(slide_reward_homework(lesson_num, n, total, V * 10))
+    return slides
+
 
 def slide_reward_homework(lesson_num, n, total, xp):
     items = ["Replay this lesson", "Finish your homework", "Practice with a friend or family member"]
