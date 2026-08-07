@@ -38,12 +38,37 @@ def esc(s):
 def slug(w):
     return w.lower().replace("'", "").replace(" ", "-")
 
-def bg_base():
+DOT_GRID = '''<svg style="position:absolute;inset:0;width:100%;height:100%;opacity:.35" xmlns="http://www.w3.org/2000/svg">
+  <defs><pattern id="dotgrid" width="28" height="28" patternUnits="userSpaceOnUse">
+    <circle cx="2" cy="2" r="1.4" fill="rgba(237,233,251,.16)"/>
+  </pattern></defs>
+  <rect width="100%" height="100%" fill="url(#dotgrid)"/></svg>'''
+
+def bg_base(variant="default"):
+    blobs = {
+        "default": f'''
+        <div style="position:absolute;left:-120px;top:-120px;width:380px;height:380px;border-radius:50%;
+                    background:radial-gradient(circle,rgba(139,92,246,.24),transparent 70%)"></div>
+        <div style="position:absolute;right:-100px;bottom:-100px;width:320px;height:320px;border-radius:50%;
+                    background:radial-gradient(circle,rgba(20,184,166,.15),transparent 70%)"></div>''',
+        "reading": f'''
+        <div style="position:absolute;right:-140px;top:-100px;width:420px;height:420px;border-radius:50%;
+                    background:radial-gradient(circle,rgba(139,92,246,.26),transparent 70%)"></div>
+        <div style="position:absolute;left:-100px;bottom:-140px;width:360px;height:360px;border-radius:50%;
+                    background:radial-gradient(circle,rgba(249,115,22,.12),transparent 70%)"></div>''',
+        "warm": f'''
+        <div style="position:absolute;left:50%;top:-160px;transform:translateX(-50%);width:520px;height:420px;border-radius:50%;
+                    background:radial-gradient(circle,rgba(249,115,22,.18),transparent 70%)"></div>
+        <div style="position:absolute;right:-100px;bottom:-100px;width:300px;height:300px;border-radius:50%;
+                    background:radial-gradient(circle,rgba(139,92,246,.2),transparent 70%)"></div>''',
+    }
+    # thin diagonal accent line for depth, subtle, doesn't collide with centered content
+    diagonal = '''<div style="position:absolute;left:0;top:38%;width:100%;height:1px;
+                  background:linear-gradient(90deg,transparent,rgba(237,233,251,.08),transparent)"></div>'''
     return f'''<div style="position:absolute;inset:0;background:linear-gradient(160deg,{BG_DARK} 0%,{BG_DARKER} 100%)"></div>
-    <div style="position:absolute;left:-120px;top:-120px;width:380px;height:380px;border-radius:50%;
-                background:radial-gradient(circle,rgba(139,92,246,.22),transparent 70%)"></div>
-    <div style="position:absolute;right:-100px;bottom:-100px;width:320px;height:320px;border-radius:50%;
-                background:radial-gradient(circle,rgba(20,184,166,.14),transparent 70%)"></div>'''
+    {DOT_GRID}
+    {blobs.get(variant, blobs["default"])}
+    {diagonal}'''
 
 def header(pagetitle, n, total):
     pct = round(n / total * 100)
@@ -54,7 +79,7 @@ def header(pagetitle, n, total):
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:{INK};font-size:.85rem;letter-spacing:.5px">LUMIO ENGLISH</div>
       </div>
       <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:{CARD_TEXT if False else INK};font-size:.95rem;background:rgba(139,92,246,.14);
-                  padding:6px 16px;border-radius:8px">{esc(pagetitle)}</div>
+                  padding:6px 16px;border-radius:8px">{pagetitle}</div>
       <div style="font-family:'Nunito',sans-serif;font-weight:800;color:{INK_DIM};font-size:.8rem">{n} / {total}</div>
     </div>
     <div style="position:relative;z-index:5;margin:14px 40px 0;height:3px;background:{BORDER};border-radius:2px">
@@ -80,19 +105,35 @@ def xp_pill(xp, extra_style=""):
 VOCAB_CHARS = ["omar-wave", "noor-happy", "sara-clap", "omar-point", "noor-wave"]
 
 # ============================================================
-def slide_title(lesson, num_words):
+def slide_title(lesson, num_words, lesson_type="VOCABULARY & GRAMMAR"):
     subtitle = " · ".join(esc(v["en"]) for v in lesson["vocab"])
     return f'''{bg_base()}
     <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;z-index:5">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
         <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,{PURPLE},{PURPLE_DEEP});
                     display:flex;align-items:center;justify-content:center;font-weight:800;font-family:'Fredoka',sans-serif;color:#fff;font-size:1.3rem">L</div>
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:{INK};font-size:1.1rem;letter-spacing:1px">LUMIO ENGLISH</div>
       </div>
+      <div style="background:rgba(139,92,246,.18);border:1px solid rgba(139,92,246,.4);color:{INK};font-family:'Fredoka',sans-serif;
+                  font-weight:600;font-size:.72rem;letter-spacing:1.5px;padding:5px 16px;border-radius:999px;margin-bottom:16px">{lesson_type}</div>
       <h1 style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:3.1rem;color:#fff;margin:0 0 14px">{esc(lesson["title"])}</h1>
       <div style="font-family:'Nunito',sans-serif;font-weight:700;color:{INK_DIM};font-size:1.05rem;margin-bottom:22px">{subtitle}</div>
       {xp_pill(num_words * 10)}
     </div>'''
+
+def slide_are_you_ready(n, total, ch):
+    return (bg_base("warm") + f'''
+    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:5;text-align:center">
+      <h2 style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:2.4rem;color:#fff;margin:0 0 30px">Are You Ready?</h2>
+      <div style="display:flex;align-items:center;gap:36px">
+        <div style="background:rgba(20,184,166,.16);border:1px solid rgba(20,184,166,.4);border-radius:12px;padding:14px 24px;
+                    font-family:'Fredoka',sans-serif;font-weight:600;color:{INK};font-size:1.05rem">&#128064; Look at me.</div>
+        <img src="{CHAR}/{ch}.png" style="height:200px">
+        <div style="background:rgba(139,92,246,.18);border:1px solid rgba(139,92,246,.4);border-radius:12px;padding:14px 24px;
+                    font-family:'Fredoka',sans-serif;font-weight:600;color:{INK};font-size:1.05rem">&#128266; Listen to me.</div>
+      </div>
+    </div>
+    ''')
 
 def slide_goal(lesson, n, total, num_words):
     return (bg_base() + header("Today's Goal", n, total) + f'''
@@ -382,20 +423,91 @@ def slide_writing_project(prompt, starters, n, total):
     ''')
 
 
+def slide_grammar_extension(prompt, n, total, ch):
+    return (bg_base() + header("Use It In Your Life", n, total) + f'''
+    <div style="position:relative;z-index:5;display:flex;justify-content:center;margin-top:70px">
+      {card_open(680, "padding:38px 42px;text-align:center")}
+        <div style="font-size:1.8rem;margin-bottom:14px">&#127775;</div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.15rem;color:{CARD_TEXT}">{esc(prompt)}</div>
+      </div>
+    </div>
+    ''' + char_badge(ch))
+
+def slide_picture_recall(sentence_parts, n, total):
+    """sentence_parts: list of {'text': str} or {'word': str} (word -> shown as an image blank)"""
+    parts_html = ""
+    for p in sentence_parts:
+        if "word" in p:
+            parts_html += f'''<span style="display:inline-flex;flex-direction:column;align-items:center;margin:0 6px;vertical-align:middle">
+              <span style="width:56px;height:56px;border-radius:8px;overflow:hidden;background:#F1F5F9;display:block">
+                <img src="assets/vocab/{slug(p["word"])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></span>
+            </span>'''
+        else:
+            parts_html += f'<span style="font-size:1.1rem;color:{CARD_TEXT}">{esc(p["text"])}</span>'
+    return (bg_base("reading") + header("Picture Recall", n, total) + f'''
+    <div style="position:relative;z-index:5;display:flex;justify-content:center;margin-top:70px">
+      {card_open(760, "padding:40px 44px")}
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.95rem;color:#6B6580;margin-bottom:20px">Use the pictures to retell the story out loud.</div>
+        <div style="line-height:2.6">{parts_html}</div>
+      </div>
+    </div>
+    ''')
+
+def slide_spot_grammar(sentences, target_note, n, total):
+    """sentences: list of {'text': str, 'has_target': bool}"""
+    rows = ""
+    for i, s in enumerate(sentences):
+        rows += f'''<button onclick="this.classList.toggle('spotted'); this.style.borderColor = this.classList.contains('spotted') ? '{PURPLE}' : '#EEF0F4'; this.style.background = this.classList.contains('spotted') ? 'rgba(139,92,246,.08)' : '#fff'"
+                style="display:block;width:100%;text-align:left;border:2px solid #EEF0F4;background:#fff;border-radius:10px;padding:12px 16px;margin-bottom:10px;
+                       font-family:'Nunito',sans-serif;font-weight:700;color:{CARD_TEXT};cursor:pointer;font-size:1rem">{esc(s["text"])}</button>'''
+    return (bg_base("reading") + header("Spot the Grammar", n, total) + f'''
+    <div style="position:relative;z-index:5;display:flex;justify-content:center;margin-top:50px">
+      {card_open(760, "padding:34px 40px")}
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.05rem;color:{CARD_TEXT};margin-bottom:4px">Tap every sentence that uses {esc(target_note)}.</div>
+        <div style="font-size:.82rem;color:#6B6580;font-weight:700;margin-bottom:18px">Tap again to un-select.</div>
+        {rows}
+      </div>
+    </div>
+    ''')
+
+def slide_comprehension_wrapup(questions, n, total):
+    rows = "".join(f'''<div style="display:flex;align-items:flex-start;gap:10px;padding:9px 0">
+        <span style="width:24px;height:24px;border-radius:6px;background:rgba(139,92,246,.16);color:{PURPLE_DEEP};font-weight:800;
+                     display:flex;align-items:center;justify-content:center;font-size:.78rem;flex-shrink:0;margin-top:2px">{i+1}</span>
+        <span style="font-family:'Nunito',sans-serif;font-weight:700;color:{CARD_TEXT};font-size:1rem">{esc(q)}</span>
+      </div>''' for i, q in enumerate(questions))
+    return (bg_base("reading") + header("What Do You Remember?", n, total) + f'''
+    <div style="position:relative;z-index:5;display:flex;justify-content:center;margin-top:55px">
+      {card_open(720, "padding:34px 40px")}
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.05rem;color:{CARD_TEXT};margin-bottom:14px">Answer out loud, in your own words.</div>
+        {rows}
+      </div>
+    </div>
+    ''')
+
+
 def build_reading_adventure_deck(lesson_num, lesson, grammar_topic, story):
     """story = {prediction_q, intro, intro_q, passages: [{text, question, label}],
                 post_q, writing_prep: {prompt, bullets}, writing_project: {prompt, starters}}"""
     V = len(lesson["vocab"])
-    plan = [("title", None), ("goal", None), ("warmup", None)]
+    plan = [("title", None), ("are_you_ready", None), ("goal", None), ("warmup", None)]
     for i, w in enumerate(lesson["vocab"]):
         plan.append(("vocab", (w, i)))
         plan.append(("practice", (w, i)))
     if grammar_topic:
         plan.append(("grammar_rule", grammar_topic))
         plan.append(("grammar_practice", grammar_topic))
+        if story.get("grammar_extension"):
+            plan.append(("grammar_extension", story["grammar_extension"]))
+        if story.get("spot_grammar"):
+            plan.append(("spot_grammar", story["spot_grammar"]))
     plan.append(("reading_intro", None))
     for idx, p in enumerate(story["passages"]):
         plan.append(("reading_passage", (p, idx + 1, len(story["passages"]))))
+    if story.get("picture_recall"):
+        plan.append(("picture_recall", story["picture_recall"]))
+    if story.get("comprehension_qs"):
+        plan.append(("comprehension_wrapup", story["comprehension_qs"]))
     plan.append(("writing_prep", None))
     plan.append(("writing_project", None))
     plan.append(("quiz", 1))
@@ -407,13 +519,18 @@ def build_reading_adventure_deck(lesson_num, lesson, grammar_topic, story):
     slides = []
     for pos, (kind, data) in enumerate(plan):
         n = pos + 1
-        if kind == "title": slides.append(slide_title(lesson, V))
+        if kind == "title": slides.append(slide_title(lesson, V, "READING COMPREHENSION"))
+        elif kind == "are_you_ready": slides.append(slide_are_you_ready(n, total, "omar-wave"))
         elif kind == "goal": slides.append(slide_goal(lesson, n, total, V))
         elif kind == "warmup": slides.append(slide_reading_warmup(story["prediction_q"], n, total, "lumi-wave-book"))
         elif kind == "grammar_rule":
             slides.append(grammar_slides.slide_grammar_rule(data, n, total, "sara-explain", header, "", bg_base, lambda ch, **kw: char_badge(ch)))
         elif kind == "grammar_practice":
             slides.append(grammar_slides.slide_grammar_practice(data, n, total, "sara-clap", header, "", bg_base, lambda ch, **kw: char_badge(ch)))
+        elif kind == "grammar_extension":
+            slides.append(slide_grammar_extension(data, n, total, "sara-explain"))
+        elif kind == "spot_grammar":
+            slides.append(slide_spot_grammar(data["sentences"], data["note"], n, total))
         elif kind == "vocab":
             w, i = data
             slides.append(slide_vocab(w, i, n, total, V, VOCAB_CHARS[i % len(VOCAB_CHARS)]))
@@ -425,6 +542,10 @@ def build_reading_adventure_deck(lesson_num, lesson, grammar_topic, story):
         elif kind == "reading_passage":
             p, idx, tot = data
             slides.append(slide_reading_passage(p["text"], p["question"], p["label"], n, total))
+        elif kind == "picture_recall":
+            slides.append(slide_picture_recall(data, n, total))
+        elif kind == "comprehension_wrapup":
+            slides.append(slide_comprehension_wrapup(data, n, total))
         elif kind == "writing_prep":
             slides.append(slide_writing_prep(story["writing_prep"]["prompt"], story["writing_prep"]["bullets"], n, total))
         elif kind == "writing_project":

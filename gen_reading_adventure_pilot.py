@@ -14,7 +14,18 @@ L3_DIALOGUES = {
        ("Look at the zebra's stripes!", "انظر إلى خطوط الحمار الوحشي!"),
        ("These wild animals are not in cages here.", "هذه الحيوانات البرية ليست في أقفاص هنا.")],
 }
-L3_GRAMMAR = compute_grammar_lesson_map("level3")
+def find_grammar_topic_by_title(level, title_contains):
+    data = json.load(open(f"grammar-hub/{level}.json", encoding="utf-8"))
+    for t in data["topics"]:
+        if title_contains.lower() in t["title"].lower():
+            return t
+    return None
+
+# For Reading Adventure, the grammar slide should match what the story is
+# actually teaching, not the generic evenly-spaced position mapping (which
+# would show "Prepositions of Place" for Lesson 11 while the story is about
+# comparatives -- thematically broken for a "grammar taught through text" lesson).
+L3_GRAMMAR_TOPIC = find_grammar_topic_by_title("level3", "Comparatives")
 
 L3_STORY = {
   "prediction_q": "You're about to read about a day at the zoo. What animals do you think Omar and Noor will see?",
@@ -30,6 +41,29 @@ L3_STORY = {
     {"label": "Finally", "text": "<b>Finally</b>, Omar and Noor see the monkeys. The monkeys are wild and playful. They swing from tree to tree and make funny sounds.",
      "question": "What do the monkeys do in the trees?"},
   ],
+  "grammar_extension": "Think of two animals you know. Which one is bigger? Which one is smaller? Tell your teacher!",
+  "spot_grammar": {
+    "note": "a comparative (bigger than / smaller than)",
+    "sentences": [
+      {"text": "The tiger is bigger than the fox."},
+      {"text": "The giraffe eats leaves from tall trees."},
+      {"text": "The zebra is smaller than the tiger."},
+      {"text": "The monkeys swing from tree to tree."},
+      {"text": "An elephant is bigger than a zebra."},
+    ],
+  },
+  "picture_recall": [
+    {"text": "First, they see the "}, {"word": "giraffe"}, {"text": ". Next, the "},
+    {"word": "tiger"}, {"text": " is bigger than the "}, {"word": "fox"},
+    {"text": ". Then they see the "}, {"word": "zebra"}, {"text": ", and finally the "},
+    {"word": "monkey"}, {"text": "s."},
+  ],
+  "comprehension_qs": [
+    "Which animal did Omar and Noor see first?",
+    "Why is the giraffe's long neck useful?",
+    "Where does the zebra live at the zoo?",
+    "What do the monkeys like to do?",
+  ],
   "writing_prep": {"prompt": "Describe your favorite zoo animal.",
     "bullets": ["What does it look like?", "Where does it live?", "What sound does it make?"]},
   "writing_project": {"prompt": "Write a passage about your favorite zoo animal.",
@@ -42,7 +76,7 @@ L4_DIALOGUES = {
        ("Lumi wakes up happy and plays in the afternoon.", "يستيقظ لومي سعيدا ويلعب بعد الظهر."),
        ("And reads in the evening. What a nice day!", "ويقرأ في المساء. يا له من يوم لطيف!")],
 }
-L4_GRAMMAR = compute_grammar_lesson_map("level4")
+L4_GRAMMAR_TOPIC = None  # Lesson 19's own focus is "reading comprehension review", not a new grammar point
 
 L4_STORY = {
   "prediction_q": "You're about to read about a day in Lumi's life. What do you think Lumi does in the morning, afternoon, and evening?",
@@ -58,6 +92,18 @@ L4_STORY = {
     {"label": "Night", "text": "At night, Lumi reads a book before bed. She feels happy and sleepy. Soon, she falls asleep, ready for a new <b>day</b> tomorrow.",
      "question": "How does Lumi feel at night?"},
   ],
+  "picture_recall": [
+    {"text": "In the "}, {"word": "morning"}, {"text": ", Lumi wakes up "},
+    {"word": "happy"}, {"text": ". In the "}, {"word": "afternoon"},
+    {"text": ", she goes to school. In the "}, {"word": "evening"},
+    {"text": ", she shares her favorite "}, {"word": "story"}, {"text": " with her brother."},
+  ],
+  "comprehension_qs": [
+    "What does Lumi do first in the morning?",
+    "What does Lumi usually do before dinner?",
+    "Who does Lumi share her favorite story with?",
+    "How does Lumi feel at night, and why?",
+  ],
   "writing_prep": {"prompt": "Describe your typical day.",
     "bullets": ["What do you do in the morning?", "What do you do in the afternoon?", "How do you feel at the end of the day?"]},
   "writing_project": {"prompt": "Write a passage about your day.",
@@ -65,10 +111,10 @@ L4_STORY = {
 }
 
 
-def build_pilot(level, lesson_num, dialogues, grammar_map, story, out_ns):
+def build_pilot(level, lesson_num, dialogues, grammar_topic, story, out_ns):
     lesson = json.load(open(f"lessons/{level}/lesson{lesson_num:02d}.json", encoding="utf-8"))
     tpl.DIALOGUES = dialogues
-    slides = build_reading_adventure_deck(lesson_num, lesson, grammar_map.get(lesson_num), story)
+    slides = build_reading_adventure_deck(lesson_num, lesson, grammar_topic, story)
 
     out_dir = f"slide-content/{out_ns}/{lesson_num:02d}"
     os.makedirs(out_dir, exist_ok=True)
@@ -83,5 +129,5 @@ def build_pilot(level, lesson_num, dialogues, grammar_map, story, out_ns):
     print(f"{out_ns}: {len(slides)} slides -> {out_dir}")
 
 
-build_pilot("level3", 11, L3_DIALOGUES, L3_GRAMMAR, L3_STORY, "_pilot-reading-level3-11")
-build_pilot("level4", 19, L4_DIALOGUES, L4_GRAMMAR, L4_STORY, "_pilot-reading-level4-19")
+build_pilot("level3", 11, L3_DIALOGUES, L3_GRAMMAR_TOPIC, L3_STORY, "_pilot-reading-level3-11")
+build_pilot("level4", 19, L4_DIALOGUES, L4_GRAMMAR_TOPIC, L4_STORY, "_pilot-reading-level4-19")
