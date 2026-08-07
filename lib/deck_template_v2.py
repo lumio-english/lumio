@@ -27,6 +27,7 @@ SHELF_BOOKS = ('<div class="shelf"></div>'
 def bg_study(): return f'<div class="wall"></div><div class="teal-band"></div>{SHELF_BOOKS}{WINDOW}{SPARKS}'
 def bg_plain(): return f'<div class="wall"></div><div class="teal-band"></div>{WINDOW}{SPARKS}'
 def bg_bare(): return f'<div class="wall"></div><div class="teal-band"></div>{SPARKS}'
+def bg_clean(): return f'<div class="wall"></div><div class="teal-band"></div>{WINDOW}'
 
 def header(pagetitle, n, total):
     return f'''<div class="header">
@@ -356,7 +357,7 @@ def slide_today_i_learned(lesson, n, total):
         <div style="width:70px;height:70px;border-radius:10px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/{slug(w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
         <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.8rem;color:#43301F;text-align:center">{esc(w["en"])}</div>
       </div>''' for w in lesson["vocab"][:6])
-    return (bg_study() + header("Today I Learned! &#127775;", n, total) + COLORSTRIP + f'''
+    return (bg_clean() + header("Today I Learned! &#127775;", n, total) + COLORSTRIP + f'''
     <div style="position:absolute;left:46px;top:150px;width:820px">
       <div style="font-size:.78rem;font-weight:800;color:#F97316;letter-spacing:1.5px;margin-bottom:10px">KEY WORDS</div>
       <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px">{chips}</div>
