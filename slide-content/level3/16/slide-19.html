@@ -17,29 +17,55 @@
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#EDE9FB;font-size:.85rem;letter-spacing:.5px">LUMIO ENGLISH</div>
       </div>
       <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#EDE9FB;font-size:.95rem;background:rgba(139,92,246,.14);
-                  padding:6px 16px;border-radius:8px">Dialogue</div>
-      <div style="font-family:'Nunito',sans-serif;font-weight:800;color:#A79BD1;font-size:.8rem">19 / 27</div>
+                  padding:6px 16px;border-radius:8px">Sound &amp; Spot</div>
+      <div style="font-family:'Nunito',sans-serif;font-weight:800;color:#A79BD1;font-size:.8rem">19 / 25</div>
     </div>
     <div style="position:relative;z-index:5;margin:14px 40px 0;height:3px;background:#4A3B7A;border-radius:2px">
-      <div style="height:100%;width:70%;background:linear-gradient(90deg,#8B5CF6,#F97316);border-radius:2px"></div>
+      <div style="height:100%;width:76%;background:linear-gradient(90deg,#8B5CF6,#F97316);border-radius:2px"></div>
     </div>
-        <div style="position:absolute;left:60px;top:70px;max-width:520px;background:#FFFFFF;border-radius:12px;
-                    padding:14px 20px;box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
-          <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:1rem;color:#2B2640">What do you wear in winter?</div>
-          <div style="direction:rtl;text-align:right;font-size:.82rem;color:#8A8398;font-weight:700;margin-top:3px">ماذا ترتدي في الشتاء؟</div>
-        </div>
-        <div style="position:absolute;right:60px;top:176px;max-width:520px;background:#FFFFFF;border-radius:12px;
-                    padding:14px 20px;box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
-          <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:1rem;color:#2B2640">I wear a scarf and gloves.</div>
-          <div style="direction:rtl;text-align:right;font-size:.82rem;color:#8A8398;font-weight:700;margin-top:3px">أرتدي وشاحا وقفازات.</div>
-        </div>
-        <div style="position:absolute;left:60px;top:282px;max-width:520px;background:#FFFFFF;border-radius:12px;
-                    padding:14px 20px;box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
-          <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:1rem;color:#2B2640">I wear boots when it's rainy.</div>
-          <div style="direction:rtl;text-align:right;font-size:.82rem;color:#8A8398;font-weight:700;margin-top:3px">أرتدي حذاء طويلا عندما يكون ممطرا.</div>
-        </div>
-        <div style="position:absolute;right:60px;top:388px;max-width:520px;background:#FFFFFF;border-radius:12px;
-                    padding:14px 20px;box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
-          <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:1rem;color:#2B2640">And a swimsuit in summer!</div>
-          <div style="direction:rtl;text-align:right;font-size:.82rem;color:#8A8398;font-weight:700;margin-top:3px">وملابس سباحة في الصيف!</div>
-        </div>
+    <div style="position:relative;z-index:5;text-align:center;margin-top:34px;font-family:'Nunito',sans-serif;font-weight:700;color:#A79BD1;font-size:.95rem">
+      Tap a word to hear it.</div>
+    <div style="position:relative;z-index:5;display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-top:24px;padding:0 40px">
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('champion')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#FFFFFF;border-radius:10px;padding:10px;
+                    box-shadow:0 8px 16px rgba(0,0,0,.2);display:flex;flex-direction:column;align-items:center;gap:6px;width:140px">
+        <div style="width:100px;height:100px;border-radius:8px;overflow:hidden;background:#F8FAFC"><img src="assets/vocab/champion.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.88rem;color:#2B2640">champion</div>
+        <div style="font-size:.75rem;color:#0D9488;font-weight:800">بطل</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('controller')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#FFFFFF;border-radius:10px;padding:10px;
+                    box-shadow:0 8px 16px rgba(0,0,0,.2);display:flex;flex-direction:column;align-items:center;gap:6px;width:140px">
+        <div style="width:100px;height:100px;border-radius:8px;overflow:hidden;background:#F8FAFC"><img src="assets/vocab/controller.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.88rem;color:#2B2640">controller</div>
+        <div style="font-size:.75rem;color:#0D9488;font-weight:800">ذراع تحكم</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('teammate')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#FFFFFF;border-radius:10px;padding:10px;
+                    box-shadow:0 8px 16px rgba(0,0,0,.2);display:flex;flex-direction:column;align-items:center;gap:6px;width:140px">
+        <div style="width:100px;height:100px;border-radius:8px;overflow:hidden;background:#F8FAFC"><img src="assets/vocab/teammate.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.88rem;color:#2B2640">teammate</div>
+        <div style="font-size:.75rem;color:#0D9488;font-weight:800">زميل الفريق</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('strategy')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#FFFFFF;border-radius:10px;padding:10px;
+                    box-shadow:0 8px 16px rgba(0,0,0,.2);display:flex;flex-direction:column;align-items:center;gap:6px;width:140px">
+        <div style="width:100px;height:100px;border-radius:8px;overflow:hidden;background:#F8FAFC"><img src="assets/vocab/strategy.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.88rem;color:#2B2640">strategy</div>
+        <div style="font-size:.75rem;color:#0D9488;font-weight:800">استراتيجية</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('level up')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#FFFFFF;border-radius:10px;padding:10px;
+                    box-shadow:0 8px 16px rgba(0,0,0,.2);display:flex;flex-direction:column;align-items:center;gap:6px;width:140px">
+        <div style="width:100px;height:100px;border-radius:8px;overflow:hidden;background:#F8FAFC"><img src="assets/vocab/level-up.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.88rem;color:#2B2640">level up</div>
+        <div style="font-size:.75rem;color:#0D9488;font-weight:800">يرتقي مستوى</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('high score')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#FFFFFF;border-radius:10px;padding:10px;
+                    box-shadow:0 8px 16px rgba(0,0,0,.2);display:flex;flex-direction:column;align-items:center;gap:6px;width:140px">
+        <div style="width:100px;height:100px;border-radius:8px;overflow:hidden;background:#F8FAFC"><img src="assets/vocab/high-score.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.88rem;color:#2B2640">high score</div>
+        <div style="font-size:.75rem;color:#0D9488;font-weight:800">أعلى نتيجة</div>
+      </button></div>
+    

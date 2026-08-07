@@ -11,6 +11,39 @@ def esc(s):
     return (s or "").replace("&", "&amp;").replace('"', "&quot;")
 
 
+def match_grammar_by_lesson_focus(level, lessons):
+    """For curricula where each lesson's own grammarFocus field names a
+    specific grammar-hub topic (rather than relying on generic even
+    spacing), match by word-overlap score against the FULL topic title
+    (not just a shared prefix -- 'Present Simple (he/she/it+s)' and
+    'Present Simple (I/you/we/they)' share a prefix but are different
+    topics, so prefix-only matching picks the wrong one every time).
+    Lessons whose focus doesn't cleanly match a topic (e.g. 'review'
+    lessons) get none -- better than forcing a mismatched topic."""
+    import re
+    data = json.load(open(f"grammar-hub/{level}.json", encoding="utf-8"))
+    topics = data["topics"]
+
+    def words(s):
+        return set(re.findall(r"[a-z']+", s.lower()))
+
+    mapping = {}
+    for lesson_num, lesson in lessons.items():
+        focus = (lesson.get("grammarFocus") or "").lower()
+        if not focus or "review" in focus:
+            continue
+        focus_words = words(focus)
+        best, best_score = None, 0
+        for t in topics:
+            t_words = words(t["title"])
+            score = len(focus_words & t_words)
+            if score > best_score:
+                best, best_score = t, score
+        if best and best_score >= 2:  # require at least 2 shared significant words
+            mapping[lesson_num] = best
+    return mapping
+
+
 def compute_grammar_lesson_map(level, num_lessons=20):
     """Spread every grammar-hub topic evenly across the level's lessons,
     returning {lesson_num: topic_dict}. With 13 topics over 20 lessons

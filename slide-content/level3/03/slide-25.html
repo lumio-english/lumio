@@ -17,37 +17,29 @@
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#EDE9FB;font-size:.85rem;letter-spacing:.5px">LUMIO ENGLISH</div>
       </div>
       <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#EDE9FB;font-size:.95rem;background:rgba(139,92,246,.14);
-                  padding:6px 16px;border-radius:8px">Session Complete</div>
-      <div style="font-family:'Nunito',sans-serif;font-weight:800;color:#A79BD1;font-size:.8rem">25 / 25</div>
+                  padding:6px 16px;border-radius:8px">Quiz · 2/2</div>
+      <div style="font-family:'Nunito',sans-serif;font-weight:800;color:#A79BD1;font-size:.8rem">25 / 27</div>
     </div>
     <div style="position:relative;z-index:5;margin:14px 40px 0;height:3px;background:#4A3B7A;border-radius:2px">
-      <div style="height:100%;width:100%;background:linear-gradient(90deg,#8B5CF6,#F97316);border-radius:2px"></div>
+      <div style="height:100%;width:93%;background:linear-gradient(90deg,#8B5CF6,#F97316);border-radius:2px"></div>
     </div>
-    <div style="position:relative;z-index:5;display:flex;gap:20px;padding:50px 40px 0">
-      <div style="background:#FFFFFF;border-radius:12px;border:1px solid rgba(0,0,0,.06);box-shadow:0 12px 26px rgba(0,0,0,.28);width:400px;padding:30px;text-align:center">
-        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.3rem;color:#2B2640;margin-bottom:14px">Nice work.</div>
-        <span style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#F97316,#EA580C);
-                color:#fff;font-family:'Fredoka',sans-serif;font-weight:600;font-size:.85rem;padding:6px 16px;border-radius:999px;font-size:1.1rem;padding:10px 22px">
-      &#9889; +60 XP</span>
-      </div>
-      <div style="background:#FFFFFF;border-radius:12px;border:1px solid rgba(0,0,0,.06);box-shadow:0 12px 26px rgba(0,0,0,.28);width:400px;padding:26px 30px">
-        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1rem;color:#2B2640;margin-bottom:10px">Before next time</div>
-        
-      <div style="display:flex;align-items:center;gap:12px;padding:8px 0">
-        <span style="width:22px;height:22px;border-radius:6px;background:#E6FBF8;color:#0D9488;font-weight:800;
-                     display:flex;align-items:center;justify-content:center;font-size:.78rem;flex-shrink:0">1</span>
-        <span style="font-family:'Nunito',sans-serif;font-weight:700;font-size:.95rem;color:#2B2640">Replay this lesson</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:12px;padding:8px 0">
-        <span style="width:22px;height:22px;border-radius:6px;background:#E6FBF8;color:#0D9488;font-weight:800;
-                     display:flex;align-items:center;justify-content:center;font-size:.78rem;flex-shrink:0">2</span>
-        <span style="font-family:'Nunito',sans-serif;font-weight:700;font-size:.95rem;color:#2B2640">Finish your homework</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:12px;padding:8px 0">
-        <span style="width:22px;height:22px;border-radius:6px;background:#E6FBF8;color:#0D9488;font-weight:800;
-                     display:flex;align-items:center;justify-content:center;font-size:.78rem;flex-shrink:0">3</span>
-        <span style="font-family:'Nunito',sans-serif;font-weight:700;font-size:.95rem;color:#2B2640">Practice with a friend or family member</span>
-      </div>
-      </div>
-    </div>
+    <div style="background:#FFFFFF;border-radius:12px;border:1px solid rgba(0,0,0,.06);box-shadow:0 12px 26px rgba(0,0,0,.28);width:260px;position:absolute;left:60px;top:200px;height:260px;overflow:hidden;padding:0"><img src="assets/vocab/annoying.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+    <div style="position:absolute;left:600px;top:150px;font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.5rem;color:#EDE9FB">What is this?</div>
+    
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'awesome', 'annoying')"
+              style="position:absolute;left:600px;top:210px;width:250px;height:76px;background:#FFFFFF;border:1px solid #EEF0F4;border-radius:10px;
+                  display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.05rem;
+                  color:#2B2640;cursor:pointer" data-quiz-option="awesome">awesome</button>
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'annoying', 'annoying')"
+              style="position:absolute;left:880px;top:210px;width:250px;height:76px;background:#FFFFFF;border:1px solid #EEF0F4;border-radius:10px;
+                  display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.05rem;
+                  color:#2B2640;cursor:pointer" data-quiz-option="annoying">annoying</button>
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'boring', 'annoying')"
+              style="position:absolute;left:600px;top:300px;width:250px;height:76px;background:#FFFFFF;border:1px solid #EEF0F4;border-radius:10px;
+                  display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.05rem;
+                  color:#2B2640;cursor:pointer" data-quiz-option="boring">boring</button>
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'weird', 'annoying')"
+              style="position:absolute;left:880px;top:300px;width:250px;height:76px;background:#FFFFFF;border:1px solid #EEF0F4;border-radius:10px;
+                  display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.05rem;
+                  color:#2B2640;cursor:pointer" data-quiz-option="weird">weird</button>
     

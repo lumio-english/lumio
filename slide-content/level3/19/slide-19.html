@@ -17,29 +17,55 @@
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#EDE9FB;font-size:.85rem;letter-spacing:.5px">LUMIO ENGLISH</div>
       </div>
       <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#EDE9FB;font-size:.95rem;background:rgba(139,92,246,.14);
-                  padding:6px 16px;border-radius:8px">Dialogue</div>
-      <div style="font-family:'Nunito',sans-serif;font-weight:800;color:#A79BD1;font-size:.8rem">19 / 27</div>
+                  padding:6px 16px;border-radius:8px">Sound &amp; Spot</div>
+      <div style="font-family:'Nunito',sans-serif;font-weight:800;color:#A79BD1;font-size:.8rem">19 / 25</div>
     </div>
     <div style="position:relative;z-index:5;margin:14px 40px 0;height:3px;background:#4A3B7A;border-radius:2px">
-      <div style="height:100%;width:70%;background:linear-gradient(90deg,#8B5CF6,#F97316);border-radius:2px"></div>
+      <div style="height:100%;width:76%;background:linear-gradient(90deg,#8B5CF6,#F97316);border-radius:2px"></div>
     </div>
-        <div style="position:absolute;left:60px;top:70px;max-width:520px;background:#FFFFFF;border-radius:12px;
-                    padding:14px 20px;box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
-          <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:1rem;color:#2B2640">What is your favorite place?</div>
-          <div style="direction:rtl;text-align:right;font-size:.82rem;color:#8A8398;font-weight:700;margin-top:3px">ما هو مكانك المفضل؟</div>
-        </div>
-        <div style="position:absolute;right:60px;top:176px;max-width:520px;background:#FFFFFF;border-radius:12px;
-                    padding:14px 20px;box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
-          <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:1rem;color:#2B2640">I like the restaurant near the airport.</div>
-          <div style="direction:rtl;text-align:right;font-size:.82rem;color:#8A8398;font-weight:700;margin-top:3px">أحب المطعم قرب المطار.</div>
-        </div>
-        <div style="position:absolute;left:60px;top:282px;max-width:520px;background:#FFFFFF;border-radius:12px;
-                    padding:14px 20px;box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
-          <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:1rem;color:#2B2640">The library is quiet, but the zoo is loud!</div>
-          <div style="direction:rtl;text-align:right;font-size:.82rem;color:#8A8398;font-weight:700;margin-top:3px">المكتبة هادئة، لكن حديقة الحيوان صاخبة!</div>
-        </div>
-        <div style="position:absolute;right:60px;top:388px;max-width:520px;background:#FFFFFF;border-radius:12px;
-                    padding:14px 20px;box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
-          <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:1rem;color:#2B2640">I like both places!</div>
-          <div style="direction:rtl;text-align:right;font-size:.82rem;color:#8A8398;font-weight:700;margin-top:3px">أحب كلا المكانين!</div>
-        </div>
+    <div style="position:relative;z-index:5;text-align:center;margin-top:34px;font-family:'Nunito',sans-serif;font-weight:700;color:#A79BD1;font-size:.95rem">
+      Tap a word to hear it.</div>
+    <div style="position:relative;z-index:5;display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-top:24px;padding:0 40px">
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('match')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#FFFFFF;border-radius:10px;padding:10px;
+                    box-shadow:0 8px 16px rgba(0,0,0,.2);display:flex;flex-direction:column;align-items:center;gap:6px;width:140px">
+        <div style="width:100px;height:100px;border-radius:8px;overflow:hidden;background:#F8FAFC"><img src="assets/vocab/match.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.88rem;color:#2B2640">match</div>
+        <div style="font-size:.75rem;color:#0D9488;font-weight:800">مباراة</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('cheer')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#FFFFFF;border-radius:10px;padding:10px;
+                    box-shadow:0 8px 16px rgba(0,0,0,.2);display:flex;flex-direction:column;align-items:center;gap:6px;width:140px">
+        <div style="width:100px;height:100px;border-radius:8px;overflow:hidden;background:#F8FAFC"><img src="assets/vocab/cheer.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.88rem;color:#2B2640">cheer</div>
+        <div style="font-size:.75rem;color:#0D9488;font-weight:800">يشجع</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('nervous')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#FFFFFF;border-radius:10px;padding:10px;
+                    box-shadow:0 8px 16px rgba(0,0,0,.2);display:flex;flex-direction:column;align-items:center;gap:6px;width:140px">
+        <div style="width:100px;height:100px;border-radius:8px;overflow:hidden;background:#F8FAFC"><img src="assets/vocab/nervous.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.88rem;color:#2B2640">nervous</div>
+        <div style="font-size:.75rem;color:#0D9488;font-weight:800">متوتر</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('proud')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#FFFFFF;border-radius:10px;padding:10px;
+                    box-shadow:0 8px 16px rgba(0,0,0,.2);display:flex;flex-direction:column;align-items:center;gap:6px;width:140px">
+        <div style="width:100px;height:100px;border-radius:8px;overflow:hidden;background:#F8FAFC"><img src="assets/vocab/proud.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.88rem;color:#2B2640">proud</div>
+        <div style="font-size:.75rem;color:#0D9488;font-weight:800">فخور</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('win')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#FFFFFF;border-radius:10px;padding:10px;
+                    box-shadow:0 8px 16px rgba(0,0,0,.2);display:flex;flex-direction:column;align-items:center;gap:6px;width:140px">
+        <div style="width:100px;height:100px;border-radius:8px;overflow:hidden;background:#F8FAFC"><img src="assets/vocab/win.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.88rem;color:#2B2640">win</div>
+        <div style="font-size:.75rem;color:#0D9488;font-weight:800">يفوز</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('teamwork')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#FFFFFF;border-radius:10px;padding:10px;
+                    box-shadow:0 8px 16px rgba(0,0,0,.2);display:flex;flex-direction:column;align-items:center;gap:6px;width:140px">
+        <div style="width:100px;height:100px;border-radius:8px;overflow:hidden;background:#F8FAFC"><img src="assets/vocab/teamwork.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.88rem;color:#2B2640">teamwork</div>
+        <div style="font-size:.75rem;color:#0D9488;font-weight:800">العمل الجماعي</div>
+      </button></div>
+    
