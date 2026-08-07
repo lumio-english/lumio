@@ -249,6 +249,46 @@ def bg_theme_wrap(theme_key):
     return lambda: bg_theme(theme_key)
 
 
+def slide_pair_check(prompt, n, total, theme_key="default"):
+    return (bg_theme(theme_key) + header_themed("Pair Check", n, total, theme_key) + f'''
+    <div style="position:relative;z-index:5;display:flex;justify-content:center;margin-top:80px">
+      {card_open(660, "padding:40px 44px;text-align:center")}
+        <div style="font-size:2rem;margin-bottom:14px">&#129309;</div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.2rem;color:{CARD_TEXT};margin-bottom:10px">{esc(prompt)}</div>
+        <div style="font-size:.85rem;color:#6B6580;font-weight:700">60 seconds &mdash; go!</div>
+      </div>
+    </div>
+    ''')
+
+def slide_round_checkpoint(round_label, n, total, theme_key="default"):
+    return (bg_theme(theme_key) + header_themed("Quick Check-In", n, total, theme_key) + f'''
+    <div style="position:relative;z-index:5;display:flex;justify-content:center;margin-top:90px">
+      {card_open(600, "padding:36px 40px;text-align:center")}
+        <div style="font-size:1.8rem;margin-bottom:12px">&#9995;</div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.15rem;color:{CARD_TEXT}">{esc(round_label)} done. How did we do?</div>
+        <div style="font-size:.85rem;color:#6B6580;font-weight:700;margin-top:8px">Thumbs up if you're feeling good, thumbs down if you want to go over one again.</div>
+      </div>
+    </div>
+    ''')
+
+def slide_error_analysis(wrong_sentence, right_sentence, why, n, total, theme_key="default"):
+    return (bg_theme(theme_key) + header_themed("Common Mistake", n, total, theme_key) + f'''
+    <div style="position:relative;z-index:5;display:flex;justify-content:center;margin-top:60px">
+      {card_open(720, "padding:36px 40px")}
+        <div style="display:flex;align-items:center;gap:12px;background:#FEF2F2;border-radius:10px;padding:12px 16px;margin-bottom:10px">
+          <span style="font-size:1.1rem">&#10060;</span>
+          <div style="font-family:'Nunito',sans-serif;font-weight:700;color:#991B1B;font-size:1rem">{esc(wrong_sentence)}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;background:#F0FDF4;border-radius:10px;padding:12px 16px;margin-bottom:18px">
+          <span style="font-size:1.1rem">&#9989;</span>
+          <div style="font-family:'Nunito',sans-serif;font-weight:700;color:#166534;font-size:1rem">{esc(right_sentence)}</div>
+        </div>
+        <div style="font-size:.9rem;color:{CARD_TEXT};font-weight:700">{esc(why)}</div>
+      </div>
+    </div>
+    ''')
+
+
 def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, notice_sentences,
                    notice_note, challenge, real_life, theme_key="default",
                    n_vocab_mcq=10, n_grammar_mcq=10):
@@ -261,8 +301,15 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
     for i in range(3):
         w = lesson["vocab"][i % V]
         plan.append(("practice", (w, i)))
-    # Vocabulary Check: live, in-class MCQ practice (replaces the old 2-question quiz + mini-games)
-    for i in range(n_vocab_mcq):
+    plan.append(("pair_check", f"Quiz your partner on today's words -- point and ask 'What's this?'"))
+    # Vocabulary Check: live, in-class MCQ practice, split into two 5-question
+    # rounds with a checkpoint -- breaks up 10 slides in a row and gives a
+    # natural pacing beat instead of one long uninterrupted block.
+    half = n_vocab_mcq // 2
+    for i in range(half):
+        plan.append(("vocab_mcq", i))
+    plan.append(("checkpoint", "Round 1"))
+    for i in range(half, n_vocab_mcq):
         plan.append(("vocab_mcq", i))
     if grammar_topic:
         plan.append(("grammar_rule", grammar_topic))
@@ -271,9 +318,14 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
     plan.append(("sentence", None))
     if grammar_topic:
         plan.append(("grammar_practice", grammar_topic))
-    # Grammar Check: live, in-class MCQ practice, right after grammar is taught
-    for i in range(n_grammar_mcq):
+    ghalf = n_grammar_mcq // 2
+    for i in range(ghalf):
         plan.append(("grammar_mcq", i))
+    plan.append(("checkpoint", "Round 1"))
+    for i in range(ghalf, n_grammar_mcq):
+        plan.append(("grammar_mcq", i))
+    if grammar_topic:
+        plan.append(("error_analysis", None))
     your_turn_n = min(2, V)
     for i in range(your_turn_n):
         plan.append(("your_turn", (lesson["vocab"][i], i + 1)))
@@ -309,6 +361,10 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
         elif kind == "practice":
             w, i = data
             slides.append(slide_practice_themed(w, n, total, VOCAB_CHARS[i % len(VOCAB_CHARS)], seed=i, theme_key=theme_key))
+        elif kind == "pair_check":
+            slides.append(slide_pair_check(data, n, total, theme_key))
+        elif kind == "checkpoint":
+            slides.append(slide_round_checkpoint(data, n, total, theme_key))
         elif kind == "vocab_mcq":
             i = data
             mode = "picture" if i % 2 == 0 else "translate"
@@ -330,6 +386,20 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
                     if w.get("example"):
                         grammar_mcq_sentences_pool.append({"en": w["example"], "ar": w["ar"]})
             slides.append(slide_grammar_mcq(grammar_mcq_sentences_pool, i, n_grammar_mcq, n, total, theme_key))
+        elif kind == "error_analysis":
+            pool = grammar_mcq_sentences_pool or []
+            if pool:
+                target_sentence = pool[0]
+                words = target_sentence["en"].strip().split(" ")
+                correct_word = words[0].rstrip(".,!?")
+                rest = " ".join(words[1:])
+                other_words = list({s["en"].strip().split(" ")[0].rstrip(".,!?") for s in pool} - {correct_word})
+                wrong_word = other_words[0] if other_words else "It"
+                wrong_sentence = f"{wrong_word} {rest}"
+                right_sentence = target_sentence["en"]
+                topic_title = grammar_topic["title"] if grammar_topic else "this grammar point"
+                why = f"With {topic_title}, we say \"{correct_word}\" here, not \"{wrong_word}\"."
+                slides.append(slide_error_analysis(wrong_sentence, right_sentence, why, n, total, theme_key))
         elif kind == "your_turn":
             w, idx = data
             slides.append(v1.slide_your_turn(w, idx, your_turn_n, n, total, "omar-wave"))
