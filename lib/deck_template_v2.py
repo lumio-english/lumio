@@ -418,6 +418,34 @@ def slide_phonics_practice(unit, n, total, ch):
     ''' + char_img(ch, right=90, bottom=40, height=320))
 
 
+def slide_sound_match(target_word, distractor_words, idx, total_q, n, total, seed):
+    """Graded phonics practice -- tap the word that matches the sound
+    played, using the phonics unit's own word list. Distinct from
+    slide_phonics_practice (which is presentational/tap-to-hear, not
+    graded) -- this is a real check with right/wrong feedback."""
+    opts = distractor_words + [target_word]
+    random.Random(seed).shuffle(opts)
+    positions = [(560, 260), (860, 260), (560, 380), (860, 380)][:len(opts)]
+    buttons = ""
+    for o, (l, t) in zip(opts, positions):
+        buttons += f'''
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{esc(o["en"])}', '{esc(target_word["en"])}')"
+              style="position:absolute;left:{l}px;top:{t}px;width:230px;height:96px;background:#fff;border:2.5px solid #F0E9DD;border-radius:16px;
+                  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer" data-quiz-option="{esc(o["en"])}">
+        {letter_tiles(o["en"]) or f'<div style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:1.15rem;color:#43301F">{esc(o["en"])}</div>'}
+      </button>'''
+    return (bg_plain() + header(f"Sound Match &bull; {idx}/{total_q}", n, total) + COLORSTRIP + f'''
+    <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(target_word["en"])}')"
+            style="position:absolute;left:80px;top:280px;width:180px;height:180px;border:none;cursor:pointer;background:linear-gradient(135deg,#0D9488,#0B7A6F);
+                   border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#fff">
+      <span style="font-size:2.2rem">&#128266;</span>
+      <span style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem">Tap to hear</span>
+    </button>
+    <div style="position:absolute;left:80px;top:200px;width:220px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.2rem;color:#43301F">Which word is this?</div>
+    {buttons}
+    ''')
+
+
 def slide_today_i_learned(lesson, n, total):
     chips = "".join(f'''
       <div style="background:#fff;border-radius:14px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;
@@ -501,6 +529,9 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
     if phonics_unit:
         plan.append(("phonics_rule", phonics_unit))
         plan.append(("phonics_practice", phonics_unit))
+        n_sound_match = min(4, len(phonics_unit.get("words", [])))
+        for i in range(n_sound_match):
+            plan.append(("sound_match", i))
     if tier == "preA":
         plan.append(("tpr", f"Stand up! Show me something that is a {esc(lesson['vocab'][0]['en'])}!"))
     for i, w in enumerate(lesson["vocab"]):
@@ -544,11 +575,22 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
         elif kind == "quick_check":
             i, r = data
             target = lesson["vocab"][i]
-            distractors = [x for x in lesson["vocab"] if x["en"] != target["en"]][:3]
+            seed = lesson_num * 11 + i + n
+            others = [x for x in lesson["vocab"] if x["en"] != target["en"]]
+            distractors = random.Random(seed).sample(others, min(3, len(others)))
             label = f"{i + 1}/{V}" if r == 0 else f"{i + 1}/{V} &bull; Round {r + 1}"
-            slides.append(slide_quick_check(target, distractors, label, V, n, total, lesson_num * 11 + i + n, tier=tier))
+            slides.append(slide_quick_check(target, distractors, label, V, n, total, seed, tier=tier))
         elif kind == "phonics_rule": slides.append(slide_phonics_rule(data, n, total, "sara-explain"))
         elif kind == "phonics_practice": slides.append(slide_phonics_practice(data, n, total, "sara-clap"))
+        elif kind == "sound_match":
+            i = data
+            words = phonics_unit.get("words", []) if phonics_unit else []
+            target_word = words[i % len(words)]
+            others = [w for w in words if w["en"] != target_word["en"]]
+            seed = lesson_num * 13 + i + n
+            distractor_words = random.Random(seed).sample(others, min(3, len(others)))
+            total_q = min(4, len(words)) or 1
+            slides.append(slide_sound_match(target_word, distractor_words, i + 1, total_q, n, total, seed))
         elif kind == "grammar_rule":
             slides.append(grammar_slides.slide_grammar_rule(data, n, total, "sara-explain", header, COLORSTRIP, bg_study, char_img))
         elif kind == "grammar_practice":

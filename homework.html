@@ -94,7 +94,7 @@ const studentName = user ? user.name : "Guest";
 let lesson = null;
 let STEPS = []; // built in init(): each {key, label, render}
 let currentStep = 0;
-const results = { spelling: {}, drawingDataUrl: null, saidWords: {}, recorded: {}, skill: {}, quiz: {} };
+const results = { spelling: {}, drawingDataUrl: null, saidWords: {}, recorded: {}, phonicsRecorded: {}, skill: {}, quiz: {}, conversationDone: {} };
 let skillType = null; // "phonics" | "grammar" | null
 let skillData = null; // the matched unit/topic object
 
@@ -215,8 +215,14 @@ function renderSayIt() {
     </div>`;
 }
 async function toggleRecording(i) {
-  const btn = document.getElementById(`recBtn-${i}`);
-  if (activeRecIdx === i && mediaRecorder && mediaRecorder.state === "recording") {
+  return toggleRecordingGeneric(i, i, lesson.vocab[i].en, results.recorded, `recBtn-${i}`, renderSayIt);
+}
+async function togglePhonicsRecording(i, wordEn) {
+  return toggleRecordingGeneric(i, 100 + i, wordEn, results.phonicsRecorded, `phRecBtn-${i}`, renderSkillFocus);
+}
+async function toggleRecordingGeneric(uiIndex, storageIndex, wordEn, resultMap, btnId, rerender) {
+  const btn = document.getElementById(btnId);
+  if (activeRecIdx === storageIndex && mediaRecorder && mediaRecorder.state === "recording") {
     mediaRecorder.stop();
     return;
   }
@@ -231,16 +237,16 @@ async function toggleRecording(i) {
       const blob = new Blob(audioChunks, { type: mediaRecorder.mimeType || "audio/webm" });
       try {
         if (typeof Lumio !== "undefined" && Lumio.saveRecording) {
-          await Lumio.saveRecording(studentName, level, num, i, lesson.vocab[i].en, blob);
-          results.recorded[i] = true;
+          await Lumio.saveRecording(studentName, level, num, storageIndex, wordEn, blob);
+          resultMap[uiIndex] = true;
         }
       } catch (e) { console.error("save recording failed", e); }
       activeStream.getTracks().forEach(t => t.stop());
       activeStream = null; activeRecIdx = null; mediaRecorder = null;
-      renderSayIt();
+      rerender();
     };
     mediaRecorder.start();
-    activeRecIdx = i;
+    activeRecIdx = storageIndex;
     btn.textContent = "⏹ Stop recording";
     btn.classList.add("recording");
   } catch (e) {
@@ -286,33 +292,58 @@ function renderSkillFocus() {
   if (skillType === "phonics") return renderPhonicsPractice();
   if (skillType === "grammar") return renderGrammarPractice();
 }
+function renderConversation() {
+  const words = lesson.vocab.slice(0, 4);
+  const prompts = words.map((w, i) => {
+    const templates = [
+      `Can you use "${w.en}" in your own sentence?`,
+      `Tell me about "${w.en}" — what do you know about it?`,
+      `Where or when have you seen or used "${w.en}"?`,
+    ];
+    return templates[i % templates.length].replace("${w.en}", w.en);
+  });
+  const rows = words.map((w, i) => `
+    <div class="hw-word-row">
+      <div class="hw-word-img"><img src="assets/vocab/${slugify(w.en)}.png" onerror="this.style.display='none'"></div>
+      <div style="flex:1">
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;color:var(--cocoa);margin-bottom:2px">${esc(w.en)} <span style="color:var(--teal-deep)">${w.ar}</span></div>
+        <div style="font-size:.88rem;color:var(--cocoa-soft);font-weight:700">${esc(prompts[i])}</div>
+      </div>
+      <label style="display:flex;align-items:center;gap:6px;font-size:.8rem;font-weight:800;color:var(--cocoa-soft)">
+        <input type="checkbox" onchange="results.conversationDone[${i}] = this.checked" ${results.conversationDone[i] ? "checked" : ""}> Talked about it
+      </label>
+    </div>`).join("");
+  document.getElementById("hwSections").innerHTML = `
+    <div class="hw-card">
+      <h2>💬 Talk About It</h2>
+      <div class="hw-sub">Talk through each question with your teacher, a classmate, or your family. Check it off when you're done.</div>
+      ${rows}
+      <div class="hw-parent-box">❤ <b>FOR PARENTS</b> — ask your child these questions and listen to their answers in English.</div>
+      ${navButtons("← Back", `Next: ${STEPS[currentStep + 1] ? STEPS[currentStep + 1].label : ""} →`)}
+    </div>`;
+}
+
 function renderPhonicsPractice() {
   const words = (skillData.words || []).slice(0, 6);
+  const micSupported = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
   const rows = words.map((w, i) => `
     <div class="hw-word-row">
       <div class="hw-word-ar" style="min-width:100px">${w.ar}</div>
-      <input class="hw-input" id="ph-${i}" placeholder="Type the word…" autocomplete="off" autocapitalize="off" spellcheck="false">
-      <button class="hw-check-btn" id="phBtn-${i}" onclick="checkPhonics(${i}, '${esc(w.en).replace(/'/g, "\\'")}')">Check</button>
+      <div style="flex:1;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.05rem;color:var(--cocoa)">${esc(w.en)}</div>
+      <button class="hw-listen-btn" title="Hear it" onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('${esc(w.en).replace(/'/g, "\\'")}')">🔊</button>
+      ${micSupported ? `<button class="hw-rec-btn ${results.phonicsRecorded[i] ? "done" : ""}" id="phRecBtn-${i}" onclick="togglePhonicsRecording(${i}, '${esc(w.en).replace(/'/g, "\\'")}')">
+        ${results.phonicsRecorded[i] ? "✓ Recorded — tap to redo" : "🎙️ Record"}</button>` : ""}
     </div>`).join("");
   document.getElementById("hwSections").innerHTML = `
     <div class="hw-card">
       <h2>🔤 Phonics Focus &mdash; ${esc(skillData.unit)}</h2>
-      <div class="hw-sub">${skillData.tip ? skillData.tip : "Practice spelling these sound words."}</div>
+      <div class="hw-sub">${skillData.tip ? skillData.tip : "Listen to each sound word, then record yourself saying it."}</div>
       ${rows}
+      ${!micSupported ? `<div class="hw-parent-box" style="margin-top:14px">Recording isn't supported on this browser/device — practice saying these sounds out loud with your family instead.</div>` : ""}
       ${navButtons("← Back", "Next: Quiz →")}
     </div>`;
 }
-function checkPhonics(i, correctWord) {
-  const input = document.getElementById(`ph-${i}`);
-  const btn = document.getElementById(`phBtn-${i}`);
-  const correct = input.value.trim().toLowerCase() === correctWord.toLowerCase();
-  input.classList.remove("correct", "wrong");
-  input.classList.add(correct ? "correct" : "wrong");
-  btn.classList.toggle("correct", correct);
-  btn.textContent = correct ? "✓ Correct!" : "Try again";
-  results.skill[i] = correct;
-  if (typeof Lumio !== "undefined" && Lumio.beep) Lumio.beep(correct);
-}
+
 function renderGrammarPractice() {
   const examples = (skillData.examples || []).slice(0, 4);
   const blanked = examples.map(ex => {
@@ -382,8 +413,13 @@ function answerQuiz(qi, chosen, correct, btn) {
 function submitHomework() {
   const spellingCorrect = Object.values(results.spelling).filter(Boolean).length;
   const quizCorrect = Object.values(results.quiz).filter(Boolean).length;
-  const skillCorrect = Object.values(results.skill).filter(Boolean).length;
-  const skillTotal = Object.keys(results.skill).length || (skillType ? (skillType === "phonics" ? (skillData.words || []).slice(0, 6).length : (skillData.examples || []).slice(0, 4).length) : 0);
+  const isPhonics = skillType === "phonics";
+  const skillCorrect = isPhonics
+    ? Object.values(results.phonicsRecorded).filter(Boolean).length
+    : Object.values(results.skill).filter(Boolean).length;
+  const skillTotal = skillType
+    ? (isPhonics ? (skillData.words || []).slice(0, 6).length : (skillData.examples || []).slice(0, 4).length)
+    : 0;
   const said = Object.values(results.saidWords).filter(Boolean).length;
   const recorded = Object.values(results.recorded).filter(Boolean).length;
   const totalPossible = lesson.vocab.length + qWordsCountSafe() + skillTotal;
@@ -405,7 +441,7 @@ function submitHomework() {
 
   currentStep = STEPS.length;
   renderSteps();
-  const skillLine = skillType ? ` · ${skillType === "phonics" ? "Phonics" : "Grammar"}: ${skillCorrect}/${skillTotal}` : "";
+  const skillLine = skillType ? ` · ${isPhonics ? "Phonics recorded" : "Grammar"}: ${skillCorrect}/${skillTotal}` : "";
   document.getElementById("hwSections").innerHTML = `
     <div class="hw-card hw-done-screen">
       <div style="font-size:3rem">🎉</div>
@@ -433,11 +469,17 @@ async function init() {
   lesson = lessonData;
   await detectSkillFocus();
 
+  const showDraw = ["pre-a", "level1"].includes(level);
   STEPS = [
     { key: "spelling", label: "Spelling", render: renderSpelling },
-    { key: "draw", label: "Draw", render: renderDraw },
-    { key: "sayit", label: "Say It", render: renderSayIt },
   ];
+  if (showDraw) {
+    STEPS.push({ key: "draw", label: "Draw", render: renderDraw });
+  }
+  STEPS.push({ key: "sayit", label: "Say It", render: renderSayIt });
+  if (!showDraw) {
+    STEPS.push({ key: "conversation", label: "Talk", render: renderConversation });
+  }
   if (skillType) {
     STEPS.push({ key: "skill", label: skillType === "phonics" ? "Phonics" : "Grammar", render: renderSkillFocus });
   }

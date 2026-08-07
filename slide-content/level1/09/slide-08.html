@@ -1,22 +1,58 @@
 <div class="wall"></div><div class="teal-band"></div><div class="window"><div class="cross-v"></div><div class="cross-h"></div></div><div class="spark" style="left:375px;top:135px;font-size:1.6rem">&#10022;</div><div class="spark" style="left:415px;top:105px;font-size:1.1rem">&#10022;</div><div class="spark" style="left:392px;top:178px;font-size:1.3rem">&#10022;</div><div class="header">
       <div class="brand"><img src="assets/logo/lumio-logo.png"><div class="name">Lumio<small>ENGLISH</small></div></div>
-      <div class="pagetitle">Practice &bull; house</div>
-      <div class="counter">8 / 43</div>
+      <div class="pagetitle">Sound Match &bull; 2/4</div>
+      <div class="counter">8 / 47</div>
     </div><div class="colorstrip"><div class="c1"></div><div class="c2"></div><div class="c3"></div><div class="c4"></div><div class="c5"></div></div>
-    <div style="position:absolute;left:0;right:0;top:180px;display:flex;justify-content:center;gap:30px">
-      <div class="card" style="width:260px;height:260px;overflow:hidden;padding:0"><img src="assets/vocab/house.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-      <div class="card" style="width:520px;padding:30px 36px;display:flex;flex-direction:column;justify-content:center">
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;color:#43301F;margin-bottom:10px">Can you say it?</div>
-        <div style="font-family:'Baloo 2',sans-serif;font-style:italic;font-weight:700;font-size:1.4rem;color:#F97316;margin-bottom:18px">&ldquo;This is my house.&rdquo;</div>
-        <div style="display:flex;align-items:center;gap:12px;background:#FFF3D6;border-radius:14px;padding:10px 16px;margin-bottom:12px">
-          <div style="width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,#0D9488,#0B7A6F);color:#fff;
-                      display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.2rem">H</div>
-          <div style="font-size:.85rem;color:#43301F;font-weight:700">&ldquo;house&rdquo; starts with the <b>h</b> sound &mdash; find more h words in Phonics! &#128218;</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;background:#E6FAF7;border-radius:14px;padding:10px 16px">
-          <span style="font-size:1.2rem">&#128172;</span>
-          <div style="font-size:.85rem;color:#0F766E;font-weight:800">TEACHER: ASK &mdash; Can you use “house” in your own sentence?</div>
-        </div>
-      </div>
-    </div>
-    <div class="floorshadow" style="right:95px;bottom:25px;width:230px;height:36px"></div><img class="char" src="assets/story/characters/omar-wave.png" style="right:95px;bottom:32px;height:260px">
+    <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('bed')"
+            style="position:absolute;left:80px;top:280px;width:180px;height:180px;border:none;cursor:pointer;background:linear-gradient(135deg,#0D9488,#0B7A6F);
+                   border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#fff">
+      <span style="font-size:2.2rem">&#128266;</span>
+      <span style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem">Tap to hear</span>
+    </button>
+    <div style="position:absolute;left:80px;top:200px;width:220px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.2rem;color:#43301F">Which word is this?</div>
+    
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'bed', 'bed')"
+              style="position:absolute;left:560px;top:260px;width:230px;height:96px;background:#fff;border:2.5px solid #F0E9DD;border-radius:16px;
+                  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer" data-quiz-option="bed">
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#F97316;
+                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">B</div><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#0D9488;
+                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">E</div><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#F59E0B;
+                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">D</div></div>
+      </button>
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'hat', 'bed')"
+              style="position:absolute;left:860px;top:260px;width:230px;height:96px;background:#fff;border:2.5px solid #F0E9DD;border-radius:16px;
+                  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer" data-quiz-option="hat">
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#F97316;
+                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">H</div><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#0D9488;
+                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">A</div><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#F59E0B;
+                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">T</div></div>
+      </button>
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'fan', 'bed')"
+              style="position:absolute;left:560px;top:380px;width:230px;height:96px;background:#fff;border:2.5px solid #F0E9DD;border-radius:16px;
+                  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer" data-quiz-option="fan">
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#F97316;
+                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">F</div><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#0D9488;
+                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">A</div><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#F59E0B;
+                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">N</div></div>
+      </button>
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'leg', 'bed')"
+              style="position:absolute;left:860px;top:380px;width:230px;height:96px;background:#fff;border:2.5px solid #F0E9DD;border-radius:16px;
+                  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer" data-quiz-option="leg">
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#F97316;
+                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">L</div><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#0D9488;
+                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">E</div><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#F59E0B;
+                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">G</div></div>
+      </button>
+    
