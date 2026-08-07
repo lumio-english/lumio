@@ -164,6 +164,67 @@ def slide_real_life(prompt, n, total, ch, theme_key="default"):
     </div>
     ''' + char_big(ch))
 
+import random
+
+def slide_vocab_mcq(vocab_list, mode, idx, total_q, n, total, theme_key="default"):
+    """mode: 'picture' (image -> English word) or 'translate' (Arabic -> English word)"""
+    seed = idx * 13 + (1 if mode == "translate" else 0)
+    rng = random.Random(seed)
+    target = vocab_list[idx % len(vocab_list)]
+    distractors = rng.sample([w for w in vocab_list if w["en"] != target["en"]], min(3, len(vocab_list) - 1))
+    opts = distractors + [target]
+    rng.shuffle(opts)
+    positions = [(600, 210), (880, 210), (600, 300), (880, 300)]
+    buttons = ""
+    for o, (l, t) in zip(opts, positions):
+        buttons += f'''
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{esc(o["en"])}', '{esc(target["en"])}')"
+              style="position:absolute;left:{l}px;top:{t}px;width:250px;height:76px;background:{CARD_BG};border:1px solid #EEF0F4;border-radius:10px;
+                  display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.05rem;
+                  color:{CARD_TEXT};cursor:pointer" data-quiz-option="{esc(o["en"])}">{esc(o["en"])}</button>'''
+    if mode == "picture":
+        prompt_html = f'''{card_open(260, "position:absolute;left:60px;top:200px;height:260px;overflow:hidden;padding:0")}
+          <img src="assets/vocab/{slug(target['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="position:absolute;left:600px;top:150px;font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.5rem;color:{INK}">What is this?</div>'''
+    else:
+        prompt_html = f'''{card_open(460, "position:absolute;left:60px;top:220px;padding:30px;text-align:center")}
+          <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.78rem;color:#6B6580;letter-spacing:1px;margin-bottom:10px">WHAT'S THE ENGLISH WORD?</div>
+          <div style="direction:rtl;font-family:'Nunito',sans-serif;font-weight:800;font-size:2rem;color:{CARD_TEXT}">{target['ar']}</div></div>'''
+    return (bg_theme(theme_key) + header_themed(f"Vocabulary Check &middot; {idx + 1}/{total_q}", n, total, theme_key) + prompt_html + buttons)
+
+
+def slide_grammar_mcq(sentences, idx, total_q, n, total, theme_key="default"):
+    """sentences: list of {en, ar} pulled from grammar examples + vocab
+    examples (this curriculum writes vocab examples to already reflect
+    the lesson's grammar focus, so pooling both gives real variety
+    without any lesson-specific hand-authoring)."""
+    seed = idx * 17
+    rng = random.Random(seed)
+    target_sentence = sentences[idx % len(sentences)]
+    words = target_sentence["en"].strip().split(" ")
+    correct_word = words[0].rstrip(".,!?")
+    rest = " ".join(words[1:])
+    other_first_words = list({s["en"].strip().split(" ")[0].rstrip(".,!?") for s in sentences} - {correct_word})
+    rng.shuffle(other_first_words)
+    distractors = other_first_words[:3]
+    while len(distractors) < 3:
+        distractors.append(rng.choice(["I", "You", "She", "They"]))
+    opts = distractors + [correct_word]
+    rng.shuffle(opts)
+    opt_buttons = "".join(f'''<button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{esc(o)}', '{esc(correct_word)}')"
+        data-quiz-option="{esc(o)}" style="border:2px solid #EEF0F4;background:#fff;border-radius:10px;padding:14px;
+        font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.05rem;color:{CARD_TEXT};cursor:pointer">{esc(o)}</button>''' for o in opts)
+    return (bg_theme(theme_key) + header_themed(f"Grammar Check &middot; {idx + 1}/{total_q}", n, total, theme_key) + f'''
+    <div style="position:relative;z-index:5;display:flex;justify-content:center;margin-top:70px">
+      {card_open(700, "padding:38px 42px")}
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.78rem;color:#6B6580;letter-spacing:1px;margin-bottom:14px">COMPLETE THE SENTENCE</div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.4rem;color:{CARD_TEXT};margin-bottom:22px">___ {esc(rest)}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">{opt_buttons}</div>
+      </div>
+    </div>
+    ''')
+
+
 def slide_practice_themed(w, n, total, ch, seed=0, theme_key="default"):
     quote = w.get("example", w["en"])
     question = v1.discussion_question(w["en"], seed)
@@ -189,29 +250,35 @@ def bg_theme_wrap(theme_key):
 
 
 def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, notice_sentences,
-                   notice_note, challenge, real_life, theme_key="default"):
+                   notice_note, challenge, real_life, theme_key="default",
+                   n_vocab_mcq=10, n_grammar_mcq=10):
     V = len(lesson["vocab"])
     ch1, ch2, ch3 = "omar-wave", "noor-happy", "sara-explain"
 
     plan = [("title", None), ("hook", None), ("first_listen", None)]
     for i, w in enumerate(lesson["vocab"]):
         plan.append(("vocab", (w, i)))
+    for i in range(3):
+        w = lesson["vocab"][i % V]
+        plan.append(("practice", (w, i)))
+    # Vocabulary Check: live, in-class MCQ practice (replaces the old 2-question quiz + mini-games)
+    for i in range(n_vocab_mcq):
+        plan.append(("vocab_mcq", i))
     if grammar_topic:
         plan.append(("grammar_rule", grammar_topic))
     if notice_sentences:
         plan.append(("notice", None))
-    for i, w in enumerate(lesson["vocab"][:3]):
-        plan.append(("practice", (w, i)))
     plan.append(("sentence", None))
     if grammar_topic:
         plan.append(("grammar_practice", grammar_topic))
+    # Grammar Check: live, in-class MCQ practice, right after grammar is taught
+    for i in range(n_grammar_mcq):
+        plan.append(("grammar_mcq", i))
     your_turn_n = min(2, V)
     for i in range(your_turn_n):
         plan.append(("your_turn", (lesson["vocab"][i], i + 1)))
     if challenge:
         plan.append(("challenge", None))
-    plan.append(("quiz", 1))
-    plan.append(("quiz", 2))
     if real_life:
         plan.append(("real_life", None))
     plan.append(("today_i_learned", None))
@@ -220,6 +287,8 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
     total = len(plan)
     slides = []
     v1.DIALOGUES = {lesson_num: dialogue}
+    vocab_mcq_sentences_pool = None
+    grammar_mcq_sentences_pool = None
     for pos, (kind, data) in enumerate(plan):
         n = pos + 1
         if kind == "title":
@@ -240,22 +309,32 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
         elif kind == "practice":
             w, i = data
             slides.append(slide_practice_themed(w, n, total, VOCAB_CHARS[i % len(VOCAB_CHARS)], seed=i, theme_key=theme_key))
+        elif kind == "vocab_mcq":
+            i = data
+            mode = "picture" if i % 2 == 0 else "translate"
+            slides.append(slide_vocab_mcq(lesson["vocab"], mode, i, n_vocab_mcq, n, total, theme_key))
         elif kind == "sentence":
             slides.append(v1.slide_sentence_builder(lesson["vocab"][0]["example"], n, total, "sara-teach-board", lesson_num))
         elif kind == "grammar_practice":
             slides.append(grammar_slides.slide_grammar_practice(
                 data, n, total, ch3, header_themed_wrap(theme_key), "", bg_theme_wrap(theme_key),
                 lambda ch, **kw: v1.char_badge(ch)))
+        elif kind == "grammar_mcq":
+            i = data
+            if grammar_mcq_sentences_pool is None:
+                grammar_mcq_sentences_pool = []
+                if grammar_topic:
+                    for ex in grammar_topic.get("examples", []):
+                        grammar_mcq_sentences_pool.append({"en": ex["en"], "ar": ex["ar"]})
+                for w in lesson["vocab"]:
+                    if w.get("example"):
+                        grammar_mcq_sentences_pool.append({"en": w["example"], "ar": w["ar"]})
+            slides.append(slide_grammar_mcq(grammar_mcq_sentences_pool, i, n_grammar_mcq, n, total, theme_key))
         elif kind == "your_turn":
             w, idx = data
             slides.append(v1.slide_your_turn(w, idx, your_turn_n, n, total, "omar-wave"))
         elif kind == "challenge":
             slides.append(slide_challenge(challenge["prompt"], challenge["hint"], n, total, ch2, theme_key))
-        elif kind == "quiz":
-            idx = data
-            target = lesson["vocab"][1 if idx == 1 else min(3, V - 1)]
-            distractors = [x for x in lesson["vocab"] if x["en"] != target["en"]][:3]
-            slides.append(slide_quiz(target, distractors, idx, 2, n, total, lesson_num * 7 + idx))
         elif kind == "real_life":
             slides.append(slide_real_life(real_life, n, total, ch1, theme_key))
         elif kind == "today_i_learned":
