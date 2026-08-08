@@ -219,6 +219,19 @@ def slide_vocab_mcq(vocab_list, mode, idx, total_q, n, total, theme_key="default
     return (bg_theme(theme_key) + header_themed(f"Vocabulary Check &middot; {idx + 1}/{total_q}", n, total, theme_key) + prompt_html + buttons)
 
 
+PRONOUN_EQUIVALENCE_GROUPS = [
+    {"i", "you", "we", "they"},      # same base-verb conjugation in Present Simple
+    {"he", "she", "it"},             # same -s verb conjugation
+    {"this", "that"},                # singular demonstratives -- both grammatically valid regardless of the sentence's implied distance
+    {"these", "those"},              # plural demonstratives -- same reasoning
+]
+def equivalence_group(word):
+    wl = word.lower()
+    for g in PRONOUN_EQUIVALENCE_GROUPS:
+        if wl in g:
+            return g
+    return None  # not a pronoun -- no ambiguity risk, treat as unique
+
 def slide_grammar_mcq(sentences, idx, total_q, n, total, theme_key="default"):
     """sentences: list of {en, ar} pulled from grammar examples + vocab
     examples (this curriculum writes vocab examples to already reflect
@@ -230,11 +243,22 @@ def slide_grammar_mcq(sentences, idx, total_q, n, total, theme_key="default"):
     words = target_sentence["en"].strip().split(" ")
     correct_word = words[0].rstrip(".,!?")
     rest = " ".join(words[1:])
-    other_first_words = list({s["en"].strip().split(" ")[0].rstrip(".,!?") for s in sentences} - {correct_word})
+    correct_group = equivalence_group(correct_word)
+    excluded = correct_group if correct_group else {correct_word.lower()}
+    other_first_words = list({
+        s["en"].strip().split(" ")[0].rstrip(".,!?")
+        for s in sentences
+        if s["en"].strip().split(" ")[0].rstrip(".,!?").lower() not in excluded
+    })
     rng.shuffle(other_first_words)
     distractors = other_first_words[:3]
-    while len(distractors) < 3:
-        distractors.append(rng.choice(["I", "You", "She", "They"]))
+    fallback_pool = ["Not", "The", "A", "Is", "Are", "Do", "Does"]
+    attempts = 0
+    while len(distractors) < 3 and attempts < 20:
+        candidate = rng.choice(fallback_pool)
+        if candidate.lower() not in excluded and candidate not in distractors:
+            distractors.append(candidate)
+        attempts += 1
     opts = distractors + [correct_word]
     rng.shuffle(opts)
     opt_buttons = "".join(f'''<button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{esc(o)}', '{esc(correct_word)}')"

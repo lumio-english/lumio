@@ -351,6 +351,140 @@ def slide_quick_check(target, distractors, idx, total_q, n, total, seed, tier="p
     {buttons}
     ''')
 
+# Per-word TPR (physical response) actions -- word-specific, not a
+# generic template applied blindly. A generic "point to/find something
+# that is X" made no sense for social phrases like "hello" or "thank
+# you" (you can't point at a greeting), abstract words like "I"/"you",
+# or things that usually aren't physically in the room like family
+# members and animals. Covers every word across all 20 Pre-A lessons.
+TPR_ACTIONS = {
+    # Greetings & social phrases -- gesture + say it
+    "hello": "Wave to a friend and say 'hello'!",
+    "hi": "Wave your hand and say 'hi'!",
+    "good morning": "Stretch your arms up high and say 'good morning'!",
+    "good night": "Close your eyes and pretend to sleep, then whisper 'good night'!",
+    "goodbye": "Wave goodbye with a big smile!",
+    "thank you": "Put your hand on your heart and say 'thank you'!",
+    "please": "Put your hands together and say 'please'!",
+    "sorry": "Make a sorry face and say 'sorry'!",
+    "nice to meet you": "Shake hands with a friend and say 'nice to meet you'!",
+    # Pronouns / abstract social words
+    "name": "Point to yourself and say your name!",
+    "i": "Point to yourself and say 'I'!",
+    "you": "Point to a friend and say 'you'!",
+    "boy": "If you are a boy, stand up and wave!",
+    "girl": "If you are a girl, stand up and wave!",
+    "friend": "Point to a friend and give them a high-five!",
+    # Body parts -- touch it directly
+    "head": "Touch your head!",
+    "eyes": "Point to your eyes and blink!",
+    "nose": "Touch your nose!",
+    "mouth": "Touch your mouth and smile!",
+    "ears": "Touch your ears!",
+    "hands": "Clap your hands!",
+    "feet": "Stomp your feet!",
+    # Family -- act it out, since family members usually aren't in the room
+    "mom": "Pretend to give your mom a big hug!",
+    "dad": "Pretend to give your dad a big hug!",
+    "brother": "Pretend to play with your brother!",
+    "sister": "Pretend to play with your sister!",
+    "baby": "Rock your arms like you're holding a baby!",
+    "grandma": "Pretend to give your grandma a gentle hug!",
+    "grandpa": "Pretend to give your grandpa a gentle hug!",
+    # Animals -- act out how they move or sound
+    "cat": "Meow like a cat and stretch like one too!",
+    "dog": "Bark like a dog and wag your 'tail'!",
+    "bird": "Flap your arms like a bird flying!",
+    "fish": "Wiggle like a fish swimming!",
+    "rabbit": "Hop like a rabbit!",
+    "duck": "Waddle and quack like a duck!",
+    "goat": "Make a goat sound -- baaa!",
+    "lion": "Make a big lion roar!",
+    "elephant": "Swing your arm like an elephant's trunk!",
+    "monkey": "Scratch your arms and jump like a monkey!",
+    "giraffe": "Stretch your neck up tall like a giraffe!",
+    "zebra": "Gallop in place like a zebra!",
+    "camel": "Walk slowly and humpy like a camel!",
+    # Actions -- direct imperative, these ARE the actions
+    "run": "Run in place!",
+    "jump": "Jump up and down!",
+    "sit": "Sit down!",
+    "stand": "Stand up tall!",
+    "clap": "Clap your hands!",
+    "sing": "Sing your favorite song out loud!",
+    # Feelings -- make the face / show it
+    "happy": "Make your happiest, biggest smile!",
+    "sad": "Make a sad face, then turn it into a smile!",
+    "angry": "Make an angry face -- grr!",
+    "tired": "Pretend to yawn and stretch, you're so tired!",
+    "hungry": "Rub your tummy like you're hungry!",
+    "scared": "Make a scared face -- boo!",
+    # Food -- pretend to eat/drink it
+    "apple": "Pretend to take a big bite of an apple!",
+    "banana": "Pretend to peel and eat a banana!",
+    "bread": "Pretend to take a big bite of bread!",
+    "milk": "Pretend to drink a glass of milk!",
+    "water": "Pretend to drink a glass of water!",
+    "egg": "Pretend to crack an egg!",
+    "rice": "Pretend to eat a spoonful of rice!",
+    "chicken": "Pretend to eat a piece of chicken!",
+    "cheese": "Pretend to take a bite of cheese!",
+    "juice": "Pretend to drink a cup of juice!",
+    "cake": "Pretend to eat a slice of cake!",
+    "ice cream": "Pretend to lick an ice cream cone!",
+    # Numbers -- show with fingers
+    "one": "Show me 1 finger!",
+    "two": "Show me 2 fingers!",
+    "three": "Show me 3 fingers!",
+    "four": "Show me 4 fingers!",
+    "five": "Show me 5 fingers!",
+    "six": "Show me 6 fingers! (use both hands!)",
+    "seven": "Show me 7 fingers!",
+    "eight": "Show me 8 fingers!",
+    "nine": "Show me 9 fingers!",
+    "ten": "Show me all 10 fingers!",
+    # Colors -- find something that color
+    "red": "Find something red in the room and point to it!",
+    "blue": "Find something blue in the room and point to it!",
+    "yellow": "Find something yellow in the room and point to it!",
+    "green": "Find something green in the room and point to it!",
+    "orange": "Find something orange in the room and point to it!",
+    "purple": "Find something purple in the room and point to it!",
+    "pink": "Find something pink in the room and point to it!",
+    "brown": "Find something brown in the room and point to it!",
+    "black": "Find something black in the room and point to it!",
+    "white": "Find something white in the room and point to it!",
+    # Concrete objects -- point to it or a picture of it
+    "ball": "Pretend to bounce or throw a ball!",
+    "box": "Find a box in the room and point to it!",
+    "car": "Pretend to drive a car -- vroom!",
+    "doll": "Pretend to hug a doll!",
+    "robot": "Walk like a robot!",
+    "blocks": "Pretend to stack blocks up high!",
+    "teddy bear": "Pretend to hug a teddy bear!",
+    "school": "Point to your backpack or something from school!",
+    "book": "Pretend to open a book and read!",
+    "pen": "Pretend to write with a pen!",
+    "pencil": "Pretend to write with a pencil!",
+    "bag": "Point to a bag or backpack!",
+    "teacher": "Point to your teacher and wave!",
+    "kite": "Pretend to fly a kite!",
+    "moon": "Look up and point at the sky, pretend you see the moon!",
+    "queen": "Stand tall and act like a queen with a crown!",
+    "sun": "Reach up high and pretend to touch the sun!",
+    "tree": "Stretch your arms out like tree branches!",
+    "umbrella": "Pretend to hold an umbrella in the rain!",
+    "van": "Pretend to drive a van -- vroom!",
+    "hat": "Pretend to put on a hat!",
+}
+
+def tpr_action_for(word):
+    """Returns a word-appropriate action, falling back to a safe
+    generic 'find it' prompt only for words not in the dictionary
+    above (shouldn't happen for any current Pre-A lesson, but keeps
+    this robust if new vocab is added later)."""
+    return TPR_ACTIONS.get(word.lower(), f"Find something that reminds you of '{word}' and show the class!")
+
 def slide_tpr_activity(instruction, n, total, ch):
     """Total Physical Response activity -- teacher-led, no reading or
     clicking required. Appropriate for pre-literacy Pre-A students who
@@ -478,11 +612,12 @@ def slide_teacher_game(vocab, n, total, ch, tier="preA", mode="teacher"):
         <div style="width:100%;flex:1;overflow:hidden"><img src="assets/vocab/{slug(w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
         {f'<div style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:.85rem;color:#43301F">{esc(w["en"])}</div>' if show_word else ""}
       </button>'''
-    title = {"teacher": "Teacher & Student Game", "student": "Your Turn to Call It!", "partner": "Partner Challenge"}.get(mode, "Teacher & Student Game")
+    title = {"teacher": "Teacher & Student Game", "student": "Your Turn to Call It!", "partner": "Partner Challenge", "group": "Everyone Together!"}.get(mode, "Teacher & Student Game")
     instruction = {
         "teacher": "Teacher says a word out loud &mdash; first student to tap it wins!",
         "student": "Pick a student to call out a word for the class &mdash; everyone else races to tap it!",
         "partner": "Pair up! Take turns calling out words for your partner to find.",
+        "group": "Everyone stands up! Teacher calls a word and the whole class points to it together!",
     }.get(mode, "Teacher says a word out loud &mdash; first student to tap it wins!")
     return (bg_study() + header(title, n, total) + COLORSTRIP + f'''
     <div style="position:absolute;left:0;right:0;top:150px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:700;
@@ -578,18 +713,8 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
         for i in range(n_sound_match):
             plan.append(("sound_match", i))
     if tier == "preA":
-        tpr_templates = [
-            "Stand up! Show me something that is a {w}!",
-            "Point to your {w}! Can you find it?",
-            "Can you find something that is {w}? Show me!",
-            "Run and touch something that reminds you of {w}!",
-            "Act out {w} for the class!",
-        ]
-        tpr_passes = 3 if V <= 4 else (2 if V <= 6 else 1)
-        for p in range(tpr_passes):
-            for i, w in enumerate(lesson["vocab"]):
-                template = tpr_templates[(i + p) % len(tpr_templates)]
-                plan.append(("tpr", template.format(w=esc(w["en"]))))
+        for w in lesson["vocab"]:
+            plan.append(("tpr", tpr_action_for(w["en"])))
     for i, w in enumerate(lesson["vocab"]):
         plan.append(("vocab", (w, i)))
         plan.append(("practice_phonics", (w, i)))
@@ -599,7 +724,7 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
     plan.append(("dialogue", None))
     plan.append(("sentence", None))
     plan.append(("sound_spot", None))
-    your_turn_n = min(3, V)
+    your_turn_n = min(4, V) if V <= 4 else min(3, V)
     for i in range(your_turn_n):
         plan.append(("your_turn", (lesson["vocab"][i], i + 1)))
     # Quick Check: live, age-calibrated in-class practice -- one round per
@@ -611,6 +736,8 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
     plan.append(("teacher_game", "teacher"))
     plan.append(("teacher_game", "student"))
     plan.append(("teacher_game", "partner"))
+    if V <= 4:
+        plan.append(("teacher_game", "group"))
     plan.append(("quiz", 1))
     plan.append(("quiz", 2))
     plan.append(("today_i_learned", None))

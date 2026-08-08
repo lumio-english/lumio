@@ -620,7 +620,7 @@
         </div>
       </div>
       <div class="sd-hubb-trail" id="hubStoriesTrail"></div>
-      <span class="sd-hubb-btn">Open</span>
+      <span class="sd-hubb-btn" id="hubStoriesBtn">Open</span>
     </button>
     <button class="sd-hubb" id="hubPhonics">
       <div class="sd-hubb-left">
@@ -1588,17 +1588,10 @@
   // this level, and greys the whole banner out when a section isn't
   // available yet at this level (mirrors the story banner's lock state).
   function renderHubTrail(elId, count, locked) {
+    // Numbered dots removed -- cluttered the banner without adding real
+    // information (the sub-label already states the count in words).
     const el = document.getElementById(elId);
-    if (!el) return;
-    if (locked || !count) { el.innerHTML = ""; return; }
-    const shown = Math.min(count, 6);
-    let html = "";
-    for (let i = 1; i <= shown; i++) {
-      html += `<div class="sd-hubb-stop${locked ? " locked" : ""}">${i}</div>`;
-      if (i < shown) html += '<div class="sd-hubb-line"></div>';
-    }
-    if (count > shown) html += `<div class="sd-hubb-stop locked">+${count - shown}</div>`;
-    el.innerHTML = html;
+    if (el) el.innerHTML = "";
   }
   function lockHubBanner(id, subId, subText) {
     const btn = document.getElementById(id);
@@ -1645,13 +1638,22 @@
     }
 
     // Stories (mini read-along stories — separate from the big story banner above)
-    try {
-      const r = await fetch(`stories-hub/${level}.json`);
-      const d = await r.json();
-      const n = (d.stories || []).length;
-      document.getElementById("hubStoriesSub").textContent = `${n} read-along stories`;
-      renderHubTrail("hubStoriesTrail", n, false);
-    } catch (e) { renderHubTrail("hubStoriesTrail", 0, true); }
+    // Gated behind a little early progress, same pattern as Grammar/Phonics --
+    // previously always open regardless of progress, which didn't match how
+    // every other Hub section behaves.
+    const STORIES_UNLOCK_AT = 3;
+    if (done < STORIES_UNLOCK_AT) {
+      lockHubBanner("hubStories", "hubStoriesSub", `Unlocks after Lesson ${STORIES_UNLOCK_AT} — ${done}/${STORIES_UNLOCK_AT} so far`);
+      document.getElementById("hubStoriesBtn").textContent = "🔒 Locked";
+    } else {
+      try {
+        const r = await fetch(`stories-hub/${level}.json`);
+        const d = await r.json();
+        const n = (d.stories || []).length;
+        document.getElementById("hubStoriesSub").textContent = `${n} read-along stories`;
+        renderHubTrail("hubStoriesTrail", n, false);
+      } catch (e) { renderHubTrail("hubStoriesTrail", 0, true); }
+    }
 
     // Writing & speaking
     try {

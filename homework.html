@@ -367,10 +367,22 @@ function renderGrammarPractice() {
       ${navButtons("← Back", `Next: ${STEPS[currentStep + 1] ? STEPS[currentStep + 1].label : ""} →`)}
     </div>`;
 }
+const PRONOUN_EQUIVALENCE_GROUPS = [
+  ["i", "you", "we", "they"],
+  ["he", "she", "it"],
+  ["this", "that"],
+  ["these", "those"],
+];
+function isEquivalentAnswer(given, correct) {
+  const g = given.trim().toLowerCase();
+  const c = correct.trim().toLowerCase();
+  if (g === c) return true;
+  return PRONOUN_EQUIVALENCE_GROUPS.some(group => group.includes(g) && group.includes(c));
+}
 function checkGrammar(i, correctWord) {
   const input = document.getElementById(`gr-${i}`);
   const btn = document.getElementById(`grBtn-${i}`);
-  const correct = input.value.trim().toLowerCase() === correctWord.toLowerCase();
+  const correct = isEquivalentAnswer(input.value, correctWord);
   input.classList.remove("correct", "wrong");
   input.classList.add(correct ? "correct" : "wrong");
   btn.classList.toggle("correct", correct);
