@@ -133,7 +133,7 @@ function renderSpelling() {
       <h2>✏️ Spelling Practice</h2>
       <div class="hw-sub">Look at the picture and the Arabic word, then type the English word.</div>
       ${rows}
-      ${navButtons("← Back", "Next: Draw It →")}
+      ${navButtons("← Back", `Next: ${STEPS[currentStep + 1] ? STEPS[currentStep + 1].label : ""} →`)}
     </div>`;
 }
 function slugify(t) { return String(t).toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""); }
@@ -161,7 +161,7 @@ function renderDraw() {
       <div style="margin-top:10px"><button class="hw-btn ghost" onclick="clearCanvas()">Clear</button></div>
       <div class="hw-footer-nav">
         <button class="hw-btn ghost" onclick="goToStep(${i - 1})">← Back</button>
-        <button class="hw-btn" onclick="finishDrawing(); goToStep(${i + 1})">Next: Say It →</button>
+        <button class="hw-btn" onclick="finishDrawing(); goToStep(${i + 1})">Next: ${STEPS[i + 1] ? STEPS[i + 1].label : ""} →</button>
       </div>
     </div>`;
   setupCanvas();
@@ -340,7 +340,7 @@ function renderPhonicsPractice() {
       <div class="hw-sub">${skillData.tip ? skillData.tip : "Listen to each sound word, then record yourself saying it."}</div>
       ${rows}
       ${!micSupported ? `<div class="hw-parent-box" style="margin-top:14px">Recording isn't supported on this browser/device — practice saying these sounds out loud with your family instead.</div>` : ""}
-      ${navButtons("← Back", "Next: Quiz →")}
+      ${navButtons("← Back", `Next: ${STEPS[currentStep + 1] ? STEPS[currentStep + 1].label : ""} →`)}
     </div>`;
 }
 
@@ -364,7 +364,7 @@ function renderGrammarPractice() {
       <h2>📝 Grammar Focus &mdash; ${esc(skillData.title)}</h2>
       <div class="hw-sub">${esc(skillData.explanation || "")} Fill in the missing first word of each sentence.</div>
       ${rows}
-      ${navButtons("← Back", "Next: Quiz →")}
+      ${navButtons("← Back", `Next: ${STEPS[currentStep + 1] ? STEPS[currentStep + 1].label : ""} →`)}
     </div>`;
 }
 function checkGrammar(i, correctWord) {

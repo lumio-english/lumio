@@ -588,7 +588,7 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
         tpr_passes = 3 if V <= 4 else (2 if V <= 6 else 1)
         for p in range(tpr_passes):
             for i, w in enumerate(lesson["vocab"]):
-                template = tpr_templates[i % len(tpr_templates)]
+                template = tpr_templates[(i + p) % len(tpr_templates)]
                 plan.append(("tpr", template.format(w=esc(w["en"]))))
     for i, w in enumerate(lesson["vocab"]):
         plan.append(("vocab", (w, i)))
