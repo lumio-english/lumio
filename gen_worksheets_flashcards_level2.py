@@ -82,14 +82,23 @@ def draw_worksheet(c, lesson, num):
         y -= 20
     y -= 10
 
-    # 2. Draw a picture
+    # 2. Talk About It
     c.setFont("Helvetica-Bold", 12)
-    c.drawString(46, y, f'2. Draw a picture of \u201c{words[0]}\u201d')
-    y -= 12
-    c.setDash(3, 3)
-    c.rect(46, y - 130, PAGE_W - 92, 120, stroke=1, fill=0)
-    c.setDash()
-    y -= 150
+    c.drawString(46, y, "2. Talk About It \u2014 answer with your family")
+    y -= 20
+    c.setFont("Helvetica", 10.5)
+    talk_qs = [
+        f'Can you use "{words[0]}" in your own sentence?',
+        f'Where or when have you seen or used "{words[min(1, len(words)-1)]}"?',
+    ]
+    for q in talk_qs:
+        c.drawString(56, y, f"\u2022 {q}")
+        y -= 16
+        c.setDash(2, 2)
+        c.line(66, y, PAGE_W - 60, y)
+        c.setDash()
+        y -= 22
+    y -= 4
 
     # 3. Say each word to your family
     c.setFont("Helvetica-Bold", 12)

@@ -82,14 +82,28 @@ def draw_worksheet(c, lesson, num):
         y -= 20
     y -= 10
 
-    # 2. Draw a picture
+    # 2. Write It
     c.setFont("Helvetica-Bold", 12)
-    c.drawString(46, y, f'2. Draw a picture of \u201c{words[0]}\u201d')
-    y -= 12
-    c.setDash(3, 3)
-    c.rect(46, y - 130, PAGE_W - 92, 120, stroke=1, fill=0)
-    c.setDash()
-    y -= 150
+    c.drawString(46, y, "2. Write It \u2014 use today's pattern")
+    y -= 18
+    c.setFont("Helvetica-Oblique", 10)
+    pattern = lesson.get("grammarFocus", "")
+    example = lesson["vocab"][0].get("example", "") if lesson.get("vocab") else ""
+    c.setFillColorRGB(*TEAL)
+    c.drawString(56, y, f"Pattern: {pattern}"[:95])
+    y -= 15
+    if example:
+        c.drawString(56, y, f'Example: \u201c{example}\u201d'[:95])
+        y -= 20
+    c.setFillColorRGB(*INK)
+    c.setFont("Helvetica", 10.5)
+    for i in range(3):
+        c.drawString(56, y, f"{i+1}.")
+        c.setDash(2, 2)
+        c.line(72, y, PAGE_W - 60, y)
+        c.setDash()
+        y -= 22
+    y -= 6
 
     # 3. Say each word to your family
     c.setFont("Helvetica-Bold", 12)
