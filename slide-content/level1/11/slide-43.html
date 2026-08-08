@@ -1,28 +1,57 @@
-<div class="wall"></div><div class="teal-band"></div><div class="window"><div class="cross-v"></div><div class="cross-h"></div></div><div class="spark" style="left:375px;top:135px;font-size:1.6rem">&#10022;</div><div class="spark" style="left:415px;top:105px;font-size:1.1rem">&#10022;</div><div class="spark" style="left:392px;top:178px;font-size:1.3rem">&#10022;</div><div class="header">
+<div class="wall"></div><div class="teal-band"></div><div class="shelf"></div><div class="book" style="left:56px;width:32px;height:78px;background:#F97316"></div><div class="book" style="left:93px;width:28px;height:85px;background:#0D9488"></div><div class="book" style="left:126px;width:36px;height:92px;background:#F59E0B"></div><div class="book" style="left:167px;width:26px;height:99px;background:#2DD4BF"></div><div class="book" style="left:198px;width:32px;height:81px;background:#DC5C33"></div><div class="window"><div class="cross-v"></div><div class="cross-h"></div></div><div class="spark" style="left:375px;top:135px;font-size:1.6rem">&#10022;</div><div class="spark" style="left:415px;top:105px;font-size:1.1rem">&#10022;</div><div class="spark" style="left:392px;top:178px;font-size:1.3rem">&#10022;</div><div class="header">
       <div class="brand"><img src="assets/logo/lumio-logo.png"><div class="name">Lumio<small>ENGLISH</small></div></div>
-      <div class="pagetitle">Quick Check &bull; 4/8 &bull; Round 2</div>
-      <div class="counter">43 / 51</div>
+      <div class="pagetitle">Partner Challenge</div>
+      <div class="counter">43 / 47</div>
     </div><div class="colorstrip"><div class="c1"></div><div class="c2"></div><div class="c3"></div><div class="c4"></div><div class="c5"></div></div>
-    <div class="card" style="position:absolute;left:280px;top:190px;width:280px;height:280px;overflow:hidden;padding:0">
-      <img src="assets/vocab/shoes.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-    <div style="position:absolute;left:610px;top:190px;width:540px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.9rem;color:#43301F">Which word matches the picture?</div>
+    <div style="position:absolute;left:0;right:0;top:150px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:700;
+                font-size:1.05rem;color:#8A7160">Pair up! Take turns calling out words for your partner to find.</div>
     
-          <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'shirt', 'shoes')"
-                  style="position:absolute;left:560px;top:230px;width:180px;height:210px;background:#fff;border:3px solid #F0E9DD;border-radius:16px;
-                      padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px" data-quiz-option="shirt">
-            <div style="width:100%;height:140px"><img src="assets/vocab/shirt.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-            <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1rem;color:#43301F">shirt</div>
-          </button>
-          <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'shoes', 'shoes')"
-                  style="position:absolute;left:790px;top:230px;width:180px;height:210px;background:#fff;border:3px solid #F0E9DD;border-radius:16px;
-                      padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px" data-quiz-option="shoes">
-            <div style="width:100%;height:140px"><img src="assets/vocab/shoes.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-            <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1rem;color:#43301F">shoes</div>
-          </button>
-          <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'dress', 'shoes')"
-                  style="position:absolute;left:1020px;top:230px;width:180px;height:210px;background:#fff;border:3px solid #F0E9DD;border-radius:16px;
-                      padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px" data-quiz-option="dress">
-            <div style="width:100%;height:140px"><img src="assets/vocab/dress.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-            <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1rem;color:#43301F">dress</div>
-          </button>
-    
+      <button onclick="this.style.transform='scale(0.92)'; this.style.borderColor='#0D9488'; setTimeout(() => { this.style.transform='scale(1)'; }, 180); typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('shirt')"
+              style="position:absolute;left:130px;top:210px;width:190px;height:160px;background:#fff;border:3px solid #F0E9DD;border-radius:18px;
+                  padding:8px;cursor:pointer;transition:transform .15s ease, border-color .15s ease;display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div style="width:100%;flex:1;overflow:hidden"><img src="assets/vocab/shirt.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem;color:#43301F">shirt</div>
+      </button>
+      <button onclick="this.style.transform='scale(0.92)'; this.style.borderColor='#0D9488'; setTimeout(() => { this.style.transform='scale(1)'; }, 180); typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('dress')"
+              style="position:absolute;left:344px;top:210px;width:190px;height:160px;background:#fff;border:3px solid #F0E9DD;border-radius:18px;
+                  padding:8px;cursor:pointer;transition:transform .15s ease, border-color .15s ease;display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div style="width:100%;flex:1;overflow:hidden"><img src="assets/vocab/dress.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem;color:#43301F">dress</div>
+      </button>
+      <button onclick="this.style.transform='scale(0.92)'; this.style.borderColor='#0D9488'; setTimeout(() => { this.style.transform='scale(1)'; }, 180); typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('pants')"
+              style="position:absolute;left:558px;top:210px;width:190px;height:160px;background:#fff;border:3px solid #F0E9DD;border-radius:18px;
+                  padding:8px;cursor:pointer;transition:transform .15s ease, border-color .15s ease;display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div style="width:100%;flex:1;overflow:hidden"><img src="assets/vocab/pants.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem;color:#43301F">pants</div>
+      </button>
+      <button onclick="this.style.transform='scale(0.92)'; this.style.borderColor='#0D9488'; setTimeout(() => { this.style.transform='scale(1)'; }, 180); typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('shoes')"
+              style="position:absolute;left:772px;top:210px;width:190px;height:160px;background:#fff;border:3px solid #F0E9DD;border-radius:18px;
+                  padding:8px;cursor:pointer;transition:transform .15s ease, border-color .15s ease;display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div style="width:100%;flex:1;overflow:hidden"><img src="assets/vocab/shoes.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem;color:#43301F">shoes</div>
+      </button>
+      <button onclick="this.style.transform='scale(0.92)'; this.style.borderColor='#0D9488'; setTimeout(() => { this.style.transform='scale(1)'; }, 180); typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('hat')"
+              style="position:absolute;left:130px;top:390px;width:190px;height:160px;background:#fff;border:3px solid #F0E9DD;border-radius:18px;
+                  padding:8px;cursor:pointer;transition:transform .15s ease, border-color .15s ease;display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div style="width:100%;flex:1;overflow:hidden"><img src="assets/vocab/hat.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem;color:#43301F">hat</div>
+      </button>
+      <button onclick="this.style.transform='scale(0.92)'; this.style.borderColor='#0D9488'; setTimeout(() => { this.style.transform='scale(1)'; }, 180); typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('jacket')"
+              style="position:absolute;left:344px;top:390px;width:190px;height:160px;background:#fff;border:3px solid #F0E9DD;border-radius:18px;
+                  padding:8px;cursor:pointer;transition:transform .15s ease, border-color .15s ease;display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div style="width:100%;flex:1;overflow:hidden"><img src="assets/vocab/jacket.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem;color:#43301F">jacket</div>
+      </button>
+      <button onclick="this.style.transform='scale(0.92)'; this.style.borderColor='#0D9488'; setTimeout(() => { this.style.transform='scale(1)'; }, 180); typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('socks')"
+              style="position:absolute;left:558px;top:390px;width:190px;height:160px;background:#fff;border:3px solid #F0E9DD;border-radius:18px;
+                  padding:8px;cursor:pointer;transition:transform .15s ease, border-color .15s ease;display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div style="width:100%;flex:1;overflow:hidden"><img src="assets/vocab/socks.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem;color:#43301F">socks</div>
+      </button>
+      <button onclick="this.style.transform='scale(0.92)'; this.style.borderColor='#0D9488'; setTimeout(() => { this.style.transform='scale(1)'; }, 180); typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('T-shirt')"
+              style="position:absolute;left:772px;top:390px;width:190px;height:160px;background:#fff;border:3px solid #F0E9DD;border-radius:18px;
+                  padding:8px;cursor:pointer;transition:transform .15s ease, border-color .15s ease;display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div style="width:100%;flex:1;overflow:hidden"><img src="assets/vocab/t-shirt.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem;color:#43301F">T-shirt</div>
+      </button>
+    <div class="floorshadow" style="right:40px;bottom:23px;width:230px;height:36px"></div><img class="char" src="assets/story/characters/omar-wave.png" style="right:40px;bottom:30px;height:150px">

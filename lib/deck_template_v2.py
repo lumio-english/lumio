@@ -299,8 +299,11 @@ def slide_quick_check(target, distractors, idx, total_q, n, total, seed, tier="p
     random.Random(seed).shuffle(opts)
 
     if tier == "preA":
-        # two large picture-only cards, side by side, no reading required
-        positions = [(500, 260), (860, 260)]
+        # two large picture-only cards, side by side, no reading required --
+        # plus a tap-to-hear button so the target word is actually
+        # announced (previously nothing on this slide indicated which
+        # word was being asked about beyond the teacher saying it aloud)
+        positions = [(560, 300), (900, 300)]
         buttons = ""
         for o, (l, t) in zip(opts, positions):
             buttons += f'''
@@ -310,6 +313,12 @@ def slide_quick_check(target, distractors, idx, total_q, n, total, seed, tier="p
             <img src="assets/vocab/{slug(o['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
           </button>'''
         prompt = "Which one is it?"
+        listen_btn = f'''<button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(target["en"])}')"
+                style="position:absolute;left:80px;top:280px;width:180px;height:180px;border:none;cursor:pointer;background:linear-gradient(135deg,#0D9488,#0B7A6F);
+                       border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#fff">
+          <span style="font-size:2.4rem">&#128266;</span>
+          <span style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.9rem">Tap to hear</span>
+        </button>'''
     elif tier == "level1":
         positions = [(560, 230), (790, 230), (1020, 230)]
         buttons = ""
@@ -333,9 +342,9 @@ def slide_quick_check(target, distractors, idx, total_q, n, total, seed, tier="p
                       color:#43301F;cursor:pointer" data-quiz-option="{esc(o["en"])}">{esc(o["en"])}</button>'''
         prompt = "What is this?"
 
-    img_block = "" if tier == "preA" else f'''<div class="card" style="position:absolute;left:280px;top:190px;width:280px;height:280px;overflow:hidden;padding:0">
+    img_block = listen_btn if tier == "preA" else f'''<div class="card" style="position:absolute;left:280px;top:190px;width:280px;height:280px;overflow:hidden;padding:0">
       <img src="assets/vocab/{slug(target['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>'''
-    prompt_pos = "left:280px;top:200px;width:600px;text-align:center" if tier == "preA" else "left:610px;top:190px;width:540px"
+    prompt_pos = "left:80px;top:200px;width:220px;text-align:center" if tier == "preA" else "left:610px;top:190px;width:540px"
     return (bg_plain() + header(f"Quick Check &bull; {idx}", n, total) + COLORSTRIP + f'''
     {img_block}
     <div style="position:absolute;{prompt_pos};font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.9rem;color:#43301F">{prompt}</div>
@@ -446,6 +455,42 @@ def slide_sound_match(target_word, distractor_words, idx, total_q, n, total, see
     ''')
 
 
+def slide_teacher_game(vocab, n, total, ch, tier="preA", mode="teacher"):
+    """A real teacher-led game, not another graded exercise -- shows
+    every word from the lesson as a tappable tile in one board.
+    Two modes instead of a repeated round: 'teacher' has the teacher
+    call out words for students to race to; 'student' flips it --
+    a student calls out words for classmates, building turn-taking
+    and peer confidence instead of just repeating the same format."""
+    cols = 3 if len(vocab) <= 6 else 4
+    tile_w = 220 if tier == "preA" else 190
+    tile_h = 190 if tier == "preA" else 160
+    tiles = ""
+    for i, w in enumerate(vocab):
+        row, col = divmod(i, cols)
+        left = 130 + col * (tile_w + 24)
+        top = 210 + row * (tile_h + 20)
+        show_word = tier != "preA"
+        tiles += f'''
+      <button onclick="this.style.transform='scale(0.92)'; this.style.borderColor='#0D9488'; setTimeout(() => {{ this.style.transform='scale(1)'; }}, 180); typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(w["en"])}')"
+              style="position:absolute;left:{left}px;top:{top}px;width:{tile_w}px;height:{tile_h}px;background:#fff;border:3px solid #F0E9DD;border-radius:18px;
+                  padding:8px;cursor:pointer;transition:transform .15s ease, border-color .15s ease;display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div style="width:100%;flex:1;overflow:hidden"><img src="assets/vocab/{slug(w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        {f'<div style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:.85rem;color:#43301F">{esc(w["en"])}</div>' if show_word else ""}
+      </button>'''
+    title = {"teacher": "Teacher & Student Game", "student": "Your Turn to Call It!", "partner": "Partner Challenge"}.get(mode, "Teacher & Student Game")
+    instruction = {
+        "teacher": "Teacher says a word out loud &mdash; first student to tap it wins!",
+        "student": "Pick a student to call out a word for the class &mdash; everyone else races to tap it!",
+        "partner": "Pair up! Take turns calling out words for your partner to find.",
+    }.get(mode, "Teacher says a word out loud &mdash; first student to tap it wins!")
+    return (bg_study() + header(title, n, total) + COLORSTRIP + f'''
+    <div style="position:absolute;left:0;right:0;top:150px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:700;
+                font-size:1.05rem;color:#8A7160">{instruction}</div>
+    {tiles}
+    ''' + char_img(ch, right=40, bottom=30, height=150))
+
+
 def slide_today_i_learned(lesson, n, total):
     chips = "".join(f'''
       <div style="background:#fff;border-radius:14px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;
@@ -457,7 +502,7 @@ def slide_today_i_learned(lesson, n, total):
     <div style="position:absolute;left:46px;top:150px;width:820px">
       <div style="font-size:.78rem;font-weight:800;color:#F97316;letter-spacing:1.5px;margin-bottom:10px">KEY WORDS</div>
       <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px">{chips}</div>
-      <div style="font-size:.78rem;font-weight:800;color:#0D9488;letter-spacing:1.5px;margin-bottom:8px">GRAMMAR</div>
+      <div style="font-size:.78rem;font-weight:800;color:#0D9488;letter-spacing:1.5px;margin-bottom:8px">SENTENCE PATTERN</div>
       <div class="card" style="padding:16px 20px">
         <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.05rem;color:#43301F">{esc(lesson.get("grammarFocus",""))}</div>
         <div style="font-family:'Baloo 2',sans-serif;font-style:italic;font-weight:700;font-size:1.1rem;color:#F97316;margin-top:6px">&ldquo;{esc(lesson["vocab"][0].get("example", ""))}&rdquo;</div>
@@ -533,7 +578,18 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
         for i in range(n_sound_match):
             plan.append(("sound_match", i))
     if tier == "preA":
-        plan.append(("tpr", f"Stand up! Show me something that is a {esc(lesson['vocab'][0]['en'])}!"))
+        tpr_templates = [
+            "Stand up! Show me something that is a {w}!",
+            "Point to your {w}! Can you find it?",
+            "Can you find something that is {w}? Show me!",
+            "Run and touch something that reminds you of {w}!",
+            "Act out {w} for the class!",
+        ]
+        tpr_passes = 3 if V <= 4 else (2 if V <= 6 else 1)
+        for p in range(tpr_passes):
+            for i, w in enumerate(lesson["vocab"]):
+                template = tpr_templates[i % len(tpr_templates)]
+                plan.append(("tpr", template.format(w=esc(w["en"]))))
     for i, w in enumerate(lesson["vocab"]):
         plan.append(("vocab", (w, i)))
         plan.append(("practice_phonics", (w, i)))
@@ -543,21 +599,18 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
     plan.append(("dialogue", None))
     plan.append(("sentence", None))
     plan.append(("sound_spot", None))
-    if tier == "preA" and V > 1:
-        plan.append(("tpr", f"Point to your {esc(lesson['vocab'][1]['en'])}! Can you find it?"))
-    if tier == "preA" and V > 2:
-        plan.append(("tpr", f"Can you find something that is {esc(lesson['vocab'][2]['en'])}? Show me!"))
-    your_turn_n = min(2, V)
+    your_turn_n = min(3, V)
     for i in range(your_turn_n):
         plan.append(("your_turn", (lesson["vocab"][i], i + 1)))
     # Quick Check: live, age-calibrated in-class practice -- one round per
-    # vocab word (two rounds for Pre-A, since young pre-literacy learners
-    # benefit from more repetition, and smaller vocab lists need the extra
-    # coverage to fill a full class period anyway)
-    rounds = 3 if (tier == "preA" and V <= 4) else 2
-    for r in range(rounds):
-        for i in range(V):
-            plan.append(("quick_check", (i, r)))
+    # vocab word, once through (no repeat round -- that repetition is now
+    # a real teacher-led game instead, more engaging than seeing the same
+    # question format twice)
+    for i in range(V):
+        plan.append(("quick_check", (i, 0)))
+    plan.append(("teacher_game", "teacher"))
+    plan.append(("teacher_game", "student"))
+    plan.append(("teacher_game", "partner"))
     plan.append(("quiz", 1))
     plan.append(("quiz", 2))
     plan.append(("today_i_learned", None))
@@ -578,8 +631,10 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
             seed = lesson_num * 11 + i + n
             others = [x for x in lesson["vocab"] if x["en"] != target["en"]]
             distractors = random.Random(seed).sample(others, min(3, len(others)))
-            label = f"{i + 1}/{V}" if r == 0 else f"{i + 1}/{V} &bull; Round {r + 1}"
+            label = f"{i + 1}/{V}"
             slides.append(slide_quick_check(target, distractors, label, V, n, total, seed, tier=tier))
+        elif kind == "teacher_game":
+            slides.append(slide_teacher_game(lesson["vocab"], n, total, "omar-wave", tier=tier, mode=data))
         elif kind == "phonics_rule": slides.append(slide_phonics_rule(data, n, total, "sara-explain"))
         elif kind == "phonics_practice": slides.append(slide_phonics_practice(data, n, total, "sara-clap"))
         elif kind == "sound_match":
