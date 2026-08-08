@@ -11,8 +11,8 @@ const Lumio = (() => {
     { id: "pre-a",  name: "Level 0 · First Words",       lessons: 20 },
     { id: "level1", name: "Level 1 · First Sentences",   lessons: 20 },
     { id: "level2", name: "Level 2 · About Me",          lessons: 20 },
-    { id: "level3", name: "Level 3 · My World",          lessons: 20 },
-    { id: "level4", name: "Level 4 · Every Day",         lessons: 20 },
+    { id: "level3", name: "Level 3 · Real Life",         lessons: 20 },
+    { id: "level4", name: "Level 4 · On My Own",         lessons: 20 },
     { id: "level5", name: "Level 5 · Stories Begin",     lessons: 20 },
     { id: "level6", name: "Level 6 · Growing Up",        lessons: 20 },
     { id: "level7", name: "Level 7 · Wide World",        lessons: 20 },
@@ -21,7 +21,7 @@ const Lumio = (() => {
     { id: "level10", name: "Level 10 · Ready for the World", lessons: 20 },
   ];
   // Levels with lesson JSON files actually available in /lessons/
-  const AVAILABLE_LEVELS = ["pre-a", "level1", "level2", "level3", "level4", "level5", "level6", "level7", "level8", "level9"];
+  const AVAILABLE_LEVELS = ["pre-a", "level1", "level2", "level3", "level4"];
 
   /* ---------- Storage ---------- */
   const get = (k, d = null) => {
