@@ -105,9 +105,14 @@ def xp_pill(xp, extra_style=""):
 VOCAB_CHARS = ["omar-wave", "noor-happy", "sara-clap", "omar-point", "noor-wave"]
 
 # ============================================================
-def slide_title(lesson, num_words, lesson_type="VOCABULARY & GRAMMAR"):
+def slide_title(lesson, num_words, lesson_type="VOCABULARY & GRAMMAR", bg_image=None):
     subtitle = " · ".join(esc(v["en"]) for v in lesson["vocab"])
-    return f'''{bg_base()}
+    if bg_image:
+        bg = f'''<div style="position:absolute;inset:0;background:url('{bg_image}') center/cover no-repeat"></div>
+        <div style="position:absolute;inset:0;background:linear-gradient(160deg,{BG_DARK}CC 0%,{BG_DARKER}F2 100%)"></div>'''
+    else:
+        bg = bg_base()
+    return f'''{bg}
     <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;z-index:5">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
         <div style="width:44px;height:44px;border-radius:10px;background:#fff;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:4px">

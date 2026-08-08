@@ -58,9 +58,22 @@ def motif_svg(motif, accent):
           <path d="M20 20h80v140h-80z"/><path d="M100 20h80v140h-80z"/><line x1="100" y1="20" x2="100" y2="160"/></svg>'''
     return ""
 
+import os
+
+CURRENT_LESSON_BG = None  # set per-lesson in build_deck_v2, read by bg_theme()
+
 def bg_theme(theme_key="default"):
     t = THEMES.get(theme_key, THEMES["default"])
     accent = t["accent"]
+    if CURRENT_LESSON_BG:
+        # Real per-lesson artwork, full-bleed, with a dark scrim so
+        # foreground text/cards stay legible over whatever's in the
+        # image -- falls back to the flat theme gradient below if no
+        # image has been generated for this lesson yet.
+        return f'''<div style="position:absolute;inset:0;background:url('{CURRENT_LESSON_BG}') center/cover no-repeat"></div>
+        <div style="position:absolute;inset:0;background:linear-gradient(160deg,{BG_DARK}CC 0%,{BG_DARKER}E6 100%)"></div>
+        {DOT_GRID}
+        {motif_svg(t["motif"], accent)}'''
     return f'''<div style="position:absolute;inset:0;background:linear-gradient(160deg,{BG_DARK} 0%,{BG_DARKER} 100%)"></div>
     {DOT_GRID}
     <div style="position:absolute;left:-120px;top:-120px;width:380px;height:380px;border-radius:50%;
@@ -68,6 +81,19 @@ def bg_theme(theme_key="default"):
     <div style="position:absolute;right:-100px;bottom:-100px;width:320px;height:320px;border-radius:50%;
                 background:radial-gradient(circle,rgba(20,184,166,.14),transparent 70%)"></div>
     {motif_svg(t["motif"], accent)}'''
+
+def lesson_bg_path(level, lesson_num):
+    """Returns the web-relative path to this lesson's background image
+    if it exists on disk, else None (graceful fallback to the theme
+    gradient). Checked at generation time, so re-run the deck generator
+    after adding new images to pick them up."""
+    rel = f"assets/lesson-bg/{level}/{lesson_num:02d}.jpg"
+    if os.path.exists(rel):
+        return rel
+    rel_png = f"assets/lesson-bg/{level}/{lesson_num:02d}.png"
+    if os.path.exists(rel_png):
+        return rel_png
+    return None
 
 def header_themed(pagetitle, n, total, theme_key="default"):
     t = THEMES.get(theme_key, THEMES["default"])
@@ -291,7 +317,9 @@ def slide_error_analysis(wrong_sentence, right_sentence, why, n, total, theme_ke
 
 def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, notice_sentences,
                    notice_note, challenge, real_life, theme_key="default",
-                   n_vocab_mcq=10, n_grammar_mcq=10):
+                   n_vocab_mcq=10, n_grammar_mcq=10, level=None):
+    global CURRENT_LESSON_BG
+    CURRENT_LESSON_BG = lesson_bg_path(level, lesson_num) if level else None
     V = len(lesson["vocab"])
     ch1, ch2, ch3 = "omar-wave", "noor-happy", "sara-explain"
 
@@ -344,7 +372,7 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
     for pos, (kind, data) in enumerate(plan):
         n = pos + 1
         if kind == "title":
-            slides.append(v1.slide_title(lesson, V, "VOCABULARY & GRAMMAR"))
+            slides.append(v1.slide_title(lesson, V, "VOCABULARY & GRAMMAR", bg_image=CURRENT_LESSON_BG))
         elif kind == "hook":
             slides.append(slide_hook(hook_question, n, total, ch1, theme_key))
         elif kind == "first_listen":

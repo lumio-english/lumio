@@ -197,7 +197,7 @@ for num in sorted(_lessons.keys()):
     notice_note = grammar_topic["title"] if grammar_topic else ""
 
     slides = build_deck_v2(num, lesson, grammar_topic, dialogue, hook, notice_sentences,
-                            notice_note, challenge, real_life, theme_key=theme_key)
+                            notice_note, challenge, real_life, theme_key=theme_key, level=LEVEL)
     nn = f"{num:02d}"
     lesson_dir = f"slide-content/{LEVEL}/{nn}"
     os.makedirs(lesson_dir, exist_ok=True)
