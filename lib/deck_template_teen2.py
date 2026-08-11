@@ -232,27 +232,120 @@ def equivalence_group(word):
             return g
     return None  # not a pronoun -- no ambiguity risk, treat as unique
 
+import re
+
+# Keyword/pattern markers used to find the grammar-relevant word in a
+# sentence, in priority order -- this is what lets us blank the word
+# that ACTUALLY demonstrates the grammar point, wherever it sits in
+# the sentence, instead of always grabbing word #1.
+TENSE_KEYWORDS = {"was", "were", "will", "am", "is", "are", "did", "didn't",
+                   "don't", "doesn't", "have", "has", "had", "going"}
+ED_VERB_RE = re.compile(r"^\w+ed$", re.I)
+ING_VERB_RE = re.compile(r"^\w+ing$", re.I)
+LY_ADVERB_RE = re.compile(r"^\w+ly$", re.I)
+COMPARATIVE_RE = re.compile(r"^(more|most|\w+er|\w+est)$", re.I)
+
+def find_blank_index(words_clean):
+    """Scans left to right for the first word matching a grammar
+    marker. Returns None if no marker is found anywhere in the
+    sentence -- callers should fall back to blanking word 0 in that
+    case (the original, proven-safe behavior) rather than guessing at
+    a position, since blanking an arbitrary word with no clear
+    grammatical role produces mismatched-part-of-speech distractor
+    options (e.g. offering a pronoun as a wrong answer for a verb
+    blank) instead of a genuinely testable question."""
+    for i, w in enumerate(words_clean):
+        wl = w.lower()
+        if wl in TENSE_KEYWORDS or ED_VERB_RE.match(w) or ING_VERB_RE.match(w) or LY_ADVERB_RE.match(w) or COMPARATIVE_RE.match(w):
+            return i
+    return None
+
+def marker_type(word):
+    wl = word.lower()
+    if wl in {"was", "were"}: return "was_were"
+    if wl in {"will"}: return "will"
+    if wl == "going": return "going_to"
+    if wl in {"have", "has", "had"}: return "have"
+    if wl in {"did", "didn't", "don't", "doesn't"}: return "aux"
+    if ED_VERB_RE.match(word): return "ed_verb"
+    if ING_VERB_RE.match(word): return "ing_verb"
+    if LY_ADVERB_RE.match(word): return "ly_adverb"
+    if COMPARATIVE_RE.match(word): return "comparative"
+    return "other"
+
+MARKER_DISTRACTOR_POOLS = {
+    "was_were": ["is", "are", "will", "did"],
+    "will": ["would", "can", "did", "was"],
+    "going_to": ["went", "goes", "gone", "go"],
+    "have": ["has", "had", "having", "have"],
+    "aux": ["was", "were", "will", "is"],
+    "ed_verb": [],   # filled from other sentences' -ed verbs when possible
+    "ing_verb": [],  # filled from other sentences' -ing verbs
+    "ly_adverb": [], # filled from other sentences' -ly adverbs
+    "comparative": ["good", "bad", "big", "small"],
+    "other": ["Not", "The", "A", "Is"],
+}
+
 def slide_grammar_mcq(sentences, idx, total_q, n, total, theme_key="default"):
     """sentences: list of {en, ar} pulled from grammar examples + vocab
     examples (this curriculum writes vocab examples to already reflect
     the lesson's grammar focus, so pooling both gives real variety
-    without any lesson-specific hand-authoring)."""
+    without any lesson-specific hand-authoring).
+
+    The blank is no longer always the first word -- finds the actual
+    grammar-relevant word (was/were, will, an -ed verb, an -ing verb,
+    a comparative, etc.) wherever it sits in the sentence, and blanks
+    that instead. Distractors are chosen based on the marker TYPE of
+    the blanked word (e.g. a blanked -ed verb gets other real -ed
+    verbs from the sentence pool as distractors, not random unrelated
+    words), with the same grammatical-equivalence exclusion as before
+    so there's still never more than one valid answer."""
     seed = idx * 17
     rng = random.Random(seed)
     target_sentence = sentences[idx % len(sentences)]
-    words = target_sentence["en"].strip().split(" ")
-    correct_word = words[0].rstrip(".,!?")
-    rest = " ".join(words[1:])
+    raw_words = target_sentence["en"].strip().split(" ")
+    words_clean = [w.rstrip(".,!?") for w in raw_words]
+    blank_i = find_blank_index(words_clean)
+    if blank_i is None:
+        blank_i = 0  # proven-safe fallback: the subject pronoun position
+    correct_word = words_clean[blank_i]
+    before = " ".join(raw_words[:blank_i])
+    after = " ".join(raw_words[blank_i + 1:])
+    mtype = marker_type(correct_word)
+
     correct_group = equivalence_group(correct_word)
     excluded = correct_group if correct_group else {correct_word.lower()}
-    other_first_words = list({
-        s["en"].strip().split(" ")[0].rstrip(".,!?")
-        for s in sentences
-        if s["en"].strip().split(" ")[0].rstrip(".,!?").lower() not in excluded
-    })
-    rng.shuffle(other_first_words)
-    distractors = other_first_words[:3]
-    fallback_pool = ["Not", "The", "A", "Is", "Are", "Do", "Does"]
+
+    if mtype == "other":
+        # No clear grammar marker for this blank (typically the subject-
+        # pronoun fallback) -- use the original proven distractor source:
+        # other sentences' word at the SAME position, which keeps part of
+        # speech consistent without needing marker detection.
+        same_type_words = set()
+        for s in sentences:
+            if s is target_sentence:
+                continue
+            sw = [w.rstrip(".,!?") for w in s["en"].strip().split(" ")]
+            if blank_i < len(sw) and sw[blank_i].lower() not in excluded:
+                same_type_words.add(sw[blank_i])
+    else:
+        # Real grammar marker (tense word, -ed/-ing verb, adverb,
+        # comparative) -- pull other real words of the SAME marker type
+        # from anywhere in the pool, which is a much better distractor
+        # source than position-matching for these.
+        same_type_words = set()
+        for s in sentences:
+            if s is target_sentence:
+                continue
+            for w in s["en"].strip().split(" "):
+                wc = w.rstrip(".,!?")
+                if marker_type(wc) == mtype and wc.lower() not in excluded:
+                    same_type_words.add(wc)
+    pool_distractors = list(same_type_words)
+    rng.shuffle(pool_distractors)
+    distractors = pool_distractors[:3]
+
+    fallback_pool = MARKER_DISTRACTOR_POOLS.get(mtype, []) + ["Not", "The", "A", "Is"]
     attempts = 0
     while len(distractors) < 3 and attempts < 20:
         candidate = rng.choice(fallback_pool)
@@ -264,11 +357,12 @@ def slide_grammar_mcq(sentences, idx, total_q, n, total, theme_key="default"):
     opt_buttons = "".join(f'''<button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{esc(o)}', '{esc(correct_word)}')"
         data-quiz-option="{esc(o)}" style="border:2px solid #EEF0F4;background:#fff;border-radius:10px;padding:14px;
         font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.05rem;color:{CARD_TEXT};cursor:pointer">{esc(o)}</button>''' for o in opts)
+    sentence_display = f"{esc(before)} ___ {esc(after)}".strip() if before else f"___ {esc(after)}".strip()
     return (bg_theme(theme_key) + header_themed(f"Grammar Check &middot; {idx + 1}/{total_q}", n, total, theme_key) + f'''
     <div style="position:relative;z-index:5;display:flex;justify-content:center;margin-top:70px">
       {card_open(700, "padding:38px 42px")}
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.78rem;color:#6B6580;letter-spacing:1px;margin-bottom:14px">COMPLETE THE SENTENCE</div>
-        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.4rem;color:{CARD_TEXT};margin-bottom:22px">___ {esc(rest)}</div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.4rem;color:{CARD_TEXT};margin-bottom:22px">{sentence_display}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">{opt_buttons}</div>
       </div>
     </div>

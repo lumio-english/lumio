@@ -93,7 +93,7 @@ function loadSlide(n) {
       document.getElementById("prevBtn").disabled = n === 1;
       document.getElementById("nextBtn").disabled = n === total;
       const gameLinksEl = document.getElementById("gameLinks");
-      const teenTrackLevels = ["level3", "level4"];
+      const teenTrackLevels = ["level3", "level4", "level5", "level6"];
       gameLinksEl.innerHTML = (!teenTrackLevels.includes(level) && gameStartSlide && n >= gameStartSlide - 1)
         ? `<a href="games/balloon-pop.html?level=${level}&n=${num}">🎈 Balloon Pop</a><a href="games/match-drag.html?level=${level}&n=${num}">🧩 Match It</a>`
         : "";

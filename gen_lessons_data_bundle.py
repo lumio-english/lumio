@@ -8,7 +8,7 @@ that meant they were actively serving the OLD curriculum instead of
 the new one. Run this any time lesson JSON content changes."""
 import json, glob, os
 
-LEVELS = ["pre-a", "level1", "level2", "level3", "level4"]
+LEVELS = ["pre-a", "level1", "level2", "level3", "level4", "level5", "level6"]
 bundle = {}
 for level in LEVELS:
     bundle[level] = {}
