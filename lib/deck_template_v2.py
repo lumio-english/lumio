@@ -41,7 +41,7 @@ def dots(active_i, count):
     return f'<div class="dots">{cells}</div>'
 def char_img(name, right=95, bottom=42, height=300):
     return (f'<div class="floorshadow" style="right:{right}px;bottom:{bottom-7}px;width:230px;height:36px"></div>'
-            f'<img class="char" src="{CHAR}/{name}.png" style="right:{right}px;bottom:{bottom}px;height:{height}px">')
+            f'<img class="char" src="{CHAR}/{name}.png" style="right:{right}px;bottom:{bottom}px;height:{height}px" onerror="this.style.display=\'none\'; this.previousElementSibling.style.display=\'none\'">')
 LETTER_COLORS = ["#F97316", "#0D9488", "#F59E0B", "#2DD4BF", "#DC5C33"]
 def letter_tiles(word):
     if " " in word or len(word) > 10: return ""

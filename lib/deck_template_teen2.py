@@ -119,7 +119,7 @@ def char_big(name, side="right", bottom=64):
     the game-links row (up to 66px) so it never overlaps controls."""
     pos = f"{side}:30px" if side in ("right", "left") else side
     return f'''<img src="{CHAR}/{name}.png" style="position:absolute;{pos};bottom:{bottom}px;height:300px;z-index:4;
-               filter:drop-shadow(0 14px 20px rgba(0,0,0,.35))">'''
+               filter:drop-shadow(0 14px 20px rgba(0,0,0,.35))" onerror="this.style.display='none'">'''
 
 
 # ============================================================
