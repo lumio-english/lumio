@@ -102,7 +102,7 @@ def xp_pill(xp, extra_style=""):
                 color:#fff;font-family:'Fredoka',sans-serif;font-weight:600;font-size:.85rem;padding:6px 16px;border-radius:999px;{extra_style}">
       &#9889; +{xp} XP</span>'''
 
-VOCAB_CHARS = ["omar-wave", "noor-happy", "sara-clap", "omar-point", "noor-wave"]
+VOCAB_CHARS = ["omar-wave", "noor-happy", "sara-clap", "omar-point", "noor-wave", "ziad-teen-happy", "hamad-teen-wave"]
 
 # ============================================================
 def slide_title(lesson, num_words, lesson_type="VOCABULARY & GRAMMAR", bg_image=None):

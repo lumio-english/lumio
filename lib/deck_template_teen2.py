@@ -439,7 +439,29 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
     global CURRENT_LESSON_BG
     CURRENT_LESSON_BG = lesson_bg_path(level, lesson_num) if level else None
     V = len(lesson["vocab"])
-    ch1, ch2, ch3 = "omar-wave", "noor-happy", "sara-explain"
+    # Ziad appears in tech-themed lessons specifically (per his character
+    # identity as the platform's gamer character) -- detected from the
+    # lesson's own title and vocabulary rather than a hand-maintained list,
+    # so this stays correct if new lessons are added later.
+    import re
+    TECH_KEYWORDS = {"phone", "text", "chat", "app", "screen", "password", "charger",
+                      "earbuds", "streaming", "gaming", "scrolling", "texting", "message",
+                      "video chat", "notification", "online", "post", "comment", "group chat",
+                      "controller", "code", "headphones"}
+    lesson_words = {lesson["title"].lower()} | {w["en"].lower() for w in lesson["vocab"]}
+    is_tech_lesson = any(
+        any(re.search(rf"\b{re.escape(kw)}\b", lw) for kw in TECH_KEYWORDS)
+        for lw in lesson_words
+    )
+    if is_tech_lesson:
+        ch1, ch2, ch3 = "ziad-teen-happy", "hamad-teen-happy", "sara-explain"
+    else:
+        char_pool = [
+            ("omar-wave", "noor-happy", "sara-explain"),
+            ("hamad-teen-wave", "sara-explain", "omar-happy"),
+            ("noor-happy", "ziad-teen-happy", "omar-wave"),
+        ]
+        ch1, ch2, ch3 = char_pool[lesson_num % len(char_pool)]
 
     plan = [("title", None), ("hook", None), ("first_listen", None)]
     for i, w in enumerate(lesson["vocab"]):

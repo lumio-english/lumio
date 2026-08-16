@@ -53,7 +53,7 @@ def letter_tiles(word):
                   box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">{ch.upper()}</div>'''
     return f'<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">{tiles}</div>'
 
-VOCAB_CHARS = ["omar-wave", "noor-happy", "sara-clap", "omar-point", "noor-wave"]
+VOCAB_CHARS = ["omar-wave", "noor-happy", "sara-clap", "omar-point", "noor-wave", "ziad-happy", "hamad-wave"]
 
 def slide_title(lesson, num_words):
     subtitle = " &bull; ".join(esc(v["en"]) for v in lesson["vocab"])
@@ -184,7 +184,15 @@ def slide_practice_phonics(w, n, total, ch, show_phonics_link=True, seed=0):
     </div>
     ''' + char_img(ch, bottom=32, height=260))
 
-def slide_dialogue(lines, n, total):
+DIALOGUE_CHAR_PAIRS = [
+    ("noor-wave", "sara-clap"),
+    ("omar-wave", "hamad-wave"),
+    ("ziad-happy", "noor-wave"),
+    ("sara-wave", "omar-happy"),
+    ("hamad-happy", "ziad-wave"),
+]
+
+def slide_dialogue(lines, n, total, lesson_num=0):
     y_positions = [165, 271, 378, 484]
     bubbles = ""
     for i, (en, ar) in enumerate(lines):
@@ -198,9 +206,10 @@ def slide_dialogue(lines, n, total):
           <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.08rem;color:#43301F">{esc(en)}</div>
           <div style="direction:rtl;text-align:right;font-size:.86rem;color:#8A7160;font-weight:700;margin-top:3px">{ar}</div>
         </div>'''
+    left_char, right_char = DIALOGUE_CHAR_PAIRS[lesson_num % len(DIALOGUE_CHAR_PAIRS)]
     return (bg_plain() + header("Dialogue &bull; Let's talk!", n, total) + COLORSTRIP + bubbles + f'''
-    <img class="char" src="{CHAR}/noor-wave.png" style="left:280px;bottom:0px;height:230px;position:absolute;z-index:5;filter:drop-shadow(0 16px 22px rgba(67,48,31,.3))">
-    <img class="char" src="{CHAR}/sara-clap.png" style="right:280px;bottom:0px;height:230px;position:absolute;z-index:5;filter:drop-shadow(0 16px 22px rgba(67,48,31,.3));transform:scaleX(-1)">
+    <img class="char" src="{CHAR}/{left_char}.png" style="left:280px;bottom:0px;height:230px;position:absolute;z-index:5;filter:drop-shadow(0 16px 22px rgba(67,48,31,.3))" onerror="this.style.display='none'">
+    <img class="char" src="{CHAR}/{right_char}.png" style="right:280px;bottom:0px;height:230px;position:absolute;z-index:5;filter:drop-shadow(0 16px 22px rgba(67,48,31,.3));transform:scaleX(-1)" onerror="this.style.display='none'">
     ''')
 
 def tokenize_sentence(sentence):
@@ -784,7 +793,7 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
             w, i = data
             slides.append(slide_practice_phonics(w, n, total, VOCAB_CHARS[i % len(VOCAB_CHARS)], has_phonics, seed=i))
         elif kind == "dialogue":
-            slides.append(slide_dialogue(DIALOGUES[lesson_num], n, total))
+            slides.append(slide_dialogue(DIALOGUES[lesson_num], n, total, lesson_num))
         elif kind == "sentence":
             slides.append(slide_sentence_builder(lesson["vocab"][0]["example"], n, total, "sara-teach-board", lesson_num))
         elif kind == "sound_spot":
