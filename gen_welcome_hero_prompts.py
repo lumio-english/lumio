@@ -58,7 +58,7 @@ CHARACTERS = [
     ("noor", "Noor, a young girl character -- wearing an orange and teal patterned hijab (headscarf), a teal and orange dress with patterned trim, warm brown skin, sometimes wears a small backpack. Cheerful, warm, energetic personality.",
      YOUNG_STYLE, "assets/story/characters/noor-wave.png"),
     ("lumi", "Lumi, the platform's mascot character -- a round friendly yellow chick-like creature with a feather tuft, big expressive eye(s), small orange beak, rosy cheeks, stubby arms and legs, cream belly patch, wears a small dark backpack with orange trim. Playful, encouraging, endlessly enthusiastic personality.",
-     LUMI_STYLE, "assets/characters/cut/lumi-hero.png (this is the EXISTING reference for this exact pose -- match it closely, this is a quality/consistency check more than a new pose)"),
+     LUMI_STYLE, "assets/story/characters/lumi-welcome-hero.png (this is the EXISTING reference for this exact pose -- match it closely, this is a quality/consistency check more than a new pose)"),
     ("ziad", "A boy named Ziad, a young gamer character -- wears a colorful hoodie or graphic t-shirt with a simple game-controller or pixel-heart print, short tousled dark hair, maybe a pair of on-ear headphones resting around his neck as a signature accessory.",
      YOUNG_STYLE, "(no existing reference yet -- use consistent with the other new Ziad pose prompts already provided)"),
     ("hamad", "A boy named Hamad, dressed in traditional Gulf children's attire -- a white or light-colored thobe (long robe) and a simple ghutra (headscarf) held with an agal (black cord), warm friendly expression.",
