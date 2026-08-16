@@ -214,6 +214,15 @@
 
   /* ---------- Mini-games ---------- */
   .sd-games-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+  .sd-buddies-grid{display:flex;gap:14px;flex-wrap:wrap;margin-top:44px}
+  .sd-buddy-card{background:#fff;border-radius:16px;padding:14px 10px 12px;text-align:center;width:120px;cursor:pointer;
+    box-shadow:0 3px 10px rgba(0,0,0,.06);border:none;font-family:inherit;transition:transform .15s ease, box-shadow .15s ease;position:relative}
+  .sd-buddy-card:hover{transform:translateY(-4px);box-shadow:0 10px 20px rgba(0,0,0,.1)}
+  .sd-buddy-card img{width:100%;max-width:88px;display:block;margin:0 auto 6px;pointer-events:none}
+  .sd-buddy-card .name{font-weight:800;font-size:.85rem;color:var(--sd-cocoa)}
+  .sd-buddy-bubble{position:absolute;top:-38px;left:50%;transform:translateX(-50%) scale(.8);background:var(--sd-cocoa);color:#fff;
+    padding:6px 12px;border-radius:10px;font-size:.72rem;font-weight:700;white-space:nowrap;opacity:0;pointer-events:none;transition:all .2s ease}
+  .sd-buddy-card.sd-buddy-active .sd-buddy-bubble{opacity:1;transform:translateX(-50%) scale(1) translateY(-6px)}
   .sd-game-tile{
     background:#fff;border-radius:20px;padding:18px;box-shadow:0 4px 16px rgba(0,0,0,.05);
     display:flex;flex-direction:column;gap:8px;transition:.15s;
@@ -542,6 +551,11 @@
   <!-- Badges -->
   <div class="sd-section-title"><h3>My badges</h3></div>
   <div class="sd-badges" id="badgeGrid"></div>
+
+  <!-- Meet your study buddies -->
+  <div class="sd-section-title"><h3>Meet your study buddies</h3></div>
+  <p class="sd-hint" style="margin:-6px 0 12px;font-weight:700;color:var(--sd-cocoa-soft);font-size:.85rem">Tap a friend to say hi! 👋</p>
+  <div class="sd-buddies-grid" id="buddiesGrid"></div>
 
   <!-- Review weak words -->
   <div id="reviewSection" style="display:none">
@@ -1665,6 +1679,43 @@
     } catch (e) { renderHubTrail("hubWritingTrail", 0, true); }
   }
   initHubBanners();
+
+  // ================= Meet your study buddies =================
+  function renderStudyBuddies() {
+    const el = document.getElementById("buddiesGrid");
+    if (!el) return;
+    const isTeen = ["level3", "level4", "level5", "level6"].includes(level);
+    const buddies = isTeen
+      ? [
+          { img: "ziad-teen-welcome-hero", name: "Ziad", line: "Level up your English!" },
+          { img: "hamad-teen-welcome-hero", name: "Hamad", line: "Welcome to the crew!" },
+        ]
+      : [
+          { img: "lumi-welcome-hero", name: "Lumi", line: "Your learning buddy!" },
+          { img: "omar-welcome-hero", name: "Omar", line: "Let's read together!" },
+          { img: "sara-welcome-hero", name: "Sara", line: "I'll help you learn!" },
+          { img: "noor-welcome-hero", name: "Noor", line: "Let's have fun!" },
+          { img: "ziad-welcome-hero", name: "Ziad", line: "Let's play and learn!" },
+          { img: "hamad-welcome-hero", name: "Hamad", line: "Welcome, friend!" },
+        ];
+    el.innerHTML = buddies.map((b, i) => `
+      <button class="sd-buddy-card" id="buddy-${i}" onclick="toggleBuddy(${i})">
+        <div class="sd-buddy-bubble">${esc(b.line)}</div>
+        <img src="assets/story/characters/${b.img}.png" alt="${esc(b.name)}" onerror="this.style.display='none'">
+        <div class="name">${esc(b.name)}</div>
+      </button>`).join("");
+  }
+  function esc(s) { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+  window.toggleBuddy = function(i) {
+    document.querySelectorAll(".sd-buddy-card").forEach((c, ci) => {
+      c.classList.toggle("sd-buddy-active", ci === i && !c.classList.contains("sd-buddy-active"));
+    });
+    if (typeof Lumio !== "undefined" && Lumio.speak) {
+      const name = document.querySelector(`#buddy-${i} .name`).textContent;
+      Lumio.speak(name);
+    }
+  };
+  renderStudyBuddies();
 
   // ================= Memory Match =================
   const memoryOverlay = document.getElementById("memoryOverlay");

@@ -463,7 +463,10 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
         ]
         ch1, ch2, ch3 = char_pool[lesson_num % len(char_pool)]
 
-    plan = [("title", None), ("hook", None), ("first_listen", None)]
+    plan = [("title", None)]
+    if lesson_num == 1:
+        plan.append(("meet_the_squad", None))
+    plan += [("hook", None), ("first_listen", None)]
     for i, w in enumerate(lesson["vocab"]):
         plan.append(("vocab", (w, i)))
     for i in range(3):
@@ -513,6 +516,8 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
         n = pos + 1
         if kind == "title":
             slides.append(v1.slide_title(lesson, V, "VOCABULARY & GRAMMAR", bg_image=CURRENT_LESSON_BG))
+        elif kind == "meet_the_squad":
+            slides.append(v1.slide_meet_the_squad(n, total, theme_key))
         elif kind == "hook":
             slides.append(slide_hook(hook_question, n, total, ch1, theme_key))
         elif kind == "first_listen":

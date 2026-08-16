@@ -55,6 +55,32 @@ def letter_tiles(word):
 
 VOCAB_CHARS = ["omar-wave", "noor-happy", "sara-clap", "omar-point", "noor-wave", "ziad-happy", "hamad-wave"]
 
+MEET_THE_TEAM_CAST = [
+    ("lumi-hero", "Lumi", "Your learning buddy!"),
+    ("omar-wave", "Omar", "Let's read together!"),
+    ("sara-wave", "Sara", "I'll help you learn!"),
+    ("noor-wave", "Noor", "Let's have fun!"),
+    ("ziad-wave", "Ziad", "Let's play and learn!"),
+    ("hamad-wave", "Hamad", "Welcome, friend!"),
+]
+
+def slide_meet_the_team(n, total):
+    cards = ""
+    positions = [80, 260, 440, 620, 800, 980]
+    for (img_name, char_name, line), left in zip(MEET_THE_TEAM_CAST, positions):
+        cards += f'''
+        <div style="position:absolute;left:{left}px;top:220px;width:160px;text-align:center">
+          <div style="height:190px;display:flex;align-items:flex-end;justify-content:center">
+            <img src="{CHAR}/{img_name}.png" style="max-height:190px;max-width:160px;filter:drop-shadow(0 10px 14px rgba(67,48,31,.25))" onerror="this.style.display='none'">
+          </div>
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.05rem;color:#43301F;margin-top:8px">{esc(char_name)}</div>
+          <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:.78rem;color:#8A7160;margin-top:2px">{esc(line)}</div>
+        </div>'''
+    return (bg_bare() + header("Meet Your Friends!", n, total) + COLORSTRIP + f'''
+    <div style="position:absolute;left:0;right:0;top:130px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;color:#43301F">These friends will help you learn English!</div>
+    {cards}
+    ''')
+
 def slide_title(lesson, num_words):
     subtitle = " &bull; ".join(esc(v["en"]) for v in lesson["vocab"])
     return f'''
@@ -712,7 +738,10 @@ def slide_reward_homework(lesson_num, n, total):
 def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic=None, has_phonics=True, level="pre-a"):
     V = len(lesson["vocab"])
     tier = "preA" if level == "pre-a" else ("level1" if level == "level1" else "level2")
-    plan = [("title", None), ("lets_learn", None), ("unscramble", lesson["vocab"][0])]
+    plan = [("title", None)]
+    if lesson_num == 1:
+        plan.append(("meet_the_team", None))
+    plan += [("lets_learn", None), ("unscramble", lesson["vocab"][0])]
     if prev_lesson:
         plan.append(("recap", None))
     if phonics_unit:
@@ -757,6 +786,7 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
     for pos, (kind, data) in enumerate(plan):
         n = pos + 1
         if kind == "title": slides.append(slide_title(lesson, V))
+        elif kind == "meet_the_team": slides.append(slide_meet_the_team(n, total))
         elif kind == "lets_learn": slides.append(slide_lets_learn(lesson, n, total, V))
         elif kind == "unscramble": slides.append(slide_unscramble(data, n, total, "lumi-wave-book"))
         elif kind == "recap": slides.append(slide_recap(prev_lesson["vocab"], n, total))

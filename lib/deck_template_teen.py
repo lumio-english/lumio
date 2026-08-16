@@ -105,6 +105,42 @@ def xp_pill(xp, extra_style=""):
 VOCAB_CHARS = ["omar-wave", "noor-happy", "sara-clap", "omar-point", "noor-wave", "ziad-teen-happy", "hamad-teen-wave"]
 
 # ============================================================
+MEET_THE_SQUAD_CAST = [
+    ("ziad-teen-wave", "Ziad", "Level up your English!"),
+    ("hamad-teen-wave", "Hamad", "Welcome to the crew!"),
+]
+# Note: Omar/Sara/Noor only have young-child art (matching Pre-A/Level1/2),
+# so they're deliberately left out of the Teen Track cast here rather than
+# showing an age-mismatched young child next to teen Ziad/Hamad. Add them
+# back once teen versions of those three exist.
+
+def slide_meet_the_squad(n, total, theme_key="default"):
+    cards = ""
+    positions = [480, 770]
+    for (img_name, char_name, line), left in zip(MEET_THE_SQUAD_CAST, positions):
+        cards += f'''
+        <div style="position:absolute;left:{left}px;top:190px;width:250px;text-align:center">
+          <div style="height:320px;display:flex;align-items:flex-end;justify-content:center">
+            <img src="{CHAR}/{img_name}.png" style="max-height:320px;max-width:250px;filter:drop-shadow(0 12px 16px rgba(0,0,0,.35))" onerror="this.style.display='none'">
+          </div>
+          <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.3rem;color:#fff;margin-top:10px">{esc(char_name)}</div>
+          <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:.9rem;color:{INK_DIM};margin-top:2px">{esc(line)}</div>
+        </div>'''
+    return (bg_base() + f'''
+    <div style="position:relative;z-index:5;padding:22px 40px 0">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+        <div style="width:30px;height:30px;border-radius:8px;background:#fff;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:3px">
+          <img src="assets/logo/lumio-logo.png" style="width:100%;height:100%;object-fit:contain"></div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:{INK};font-size:.85rem;letter-spacing:.5px">LUMIO ENGLISH</div>
+      </div>
+    </div>
+    <div style="position:relative;z-index:5;text-align:center;margin-top:20px">
+      <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.7rem;color:#fff">Meet the Squad</div>
+      <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:.95rem;color:{INK_DIM};margin-top:6px">Your crew for this level</div>
+    </div>
+    {cards}
+    ''')
+
 def slide_title(lesson, num_words, lesson_type="VOCABULARY & GRAMMAR", bg_image=None):
     subtitle = " · ".join(esc(v["en"]) for v in lesson["vocab"])
     if bg_image:
