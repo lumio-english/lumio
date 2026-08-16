@@ -102,29 +102,28 @@ def xp_pill(xp, extra_style=""):
                 color:#fff;font-family:'Fredoka',sans-serif;font-weight:600;font-size:.85rem;padding:6px 16px;border-radius:999px;{extra_style}">
       &#9889; +{xp} XP</span>'''
 
-VOCAB_CHARS = ["omar-wave", "noor-happy", "sara-clap", "omar-point", "noor-wave", "ziad-teen-happy", "hamad-teen-wave"]
+VOCAB_CHARS = ["omar-teen-wave", "noor-teen-happy", "sara-teen-explain", "omar-teen-point", "noor-teen-wave", "ziad-teen-happy", "hamad-teen-wave"]
 
 # ============================================================
 MEET_THE_SQUAD_CAST = [
+    ("omar-teen-wave", "Omar", "Let's get started!"),
+    ("sara-teen-wave", "Sara", "I've got your back!"),
+    ("noor-teen-wave", "Noor", "Ready when you are!"),
     ("ziad-teen-wave", "Ziad", "Level up your English!"),
     ("hamad-teen-wave", "Hamad", "Welcome to the crew!"),
 ]
-# Note: Omar/Sara/Noor only have young-child art (matching Pre-A/Level1/2),
-# so they're deliberately left out of the Teen Track cast here rather than
-# showing an age-mismatched young child next to teen Ziad/Hamad. Add them
-# back once teen versions of those three exist.
 
 def slide_meet_the_squad(n, total, theme_key="default"):
     cards = ""
-    positions = [480, 770]
+    positions = [90, 320, 550, 780, 1010]
     for (img_name, char_name, line), left in zip(MEET_THE_SQUAD_CAST, positions):
         cards += f'''
-        <div style="position:absolute;left:{left}px;top:190px;width:250px;text-align:center">
-          <div style="height:320px;display:flex;align-items:flex-end;justify-content:center">
-            <img src="{CHAR}/{img_name}.png" style="max-height:320px;max-width:250px;filter:drop-shadow(0 12px 16px rgba(0,0,0,.35))" onerror="this.style.display='none'">
+        <div style="position:absolute;left:{left}px;top:210px;width:210px;text-align:center">
+          <div style="height:260px;display:flex;align-items:flex-end;justify-content:center">
+            <img src="{CHAR}/{img_name}.png" style="max-height:260px;max-width:210px;filter:drop-shadow(0 12px 16px rgba(0,0,0,.35))" onerror="this.style.display='none'">
           </div>
-          <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.3rem;color:#fff;margin-top:10px">{esc(char_name)}</div>
-          <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:.9rem;color:{INK_DIM};margin-top:2px">{esc(line)}</div>
+          <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.15rem;color:#fff;margin-top:10px">{esc(char_name)}</div>
+          <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:.82rem;color:{INK_DIM};margin-top:2px">{esc(line)}</div>
         </div>'''
     return (bg_base() + f'''
     <div style="position:relative;z-index:5;padding:22px 40px 0">

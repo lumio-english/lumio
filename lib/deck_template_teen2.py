@@ -454,12 +454,12 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
         for lw in lesson_words
     )
     if is_tech_lesson:
-        ch1, ch2, ch3 = "ziad-teen-happy", "hamad-teen-happy", "sara-explain"
+        ch1, ch2, ch3 = "ziad-teen-happy", "hamad-teen-happy", "sara-teen-explain"
     else:
         char_pool = [
-            ("omar-wave", "noor-happy", "sara-explain"),
-            ("hamad-teen-wave", "sara-explain", "omar-happy"),
-            ("noor-happy", "ziad-teen-happy", "omar-wave"),
+            ("omar-teen-wave", "noor-teen-happy", "sara-teen-explain"),
+            ("hamad-teen-wave", "sara-teen-explain", "omar-teen-happy"),
+            ("noor-teen-happy", "ziad-teen-happy", "omar-teen-wave"),
         ]
         ch1, ch2, ch3 = char_pool[lesson_num % len(char_pool)]
 
@@ -543,7 +543,7 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
             mode = "picture" if i % 2 == 0 else "translate"
             slides.append(slide_vocab_mcq(lesson["vocab"], mode, i, n_vocab_mcq, n, total, theme_key))
         elif kind == "sentence":
-            slides.append(v1.slide_sentence_builder(lesson["vocab"][0]["example"], n, total, "sara-teach-board", lesson_num))
+            slides.append(v1.slide_sentence_builder(lesson["vocab"][0]["example"], n, total, "sara-teen-explain", lesson_num))
         elif kind == "grammar_practice":
             slides.append(grammar_slides.slide_grammar_practice(
                 data, n, total, ch3, header_themed_wrap(theme_key), "", bg_theme_wrap(theme_key),
@@ -575,7 +575,7 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
                 slides.append(slide_error_analysis(wrong_sentence, right_sentence, why, n, total, theme_key))
         elif kind == "your_turn":
             w, idx = data
-            slides.append(v1.slide_your_turn(w, idx, your_turn_n, n, total, "omar-wave"))
+            slides.append(v1.slide_your_turn(w, idx, your_turn_n, n, total, "omar-teen-wave"))
         elif kind == "challenge":
             slides.append(slide_challenge(challenge["prompt"], challenge["hint"], n, total, ch2, theme_key))
         elif kind == "real_life":
