@@ -869,6 +869,13 @@
       </select>
     </div>
     <div class="td-field">
+      <label for="clsLesson">Lesson</label>
+      <select id="clsLesson"></select>
+      <div class="td-field-hint" style="font-weight:600;color:var(--td-muted);font-size:.78rem;margin-top:4px">
+        Which lesson this live class is for. The student's next lesson only unlocks once you mark this class present.
+      </div>
+    </div>
+    <div class="td-field">
       <label for="clsNotes">Notes <span style="font-weight:600;color:var(--td-muted)">(optional)</span></label>
       <input type="text" id="clsNotes" placeholder="e.g. Focus on Lesson 5 vocabulary">
     </div>
@@ -1756,6 +1763,7 @@
   const clsDateInput = document.getElementById("clsDate");
   const clsTimeInput = document.getElementById("clsTime");
   const clsDurationSelect = document.getElementById("clsDuration");
+  const clsLessonSelect = document.getElementById("clsLesson");
   const clsNotesInput = document.getElementById("clsNotes");
   const clsStudentError = document.getElementById("clsStudentError");
   let editingClassId = null;
@@ -1850,7 +1858,7 @@
             ${c.status === "cancelled" ? '<span class="td-badge grey">cancelled</span>' : ""}
             ${attendanceBadge(c)}
           </div>
-          <div class="meta">${teacher ? teacher.name : (c.teacherName || "Unassigned")}${c.notes ? " · " + c.notes : ""}</div>
+          <div class="meta">${teacher ? teacher.name : (c.teacherName || "Unassigned")}${c.lessonNumber ? " · Lesson " + c.lessonNumber : ""}${c.notes ? " · " + c.notes : ""}</div>
           ${c.status === "completed" ? `<textarea class="td-session-notes" placeholder="What did you cover this session? Any homework given?">${c.sessionNotes || ""}</textarea>` : ""}
         </div>
         <div class="td-class-acts">
@@ -1912,6 +1920,39 @@
     });
   }
 
+  // Fills clsLessonSelect with "Lesson 1".."Lesson N" for whichever
+  // student is currently picked (N = that student's level's lesson
+  // count), and defaults to their next lesson that still needs either
+  // prep or a live class — the teacher can always override it.
+  function renderClsLessonOptions(presetLessonNumber) {
+    const studentId = clsStudentSelect.value;
+    const student = studentId && window.LumioProfiles ? LumioProfiles.getStudent(studentId) : null;
+    const lvlMeta = student && window.Lumio ? (Lumio.LEVELS || []).find(l => l.id === student.level) : null;
+    const N = (lvlMeta && lvlMeta.lessons) || 20;
+    clsLessonSelect.innerHTML = "";
+    for (let n = 1; n <= N; n++) {
+      const opt = document.createElement("option");
+      opt.value = String(n);
+      opt.textContent = `Lesson ${n}`;
+      clsLessonSelect.appendChild(opt);
+    }
+    if (presetLessonNumber) {
+      clsLessonSelect.value = String(presetLessonNumber);
+      return;
+    }
+    // Default: the next lesson that isn't fully prepped-and-attended yet,
+    // using the same prep-progress data the student's own map reads —
+    // this doesn't need to know about attendance itself since a teacher
+    // is about to record it right now.
+    let guess = 1;
+    if (student && window.Lumio) {
+      const prog = (Lumio.progressFor(student.name)[student.level]) || {};
+      while (guess <= N && prog[guess]) guess++;
+      if (guess > N) guess = N;
+    }
+    clsLessonSelect.value = String(guess);
+  }
+
   function openClassModal(c) {
     editingClassId = c ? c.id : null;
     document.getElementById("classModalTitle").textContent = c ? "Edit class" : "Book a class";
@@ -1923,14 +1964,17 @@
       clsTimeInput.value = c.startTime;
       clsDurationSelect.value = String(c.durationMinutes);
       clsNotesInput.value = c.notes || "";
+      renderClsLessonOptions(c.lessonNumber);
     } else {
       clsDateInput.value = LumioSchedule.todayStr();
       clsTimeInput.value = "16:00";
       clsDurationSelect.value = "30";
       clsNotesInput.value = "";
+      renderClsLessonOptions();
     }
     classModalOverlay.classList.add("show");
   }
+  clsStudentSelect.addEventListener("change", () => renderClsLessonOptions());
   function closeClassModal() { classModalOverlay.classList.remove("show"); }
   document.getElementById("bookClassBtn").onclick = () => openClassModal(null);
   document.getElementById("classModalCancel").onclick = closeClassModal;
@@ -1952,6 +1996,7 @@
       startTime: clsTimeInput.value,
       durationMinutes: clsDurationSelect.value,
       level: student.level,
+      lessonNumber: clsLessonSelect.value ? Number(clsLessonSelect.value) : null,
       notes: clsNotesInput.value.trim(),
     };
     try {

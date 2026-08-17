@@ -12,6 +12,12 @@
  *       startTime,   // "HH:MM" 24h
  *       durationMinutes,
  *       level, notes,
+ *       lessonNumber, // which lesson (within `level`) this class is the live
+ *                      // session for -- e.g. 5. Set at booking time. Optional
+ *                      // for legacy/free-form classes, but required for a
+ *                      // class to count toward unlocking the next lesson's
+ *                      // prep on the student's adventure map (see
+ *                      // js/dashboard.js).
  *       status,      // "scheduled" | "completed" | "cancelled"
  *       createdAt
  *     }],
@@ -84,7 +90,7 @@
   function getClass(id) {
     return load().classes.find(c => c.id === id) || null;
   }
-  function addClass({ studentId, studentName, teacherId, teacherName, date, startTime, durationMinutes, level, notes } = {}) {
+  function addClass({ studentId, studentName, teacherId, teacherName, date, startTime, durationMinutes, level, notes, lessonNumber } = {}) {
     if (!studentName) throw new Error("Pick a student for this class.");
     if (!date) throw new Error("Pick a date for this class.");
     if (!startTime) throw new Error("Pick a start time for this class.");
@@ -99,6 +105,7 @@
       startTime,
       durationMinutes: Number(durationMinutes) || 30,
       level: level || "",
+      lessonNumber: lessonNumber ? Number(lessonNumber) : null,
       notes: notes || "", // set when booking — plans/context going into the class
       sessionNotes: "", // set after the class — what was actually covered, homework, etc.
       status: "scheduled",
@@ -118,6 +125,7 @@
       if (patch[k] !== undefined) c[k] = patch[k];
     });
     if (patch.durationMinutes !== undefined) c.durationMinutes = Number(patch.durationMinutes) || c.durationMinutes;
+    if (patch.lessonNumber !== undefined) c.lessonNumber = patch.lessonNumber ? Number(patch.lessonNumber) : null;
     c.updatedAt = new Date().toISOString();
     save(data);
     return c;
@@ -213,6 +221,31 @@
     }
   }
 
+  // The set of lesson numbers (within `level`) for which this student has
+  // an attended ("present") live class -- this is the "live lesson
+  // happened" signal the adventure map (js/dashboard.js) gates the next
+  // lesson's prep on. Only "present" counts; "absent"/"no-show" don't
+  // unlock the next lesson, since the class didn't actually happen for them.
+  function attendedLessonNumbers(studentName, level) {
+    const nums = new Set();
+    listClasses({ studentName }).forEach(c => {
+      if (c.attendance === "present" && c.level === level && c.lessonNumber) {
+        nums.add(Number(c.lessonNumber));
+      }
+    });
+    return nums;
+  }
+  // The most relevant (most recently booked, non-cancelled) class for a
+  // given student/level/lesson — used to show "your class for Lesson 5 is
+  // Tuesday at 4pm" style status without needing the caller to filter
+  // listClasses() themselves.
+  function classForLesson(studentName, level, lessonNumber) {
+    const matches = listClasses({ studentName })
+      .filter(c => c.level === level && Number(c.lessonNumber) === Number(lessonNumber) && c.status !== "cancelled");
+    if (!matches.length) return null;
+    return matches.sort((a, b) => (b.date + b.startTime).localeCompare(a.date + a.startTime))[0];
+  }
+
   function attendanceStatsForStudent(studentName) {
     const classes = listClasses({ studentName }).filter(c => c.attendance);
     const stats = { present: 0, absent: 0, "no-show": 0, total: classes.length };
@@ -224,6 +257,7 @@
     listClasses, getClass,
     addClass, updateClass, removeClass, cancelClass, completeClass,
     markAttendance, needsAttendance, attendanceStatsForStudent,
+    attendedLessonNumbers, classForLesson,
     upcomingForStudent, upcomingForTeacher, todayStr,
     getSyncConfig, syncNow,
   };

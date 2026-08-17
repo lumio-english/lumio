@@ -541,7 +541,7 @@
   </div>
 
   <!-- My Schedule -->
-  <div class="sd-section-title"><h3>My schedule</h3></div>
+  <div class="sd-section-title" id="scheduleCard"><h3>My schedule</h3></div>
   <div class="sd-schedule-card">
     <div id="scheduleNext"></div>
     <div id="scheduleList"></div>
@@ -843,9 +843,25 @@
   const progAll = Lumio.progressFor(u.name) || {};
   const prog = progAll[level] || {};
   const entries = Object.entries(prog);
-  const done = entries.length;
   const total = meta.lessons || 20;
   const stars = entries.reduce((s, [,r]) => s + (r.stars || 0), 0);
+
+  // A lesson only counts toward "done" once its prep (this data, prog[n])
+  // AND its live class with the teacher (LumioSchedule attendance) are
+  // both complete — same combined rule js/dashboard.js uses for the
+  // adventure map itself, kept in sync here since this block also drives
+  // the story-part unlock thresholds and the "today's mission" card.
+  const attendedSet = (window.LumioSchedule && LumioSchedule.attendedLessonNumbers)
+    ? LumioSchedule.attendedLessonNumbers(u.name, level)
+    : new Set();
+  const isPrepDone = n => !!prog[n];
+  const isLiveDone = n => attendedSet.has(n);
+  const isFullyDone = n => isPrepDone(n) && isLiveDone(n);
+  let current = total + 1; // sentinel: every lesson fully done
+  for (let n = 1; n <= total; n++) {
+    if (!isFullyDone(n)) { current = n; break; }
+  }
+  const done = current - 1;
   const pct = Math.round((done / total) * 100);
 
   document.getElementById("doneCount").textContent = `${done}/${total} lessons`;
@@ -857,7 +873,10 @@
   // Story banner — works for both Pre-A ("Lumi's Magic Map") and
   // Level 1 ("The Treehouse Club"), each with its own vocabulary
   const storyBanner = document.getElementById("storyBanner");
-  const STORY_TITLES = { "pre-a": "Lumi's Magic Map", "level1": "The Treehouse Club" };
+  const STORY_TITLES = {
+    "pre-a": "Lumi's Magic Map", "level1": "The Treehouse Club",
+    "level2": "The Twelve Months Club", "level3": "The Crew",
+  };
   if (!STORY_TITLES[level]) {
     storyBanner.style.display = "none";
   } else {
@@ -871,9 +890,12 @@
     const trail = document.getElementById("storyTrail");
     let currentPart = null;
     trail.innerHTML = STORY_PARTS.map((p, i) => {
-      const isDone = !!storyProg[p.id];
       const isUnlocked = done >= p.unlockAt;
-      const cls = isDone ? "done" : (isUnlocked ? "current" : "locked");
+      // A part can never show as done (checkmark) while still locked, even
+      // if storyProg has a stale/leftover record for it (e.g. from a
+      // teacher preview session) — locked always wins.
+      const isDone = isUnlocked && !!storyProg[p.id];
+      const cls = !isUnlocked ? "locked" : (isDone ? "done" : "current");
       if (isUnlocked && !isDone && !currentPart) currentPart = p;
       const line = i < STORY_PARTS.length - 1 ? '<div class="sd-story-line"></div>' : "";
       return `<div class="sd-story-stop ${cls}">${isDone ? "✓" : p.id}</div>${line}`;
@@ -887,7 +909,7 @@
       btn.href = "#";
       btn.style.opacity = ".6";
     } else {
-      const allDone = STORY_PARTS.every(p => storyProg[p.id]);
+      const allDone = STORY_PARTS.every(p => done >= p.unlockAt && storyProg[p.id]);
       document.getElementById("storySub").textContent = allDone
         ? "You finished the whole story! 🎉"
         : (nextLocked ? `Part ${currentPart.id} unlocked! Next part after Lesson ${nextLocked.unlockAt}.` : `Part ${currentPart.id} unlocked!`);
@@ -897,7 +919,10 @@
   }
 
   // ---------- today's mission ----------
-  const nextLessonNum = done + 1;
+  // `current` (computed above, alongside `done`) is the next lesson that
+  // isn't fully done yet — it needs either its prep or its live class.
+  const nextLessonNum = current;
+  const awaitingClass = current <= total && isPrepDone(current) && !isLiveDone(current);
   if (done >= total) {
     document.getElementById("missionTitle").textContent = "Level complete! 🎉";
     document.getElementById("missionSub").textContent = "You finished every lesson — go check your certificate!";
@@ -905,6 +930,16 @@
     document.getElementById("missionBtn").href = "certificates.html";
     document.getElementById("worksheetBtn").style.display = "none";
     document.getElementById("flashcardsBtn").style.display = "none";
+  } else if (awaitingClass) {
+    // Prep's done — the only thing left for this lesson is the live class,
+    // which isn't something to "continue" into, so point at the schedule
+    // instead of lesson.html.
+    document.getElementById("missionTitle").textContent = `Lesson ${nextLessonNum}: prep done! 🕐`;
+    document.getElementById("missionSub").textContent = "Your live class with your teacher unlocks the next lesson — check My Schedule below.";
+    document.getElementById("missionBtn").textContent = "📅 My schedule";
+    document.getElementById("missionBtn").href = "#scheduleCard";
+    document.getElementById("worksheetBtn").href = `worksheets/${level}/lesson${String(nextLessonNum).padStart(2,"0")}-homework.pdf`;
+    document.getElementById("flashcardsBtn").href = `flashcards/${level}/lesson${String(nextLessonNum).padStart(2,"0")}-flashcards.pdf`;
   } else {
     document.getElementById("missionTitle").textContent = `Lesson ${nextLessonNum}`;
     document.getElementById("missionSub").textContent = done === 0
