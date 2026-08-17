@@ -65,12 +65,19 @@
   .hw-done-screen .stars { font-size:2.4rem; letter-spacing:8px; margin:14px 0 }
   .hw-parent-box { background:var(--cream); border-radius:16px; padding:16px 18px; margin-top:6px; }
   .hw-parent-box b { color:var(--orange-deep) }
+  .hw-preview-banner {
+    background:linear-gradient(135deg,#7C3AED,#6D28D9); color:#fff; text-align:center;
+    font-weight:800; font-size:.85rem; padding:10px 16px;
+  }
 </style>
 </head>
 <body>
 <div class="hw-top">
   <div class="brand">📝 Lumio Homework</div>
   <a href="student.html">✕ Exit</a>
+</div>
+<div class="hw-preview-banner" id="hwPreviewBanner" style="display:none">
+  🧪 Teacher preview — this is a test run. Nothing you do here is saved to any student's real homework record.
 </div>
 <div class="hw-wrap" id="hwWrap">
   <div class="hw-header">
@@ -88,8 +95,22 @@ const qs = k => new URLSearchParams(location.search).get(k);
 const level = qs("level") || "pre-a";
 const num = parseInt(qs("n") || "1", 10);
 const nn = String(num).padStart(2, "0");
+
+// Teacher preview: same pattern as story.html's preview mode. A teacher
+// testing homework from the Materials tab (or any ?preview=1 link) must
+// never have their test run saved as if it were a real student's
+// progress -- especially if a real student happens to still be logged
+// in on the same device/browser. previewMode forces a distinct,
+// obviously-fake identity and skips the save entirely (see
+// submitHomework() below), so testing here can never touch real data.
+function isTeacherSession() {
+  try { return sessionStorage.getItem("lumio_teacher") === "1"; } catch (e) { return false; }
+}
+const previewMode = qs("preview") === "1" && isTeacherSession();
+if (previewMode) document.getElementById("hwPreviewBanner").style.display = "block";
+
 const user = (typeof Lumio !== "undefined" && Lumio.user) ? Lumio.user() : null;
-const studentName = user ? user.name : "Guest";
+const studentName = previewMode ? "Teacher Preview" : (user ? user.name : "Guest");
 
 let lesson = null;
 let STEPS = []; // built in init(): each {key, label, render}
@@ -439,6 +460,23 @@ function submitHomework() {
   const pct = totalPossible ? Math.round((totalCorrect / totalPossible) * 100) : 0;
   const stars = pct >= 90 ? 3 : pct >= 60 ? 2 : 1;
 
+  if (previewMode) {
+    // Teacher testing this lesson's homework -- never write real progress.
+    if (typeof Lumio !== "undefined" && Lumio.confetti) Lumio.confetti(70);
+    currentStep = STEPS.length;
+    renderSteps();
+    const skillLine = skillType ? ` · ${isPhonics ? "Phonics recorded" : "Grammar"}: ${skillCorrect}/${skillTotal}` : "";
+    document.getElementById("hwSections").innerHTML = `
+      <div class="hw-card hw-done-screen">
+        <div style="font-size:3rem">🧪</div>
+        <h2 style="justify-content:center">Preview complete</h2>
+        <div class="stars">${"⭐".repeat(stars)}${"☆".repeat(3 - stars)}</div>
+        <div class="hw-sub">Spelling: ${spellingCorrect}/${lesson.vocab.length} · Quiz: ${quizCorrect}/${qWordsCountSafe()}${skillLine} · Said out loud: ${said}/${lesson.vocab.length}${recorded ? ` · Recorded: ${recorded}` : ""}</div>
+        <div class="hw-sub" style="color:#7C3AED;font-weight:800;margin-top:10px">This was a preview only — nothing was saved to any student's record.</div>
+        <a class="hw-btn" style="display:inline-block;margin-top:16px;text-decoration:none" href="teacher.html">Back to teacher dashboard</a>
+      </div>`;
+    return;
+  }
   const record = {
     stars, score: totalCorrect, total: totalPossible, said, saidTotal: lesson.vocab.length,
     recorded, recordedTotal: lesson.vocab.length,
