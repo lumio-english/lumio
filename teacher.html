@@ -715,6 +715,16 @@
       <p class="sub">Same idea, Level 1 vocabulary — Lumi, Sara, Omar, and Noor build a backyard clubhouse together.</p>
       <div id="storyPartsGridL1" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:6px"></div>
     </div>
+    <div class="td-panel" style="margin-top:16px">
+      <div class="td-panel-head"><h2>📖 The Twelve Months Club</h2><span class="td-badge teal" style="margin-left:8px">Level 2</span></div>
+      <p class="sub">Level 2 vocabulary — the whole crew (now with Ziad and Hamad too) spends a year learning about each other, one month at a time.</p>
+      <div id="storyPartsGridL2" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:6px"></div>
+    </div>
+    <div class="td-panel" style="margin-top:16px">
+      <div class="td-panel-head"><h2>📖 The Crew</h2><span class="td-badge teal" style="margin-left:8px">Level 3</span></div>
+      <p class="sub">Level 3 vocabulary, teen cast — the crew hangs out, navigates school, and plays their way through a season together.</p>
+      <div id="storyPartsGridL3" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:6px"></div>
+    </div>
   </div>
 
 </div>
@@ -2424,6 +2434,18 @@
     { id: 3, name: "Grand Opening Prep", pages: 6 },
     { id: 4, name: "The Backyard Party", pages: 6 },
   ];
+  const STORY_PARTS_L2 = [
+    { id: 1, name: "New Friends, New Family", pages: 10 },
+    { id: 2, name: "School Days", pages: 10 },
+    { id: 3, name: "A Year of Birthdays", pages: 10 },
+    { id: 4, name: "The Big Poster Party", pages: 10 },
+  ];
+  const STORY_PARTS_L3 = [
+    { id: 1, name: "Meet the Crew", pages: 10 },
+    { id: 2, name: "Around School", pages: 10 },
+    { id: 3, name: "Game Night", pages: 10 },
+    { id: 4, name: "The Big Match", pages: 10 },
+  ];
   function renderStoryGrid(elId, parts, level) {
     document.getElementById(elId).innerHTML = parts.map(p => `
       <a href="story.html?part=${p.id}&level=${level}&preview=1" style="text-decoration:none;background:#fff;border:1px solid var(--td-border);
@@ -2436,6 +2458,8 @@
   }
   renderStoryGrid("storyPartsGrid", STORY_PARTS, "pre-a");
   renderStoryGrid("storyPartsGridL1", STORY_PARTS_L1, "level1");
+  renderStoryGrid("storyPartsGridL2", STORY_PARTS_L2, "level2");
+  renderStoryGrid("storyPartsGridL3", STORY_PARTS_L3, "level3");
 
   // ---------- nav ----------
   const views = { overview: "viewOverview", students: "viewStudents", team: "viewTeam", schedule: "viewSchedule", leads: "viewLeads", materials: "viewMaterials", story: "viewStory" };
