@@ -1,20 +1,41 @@
-# Missing Vocabulary Images — English Hub (202 words)
+# Missing Vocabulary Images — English Hub (186 words)
 
 Every word used anywhere in the app's lesson prep decks already has an image — this batch is entirely for the **English Hub** (the standalone vocabulary reference, separate from the 20-lesson curriculum). Save each one named exactly as shown and drop into `assets/vocab/` — picked up automatically everywhere that word is used (Hub grid, Hub slideshow, and homework quiz if the word is ever reused there too).
 
-Organized by level. Within each level, batches are capped at 10 images. A few words (hand, foot, eye, ear, today, eat, sleep, hard, solution) are used in more than one level's Hub and only need **one** image each — noted where that happens.
+Organized by level. Within each level, batches are capped at 10 images. A few words (foot, ear, today, hard, solution) are used in more than one level's Hub and only need **one** image each — noted where that happens.
+
+## 16 words that turned out to already have images
+
+You caught a real gap in my first pass — I was only checking for an exact filename match, which missed cases where a *different word with the same meaning* already had an image. Checked each of these by actually looking at the picture, not just the filename, before accepting it:
+
+| Word | Reused from |
+|---|---|
+| mother | mom.png |
+| father | dad.png |
+| hand | hands.png |
+| eye | eyes.png |
+| game | games.png |
+| eat | eating.png |
+| sleep | sleeping.png |
+| drink | drinking.png |
+| rain | rainy.png |
+| snow | snowy.png |
+| storm | stormy.png |
+| neighbor | neighbors.png |
+| think | was-thinking.png |
+| remember | remembered.png |
+| grow | grow-up.png |
+| skill | skilled.png |
+
+These are already copied into `assets/vocab/` under the correct filenames and verified live — nothing needed from you for these 16.
+
+A few other filenames *looked* like plausible matches by name (`break` for "break time", `smoothly` for "smooth", `patiently` for "patient", `bake` for "bakery") but weren't actually good fits once I looked at the pictures — `break.png` is a coffee-and-pillow relaxation scene, not a school recess; `smoothly.png` is a flowing water wave, not a smooth-textured object; `bake.png` shows the baking action, not the bakery shop itself. Those four stay in the missing list below with their own dedicated prompts.
 
 ---
 
 ## pre-a
 
-### Batch 1 (10 images)
-
-**`mother.png`** — *mother*
-> A cartoon mom character with a warm smile, wavy brown hair, wearing a simple orange dress, arms open for a hug. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
-
-**`father.png`** — *father*
-> A cartoon dad character with a warm smile, short dark hair, wearing a simple blue shirt, one hand raised in a friendly wave. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
+### Batch 1 (8 images)
 
 **`family.png`** — *family*
 > A cartoon family of four (mom, dad, two small kids) standing together holding hands, all smiling. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
@@ -22,14 +43,8 @@ Organized by level. Within each level, batches are capped at 10 images. A few wo
 **`horse.png`** — *horse*
 > A cartoon brown horse standing side-on, flowing mane and tail, friendly expression. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
-**`hand.png`** — *hand* *(shared with Level 1's Hub)*
-> A cartoon open human hand, palm facing forward, five fingers spread, simple skin tone. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
-
 **`foot.png`** — *foot* *(shared with Level 1's Hub)*
 > A cartoon bare human foot, side view, five toes visible, simple skin tone. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
-
-**`eye.png`** — *eye* *(shared with Level 1's Hub)*
-> A large cartoon eye with lashes, round iris, friendly sparkle highlight. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
 **`ear.png`** — *ear* *(shared with Level 1's Hub)*
 > A cartoon human ear, side profile view, simple skin tone, soft rounded shape. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
@@ -40,32 +55,15 @@ Organized by level. Within each level, batches are capped at 10 images. A few wo
 **`leg.png`** — *leg*
 > A cartoon leg from hip to foot, simple skin tone, wearing a small sock and shoe. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
-### Batch 2 (7 images)
-
 **`toy.png`** — *toy*
 > A cartoon jack-in-the-box toy, bright red and yellow, lid open with a spring popping out. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
-
-**`game.png`** — *game*
-> A cartoon board game box, colorful lid slightly open, two dice sitting on top. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
-
-**`eat.png`** — *eat* *(shared with Level 1's Hub)*
-> A cartoon child sitting at a small table happily eating from a bowl with a spoon, big smile. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
-
-**`sleep.png`** — *sleep* *(shared with Level 1's Hub)*
-> A cartoon child sleeping peacefully in bed, eyes closed, hugging a pillow, a crescent moon and stars glowing softly above. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
-
-**`drink.png`** — *drink*
-> A cartoon glass of orange juice with a striped straw, a few bubbles rising. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
 **`today.png`** — *today* *(shared with Level 1's Hub)*
 > A cartoon desk calendar page, one day circled in bright red, a small sun icon in the corner. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
-**`rain.png`** — *rain*
-> A cartoon grey rain cloud with several blue raindrops falling from it. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
-
 ## level1
 
-### Batch 3 (10 images)
+### Batch 2 (10 images)
 
 **`finger.png`** — *finger*
 > A cartoon hand with one finger pointing upward, simple skin tone. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
@@ -85,25 +83,19 @@ Organized by level. Within each level, batches are capped at 10 images. A few wo
 **`scissors.png`** — *scissors*
 > A cartoon pair of child-safe scissors, orange handles, blades slightly open. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
-**`snow.png`** — *snow*
-> A cartoon pile of soft white snow with a few snowflakes falling above it. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
-
-**`storm.png`** — *storm*
-> A cartoon dark storm cloud with a bright lightning bolt and a few raindrops. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
-
 **`bored.png`** — *bored*
 > A cartoon child sitting with chin resting on hand, droopy half-closed eyes, flat mouth, clearly bored. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
 **`bed.png`** — *bed*
 > A cartoon single bed with a blue blanket and fluffy pillow, wooden headboard. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
-### Batch 4 (10 images)
-
 **`sofa.png`** — *sofa*
 > A cartoon cozy sofa with two soft cushions, warm orange fabric. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
 **`mirror.png`** — *mirror*
 > A cartoon oval wall mirror in a wooden frame, glass surface with a light reflection streak. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
+
+### Batch 3 (8 images)
 
 **`street.png`** — *street*
 > A cartoon city street with a curving road, a lamppost, and a crosswalk. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
@@ -131,16 +123,13 @@ Organized by level. Within each level, batches are capped at 10 images. A few wo
 
 ## level2
 
-### Batch 5 (10 images)
+### Batch 4 (10 images)
 
 **`nephew.png`** — *nephew*
 > A cartoon young boy waving cheerfully, simple modern clothes, warm smile. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
 **`niece.png`** — *niece*
 > A cartoon young girl waving cheerfully, simple modern dress, warm smile. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
-
-**`neighbor.png`** — *neighbor*
-> Two cartoon houses side by side with a low fence between them, a friendly wave symbol over the fence. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
 **`relative.png`** — *relative*
 > A cartoon extended family group of five (grandparents, parents, child) standing together smiling. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
@@ -163,10 +152,10 @@ Organized by level. Within each level, batches are capped at 10 images. A few wo
 **`balcony.png`** — *balcony*
 > A cartoon apartment balcony with a railing, a small potted plant, and a chair. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
-### Batch 6 (10 images)
-
 **`stairs.png`** — *stairs*
 > A cartoon staircase with a wooden railing, viewed from the side going upward. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
+
+### Batch 5 (10 images)
 
 **`roof.png`** — *roof*
 > A cartoon house roof, red triangular tiles, a small chimney on top. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
@@ -195,14 +184,12 @@ Organized by level. Within each level, batches are capped at 10 images. A few wo
 **`break-time.png`** — *break time*
 > A cartoon school bell ringing with motion lines, a cheerful child running outside with a ball. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
-### Batch 7 (1 images)
-
 **`march.png`** — *March*
 > A cartoon calendar page showing spring flowers blooming beside it, representing the month of March. Simple flat vector illustration for a children's English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane, no scenery behind the subject), no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 6-9. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
 ## level5
 
-### Batch 8 (10 images)
+### Batch 6 (10 images)
 
 **`environment.png`** — *environment*
 > A cartoon Earth globe with a small tree, sun, and cloud around it, representing the natural environment. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
@@ -234,7 +221,7 @@ Organized by level. Within each level, batches are capped at 10 images. A few wo
 **`luggage.png`** — *luggage*
 > A cartoon rolling suitcase, packed and closed, with a travel tag attached to the handle. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
-### Batch 9 (10 images)
+### Batch 7 (10 images)
 
 **`ticket.png`** — *ticket*
 > A cartoon boarding-pass style travel ticket with a perforated tear line and a small airplane icon. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
@@ -266,7 +253,7 @@ Organized by level. Within each level, batches are capped at 10 images. A few wo
 **`rough.png`** — *rough*
 > A cartoon jagged, bumpy grey rock with a rough uneven surface texture. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
-### Batch 10 (10 images)
+### Batch 8 (10 images)
 
 **`sharp.png`** — *sharp*
 > A cartoon pencil with a freshly sharpened pointed tip, a small glint highlight. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
@@ -292,19 +279,13 @@ Organized by level. Within each level, batches are capped at 10 images. A few wo
 **`ladybug.png`** — *ladybug*
 > A cartoon red ladybug with black spots on its shell, small antennae. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
-**`think.png`** — *think*
-> A cartoon teen character with a hand on their chin, looking upward thoughtfully, a small lightbulb glowing above their head. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
-
-**`remember.png`** — *remember*
-> A cartoon teen character tapping their temple with one finger, a small thought-bubble memory icon above their head. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
-
-### Batch 11 (7 images)
-
 **`understand.png`** — *understand*
 > A cartoon teen character nodding with a lightbulb glowing brightly above their head, confident expression. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
 **`imagine.png`** — *imagine*
 > A cartoon teen character with eyes closed, a colorful swirl of daydream clouds and stars floating above their head. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
+
+### Batch 9 (5 images)
 
 **`hero.png`** — *hero*
 > A cartoon young hero character in a flowing cape, standing confidently, hands on hips. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
@@ -323,7 +304,7 @@ Organized by level. Within each level, batches are capped at 10 images. A few wo
 
 ## level6
 
-### Batch 12 (10 images)
+### Batch 10 (10 images)
 
 **`math.png`** — *math*
 > A cartoon open notebook page with simple math symbols (plus, equals) and a pencil resting on it. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
@@ -355,7 +336,7 @@ Organized by level. Within each level, batches are capped at 10 images. A few wo
 **`hardworking.png`** — *hardworking*
 > A cartoon teen character with sleeves rolled up, determined expression, small sweat drop, working hard. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
-### Batch 13 (10 images)
+### Batch 11 (10 images)
 
 **`stubborn.png`** — *stubborn*
 > A cartoon teen character with arms crossed tightly, feet planted, firm unmoving expression. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
@@ -387,7 +368,7 @@ Organized by level. Within each level, batches are capped at 10 images. A few wo
 **`muscle.png`** — *muscle*
 > A cartoon flexed bicep arm, muscle bulging, simple confident pose. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
-### Batch 14 (4 images)
+### Batch 12 (3 images)
 
 **`bone.png`** — *bone*
 > A cartoon white dog-bone-shaped bone, simple and rounded at both ends. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
@@ -395,15 +376,12 @@ Organized by level. Within each level, batches are capped at 10 images. A few wo
 **`skin.png`** — *skin*
 > A cartoon simple hand with a magnifying glass hovering over it, showing a close-up patch of skin texture. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
-**`grow.png`** — *grow*
-> A cartoon small seedling sprouting up into a taller plant, three growth stages shown side by side, small to tall. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
-
 **`fail.png`** — *fail*
 > A cartoon tower of building blocks toppling over, one block mid-fall. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
 ## level7
 
-### Batch 15 (10 images)
+### Batch 13 (10 images)
 
 **`egypt.png`** — *Egypt*
 > A cartoon simplified pyramid silhouette with a small crescent moon and star icon beside it, representing Egypt. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
@@ -435,7 +413,7 @@ Organized by level. Within each level, batches are capped at 10 images. A few wo
 **`costume.png`** — *costume*
 > A cartoon colorful traditional festival costume on a hanger, patterned fabric and decorative trim. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
-### Batch 16 (10 images)
+### Batch 14 (10 images)
 
 **`ceremony.png`** — *ceremony*
 > A cartoon simple podium with a ribbon and a small trophy on top, representing a formal ceremony. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
@@ -467,7 +445,7 @@ Organized by level. Within each level, batches are capped at 10 images. A few wo
 **`natural-resources.png`** — *natural resources*
 > A cartoon cluster of icons: a water droplet, a small tree, and a sun, grouped together. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
-### Batch 17 (10 images)
+### Batch 15 (10 images)
 
 **`wildlife.png`** — *wildlife*
 > A cartoon deer standing in a simple grassy clearing, alert and gentle. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
@@ -499,7 +477,7 @@ Organized by level. Within each level, batches are capped at 10 images. A few wo
 **`discover.png`** — *discover*
 > A cartoon teen character holding a magnifying glass up to their eye, spotting something exciting ahead. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
-### Batch 18 (2 images)
+### Batch 16 (2 images)
 
 **`compare.png`** — *compare*
 > A cartoon simple balance scale with two different-sized objects on each side, weighing them against each other. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
@@ -509,7 +487,7 @@ Organized by level. Within each level, batches are capped at 10 images. A few wo
 
 ## level8
 
-### Batch 19 (10 images)
+### Batch 17 (10 images)
 
 **`community.png`** — *community*
 > A cartoon group of diverse simple person-shaped icons standing in a circle, holding hands. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
@@ -541,7 +519,7 @@ Organized by level. Within each level, batches are capped at 10 images. A few wo
 **`broadcast.png`** — *broadcast*
 > A cartoon satellite dish with wavy signal lines radiating outward from it. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
-### Batch 20 (10 images)
+### Batch 18 (10 images)
 
 **`argument.png`** — *argument*
 > A cartoon two speech bubbles overlapping, one red and one blue, facing each other in disagreement. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
@@ -573,7 +551,7 @@ Organized by level. Within each level, batches are capped at 10 images. A few wo
 **`determined.png`** — *determined*
 > A cartoon teen character with a focused, confident expression, fists clenched, leaning forward with purpose. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
-### Batch 21 (4 images)
+### Batch 19 (4 images)
 
 **`ambitious.png`** — *ambitious*
 > A cartoon teen character reaching upward toward a glowing star, determined expression. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
@@ -589,7 +567,7 @@ Organized by level. Within each level, batches are capped at 10 images. A few wo
 
 ## level9
 
-### Batch 22 (10 images)
+### Batch 20 (10 images)
 
 **`poverty.png`** — *poverty*
 > A cartoon simple empty bowl with a single small coin beside it, representing scarcity. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
@@ -621,7 +599,7 @@ Organized by level. Within each level, batches are capped at 10 images. A few wo
 **`factor.png`** — *factor*
 > A cartoon simple gear turning among several other smaller gears, showing one key piece influencing the rest. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
-### Batch 23 (10 images)
+### Batch 21 (10 images)
 
 **`process.png`** — *process*
 > A cartoon flowchart of three simple connected circles with arrows leading from one to the next. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
@@ -641,9 +619,6 @@ Organized by level. Within each level, batches are capped at 10 images. A few wo
 **`opportunity.png`** — *opportunity*
 > A cartoon open door with warm golden light streaming through it, inviting and bright. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
-**`skill.png`** — *skill*
-> A cartoon toolbox open with a wrench, paintbrush, and gear inside, representing a set of abilities. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
-
 **`integrity.png`** — *integrity*
 > A cartoon simple shield with a single glowing checkmark in the center, solid and steady. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
@@ -653,10 +628,10 @@ Organized by level. Within each level, batches are capped at 10 images. A few wo
 **`courage.png`** — *courage*
 > A cartoon small lion cub standing tall and confident, chest out, brave expression. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
 
-### Batch 24 (7 images)
-
 **`resilience.png`** — *resilience*
 > A cartoon bent-but-unbroken green sapling springing back upright after a strong wind, motion lines showing the bounce-back. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
+
+### Batch 22 (6 images)
 
 **`humility.png`** — *humility*
 > A cartoon teen character with a warm modest smile, gently offering a small trophy to someone else instead of keeping it. Simple flat vector illustration for a tween/teen English-learning app. Bright cheerful colors, thick clean black outlines, soft rounded shapes, one centered subject or scene, ISOLATED ON A FULLY TRANSPARENT BACKGROUND (PNG cutout, no background color, no shadow plane), no text or letters anywhere in the image, no watermark, square 1:1 composition, a little more mature/stylish than a toddler's storybook (ages 9-13), aimed at Arabic-speaking students. If your tool cannot export true transparency, use a plain solid white background instead so it can be removed cleanly.
