@@ -431,7 +431,7 @@
     Lumio.speak(stars === 3 ? "Amazing! Three stars!" : stars === 2 ? "Great job!" : "Good try! Practice makes perfect!");
     stage.innerHTML = `
       <div class="card center card-sun">
-        <img src="assets/characters/cut/lumi-celebrate.png" alt="Lumi celebrating" style="width:170px;filter:drop-shadow(0 10px 16px rgba(67,48,31,.22))">
+        <img src="assets/story/characters/lumi-celebrate.png" alt="Lumi celebrating" style="width:170px;filter:drop-shadow(0 10px 16px rgba(67,48,31,.22))">
         <h1 class="mt">Lesson complete!</h1>
         <div class="stars mt" style="font-size:3rem">
           ${"★".repeat(stars)}<span class="star-off">${"★".repeat(3 - stars)}</span>
@@ -440,8 +440,11 @@
         <div class="row mt" style="justify-content:center">
           <a class="btn" href="lesson.html?level=${level}&n=${num}">↺ Play again</a>
           <a class="btn btn-teal" href="student.html">My map</a>
-          ${num < 20 ? `<a class="btn btn-primary" href="lesson.html?level=${level}&n=${num + 1}">Next lesson →</a>` : ""}
         </div>
+        <p class="mt" style="font-weight:700;color:var(--cocoa-soft);font-size:.95rem">
+          Great work! Your live class with your teacher unlocks the next lesson —
+          check My Schedule on your map.
+        </p>
         <div class="mt" style="padding-top:14px;border-top:1.5px solid #F5EEE1">
           <a class="btn" style="background:#FFF3D6;color:#C2530A" href="homework.html?level=${level}&n=${num}">📝 Do your homework</a>
         </div>
