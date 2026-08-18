@@ -55,6 +55,30 @@
     `<button class="btn btn-sun ${big ? "btn-big" : ""}" onclick="Lumio.speak('${text.replace(/'/g, "\\'")}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="vertical-align:-3px;margin-right:6px"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 010 7M19 6a9 9 0 010 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>Listen</button>`;
 
   /* ============================================================
+     SHARED — vocab image with letter-tile fallback
+     ============================================================ */
+  // Vocab images are used throughout lesson.html the same way everywhere:
+  // try the real picture first, fall back to a colored letter-tile only if
+  // that word genuinely has no image yet. The letter-tile sits behind the
+  // <img> so it's visible immediately (no flash of blank space) and as a
+  // fallback if the image 404s -- but once the real picture loads, it's
+  // explicitly hidden via onload, and the <img> itself gets a white fill
+  // so even letterboxed margins (when the picture's aspect ratio doesn't
+  // exactly match the box) show white/cream, never the tile's random
+  // color peeking through at the edges.
+  let vocabImgSeq = 0;
+  const vocabImg = (word, boxStyle) => {
+    const id = `vi${vocabImgSeq++}`;
+    return `<div style="${boxStyle};position:relative;overflow:hidden">
+       <div id="${id}" style="position:absolute;inset:0">${Lumio.letterTile(word)}</div>
+       <img src="assets/vocab/${word.toLowerCase().replace(/'/g,"").replace(/ /g,"-")}.png" alt="${word}"
+            style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:6px;box-sizing:border-box;background:#fff"
+            onload="var t=document.getElementById('${id}');if(t)t.style.display='none';"
+            onerror="this.remove()">
+     </div>`;
+  };
+
+  /* ============================================================
      ACTIVITY 1 — VOCAB FLASHCARDS
      ============================================================ */
   function actVocab() {
@@ -65,11 +89,7 @@
       stage.innerHTML = `
         <div class="card center">
           <span class="chip chip-orange">New words · ${i + 1}/${words.length}</span>
-          <div style="position:relative;width:min(320px,70vw);height:220px;margin:18px auto;border-radius:20px;overflow:hidden;background:#fff">
-            <div style="position:absolute;inset:0">${Lumio.letterTile(w.en)}</div>
-            <img src="assets/vocab/${w.en.toLowerCase().replace(/ /g,"-")}.png" alt="${w.en}"
-                 style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:8px;box-sizing:border-box" onerror="this.remove()">
-          </div>
+          ${vocabImg(w.en, "width:min(320px,70vw);height:220px;margin:18px auto;border-radius:20px")}
           <h1 style="font-size:2.6rem">${w.en}</h1>
           <p class="ar" style="font-size:1.5rem;font-weight:800;color:var(--cocoa-soft)">${w.ar}</p>
           ${w.example ? `<p class="mt" style="font-weight:700">"${w.example}"</p>` : ""}
@@ -99,7 +119,7 @@
           <div class="mt">${speakBtn(target.en, true)}</div>
           <div class="feature-grid mt" id="opts">
             ${opts.map(o => `<button class="card btn-opt" data-en="${o.en}" style="cursor:pointer;border-width:3px;padding:0;overflow:hidden">
-              <div style="height:90px">${Lumio.letterTile(o.en)}</div>
+              ${vocabImg(o.en, "height:90px")}
               <div style="font-size:1rem;font-weight:800;padding:8px">${o.en}</div></button>`).join("")}
           </div>
         </div>`;
@@ -159,7 +179,7 @@
      ============================================================ */
   function actQuiz(a) {
     const auto = Lumio.shuffle([...lesson.vocab]).slice(0, a.rounds || 4).map(v => ({
-      prompt: `<div style="height:130px;border-radius:18px;overflow:hidden;max-width:220px;margin:0 auto">${Lumio.letterTile(v.en)}</div><h2 class="mt">What is this?</h2>`,
+      prompt: `${vocabImg(v.en, "height:130px;border-radius:18px;max-width:220px;margin:0 auto")}<h2 class="mt">What is this?</h2>`,
       answer: v.en,
       options: Lumio.shuffle([v.en, ...Lumio.shuffle(lesson.vocab.filter(x => x.en !== v.en)).slice(0, 3).map(x => x.en)]),
     }));
@@ -209,7 +229,7 @@
         stage.innerHTML = `
           <div class="card center">
             <span class="chip chip-orange">Spell it · ${r + 1}/${words.length}</span>
-            <div style="height:110px;border-radius:16px;overflow:hidden;max-width:200px;margin:12px auto">${Lumio.letterTile(w.en)}</div>
+            ${vocabImg(w.en, "height:110px;border-radius:16px;max-width:200px;margin:12px auto")}
             ${speakBtn(w.en)}
             <div class="mt" style="font-family:var(--font-display);font-size:2.2rem;letter-spacing:6px;min-height:52px;border-bottom:4px dashed var(--cocoa);display:inline-block;padding:0 20px">${built || "&nbsp;"}</div>
             <div class="row mt" style="justify-content:center" id="letters">
@@ -278,7 +298,7 @@
       stage.innerHTML = `
         <div class="card center">
           <span class="chip chip-teal">Speak it · ${r + 1}/${words.length}</span>
-          <div style="height:110px;border-radius:16px;overflow:hidden;max-width:200px;margin:12px auto">${Lumio.letterTile(w.en)}</div>
+          ${vocabImg(w.en, "height:110px;border-radius:16px;max-width:200px;margin:12px auto")}
           <h1 style="font-size:2.2rem">${w.en}</h1>
           <p class="ar" style="font-size:1.3rem;font-weight:800;color:var(--cocoa-soft)">${w.ar}</p>
           <div class="row mt" style="justify-content:center">${speakBtn(w.en, true)}</div>
