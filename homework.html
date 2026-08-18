@@ -157,7 +157,14 @@ function renderSpelling() {
       ${navButtons("← Back", `Next: ${STEPS[currentStep + 1] ? STEPS[currentStep + 1].label : ""} →`)}
     </div>`;
 }
-function slugify(t) { return String(t).toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""); }
+// Matches the exact slug convention used everywhere else in the app
+// (lib/*.py, hub-present.html): strip apostrophes rather than treating
+// them as word separators, so "o'clock" -> "oclock" and "don't have to"
+// -> "dont-have-to", matching the actual files in assets/vocab/. This
+// used to diverge (a generic [^a-z0-9]+ collapse), which silently
+// produced dead paths like "o-clock.png" for any vocab word containing
+// an apostrophe.
+function slugify(t) { return String(t).toLowerCase().trim().replace(/'/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""); }
 function checkSpelling(i) {
   const input = document.getElementById(`sp-${i}`);
   const btn = document.getElementById(`spBtn-${i}`);

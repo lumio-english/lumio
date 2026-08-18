@@ -261,6 +261,8 @@
     background:var(--sd-cream);border-radius:14px;padding:12px 10px;text-align:center;
     display:flex;flex-direction:column;align-items:center;gap:4px;
   }
+  .sd-vocab-word-img{width:64px;height:64px;border-radius:10px;overflow:hidden;background:#fff;display:flex;align-items:center;justify-content:center}
+  .sd-vocab-word-img img{width:100%;height:100%;object-fit:contain}
   .sd-vocab-word-card .en{font-weight:800;font-size:.92rem;color:var(--sd-cocoa)}
   .sd-vocab-word-card .ar{font-size:.86rem;color:var(--sd-cocoa-soft);font-weight:700}
   .sd-vocab-word-card .sd-vocab-listen{
@@ -1268,6 +1270,10 @@
   const vocabOverlay = document.getElementById("vocabOverlay");
   const vocabTitle = document.getElementById("vocabTitle");
   const vocabThemes = document.getElementById("vocabThemes");
+  // Same slug convention as lib/*.py and hub-present.html — strip
+  // apostrophes rather than treating them as separators, so
+  // "o'clock" -> "oclock" matches the actual asset filename.
+  const vocabSlug = w => w.toLowerCase().replace(/'/g, "").replace(/ /g, "-");
   // Separate curated study list, not the same words as the lessons —
   // organized by everyday theme rather than lesson order. Always
   // shows the student's own current level, matching the rest of their
@@ -1302,6 +1308,7 @@
         <div class="sd-vocab-word-grid">
           ${theme.words.map(w => `
             <div class="sd-vocab-word-card">
+              <div class="sd-vocab-word-img"><img src="assets/vocab/${vocabSlug(w.en)}.png" onerror="this.parentElement.style.display='none'"></div>
               <div class="en">${w.en}</div>
               <div class="ar">${w.ar}</div>
               <button class="sd-vocab-listen" onclick="Lumio.speak('${w.en.replace(/'/g, "\\'")}')">🔊</button>
