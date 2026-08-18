@@ -19,6 +19,10 @@
   .pic-slot img { padding: 6px; box-sizing: border-box; }
   .pic-slot.over { border-color: var(--orange); background: var(--sun-soft); }
   .pic-slot.filled { border-style: solid; border-color: var(--green); }
+  .pic-slot.correct-pop { animation: correctPop .5s ease; }
+  @keyframes correctPop { 0% { transform: scale(1); } 40% { transform: scale(1.06); } 100% { transform: scale(1); } }
+  .pic-slot.wrong-shake { animation: wrongShake .4s ease; }
+  @keyframes wrongShake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
   .word-chip {
     background: var(--card); border-radius: 999px; padding: 14px 26px;
     font-family: var(--font-display); font-weight: 800; font-size: 1.15rem;

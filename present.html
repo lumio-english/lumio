@@ -94,8 +94,11 @@ function loadSlide(n) {
       document.getElementById("nextBtn").disabled = n === total;
       const gameLinksEl = document.getElementById("gameLinks");
       const teenTrackLevels = ["level3", "level4", "level5", "level6"];
+      const firstGame = level === "pre-a"
+        ? `<a href="games/lumis-pocket.html?level=${level}&n=${num}">🔍 Lumi's Pocket</a>`
+        : `<a href="games/balloon-pop.html?level=${level}&n=${num}">🎈 Balloon Pop</a>`;
       gameLinksEl.innerHTML = (!teenTrackLevels.includes(level) && gameStartSlide && n >= gameStartSlide - 1)
-        ? `<a href="games/balloon-pop.html?level=${level}&n=${num}">🎈 Balloon Pop</a><a href="games/match-drag.html?level=${level}&n=${num}">🧩 Match It</a>`
+        ? `${firstGame}<a href="games/match-drag.html?level=${level}&n=${num}">🧩 Match It</a>`
         : "";
     })
     .catch(() => { document.getElementById("stageContent").innerHTML = "<div id='loadingMsg' style='padding:40px'>Slide not found.</div>"; });

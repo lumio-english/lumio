@@ -138,9 +138,10 @@
       if (cur >= gameStartSlide - 1 && cur <= total) {
         const gwrap = document.createElement("div");
         gwrap.style.cssText = "position:absolute;right:3%;bottom:6%;display:flex;gap:1%;pointer-events:auto";
-        gwrap.innerHTML = `
-          <a class="overlay-btn game-btn" href="games/balloon-pop.html?level=${level}&n=${num}">Balloon Pop</a>
-          <a class="overlay-btn game-btn" href="games/match-drag.html?level=${level}&n=${num}">Match It</a>`;
+        const firstGame = level === "pre-a"
+          ? `<a class="overlay-btn game-btn" href="games/lumis-pocket.html?level=${level}&n=${num}">Lumi's Pocket</a>`
+          : `<a class="overlay-btn game-btn" href="games/balloon-pop.html?level=${level}&n=${num}">Balloon Pop</a>`;
+        gwrap.innerHTML = `${firstGame}<a class="overlay-btn game-btn" href="games/match-drag.html?level=${level}&n=${num}">Match It</a>`;
         wrap.appendChild(gwrap);
       }
       deck.appendChild(wrap);
