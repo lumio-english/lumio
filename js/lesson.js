@@ -428,6 +428,7 @@
   // rather than linking to something that doesn't exist yet.
   const LEVEL_GAMES = {
     "pre-a": { file: "lumis-pocket.html", label: "🔍 Play Lumi's Pocket!" },
+    "level1": { file: "treehouse-builder.html", label: "🌳 Play Treehouse Builder!" },
   };
 
   function showResults() {

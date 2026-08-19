@@ -96,6 +96,8 @@ function loadSlide(n) {
       const teenTrackLevels = ["level3", "level4", "level5", "level6"];
       const firstGame = level === "pre-a"
         ? `<a href="games/lumis-pocket.html?level=${level}&n=${num}">🔍 Lumi's Pocket</a>`
+        : level === "level1"
+        ? `<a href="games/treehouse-builder.html?level=${level}&n=${num}">🌳 Treehouse Builder</a>`
         : `<a href="games/balloon-pop.html?level=${level}&n=${num}">🎈 Balloon Pop</a>`;
       gameLinksEl.innerHTML = (!teenTrackLevels.includes(level) && gameStartSlide && n >= gameStartSlide - 1)
         ? `${firstGame}<a href="games/match-drag.html?level=${level}&n=${num}">🧩 Match It</a>`

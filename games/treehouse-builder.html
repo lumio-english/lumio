@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Treehouse Builder — Lumio English</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  body {
+    min-height: 100vh; overflow-x: hidden;
+    background: linear-gradient(180deg, #BEE3D4 0%, #E3F3E9 50%, #FFFBF5 100%);
+    position: relative;
+  }
+  .cloud { position: absolute; background: #fff; border-radius: 999px; opacity: .75;
+    box-shadow: 40px 6px 0 -6px #fff, -40px 10px 0 -10px #fff; }
+  .leaf { position: absolute; font-size: 1.3rem; opacity: .5; animation: drift 3s ease-in-out infinite; }
+  @keyframes drift { 0%,100% { transform: translateY(0) rotate(-6deg); } 50% { transform: translateY(-10px) rotate(6deg); } }
+
+  #hud { position: relative; z-index: 5; display: flex; align-items: center; gap: 12px; padding: 16px 20px; }
+  #hud .pill { background: #fff; border-radius: 999px; padding: 8px 18px; font-family: var(--font-display); font-weight: 800; box-shadow: var(--sh-sm); }
+
+  #layout { position: relative; z-index: 5; max-width: 920px; margin: 0 auto; padding: 0 20px 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 760px) { #layout { grid-template-columns: 1fr; } #treeWrap { order: 2; } #playWrap { order: 1; } }
+
+  #treeWrap { display: flex; flex-direction: column; align-items: center; padding-top: 10px; }
+  #treeWrap svg { width: 100%; max-width: 340px; height: auto; }
+  .piece { opacity: 0; transform: scale(.7); transform-origin: center; transition: opacity .5s ease, transform .5s cubic-bezier(.34,1.56,.64,1); }
+  .piece.show { opacity: 1; transform: scale(1); }
+  #buildLabel { font-family: var(--font-display); font-weight: 800; color: var(--cocoa); text-align: center; margin-top: 6px; font-size: 1.05rem; }
+
+  #playWrap { text-align: center; }
+  #promptCard {
+    background: #fff; border-radius: 24px; padding: 16px 22px; margin: 6px auto 18px;
+    box-shadow: var(--sh-md); display: inline-flex; align-items: center; gap: 12px; max-width: 100%;
+  }
+  #promptCard p { font-family: var(--font-display); font-weight: 800; color: var(--cocoa); font-size: 1.1rem; margin: 0; }
+  #hearBtn {
+    background: var(--grad-sun); border: none; border-radius: 999px; width: 52px; height: 52px;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+    box-shadow: 0 6px 14px rgba(255,197,61,.5); transition: transform .15s ease;
+  }
+  #hearBtn:active { transform: scale(.9); }
+  #hearBtn.pulse { animation: pulse 1s ease infinite; }
+  @keyframes pulse { 0%,100% { box-shadow: 0 6px 14px rgba(255,197,61,.5); } 50% { box-shadow: 0 6px 22px rgba(255,197,61,.85); } }
+
+  #optGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (max-width: 420px) { #optGrid { grid-template-columns: repeat(2, 1fr); } }
+  .opt-card {
+    background: #fff; border: 5px solid transparent; border-radius: 22px; padding: 0;
+    cursor: pointer; overflow: hidden; box-shadow: var(--sh-md);
+    transition: transform .15s ease, border-color .2s ease, opacity .3s ease;
+    position: relative;
+  }
+  .opt-card:active { transform: scale(.94); }
+  .opt-card .pic { position: relative; width: 100%; aspect-ratio: 1/1; overflow: hidden; }
+  .opt-card .pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 8%; box-sizing: border-box; background: #fff; }
+  .opt-card .word { font-family: var(--font-display); font-weight: 800; font-size: .95rem; color: var(--cocoa); padding: 8px 4px; }
+  .opt-card.correct { border-color: var(--green); background: var(--green-soft); }
+  .opt-card.correct-pop { animation: correctPop .5s ease; }
+  @keyframes correctPop { 0% { transform: scale(1); } 40% { transform: scale(1.1); } 100% { transform: scale(1); } }
+  .opt-card.wrong-dim { opacity: .35; pointer-events: none; }
+  .opt-card.wrong-shake { animation: wrongShake .4s ease; }
+  @keyframes wrongShake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+  .opt-card.locked { pointer-events: none; }
+  .opt-card .check {
+    position: absolute; top: 8px; right: 8px; width: 30px; height: 30px; border-radius: 999px;
+    background: var(--green); color: #fff; display: flex; align-items: center; justify-content: center;
+    font-weight: 800; opacity: 0; transform: scale(.5); transition: all .25s ease;
+  }
+  .opt-card.correct .check { opacity: 1; transform: scale(1); }
+
+  #endcard {
+    position: fixed; inset: 0; z-index: 60; display: none;
+    align-items: center; justify-content: center; background: rgba(67,48,31,.45); padding: 20px;
+  }
+  #endcard .box { background: #fff; border-radius: 28px; padding: 32px 36px; text-align: center; box-shadow: var(--sh-lg); max-width: 440px; }
+  #endcard .crew { display: flex; justify-content: center; gap: -10px; margin: 6px 0; }
+  #endcard .crew img { height: 90px; margin: 0 -10px; filter: drop-shadow(0 8px 12px rgba(67,48,31,.2)); }
+</style>
+</head>
+<body>
+
+<div class="cloud" style="width:64px;height:24px;top:36px;left:8%"></div>
+<div class="cloud" style="width:50px;height:18px;top:80px;right:10%"></div>
+<div class="leaf" style="top:18%;left:5%">🍃</div>
+<div class="leaf" style="top:60%;right:4%;animation-delay:.9s">🍃</div>
+
+<div id="hud">
+  <a class="btn btn-ghost" href="../present.html" id="exitBtn" style="background:#fff">Exit</a>
+  <span class="pill">★ <span id="score">0</span></span>
+  <span class="pill" id="roundPill">1/6</span>
+</div>
+
+<div id="layout">
+  <div id="treeWrap">
+    <svg viewBox="0 0 340 420" xmlns="http://www.w3.org/2000/svg">
+      <!-- piece 0: ground + trunk + branches (always visible, the starting point) -->
+      <ellipse cx="170" cy="405" rx="140" ry="14" fill="#BEE3D4"/>
+      <path d="M155 405 C150 300 148 220 160 150 C165 120 175 100 172 60 L188 60 C182 100 190 120 195 150 C202 220 200 300 195 405 Z" fill="#B5794A"/>
+      <path d="M172 170 C140 155 110 160 90 140" stroke="#B5794A" stroke-width="14" stroke-linecap="round" fill="none"/>
+      <path d="M195 190 C230 175 255 180 275 160" stroke="#B5794A" stroke-width="14" stroke-linecap="round" fill="none"/>
+      <circle cx="80" cy="130" r="34" fill="#7DBF8E"/>
+      <circle cx="270" cy="150" r="30" fill="#7DBF8E"/>
+      <circle cx="120" cy="90" r="26" fill="#8FCB9E"/>
+
+      <!-- piece 1: platform -->
+      <g class="piece" id="pc-platform">
+        <rect x="90" y="248" width="160" height="20" rx="4" fill="#D9A85E"/>
+        <rect x="90" y="248" width="160" height="6" rx="3" fill="#E9C08A"/>
+        <line x1="105" y1="248" x2="105" y2="268" stroke="#B5794A" stroke-width="2"/>
+        <line x1="135" y1="248" x2="135" y2="268" stroke="#B5794A" stroke-width="2"/>
+        <line x1="165" y1="248" x2="165" y2="268" stroke="#B5794A" stroke-width="2"/>
+        <line x1="195" y1="248" x2="195" y2="268" stroke="#B5794A" stroke-width="2"/>
+        <line x1="225" y1="248" x2="225" y2="268" stroke="#B5794A" stroke-width="2"/>
+      </g>
+
+      <!-- piece 2: walls + door -->
+      <g class="piece" id="pc-walls">
+        <rect x="105" y="150" width="130" height="98" rx="8" fill="#F0C48A"/>
+        <rect x="150" y="196" width="40" height="52" rx="4" fill="#B5794A"/>
+        <circle cx="182" cy="222" r="3" fill="#7A4E24"/>
+      </g>
+
+      <!-- piece 3: roof -->
+      <g class="piece" id="pc-roof">
+        <polygon points="95,152 170,95 245,152" fill="#EF6B4B"/>
+        <polygon points="95,152 170,95 170,110 108,152" fill="#F58868"/>
+        <rect x="160" y="80" width="10" height="22" fill="#8A5A34"/>
+      </g>
+
+      <!-- piece 4: window + bunting -->
+      <g class="piece" id="pc-window">
+        <circle cx="128" cy="200" r="16" fill="#BEE3F5" stroke="#8A5A34" stroke-width="3"/>
+        <line x1="128" y1="184" x2="128" y2="216" stroke="#8A5A34" stroke-width="2"/>
+        <line x1="112" y1="200" x2="144" y2="200" stroke="#8A5A34" stroke-width="2"/>
+        <path d="M108 152 Q170 172 232 152" stroke="#8A5A34" stroke-width="2" fill="none"/>
+        <polygon points="120,158 128,170 112,170" fill="#F97316"/>
+        <polygon points="150,160 158,172 142,172" fill="#0D9488"/>
+        <polygon points="180,160 188,172 172,172" fill="#F59E0B"/>
+        <polygon points="210,158 218,170 202,170" fill="#8B5CF6"/>
+      </g>
+
+      <!-- piece 5: rope ladder + flag -->
+      <g class="piece" id="pc-final">
+        <polygon points="170,60 170,80 185,70" fill="#F97316"/>
+        <line x1="150" y1="268" x2="140" y2="360" stroke="#D9A85E" stroke-width="4"/>
+        <line x1="170" y1="268" x2="165" y2="360" stroke="#D9A85E" stroke-width="4"/>
+        <line x1="142" y1="290" x2="167" y2="288" stroke="#B5794A" stroke-width="5"/>
+        <line x1="141" y1="315" x2="166" y2="313" stroke="#B5794A" stroke-width="5"/>
+        <line x1="140" y1="340" x2="165" y2="338" stroke="#B5794A" stroke-width="5"/>
+      </g>
+    </svg>
+    <div id="buildLabel">Building the Treehouse Club! 🌳</div>
+  </div>
+
+  <div id="playWrap">
+    <div id="promptCard">
+      <button id="hearBtn" class="pulse" aria-label="Listen">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="#43301F"/><path d="M16.5 8.5a5 5 0 010 7M19 6a9 9 0 010 12" stroke="#43301F" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+      </button>
+      <p>Tap the picture you hear!</p>
+    </div>
+    <div id="optGrid"></div>
+  </div>
+</div>
+
+<div id="endcard">
+  <div class="box">
+    <div class="crew">
+      <img src="../assets/story/characters/lumi-celebrate.png" alt="Lumi">
+      <img src="../assets/story/characters/omar-celebrate.png" alt="Omar">
+      <img src="../assets/story/characters/sara-celebrate.png" alt="Sara">
+      <img src="../assets/story/characters/noor-happy.png" alt="Noor">
+    </div>
+    <h1 style="font-family:var(--font-display);margin-top:8px">The Treehouse Club is open!</h1>
+    <p style="font-weight:800;font-size:1.2rem;margin:10px 0" id="finalScore"></p>
+    <div class="row" style="justify-content:center;gap:10px">
+      <button class="btn btn-primary" onclick="location.reload()">↺ Build again</button>
+      <a class="btn btn-teal" id="backBtn" href="../present.html">Back</a>
+    </div>
+  </div>
+</div>
+
+<script src="../js/app.js"></script>
+<script src="../js/lessons-data.js"></script>
+<script>
+const level = Lumio.qs("level") || "level1";
+const num = parseInt(Lumio.qs("n") || "1", 10);
+const source = Lumio.qs("from");
+const backHref = source === "lesson" ? "../student.html" : `../present.html?level=${level}&n=${num}`;
+document.getElementById("exitBtn").href = backHref;
+document.getElementById("backBtn").href = backHref;
+
+const lesson = window.LUMIO_LESSONS?.[level]?.[num];
+const vocab = lesson ? lesson.vocab : [];
+const slug = w => w.toLowerCase().replace(/'/g, "").replace(/ /g, "-");
+
+// One treehouse piece unlocks per correct round, in build order (base is
+// already visible, so a 6-round lesson finishes with every piece placed
+// exactly on the final correct answer).
+const PIECES = ["pc-platform", "pc-walls", "pc-roof", "pc-window", "pc-final"];
+const BUILD_LABELS = [
+  "Building the Treehouse Club! 🌳", "The platform is up! 🪵", "Walls are in place! 🏠",
+  "The roof is on! 🏡", "A window for waving! 👋", "The ladder's ready — come on up! 🎉",
+];
+
+if (!vocab.length) {
+  document.getElementById("playWrap").innerHTML = "<p style='padding:40px'>No lesson data found.</p>";
+} else {
+  const ROUNDS = Math.min(6, vocab.length);
+  const order = Lumio.shuffle([...vocab]).slice(0, ROUNDS);
+  let r = 0, score = 0, locked = false;
+  const optGrid = document.getElementById("optGrid");
+  const buildLabel = document.getElementById("buildLabel");
+
+  function placePiece(roundIndexJustWon) {
+    // roundIndexJustWon is 0-based; piece[i] unlocks after winning round i
+    // (there are ROUNDS-1 physical pieces spread across up to 5 rounds,
+    // then the final flag+ladder always lands on the very last round).
+    const pieceIdx = roundIndexJustWon === ROUNDS - 1 ? PIECES.length - 1
+      : Math.min(roundIndexJustWon, PIECES.length - 2);
+    const el = document.getElementById(PIECES[pieceIdx]);
+    if (el && !el.classList.contains("show")) el.classList.add("show");
+    buildLabel.textContent = BUILD_LABELS[Math.min(roundIndexJustWon + 1, BUILD_LABELS.length - 1)];
+  }
+
+  function playPrompt() { Lumio.speak(order[r].en); }
+
+  function drawRound() {
+    locked = false;
+    document.getElementById("roundPill").textContent = `${r + 1}/${ROUNDS}`;
+    const target = order[r];
+    const distractorPool = Lumio.shuffle(vocab.filter(v => v.en !== target.en));
+    const numOptions = Math.min(3, vocab.length);
+    const opts = Lumio.shuffle([target, ...distractorPool.slice(0, numOptions - 1)]);
+
+    optGrid.innerHTML = opts.map(o => `
+      <button class="opt-card" data-en="${o.en}">
+        <div class="pic">
+          <div style="position:absolute;inset:0">${Lumio.letterTile(o.en)}</div>
+          <img src="../assets/vocab/${slug(o.en)}.png" alt="${o.en}"
+               onload="this.previousElementSibling.style.display='none'" onerror="this.remove()">
+        </div>
+        <div class="word">${o.en}</div>
+        <div class="check">✓</div>
+      </button>`).join("");
+
+    document.querySelectorAll(".opt-card").forEach(card => { card.onclick = () => choose(card, target); });
+    setTimeout(playPrompt, 350);
+  }
+
+  function choose(card, target) {
+    if (locked) return;
+    const ok = card.dataset.en === target.en;
+    if (ok) {
+      locked = true;
+      score++;
+      document.getElementById("score").textContent = score;
+      Lumio.beep(true);
+      card.classList.add("correct", "correct-pop");
+      document.querySelectorAll(".opt-card").forEach(c => c.classList.add("locked"));
+      placePiece(r);
+      setTimeout(() => { r++; r < ROUNDS ? drawRound() : endGame(); }, 1200);
+    } else {
+      Lumio.beep(false);
+      card.classList.add("wrong-shake", "wrong-dim");
+      // gentle -- no scoring penalty, no lockout; they simply try another card
+    }
+  }
+
+  function endGame() {
+    Lumio.confetti(100);
+    const pct = Math.round((score / ROUNDS) * 100);
+    Lumio.speak(pct >= 80 ? "Amazing! The Treehouse Club is open!" : "Great building! Let's finish the treehouse again soon!");
+    document.getElementById("finalScore").textContent = `You built the treehouse with ${score} out of ${ROUNDS} correct answers!`;
+    document.getElementById("endcard").style.display = "flex";
+  }
+
+  document.getElementById("hearBtn").onclick = playPrompt;
+  drawRound();
+}
+</script>
+</body>
+</html>
