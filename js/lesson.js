@@ -430,6 +430,7 @@
     "pre-a": { file: "lumis-pocket.html", label: "🔍 Play Lumi's Pocket!" },
     "level1": { file: "treehouse-builder.html", label: "🌳 Play Treehouse Builder!" },
     "level2": { file: "twelve-months-calendar.html", label: "📅 Play Twelve Months Calendar!" },
+    "level3": { file: "crew-chat.html", label: "💬 Play Crew Chat!" },
   };
 
   function showResults() {

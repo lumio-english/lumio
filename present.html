@@ -93,16 +93,20 @@ function loadSlide(n) {
       document.getElementById("prevBtn").disabled = n === 1;
       document.getElementById("nextBtn").disabled = n === total;
       const gameLinksEl = document.getElementById("gameLinks");
-      const teenTrackLevels = ["level3", "level4", "level5", "level6"];
-      const firstGame = level === "pre-a"
-        ? `<a href="games/lumis-pocket.html?level=${level}&n=${num}">🔍 Lumi's Pocket</a>`
-        : level === "level1"
-        ? `<a href="games/treehouse-builder.html?level=${level}&n=${num}">🌳 Treehouse Builder</a>`
-        : level === "level2"
-        ? `<a href="games/twelve-months-calendar.html?level=${level}&n=${num}">📅 Twelve Months Calendar</a>`
-        : `<a href="games/balloon-pop.html?level=${level}&n=${num}">🎈 Balloon Pop</a>`;
-      gameLinksEl.innerHTML = (!teenTrackLevels.includes(level) && gameStartSlide && n >= gameStartSlide - 1)
-        ? `${firstGame}<a href="games/match-drag.html?level=${level}&n=${num}">🧩 Match It</a>`
+      // Games built so far, one per level. Match It (the generic picture-
+      // matching game) is paired alongside a level's own tailored game for
+      // levels 1-2, but not for level3 -- Crew Chat is deliberately built
+      // around text/typing instead of picture-tap, so pairing it with a
+      // picture-tap game would undercut the whole point of it.
+      const LEVEL_GAMES = {
+        "pre-a": [{ href: "lumis-pocket.html", label: "🔍 Lumi's Pocket" }, { href: "match-drag.html", label: "🧩 Match It" }],
+        "level1": [{ href: "treehouse-builder.html", label: "🌳 Treehouse Builder" }, { href: "match-drag.html", label: "🧩 Match It" }],
+        "level2": [{ href: "twelve-months-calendar.html", label: "📅 Twelve Months Calendar" }, { href: "match-drag.html", label: "🧩 Match It" }],
+        "level3": [{ href: "crew-chat.html", label: "💬 Crew Chat" }],
+      };
+      const games = LEVEL_GAMES[level];
+      gameLinksEl.innerHTML = (games && gameStartSlide && n >= gameStartSlide - 1)
+        ? games.map(g => `<a href="games/${g.href}?level=${level}&n=${num}">${g.label}</a>`).join("")
         : "";
     })
     .catch(() => { document.getElementById("stageContent").innerHTML = "<div id='loadingMsg' style='padding:40px'>Slide not found.</div>"; });

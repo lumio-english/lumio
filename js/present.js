@@ -136,17 +136,24 @@
         });
       }
       if (cur >= gameStartSlide - 1 && cur <= total) {
-        const gwrap = document.createElement("div");
-        gwrap.style.cssText = "position:absolute;right:3%;bottom:6%;display:flex;gap:1%;pointer-events:auto";
-        const firstGame = level === "pre-a"
-          ? `<a class="overlay-btn game-btn" href="games/lumis-pocket.html?level=${level}&n=${num}">Lumi's Pocket</a>`
-          : level === "level1"
-          ? `<a class="overlay-btn game-btn" href="games/treehouse-builder.html?level=${level}&n=${num}">Treehouse Builder</a>`
-          : level === "level2"
-          ? `<a class="overlay-btn game-btn" href="games/twelve-months-calendar.html?level=${level}&n=${num}">Twelve Months Calendar</a>`
-          : `<a class="overlay-btn game-btn" href="games/balloon-pop.html?level=${level}&n=${num}">Balloon Pop</a>`;
-        gwrap.innerHTML = `${firstGame}<a class="overlay-btn game-btn" href="games/match-drag.html?level=${level}&n=${num}">Match It</a>`;
-        wrap.appendChild(gwrap);
+        // Same LEVEL_GAMES registry as present.html -- kept in sync so both
+        // teacher-facing views always offer the same games per level. Match
+        // It (picture-tap) is paired with a level's own game for levels 1-2,
+        // but not level3: Crew Chat is deliberately text/typing-based, so
+        // pairing it with a picture-tap game would undercut the point of it.
+        const LEVEL_GAMES = {
+          "pre-a": [{ href: "lumis-pocket.html", label: "Lumi's Pocket" }, { href: "match-drag.html", label: "Match It" }],
+          "level1": [{ href: "treehouse-builder.html", label: "Treehouse Builder" }, { href: "match-drag.html", label: "Match It" }],
+          "level2": [{ href: "twelve-months-calendar.html", label: "Twelve Months Calendar" }, { href: "match-drag.html", label: "Match It" }],
+          "level3": [{ href: "crew-chat.html", label: "Crew Chat" }],
+        };
+        const games = LEVEL_GAMES[level];
+        if (games) {
+          const gwrap = document.createElement("div");
+          gwrap.style.cssText = "position:absolute;right:3%;bottom:6%;display:flex;gap:1%;pointer-events:auto";
+          gwrap.innerHTML = games.map(g => `<a class="overlay-btn game-btn" href="games/${g.href}?level=${level}&n=${num}">${g.label}</a>`).join("");
+          wrap.appendChild(gwrap);
+        }
       }
       deck.appendChild(wrap);
       overlayEl = wrap;
