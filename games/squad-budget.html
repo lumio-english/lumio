@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Squad Budget — Lumio English</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  body {
+    min-height: 100vh; overflow-x: hidden;
+    background: linear-gradient(180deg, #FFF1E0 0%, #FFF8EE 45%, #FFFBF5 100%);
+    position: relative;
+  }
+  .awning { position: absolute; top: 0; left: 0; right: 0; height: 14px;
+    background: repeating-linear-gradient(90deg, #F97316 0 40px, #FFF3D6 40px 80px); z-index: 2; }
+
+  #hud { position: relative; z-index: 5; display: flex; align-items: center; gap: 10px; padding: 22px 20px 14px; flex-wrap: wrap; }
+  #hud .pill { background: #fff; border-radius: 999px; padding: 8px 16px; font-family: var(--font-display); font-weight: 800; box-shadow: var(--sh-sm); font-size: .92rem; }
+  #hud .coins { background: linear-gradient(135deg,#FDE68A,#F59E0B); color: #6B3E00; }
+  #hud .coins.low { animation: coinPulse .7s ease infinite; }
+  @keyframes coinPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+
+  #layout { position: relative; z-index: 5; max-width: 980px; margin: 0 auto; padding: 0 20px 40px; display: grid; grid-template-columns: 240px 1fr; gap: 22px; align-items: start; }
+  @media (max-width: 780px) { #layout { grid-template-columns: 1fr; } }
+
+  /* ---- shopping list / receipt panel ---- */
+  #listPanel { background: #fff; border-radius: 20px; padding: 16px; box-shadow: var(--sh-md); }
+  #listPanel h3 { font-family: var(--font-display); color: var(--cocoa); font-size: 1rem; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  #shopList { display: flex; flex-direction: column; gap: 8px; }
+  .list-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 12px; background: var(--cream); font-weight: 700; color: var(--cocoa-soft); font-size: .92rem; transition: all .3s ease; }
+  .list-item .box { width: 18px; height: 18px; border-radius: 5px; border: 2px solid #D9C9AE; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: .7rem; color: #fff; }
+  .list-item.bought { background: var(--green-soft); color: var(--cocoa); }
+  .list-item.bought .box { background: var(--green); border-color: var(--green); }
+
+  #receiptWrap { margin-top: 14px; border-top: 2px dashed #E3D6BE; padding-top: 10px; }
+  #receiptWrap h4 { font-family: var(--font-display); font-size: .82rem; color: var(--cocoa-soft); margin-bottom: 6px; }
+  #receiptLines { font-family: "Courier New", monospace; font-size: .8rem; color: var(--cocoa); display: flex; flex-direction: column; gap: 3px; min-height: 20px; }
+  #receiptLines div { display: flex; justify-content: space-between; animation: printIn .3s ease; }
+  @keyframes printIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ---- market grid ---- */
+  #marketWrap { text-align: center; }
+  #promptCard {
+    background: #fff; border-radius: 24px; padding: 16px 22px; margin: 6px auto 18px;
+    box-shadow: var(--sh-md); display: inline-flex; align-items: center; gap: 12px; max-width: 100%;
+  }
+  #promptCard p { font-family: var(--font-display); font-weight: 800; color: var(--cocoa); font-size: 1.1rem; margin: 0; }
+  #hearBtn {
+    background: var(--grad-sun); border: none; border-radius: 999px; width: 52px; height: 52px;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+    box-shadow: 0 6px 14px rgba(255,197,61,.5); transition: transform .15s ease;
+  }
+  #hearBtn:active { transform: scale(.9); }
+  #hearBtn.pulse { animation: pulse 1s ease infinite; }
+  @keyframes pulse { 0%,100% { box-shadow: 0 6px 14px rgba(255,197,61,.5); } 50% { box-shadow: 0 6px 22px rgba(255,197,61,.85); } }
+
+  #stallGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  @media (min-width: 560px) { #stallGrid { grid-template-columns: repeat(4, 1fr); } }
+  .stall {
+    background: #fff; border: 4px solid transparent; border-radius: 18px; padding: 16px 10px;
+    cursor: pointer; box-shadow: var(--sh-md); transition: transform .15s ease, border-color .2s ease, opacity .3s ease;
+    position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
+  .stall:active { transform: scale(.94); }
+  .stall .tag { background: var(--grad-sun); color: #6B3E00; font-family: var(--font-display); font-weight: 800; font-size: .82rem; padding: 4px 12px; border-radius: 999px; }
+  .stall .word { font-family: var(--font-display); font-weight: 800; color: var(--cocoa); font-size: 1rem; }
+  .stall.correct { border-color: var(--green); background: var(--green-soft); }
+  .stall.correct-pop { animation: correctPop .5s ease; }
+  @keyframes correctPop { 0% { transform: scale(1); } 40% { transform: scale(1.1); } 100% { transform: scale(1); } }
+  .stall.wrong-dim { opacity: .35; pointer-events: none; }
+  .stall.wrong-shake { animation: wrongShake .4s ease; }
+  @keyframes wrongShake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+  .stall.locked { pointer-events: none; }
+
+  #cart { position: fixed; bottom: 20px; right: 20px; z-index: 40; background: #fff; border-radius: 999px;
+    width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; box-shadow: var(--sh-lg);
+    font-size: 1.7rem; transition: transform .25s cubic-bezier(.34,1.56,.64,1); }
+  #cart.bump { transform: scale(1.25); }
+
+  #endcard {
+    position: fixed; inset: 0; z-index: 60; display: none;
+    align-items: center; justify-content: center; background: rgba(67,48,31,.45); padding: 20px;
+  }
+  #endcard .box { background: #fff; border-radius: 28px; padding: 30px 32px; text-align: center; box-shadow: var(--sh-lg); max-width: 460px; }
+  #endcard .crew { display: flex; justify-content: center; margin: 8px 0; }
+  #endcard .crew img { height: 84px; margin: 0 -10px; filter: drop-shadow(0 8px 12px rgba(67,48,31,.2)); }
+  #endcard .receiptFinal { font-family: "Courier New", monospace; background: var(--cream); border-radius: 12px; padding: 12px 16px; text-align: left; margin: 12px 0; font-size: .85rem; }
+  #endcard .receiptFinal .tot { border-top: 1px dashed #D9C9AE; margin-top: 6px; padding-top: 6px; font-weight: 800; display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+<div class="awning"></div>
+
+<div id="hud">
+  <a class="btn btn-ghost" href="../present.html" id="exitBtn" style="background:#fff">Exit</a>
+  <span class="pill">★ <span id="score">0</span></span>
+  <span class="pill coins" id="coinsPill">🪙 <span id="coins">0</span></span>
+  <span class="pill" id="roundPill">1/6</span>
+</div>
+
+<div id="layout">
+  <div id="listPanel">
+    <h3>🛍️ Shopping List</h3>
+    <div id="shopList"></div>
+    <div id="receiptWrap">
+      <h4>RECEIPT</h4>
+      <div id="receiptLines"></div>
+    </div>
+  </div>
+
+  <div id="marketWrap">
+    <div id="promptCard">
+      <button id="hearBtn" class="pulse" aria-label="Listen">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="#43301F"/><path d="M16.5 8.5a5 5 0 010 7M19 6a9 9 0 010 12" stroke="#43301F" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+      </button>
+      <p id="promptText">Find this on the list!</p>
+    </div>
+    <div id="stallGrid"></div>
+  </div>
+</div>
+
+<div id="cart">🛒</div>
+
+<div id="endcard">
+  <div class="box">
+    <div class="crew">
+      <img src="../assets/story/characters/lumi-teen-thumbs.png" alt="Lumi">
+      <img src="../assets/story/characters/omar-teen-backpack.png" alt="Omar">
+      <img src="../assets/story/characters/sara-teen-happy.png" alt="Sara">
+      <img src="../assets/story/characters/noor-teen-backpack.png" alt="Noor">
+      <img src="../assets/story/characters/ziad-teen-thumbs.png" alt="Ziad">
+      <img src="../assets/story/characters/hamad-teen-happy.png" alt="Hamad">
+    </div>
+    <h1 style="font-family:var(--font-display)">Best squad shopping trip ever!</h1>
+    <div class="receiptFinal" id="finalReceipt"></div>
+    <div class="row" style="justify-content:center;gap:10px">
+      <button class="btn btn-primary" onclick="location.reload()">↺ Shop again</button>
+      <a class="btn btn-teal" id="backBtn" href="../present.html">Back</a>
+    </div>
+  </div>
+</div>
+
+<script src="../js/app.js"></script>
+<script src="../js/lessons-data.js"></script>
+<script>
+const level = Lumio.qs("level") || "level4";
+const num = parseInt(Lumio.qs("n") || "1", 10);
+const source = Lumio.qs("from");
+const backHref = source === "lesson" ? "../student.html" : `../present.html?level=${level}&n=${num}`;
+document.getElementById("exitBtn").href = backHref;
+document.getElementById("backBtn").href = backHref;
+
+const lesson = window.LUMIO_LESSONS?.[level]?.[num];
+const vocab = lesson ? lesson.vocab : [];
+
+if (!vocab.length) {
+  document.getElementById("marketWrap").innerHTML = "<p style='padding:40px'>No lesson data found.</p>";
+} else {
+  const ROUNDS = Math.min(6, vocab.length);
+  const order = Lumio.shuffle([...vocab]).slice(0, ROUNDS);
+  // Prices are randomized per item, but the starting budget is always
+  // computed AFTER prices are assigned (sum of every real price + a
+  // generous cushion) so the student can never run out of coins before
+  // finishing the list -- the countdown is a satisfying feeling, never a
+  // failure risk. Same "gentle by design" philosophy as the other games,
+  // just expressed through the shopping theme instead of lives/attempts.
+  const prices = {};
+  order.forEach(w => { prices[w.en] = [10, 15, 20, 25][Math.floor(Math.random() * 4)]; });
+  let coins = Object.values(prices).reduce((a, b) => a + b, 0) + 40;
+  document.getElementById("coins").textContent = coins;
+
+  let r = 0, score = 0, locked = false;
+  const stallGrid = document.getElementById("stallGrid");
+  const shopList = document.getElementById("shopList");
+  const receiptLines = document.getElementById("receiptLines");
+
+  shopList.innerHTML = order.map((w, i) => `
+    <div class="list-item" id="item${i}"><span class="box"></span><span class="lbl">${w.ar}</span></div>`).join("");
+
+  function playPrompt() { Lumio.speak(order[r].en); }
+
+  function drawRound() {
+    locked = false;
+    document.getElementById("roundPill").textContent = `${r + 1}/${ROUNDS}`;
+    document.getElementById("promptText").textContent = "Find this on the list!";
+    const target = order[r];
+    const distractorPool = Lumio.shuffle(vocab.filter(v => v.en !== target.en));
+    const numOptions = Math.min(4, vocab.length);
+    const opts = Lumio.shuffle([target, ...distractorPool.slice(0, numOptions - 1)]);
+
+    stallGrid.innerHTML = opts.map(o => `
+      <button class="stall" data-en="${o.en}">
+        <span class="tag">${prices[o.en] || [10,15,20,25][Math.floor(Math.random()*4)]}🪙</span>
+        <span class="word">${o.en}</span>
+      </button>`).join("");
+
+    document.querySelectorAll(".stall").forEach(card => { card.onclick = () => choose(card, target); });
+    setTimeout(playPrompt, 350);
+  }
+
+  function choose(card, target) {
+    if (locked) return;
+    const ok = card.dataset.en === target.en;
+    if (ok) {
+      locked = true;
+      score++;
+      const price = prices[target.en];
+      coins -= price;
+      document.getElementById("score").textContent = score;
+      document.getElementById("coins").textContent = coins;
+      Lumio.beep(true);
+      card.classList.add("correct", "correct-pop");
+      document.querySelectorAll(".stall").forEach(c => c.classList.add("locked"));
+
+      const item = document.getElementById(`item${r}`);
+      item.classList.add("bought");
+      item.querySelector(".box").textContent = "✓";
+      item.querySelector(".lbl").textContent = `${target.en} — ${target.ar}`;
+
+      const line = document.createElement("div");
+      line.innerHTML = `<span>${target.en}</span><span>${price}🪙</span>`;
+      receiptLines.appendChild(line);
+
+      const cart = document.getElementById("cart");
+      cart.classList.add("bump");
+      setTimeout(() => cart.classList.remove("bump"), 300);
+
+      setTimeout(() => { r++; r < ROUNDS ? drawRound() : endGame(); }, 1300);
+    } else {
+      Lumio.beep(false);
+      card.classList.add("wrong-shake", "wrong-dim");
+      // gentle -- no penalty, no coins lost, they simply try another stall
+    }
+  }
+
+  function endGame() {
+    Lumio.confetti(100);
+    const spent = Object.keys(prices).reduce((s, en) => s + prices[en], 0);
+    const pct = Math.round((score / ROUNDS) * 100);
+    Lumio.speak(pct >= 80 ? "What a haul! Best squad shopping trip ever!" : "Great shopping! Let's fill the list again soon!");
+    document.getElementById("finalReceipt").innerHTML =
+      order.map(w => `<div style="display:flex;justify-content:space-between"><span>${w.en}</span><span>${prices[w.en]}🪙</span></div>`).join("") +
+      `<div class="tot"><span>Total spent</span><span>${spent}🪙</span></div>
+       <div class="tot" style="color:var(--green);border-top:none"><span>Coins left</span><span>${coins}🪙</span></div>`;
+    document.getElementById("endcard").style.display = "flex";
+  }
+
+  document.getElementById("hearBtn").onclick = playPrompt;
+  drawRound();
+}
+</script>
+</body>
+</html>

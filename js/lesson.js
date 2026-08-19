@@ -431,6 +431,7 @@
     "level1": { file: "treehouse-builder.html", label: "🌳 Play Treehouse Builder!" },
     "level2": { file: "twelve-months-calendar.html", label: "📅 Play Twelve Months Calendar!" },
     "level3": { file: "crew-chat.html", label: "💬 Play Crew Chat!" },
+    "level4": { file: "squad-budget.html", label: "🛍️ Play Squad Budget!" },
   };
 
   function showResults() {

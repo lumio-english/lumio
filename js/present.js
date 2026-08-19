@@ -146,6 +146,7 @@
           "level1": [{ href: "treehouse-builder.html", label: "Treehouse Builder" }, { href: "match-drag.html", label: "Match It" }],
           "level2": [{ href: "twelve-months-calendar.html", label: "Twelve Months Calendar" }, { href: "match-drag.html", label: "Match It" }],
           "level3": [{ href: "crew-chat.html", label: "Crew Chat" }],
+          "level4": [{ href: "squad-budget.html", label: "Squad Budget" }],
         };
         const games = LEVEL_GAMES[level];
         if (games) {
