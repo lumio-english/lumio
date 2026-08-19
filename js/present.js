@@ -142,6 +142,8 @@
           ? `<a class="overlay-btn game-btn" href="games/lumis-pocket.html?level=${level}&n=${num}">Lumi's Pocket</a>`
           : level === "level1"
           ? `<a class="overlay-btn game-btn" href="games/treehouse-builder.html?level=${level}&n=${num}">Treehouse Builder</a>`
+          : level === "level2"
+          ? `<a class="overlay-btn game-btn" href="games/twelve-months-calendar.html?level=${level}&n=${num}">Twelve Months Calendar</a>`
           : `<a class="overlay-btn game-btn" href="games/balloon-pop.html?level=${level}&n=${num}">Balloon Pop</a>`;
         gwrap.innerHTML = `${firstGame}<a class="overlay-btn game-btn" href="games/match-drag.html?level=${level}&n=${num}">Match It</a>`;
         wrap.appendChild(gwrap);
