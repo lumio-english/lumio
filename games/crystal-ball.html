@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crystal Ball — Lumio English</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  body {
+    min-height: 100vh; overflow-x: hidden;
+    background: radial-gradient(ellipse at top, #3B2A6B 0%, #201341 55%, #120A28 100%);
+    position: relative; font-family: var(--font-body);
+  }
+  .star { position: absolute; background: #fff; border-radius: 50%; animation: twinkle 2.6s ease-in-out infinite; }
+  @keyframes twinkle { 0%,100% { opacity: .2; } 50% { opacity: .9; } }
+
+  #hud { position: relative; z-index: 5; display: flex; align-items: center; gap: 10px; padding: 18px 20px 6px; flex-wrap: wrap; }
+  #hud .pill { background: rgba(255,255,255,.12); color: #F5EFFF; border-radius: 999px; padding: 8px 16px; font-family: var(--font-display); font-weight: 800; font-size: .92rem; backdrop-filter: blur(4px); }
+  #hud .pill.power { background: linear-gradient(135deg,#A78BFA,#7C3AED); }
+  #hud a.exit { color: #F5EFFF; background: rgba(255,255,255,.12); border-radius: 999px; padding: 8px 16px; font-weight: 800; text-decoration: none; }
+
+  #stage { position: relative; z-index: 5; max-width: 520px; margin: 0 auto; padding: 10px 20px 40px; text-align: center; }
+
+  #ballWrap { position: relative; width: 200px; height: 200px; margin: 10px auto 8px; }
+  #ball {
+    width: 100%; height: 100%; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.5), rgba(167,139,250,.35) 40%, rgba(76,29,149,.55) 75%, rgba(30,10,60,.7));
+    box-shadow: 0 0 40px rgba(167,139,250,.55), inset 0 0 30px rgba(255,255,255,.25);
+    position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;
+    transition: box-shadow .4s ease;
+  }
+  #ball.power2 { box-shadow: 0 0 60px rgba(167,139,250,.8), inset 0 0 40px rgba(255,255,255,.35); }
+  #ball.power3 { box-shadow: 0 0 90px rgba(196,181,253,.95), inset 0 0 55px rgba(255,255,255,.5); }
+  .mist { position: absolute; border-radius: 50%; background: rgba(255,255,255,.18); animation: swirl 6s linear infinite; }
+  @keyframes swirl { from { transform: rotate(0deg) translateX(30px) rotate(0deg); } to { transform: rotate(360deg) translateX(30px) rotate(-360deg); } }
+  #ballText { position: relative; z-index: 2; font-family: var(--font-display); font-weight: 800; color: #fff; font-size: 1.3rem; text-shadow: 0 2px 8px rgba(0,0,0,.4); padding: 0 20px; }
+  #ballStand { width: 90px; height: 22px; margin: -6px auto 0; background: linear-gradient(180deg,#6D28D9,#4C1D95); border-radius: 0 0 40px 40px; }
+
+  #kicker { font-family: var(--font-display); font-weight: 800; color: #C4B5FD; font-size: .85rem; letter-spacing: .5px; text-transform: uppercase; margin: 14px 0 4px; }
+  #hearBtn {
+    background: linear-gradient(135deg,#FDE68A,#F59E0B); border: none; border-radius: 999px; width: 44px; height: 44px;
+    display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+    box-shadow: 0 6px 14px rgba(245,158,11,.5); transition: transform .15s ease; margin: 4px 0 12px;
+  }
+  #hearBtn:active { transform: scale(.9); }
+
+  #optGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .opt-card {
+    background: linear-gradient(160deg, #2D1B5E, #1B0F3D); border: 3px solid #6D28D9; border-radius: 16px;
+    padding: 16px 8px; cursor: pointer; font-family: var(--font-display); font-weight: 800; color: #F5EFFF; font-size: .95rem;
+    transition: transform .15s ease, border-color .2s ease, opacity .3s ease;
+  }
+  .opt-card:active { transform: scale(.94); }
+  .opt-card.correct { border-color: #34D399; background: linear-gradient(160deg,#0F3D2D,#0A2B1F); }
+  .opt-card.correct-pop { animation: correctPop .5s ease; }
+  @keyframes correctPop { 0% { transform: scale(1); } 40% { transform: scale(1.1); } 100% { transform: scale(1); } }
+  .opt-card.wrong-dim { opacity: .3; pointer-events: none; }
+  .opt-card.wrong-shake { animation: wrongShake .4s ease; }
+  @keyframes wrongShake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+  .opt-card.locked { pointer-events: none; }
+
+  #tfOpts { display: flex; gap: 14px; justify-content: center; }
+  .tf-btn {
+    border: none; border-radius: 14px; padding: 15px 28px; font-family: var(--font-display); font-weight: 800;
+    font-size: 1.05rem; cursor: pointer; transition: transform .15s ease, opacity .3s ease; color: #fff;
+  }
+  .tf-btn:active { transform: scale(.94); }
+  .tf-btn.right { background: linear-gradient(135deg,#34D399,#059669); }
+  .tf-btn.wrong { background: linear-gradient(135deg,#F87171,#DC2626); }
+  .tf-btn.locked { pointer-events: none; opacity: .5; }
+  .tf-btn.chosen-right { outline: 4px solid #FDE68A; }
+
+  #endcard {
+    position: fixed; inset: 0; z-index: 60; display: none;
+    align-items: center; justify-content: center; background: rgba(10,5,25,.75); padding: 20px;
+  }
+  #endcard .box { background: linear-gradient(160deg,#2D1B5E,#1B0F3D); border: 2px solid #7C3AED; border-radius: 26px; padding: 30px 32px; text-align: center; box-shadow: 0 0 60px rgba(124,58,237,.5); max-width: 460px; }
+  #endcard .box h1, #endcard .box p { color: #F5EFFF; }
+  #endcard .box p { font-weight: 700; color: #C4B5FD; }
+  #endcard .crew { display: flex; justify-content: center; margin: 10px 0; }
+  #endcard .crew img { height: 82px; margin: 0 -10px; filter: drop-shadow(0 8px 16px rgba(124,58,237,.5)); }
+</style>
+</head>
+<body>
+<div class="star" style="width:3px;height:3px;top:8%;left:12%"></div>
+<div class="star" style="width:2px;height:2px;top:15%;left:80%;animation-delay:.7s"></div>
+<div class="star" style="width:3px;height:3px;top:70%;left:6%;animation-delay:1.3s"></div>
+<div class="star" style="width:2px;height:2px;top:60%;left:88%;animation-delay:.4s"></div>
+<div class="star" style="width:3px;height:3px;top:40%;left:92%;animation-delay:1.8s"></div>
+<div class="star" style="width:2px;height:2px;top:88%;left:30%;animation-delay:1s"></div>
+
+<div id="hud">
+  <a class="exit" href="../present.html" id="exitBtn">Exit</a>
+  <span class="pill">🔮 <span id="score">0</span></span>
+  <span class="pill power" id="powerPill" style="display:none">✨ Vision x<span id="power">1</span></span>
+  <span class="pill" id="roundPill">1/6</span>
+</div>
+
+<div id="stage">
+  <div id="ballWrap">
+    <div id="ball">
+      <div class="mist" style="width:60px;height:60px;top:20%;left:15%"></div>
+      <div class="mist" style="width:40px;height:40px;top:55%;left:55%;animation-duration:8s"></div>
+      <div id="ballText">🔮</div>
+    </div>
+  </div>
+  <div id="ballStand"></div>
+
+  <div id="kicker">Read the crystal ball</div>
+  <div><button id="hearBtn" aria-label="Listen">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="#43301F"/><path d="M16.5 8.5a5 5 0 010 7M19 6a9 9 0 010 12" stroke="#43301F" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+  </button></div>
+
+  <div id="optGrid" style="display:none"></div>
+  <div id="tfOpts" style="display:none"></div>
+</div>
+
+<div id="endcard">
+  <div class="box">
+    <div class="crew">
+      <img src="../assets/story/characters/lumi-teen-celebrate.png" alt="Lumi">
+      <img src="../assets/story/characters/omar-teen-thumbs.png" alt="Omar">
+      <img src="../assets/story/characters/sara-teen-celebrate.png" alt="Sara">
+      <img src="../assets/story/characters/noor-teen-thumbs.png" alt="Noor">
+      <img src="../assets/story/characters/ziad-teen-celebrate.png" alt="Ziad">
+      <img src="../assets/story/characters/hamad-teen-thumbs.png" alt="Hamad">
+    </div>
+    <h1 style="font-family:var(--font-display)">The future looks bright! ✨</h1>
+    <p id="finalScore"></p>
+    <div class="row" style="justify-content:center;gap:10px;margin-top:10px">
+      <button class="btn btn-primary" onclick="location.reload()">↺ New vision</button>
+      <a class="btn btn-teal" id="backBtn" href="../present.html">Back</a>
+    </div>
+  </div>
+</div>
+
+<script src="../js/app.js"></script>
+<script src="../js/lessons-data.js"></script>
+<script>
+const level = Lumio.qs("level") || "level6";
+const num = parseInt(Lumio.qs("n") || "1", 10);
+const source = Lumio.qs("from");
+const backHref = source === "lesson" ? "../student.html" : `../present.html?level=${level}&n=${num}`;
+document.getElementById("exitBtn").href = backHref;
+document.getElementById("backBtn").href = backHref;
+
+const lesson = window.LUMIO_LESSONS?.[level]?.[num];
+const vocab = lesson ? lesson.vocab : [];
+
+if (!vocab.length) {
+  document.getElementById("stage").innerHTML = "<p style='padding:40px;color:#F5EFFF'>No lesson data found.</p>";
+} else {
+  const ROUNDS = Math.min(6, vocab.length);
+  const order = Lumio.shuffle([...vocab]).slice(0, ROUNDS);
+  // Same reliable alternating pattern proven in Story Detective (read the
+  // vision / judge a prediction), reskinned as fortune-telling to match
+  // Level 6's actual grammar focus -- predictions and future plans. A
+  // streak ("Vision Power") makes the crystal ball itself glow brighter
+  // the longer the streak runs, real visual escalation rather than just a
+  // number going up.
+  let r = 0, score = 0, power = 0, locked = false;
+  const optGrid = document.getElementById("optGrid");
+  const tfOpts = document.getElementById("tfOpts");
+  const kicker = document.getElementById("kicker");
+  const ballText = document.getElementById("ballText");
+  const ball = document.getElementById("ball");
+
+  function updatePower(hit) {
+    power = hit ? power + 1 : 0;
+    if (power >= 3) {
+      document.getElementById("powerPill").style.display = "inline-block";
+      document.getElementById("power").textContent = power;
+    } else {
+      document.getElementById("powerPill").style.display = "none";
+    }
+    ball.classList.remove("power2", "power3");
+    if (power >= 5) ball.classList.add("power3");
+    else if (power >= 3) ball.classList.add("power2");
+  }
+
+  function playPrompt(word) { Lumio.speak(word); }
+
+  function drawRound() {
+    locked = false;
+    document.getElementById("roundPill").textContent = `${r + 1}/${ROUNDS}`;
+    const target = order[r];
+    const isVerify = r % 2 === 1;
+
+    if (isVerify) {
+      kicker.textContent = "Judge the prediction";
+      optGrid.style.display = "none";
+      tfOpts.style.display = "flex";
+      const showCorrect = Math.random() < 0.5;
+      const claim = showCorrect ? target.en : Lumio.shuffle(vocab.filter(v => v.en !== target.en))[0].en;
+      window.__isTrue = showCorrect;
+      ballText.textContent = `"${target.ar}" = "${claim}" ?`;
+      tfOpts.innerHTML = `
+        <button class="tf-btn right" data-v="true">✅ Correct</button>
+        <button class="tf-btn wrong" data-v="false">❌ Wrong</button>`;
+      document.querySelectorAll(".tf-btn").forEach(b => { b.onclick = () => verify(b, showCorrect, target); });
+    } else {
+      kicker.textContent = "Read the crystal ball";
+      tfOpts.style.display = "none";
+      optGrid.style.display = "grid";
+      ballText.textContent = target.ar;
+      const distractorPool = Lumio.shuffle(vocab.filter(v => v.en !== target.en));
+      const numOptions = Math.min(3, vocab.length);
+      const opts = Lumio.shuffle([target, ...distractorPool.slice(0, numOptions - 1)]);
+      optGrid.innerHTML = opts.map(o => `<button class="opt-card" data-en="${o.en}">${o.en}</button>`).join("");
+      document.querySelectorAll(".opt-card").forEach(card => { card.onclick = () => choose(card, target); });
+    }
+    setTimeout(() => playPrompt(target.en), 350);
+  }
+
+  function choose(card, target) {
+    if (locked) return;
+    const ok = card.dataset.en === target.en;
+    if (ok) {
+      locked = true;
+      score++;
+      updatePower(true);
+      document.getElementById("score").textContent = score;
+      Lumio.beep(true);
+      card.classList.add("correct", "correct-pop");
+      document.querySelectorAll(".opt-card").forEach(c => c.classList.add("locked"));
+      setTimeout(() => { r++; r < ROUNDS ? drawRound() : endGame(); }, 1100);
+    } else {
+      Lumio.beep(false);
+      updatePower(false);
+      card.classList.add("wrong-shake", "wrong-dim");
+    }
+  }
+
+  function verify(btn, showCorrect) {
+    if (locked) return;
+    const chose = btn.dataset.v === "true";
+    const ok = chose === showCorrect;
+    document.querySelectorAll(".tf-btn").forEach(b => b.classList.add("locked"));
+    if (ok) {
+      locked = true;
+      score++;
+      updatePower(true);
+      document.getElementById("score").textContent = score;
+      Lumio.beep(true);
+      btn.classList.add("chosen-right");
+    } else {
+      Lumio.beep(false);
+      updatePower(false);
+    }
+    setTimeout(() => { r++; r < ROUNDS ? drawRound() : endGame(); }, 1300);
+  }
+
+  function endGame() {
+    Lumio.confetti(100);
+    const pct = Math.round((score / ROUNDS) * 100);
+    Lumio.speak(pct >= 80 ? "The crystal ball is glowing! Your future looks amazing!" : "Good vision! Come see the crystal ball again soon!");
+    document.getElementById("finalScore").textContent = `You read ${score} out of ${ROUNDS} visions correctly!`;
+    document.getElementById("endcard").style.display = "flex";
+  }
+
+  document.getElementById("hearBtn").onclick = () => playPrompt(order[r].en);
+  drawRound();
+}
+</script>
+</body>
+</html>

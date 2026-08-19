@@ -433,6 +433,7 @@
     "level3": { file: "crew-chat.html", label: "💬 Play Crew Chat!" },
     "level4": { file: "squad-budget.html", label: "🛍️ Play Squad Budget!" },
     "level5": { file: "story-detective.html", label: "🕵️ Play Story Detective!" },
+    "level6": { file: "crystal-ball.html", label: "🔮 Play Crystal Ball!" },
   };
 
   function showResults() {

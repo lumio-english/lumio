@@ -148,6 +148,7 @@
           "level3": [{ href: "crew-chat.html", label: "Crew Chat" }],
           "level4": [{ href: "squad-budget.html", label: "Squad Budget" }],
           "level5": [{ href: "story-detective.html", label: "Story Detective" }],
+          "level6": [{ href: "crystal-ball.html", label: "Crystal Ball" }],
         };
         const games = LEVEL_GAMES[level];
         if (games) {
