@@ -223,21 +223,37 @@
   .sd-buddy-bubble{position:absolute;top:-38px;left:50%;transform:translateX(-50%) scale(.8);background:var(--sd-cocoa);color:#fff;
     padding:6px 12px;border-radius:10px;font-size:.72rem;font-weight:700;white-space:nowrap;opacity:0;pointer-events:none;transition:all .2s ease}
   .sd-buddy-card.sd-buddy-active .sd-buddy-bubble{opacity:1;transform:translateX(-50%) scale(1) translateY(-6px)}
-  .sd-game-tile{
-    background:#fff;border-radius:20px;padding:18px;box-shadow:0 4px 16px rgba(0,0,0,.05);
-    display:flex;flex-direction:column;gap:8px;transition:.15s;
-  }
-  .sd-game-tile:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(0,0,0,.09)}
-  .sd-game-icon{
-    width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.7rem;
-  }
-  .sd-game-tile h4{margin:0;font-family:'Baloo 2',sans-serif;font-size:1.05rem}
-  .sd-game-tile p{margin:0;font-size:.82rem;color:var(--sd-cocoa-soft);font-weight:700;flex:1}
   .sd-game-play{
     align-self:flex-start;background:var(--sd-teal-deep);color:#fff;border:none;border-radius:999px;
     padding:8px 18px;font-weight:800;font-size:.85rem;cursor:pointer;font-family:inherit;
     transition:transform .13s cubic-bezier(.22,1,.36,1),background .15s ease;
   }
+
+  /* One wide card for this student's own level's tailored mini-game
+     (games/*.html) -- background matches that game's own established
+     palette, so it reads as a preview of the game's world, not a
+     generic tile. Play opens sd-gameMapOverlay: a per-lesson picker
+     reusing the exact same .path/.node visual language as the
+     adventure map on this same page, so "locked until you finish the
+     lesson" looks and feels identical to how locking already works
+     everywhere else on the dashboard. */
+  .sd-game-wide{
+    border-radius:26px;padding:28px 24px;text-align:center;color:#fff;position:relative;overflow:hidden;
+    box-shadow:0 10px 28px rgba(0,0,0,.18);
+  }
+  .sd-game-wide-icon{font-size:2.6rem;margin-bottom:6px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.25))}
+  .sd-game-wide h4{margin:0 0 6px;font-family:'Baloo 2',sans-serif;font-size:1.4rem;text-shadow:0 2px 6px rgba(0,0,0,.25)}
+  .sd-game-wide p{margin:0 auto 18px;font-size:.9rem;font-weight:700;opacity:.92;max-width:420px;line-height:1.4}
+  .sd-game-wide-play{
+    background:#fff;color:var(--sd-cocoa);border:none;border-radius:999px;padding:12px 34px;
+    font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.05rem;cursor:pointer;
+    box-shadow:0 6px 16px rgba(0,0,0,.2);transition:transform .15s ease;
+  }
+  .sd-game-wide-play:active{transform:scale(.96)}
+
+  #gameMapPath{display:grid;grid-template-columns:repeat(5,1fr);gap:16px 10px;padding:10px 4px 4px;justify-items:center}
+  @media (max-width:480px){ #gameMapPath{grid-template-columns:repeat(4,1fr)} }
+  #gameMapPath .node{width:60px;height:60px;font-size:1.05rem}
 
   /* ---------- English Hub ---------- */
   .sd-hub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}
@@ -459,16 +475,6 @@
   .wb-letter.wrong{animation:lgshake .3s}
   @keyframes lgshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 
-  /* ---------- Color Sequence ---------- */
-  .cs-status{text-align:center;font-weight:700;color:var(--sd-cocoa-soft);margin-bottom:14px;min-height:20px}
-  .cs-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:280px;margin:0 auto}
-  .cs-pad{
-    aspect-ratio:1;border-radius:16px;border:none;cursor:pointer;opacity:.55;transition:opacity .15s, transform .1s;
-  }
-  .cs-pad.lit{opacity:1;transform:scale(1.04)}
-  .cs-pad.p0{background:#FF6B6B} .cs-pad.p1{background:#2DD4BF} .cs-pad.p2{background:#FFC93C} .cs-pad.p3{background:#8B7CF6}
-  .cs-pad:disabled{cursor:default}
-
   .sd-game-end{padding:10px 0}
   .sd-game-end .stars{font-size:2.2rem;color:var(--sd-amber,#E8A23D);margin:8px 0}
   .sd-game-again{background:var(--sd-orange);color:#fff;border:none;border-radius:999px;padding:10px 22px;font-weight:800;cursor:pointer;font-family:inherit;margin-top:10px}
@@ -573,34 +579,13 @@
     </div>
   </div>
 
-  <!-- Mini-games -->
-  <div class="sd-section-title"><h3>Mini-games</h3></div>
-  <p class="sd-hint" style="margin:-6px 0 12px;font-weight:700;color:var(--sd-cocoa-soft);font-size:.85rem">Uses words from your current lesson — play well and it can boost that lesson's stars! 🌟</p>
-  <div class="sd-games-grid">
-    <div class="sd-game-tile">
-      <div class="sd-game-icon" style="background:#EFE9FE;color:#6D5AE0">🧠</div>
-      <h4>Memory Match</h4>
-      <p>Flip cards and find the matching pairs before you run out of tries!</p>
-      <button class="sd-game-play" id="playMemory">Play</button>
-    </div>
-    <div class="sd-game-tile">
-      <div class="sd-game-icon" style="background:#E2F4FF;color:#0EA5E9">🎈</div>
-      <h4>Word Pop</h4>
-      <p>Pop the bubble with the right word before your hearts run out!</p>
-      <button class="sd-game-play" id="playWordPop">Play</button>
-    </div>
-    <div class="sd-game-tile">
-      <div class="sd-game-icon" style="background:#FFEFE0;color:#F9720C">🔤</div>
-      <h4>Word Builder</h4>
-      <p>Put the mixed-up letters in the right order to spell the word!</p>
-      <button class="sd-game-play" id="playBuilder">Play</button>
-    </div>
-    <div class="sd-game-tile">
-      <div class="sd-game-icon" style="background:#FDE8F3;color:#DB2777">🎨</div>
-      <h4>Color Sequence</h4>
-      <p>Watch the pattern light up, then repeat it back — how far can you go? (just for fun, doesn't use lesson words)</p>
-      <button class="sd-game-play" id="playSequence">Play</button>
-    </div>
+  <!-- Mini-game -->
+  <div class="sd-section-title"><h3>🎮 Mini-Game</h3></div>
+  <div class="sd-game-wide" id="gameWideCard">
+    <div class="sd-game-wide-icon" id="gameWideIcon"></div>
+    <h4 id="gameWideTitle"></h4>
+    <p id="gameWideSub"></p>
+    <button class="sd-game-wide-play" id="gameWidePlay">▶ Play</button>
   </div>
 
   <!-- English Hub -->
@@ -772,15 +757,13 @@
   </div>
 </div>
 
-<!-- Color Sequence modal -->
-<div class="sd-modal-overlay" id="sequenceOverlay">
-  <div class="sd-modal" style="position:relative">
-    <button class="sd-modal-close-x" id="sequenceClose">✕</button>
-    <h3>Color Sequence</h3>
-    <div class="wp-hud"><span id="csLevel">Round 1</span><span id="csBest">Best: 0</span></div>
-    <div id="csStatus" class="cs-status">Watch closely!</div>
-    <div class="cs-grid" id="csGrid"></div>
-    <div id="csEnd" style="display:none"></div>
+<!-- Mini-game lesson map modal -->
+<div class="sd-modal-overlay" id="gameMapOverlay">
+  <div class="sd-modal wide" style="position:relative">
+    <button class="sd-modal-close-x" id="gameMapClose">✕</button>
+    <h3 id="gameMapTitle"></h3>
+    <p class="sd-hint" id="gameMapSub"></p>
+    <div id="gameMapPath"></div>
   </div>
 </div>
 
@@ -1852,7 +1835,6 @@
     document.getElementById("mmAgain").onclick = () => startMemory(mmState.source);
   }
 
-  document.getElementById("playMemory").onclick = () => { reviewMode = false; memoryOverlay.classList.add("show"); startMemory(); };
   document.getElementById("memoryClose").onclick = () => memoryOverlay.classList.remove("show");
   memoryOverlay.addEventListener("click", e => { if (e.target === memoryOverlay) memoryOverlay.classList.remove("show"); });
 
@@ -1925,7 +1907,6 @@
     document.getElementById("wpAgain").onclick = () => startWordPop(wpState.source);
   }
 
-  document.getElementById("playWordPop").onclick = () => { reviewMode = false; wordpopOverlay.classList.add("show"); startWordPop(); };
   document.getElementById("wordpopClose").onclick = () => wordpopOverlay.classList.remove("show");
   wordpopOverlay.addEventListener("click", e => { if (e.target === wordpopOverlay) wordpopOverlay.classList.remove("show"); });
 
@@ -2026,98 +2007,71 @@
     if (st >= 2) confettiBurst(45);
     document.getElementById("wbAgain").onclick = () => startBuilder(wbState.source);
   }
-  document.getElementById("playBuilder").onclick = () => { reviewMode = false; builderOverlay.classList.add("show"); startBuilder(); };
   document.getElementById("builderClose").onclick = () => builderOverlay.classList.remove("show");
   builderOverlay.addEventListener("click", e => { if (e.target === builderOverlay) builderOverlay.classList.remove("show"); });
 
-  // ================= Color Sequence =================
-  const sequenceOverlay = document.getElementById("sequenceOverlay");
-  const csGrid = document.getElementById("csGrid");
-  const csStatus = document.getElementById("csStatus");
-  const csLevelEl = document.getElementById("csLevel");
-  const csBestEl = document.getElementById("csBest");
-  const csEnd = document.getElementById("csEnd");
-  const CS_COLORS = 4;
-  let csState = null;
+  // ================= Mini-game: level card + lesson map =================
+  // Reuses this page's own `level`, `meta`, and `prog` (declared earlier)
+  // -- a lesson's game only unlocks once that lesson's own prep is done,
+  // same gate as the "Play <Game>!" button on the lesson results screen
+  // this links through to, not tied to the live class (that gate belongs
+  // to the *next* lesson's prep, not to replaying this lesson's game).
+  const GAME_INFO = {
+    "pre-a": { file: "lumis-pocket.html", title: "Lumi's Pocket", icon: "🔍",
+      sub: "Listen and tap the right picture with Lumi!",
+      bg: "linear-gradient(160deg,#FDBA74,#F97316)" },
+    "level1": { file: "treehouse-builder.html", title: "Treehouse Builder", icon: "🌳",
+      sub: "Answer correctly to build the Treehouse Club, piece by piece!",
+      bg: "linear-gradient(160deg,#86EFAC,#16A34A)" },
+    "level2": { file: "twelve-months-calendar.html", title: "Twelve Months Calendar", icon: "📅",
+      sub: "Flip through the year with the Twelve Months Club!",
+      bg: "linear-gradient(160deg,#FBCFE8,#EC4899)" },
+    "level3": { file: "crew-chat.html", title: "Crew Chat", icon: "💬",
+      sub: "Reply to the crew's group chat — tap or type it back!",
+      bg: "linear-gradient(160deg,#111B21,#005C4B)" },
+    "level4": { file: "squad-budget.html", title: "Squad Budget", icon: "🛍️",
+      sub: "Shop the list, watch your budget, print the receipt!",
+      bg: "linear-gradient(160deg,#FDE68A,#F59E0B)" },
+    "level5": { file: "story-detective.html", title: "Story Detective", icon: "🕵️",
+      sub: "Find the evidence and crack the case!",
+      bg: "linear-gradient(160deg,#C9A876,#43301F)" },
+    "level6": { file: "crystal-ball.html", title: "Crystal Ball", icon: "🔮",
+      sub: "Read the crystal ball and judge each prediction!",
+      bg: "radial-gradient(circle at 30% 20%,#7C3AED,#1B0F3D)" },
+  };
+  const gameInfo = GAME_INFO[level] || GAME_INFO["pre-a"];
+  const gameWideCard = document.getElementById("gameWideCard");
+  gameWideCard.style.background = gameInfo.bg;
+  document.getElementById("gameWideIcon").textContent = gameInfo.icon;
+  document.getElementById("gameWideTitle").textContent = gameInfo.title;
+  document.getElementById("gameWideSub").textContent = gameInfo.sub;
 
-  function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
-  function renderCsGrid() {
-    csGrid.innerHTML = "";
-    csGrid.style.display = "grid";
-    for (let i = 0; i < CS_COLORS; i++) {
-      const btn = document.createElement("button");
-      btn.className = "cs-pad p" + i;
-      btn.type = "button";
-      btn.onclick = () => handlePadClick(i);
-      csGrid.appendChild(btn);
-    }
-  }
-  function litPad(idx) {
-    return new Promise(resolve => {
-      const pad = csGrid.children[idx];
-      pad.classList.add("lit");
-      setTimeout(() => { pad.classList.remove("lit"); resolve(); }, 450);
-    });
-  }
-  async function playSequence() {
-    csState.accepting = false;
-    csStatus.textContent = "Watch closely!";
-    for (const idx of csState.sequence) {
-      await litPad(idx);
-      await wait(220);
-    }
-    csStatus.textContent = "Your turn!";
-    csState.accepting = true;
-  }
-  function nextSequenceRound() {
-    csState.level++;
-    csState.playerIndex = 0;
-    csLevelEl.textContent = "Round " + csState.level;
-    csState.sequence.push(Math.floor(Math.random() * CS_COLORS));
-    playSequence();
-  }
-  function handlePadClick(i) {
-    if (!csState || !csState.accepting) return;
-    const pad = csGrid.children[i];
-    pad.classList.add("lit"); setTimeout(() => pad.classList.remove("lit"), 200);
-    if (csState.sequence[csState.playerIndex] === i) {
-      csState.playerIndex++;
-      if (csState.playerIndex === csState.sequence.length) {
-        csState.accepting = false;
-        setTimeout(nextSequenceRound, 500);
+  const gameMapOverlay = document.getElementById("gameMapOverlay");
+  const gameMapPath = document.getElementById("gameMapPath");
+  document.getElementById("gameMapTitle").textContent = `${gameInfo.icon} ${gameInfo.title}`;
+  document.getElementById("gameMapSub").textContent = "Pick any lesson you've already prepped to play!";
+
+  function renderGameMap() {
+    const N = meta.lessons || 20;
+    gameMapPath.innerHTML = "";
+    for (let n = 1; n <= N; n++) {
+      const unlocked = !!prog[n];
+      const el = document.createElement(unlocked ? "a" : "div");
+      el.className = `node ${unlocked ? "done" : "locked"}`;
+      if (unlocked) {
+        el.href = `games/${gameInfo.file}?level=${level}&n=${n}`;
+      } else {
+        el.title = "Finish this lesson's prep to unlock its game";
       }
-    } else {
-      csState.accepting = false;
-      endSequence();
+      el.innerHTML = unlocked
+        ? `<span>${n}</span>`
+        : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="9" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 11V7a4 4 0 018 0v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+      gameMapPath.appendChild(el);
     }
   }
-  function endSequence() {
-    const reached = csState.level - 1;
-    const best = Math.max(reached, csState.best);
-    safeSet("lumio_cs_best", String(best));
-    const st = reached >= 8 ? 3 : reached >= 4 ? 2 : 1;
-    csGrid.style.display = "none";
-    csEnd.style.display = "block";
-    csEnd.innerHTML = `
-      <div class="sd-game-end">
-        <h3>${reached >= 1 ? "Nice memory! 🎨" : "Let's try again!"}</h3>
-        <div class="stars">${"★".repeat(st)}${"☆".repeat(3 - st)}</div>
-        <p style="font-weight:700;color:var(--sd-cocoa-soft)">You reached round ${reached}${best > reached ? " · Best: " + best : (best === reached && reached > 0 ? " · New best!" : "")}</p>
-        <button class="sd-game-again" id="csAgain">Play again</button>
-      </div>`;
-    if (st >= 2) confettiBurst(35);
-    document.getElementById("csAgain").onclick = startSequence;
-  }
-  function startSequence() {
-    csEnd.style.display = "none";
-    renderCsGrid();
-    csState = { sequence: [], playerIndex: 0, level: 0, accepting: false, best: Number(safeGet("lumio_cs_best") || 0) };
-    csBestEl.textContent = "Best: " + csState.best;
-    nextSequenceRound();
-  }
-  document.getElementById("playSequence").onclick = () => { sequenceOverlay.classList.add("show"); startSequence(); };
-  document.getElementById("sequenceClose").onclick = () => sequenceOverlay.classList.remove("show");
-  sequenceOverlay.addEventListener("click", e => { if (e.target === sequenceOverlay) sequenceOverlay.classList.remove("show"); });
+  document.getElementById("gameWidePlay").onclick = () => { renderGameMap(); gameMapOverlay.classList.add("show"); };
+  document.getElementById("gameMapClose").onclick = () => gameMapOverlay.classList.remove("show");
+  gameMapOverlay.addEventListener("click", e => { if (e.target === gameMapOverlay) gameMapOverlay.classList.remove("show"); });
 
  } catch (e) {
    console.error("Lumio student dashboard error:", e);
