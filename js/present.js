@@ -147,6 +147,7 @@
           "level2": [{ href: "twelve-months-calendar.html", label: "Twelve Months Calendar" }, { href: "match-drag.html", label: "Match It" }],
           "level3": [{ href: "crew-chat.html", label: "Crew Chat" }],
           "level4": [{ href: "squad-budget.html", label: "Squad Budget" }],
+          "level5": [{ href: "story-detective.html", label: "Story Detective" }],
         };
         const games = LEVEL_GAMES[level];
         if (games) {

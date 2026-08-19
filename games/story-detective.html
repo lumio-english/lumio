@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Story Detective — Lumio English</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;700;800&family=Caveat:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  body {
+    min-height: 100vh; overflow-x: hidden;
+    background: linear-gradient(180deg, #2B2118 0%, #3A2E20 100%);
+    position: relative; font-family: var(--font-body);
+  }
+  .spot { position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(255,220,150,.12), transparent 70%); pointer-events: none; }
+
+  #hud { position: relative; z-index: 5; display: flex; align-items: center; gap: 10px; padding: 18px 20px 12px; flex-wrap: wrap; }
+  #hud .pill { background: #FFF3D6; color: #43301F; border-radius: 999px; padding: 8px 16px; font-family: var(--font-display); font-weight: 800; box-shadow: var(--sh-sm); font-size: .92rem; }
+  #hud a.exit { color: #FFF3D6; background: rgba(255,255,255,.12); border-radius: 999px; padding: 8px 16px; font-weight: 800; text-decoration: none; }
+
+  #board {
+    position: relative; z-index: 5; max-width: 780px; margin: 0 auto 18px; padding: 20px;
+    background: #C9A876; background-image: repeating-linear-gradient(0deg, rgba(0,0,0,.04) 0 2px, transparent 2px 40px), repeating-linear-gradient(90deg, rgba(0,0,0,.04) 0 2px, transparent 2px 40px);
+    border-radius: 18px; box-shadow: var(--sh-lg); min-height: 130px;
+  }
+  #boardTitle { font-family: 'Caveat', cursive; font-size: 1.6rem; color: #43301F; text-align: center; margin-bottom: 6px; font-weight: 700; }
+  #evidenceRow { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; align-items: flex-start; position: relative; }
+  .evidence {
+    background: #fff; border-radius: 4px; padding: 10px 12px; box-shadow: 0 4px 10px rgba(0,0,0,.3);
+    transform: rotate(-2deg); position: relative; min-width: 84px; text-align: center;
+    opacity: 0; transform: rotate(-2deg) scale(.6); transition: all .45s cubic-bezier(.34,1.56,.64,1);
+  }
+  .evidence:nth-child(even) { transform: rotate(2deg) scale(.6); }
+  .evidence.show { opacity: 1; transform: rotate(-2deg) scale(1); }
+  .evidence.show:nth-child(even) { transform: rotate(2deg) scale(1); }
+  .evidence .pin { position: absolute; top: -8px; left: 50%; transform: translateX(-50%); width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #EF4444, #B91C1C); box-shadow: 0 2px 3px rgba(0,0,0,.4); }
+  .evidence .word { font-family: var(--font-display); font-weight: 800; color: #43301F; font-size: .95rem; margin-top: 4px; }
+  .evidence .stamp { position: absolute; bottom: -6px; right: -10px; background: var(--green); color: #fff; font-size: .6rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; transform: rotate(8deg); opacity: 0; transition: opacity .3s ease; }
+  .evidence.confirmed .stamp { opacity: 1; }
+
+  #caseFile { max-width: 560px; margin: 0 auto; position: relative; z-index: 5; }
+  #promptCard {
+    background: #FFF9EE; border-radius: 20px; padding: 18px 22px; box-shadow: var(--sh-lg);
+    text-align: center; border: 3px solid #43301F;
+  }
+  #promptCard .kicker { font-family: var(--font-display); font-weight: 800; color: #B91C1C; font-size: .82rem; letter-spacing: .5px; text-transform: uppercase; margin-bottom: 6px; }
+  #promptCard p { font-family: var(--font-display); font-weight: 800; color: #43301F; font-size: 1.15rem; margin: 4px 0 14px; }
+  #hearBtn {
+    background: var(--grad-sun); border: none; border-radius: 999px; width: 46px; height: 46px;
+    display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+    box-shadow: 0 6px 14px rgba(255,197,61,.5); transition: transform .15s ease; margin-bottom: 10px;
+  }
+  #hearBtn:active { transform: scale(.9); }
+
+  #evidenceOpts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .opt-card {
+    background: #fff; border: 4px solid #E3D6BE; border-radius: 14px; padding: 14px 8px;
+    cursor: pointer; font-family: var(--font-display); font-weight: 800; color: #43301F; font-size: .95rem;
+    transition: transform .15s ease, border-color .2s ease, opacity .3s ease;
+  }
+  .opt-card:active { transform: scale(.94); }
+  .opt-card.correct { border-color: var(--green); background: var(--green-soft); }
+  .opt-card.correct-pop { animation: correctPop .5s ease; }
+  @keyframes correctPop { 0% { transform: scale(1); } 40% { transform: scale(1.1); } 100% { transform: scale(1); } }
+  .opt-card.wrong-dim { opacity: .35; pointer-events: none; }
+  .opt-card.wrong-shake { animation: wrongShake .4s ease; }
+  @keyframes wrongShake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+  .opt-card.locked { pointer-events: none; }
+
+  #tfOpts { display: flex; gap: 14px; justify-content: center; }
+  .tf-btn {
+    border: none; border-radius: 14px; padding: 16px 30px; font-family: var(--font-display); font-weight: 800;
+    font-size: 1.1rem; cursor: pointer; transition: transform .15s ease, opacity .3s ease; color: #fff;
+  }
+  .tf-btn:active { transform: scale(.94); }
+  .tf-btn.true { background: var(--green); }
+  .tf-btn.false { background: #EF4444; }
+  .tf-btn.locked { pointer-events: none; opacity: .5; }
+  .tf-btn.chosen-right { outline: 4px solid #FDE68A; }
+
+  #endcard {
+    position: fixed; inset: 0; z-index: 60; display: none;
+    align-items: center; justify-content: center; background: rgba(0,0,0,.7); padding: 20px;
+  }
+  #endcard .box { background: #FFF9EE; border-radius: 24px; padding: 30px 32px; text-align: center; box-shadow: var(--sh-lg); max-width: 460px; border: 3px solid #43301F; position: relative; }
+  #endcard .stamp2 { font-family: var(--font-display); font-weight: 800; color: #B91C1C; border: 4px solid #B91C1C; border-radius: 10px; padding: 6px 18px; display: inline-block; transform: rotate(-6deg); font-size: 1.3rem; margin-bottom: 10px; }
+  #endcard .crew { display: flex; justify-content: center; margin: 8px 0; }
+  #endcard .crew img { height: 82px; margin: 0 -10px; filter: drop-shadow(0 8px 12px rgba(67,48,31,.2)); }
+</style>
+</head>
+<body>
+<div class="spot" style="width:400px;height:400px;top:-100px;left:-100px"></div>
+<div class="spot" style="width:300px;height:300px;bottom:0;right:-80px"></div>
+
+<div id="hud">
+  <a class="exit" href="../present.html" id="exitBtn">Exit</a>
+  <span class="pill">🔎 <span id="score">0</span></span>
+  <span class="pill" id="roundPill">1/6</span>
+</div>
+
+<div id="board">
+  <div id="boardTitle">Case file: What Really Happened?</div>
+  <div id="evidenceRow"></div>
+</div>
+
+<div id="caseFile">
+  <div id="promptCard">
+    <div class="kicker" id="kicker">Find the evidence</div>
+    <p id="promptText"></p>
+    <div><button id="hearBtn" aria-label="Listen">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="#43301F"/><path d="M16.5 8.5a5 5 0 010 7M19 6a9 9 0 010 12" stroke="#43301F" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+    </button></div>
+    <div id="evidenceOpts" style="display:none"></div>
+    <div id="tfOpts" style="display:none">
+      <button class="tf-btn true" data-v="true">✅ TRUE</button>
+      <button class="tf-btn false" data-v="false">❌ FALSE</button>
+    </div>
+  </div>
+</div>
+
+<div id="endcard">
+  <div class="box">
+    <div class="stamp2">CASE CLOSED</div>
+    <div class="crew">
+      <img src="../assets/story/characters/lumi-teen-celebrate.png" alt="Lumi">
+      <img src="../assets/story/characters/omar-teen-point.png" alt="Omar">
+      <img src="../assets/story/characters/sara-teen-happy.png" alt="Sara">
+      <img src="../assets/story/characters/noor-teen-celebrate.png" alt="Noor">
+      <img src="../assets/story/characters/ziad-teen-happy.png" alt="Ziad">
+      <img src="../assets/story/characters/hamad-teen-point.png" alt="Hamad">
+    </div>
+    <h1 style="font-family:var(--font-display);color:#43301F">Mystery solved!</h1>
+    <p style="font-weight:800;color:#8A7160" id="finalScore"></p>
+    <div class="row" style="justify-content:center;gap:10px;margin-top:10px">
+      <button class="btn btn-primary" onclick="location.reload()">↺ New case</button>
+      <a class="btn btn-teal" id="backBtn" href="../present.html">Back</a>
+    </div>
+  </div>
+</div>
+
+<script src="../js/app.js"></script>
+<script src="../js/lessons-data.js"></script>
+<script>
+const level = Lumio.qs("level") || "level5";
+const num = parseInt(Lumio.qs("n") || "1", 10);
+const source = Lumio.qs("from");
+const backHref = source === "lesson" ? "../student.html" : `../present.html?level=${level}&n=${num}`;
+document.getElementById("exitBtn").href = backHref;
+document.getElementById("backBtn").href = backHref;
+
+const lesson = window.LUMIO_LESSONS?.[level]?.[num];
+const vocab = lesson ? lesson.vocab : [];
+
+if (!vocab.length) {
+  document.getElementById("caseFile").innerHTML = "<p style='padding:40px;color:#FFF3D6'>No lesson data found.</p>";
+} else {
+  const ROUNDS = Math.min(6, vocab.length);
+  const order = Lumio.shuffle([...vocab]).slice(0, ROUNDS);
+  // Alternate interaction types: odd rounds ask the student to FIND the
+  // right evidence (pick the word), even rounds ask them to VERIFY a
+  // witness statement (true/false) about evidence already on the board --
+  // genuinely different judgment task, not just a re-skin, and 100%
+  // reliable since it reuses the word's own Arabic rather than generating
+  // new sentences.
+  let r = 0, score = 0, locked = false;
+  const evidenceRow = document.getElementById("evidenceRow");
+  const evidenceOpts = document.getElementById("evidenceOpts");
+  const tfOpts = document.getElementById("tfOpts");
+  const kicker = document.getElementById("kicker");
+  const promptText = document.getElementById("promptText");
+
+  order.forEach((w, i) => {
+    const card = document.createElement("div");
+    card.className = "evidence";
+    card.id = `ev${i}`;
+    card.innerHTML = `<div class="pin"></div><div class="word">?</div><div class="stamp">CONFIRMED</div>`;
+    evidenceRow.appendChild(card);
+  });
+
+  function playPrompt(word) { Lumio.speak(word); }
+
+  function drawRound() {
+    locked = false;
+    document.getElementById("roundPill").textContent = `${r + 1}/${ROUNDS}`;
+    const target = order[r];
+    const isVerify = r % 2 === 1;
+
+    if (isVerify) {
+      kicker.textContent = "Verify the clue";
+      evidenceOpts.style.display = "none";
+      tfOpts.style.display = "flex";
+      document.querySelectorAll(".tf-btn").forEach(b => { b.className = b.className.replace(" locked", "").replace(" chosen-right", ""); });
+      // Show either the correct word or a plausible wrong one from this
+      // lesson's own vocab -- never an invented word.
+      const showCorrect = Math.random() < 0.5;
+      const claim = showCorrect ? target.en : Lumio.shuffle(vocab.filter(v => v.en !== target.en))[0].en;
+      window.__isTrue = showCorrect;
+      promptText.innerHTML = `A witness says: <br>"<b>${target.ar}</b>" means "<b>${claim}</b>"`;
+      document.querySelectorAll(".tf-btn").forEach(b => { b.onclick = () => verify(b, showCorrect, target, i => i); });
+    } else {
+      kicker.textContent = "Find the evidence";
+      tfOpts.style.display = "none";
+      evidenceOpts.style.display = "grid";
+      promptText.innerHTML = `What does "<b>${target.ar}</b>" mean?`;
+      const distractorPool = Lumio.shuffle(vocab.filter(v => v.en !== target.en));
+      const numOptions = Math.min(3, vocab.length);
+      const opts = Lumio.shuffle([target, ...distractorPool.slice(0, numOptions - 1)]);
+      evidenceOpts.innerHTML = opts.map(o => `<button class="opt-card" data-en="${o.en}">${o.en}</button>`).join("");
+      document.querySelectorAll(".opt-card").forEach(card => { card.onclick = () => chooseFind(card, target); });
+    }
+    setTimeout(() => playPrompt(target.en), 350);
+  }
+
+  function pinEvidence(idx, target) {
+    const card = document.getElementById(`ev${idx}`);
+    card.querySelector(".word").textContent = target.en;
+    card.classList.add("show");
+  }
+
+  function chooseFind(card, target) {
+    if (locked) return;
+    const ok = card.dataset.en === target.en;
+    if (ok) {
+      locked = true;
+      score++;
+      document.getElementById("score").textContent = score;
+      Lumio.beep(true);
+      card.classList.add("correct", "correct-pop");
+      document.querySelectorAll(".opt-card").forEach(c => c.classList.add("locked"));
+      pinEvidence(r, target);
+      setTimeout(() => { r++; r < ROUNDS ? drawRound() : endGame(); }, 1200);
+    } else {
+      Lumio.beep(false);
+      card.classList.add("wrong-shake", "wrong-dim");
+    }
+  }
+
+  function verify(btn, showCorrect, target) {
+    if (locked) return;
+    const chose = btn.dataset.v === "true";
+    const ok = chose === showCorrect;
+    document.querySelectorAll(".tf-btn").forEach(b => b.classList.add("locked"));
+    if (ok) {
+      locked = true;
+      score++;
+      document.getElementById("score").textContent = score;
+      Lumio.beep(true);
+      btn.classList.add("chosen-right");
+      pinEvidence(r, target);
+      const card = document.getElementById(`ev${r}`);
+      card.classList.add("confirmed");
+      setTimeout(() => { r++; r < ROUNDS ? drawRound() : endGame(); }, 1200);
+    } else {
+      Lumio.beep(false);
+      // gentle -- reveal the right answer, then move on rather than stall
+      pinEvidence(r, target);
+      setTimeout(() => { r++; r < ROUNDS ? drawRound() : endGame(); }, 1400);
+    }
+  }
+
+  function endGame() {
+    Lumio.confetti(100);
+    const pct = Math.round((score / ROUNDS) * 100);
+    Lumio.speak(pct >= 80 ? "Case closed! Great detective work!" : "Good clues! Let's crack the next case soon!");
+    document.getElementById("finalScore").textContent = `You solved the case with ${score} out of ${ROUNDS} clues confirmed!`;
+    document.getElementById("endcard").style.display = "flex";
+  }
+
+  document.getElementById("hearBtn").onclick = () => playPrompt(order[r].en);
+  drawRound();
+}
+</script>
+</body>
+</html>

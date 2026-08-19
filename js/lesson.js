@@ -432,6 +432,7 @@
     "level2": { file: "twelve-months-calendar.html", label: "📅 Play Twelve Months Calendar!" },
     "level3": { file: "crew-chat.html", label: "💬 Play Crew Chat!" },
     "level4": { file: "squad-budget.html", label: "🛍️ Play Squad Budget!" },
+    "level5": { file: "story-detective.html", label: "🕵️ Play Story Detective!" },
   };
 
   function showResults() {
