@@ -422,6 +422,14 @@
   /* ============================================================
      RESULTS
      ============================================================ */
+  // Level-tailored bonus games (games/*.html), reachable right after
+  // finishing prep. Only listed here once a level actually has its own
+  // game built — an empty/missing entry means no bonus button shows,
+  // rather than linking to something that doesn't exist yet.
+  const LEVEL_GAMES = {
+    "pre-a": { file: "lumis-pocket.html", label: "🔍 Play Lumi's Pocket!" },
+  };
+
   function showResults() {
     barEl.style.width = "100%";
     const pct = total ? Math.round((score / total) * 100) : 100;
@@ -429,6 +437,7 @@
     Lumio.saveResult(user.name, level, num, stars, score, total);
     Lumio.confetti(90);
     Lumio.speak(stars === 3 ? "Amazing! Three stars!" : stars === 2 ? "Great job!" : "Good try! Practice makes perfect!");
+    const game = LEVEL_GAMES[level];
     stage.innerHTML = `
       <div class="card center card-sun">
         <img src="assets/story/characters/lumi-celebrate.png" alt="Lumi celebrating" style="width:170px;filter:drop-shadow(0 10px 16px rgba(67,48,31,.22))">
@@ -446,6 +455,7 @@
           check My Schedule on your map.
         </p>
         <div class="mt" style="padding-top:14px;border-top:1.5px solid #F5EEE1">
+          ${game ? `<a class="btn" style="background:#E6F7F4;color:#0D9488;margin-right:8px" href="games/${game.file}?level=${level}&n=${num}&from=lesson">${game.label}</a>` : ""}
           <a class="btn" style="background:#FFF3D6;color:#C2530A" href="homework.html?level=${level}&n=${num}">📝 Do your homework</a>
         </div>
       </div>`;

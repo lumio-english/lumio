@@ -166,14 +166,24 @@ const Lumio = (() => {
   // Not every word has a real recording yet — only what's been generated so
   // far for the lessons that exist. slugify() must exactly match the naming
   // used when the files were generated (see _docs/generate-audio.py).
-  const slugify = (text) => String(text).toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  const slugify = (text) => String(text).toLowerCase().trim().replace(/'/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  // Pages that live in a subfolder (e.g. games/lumis-pocket.html) need
+  // "../assets/..." not "assets/...". Rather than hardcode that per-page,
+  // work it out from app.js's own <script> tag, which every page already
+  // has to get this far — same pattern as the rest of that page's own
+  // relative links (../css/style.css etc.), just computed once instead of
+  // needing every caller to know its own nesting depth.
+  const ASSET_ROOT = (() => {
+    const el = document.querySelector('script[src*="js/app.js"]');
+    return el ? el.getAttribute("src").replace(/js\/app\.js.*$/, "") : "";
+  })();
   let currentAudio = null;
   const speak = (text, rate = 0.92) => {
     if (currentAudio) { try { currentAudio.pause(); } catch (e) {} currentAudio = null; }
     if ("speechSynthesis" in window) speechSynthesis.cancel();
     const slug = slugify(text);
     if (!slug) { speakSynth(text, rate); return; }
-    const audio = new Audio(`assets/audio/${slug}.mp3`);
+    const audio = new Audio(`${ASSET_ROOT}assets/audio/${slug}.mp3`);
     currentAudio = audio;
     let fellBack = false;
     const fallback = () => { if (fellBack) return; fellBack = true; speakSynth(text, rate); };
@@ -187,7 +197,7 @@ const Lumio = (() => {
     if ("speechSynthesis" in window) speechSynthesis.cancel();
     const slug = slugify(token);
     if (!slug) { speakSynth(token, rate); return; }
-    const audio = new Audio(`assets/audio/phonics-sound-${slug}.mp3`);
+    const audio = new Audio(`${ASSET_ROOT}assets/audio/phonics-sound-${slug}.mp3`);
     currentAudio = audio;
     let fellBack = false;
     const fallback = () => { if (fellBack) return; fellBack = true; speakSynth(token, rate); };
