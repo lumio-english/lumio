@@ -145,6 +145,78 @@ h3 { font-size: 1.15rem; }
   border-radius: 999px; transition: width .5s cubic-bezier(.2,.8,.2,1);
 }
 
+/* ============================================================
+   TEEN THEME — Level 3-6's lesson.html (prep) only, matching the
+   already-established Present/teen-deck look (see
+   lib/deck_template_teen.py's own palette comments, which this
+   mirrors exactly: dark indigo background, sharp-cornered white
+   cards, Fredoka headings, purple/orange/teal accents). Applied via
+   body.theme-teen so it only ever affects pages that opt in
+   (js/lesson.js adds the class for level3-6 only) — every rule below
+   is scoped under that selector, so pre-a/level1/level2 and every
+   other page on the site are completely unaffected.
+
+   Redefining the existing --variables (rather than writing new
+   selectors) is deliberate: almost every component below already
+   reads var(--cocoa), var(--paper), var(--card), var(--line), and
+   var(--font-display), so most of the re-theme is "free" once these
+   are redefined at this scope. Only the handful of components that
+   hardcode a hex value instead of using a variable (chips, the
+   progress bar track) need an explicit override underneath.
+   ============================================================ */
+body.theme-teen {
+  --cocoa: #EDE9FB;
+  --ink: #EDE9FB;
+  --muted: #A79BD1;
+  --cocoa-soft: #A79BD1;
+  --line: rgba(237,233,251,.14);
+  --card: #FFFFFF;
+  --r-lg: 14px; --r-md: 12px; --r-sm: 10px;
+  --font-display: 'Fredoka', 'Nunito', system-ui, sans-serif;
+  --grad-brand: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
+  --teal: #14B8A6;
+  --teal-soft: rgba(20,184,166,.16);
+  background: linear-gradient(160deg, #2B1B52 0%, #1C1038 100%);
+}
+body.theme-teen h1, body.theme-teen h2, body.theme-teen h3, body.theme-teen .display { color: var(--cocoa); }
+body.theme-teen .topbar {
+  background: rgba(28,16,56,.75); border-bottom: 1px solid var(--line);
+}
+body.theme-teen .topbar .brand { -webkit-text-fill-color: #fff; }
+body.theme-teen .topbar .brand span { -webkit-text-fill-color: var(--cocoa); }
+body.theme-teen .topbar .hello-chip { background: rgba(139,92,246,.18); color: var(--cocoa); box-shadow: inset 0 0 0 1px rgba(139,92,246,.35); }
+/* Base .btn text color follows --cocoa, which is now light -- fine for
+   ghost buttons sitting directly on the dark page background, but
+   .btn (plain, results-screen "Play again"/game/homework links) and
+   .btn-sun (bright yellow Listen button, Spell's letter tiles) both
+   sit on light backgrounds (a white .btn or the yellow --grad-sun)
+   and need to stay dark-on-light. Order matters here: this dark-text
+   rule must come BEFORE .btn-ghost's own override below it, so ghost
+   buttons -- which really do sit on the dark background -- win back
+   the light color despite matching this broader .btn selector too. */
+body.theme-teen .btn:not(.btn-primary):not(.btn-teal):not(.btn-ghost) { color: #2B2640; }
+body.theme-teen .btn-ghost { color: var(--cocoa-soft); }
+body.theme-teen .btn-ghost:hover { background: rgba(237,233,251,.08); }
+/* .btn-ghost is used in two different contexts that need opposite
+   treatment: the topbar "← Map" link sits on the dark page background
+   (light text, handled above), but Spell's "↺ Start over" sits INSIDE
+   a white .card -- caught this by actually looking at a rendered
+   Spell screenshot, where the light lavender text was legible but
+   noticeably washed-out against white. Card-scoped override wins on
+   specificity for the in-card case. */
+body.theme-teen .card .btn-ghost { color: #6B5F8A; }
+body.theme-teen .card .btn-ghost:hover { background: rgba(43,38,64,.06); }
+body.theme-teen .card { color: #2B2640; }
+body.theme-teen .card h1, body.theme-teen .card h2, body.theme-teen .card h3 { color: #2B2640; }
+body.theme-teen .card-sun { background: linear-gradient(160deg, #FFF8E8, #FFEFC9); border-color: rgba(245,158,11,.18); }
+/* Chips always render nested inside a white .card in lesson.html's
+   activities (confirmed by checking js/lesson.js directly, not
+   assumed) -- so they keep their original light-pastel-bg/dark-text
+   styling unchanged here. A dark-on-dark reskin would only make sense
+   if chips ever sat directly on the page background, which they don't. */
+body.theme-teen .progressbar { background: rgba(237,233,251,.14); box-shadow: inset 0 1px 3px rgba(0,0,0,.2); }
+body.theme-teen .star-off { color: rgba(43,38,64,.2); }
+
 /* ---------- Forms ---------- */
 input[type="text"], input[type="password"], select {
   font-family: var(--font-body); font-weight: 700; font-size: 1.08rem;

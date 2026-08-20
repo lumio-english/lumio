@@ -9,6 +9,13 @@
   const level = Lumio.qs("level") || user.level || "pre-a";
   const num = parseInt(Lumio.qs("n") || "1", 10);
   const nn = String(num).padStart(2, "0");
+  // Level 3-6's prep uses the same dark/Fredoka look already established
+  // for Present (see css/style.css's "TEEN THEME" block for the full
+  // rationale) -- pre-a/level1/level2 are untouched, this class simply
+  // never gets added for them.
+  if (["level3", "level4", "level5", "level6"].includes(level)) {
+    document.body.classList.add("theme-teen");
+  }
 
   const stage = document.getElementById("stage");
   const barEl = document.getElementById("bar");
