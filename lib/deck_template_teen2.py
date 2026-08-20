@@ -433,9 +433,45 @@ def slide_error_analysis(wrong_sentence, right_sentence, why, n, total, theme_ke
     ''')
 
 
+def slide_discussion(points, n, total, ch, theme_key="default"):
+    """A single slide meant to be sat on for real time (~10 minutes),
+    not clicked through -- the teacher leads an open class discussion
+    using these as starting points, not a script to read verbatim.
+    `points` is a list of 5-6 strings mixing open discussion prompts
+    ("Talk about...") and direct questions ("What...?") on purpose --
+    matches how Eslam described wanting a genuine mix, not a uniform
+    quiz-style list. No interactive checking/scoring on this slide at
+    all, unlike every other slide type in the deck -- that's
+    deliberate, since a scored right/wrong slide would work against
+    the "free, open conversation" goal.
+    """
+    rows = "".join(f'''
+        <div style="display:flex;align-items:flex-start;gap:14px;padding:13px 0;{"border-top:1px solid #EEF0F4" if i else ""}">
+          <div style="width:26px;height:26px;border-radius:50%;background:{PURPLE}1F;color:{PURPLE_DEEP};
+                      font-family:'Fredoka',sans-serif;font-weight:600;font-size:.85rem;flex-shrink:0;
+                      display:flex;align-items:center;justify-content:center;margin-top:2px">{i+1}</div>
+          <div style="font-family:'Fredoka',sans-serif;font-weight:500;font-size:1.05rem;color:{CARD_TEXT};line-height:1.45">{esc(p)}</div>
+        </div>''' for i, p in enumerate(points))
+    return (bg_theme(theme_key) + header_themed("Discussion Time", n, total, theme_key) + f'''
+    <div style="position:relative;z-index:5;display:flex;justify-content:center;margin-top:32px">
+      {card_open(760, "padding:34px 42px 30px")}
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+          <span style="font-size:1.6rem">&#128172;</span>
+          <div>
+            <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.3rem;color:{CARD_TEXT}">Let's talk about it!</div>
+            <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:.82rem;color:#8B7EA8">
+              &#8776; 10 minutes &middot; open class conversation &middot; talk to each other, not just to me</div>
+          </div>
+        </div>
+        <div style="margin-top:14px">{rows}</div>
+      </div>
+    </div>
+    ''' + char_big(ch, side="left", bottom=54))
+
+
 def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, notice_sentences,
                    notice_note, challenge, real_life, theme_key="default",
-                   n_vocab_mcq=10, n_grammar_mcq=10, level=None):
+                   n_vocab_mcq=10, n_grammar_mcq=10, level=None, discussion=None):
     global CURRENT_LESSON_BG
     CURRENT_LESSON_BG = lesson_bg_path(level, lesson_num) if level else None
     V = len(lesson["vocab"])
@@ -504,6 +540,12 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
         plan.append(("challenge", None))
     if real_life:
         plan.append(("real_life", None))
+    if discussion:
+        # After challenge/real_life -- by this point students have the
+        # vocab, grammar, and a controlled-practice sentence or two under
+        # their belt, so they actually have language to talk WITH, not
+        # just a topic to stare at blankly.
+        plan.append(("discussion", discussion))
     plan.append(("today_i_learned", None))
     plan.append(("reward_homework", None))
 
@@ -580,6 +622,8 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
             slides.append(slide_challenge(challenge["prompt"], challenge["hint"], n, total, ch2, theme_key))
         elif kind == "real_life":
             slides.append(slide_real_life(real_life, n, total, ch1, theme_key))
+        elif kind == "discussion":
+            slides.append(slide_discussion(data, n, total, ch3, theme_key))
         elif kind == "today_i_learned":
             slides.append(slide_today_i_learned(lesson, n, total))
         elif kind == "reward_homework":
