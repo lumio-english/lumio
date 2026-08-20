@@ -198,13 +198,23 @@ def make_flashcards(lesson, num):
 
 # ================= MAIN =================
 def main():
+    # --flashcards-only regenerates just the flashcard PDFs, leaving the
+    # existing homework worksheets untouched -- same safety flag pattern
+    # as --writing-only in the pre-a/level1/level2/level3 scripts, added
+    # after that exact mistake (a full main() re-run silently corrupting
+    # unrelated PDFs in this environment) was caught once already.
+    flashcards_only = "--flashcards-only" in sys.argv
     files = sorted(glob.glob(f"lessons/{LEVEL}/lesson*.json"))
     for f in files:
         d = json.load(open(f, encoding="utf-8"))
         num = d["number"]
-        wp = make_worksheet(d, num)
-        fp = make_flashcards(d, num)
-        print(f"Lesson {num:02d}: {wp}, {fp}")
+        if flashcards_only:
+            fp = make_flashcards(d, num)
+            print(f"Lesson {num:02d}: {fp}")
+        else:
+            wp = make_worksheet(d, num)
+            fp = make_flashcards(d, num)
+            print(f"Lesson {num:02d}: {wp}, {fp}")
 
 if __name__ == "__main__":
     main()

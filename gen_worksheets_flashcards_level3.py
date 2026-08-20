@@ -218,6 +218,7 @@ def main():
     # PDFs' exact rendering) silently shrank them from ~9.8MB to
     # ~2.9MB. Full regeneration remains the default for normal use.
     writing_only = "--writing-only" in sys.argv
+    flashcards_only = "--flashcards-only" in sys.argv
     files = sorted(glob.glob(f"lessons/{LEVEL}/lesson*.json"))
     for f in files:
         d = json.load(open(f, encoding="utf-8"))
@@ -225,6 +226,9 @@ def main():
         if writing_only:
             wrp = make_writing_practice(d, num)
             print(f"Lesson {num:02d}: {wrp}")
+        elif flashcards_only:
+            fp = make_flashcards(d, num)
+            print(f"Lesson {num:02d}: {fp}")
         else:
             wp = make_worksheet(d, num)
             fp = make_flashcards(d, num)

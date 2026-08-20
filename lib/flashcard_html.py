@@ -43,13 +43,19 @@ def build_flashcard_html(level, num, vocab, page="front"):
         has_img = os.path.exists(img_abs)
         img_html = (f'<img src="file://{img_abs}">' if has_img
                     else f'<div class="fallback">{esc(w["en"][0].upper())}</div>')
+        logo_abs = os.path.abspath("assets/logo/lumio-logo.png")
+        logo_html = f'<img class="card-logo" src="file://{logo_abs}">' if os.path.exists(logo_abs) else ""
         return f'''<div class="card">
+          {logo_html}
           {img_html}
           <div class="word">{esc(w["en"])}</div>
         </div>'''
 
     def back_card(w):
+        logo_abs = os.path.abspath("assets/logo/lumio-logo.png")
+        logo_html = f'<img class="card-logo" src="file://{logo_abs}">' if os.path.exists(logo_abs) else ""
         return f'''<div class="card back-card">
+          {logo_html}
           <div class="arword">{esc(w["ar"])}</div>
         </div>'''
 
@@ -76,15 +82,17 @@ def build_flashcard_html(level, num, vocab, page="front"):
   .card {{
     flex: 1; height: 62mm; border: 2px dashed #8A7160; border-radius: 6mm;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 4mm; padding: 4mm;
+    gap: 4mm; padding: 4mm; position: relative;
   }}
-  .card img {{ max-width: 70%; max-height: 60%; object-fit: contain; }}
+  .card-logo {{ position: absolute; top: 2.5mm; right: 2.5mm; width: 8mm; height: 8mm; object-fit: contain; }}
+  .card img:not(.card-logo) {{ max-width: 70%; max-height: 60%; object-fit: contain; }}
   .card .fallback {{
     width: 26mm; height: 26mm; border-radius: 4mm; background: #FFF3D6; color: #F97316;
     display: flex; align-items: center; justify-content: center; font-size: 16mm; font-weight: 800;
   }}
   .card .word {{ font-size: 15px; font-weight: 800; color: #43301F; }}
-  .back-card .arword {{ font-size: 20px; font-weight: 800; color: #0D9488; direction: rtl; }}
+  .back-card {{ align-items: flex-start; justify-content: flex-start; }}
+  .back-card .arword {{ font-size: 13px; font-weight: 800; color: #0D9488; direction: rtl; }}
 </style></head>
 <body>
   <div class="header">Lumio English &mdash; {level.upper()} Lesson {num} &mdash; print double-sided, flip on long edge</div>
