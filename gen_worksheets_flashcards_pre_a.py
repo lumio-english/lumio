@@ -6,6 +6,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.utils import ImageReader
+from writing_practice import draw_writing_practice
 
 pdfmetrics.registerFont(TTFont("NotoArabic", "/usr/share/fonts/truetype/noto/NotoSansArabic-Regular.ttf"))
 pdfmetrics.registerFont(TTFont("NotoArabic-Bold", "/usr/share/fonts/truetype/noto/NotoSansArabic-Bold.ttf"))
@@ -30,6 +31,7 @@ CREAM = (1, 0.953, 0.839)
 
 os.makedirs(f"worksheets/{LEVEL}", exist_ok=True)
 os.makedirs(f"flashcards/{LEVEL}", exist_ok=True)
+os.makedirs(f"writing/{LEVEL}", exist_ok=True)
 
 def slug(w):
     return w.lower().replace("'", "").replace(" ", "-")
@@ -182,15 +184,38 @@ def make_flashcards(lesson, num):
     build_flashcard_pdf(LEVEL, num, lesson["vocab"], path)
     return path
 
+# ================= WRITING PRACTICE =================
+def make_writing_practice(lesson, num):
+    nn = f"{num:02d}"
+    path = f"writing/{LEVEL}/lesson{nn}-writing.pdf"
+    c = canvas.Canvas(path, pagesize=A4)
+    logo_path = "assets/logo/lumio-logo.png"
+    draw_writing_practice(c, "PRE-A", lesson, num, INK, ORANGE, TEAL, MUTED, CREAM,
+                           logo_path=logo_path, strengthen_sentences=False)
+    c.save()
+    return path
+
 # ================= MAIN =================
 def main():
+    # --writing-only regenerates just the new writing-practice PDFs,
+    # leaving the existing homework/flashcard PDFs untouched -- added
+    # after discovering that re-running full main() in a different
+    # environment (missing whatever produced the original flashcard
+    # PDFs' exact rendering) silently shrank them from ~9.8MB to
+    # ~2.9MB. Full regeneration remains the default for normal use.
+    writing_only = "--writing-only" in sys.argv
     files = sorted(glob.glob(f"lessons/{LEVEL}/lesson*.json"))
     for f in files:
         d = json.load(open(f, encoding="utf-8"))
         num = d["number"]
-        wp = make_worksheet(d, num)
-        fp = make_flashcards(d, num)
-        print(f"Lesson {num:02d}: {wp}, {fp}")
+        if writing_only:
+            wrp = make_writing_practice(d, num)
+            print(f"Lesson {num:02d}: {wrp}")
+        else:
+            wp = make_worksheet(d, num)
+            fp = make_flashcards(d, num)
+            wrp = make_writing_practice(d, num)
+            print(f"Lesson {num:02d}: {wp}, {fp}, {wrp}")
 
 if __name__ == "__main__":
     main()

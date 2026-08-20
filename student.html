@@ -507,6 +507,7 @@
       <a class="sd-hero-btn" id="missionBtn" href="#">▶ Continue</a>
       <a class="sd-hero-btn" id="homeworkBtn" href="#" style="background:#F59E0B;margin-top:10px">🖥️ Interactive Homework</a>
       <a class="sd-hero-btn" id="worksheetBtn" href="#" download style="background:#0D9488;margin-top:10px">📄 Homework Sheet</a>
+      <a class="sd-hero-btn" id="writingBtn" href="#" download style="background:#DB2777;margin-top:10px">✏️ Writing Practice</a>
       <a class="sd-hero-btn" id="flashcardsBtn" href="#" download style="background:#7C3AED;margin-top:10px">🃏 Flashcards</a>
     </div>
     <div class="sd-side-stats">
@@ -909,6 +910,11 @@
   // isn't fully done yet — it needs either its prep or its live class.
   const nextLessonNum = current;
   const awaitingClass = current <= total && isPrepDone(current) && !isLiveDone(current);
+  // Writing-practice sheets only exist for pre-a/level1/level2/level3 so far
+  // — hide the button entirely for level4-6 rather than link to a PDF that
+  // doesn't exist yet.
+  const hasWritingPractice = ["pre-a", "level1", "level2", "level3"].includes(level);
+  if (!hasWritingPractice) document.getElementById("writingBtn").style.display = "none";
   if (done >= total) {
     document.getElementById("missionTitle").textContent = "Level complete! 🎉";
     document.getElementById("missionSub").textContent = "You finished every lesson — go check your certificate!";
@@ -916,6 +922,7 @@
     document.getElementById("missionBtn").href = "certificates.html";
     document.getElementById("homeworkBtn").style.display = "none";
     document.getElementById("worksheetBtn").style.display = "none";
+    document.getElementById("writingBtn").style.display = "none";
     document.getElementById("flashcardsBtn").style.display = "none";
   } else if (awaitingClass) {
     // Prep's done — the only thing left for this lesson is the live class,
@@ -927,6 +934,7 @@
     document.getElementById("missionBtn").href = "#scheduleCard";
     document.getElementById("homeworkBtn").href = `homework.html?level=${level}&n=${nextLessonNum}`;
     document.getElementById("worksheetBtn").href = `worksheets/${level}/lesson${String(nextLessonNum).padStart(2,"0")}-homework.pdf`;
+    if (hasWritingPractice) document.getElementById("writingBtn").href = `writing/${level}/lesson${String(nextLessonNum).padStart(2,"0")}-writing.pdf`;
     document.getElementById("flashcardsBtn").href = `flashcards/${level}/lesson${String(nextLessonNum).padStart(2,"0")}-flashcards.pdf`;
   } else {
     document.getElementById("missionTitle").textContent = `Lesson ${nextLessonNum}`;
@@ -937,6 +945,7 @@
     document.getElementById("missionBtn").href = `lesson.html?level=${level}&n=${nextLessonNum}`;
     document.getElementById("homeworkBtn").href = `homework.html?level=${level}&n=${nextLessonNum}`;
     document.getElementById("worksheetBtn").href = `worksheets/${level}/lesson${String(nextLessonNum).padStart(2,"0")}-homework.pdf`;
+    if (hasWritingPractice) document.getElementById("writingBtn").href = `writing/${level}/lesson${String(nextLessonNum).padStart(2,"0")}-writing.pdf`;
     document.getElementById("flashcardsBtn").href = `flashcards/${level}/lesson${String(nextLessonNum).padStart(2,"0")}-flashcards.pdf`;
   }
 
