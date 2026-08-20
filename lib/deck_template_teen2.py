@@ -136,16 +136,27 @@ def slide_hook(hook_question, n, total, ch, theme_key="default"):
     ''' + char_big(ch))
 
 def slide_first_listen(dialogue, n, total, theme_key="default"):
-    y_positions = [130, 250, 370, 490]
+    # Dynamic spacing rather than a fixed 4-slot layout -- richer, more
+    # advanced dialogues run longer than the original 4-line/2-exchange
+    # format, and a hard-coded slot array would silently stack extra
+    # lines on top of each other instead of failing loudly. Computes
+    # enough pitch to fit however many lines this lesson's dialogue
+    # actually has, capped so short dialogues don't look oddly sparse.
+    count = max(1, len(dialogue))
+    top_margin, bottom_budget = 110, 690
+    pitch = min(118, bottom_budget // count)
+    bubble_font = "1rem" if count <= 5 else ".92rem"
+    ar_font = ".82rem" if count <= 5 else ".76rem"
+    pad = "14px 20px" if count <= 5 else "11px 18px"
     bubbles = ""
     for i, (en, ar) in enumerate(dialogue):
         left = i % 2 == 0
         side = "left" if left else "right"
         bubbles += f'''
-        <div style="position:absolute;{side}:60px;top:{y_positions[min(i, 3)]}px;max-width:480px;background:{CARD_BG};border-radius:12px;
-                    padding:14px 20px;box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
-          <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:1rem;color:{CARD_TEXT}">{esc(en)}</div>
-          <div style="direction:rtl;text-align:right;font-size:.82rem;color:#8A8398;font-weight:700;margin-top:3px">{ar}</div>
+        <div style="position:absolute;{side}:60px;top:{top_margin + i * pitch}px;max-width:480px;background:{CARD_BG};border-radius:12px;
+                    padding:{pad};box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
+          <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:{bubble_font};color:{CARD_TEXT}">{esc(en)}</div>
+          <div style="direction:rtl;text-align:right;font-size:{ar_font};color:#8A8398;font-weight:700;margin-top:3px">{ar}</div>
         </div>'''
     return (bg_theme(theme_key) + header_themed("First Listen", n, total, theme_key) + f'''
     <div style="position:relative;z-index:5;text-align:center;margin-top:34px;font-family:'Nunito',sans-serif;font-weight:700;color:{INK_DIM};font-size:.9rem">
