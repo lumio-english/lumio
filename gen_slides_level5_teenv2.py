@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys, json, glob, os
 sys.path.insert(0, "lib")
-from deck_template_teen2 import build_deck_v2
+from deck_template_teen2 import build_deck_v2, chunk_grammar_topics
 from grammar_slides import match_grammar_by_lesson_focus
 
 LEVEL = "level5"
@@ -335,9 +335,18 @@ for num in sorted(_lessons.keys()):
     notice_sentences = make_notice_sentences(num, grammar_topic)
     notice_note = grammar_topic["title"] if grammar_topic else ""
 
+    is_review = num == 20
+    n_vocab_mcq = 24 if is_review else 10
+    n_grammar_mcq = 16 if is_review else 10
+    grammar_recap_topics = None
+    if is_review:
+        hub = json.load(open(f"grammar-hub/{LEVEL}.json", encoding="utf-8"))
+        grammar_recap_topics = chunk_grammar_topics(hub["topics"], per_slide=5)
+
     slides = build_deck_v2(num, lesson, grammar_topic, dialogue, hook, notice_sentences,
                             notice_note, challenge, real_life, theme_key=theme_key, level=LEVEL,
-                            discussion=discussion)
+                            discussion=discussion, n_vocab_mcq=n_vocab_mcq, n_grammar_mcq=n_grammar_mcq,
+                            grammar_recap_topics=grammar_recap_topics)
     nn = f"{num:02d}"
     lesson_dir = f"slide-content/{LEVEL}/{nn}"
     os.makedirs(lesson_dir, exist_ok=True)
