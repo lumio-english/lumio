@@ -19,6 +19,26 @@
   .cert .name { font-family: var(--font-display); font-size: 2.4rem; margin: 18px 0;
     border-bottom: 4px dashed var(--sun); display: inline-block; padding: 0 30px 6px; }
   @media print { .no-print { display: none !important; } body { background: #fff; } }
+  /* Teen theme (level3-6): body loads css/style.css, whose .theme-teen
+     block redefines --ink/--cocoa to light for lesson.html's own
+     content (which sits directly on the dark page background there).
+     .cert is a plain white card with no dark-text override of its own
+     -- without this rule its name/paragraph text would inherit that
+     light color and wash out against the white background, the same
+     leak already found and fixed on student.html. .cert h1 already has
+     its own explicit color (--orange) so it's unaffected either way. */
+  body.theme-teen .cert { color: #2B2640; }
+  /* css/style.css's own .theme-teen block sets a blanket
+     body.theme-teen h1{color:var(--cocoa)} rule (specificity 0,1,2)
+     which beats this page's own un-scoped .cert h1{color:var(--orange)}
+     rule (0,1,1) on specificity -- the exact same cross-file leak
+     already found and fixed on student.html, caught here the same
+     way: by actually screenshotting the certificate rather than
+     assuming the explicit color would hold. Needs its own
+     theme-scoped override with enough specificity to win it back. */
+  body.theme-teen .cert h1 { color: var(--orange); }
+  .cert-date { color: var(--cocoa-soft); }
+  body.theme-teen .cert-date { color: #6B5F8A; }
 </style>
 </head>
 <body>
@@ -39,7 +59,7 @@
     <p style="font-weight:700;font-size:1.15rem">for completing <b id="certLevel">Pre-A</b> of Lumio English<br>
       with <span id="certStars">0</span> stars!</p>
     <p class="mt" style="font-weight:800">Learn · Speak · Grow</p>
-    <p style="color:var(--cocoa-soft);font-weight:700" id="certDate"></p>
+    <p style="font-weight:700" class="cert-date" id="certDate"></p>
   </div>
   <p class="center no-print" id="notDone" style="display:none;font-weight:800;color:var(--coral)">
     Finish all 20 lessons to unlock your certificate!</p>
@@ -50,6 +70,9 @@
 (() => {
   const u = Lumio.requireUser();
   const level = u.level || "pre-a";
+  if (["level3", "level4", "level5", "level6"].includes(level)) {
+    document.body.classList.add("theme-teen");
+  }
   const meta = Lumio.LEVELS.find(l => l.id === level);
   const prog = (Lumio.progressFor(u.name)[level]) || {};
   const done = Object.keys(prog).length;
