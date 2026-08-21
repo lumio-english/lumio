@@ -91,8 +91,8 @@ def build_flashcard_html(level, num, vocab, page="front"):
     display: flex; align-items: center; justify-content: center; font-size: 16mm; font-weight: 800;
   }}
   .card .word {{ font-size: 15px; font-weight: 800; color: #43301F; }}
-  .back-card {{ align-items: flex-start; justify-content: flex-start; }}
-  .back-card .arword {{ font-size: 13px; font-weight: 800; color: #0D9488; direction: rtl; }}
+  .back-card {{ align-items: center; justify-content: center; }}
+  .back-card .arword {{ font-size: 26px; font-weight: 800; color: #0D9488; direction: rtl; text-align: center; }}
 </style></head>
 <body>
   <div class="header">Lumio English &mdash; {level.upper()} Lesson {num} &mdash; print double-sided, flip on long edge</div>
