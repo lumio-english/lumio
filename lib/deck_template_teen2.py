@@ -480,9 +480,58 @@ def slide_discussion(points, n, total, ch, theme_key="default"):
     ''' + char_big(ch, side="left", bottom=54))
 
 
+def slide_grammar_recap(topics, n, total, ch, theme_key="default"):
+    """Review-lesson-only slide: a condensed recap of several grammar
+    topics at once (title + one example sentence each), as opposed to
+    the normal slide_grammar_rule's full explanation+4-examples
+    treatment for a single topic. A real review needs to touch every
+    major structure taught across the level, not repeat the single-
+    topic-per-lesson depth -- this trades depth for breadth on purpose.
+    Caller is expected to chunk a level's full topic list into groups
+    of ~5 (see chunk_grammar_topics below) and call this once per
+    chunk, matching how vocab_mcq already spans multiple slides for a
+    larger pool rather than trying to fit everything on one screen.
+    """
+    rows = "".join(f'''
+        <div style="display:flex;align-items:flex-start;gap:14px;padding:13px 0;{"border-top:1px solid #EEF0F4" if i else ""}">
+          <div style="width:26px;height:26px;border-radius:50%;background:{TEAL}1F;color:{TEAL_DEEP};
+                      font-family:'Fredoka',sans-serif;font-weight:600;font-size:.85rem;flex-shrink:0;
+                      display:flex;align-items:center;justify-content:center;margin-top:2px">{i+1}</div>
+          <div>
+            <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.02rem;color:{CARD_TEXT}">{esc(t["title"])}</div>
+            <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:.88rem;color:#6B6480;margin-top:2px">{esc(t["examples"][0]["en"])}</div>
+          </div>
+        </div>''' for i, t in enumerate(topics))
+    return (bg_theme(theme_key) + header_themed("Grammar Recap", n, total, theme_key) + f'''
+    <div style="position:relative;z-index:5;display:flex;justify-content:center;margin-top:32px">
+      {card_open(760, "padding:34px 42px 30px")}
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+          <span style="font-size:1.6rem">&#128220;</span>
+          <div>
+            <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.3rem;color:{CARD_TEXT}">Quick grammar recap</div>
+            <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:.82rem;color:#8B7EA8">
+              Everything we've covered this level, at a glance</div>
+          </div>
+        </div>
+        <div style="margin-top:14px">{rows}</div>
+      </div>
+    </div>
+    ''' + char_big(ch, side="left", bottom=54))
+
+
+def chunk_grammar_topics(topics, per_slide=5):
+    """Splits a level's full grammar-hub topic list into groups sized
+    for slide_grammar_recap -- 5 per slide comfortably matches
+    slide_discussion's already-proven list capacity at this card size."""
+    return [topics[i:i + per_slide] for i in range(0, len(topics), per_slide)]
+
+
+
+
 def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, notice_sentences,
                    notice_note, challenge, real_life, theme_key="default",
-                   n_vocab_mcq=10, n_grammar_mcq=10, level=None, discussion=None):
+                   n_vocab_mcq=10, n_grammar_mcq=10, level=None, discussion=None,
+                   grammar_recap_topics=None):
     global CURRENT_LESSON_BG
     CURRENT_LESSON_BG = lesson_bg_path(level, lesson_num) if level else None
     V = len(lesson["vocab"])
@@ -536,6 +585,17 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
     plan.append(("sentence", None))
     if grammar_topic:
         plan.append(("grammar_practice", grammar_topic))
+    if grammar_recap_topics:
+        # Review-lesson-only: grammar_topic is deliberately never set for
+        # lessons whose grammarFocus says "review" (see
+        # match_grammar_by_lesson_focus's own docstring), which meant
+        # Lesson 20 previously had zero grammar content in the deck at
+        # all -- confirmed this by checking lesson20.json's grammarFocus
+        # field directly rather than assuming. grammar_recap_topics
+        # (pre-chunked into groups of ~5 by the caller) fills that gap
+        # with breadth instead of one topic's usual depth.
+        for chunk in grammar_recap_topics:
+            plan.append(("grammar_recap", chunk))
     ghalf = n_grammar_mcq // 2
     for i in range(ghalf):
         plan.append(("grammar_mcq", i))
@@ -601,6 +661,8 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
             slides.append(grammar_slides.slide_grammar_practice(
                 data, n, total, ch3, header_themed_wrap(theme_key), "", bg_theme_wrap(theme_key),
                 lambda ch, **kw: v1.char_badge(ch)))
+        elif kind == "grammar_recap":
+            slides.append(slide_grammar_recap(data, n, total, ch2, theme_key))
         elif kind == "grammar_mcq":
             i = data
             if grammar_mcq_sentences_pool is None:
