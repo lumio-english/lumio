@@ -1981,29 +1981,37 @@
   const GAME_INFO = {
     "pre-a": { file: "lumis-pocket.html", title: "Lumi's Pocket", icon: "🔍",
       sub: "Listen and tap the right picture with Lumi!",
-      bg: "linear-gradient(160deg,#FDBA74,#F97316)" },
+      bg: "linear-gradient(160deg,#FDBA74,#F97316)", poster: "assets/games/poster-pre-a.png" },
     "level1": { file: "treehouse-builder.html", title: "Treehouse Builder", icon: "🌳",
       sub: "Answer correctly to build the Treehouse Club, piece by piece!",
-      bg: "linear-gradient(160deg,#86EFAC,#16A34A)" },
+      bg: "linear-gradient(160deg,#86EFAC,#16A34A)", poster: "assets/games/poster-level1.png" },
     "level2": { file: "twelve-months-calendar.html", title: "Twelve Months Calendar", icon: "📅",
       sub: "Flip through the year with the Twelve Months Club!",
-      bg: "linear-gradient(160deg,#FBCFE8,#EC4899)" },
+      bg: "linear-gradient(160deg,#FBCFE8,#EC4899)", poster: "assets/games/poster-level2.png" },
     "level3": { file: "crew-chat.html", title: "Crew Chat", icon: "💬",
       sub: "Reply to the crew's group chat — tap or type it back!",
-      bg: "linear-gradient(160deg,#111B21,#005C4B)" },
+      bg: "linear-gradient(160deg,#111B21,#005C4B)", poster: "assets/games/poster-level3.png" },
     "level4": { file: "squad-budget.html", title: "Squad Budget", icon: "🛍️",
       sub: "Shop the list, watch your budget, print the receipt!",
-      bg: "linear-gradient(160deg,#FDE68A,#F59E0B)" },
+      bg: "linear-gradient(160deg,#FDE68A,#F59E0B)", poster: "assets/games/poster-level4.png" },
     "level5": { file: "story-detective.html", title: "Story Detective", icon: "🕵️",
       sub: "Find the evidence and crack the case!",
-      bg: "linear-gradient(160deg,#C9A876,#43301F)" },
+      bg: "linear-gradient(160deg,#C9A876,#43301F)", poster: "assets/games/poster-level5.png" },
     "level6": { file: "crystal-ball.html", title: "Crystal Ball", icon: "🔮",
       sub: "Read the crystal ball and judge each prediction!",
-      bg: "radial-gradient(circle at 30% 20%,#7C3AED,#1B0F3D)" },
+      bg: "radial-gradient(circle at 30% 20%,#7C3AED,#1B0F3D)", poster: "assets/games/poster-level6.png" },
   };
   const gameInfo = GAME_INFO[level] || GAME_INFO["pre-a"];
   const gameWideCard = document.getElementById("gameWideCard");
-  gameWideCard.style.background = gameInfo.bg;
+  // Poster layered over the original gradient (kept as a fallback if the
+  // image ever fails to load, not replaced) -- plus a left-to-right dark
+  // scrim so the card's white icon/title/description/button text stays
+  // readable regardless of exactly where each poster's own "calm" area
+  // landed, rather than trusting every image to line up perfectly with
+  // the fixed text position.
+  gameWideCard.style.background =
+    `linear-gradient(to right, rgba(20,10,10,.45), rgba(20,10,10,.08) 45%, transparent 70%), ` +
+    `url('${gameInfo.poster}') center/cover no-repeat, ${gameInfo.bg}`;
   document.getElementById("gameWideIcon").textContent = gameInfo.icon;
   document.getElementById("gameWideTitle").textContent = gameInfo.title;
   document.getElementById("gameWideSub").textContent = gameInfo.sub;
