@@ -30,6 +30,28 @@
   .wgrid-card img { width:110px; height:110px; object-fit:contain; border-radius:12px; background:#FFFCF6; }
   .wtxtinput { width:100%; min-height:110px; border-radius:14px; border:2px solid #F0E9DD; padding:14px 16px; font-family:'Nunito',sans-serif;
     font-size:1rem; color:#43301F; resize:none; }
+
+  /* Teen theme (level3-6) -- reuses the exact class names css/slide-
+     styles.css already defines (.wall, .window, .shelf/.book,
+     .header/.pagetitle/.counter/.brand, .card) so all 5 slide-builder
+     functions below (buildVocabSlides, buildGrammarSlides, etc.)
+     re-theme automatically with zero JS changes -- only .card stays
+     white on purpose, matching how every other themed page in this
+     app keeps card-internal text dark regardless of page theme. */
+  #stage.theme-teen{ background: linear-gradient(160deg, #2B1B52 0%, #1C1038 100%); }
+  #stage.theme-teen .wall{ background: linear-gradient(180deg, #2B1B52 0%, #1C1038 100%); }
+  #stage.theme-teen .teal-band{ background: #7C3AED; opacity: .3; }
+  #stage.theme-teen .window{ background: rgba(139,92,246,.14); border-color: rgba(237,233,251,.25); }
+  #stage.theme-teen .window .cross-v, #stage.theme-teen .window .cross-h{ background: rgba(237,233,251,.2); }
+  #stage.theme-teen .shelf{ background: #4A3B7A; }
+  #stage.theme-teen .spark{ color: #A78BFA; }
+  #stage.theme-teen .brand .name{ color: #EDE9FB; }
+  #stage.theme-teen .pagetitle{ background: rgba(139,92,246,.18); color: #EDE9FB; box-shadow: none; }
+  #stage.theme-teen .counter{ background: rgba(139,92,246,.18); color: #C4B5FD; box-shadow: none; }
+  #stage.theme-teen .dot{ background: rgba(237,233,251,.2); }
+  #stage.theme-teen .dot.on{ background: #F97316; }
+  #stage.theme-teen .wgrid-card{ background: #fff; }
+  #stage.theme-teen .wtxtinput{ border-color: #E3D6BE; }
 </style>
 </head>
 <body>
@@ -57,6 +79,14 @@
 const qs = k => new URLSearchParams(location.search).get(k);
 const type = qs("type") || "vocab";
 const level = qs("level") || "pre-a";
+// Same teen theme as lesson.html/student.html/homework.html for
+// level3-6 -- applied to #stage specifically (not body), since the
+// page chrome (topbar, background) is already dark for every level;
+// only the slide canvas itself (.slideStage, shared by all 5 slide-
+// builder functions below) needs the palette swap.
+if (["level3", "level4", "level5", "level6"].includes(level)) {
+  document.getElementById("stage").classList.add("theme-teen");
+}
 let cur = 1, total = 1, slides = [];
 
 const TITLES = { vocab: "📔 Vocabulary", grammar: "📐 Grammar", idioms: "💡 Idioms", phonics: "🔤 Phonics", writing: "✍️ Writing & Speaking" };
