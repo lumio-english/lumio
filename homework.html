@@ -14,6 +14,17 @@
   }
   * { box-sizing:border-box; }
   body { margin:0; min-height:100vh; background:linear-gradient(180deg,#FFF3D6 0%,var(--cream) 40%); font-family:'Nunito',sans-serif; color:var(--cocoa); padding-bottom:60px; }
+  /* Teen theme (level3-6) -- self-contained block, this page doesn't
+     load css/style.css so there's no cross-file leak risk here like
+     student.html had. .hw-top is already dark (#2B2118) regardless of
+     theme, and every actual homework activity (word rows, quiz,
+     drawing canvas, recording) lives inside white .hw-card elements
+     whose --cocoa/--cocoa-soft text stays correct unchanged -- only
+     .hw-header sits directly on the page background and needs an
+     explicit override. */
+  body.theme-teen { background: linear-gradient(160deg, #2B1B52 0%, #1C1038 100%); }
+  body.theme-teen .hw-header h1 { color: #EDE9FB; }
+  body.theme-teen .hw-header p { color: #A79BD1; }
   .hw-top { position:sticky; top:0; z-index:20; background:#2B2118; color:#fff; display:flex; align-items:center; justify-content:space-between; padding:12px 20px; }
   .hw-top .brand { font-family:'Baloo 2',sans-serif; font-weight:800; display:flex; align-items:center; gap:8px }
   .hw-top a { color:#fff; text-decoration:none; background:rgba(255,255,255,.14); padding:8px 16px; border-radius:999px; font-weight:800; font-size:.85rem }
@@ -93,6 +104,10 @@
 <script>
 const qs = k => new URLSearchParams(location.search).get(k);
 const level = qs("level") || "pre-a";
+// Same teen theme as lesson.html/student.html for level3-6.
+if (["level3", "level4", "level5", "level6"].includes(level)) {
+  document.body.classList.add("theme-teen");
+}
 const num = parseInt(qs("n") || "1", 10);
 const nn = String(num).padStart(2, "0");
 
