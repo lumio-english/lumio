@@ -79,6 +79,11 @@
 const qs = k => new URLSearchParams(location.search).get(k);
 const type = qs("type") || "vocab";
 const level = qs("level") || "pre-a";
+// Used by the slide builders below to pick age-appropriate guide
+// characters (Vocabulary/Grammar/Phonics/Idioms all show one in a
+// corner) -- separate from the .theme-teen CSS class added below,
+// since character choice is a JS/content concern, not a color one.
+const isTeenLevel = ["level3", "level4", "level5", "level6"].includes(level);
 // Same teen theme as lesson.html/student.html/homework.html for
 // level3-6 -- applied to #stage specifically (not body), since the
 // page chrome (topbar, background) is already dark for every level;
@@ -147,7 +152,9 @@ function buildVocabSlides(data) {
       <div style="position:absolute;left:0;right:380px;top:215px;display:flex;flex-wrap:wrap;gap:16px;justify-content:center;padding:0 30px">
         ${cards}
       </div>
-      ${charImg(["omar-wave","noor-happy","sara-clap","ziad-happy","hamad-wave"][i % 5], { right: 90, bottom: 40, height: 320 })}`;
+      ${charImg((isTeenLevel
+        ? ["omar-teen-wave","noor-teen-happy","sara-teen-celebrate","ziad-teen-happy","hamad-teen-wave"]
+        : ["omar-wave","noor-happy","sara-clap","ziad-happy","hamad-wave"])[i % 5], { right: 90, bottom: 40, height: 320 })}`;
   });
 }
 
@@ -166,7 +173,7 @@ function buildGrammarSlides(data) {
         <div style="direction:rtl;text-align:right;font-size:.85rem;color:#8A7160;line-height:1.6;margin-bottom:16px">${t.explanationAr}</div>
         ${cards}
       </div>
-      ${charImg("sara-explain", { bottom: 42, height: 310 })}`;
+      ${charImg(isTeenLevel ? "sara-teen-explain" : "sara-explain", { bottom: 42, height: 310 })}`;
   });
 }
 
@@ -191,7 +198,7 @@ function buildPhonicsSlides(data) {
         <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px">${words}</div>
         ${u.tip ? `<div style="background:#FFF3D6;border-radius:12px;padding:10px 14px;direction:rtl;text-align:right;font-size:.8rem;color:#43301F;line-height:1.6">${u.tip}</div>` : ""}
       </div>
-      ${charImg("sara-clap", { bottom: 24, height: 290 })}`;
+      ${charImg(isTeenLevel ? "sara-teen-celebrate" : "sara-clap", { bottom: 24, height: 290 })}`;
   });
 }
 
@@ -217,7 +224,7 @@ function buildIdiomsSlides(data) {
           <div style="direction:rtl;text-align:right;font-size:.82rem;color:#8A7160;font-weight:700;margin-top:4px">${idiom.exampleAr}</div>
         </div>
       </div>
-      ${charImg("omar-think", { bottom: 42, height: 300 })}`;
+      ${charImg(isTeenLevel ? "omar-teen-think" : "omar-think", { bottom: 42, height: 300 })}`;
   });
 }
 
