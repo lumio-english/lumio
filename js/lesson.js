@@ -148,8 +148,13 @@
   /* ============================================================
      ACTIVITY 3 — MATCH (English ↔ Arabic pairs)
      ============================================================ */
-  function actMatch() {
-    const pairs = Lumio.shuffle([...lesson.vocab]).slice(0, 5);
+  function actMatch(a) {
+    // a.rounds controls how many pairs to show -- defaults to 5, the
+    // original hard-coded value, so every normal lesson's Match activity
+    // is completely unaffected. Lesson 20's review config raises this
+    // for genuinely broader coverage instead of just 5 random words out
+    // of a much larger review vocab pool.
+    const pairs = Lumio.shuffle([...lesson.vocab]).slice(0, (a && a.rounds) || 5);
     const tiles = Lumio.shuffle([
       ...pairs.map(p => ({ id: p.en, label: p.ar, kind: "ar" })),
       ...pairs.map(p => ({ id: p.en, label: p.en, kind: "en" })),
@@ -479,7 +484,7 @@
     switch (a.type) {
       case "vocab": return actVocab();
       case "listen-choose": return actListen(a);
-      case "match": return actMatch();
+      case "match": return actMatch(a);
       case "quiz": return actQuiz(a);
       case "spell": return actSpell(a);
       case "speak": return actSpeak(a);
