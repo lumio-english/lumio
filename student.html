@@ -29,7 +29,17 @@
     min-height:100vh;
     opacity:0; animation:sdPageFadeIn .4s ease forwards;
   }
-  @keyframes sdPageFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  /* Opacity-only (no transform) deliberately: a transform on <body> --
+     even a completed/no-op one like translateY(0) left by an animation's
+     forwards fill-mode -- creates a new containing block for any
+     position:fixed descendant per the CSS spec, which was silently
+     breaking every modal on this page (they rendered ~1200px down the
+     document instead of centered in the viewport, confirmed via
+     getBoundingClientRect() and reproduced against the unmodified file
+     with git stash before concluding this wasn't something introduced
+     elsewhere). Dropping the translateY keeps the fade-in feel without
+     the side effect. */
+  @keyframes sdPageFadeIn{from{opacity:0}to{opacity:1}}
   h1,h2,h3,.sd-display{font-family:'Baloo 2',sans-serif}
 
   /* ============================================================
