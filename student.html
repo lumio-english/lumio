@@ -32,6 +32,56 @@
   @keyframes sdPageFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
   h1,h2,h3,.sd-display{font-family:'Baloo 2',sans-serif}
 
+  /* ============================================================
+     TEEN THEME -- level3-6 only, matching Present/lesson.html's
+     established dark palette (see css/style.css's own "TEEN THEME"
+     block, which this page already loads and which handles the
+     adventure map's .node/.path styling for free once this class is
+     present). Deliberately NOT redefining --sd-cocoa/--sd-cocoa-soft
+     here: those are used almost entirely for text sitting *inside*
+     white/cream cards (badges, buddy cards, stat cards, the schedule
+     and map cards, the hero card, hub banners), which stay white
+     regardless of page theme -- exactly how Present's own white cards
+     behave on its dark background. Redefining them would have meant
+     hand-patching two dozen card classes back to dark text; instead
+     only the handful of elements that render text *directly on the
+     page background* (topbar brand, section titles) get an explicit
+     override below. Checked every .sd- component's own background
+     before deciding this -- the hero card, story banner, hub banner
+     rows, and mini-game wide card already carry their own explicit
+     white-on-color styling independent of the page theme, so none of
+     them needed touching either. */
+  body.theme-teen{
+    background: linear-gradient(160deg, #2B1B52 0%, #1C1038 100%);
+  }
+  body.theme-teen .sd-topbar{
+    background: rgba(28,16,56,.75); backdrop-filter: blur(6px);
+    border-bottom: 3px solid rgba(139,92,246,.25);
+  }
+  body.theme-teen .sd-brand{ color: #EDE9FB; }
+  body.theme-teen .sd-section-title h3{ color: #EDE9FB; }
+  body.theme-teen .sd-logout{ background: rgba(237,233,251,.12); color: #EDE9FB; }
+  /* css/style.css's own .theme-teen block (built for lesson.html, where
+     every h1/h2/h3 sits directly on the dark page background) sets a
+     blanket "h1,h2,h3 -> light" rule. That rule leaks onto this page
+     too, since both files load on student.html and target the same
+     bare tag selectors -- caught this by actually screenshotting the
+     page rather than assuming the two files' theme blocks wouldn't
+     interact: "Level 3 · Real Life adventure map" (a plain <h2>
+     sitting inside a white .sd-path-card) rendered washed-out and
+     nearly illegible. Unlike lesson.html, most of this page's h1-h3
+     elements sit *inside* white cards/modals (the map title, every
+     modal dialog's heading, avatar-picker heading, mini-game result
+     headings), so the default here needs to go the other way -- reset
+     to dark first, then the more specific .sd-section-title h3 rule
+     above (which is already more specific than either blanket rule)
+     correctly wins back to light for the handful of section titles
+     that really do sit directly on the dark page background. This
+     rule's specificity matches the leaked one exactly, so it wins on
+     source order alone (this stylesheet loads after css/style.css) --
+     but written explicitly rather than relying on that silently. */
+  body.theme-teen h1, body.theme-teen h2, body.theme-teen h3{ color: var(--sd-cocoa); }
+
   @keyframes sdFadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
   @keyframes sdPop{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
   @keyframes sdPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
@@ -789,6 +839,12 @@
   }
 
   const level = u.level || "pre-a";
+  // Same dark/Fredoka teen theme already applied to lesson.html for
+  // level3-6 -- see css/style.css's "TEEN THEME" block for the palette
+  // and rationale. Pre-a/level1/level2 are untouched.
+  if (["level3", "level4", "level5", "level6"].includes(level)) {
+    document.body.classList.add("theme-teen");
+  }
   const meta = (Lumio.LEVELS || []).find(l => l.id === level) || { name: "Pre-A", lessons: 20 };
   const progAll = Lumio.progressFor(u.name) || {};
   const prog = progAll[level] || {};
