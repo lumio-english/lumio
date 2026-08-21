@@ -55,6 +55,19 @@
   #lockScreen p { color:#8A7160; font-weight:700; font-size:1.1rem; max-width:520px }
   #lockScreen button { margin-top:26px; background:linear-gradient(135deg,#F97316,#EA580C); color:#fff; border:none;
     border-radius:999px; padding:14px 34px; font-weight:800; font-size:1.05rem; cursor:pointer }
+  /* Teen theme (level3-6): #stage's own flat background is never
+     actually visible -- every real story page supplies its own
+     full-bleed scene image (checked all 40 Level 3 pages before
+     concluding this), so there's nothing to theme there. #lockScreen
+     is different: it's a generic, non-bespoke full-screen state (shown
+     when a story part isn't unlocked yet), so it gets the same dark
+     treatment as every other page's generic chrome. The "Part complete"
+     screen is a second, separate case -- built dynamically in JS with
+     inline styles rather than these CSS classes, handled at its own
+     call site instead of here. */
+  body.theme-teen #lockScreen { background: linear-gradient(160deg, #2B1B52 0%, #1C1038 100%); }
+  body.theme-teen #lockScreen h2 { color: #EDE9FB; }
+  body.theme-teen #lockScreen p { color: #C4B5FD; }
 </style>
 </head>
 <body>
@@ -122,6 +135,8 @@ function currentUserLevel() {
   try { const u = Lumio.user(); return (u && u.level) || "pre-a"; } catch (e) { return "pre-a"; }
 }
 const storyLevel = qs("level") || currentUserLevel();
+const storyIsTeen = ["level3", "level4", "level5", "level6"].includes(storyLevel);
+if (storyIsTeen) document.body.classList.add("theme-teen");
 const story = STORIES[storyLevel] || STORIES["pre-a"];
 const PARTS = story.parts;
 document.querySelector(".brand").textContent = `📖 ${story.title}`;
@@ -185,12 +200,15 @@ function finishPart(part) {
     prog[storyLevel][part.id] = true;
     localStorage.setItem(key, JSON.stringify(prog));
   } catch (e) {}
+  const completeBg = storyIsTeen ? "linear-gradient(160deg,#2B1B52,#1C1038)" : "linear-gradient(160deg,#FFF3D6,#FDE8CC)";
+  const completeH2 = storyIsTeen ? "#EDE9FB" : "#43301F";
+  const completeP = storyIsTeen ? "#C4B5FD" : "#8A7160";
   document.getElementById("stageContent").innerHTML = `
     <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
-                background:linear-gradient(160deg,#FFF3D6,#FDE8CC);text-align:center">
+                background:${completeBg};text-align:center">
       <div style="font-size:4.5rem;margin-bottom:10px">🎉</div>
-      <h2 style="font-family:'Baloo 2',sans-serif;color:#43301F;font-size:2.2rem;margin-bottom:12px">Part ${part.id} complete!</h2>
-      <p style="color:#8A7160;font-weight:700;font-size:1.15rem">Great reading! Come back after more lessons for the next part.</p>
+      <h2 style="font-family:'Baloo 2',sans-serif;color:${completeH2};font-size:2.2rem;margin-bottom:12px">Part ${part.id} complete!</h2>
+      <p style="color:${completeP};font-weight:700;font-size:1.15rem">Great reading! Come back after more lessons for the next part.</p>
       <button onclick="location.href='student.html'" style="margin-top:26px;background:linear-gradient(135deg,#F97316,#EA580C);
         color:#fff;border:none;border-radius:999px;padding:14px 34px;font-weight:800;font-size:1.05rem;cursor:pointer">
         Back to my lessons</button>
