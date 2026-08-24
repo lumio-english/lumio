@@ -778,11 +778,24 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
         plan.append(("teacher_game", "group"))
     plan.append(("quiz", 1))
     plan.append(("quiz", 2))
+    # Review lessons only: two fixed quiz slides is a reasonable capstone
+    # check for a normal lesson (quick_check above already gives every
+    # word its own per-word round), but a genuine review deserves a
+    # slightly bigger final check too -- extends the quiz round count
+    # without touching normal lessons at all.
+    n_extra_quiz = 0
+    if lesson_num == 20:
+        extra_targets = [i for i in range(V) if i not in (1, min(3, V - 1))][:6]
+        n_extra_quiz = len(extra_targets)
+        for i in extra_targets:
+            plan.append(("quiz_review_extra", i))
     plan.append(("today_i_learned", None))
     plan.append(("reward_homework", None))
 
     total = len(plan)
     slides = []
+    quiz_total_q = 2 + n_extra_quiz
+    quiz_review_idx = [2]  # mutable counter; original 2 quiz slides use idx 1-2 directly
     for pos, (kind, data) in enumerate(plan):
         n = pos + 1
         if kind == "title": slides.append(slide_title(lesson, V))
@@ -837,7 +850,14 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
             idx = data
             target = lesson["vocab"][1 if idx == 1 else min(3, V - 1)]
             distractors = [x for x in lesson["vocab"] if x["en"] != target["en"]][:3]
-            slides.append(slide_quiz(target, distractors, idx, 2, n, total, lesson_num * 7 + idx))
+            slides.append(slide_quiz(target, distractors, idx, quiz_total_q, n, total, lesson_num * 7 + idx))
+        elif kind == "quiz_review_extra":
+            i = data
+            target = lesson["vocab"][i]
+            distractors = [x for x in lesson["vocab"] if x["en"] != target["en"]]
+            distractors = random.Random(lesson_num * 17 + i).sample(distractors, min(3, len(distractors)))
+            quiz_review_idx[0] += 1
+            slides.append(slide_quiz(target, distractors, quiz_review_idx[0], quiz_total_q, n, total, lesson_num * 19 + i))
         elif kind == "reward_homework": slides.append(slide_reward_homework(lesson_num, n, total))
     return slides
 
