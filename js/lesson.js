@@ -91,11 +91,24 @@
   function actVocab() {
     let i = 0;
     const words = lesson.vocab;
+    // Words are ordered verbs-first (where a lesson tags any), then
+    // other parts of speech -- shows "New Verbs" while stepping
+    // through the verb section and "New Words" afterward, each with
+    // its own 1-based count within that section. Lessons with no
+    // "pos" field at all (every lesson except the ones explicitly
+    // reviewed so far) get verbCount=0, so isVerb is always false and
+    // this produces the exact original "New words · i/total" label --
+    // zero behavior change unless a lesson actually opts in.
+    const verbCount = words.filter(w => w.pos === "verb").length;
     const draw = () => {
       const w = words[i];
+      const isVerb = w.pos === "verb";
+      const chipLabel = isVerb ? "New Verbs" : "New words";
+      const chipIndex = isVerb ? (i + 1) : (i - verbCount + 1);
+      const chipTotal = isVerb ? verbCount : (words.length - verbCount);
       stage.innerHTML = `
         <div class="card center">
-          <span class="chip chip-orange">New words · ${i + 1}/${words.length}</span>
+          <span class="chip chip-orange">${chipLabel} · ${chipIndex}/${chipTotal}</span>
           ${vocabImg(w.en, "width:min(320px,70vw);height:220px;margin:18px auto;border-radius:20px")}
           <h1 style="font-size:2.6rem">${w.en}</h1>
           <p class="ar" style="font-size:1.5rem;font-weight:800;color:var(--cocoa-soft)">${w.ar}</p>

@@ -234,9 +234,20 @@ def slide_recap(prev_words, n, total):
     <div style="position:relative;z-index:5;text-align:center;margin-top:24px;font-family:'Nunito',sans-serif;font-weight:700;color:{INK_DIM};font-size:.9rem">From last lesson</div>
     ''')
 
-def slide_vocab(w, idx, n, total, num_words, ch):
+def slide_vocab(w, idx, n, total, num_words, ch, verb_count=0):
     quote = w.get("example", w["en"])
-    return (bg_base() + header(f"Vocabulary · {esc(w['en'])}", n, total) + f'''
+    # Same verbs-first-then-other-words split as js/lesson.js's actVocab,
+    # kept in sync deliberately -- verb_count=0 (the default, and what
+    # every untouched lesson passes) reproduces the exact original
+    # "Vocabulary · word" label with no behavior change.
+    is_verb = w.get("pos") == "verb"
+    if is_verb:
+        chip_label = f"New Verbs · {esc(w['en'])}"
+    elif verb_count:
+        chip_label = f"New Words · {esc(w['en'])}"
+    else:
+        chip_label = f"Vocabulary · {esc(w['en'])}"
+    return (bg_base() + header(chip_label, n, total) + f'''
     <div style="position:relative;z-index:5;display:flex;gap:22px;padding:44px 40px 0">
       {card_open(410, "padding:20px;text-align:center")}
         <div style="width:100%;aspect-ratio:1/1;border-radius:10px;overflow:hidden;background:#F8FAFC">

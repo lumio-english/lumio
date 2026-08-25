@@ -480,6 +480,28 @@ def slide_discussion(points, n, total, ch, theme_key="default"):
     ''' + char_big(ch, side="left", bottom=54))
 
 
+def slide_describing_time(image_rel_path, n, total, theme_key="default"):
+    """Checkpoint-only slide (lessons 6/11/16/20): a single large picture
+    the teacher displays while students describe what they see aloud,
+    using vocabulary from the lessons since the last checkpoint. No
+    interactive checking, same deliberate choice as slide_discussion --
+    this is an open speaking activity, not a scored one. Image uses
+    object-fit:contain (never cover) so nothing in the scene gets
+    cropped off, since the whole point of the activity is students
+    noticing and naming every detail.
+    """
+    return (bg_theme(theme_key) + header_themed("Describing Time", n, total, theme_key) + f'''
+    <div style="position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;margin-top:22px">
+      <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.15rem;color:{INK};margin-bottom:14px;text-align:center">
+        Look at the picture. What do you see? Describe it in English!</div>
+      <div style="width:1220px;height:620px;border-radius:16px;overflow:hidden;background:{CARD_BG};
+                  box-shadow:0 18px 40px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center">
+        <img src="{image_rel_path}" style="width:100%;height:100%;object-fit:contain">
+      </div>
+    </div>
+    ''')
+
+
 def slide_grammar_recap(topics, n, total, ch, theme_key="default"):
     """Review-lesson-only slide: a condensed recap of several grammar
     topics at once (title + one example sentence each), as opposed to
@@ -531,7 +553,7 @@ def chunk_grammar_topics(topics, per_slide=5):
 def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, notice_sentences,
                    notice_note, challenge, real_life, theme_key="default",
                    n_vocab_mcq=10, n_grammar_mcq=10, level=None, discussion=None,
-                   grammar_recap_topics=None):
+                   grammar_recap_topics=None, describing_time_image=None):
     global CURRENT_LESSON_BG
     CURRENT_LESSON_BG = lesson_bg_path(level, lesson_num) if level else None
     V = len(lesson["vocab"])
@@ -562,7 +584,10 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
     plan = [("title", None)]
     if lesson_num == 1:
         plan.append(("meet_the_squad", None))
-    plan += [("hook", None), ("first_listen", None)]
+    plan += [("hook", None)]
+    if describing_time_image:
+        plan.append(("describing_time", describing_time_image))
+    plan.append(("first_listen", None))
     for i, w in enumerate(lesson["vocab"]):
         plan.append(("vocab", (w, i)))
     for i in range(3):
@@ -633,11 +658,14 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
             slides.append(v1.slide_meet_the_squad(n, total, theme_key))
         elif kind == "hook":
             slides.append(slide_hook(hook_question, n, total, ch1, theme_key))
+        elif kind == "describing_time":
+            slides.append(slide_describing_time(data, n, total, theme_key))
         elif kind == "first_listen":
             slides.append(slide_first_listen(dialogue, n, total, theme_key))
         elif kind == "vocab":
             w, i = data
-            slides.append(slide_vocab(w, i, n, total, V, VOCAB_CHARS[i % len(VOCAB_CHARS)]))
+            verb_count = sum(1 for x in lesson["vocab"] if x.get("pos") == "verb")
+            slides.append(slide_vocab(w, i, n, total, V, VOCAB_CHARS[i % len(VOCAB_CHARS)], verb_count))
         elif kind == "grammar_rule":
             slides.append(grammar_slides.slide_grammar_rule(
                 data, n, total, ch3, header_themed_wrap(theme_key), "", bg_theme_wrap(theme_key),
