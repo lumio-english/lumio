@@ -155,9 +155,21 @@ def slide_recap(prev_words, n, total):
                 font-weight:700;font-size:1.05rem;color:#8A7160">From last lesson &mdash; tap each card to check!</div>
     ''' + char_img("noor-think", right=60, bottom=250, height=200))
 
-def slide_vocab(w, idx, n, total, num_words, ch):
+def slide_vocab(w, idx, n, total, num_words, ch, verb_count=0):
     quote = w.get("example", w["en"])
-    return (bg_plain() + header(f"Vocabulary &bull; {esc(w['en'])}", n, total) + dots(idx, num_words) + COLORSTRIP + f'''
+    # Same verbs-first-then-other-words convention as the teen track's
+    # slide_vocab (lib/deck_template_teen.py) and js/lesson.js's
+    # actVocab, kept in sync deliberately -- verb_count=0 (the default)
+    # reproduces the exact original "Vocabulary &bull; word" label with
+    # zero behavior change for every lesson that hasn't opted in.
+    is_verb = w.get("pos") == "verb"
+    if is_verb:
+        chip_label = f"New Verbs &bull; {esc(w['en'])}"
+    elif verb_count:
+        chip_label = f"New Words &bull; {esc(w['en'])}"
+    else:
+        chip_label = f"Vocabulary &bull; {esc(w['en'])}"
+    return (bg_plain() + header(chip_label, n, total) + dots(idx, num_words) + COLORSTRIP + f'''
     <div class="card" style="position:absolute;left:46px;top:180px;width:450px;padding:24px;background:#fff">
       <div style="width:100%;aspect-ratio:1/1;border-radius:22px;overflow:hidden;margin-bottom:20px;
                      box-shadow:0 12px 26px rgba(67,48,31,.22);border:7px solid #fff;outline:4px solid #FFDCA8;background:#fff">
@@ -681,6 +693,26 @@ def slide_today_i_learned(lesson, n, total):
     ''' + char_img("noor-happy", bottom=42, height=310))
 
 
+def slide_describing_time(image_rel_path, n, total):
+    """Checkpoint-only slide (lessons 6/11/16/20): a single large
+    picture the teacher displays while students describe what they see
+    aloud, using vocabulary from the lessons since the last checkpoint.
+    Young-track equivalent of the teen deck's slide_describing_time --
+    same object-fit:contain choice (never cover), same reasoning: never
+    crop any of the scene, since the point of the activity is students
+    noticing and naming everything in it.
+    """
+    return (bg_plain() + header("Describing Time", n, total) + COLORSTRIP + f'''
+    <div style="position:absolute;left:0;top:150px;width:900px;text-align:center;
+                font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.15rem;color:#43301F">
+      Look at the picture. What do you see? Describe it in English!</div>
+    <div class="card" style="position:absolute;left:46px;top:200px;width:808px;height:520px;
+                overflow:hidden;padding:0;display:flex;align-items:center;justify-content:center;background:#fff">
+      <img src="{image_rel_path}" style="width:100%;height:100%;object-fit:contain">
+    </div>
+    ''')
+
+
 def slide_unscramble(word, n, total, ch):
     import random as _r
     letters = list(word["en"].replace(" ", ""))
@@ -831,7 +863,8 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
             slides.append(grammar_slides.slide_grammar_practice(data, n, total, "sara-clap", header, COLORSTRIP, bg_plain, char_img))
         elif kind == "vocab":
             w, i = data
-            slides.append(slide_vocab(w, i, n, total, V, VOCAB_CHARS[i % len(VOCAB_CHARS)]))
+            verb_count = sum(1 for x in lesson["vocab"] if x.get("pos") == "verb")
+            slides.append(slide_vocab(w, i, n, total, V, VOCAB_CHARS[i % len(VOCAB_CHARS)], verb_count))
         elif kind == "practice_phonics":
             w, i = data
             slides.append(slide_practice_phonics(w, n, total, VOCAB_CHARS[i % len(VOCAB_CHARS)], has_phonics, seed=i))
