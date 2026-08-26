@@ -343,10 +343,17 @@ for num in sorted(_lessons.keys()):
         hub = json.load(open(f"grammar-hub/{LEVEL}.json", encoding="utf-8"))
         grammar_recap_topics = chunk_grammar_topics(hub["topics"], per_slide=5)
 
+    describing_time_image = None
+    if num in (6, 11, 16, 20):
+        img_path = f"assets/describing-time/{LEVEL}/lesson{num:02d}.jpg"
+        if os.path.exists(img_path):
+            describing_time_image = img_path
+
     slides = build_deck_v2(num, lesson, grammar_topic, dialogue, hook, notice_sentences,
                             notice_note, challenge, real_life, theme_key=theme_key, level=LEVEL,
                             discussion=discussion, n_vocab_mcq=n_vocab_mcq, n_grammar_mcq=n_grammar_mcq,
-                            grammar_recap_topics=grammar_recap_topics)
+                            grammar_recap_topics=grammar_recap_topics,
+                            describing_time_image=describing_time_image)
     nn = f"{num:02d}"
     lesson_dir = f"slide-content/{LEVEL}/{nn}"
     os.makedirs(lesson_dir, exist_ok=True)

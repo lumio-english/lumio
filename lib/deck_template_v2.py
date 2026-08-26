@@ -774,6 +774,10 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
     if lesson_num == 1:
         plan.append(("meet_the_team", None))
     plan += [("lets_learn", None), ("unscramble", lesson["vocab"][0])]
+    if lesson_num in (6, 11, 16, 20):
+        img_path = f"assets/describing-time/{level}/lesson{lesson_num:02d}.jpg"
+        if os.path.exists(img_path):
+            plan.append(("describing_time", img_path))
     if prev_lesson:
         plan.append(("recap", None))
     if phonics_unit:
@@ -834,6 +838,7 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
         elif kind == "meet_the_team": slides.append(slide_meet_the_team(n, total))
         elif kind == "lets_learn": slides.append(slide_lets_learn(lesson, n, total, V))
         elif kind == "unscramble": slides.append(slide_unscramble(data, n, total, "lumi-wave-book"))
+        elif kind == "describing_time": slides.append(slide_describing_time(data, n, total))
         elif kind == "recap": slides.append(slide_recap(prev_lesson["vocab"], n, total))
         elif kind == "tpr": slides.append(slide_tpr_activity(data, n, total, "omar-wave"))
         elif kind == "quick_check":
