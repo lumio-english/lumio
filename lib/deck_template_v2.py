@@ -694,23 +694,31 @@ def slide_today_i_learned(lesson, n, total):
 
 
 def slide_describing_time(image_rel_path, n, total):
-    """Checkpoint-only slide (lessons 6/11/16/20): a single large
-    picture the teacher displays while students describe what they see
-    aloud, using vocabulary from the lessons since the last checkpoint.
-    Young-track equivalent of the teen deck's slide_describing_time --
-    same object-fit:contain choice (never cover), same reasoning: never
-    crop any of the scene, since the point of the activity is students
-    noticing and naming everything in it.
+    """Checkpoint-only slide (lessons 6/11/16/20): the picture fills the
+    entire slide edge-to-edge, with the header and instructional
+    headline overlaid directly on top using a gradient scrim (same
+    approach as the teen-track version, kept in sync deliberately --
+    full-bleed cover with a dark band only where the text sits, fading
+    out quickly so the rest of the scene stays fully visible).
     """
-    return (bg_plain() + header("Describing Time", n, total) + COLORSTRIP + f'''
-    <div style="position:absolute;left:0;top:150px;width:900px;text-align:center;
-                font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.15rem;color:#43301F">
-      Look at the picture. What do you see? Describe it in English!</div>
-    <div class="card" style="position:absolute;left:46px;top:200px;width:808px;height:520px;
-                overflow:hidden;padding:0;display:flex;align-items:center;justify-content:center;background:#fff">
-      <img src="{image_rel_path}" style="width:100%;height:100%;object-fit:contain">
+    return f'''
+    <div style="position:absolute;inset:0;background:url('{image_rel_path}') center/cover no-repeat"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg, rgba(67,48,31,.72) 0%, rgba(67,48,31,.42) 14%, rgba(67,48,31,0) 28%)"></div>
+    <div style="position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:22px 40px 0">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:30px;height:30px;border-radius:8px;background:#fff;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:3px">
+          <img src="assets/logo/lumio-logo.png" style="width:100%;height:100%;object-fit:contain"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#fff;font-size:1rem">Lumio <span style="font-weight:600;font-size:.7rem;opacity:.85">ENGLISH</span></div>
+      </div>
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#fff;font-size:.95rem;background:rgba(255,255,255,.2);
+                  border:1px solid rgba(255,255,255,.35);padding:6px 18px;border-radius:999px">Describing Time</div>
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#fff;font-size:.85rem">{n} / {total}</div>
     </div>
-    ''')
+    <div style="position:relative;z-index:5;text-align:center;margin-top:16px">
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.55)">
+        Look at the picture. What do you see? Describe it in English!</div>
+    </div>
+    '''
 
 
 def slide_unscramble(word, n, total, ch):

@@ -481,25 +481,36 @@ def slide_discussion(points, n, total, ch, theme_key="default"):
 
 
 def slide_describing_time(image_rel_path, n, total, theme_key="default"):
-    """Checkpoint-only slide (lessons 6/11/16/20): a single large picture
-    the teacher displays while students describe what they see aloud,
-    using vocabulary from the lessons since the last checkpoint. No
-    interactive checking, same deliberate choice as slide_discussion --
-    this is an open speaking activity, not a scored one. Image uses
-    object-fit:contain (never cover) so nothing in the scene gets
-    cropped off, since the whole point of the activity is students
-    noticing and naming every detail.
+    """Checkpoint-only slide (lessons 6/11/16/20): the picture fills the
+    entire slide edge-to-edge (object-fit:cover -- deliberately not
+    'contain' anymore; Eslam asked for full-slide coverage once he'd
+    seen the image quality, prioritizing an immersive full-bleed look
+    over the earlier no-crop caution, and these images are dense enough
+    that a modest edge crop from a 3:2 or similar source onto 16:9
+    loses little that matters), with the header and instructional
+    headline overlaid directly on the image using a gradient scrim
+    that's only opaque where the text actually sits (~200px band) and
+    fades to fully transparent quickly after, so the rest of the scene
+    stays undimmed for the description activity itself.
     """
-    return (bg_theme(theme_key) + header_themed("Describing Time", n, total, theme_key) + f'''
-    <div style="position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;margin-top:22px">
-      <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.15rem;color:{INK};margin-bottom:14px;text-align:center">
-        Look at the picture. What do you see? Describe it in English!</div>
-      <div style="width:1220px;height:620px;border-radius:16px;overflow:hidden;background:{CARD_BG};
-                  box-shadow:0 18px 40px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center">
-        <img src="{image_rel_path}" style="width:100%;height:100%;object-fit:contain">
+    return f'''
+    <div style="position:absolute;inset:0;background:url('{image_rel_path}') center/cover no-repeat"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg, rgba(20,12,40,.75) 0%, rgba(20,12,40,.45) 14%, rgba(20,12,40,0) 28%)"></div>
+    <div style="position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:22px 40px 0">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:30px;height:30px;border-radius:8px;background:#fff;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:3px">
+          <img src="assets/logo/lumio-logo.png" style="width:100%;height:100%;object-fit:contain"></div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#fff;font-size:.85rem;letter-spacing:.5px">LUMIO ENGLISH</div>
       </div>
+      <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#fff;font-size:.95rem;background:rgba(255,255,255,.16);
+                  border:1px solid rgba(255,255,255,.32);padding:6px 18px;border-radius:8px">Describing Time</div>
+      <div style="font-family:'Nunito',sans-serif;font-weight:800;color:#fff;font-size:.85rem">{n} / {total}</div>
     </div>
-    ''')
+    <div style="position:relative;z-index:5;text-align:center;margin-top:16px">
+      <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.3rem;color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.6)">
+        Look at the picture. What do you see? Describe it in English!</div>
+    </div>
+    '''
 
 
 def slide_grammar_recap(topics, n, total, ch, theme_key="default"):
