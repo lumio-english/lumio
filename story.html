@@ -14,6 +14,11 @@
   #topbar .brand { color:#fff; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1.1rem; }
   #exitBtn { background:rgba(255,255,255,.15); color:#fff; border:none; border-radius:999px; padding:8px 18px;
     font-weight:800; font-size:.85rem; cursor:pointer; }
+  #toggleTextBtn { background:rgba(255,255,255,.15); color:#fff; border:none; border-radius:999px; padding:8px 18px;
+    font-weight:800; font-size:.85rem; cursor:pointer; margin-right:10px; display:flex; align-items:center; gap:6px; }
+  #toggleTextBtn:hover, #exitBtn:hover { background:rgba(255,255,255,.26); }
+  .caption { transition:opacity .25s ease, transform .25s ease; }
+  .caption.text-hidden { opacity:0; transform:translateY(16px); pointer-events:none; }
   #stageWrap { position:absolute; top:56px; left:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center; }
   #stage { width:1600px; height:900px; position:relative; background:#FFF3D6; transform-origin: center center; overflow:hidden;
     border-radius:12px; box-shadow:0 30px 70px rgba(0,0,0,.4); }
@@ -74,7 +79,10 @@
 
 <div id="topbar">
   <div class="brand">📖 Lumi's Magic Map</div>
-  <button id="exitBtn" onclick="location.href='student.html'">✕ Exit Story</button>
+  <div style="display:flex;align-items:center">
+    <button id="toggleTextBtn" onclick="toggleText()">🙈 Hide text</button>
+    <button id="exitBtn" onclick="location.href='student.html'">✕ Exit Story</button>
+  </div>
 </div>
 
 <div id="stageWrap">
@@ -182,6 +190,17 @@ function startPart(part) {
   };
 }
 
+let textHidden = false;
+function applyTextVisibility() {
+  const cap = document.querySelector(".caption");
+  if (cap) cap.classList.toggle("text-hidden", textHidden);
+}
+function toggleText() {
+  textHidden = !textHidden;
+  document.getElementById("toggleTextBtn").innerHTML = textHidden ? "&#128064; Show text" : "&#128584; Hide text";
+  applyTextVisibility();
+}
+
 function loadPage(partId, pageNum) {
   fetch(`story-content/${storyLevel}/part${partId}-page${pageNum}.html`)
     .then(r => r.text())
@@ -189,6 +208,7 @@ function loadPage(partId, pageNum) {
       document.getElementById("stageContent").innerHTML = html;
       document.getElementById("prevBtn").disabled = pageNum === 1;
       if (storyLevel === "pre-a" && partId === 1 && pageNum === 3) setupColorGame();
+      applyTextVisibility();
     });
 }
 
