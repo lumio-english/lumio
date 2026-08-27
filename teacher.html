@@ -485,6 +485,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H14l5 5v11.5A1.5 1.5 0 0 1 17.5 21h-12A1.5 1.5 0 0 1 4 19.5v-15Z"/><path d="M14 3v5h5"/></svg>
       Materials
     </button>
+    <button class="td-navitem" data-view="manuals">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M9 7h7"/><path d="M9 11h7"/></svg>
+      Levels Manuals
+    </button>
     <button class="td-navitem" data-view="story">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
       Story
@@ -701,6 +705,14 @@
         </div>
       </div>
       <div class="td-mat-grid" id="matGrid"></div>
+    </div>
+  </div>
+
+  <div id="viewManuals">
+    <div class="td-panel">
+      <div class="td-panel-head"><h2>Level Manuals</h2><span class="td-badge teal" style="margin-left:8px">8 documents</span></div>
+      <p class="sub">A complete, parent-friendly guide to the whole curriculum, plus a detailed manual for each level covering every lesson, its vocabulary, and its bonus game. Great for sharing with parents or new teachers.</p>
+      <div class="td-mat-grid" id="manualsGrid"></div>
     </div>
   </div>
 
@@ -2461,8 +2473,34 @@
   renderStoryGrid("storyPartsGridL2", STORY_PARTS_L2, "level2");
   renderStoryGrid("storyPartsGridL3", STORY_PARTS_L3, "level3");
 
+  // ---------- level manuals ----------
+  const MANUALS = [
+    { badge: "ALL", name: "The Complete Curriculum Guide", desc: "The full roadmap — every level, how learning works, the English Hub, and more.", file: "Lumio_English_Curriculum_Guide.pdf" },
+    { badge: "Pre-A", name: "Pre-A · First Words", desc: "Ages 4-6 · 20 lessons, lesson by lesson, plus this level's bonus game.", file: "Lumio_English_Pre-A_First_Words_Manual.pdf" },
+    { badge: "L1", name: "Level 1 · About Me", desc: "Ages 6-8 · 20 lessons, lesson by lesson, plus this level's bonus game.", file: "Lumio_English_Level1_About_Me_Manual.pdf" },
+    { badge: "L2", name: "Level 2 · My World", desc: "Ages 8-10 · 20 lessons, lesson by lesson, plus this level's bonus game.", file: "Lumio_English_Level2_My_World_Manual.pdf" },
+    { badge: "L3", name: "Level 3 · Everyday Life", desc: "Ages 10-12 · 20 lessons, lesson by lesson, plus this level's bonus game.", file: "Lumio_English_Level3_Everyday_Life_Manual.pdf" },
+    { badge: "L4", name: "Level 4 · Smart Choices", desc: "Ages 11-13 · 20 lessons, lesson by lesson, plus this level's bonus game.", file: "Lumio_English_Level4_Smart_Choices_Manual.pdf" },
+    { badge: "L5", name: "Level 5 · Telling My Story", desc: "Ages 12-14 · 20 lessons, lesson by lesson, plus this level's bonus game.", file: "Lumio_English_Level5_Telling_My_Story_Manual.pdf" },
+    { badge: "L6", name: "Level 6 · Looking Ahead", desc: "Ages 13-15 · 20 lessons, lesson by lesson, plus this level's bonus game.", file: "Lumio_English_Level6_Looking_Ahead_Manual.pdf" },
+  ];
+  const manualsGrid = document.getElementById("manualsGrid");
+  if (manualsGrid) {
+    MANUALS.forEach(m => {
+      const row = document.createElement("div");
+      row.className = "td-mat-row";
+      row.innerHTML = `<div class="td-mat-top"><div class="num">${m.badge}</div><b>${m.name}</b></div>
+        <div style="font-size:.78rem;color:var(--td-muted);line-height:1.4;margin:-4px 0 2px">${m.desc}</div>
+        <div class="td-mat-actions">
+          <a class="act present" href="manuals/${m.file}" target="_blank">&#128065; Preview</a>
+          <a class="act pptx" href="manuals/${m.file}" download>&#8681; Download PDF</a>
+        </div>`;
+      manualsGrid.appendChild(row);
+    });
+  }
+
   // ---------- nav ----------
-  const views = { overview: "viewOverview", students: "viewStudents", team: "viewTeam", schedule: "viewSchedule", leads: "viewLeads", materials: "viewMaterials", story: "viewStory" };
+  const views = { overview: "viewOverview", students: "viewStudents", team: "viewTeam", schedule: "viewSchedule", leads: "viewLeads", materials: "viewMaterials", manuals: "viewManuals", story: "viewStory" };
   const titles = {
     overview: ["Overview", "A snapshot of how your students are doing right now."],
     students: ["Students", "Manage your roster and dig into individual progress."],
@@ -2470,6 +2508,7 @@
     schedule: ["Schedule", "Book classes and see who's up next."],
     leads: ["Leads", "People who took the placement test but aren't enrolled yet."],
     materials: ["Materials", "Present or download your Zoom-ready decks."],
+    manuals: ["Levels Manuals", "The full curriculum guide, plus a detailed manual for each level — share these with parents."],
     story: ["Story", "Preview Lumi's Magic Map — full access, no lesson requirements."]
   };
   document.querySelectorAll(".td-navitem").forEach(btn => {

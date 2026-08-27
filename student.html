@@ -680,6 +680,23 @@
     </button>
   </div>
 
+  <!-- My Level Manual -->
+  <div id="manualSection">
+  <div class="sd-section-title"><h3>📘 My Level Manual</h3></div>
+  <div class="sd-hub-banners">
+    <a class="sd-hubb" id="manualBtn" href="#" download>
+      <div class="sd-hubb-left">
+        <div class="sd-hubb-icon">📘</div>
+        <div>
+          <div class="sd-hubb-title" id="manualTitle">Your level guide</div>
+          <div class="sd-hubb-sub" id="manualSub">Every lesson in your level, explained for your family</div>
+        </div>
+      </div>
+      <span class="sd-hubb-btn">⬇ Download</span>
+    </a>
+  </div>
+  </div>
+
   <!-- Adventure path -->
   <div class="sd-section-title"><h3>Adventure map</h3></div>
   <div class="sd-path-card">
@@ -976,6 +993,25 @@
     document.getElementById("worksheetBtn").href = `worksheets/${level}/lesson${String(nextLessonNum).padStart(2,"0")}-homework.pdf`;
     if (hasWritingPractice) document.getElementById("writingBtn").href = `writing/${level}/lesson${String(nextLessonNum).padStart(2,"0")}-writing.pdf`;
     document.getElementById("flashcardsBtn").href = `flashcards/${level}/lesson${String(nextLessonNum).padStart(2,"0")}-flashcards.pdf`;
+  }
+
+  // ---------- my level manual ----------
+  const MANUAL_INFO = {
+    "pre-a": { file: "Lumio_English_Pre-A_First_Words_Manual.pdf", name: "Pre-A · First Words" },
+    "level1": { file: "Lumio_English_Level1_About_Me_Manual.pdf", name: "Level 1 · About Me" },
+    "level2": { file: "Lumio_English_Level2_My_World_Manual.pdf", name: "Level 2 · My World" },
+    "level3": { file: "Lumio_English_Level3_Everyday_Life_Manual.pdf", name: "Level 3 · Everyday Life" },
+    "level4": { file: "Lumio_English_Level4_Smart_Choices_Manual.pdf", name: "Level 4 · Smart Choices" },
+    "level5": { file: "Lumio_English_Level5_Telling_My_Story_Manual.pdf", name: "Level 5 · Telling My Story" },
+    "level6": { file: "Lumio_English_Level6_Looking_Ahead_Manual.pdf", name: "Level 6 · Looking Ahead" },
+  };
+  const manualInfo = MANUAL_INFO[level];
+  if (manualInfo) {
+    document.getElementById("manualBtn").href = `manuals/${manualInfo.file}`;
+    document.getElementById("manualTitle").textContent = manualInfo.name;
+    document.getElementById("manualSub").textContent = "Every lesson in your level, explained for your family";
+  } else {
+    document.getElementById("manualSection").style.display = "none";
   }
 
   // ---------- my schedule ----------
