@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Present — Lumio English</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/logo/favicon-32.png">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@600;700;800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/slide-styles.css">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-font-smoothing:antialiased; }
+  html,body { height:100%; background:#2B2118; font-family:'Nunito',sans-serif; overflow:hidden; }
+  #topbar { position:fixed; top:0; left:0; right:0; height:52px; background:rgba(43,33,24,.92); z-index:100;
+    display:flex; align-items:center; justify-content:space-between; padding:0 16px; }
+  #topbar .brand { color:#fff; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1rem; display:flex; align-items:center; gap:8px }
+  #topbar .actions { display:flex; gap:8px; align-items:center }
+  #topbar button, #topbar a { background:rgba(255,255,255,.14); color:#fff; border:none; border-radius:999px; padding:7px 16px;
+    font-weight:800; font-size:.8rem; cursor:pointer; text-decoration:none; }
+  #stageWrap { position:absolute; top:52px; left:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center; }
+  .slideStage { transform-origin: center center; box-shadow:0 30px 70px rgba(0,0,0,.4); border-radius:8px; overflow:hidden; }
+  #navRow { position:absolute; bottom:0; left:0; right:0; height:52px; z-index:50;
+    display:flex; align-items:center; justify-content:space-between; padding:0 26px; pointer-events:none; }
+  .navbtn { pointer-events:auto; background:rgba(255,255,255,.92); border:none; border-radius:999px; width:100px; height:40px;
+    font-weight:800; font-size:.9rem; color:#43301F; cursor:pointer; box-shadow:0 10px 20px rgba(0,0,0,.25); }
+  .navbtn:disabled { opacity:0; pointer-events:none; }
+  .navbtn.next { background:linear-gradient(135deg,#F97316,#EA580C); color:#fff; }
+  #gameLinks { position:absolute; right:26px; bottom:66px; z-index:50; display:flex; gap:8px; pointer-events:auto; }
+  #gameLinks a { background:#fff; color:#43301F; text-decoration:none; font-weight:800; font-size:.8rem; padding:9px 16px;
+    border-radius:999px; box-shadow:0 8px 16px rgba(0,0,0,.2); }
+  #loadingMsg { color:#fff; font-family:'Baloo 2',sans-serif; font-weight:700; }
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <div class="brand" id="lessonBrand">📖 Lumio English</div>
+  <div class="actions">
+    <button onclick="toggleFullscreen()">⛶ Fullscreen</button>
+    <a href="teacher.html">✕ Exit</a>
+  </div>
+</div>
+
+<div id="stageWrap">
+  <div class="slideStage" id="stage">
+    <div id="stageContent"><div id="loadingMsg">Loading…</div></div>
+    <div id="gameLinks"></div>
+    <div id="navRow">
+      <button class="navbtn" id="prevBtn">← Back</button>
+      <button class="navbtn next" id="nextBtn">Next →</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+const qs = k => new URLSearchParams(location.search).get(k);
+const level = qs("level") || "pre-a";
+// Up to 4 students per trial session -- comma-separated in the URL, e.g.
+// ?names=Youssef,Sara,Omar,Layla. Falls back to a generic group greeting
+// if none are supplied (a teacher previewing the deck, for instance).
+const studentNames = (qs("names") || "").split(",").map(s => s.trim()).filter(Boolean).slice(0, 4);
+
+let cur = 1;
+let total = 1;
+let gameStartSlide = null;
+
+document.getElementById("lessonBrand").textContent = `📖 ${level.toUpperCase()} · Trial Class`;
+
+// Trial decks are hand-built, not generated from a lesson's real vocab
+// count -- fixed slide totals per level, filled in as each level's trial
+// deck is built. See gen_trial_{level}.py for how each one is composed.
+const TRIAL_TOTALS = { "pre-a": 43 };
+total = TRIAL_TOTALS[level] || 1;
+loadSlide(1);
+
+function renderTrialNames() {
+  const el = document.getElementById("trialNames");
+  if (!el) return; // not every slide has the name-chip placeholder
+  if (!studentNames.length) { el.style.display = "none"; return; }
+  el.innerHTML = studentNames.map(name => `
+    <div style="background:#fff;border-radius:999px;padding:8px 20px;font-family:'Baloo 2',sans-serif;
+                font-weight:800;font-size:1.05rem;color:#43301F;box-shadow:0 6px 14px rgba(67,48,31,.14)">${name}</div>
+  `).join("");
+}
+
+function loadSlide(n) {
+  cur = n;
+  fetch(`slide-content/trial/${level}/slide-${String(n).padStart(2,"0")}.html`)
+    .then(r => { if (!r.ok) throw new Error("missing"); return r.text(); })
+    .then(html => {
+      const stageContent = document.getElementById("stageContent");
+      stageContent.innerHTML = html;
+      renderTrialNames();
+      delete stageContent.dataset.quizAnswered; // reset per-slide -- this container persists across slide loads
+      document.getElementById("prevBtn").disabled = n === 1;
+      document.getElementById("nextBtn").disabled = n === total;
+      document.getElementById("gameLinks").innerHTML = "";
+    })
+    .catch(() => { document.getElementById("stageContent").innerHTML = "<div id='loadingMsg' style='padding:40px'>Slide not found.</div>"; });
+}
+
+document.getElementById("prevBtn").onclick = () => { if (cur > 1) loadSlide(cur - 1); };
+document.getElementById("nextBtn").onclick = () => { if (cur < total) loadSlide(cur + 1); };
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowRight") document.getElementById("nextBtn").click();
+  if (e.key === "ArrowLeft") document.getElementById("prevBtn").click();
+});
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+}
+
+window.checkQuizAnswer = function (el, chosen, correct) {
+  const container = el.closest("#stageContent");
+  if (container.dataset.quizAnswered === "1") return;
+  container.dataset.quizAnswered = "1";
+  const isCorrect = chosen === correct;
+  el.style.background = isCorrect ? "rgba(74,222,128,.28)" : "rgba(248,113,113,.28)";
+  el.style.borderColor = isCorrect ? "#16A34A" : "#DC2626";
+  if (isCorrect) {
+    if (typeof Lumio !== 'undefined' && Lumio.confetti) Lumio.confetti(50);
+    if (typeof Lumio !== 'undefined' && Lumio.speak) Lumio.speak(correct);
+  } else {
+    const correctBtn = container.querySelector(`[data-quiz-option="${correct}"]`);
+    if (correctBtn) { correctBtn.style.background = "rgba(74,222,128,.28)"; correctBtn.style.borderColor = "#16A34A"; }
+  }
+};
+
+// ---- sentence builder drag-and-drop (global, works on whichever slide is currently shown) ----
+(function () {
+  let dragEl = null, offsetX = 0, offsetY = 0;
+  function onPointerDown(e) {
+    const tile = e.target.closest(".sb-tile");
+    if (!tile || tile.classList.contains("sb-punct")) return;
+    dragEl = tile;
+    try { dragEl.setPointerCapture(e.pointerId); } catch (err) {}
+    dragEl.classList.add("sb-dragging");
+    const r = dragEl.getBoundingClientRect();
+    offsetX = e.clientX - r.left; offsetY = e.clientY - r.top;
+  }
+  function onPointerMove(e) {
+    if (!dragEl) return;
+    dragEl.style.position = "fixed";
+    dragEl.style.zIndex = "999";
+    dragEl.style.left = (e.clientX - offsetX) + "px";
+    dragEl.style.top = (e.clientY - offsetY) + "px";
+    document.querySelectorAll(".sb-slot").forEach(s => {
+      const sr = s.getBoundingClientRect();
+      const over = e.clientX >= sr.left && e.clientX <= sr.right && e.clientY >= sr.top && e.clientY <= sr.bottom;
+      s.style.background = over ? "#FFF3D6" : "";
+    });
+  }
+  function onPointerUp(e) {
+    if (!dragEl) return;
+    dragEl.classList.remove("sb-dragging");
+    const tray = document.getElementById("sbTray");
+    let dropped = false;
+    document.querySelectorAll(".sb-slot").forEach(s => {
+      const sr = s.getBoundingClientRect();
+      const over = e.clientX >= sr.left && e.clientX <= sr.right && e.clientY >= sr.top && e.clientY <= sr.bottom;
+      s.style.background = "";
+      if (over && !dropped) {
+        if (s.firstChild && tray) tray.appendChild(s.firstChild);
+        dragEl.removeAttribute("style");
+        dragEl.className = "sb-tile";
+        s.appendChild(dragEl);
+        s.classList.add("sb-filled");
+        dropped = true;
+      }
+    });
+    if (!dropped && tray) {
+      dragEl.removeAttribute("style");
+      dragEl.className = "sb-tile";
+      tray.appendChild(dragEl);
+    }
+    document.querySelectorAll(".sb-slot").forEach(s => { if (!s.firstChild) s.classList.remove("sb-filled"); });
+    dragEl = null;
+  }
+  document.addEventListener("pointerdown", onPointerDown);
+  document.addEventListener("pointermove", onPointerMove);
+  document.addEventListener("pointerup", onPointerUp);
+})();
+
+window.checkSentenceBuilder = function () {
+  const slotsWrap = document.getElementById("sbSlots");
+  if (!slotsWrap) return;
+  const correctSentence = slotsWrap.dataset.correct;
+  const correctWords = correctSentence.replace(/[.!?]+$/, "").split(" ");
+  const slots = slotsWrap.querySelectorAll(".sb-slot");
+  const current = [...slots].map(s => s.firstChild ? s.firstChild.dataset.word : null);
+  const feedback = document.getElementById("sbFeedback");
+  if (current.includes(null)) {
+    feedback.textContent = "Fill in all the boxes first!";
+    feedback.style.color = "#C2530A";
+    return;
+  }
+  const isCorrect = current.every((w, i) => w === correctWords[i]);
+  if (isCorrect) {
+    feedback.textContent = "\u2713 Perfect! Well done!";
+    feedback.style.color = "#16A34A";
+    if (typeof Lumio !== 'undefined' && Lumio.confetti) Lumio.confetti(60);
+    if (typeof Lumio !== 'undefined' && Lumio.speak) Lumio.speak(correctSentence.replace(/[.!?]+$/, ""));
+  } else {
+    feedback.textContent = "Not quite — try again!";
+    feedback.style.color = "#DC2626";
+  }
+};
+
+function fitStage() {
+  const stage = document.getElementById("stage");
+  const wrap = document.getElementById("stageWrap");
+  const scale = Math.min(wrap.clientWidth / 1467, wrap.clientHeight / 825);
+  stage.style.width = "1467px"; stage.style.height = "825px";
+  stage.style.transform = `scale(${scale})`;
+}
+window.addEventListener("resize", fitStage);
+fitStage();
+</script>
+</body>
+</html>
