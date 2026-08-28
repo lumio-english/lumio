@@ -163,7 +163,7 @@ document.getElementById("lessonBrand").textContent = `📖 ${level.toUpperCase()
 // Trial decks are hand-built, not generated from a lesson's real vocab
 // count -- fixed slide totals per level, filled in as each level's trial
 // deck is built. See gen_trial_{level}.py for how each one is composed.
-const TRIAL_TOTALS = { "pre-a": 44 };
+const TRIAL_TOTALS = { "pre-a": 44, "level1": 39 };
 total = TRIAL_TOTALS[level] || 1;
 
 if (roster.length) {
