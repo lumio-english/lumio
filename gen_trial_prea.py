@@ -72,17 +72,17 @@ def name_chips_html():
 
 def slide_trial_welcome(n, total):
     return (bg_plain() + SPARKS + f'''
-    <div style="position:absolute;top:0;left:0;bottom:0;right:560px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 20px">
-      <div style="font-size:1.1rem;font-weight:800;color:#F97316;letter-spacing:2px;margin-bottom:14px">TRIAL CLASS</div>
-      <h1 style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2.7rem;color:#43301F;margin:0 0 6px">
+    <div style="position:absolute;top:0;left:0;bottom:0;right:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 30px">
+      <div style="font-size:1.15rem;font-weight:800;color:#F97316;letter-spacing:2px;margin-bottom:16px">TRIAL CLASS</div>
+      <h1 style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:3.2rem;color:#43301F;margin:0 0 10px">
         Welcome, friends! &#127881;
       </h1>
-      <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.25rem;color:#8A7160;margin-bottom:6px">
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.4rem;color:#8A7160;margin-bottom:22px;max-width:820px">
         Today we're going to have SO much fun with English &mdash; are you ready?
       </div>
       {name_chips_html()}
     </div>
-    ''' + char_img("lumi-hero", right=460, bottom=30, height=320))
+    ''' + char_img("lumi-hero", right=30, bottom=30, height=190))
 
 
 def slide_trial_transition(headline, emoji, n, total):
@@ -192,22 +192,22 @@ def slide_mini_celebrate(headline, n, total):
 
 def slide_trial_finish(n, total):
     return (bg_plain() + SPARKS + f'''
-    <div style="position:absolute;top:0;left:0;bottom:0;right:380px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 20px">
-      <div style="font-size:1rem;font-weight:800;color:#0D9488;letter-spacing:2px;margin-bottom:10px">GREAT JOB TODAY</div>
-      <h1 style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2.3rem;color:#43301F;margin:0 0 4px">
+    <div style="position:absolute;top:0;left:0;bottom:0;right:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 30px">
+      <div style="font-size:1.05rem;font-weight:800;color:#0D9488;letter-spacing:2px;margin-bottom:12px">GREAT JOB TODAY</div>
+      <h1 style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2.6rem;color:#43301F;margin:0 0 6px">
         You're all naturals! &#11088;
       </h1>
       {name_chips_html()}
-      <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.05rem;color:#8A7160;margin:16px 0 22px">
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.15rem;color:#8A7160;margin:20px 0 24px;max-width:820px">
         Hello, animals, colors, family, and moving in English &mdash; all in one class! This is just a taste
         of the 140 lessons and 7 levels waiting on the full Lumio adventure.
       </div>
-      <div style="background:#fff;border-radius:18px;padding:14px 26px;box-shadow:0 12px 26px rgba(67,48,31,.18);
-                  font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.95rem;color:#43301F">
+      <div style="background:#fff;border-radius:18px;padding:15px 28px;box-shadow:0 12px 26px rgba(67,48,31,.18);
+                  font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1rem;color:#43301F">
         &#128172; Ask your teacher about starting the full course today!
       </div>
     </div>
-    ''' + char_img("lumi-celebrate", right=60, bottom=20, height=250))
+    ''' + char_img("lumi-celebrate", right=30, bottom=25, height=170))
 
 
 def build():
