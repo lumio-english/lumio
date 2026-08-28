@@ -2400,6 +2400,29 @@
     const titles = await getLessonTitles(level);
     if (token !== matRenderToken) return;
     matGrid.innerHTML = "";
+
+    // Trial class -- always shown first, above the regular 20 lessons.
+    // Only Pre-A has a deck built so far; other levels show a disabled
+    // "coming soon" card rather than a dead link, matching how the rest
+    // of the app handles not-yet-built levels elsewhere.
+    const TRIAL_LEVELS = ["pre-a"];
+    const trialRow = document.createElement("div");
+    trialRow.className = "td-mat-row";
+    trialRow.style.borderColor = "#F97316";
+    trialRow.style.gridColumn = "1 / -1";
+    if (TRIAL_LEVELS.includes(level)) {
+      trialRow.innerHTML = `<div class="td-mat-top"><div class="num" style="background:#F97316;color:#fff">★</div><b>Trial Class</b></div>
+        <div style="font-size:.78rem;color:var(--td-muted);margin:-4px 0 8px">A high-energy first class for up to 4 new students, pulled from this level's real lessons.</div>
+        <div class="td-mat-actions">
+          <a class="act present" href="present-trial.html?level=${level}">▶ Start Trial Class</a>
+        </div>`;
+    } else {
+      trialRow.style.opacity = ".6";
+      trialRow.innerHTML = `<div class="td-mat-top"><div class="num" style="background:#F97316;color:#fff">★</div><b>Trial Class</b></div>
+        <div style="font-size:.78rem;color:var(--td-muted)">Coming soon for this level.</div>`;
+    }
+    matGrid.appendChild(trialRow);
+
     titles.forEach((title, i) => {
       const n = i + 1;
       if (q && !title.toLowerCase().includes(q) && !("l" + String(n).padStart(2, "0")).includes(q)) return;

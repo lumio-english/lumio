@@ -40,6 +40,22 @@
   </div>
 </div>
 
+<div id="nameSetupOverlay" style="position:fixed;inset:0;background:rgba(28,16,56,.85);z-index:200;display:flex;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:20px;padding:36px 40px;max-width:480px;width:90%;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.3)">
+    <div style="font-size:2.2rem;margin-bottom:8px">🎉</div>
+    <h2 style="font-family:'Baloo 2',sans-serif;font-weight:800;margin:0 0 6px;color:#2B2640">Who's joining today?</h2>
+    <p style="color:#6B6580;font-size:.9rem;margin:0 0 20px">Enter up to 4 student names (leave extra boxes blank if fewer are joining).</p>
+    <div id="nameInputs" style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+      <input type="text" class="trial-name-input" placeholder="Student 1 name" style="padding:12px 16px;border-radius:10px;border:2px solid #E5E1F5;font-size:1rem;font-family:inherit">
+      <input type="text" class="trial-name-input" placeholder="Student 2 name (optional)" style="padding:12px 16px;border-radius:10px;border:2px solid #E5E1F5;font-size:1rem;font-family:inherit">
+      <input type="text" class="trial-name-input" placeholder="Student 3 name (optional)" style="padding:12px 16px;border-radius:10px;border:2px solid #E5E1F5;font-size:1rem;font-family:inherit">
+      <input type="text" class="trial-name-input" placeholder="Student 4 name (optional)" style="padding:12px 16px;border-radius:10px;border:2px solid #E5E1F5;font-size:1rem;font-family:inherit">
+    </div>
+    <button id="startTrialBtn" style="background:#F97316;color:#fff;border:none;border-radius:999px;padding:14px 40px;
+            font-weight:800;font-size:1.05rem;cursor:pointer;font-family:inherit">Start Trial Class →</button>
+  </div>
+</div>
+
 <div id="stageWrap">
   <div class="slideStage" id="stage">
     <div id="stageContent"><div id="loadingMsg">Loading…</div></div>
@@ -56,9 +72,11 @@
 const qs = k => new URLSearchParams(location.search).get(k);
 const level = qs("level") || "pre-a";
 // Up to 4 students per trial session -- comma-separated in the URL, e.g.
-// ?names=Youssef,Sara,Omar,Layla. Falls back to a generic group greeting
-// if none are supplied (a teacher previewing the deck, for instance).
-const studentNames = (qs("names") || "").split(",").map(s => s.trim()).filter(Boolean).slice(0, 4);
+// ?names=Youssef,Sara,Omar,Layla. If none are supplied, the name-setup
+// overlay collects them first (the normal path: a teacher won't hand-
+// build this URL, they'll land here from the Materials tab with just
+// ?level= and fill names in on screen).
+let studentNames = (qs("names") || "").split(",").map(s => s.trim()).filter(Boolean).slice(0, 4);
 
 let cur = 1;
 let total = 1;
@@ -71,7 +89,21 @@ document.getElementById("lessonBrand").textContent = `📖 ${level.toUpperCase()
 // deck is built. See gen_trial_{level}.py for how each one is composed.
 const TRIAL_TOTALS = { "pre-a": 43 };
 total = TRIAL_TOTALS[level] || 1;
-loadSlide(1);
+
+const nameOverlay = document.getElementById("nameSetupOverlay");
+if (studentNames.length) {
+  nameOverlay.style.display = "none";
+  loadSlide(1);
+} else {
+  document.getElementById("stageWrap").style.visibility = "hidden";
+  document.getElementById("startTrialBtn").onclick = () => {
+    studentNames = Array.from(document.querySelectorAll(".trial-name-input"))
+      .map(el => el.value.trim()).filter(Boolean).slice(0, 4);
+    nameOverlay.style.display = "none";
+    document.getElementById("stageWrap").style.visibility = "visible";
+    loadSlide(1);
+  };
+}
 
 function renderTrialNames() {
   const el = document.getElementById("trialNames");
