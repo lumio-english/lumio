@@ -62,17 +62,22 @@ def load_word(level, lesson_num, en):
 
 
 def name_chips_html():
-    return '<div id="trialNames" style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:18px"></div>'
+    # Constrained + wrap so a longer roster drops to a second row instead
+    # of running under Lumi's image on the right (that overlap was a real
+    # bug Eslam caught -- Omar's chip was getting hidden behind the
+    # character). The width limit here works together with the narrower
+    # text column in slide_trial_welcome/finish below.
+    return '<div id="trialNames" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px;max-width:640px"></div>'
 
 
 def slide_trial_welcome(n, total):
     return (bg_plain() + SPARKS + f'''
-    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
+    <div style="position:absolute;top:0;left:0;bottom:0;right:560px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 20px">
       <div style="font-size:1.1rem;font-weight:800;color:#F97316;letter-spacing:2px;margin-bottom:14px">TRIAL CLASS</div>
-      <h1 style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:3rem;color:#43301F;margin:0 0 6px">
+      <h1 style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2.7rem;color:#43301F;margin:0 0 6px">
         Welcome, friends! &#127881;
       </h1>
-      <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.4rem;color:#8A7160;max-width:800px;margin-bottom:6px">
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.25rem;color:#8A7160;margin-bottom:6px">
         Today we're going to have SO much fun with English &mdash; are you ready?
       </div>
       {name_chips_html()}
@@ -111,29 +116,38 @@ def slide_team_assign(n, total):
 
 def slide_buzzer_challenge(prompt_word, n, total):
     return (bg_clean() + header("Buzzer Challenge", n, total) + COLORSTRIP + f'''
-    <div data-challenge="buzzer" style="position:absolute;inset:0;top:130px;display:flex;flex-direction:column;align-items:center">
+    <div data-challenge="buzzer" style="position:absolute;inset:0;top:120px;display:flex;flex-direction:column;align-items:center">
       <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.05rem;color:#8A7160;margin-bottom:8px;text-align:center">
         Who says it first? Tap the name of whoever answers correctly!
       </div>
-      <div style="background:#fff;border-radius:20px;padding:20px 40px;box-shadow:0 10px 24px rgba(67,48,31,.12);margin-bottom:18px;text-align:center">
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.6rem;color:#43301F">{esc(prompt_word["en"])}</div>
-        <div style="font-family:'Tajawal',sans-serif;font-weight:700;font-size:1.1rem;color:#8A7160">{esc(prompt_word["ar"])}</div>
+      <div style="background:#fff;border-radius:20px;padding:14px 34px;box-shadow:0 10px 24px rgba(67,48,31,.12);margin-bottom:16px;text-align:center">
+        <div style="width:130px;height:130px;border-radius:14px;overflow:hidden;background:#FFFCF6;border:3px solid #FFE0B8;margin:0 auto 8px">
+          <img src="assets/vocab/{slug(prompt_word["en"])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
+        </div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.4rem;color:#43301F">{esc(prompt_word["en"])}</div>
+        <div style="font-family:'Tajawal',sans-serif;font-weight:700;font-size:1rem;color:#8A7160">{esc(prompt_word["ar"])}</div>
       </div>
       <div id="pickerZone" style="display:flex;flex-wrap:wrap;justify-content:center;max-width:900px"></div>
     </div>
-    ''' + char_img("lumi-hero", right=40, bottom=20, height=150))
+    ''' + char_img("lumi-hero", right=40, bottom=20, height=140))
 
 
-def slide_team_relay(topic_label, n, total):
+def slide_team_relay(prompt_word, question_line, n, total):
     return (bg_study() + header("Team Relay!", n, total) + COLORSTRIP + f'''
-    <div data-challenge="team-relay" style="position:absolute;inset:0;top:150px;display:flex;flex-direction:column;align-items:center;text-align:center">
-      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.6rem;color:#43301F;margin-bottom:6px">{topic_label}</div>
-      <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1rem;color:#8A7160;margin-bottom:22px">
+    <div data-challenge="team-relay" style="position:absolute;inset:0;top:120px;display:flex;flex-direction:column;align-items:center;text-align:center">
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;color:#43301F;margin-bottom:10px">{question_line}</div>
+      <div style="background:#fff;border-radius:20px;padding:12px 30px;box-shadow:0 10px 24px rgba(67,48,31,.12);margin-bottom:14px">
+        <div style="width:110px;height:110px;border-radius:14px;overflow:hidden;background:#FFFCF6;border:3px solid #FFE0B8;margin:0 auto 6px">
+          <img src="assets/vocab/{slug(prompt_word["en"])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
+        </div>
+        <div style="font-family:'Tajawal',sans-serif;font-weight:700;font-size:.95rem;color:#8A7160">{esc(prompt_word["ar"])}</div>
+      </div>
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.95rem;color:#8A7160;margin-bottom:16px">
         Call on one player from each team &mdash; whoever's team answers first taps their team below!
       </div>
       <div id="teamZone" style="display:flex;gap:20px"></div>
     </div>
-    ''' + char_img("lumi-celebrate", right=40, bottom=20, height=150))
+    ''' + char_img("lumi-celebrate", right=40, bottom=20, height=130))
 
 
 def slide_copycat_challenge(action_line, n, total):
@@ -178,18 +192,18 @@ def slide_mini_celebrate(headline, n, total):
 
 def slide_trial_finish(n, total):
     return (bg_plain() + SPARKS + f'''
-    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
+    <div style="position:absolute;top:0;left:0;bottom:0;right:380px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 20px">
       <div style="font-size:1rem;font-weight:800;color:#0D9488;letter-spacing:2px;margin-bottom:10px">GREAT JOB TODAY</div>
-      <h1 style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2.6rem;color:#43301F;margin:0 0 4px">
+      <h1 style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2.3rem;color:#43301F;margin:0 0 4px">
         You're all naturals! &#11088;
       </h1>
       {name_chips_html()}
-      <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.15rem;color:#8A7160;max-width:760px;margin:16px 0 22px">
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.05rem;color:#8A7160;margin:16px 0 22px">
         Hello, animals, colors, family, and moving in English &mdash; all in one class! This is just a taste
         of the 140 lessons and 7 levels waiting on the full Lumio adventure.
       </div>
-      <div style="background:#fff;border-radius:18px;padding:16px 30px;box-shadow:0 12px 26px rgba(67,48,31,.18);
-                  font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1rem;color:#43301F">
+      <div style="background:#fff;border-radius:18px;padding:14px 26px;box-shadow:0 12px 26px rgba(67,48,31,.18);
+                  font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.95rem;color:#43301F">
         &#128172; Ask your teacher about starting the full course today!
       </div>
     </div>
@@ -213,7 +227,7 @@ def build():
 
     slides.append(slide_buzzer_challenge(animal_words[0], len(slides) + 1, TOTAL))
     slides.append(slide_buzzer_challenge(animal_words[3], len(slides) + 1, TOTAL))
-    slides.append(slide_team_relay("Which animal is this?", len(slides) + 1, TOTAL))
+    slides.append(slide_team_relay(animal_words[5], "Which animal is this?", len(slides) + 1, TOTAL))
     slides.append(slide_mini_celebrate("You're all Animal Experts!", len(slides) + 1, TOTAL))
 
     slides.append(slide_trial_transition("Let's paint with colors!", "&#127752;", len(slides) + 1, TOTAL))
@@ -227,7 +241,7 @@ def build():
     family_words = [load_word("pre-a", 10, w) for w in ["mom", "dad", "brother", "sister"]]
     for w in family_words:
         slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
-    slides.append(slide_team_relay("Who is this?", len(slides) + 1, TOTAL))
+    slides.append(slide_team_relay(family_words[0], "Who is this?", len(slides) + 1, TOTAL))
     slides.append(slide_mini_celebrate("You're a Family Friend!", len(slides) + 1, TOTAL))
 
     slides.append(slide_trial_transition("Let's move like Lumi!", "&#127939;", len(slides) + 1, TOTAL))
