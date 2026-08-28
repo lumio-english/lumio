@@ -49,7 +49,7 @@ from deck_template_v2 import (
     slide_vocab, slide_quick_check, slide_tpr_activity, slide_teacher_game, esc, slug,
 )
 
-TOTAL = 43
+TOTAL = 44
 
 
 def load_word(level, lesson_num, en):
@@ -89,6 +89,84 @@ def slide_trial_transition(headline, emoji, n, total):
     ''' + char_img("lumi-celebrate", bottom=40, height=290))
 
 
+def slide_team_assign(n, total):
+    return (bg_study() + header("Let's Make Teams!", n, total) + COLORSTRIP + f'''
+    <div data-challenge="team-assign" style="position:absolute;inset:0;top:150px;display:flex;flex-direction:column;align-items:center">
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.1rem;color:#8A7160;margin-bottom:16px;text-align:center">
+        Tap any name to move it to the other team!
+      </div>
+      <div style="display:flex;gap:40px;width:100%;justify-content:center">
+        <div style="background:#fff;border-radius:18px;padding:16px 22px;min-width:280px;box-shadow:0 8px 20px rgba(67,48,31,.1)">
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#F97316;font-size:1.2rem;margin-bottom:10px;text-align:center">&#9728;&#65039; Team Sun</div>
+          <div id="teamAList" style="display:flex;flex-wrap:wrap;justify-content:center"></div>
+        </div>
+        <div style="background:#fff;border-radius:18px;padding:16px 22px;min-width:280px;box-shadow:0 8px 20px rgba(67,48,31,.1)">
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#8B5CF6;font-size:1.2rem;margin-bottom:10px;text-align:center">&#11088; Team Star</div>
+          <div id="teamBList" style="display:flex;flex-wrap:wrap;justify-content:center"></div>
+        </div>
+      </div>
+    </div>
+    ''' + char_img("lumi-celebrate", right=40, bottom=20, height=150))
+
+
+def slide_buzzer_challenge(prompt_word, n, total):
+    return (bg_clean() + header("Buzzer Challenge", n, total) + COLORSTRIP + f'''
+    <div data-challenge="buzzer" style="position:absolute;inset:0;top:130px;display:flex;flex-direction:column;align-items:center">
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.05rem;color:#8A7160;margin-bottom:8px;text-align:center">
+        Who says it first? Tap the name of whoever answers correctly!
+      </div>
+      <div style="background:#fff;border-radius:20px;padding:20px 40px;box-shadow:0 10px 24px rgba(67,48,31,.12);margin-bottom:18px;text-align:center">
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.6rem;color:#43301F">{esc(prompt_word["en"])}</div>
+        <div style="font-family:'Tajawal',sans-serif;font-weight:700;font-size:1.1rem;color:#8A7160">{esc(prompt_word["ar"])}</div>
+      </div>
+      <div id="pickerZone" style="display:flex;flex-wrap:wrap;justify-content:center;max-width:900px"></div>
+    </div>
+    ''' + char_img("lumi-hero", right=40, bottom=20, height=150))
+
+
+def slide_team_relay(topic_label, n, total):
+    return (bg_study() + header("Team Relay!", n, total) + COLORSTRIP + f'''
+    <div data-challenge="team-relay" style="position:absolute;inset:0;top:150px;display:flex;flex-direction:column;align-items:center;text-align:center">
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.6rem;color:#43301F;margin-bottom:6px">{topic_label}</div>
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1rem;color:#8A7160;margin-bottom:22px">
+        Call on one player from each team &mdash; whoever's team answers first taps their team below!
+      </div>
+      <div id="teamZone" style="display:flex;gap:20px"></div>
+    </div>
+    ''' + char_img("lumi-celebrate", right=40, bottom=20, height=150))
+
+
+def slide_copycat_challenge(action_line, n, total):
+    return (bg_clean() + header("Copy-Cat Challenge", n, total) + COLORSTRIP + f'''
+    <div data-challenge="copycat" style="position:absolute;inset:0;top:130px;display:flex;flex-direction:column;align-items:center;text-align:center">
+      <div style="font-size:2.6rem;margin-bottom:10px">&#127942;</div>
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;color:#43301F;max-width:800px;margin-bottom:8px">{action_line}</div>
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1rem;color:#8A7160;margin-bottom:18px">Pick two students to go head-to-head &mdash; tap whoever did it best!</div>
+      <div id="pickerZone" style="display:flex;flex-wrap:wrap;justify-content:center;max-width:900px"></div>
+    </div>
+    ''' + char_img("lumi-hero", right=40, bottom=20, height=150))
+
+
+def slide_scoreboard(headline, n, total):
+    return (bg_plain() + SPARKS + f'''
+    <div data-challenge="scoreboard" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.6rem;color:#43301F;margin-bottom:24px">{headline}</div>
+      <div id="scoreboardBig"></div>
+    </div>
+    ''')
+
+
+def slide_finale(n, total):
+    return (bg_clean() + header("Class Champions!", n, total) + COLORSTRIP + f'''
+    <div data-challenge="finale" style="position:absolute;inset:0;top:120px;display:flex;flex-direction:column;align-items:center">
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1rem;color:#8A7160;margin-bottom:14px;text-align:center">
+        Everyone did great today! Pick a name for each shout-out:
+      </div>
+      <div id="finaleZone" style="width:560px"></div>
+    </div>
+    ''' + char_img("lumi-celebrate", right=40, bottom=10, height=140))
+
+
 def slide_mini_celebrate(headline, n, total):
     return (bg_clean() + header("Trial Class", n, total) + COLORSTRIP + SPARKS + f'''
     <div style="position:absolute;inset:0;top:40px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
@@ -122,6 +200,7 @@ def build():
     slides = []
 
     slides.append(slide_trial_welcome(1, TOTAL))
+    slides.append(slide_team_assign(len(slides) + 1, TOTAL))
 
     for w_en in ["hello", "hi", "good morning", "good night", "goodbye", "thank you"]:
         slides.append(slide_vocab(load_word("pre-a", 1, w_en), 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
@@ -132,41 +211,42 @@ def build():
     for w in animal_words:
         slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
 
-    slides.append(slide_quick_check(animal_words[0], animal_words[1:3], 0, 1, len(slides) + 1, TOTAL, seed=1, tier="preA"))
-    slides.append(slide_quick_check(animal_words[3], [animal_words[4], animal_words[0]], 0, 1, len(slides) + 1, TOTAL, seed=2, tier="preA"))
-    slides.append(slide_teacher_game(animal_words, len(slides) + 1, TOTAL, "lumi-hero", tier="preA", mode="group"))
+    slides.append(slide_buzzer_challenge(animal_words[0], len(slides) + 1, TOTAL))
+    slides.append(slide_buzzer_challenge(animal_words[3], len(slides) + 1, TOTAL))
+    slides.append(slide_team_relay("Which animal is this?", len(slides) + 1, TOTAL))
     slides.append(slide_mini_celebrate("You're all Animal Experts!", len(slides) + 1, TOTAL))
 
     slides.append(slide_trial_transition("Let's paint with colors!", "&#127752;", len(slides) + 1, TOTAL))
     color_words = [load_word("pre-a", 8, w) for w in ["red", "blue", "yellow", "green"]]
     for w in color_words:
         slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
-    slides.append(slide_quick_check(color_words[0], color_words[1:3], 0, 1, len(slides) + 1, TOTAL, seed=3, tier="preA"))
-    slides.append(slide_mini_celebrate("You're all Color Champions!", len(slides) + 1, TOTAL))
+    slides.append(slide_buzzer_challenge(color_words[1], len(slides) + 1, TOTAL))
+    slides.append(slide_scoreboard("Halfway there! Here's the score so far...", len(slides) + 1, TOTAL))
 
     slides.append(slide_trial_transition("Let's meet my family!", "&#128106;", len(slides) + 1, TOTAL))
     family_words = [load_word("pre-a", 10, w) for w in ["mom", "dad", "brother", "sister"]]
     for w in family_words:
         slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
-    slides.append(slide_teacher_game(family_words, len(slides) + 1, TOTAL, "lumi-hero", tier="preA", mode="student"))
+    slides.append(slide_team_relay("Who is this?", len(slides) + 1, TOTAL))
     slides.append(slide_mini_celebrate("You're a Family Friend!", len(slides) + 1, TOTAL))
 
     slides.append(slide_trial_transition("Let's move like Lumi!", "&#127939;", len(slides) + 1, TOTAL))
-    tpr_lines = {
-        "run": "Everyone stand up and run in place! Say \u201cRun!\u201d &#127939;",
-        "jump": "Stand up and jump like a bunny! Say \u201cJump!\u201d &#128007;",
+    unison_tpr = {
         "sit": "Sit down quickly! Say \u201cSit!\u201d &#128994;",
         "stand": "Now stand back up! Say \u201cStand!\u201d &#128993;",
-        "clap": "Clap your hands and say \u201cClap!\u201d &#128079;",
         "sing": "Everyone sing \u201cLa la la!\u201d together! &#127925;",
     }
-    for w_en, line in tpr_lines.items():
+    for w_en, line in unison_tpr.items():
         slides.append(slide_tpr_activity(line, len(slides) + 1, TOTAL, "lumi-hero"))
+
+    slides.append(slide_copycat_challenge("Who can run in place the best? Ready, go!", len(slides) + 1, TOTAL))
+    slides.append(slide_copycat_challenge("Who can jump like a bunny the highest?", len(slides) + 1, TOTAL))
 
     for w_en in ["song", "playground"]:
         slides.append(slide_vocab(load_word("pre-a", 18, w_en), 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
 
-    slides.append(slide_mini_celebrate("You're all Super Movers!", len(slides) + 1, TOTAL))
+    slides.append(slide_scoreboard("And the final score is...", len(slides) + 1, TOTAL))
+    slides.append(slide_finale(len(slides) + 1, TOTAL))
     slides.append(slide_trial_finish(len(slides) + 1, TOTAL))
 
     assert len(slides) == TOTAL, f"expected {TOTAL} slides, built {len(slides)}"

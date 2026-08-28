@@ -34,25 +34,29 @@
 
 <div id="topbar">
   <div class="brand" id="lessonBrand">📖 Lumio English</div>
+  <div id="scoreboardChip" style="display:none;align-items:center;gap:10px;background:rgba(255,255,255,.1);border-radius:999px;padding:6px 14px">
+  </div>
   <div class="actions">
+    <button id="manageRosterBtn">👥 <span id="rosterCountLabel">0</span> students</button>
     <button onclick="toggleFullscreen()">⛶ Fullscreen</button>
     <a href="teacher.html">✕ Exit</a>
   </div>
 </div>
 
 <div id="nameSetupOverlay" style="position:fixed;inset:0;background:rgba(28,16,56,.85);z-index:200;display:flex;align-items:center;justify-content:center">
-  <div style="background:#fff;border-radius:20px;padding:36px 40px;max-width:480px;width:90%;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.3)">
+  <div style="background:#fff;border-radius:20px;padding:32px 36px;max-width:480px;width:90%;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.3);max-height:88vh;overflow-y:auto">
     <div style="font-size:2.2rem;margin-bottom:8px">🎉</div>
-    <h2 style="font-family:'Baloo 2',sans-serif;font-weight:800;margin:0 0 6px;color:#2B2640">Who's joining today?</h2>
-    <p style="color:#6B6580;font-size:.9rem;margin:0 0 20px">Enter up to 4 student names (leave extra boxes blank if fewer are joining).</p>
-    <div id="nameInputs" style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
-      <input type="text" class="trial-name-input" placeholder="Student 1 name" style="padding:12px 16px;border-radius:10px;border:2px solid #E5E1F5;font-size:1rem;font-family:inherit">
-      <input type="text" class="trial-name-input" placeholder="Student 2 name (optional)" style="padding:12px 16px;border-radius:10px;border:2px solid #E5E1F5;font-size:1rem;font-family:inherit">
-      <input type="text" class="trial-name-input" placeholder="Student 3 name (optional)" style="padding:12px 16px;border-radius:10px;border:2px solid #E5E1F5;font-size:1rem;font-family:inherit">
-      <input type="text" class="trial-name-input" placeholder="Student 4 name (optional)" style="padding:12px 16px;border-radius:10px;border:2px solid #E5E1F5;font-size:1rem;font-family:inherit">
+    <h2 style="font-family:'Baloo 2',sans-serif;font-weight:800;margin:0 0 6px;color:#2B2640">Who's in class today?</h2>
+    <p style="color:#6B6580;font-size:.87rem;margin:0 0 16px">Add every student as they join &mdash; there's no limit. You can add more later too.</p>
+    <div id="rosterList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;text-align:left"></div>
+    <div style="display:flex;gap:8px;margin-bottom:20px">
+      <input type="text" id="rosterNameInput" placeholder="Type a student's name…"
+             style="flex:1;padding:12px 16px;border-radius:10px;border:2px solid #E5E1F5;font-size:1rem;font-family:inherit">
+      <button id="rosterAddBtn" style="background:#8B5CF6;color:#fff;border:none;border-radius:10px;padding:0 20px;
+              font-weight:800;font-size:1.3rem;cursor:pointer;font-family:inherit">+</button>
     </div>
     <button id="startTrialBtn" style="background:#F97316;color:#fff;border:none;border-radius:999px;padding:14px 40px;
-            font-weight:800;font-size:1.05rem;cursor:pointer;font-family:inherit">Start Trial Class →</button>
+            font-weight:800;font-size:1.05rem;cursor:pointer;font-family:inherit;width:100%">Start Trial Class →</button>
   </div>
 </div>
 
@@ -67,52 +71,229 @@
   </div>
 </div>
 
+<!-- Manage-roster modal: reachable any time mid-class from the topbar,
+     for latecomers -- Zoom trial classes routinely have students join
+     a few minutes late. -->
+<div id="rosterModal" style="display:none;position:fixed;inset:0;background:rgba(28,16,56,.85);z-index:200;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:20px;padding:28px 32px;max-width:440px;width:90%;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.3);max-height:80vh;overflow-y:auto">
+    <h2 style="font-family:'Baloo 2',sans-serif;font-weight:800;margin:0 0 14px;color:#2B2640">Class Roster</h2>
+    <div id="rosterModalList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;text-align:left"></div>
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <input type="text" id="rosterModalInput" placeholder="Add a latecomer…"
+             style="flex:1;padding:10px 14px;border-radius:10px;border:2px solid #E5E1F5;font-size:.95rem;font-family:inherit">
+      <button id="rosterModalAddBtn" style="background:#8B5CF6;color:#fff;border:none;border-radius:10px;padding:0 18px;
+              font-weight:800;font-size:1.2rem;cursor:pointer;font-family:inherit">+</button>
+    </div>
+    <button id="rosterModalCloseBtn" style="background:#F97316;color:#fff;border:none;border-radius:999px;padding:11px 30px;
+            font-weight:800;font-size:.95rem;cursor:pointer;font-family:inherit">Done</button>
+  </div>
+</div>
+
 <script src="js/app.js"></script>
 <script>
 const qs = k => new URLSearchParams(location.search).get(k);
 const level = qs("level") || "pre-a";
-// Up to 4 students per trial session -- comma-separated in the URL, e.g.
-// ?names=Youssef,Sara,Omar,Layla. If none are supplied, the name-setup
-// overlay collects them first (the normal path: a teacher won't hand-
-// build this URL, they'll land here from the Materials tab with just
-// ?level= and fill names in on screen).
-let studentNames = (qs("names") || "").split(",").map(s => s.trim()).filter(Boolean).slice(0, 4);
+
+// ---------- roster (no fixed limit -- add/remove any time, including
+// mid-class for latecomers, which is routine on a live Zoom trial) ----------
+let roster = []; // [{name, team: null|"A"|"B"}]
+const seedNames = (qs("names") || "").split(",").map(s => s.trim()).filter(Boolean);
+seedNames.forEach(n => roster.push({ name: n, team: null }));
+
+const TEAMS = {
+  A: { name: "Team Sun", emoji: "☀️", color: "#F97316" },
+  B: { name: "Team Star", emoji: "⭐", color: "#8B5CF6" },
+};
+let scores = { A: 0, B: 0 };
+let shoutouts = {}; // name -> count of points individually credited, for the finale
+
+function addRosterName(list, name) {
+  if (!name) return;
+  if (list.some(s => s.name.toLowerCase() === name.toLowerCase())) return;
+  list.push({ name, team: null });
+}
+function removeRosterName(list, name) {
+  const i = list.findIndex(s => s.name === name);
+  if (i > -1) list.splice(i, 1);
+}
+function autoAssignTeams() {
+  // Anyone not yet on a team gets split evenly, alternating, keeping
+  // whatever manual assignments a teacher already made intact.
+  let ai = roster.filter(s => s.team === "A").length;
+  let bi = roster.filter(s => s.team === "B").length;
+  roster.forEach(s => {
+    if (s.team) return;
+    if (ai <= bi) { s.team = "A"; ai++; } else { s.team = "B"; bi++; }
+  });
+}
+
+function renderRosterEditor(container, onChange) {
+  container.innerHTML = roster.map(s => `
+    <div style="display:flex;align-items:center;justify-content:space-between;background:#FAF9FC;border-radius:10px;padding:8px 12px">
+      <span style="font-weight:700;color:#2B2640">${s.name}</span>
+      <button data-remove="${s.name}" style="background:none;border:none;color:#C4433D;font-size:1.1rem;cursor:pointer;font-weight:800">✕</button>
+    </div>`).join("") || `<div style="color:#9385C4;font-size:.85rem;padding:8px 0">No students added yet.</div>`;
+  container.querySelectorAll("[data-remove]").forEach(btn => {
+    btn.onclick = () => { removeRosterName(roster, btn.dataset.remove); onChange(); };
+  });
+}
+
+function refreshRosterChip() {
+  document.getElementById("rosterCountLabel").textContent = roster.length;
+}
+
+// ---------- setup overlay ----------
+const nameOverlay = document.getElementById("nameSetupOverlay");
+const rosterListEl = document.getElementById("rosterList");
+const rosterNameInput = document.getElementById("rosterNameInput");
+function refreshSetupList() { renderRosterEditor(rosterListEl, refreshSetupList); refreshRosterChip(); }
+refreshSetupList();
+document.getElementById("rosterAddBtn").onclick = () => {
+  addRosterName(roster, rosterNameInput.value.trim());
+  rosterNameInput.value = "";
+  refreshSetupList();
+};
+rosterNameInput.addEventListener("keydown", e => { if (e.key === "Enter") document.getElementById("rosterAddBtn").click(); });
 
 let cur = 1;
 let total = 1;
-let gameStartSlide = null;
 
 document.getElementById("lessonBrand").textContent = `📖 ${level.toUpperCase()} · Trial Class`;
 
 // Trial decks are hand-built, not generated from a lesson's real vocab
 // count -- fixed slide totals per level, filled in as each level's trial
 // deck is built. See gen_trial_{level}.py for how each one is composed.
-const TRIAL_TOTALS = { "pre-a": 43 };
+const TRIAL_TOTALS = { "pre-a": 44 };
 total = TRIAL_TOTALS[level] || 1;
 
-const nameOverlay = document.getElementById("nameSetupOverlay");
-if (studentNames.length) {
+if (roster.length) {
   nameOverlay.style.display = "none";
   loadSlide(1);
 } else {
   document.getElementById("stageWrap").style.visibility = "hidden";
-  document.getElementById("startTrialBtn").onclick = () => {
-    studentNames = Array.from(document.querySelectorAll(".trial-name-input"))
-      .map(el => el.value.trim()).filter(Boolean).slice(0, 4);
-    nameOverlay.style.display = "none";
-    document.getElementById("stageWrap").style.visibility = "visible";
-    loadSlide(1);
-  };
+}
+document.getElementById("startTrialBtn").onclick = () => {
+  if (!roster.length) { rosterNameInput.focus(); return; }
+  nameOverlay.style.display = "none";
+  document.getElementById("stageWrap").style.visibility = "visible";
+  loadSlide(1);
+};
+
+// ---------- mid-class roster modal (latecomers) ----------
+const rosterModal = document.getElementById("rosterModal");
+const rosterModalList = document.getElementById("rosterModalList");
+const rosterModalInput = document.getElementById("rosterModalInput");
+function refreshModalList() { renderRosterEditor(rosterModalList, refreshModalList); refreshRosterChip(); renderChallengeUI(); }
+document.getElementById("manageRosterBtn").onclick = () => { refreshModalList(); rosterModal.style.display = "flex"; };
+document.getElementById("rosterModalCloseBtn").onclick = () => { rosterModal.style.display = "none"; };
+document.getElementById("rosterModalAddBtn").onclick = () => {
+  const n = rosterModalInput.value.trim();
+  if (n) { addRosterName(roster, n); autoAssignTeams(); rosterModalInput.value = ""; refreshModalList(); }
+};
+rosterModalInput.addEventListener("keydown", e => { if (e.key === "Enter") document.getElementById("rosterModalAddBtn").click(); });
+
+// ---------- scoreboard chip (topbar, visible on every slide once teams exist) ----------
+function refreshScoreboardChip() {
+  const chip = document.getElementById("scoreboardChip");
+  const anyTeamed = roster.some(s => s.team);
+  if (!anyTeamed) { chip.style.display = "none"; return; }
+  chip.style.display = "flex";
+  chip.innerHTML = `
+    <span style="color:${TEAMS.A.color};font-weight:800;font-size:.85rem">${TEAMS.A.emoji} ${TEAMS.A.name} ${scores.A}</span>
+    <span style="color:rgba(255,255,255,.4)">·</span>
+    <span style="color:${TEAMS.B.color};font-weight:800;font-size:.85rem">${TEAMS.B.emoji} ${TEAMS.B.name} ${scores.B}</span>`;
 }
 
-function renderTrialNames() {
-  const el = document.getElementById("trialNames");
-  if (!el) return; // not every slide has the name-chip placeholder
-  if (!studentNames.length) { el.style.display = "none"; return; }
-  el.innerHTML = studentNames.map(name => `
-    <div style="background:#fff;border-radius:999px;padding:8px 20px;font-family:'Baloo 2',sans-serif;
-                font-weight:800;font-size:1.05rem;color:#43301F;box-shadow:0 6px 14px rgba(67,48,31,.14)">${name}</div>
-  `).join("");
+function awardPoint(team, studentName) {
+  scores[team] = (scores[team] || 0) + 1;
+  if (studentName) shoutouts[studentName] = (shoutouts[studentName] || 0) + 1;
+  refreshScoreboardChip();
+  renderChallengeUI(); // refresh in place so the score bump is visible immediately
+}
+
+// ---------- challenge UI: renders into whatever placeholder containers
+// the current slide's own HTML provides (data-challenge attribute marks
+// which kind), reading live from roster/teams/scores -- this is why
+// challenge slides are templates, not pre-baked with specific names,
+// since nobody knows who's actually in the room until class starts. ----------
+function pillButton(label, onClick, color) {
+  const b = document.createElement("button");
+  b.textContent = label;
+  b.onclick = onClick;
+  b.style.cssText = `background:${color};color:#fff;border:none;border-radius:999px;padding:10px 20px;
+    font-weight:800;font-size:.95rem;cursor:pointer;font-family:'Baloo 2',sans-serif;margin:4px;box-shadow:0 4px 10px rgba(0,0,0,.15)`;
+  return b;
+}
+
+function renderChallengeUI() {
+  const root = document.querySelector("[data-challenge]");
+  if (!root) return;
+  const kind = root.dataset.challenge;
+
+  if (kind === "team-assign") {
+    autoAssignTeams();
+    const colA = root.querySelector("#teamAList"), colB = root.querySelector("#teamBList");
+    if (!colA) return;
+    [["A", colA], ["B", colB]].forEach(([team, col]) => {
+      col.innerHTML = "";
+      roster.filter(s => s.team === team).forEach(s => {
+        col.appendChild(pillButton(s.name + " ⇄", () => { s.team = team === "A" ? "B" : "A"; renderChallengeUI(); }, TEAMS[team].color));
+      });
+    });
+    refreshScoreboardChip();
+  }
+
+  if (kind === "buzzer" || kind === "copycat") {
+    const zone = root.querySelector("#pickerZone");
+    if (!zone) return;
+    zone.innerHTML = "";
+    if (!roster.length) { zone.innerHTML = `<div style="color:#9385C4">Add students from the 👥 button above.</div>`; return; }
+    roster.forEach(s => {
+      const color = s.team ? TEAMS[s.team].color : "#9385C4";
+      zone.appendChild(pillButton(s.name, () => awardPoint(s.team || "A", s.name), color));
+    });
+  }
+
+  if (kind === "team-relay") {
+    const zone = root.querySelector("#teamZone");
+    if (!zone) return;
+    zone.innerHTML = "";
+    zone.appendChild(pillButton(`${TEAMS.A.emoji} ${TEAMS.A.name}`, () => awardPoint("A"), TEAMS.A.color));
+    zone.appendChild(pillButton(`${TEAMS.B.emoji} ${TEAMS.B.name}`, () => awardPoint("B"), TEAMS.B.color));
+  }
+
+  if (kind === "scoreboard") {
+    const el = root.querySelector("#scoreboardBig");
+    if (!el) return;
+    const leader = scores.A === scores.B ? null : (scores.A > scores.B ? "A" : "B");
+    el.innerHTML = `
+      <div style="display:flex;gap:40px;justify-content:center;align-items:flex-end">
+        <div style="text-align:center;${leader === "A" ? "transform:scale(1.08)" : ""}">
+          <div style="font-size:3rem">${TEAMS.A.emoji}</div>
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.2rem;color:${TEAMS.A.color}">${TEAMS.A.name}</div>
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2.6rem;color:#2B2640">${scores.A}</div>
+        </div>
+        <div style="text-align:center;${leader === "B" ? "transform:scale(1.08)" : ""}">
+          <div style="font-size:3rem">${TEAMS.B.emoji}</div>
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.2rem;color:${TEAMS.B.color}">${TEAMS.B.name}</div>
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2.6rem;color:#2B2640">${scores.B}</div>
+        </div>
+      </div>`;
+  }
+
+  if (kind === "finale") {
+    const zone = root.querySelector("#finaleZone");
+    if (!zone) return;
+    const categories = ["⚡ Fastest Fingers", "🤝 Best Team Player", "📣 Loudest Cheer", "🌟 Super Star"];
+    zone.innerHTML = categories.map((cat, i) => `
+      <div style="background:#fff;border-radius:14px;padding:14px 18px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 10px rgba(0,0,0,.08)">
+        <span style="font-weight:800;color:#2B2640">${cat}</span>
+        <select data-finale-idx="${i}" style="border-radius:8px;border:2px solid #E5E1F5;padding:6px 10px;font-family:inherit;font-weight:700">
+          <option value="">Pick a student…</option>
+          ${roster.map(s => `<option value="${s.name}">${s.name}</option>`).join("")}
+        </select>
+      </div>`).join("");
+  }
 }
 
 function loadSlide(n) {
@@ -122,13 +303,25 @@ function loadSlide(n) {
     .then(html => {
       const stageContent = document.getElementById("stageContent");
       stageContent.innerHTML = html;
-      renderTrialNames();
       delete stageContent.dataset.quizAnswered; // reset per-slide -- this container persists across slide loads
       document.getElementById("prevBtn").disabled = n === 1;
       document.getElementById("nextBtn").disabled = n === total;
       document.getElementById("gameLinks").innerHTML = "";
+      renderTrialNames();
+      renderChallengeUI();
+      refreshScoreboardChip();
     })
     .catch(() => { document.getElementById("stageContent").innerHTML = "<div id='loadingMsg' style='padding:40px'>Slide not found.</div>"; });
+}
+
+function renderTrialNames() {
+  const el = document.getElementById("trialNames");
+  if (!el) return; // not every slide has the name-chip placeholder
+  if (!roster.length) { el.style.display = "none"; return; }
+  el.innerHTML = roster.map(s => `
+    <div style="background:#fff;border-radius:999px;padding:8px 20px;font-family:'Baloo 2',sans-serif;
+                font-weight:800;font-size:1.05rem;color:#43301F;box-shadow:0 6px 14px rgba(67,48,31,.14)">${s.name}</div>
+  `).join("");
 }
 
 document.getElementById("prevBtn").onclick = () => { if (cur > 1) loadSlide(cur - 1); };
