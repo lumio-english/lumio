@@ -72,7 +72,7 @@ def name_chips_html():
 
 def slide_trial_welcome(n, total):
     return (bg_plain() + SPARKS + f'''
-    <div style="position:absolute;top:0;left:0;bottom:0;right:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 30px">
+    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 30px">
       <div style="font-size:1.15rem;font-weight:800;color:#F97316;letter-spacing:2px;margin-bottom:16px">TRIAL CLASS</div>
       <h1 style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:3.2rem;color:#43301F;margin:0 0 10px">
         Welcome, friends! &#127881;
@@ -192,7 +192,7 @@ def slide_mini_celebrate(headline, n, total):
 
 def slide_trial_finish(n, total):
     return (bg_plain() + SPARKS + f'''
-    <div style="position:absolute;top:0;left:0;bottom:0;right:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 30px">
+    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 30px">
       <div style="font-size:1.05rem;font-weight:800;color:#0D9488;letter-spacing:2px;margin-bottom:12px">GREAT JOB TODAY</div>
       <h1 style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2.6rem;color:#43301F;margin:0 0 6px">
         You're all naturals! &#11088;
