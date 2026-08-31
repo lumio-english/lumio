@@ -173,6 +173,11 @@
   .td-lead-acts button:active{transform:translateY(0) scale(.95)}
   .td-lead-acts button.primary{background:var(--td-indigo);border-color:var(--td-indigo);color:#fff}
   .td-lead-acts button.primary:hover{background:var(--td-indigo-dark);color:#fff}
+  .td-lead-acts a.trial-link{
+    display:inline-flex;align-items:center;font-size:.78rem;font-weight:800;padding:6px 12px;border-radius:8px;
+    border:1px solid #F97316;background:#F97316;color:#fff;
+  }
+  .td-lead-acts a.trial-link:hover{background:#EA580C;border-color:#EA580C;color:#fff;transform:translateY(-1px)}
   .td-lead-acts button.danger:hover{border-color:var(--td-coral);color:var(--td-coral)}
   .td-lead-status{font-size:.68rem;font-weight:800;padding:2px 9px;border-radius:99px;text-transform:uppercase}
   .td-lead-status.new{background:var(--td-coral-soft);color:var(--td-coral)}
@@ -2063,6 +2068,17 @@
     leadsNavBadge.style.display = n > 0 ? "inline-block" : "none";
     leadsNavBadge.textContent = n;
   }
+  // Trial decks only exist for the 7 levels actually built (pre-a to
+  // level6) -- the quick placement test's own question bank goes up to
+  // level10 (testing for levels that don't exist yet on the platform,
+  // a separate real issue worth fixing in that file too), so a lead
+  // suggested into one of those falls back to the highest level that
+  // actually has a trial deck rather than linking to a broken one.
+  const TRIAL_BUILT_LEVELS = ["pre-a", "level1", "level2", "level3", "level4", "level5", "level6"];
+  function trialLevelFor(suggestedLevel) {
+    return TRIAL_BUILT_LEVELS.includes(suggestedLevel) ? suggestedLevel : "level6";
+  }
+
   function renderLeads() {
     if (!window.LumioLeads) { leadsList.innerHTML = ""; return; }
     const status = leadsStatusFilter.value;
@@ -2085,6 +2101,7 @@
         <div class="td-lead-score"><b>${scoreLabel}</b><span>Test score</span></div>
         <div class="td-lead-acts">
           ${lead.status === "new" ? `<button type="button" data-act="contacted">Mark contacted</button>` : ""}
+          ${lead.status !== "enrolled" ? `<a href="present-trial.html?level=${trialLevelFor(lead.suggestedLevel)}&names=${encodeURIComponent(lead.name)}" target="_blank" rel="noopener" class="trial-link" data-act="trial">▶ Start Trial Class</a>` : ""}
           ${lead.status !== "enrolled" ? `<button type="button" class="primary" data-act="convert">Convert to student</button>` : ""}
           ${lead.status !== "dismissed" && lead.status !== "enrolled" ? `<button type="button" class="danger" data-act="dismiss">Dismiss</button>` : ""}
           <button type="button" class="danger" data-act="remove">Remove</button>
@@ -2101,6 +2118,16 @@
         renderLeads(); updateLeadsBadge();
         showToast(`${lead.name} marked as contacted.`, "success");
       };
+      const trialLink = row.querySelector('[data-act="trial"]');
+      if (trialLink) trialLink.addEventListener("click", () => {
+        // Doesn't block the link's own navigation (opens in a new tab) --
+        // just records that starting the trial counts as real contact,
+        // same as the explicit "Mark contacted" button above.
+        if (lead.status === "new") {
+          LumioLeads.updateLead(lead.id, { status: "contacted" });
+          renderLeads(); updateLeadsBadge();
+        }
+      });
       const convertBtn = row.querySelector('[data-act="convert"]');
       if (convertBtn) convertBtn.onclick = () => {
         convertingLeadId = lead.id;
