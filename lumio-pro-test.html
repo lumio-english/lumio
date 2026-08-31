@@ -364,6 +364,14 @@ body { overflow-x: hidden; -webkit-text-size-adjust: 100%; }
         <input class="splash-input" id="student-phone" type="tel" placeholder="Phone number..." maxlength="15" style="flex:1"/>
       </div>
       <input class="splash-input" id="student-age" type="number" placeholder="Enter your age..." min="4" max="18"/>
+      <select class="splash-input" id="student-self-level" style="color:#43301F">
+        <option value="">Your current level in English (optional)...</option>
+        <option value="never">I have never learned English, but I know a few simple words</option>
+        <option value="beginner">I can say and understand some simple words and expressions</option>
+        <option value="elementary">I can have simple conversations about everyday topics</option>
+        <option value="intermediate">I can talk about many topics and understand most conversations</option>
+        <option value="advanced">I am very comfortable in English and use it often</option>
+      </select>
     </div>
     <div id="id-error" style="display:none;color:#ef4444;font-weight:700;margin-top:8px;font-size:0.95rem;"></div>
     <button class="btn-start" onclick="startTest()">Start My Test</button>
@@ -407,7 +415,7 @@ body { overflow-x: hidden; -webkit-text-size-adjust: 100%; }
   <div class="q-body">
     <div class="progress-outer"><div class="progress-inner" id="progress-bar" style="width:0%"></div></div>
     <div class="progress-labels">
-      <span id="q-counter">Question 1 of 51</span>
+      <span id="q-counter">Question 1 of 30</span>
       <span id="q-section-name">Listening</span>
     </div>
     <div class="section-badge">
@@ -446,7 +454,7 @@ body { overflow-x: hidden; -webkit-text-size-adjust: 100%; }
           </svg>
           <div class="score-ring-text">
             <span class="score-number" id="ring-score">0</span>
-            <span class="score-label">/ 60</span>
+            <span class="score-label">/ 30</span>
           </div>
         </div>
       </div>
@@ -461,10 +469,10 @@ body { overflow-x: hidden; -webkit-text-size-adjust: 100%; }
         </div>
       </div>
       <div class="score-breakdown">
-        <div class="score-box"><div class="score-box-label">Listening</div><div class="score-box-val" id="sb-listen">0/14</div></div>
-        <div class="score-box"><div class="score-box-label">Reading</div><div class="score-box-val" id="sb-read">0/14</div></div>
-        <div class="score-box"><div class="score-box-label">Writing</div><div class="score-box-val" id="sb-write">0/3</div></div>
-        <div class="score-box"><div class="score-box-label">Grammar</div><div class="score-box-val" id="sb-gram">0/20</div></div>
+        <div class="score-box"><div class="score-box-label">Listening</div><div class="score-box-val" id="sb-listen">0/8</div></div>
+        <div class="score-box"><div class="score-box-label">Reading</div><div class="score-box-val" id="sb-read">0/8</div></div>
+        <div class="score-box"><div class="score-box-label">Writing</div><div class="score-box-val" id="sb-write">0/2</div></div>
+        <div class="score-box"><div class="score-box-label">Grammar</div><div class="score-box-val" id="sb-gram">0/12</div></div>
       </div>
       <div class="tips-section">
         <div class="tips-title">Study Tips For You</div>
@@ -698,20 +706,31 @@ function pickByLevel(bank, counts) {
 // ═══════════════════════════════════════════════════════════
 //  BUILD THIS SESSION'S QUESTION SET (called on page load)
 // ═══════════════════════════════════════════════════════════
-const LISTENING_QS = pickByLevel(BANK_LISTENING, {A1:4, A2:4, B1:4, B2:4});
-const READING_QS   = pickByLevel(BANK_READING,   {A1:4, A2:4, B1:4, B2:4});
-const WRITING_QS   = pickByLevel(BANK_WRITING,   {A1:1, A2:1, B1:1, B2:1});
-const GRAMMAR_QS   = pickByLevel(BANK_GRAMMAR,   {A1:6, A2:6, B1:6, B2:6});
+const LISTENING_QS = pickByLevel(BANK_LISTENING, {A1:2, A2:2, B1:2, B2:2});
+const READING_QS   = pickByLevel(BANK_READING,   {A1:2, A2:2, B1:2, B2:2});
+const WRITING_QS   = pickByLevel(BANK_WRITING,   {A1:1, B2:1});
+const GRAMMAR_QS   = pickByLevel(BANK_GRAMMAR,   {A1:3, A2:3, B1:3, B2:3});
 
 
 const ALL_QUESTIONS = [...LISTENING_QS,...READING_QS,...WRITING_QS,...GRAMMAR_QS];
-const TOTAL = ALL_QUESTIONS.length; // 51
+const TOTAL = ALL_QUESTIONS.length; // 30 (8 listening + 8 reading + 2 writing + 12 grammar)
+
+// Section boundaries computed from each section's real length rather than
+// hardcoded -- so changing a pickByLevel count above never silently
+// desyncs from SECTION_MAP or the scoring/slicing logic below it.
+const LISTEN_END = LISTENING_QS.length - 1;
+const READ_START = LISTENING_QS.length;
+const READ_END = READ_START + READING_QS.length - 1;
+const WRITE_START = READ_END + 1;
+const WRITE_END = WRITE_START + WRITING_QS.length - 1;
+const GRAMMAR_START = WRITE_END + 1;
+const GRAMMAR_END = GRAMMAR_START + GRAMMAR_QS.length - 1;
 
 const SECTION_MAP = [
-  {id:'listening', start:0,  end:15, label:'Listening'},
-  {id:'reading',   start:16, end:31, label:'Reading'},
-  {id:'writing',   start:32, end:35, label:'Writing'},
-  {id:'grammar',   start:36, end:59, label:'Grammar'},
+  {id:'listening', start:0,           end:LISTEN_END,   label:'Listening'},
+  {id:'reading',   start:READ_START,  end:READ_END,     label:'Reading'},
+  {id:'writing',   start:WRITE_START, end:WRITE_END,    label:'Writing'},
+  {id:'grammar',   start:GRAMMAR_START, end:GRAMMAR_END, label:'Grammar'},
 ];
 
 function getSectionFor(i){
@@ -1181,17 +1200,17 @@ function startTimer(){
 function calcScore(){
   let listenScore=0, readScore=0, writeScore=0, gramScore=0;
 
-  // Listening (0-15)
+  // Listening (0 to LISTEN_END)
   LISTENING_QS.forEach((q,i)=>{ if(answers[i]===q.answer) listenScore++; });
-  // Reading (16-31)
-  READING_QS.forEach((q,i)=>{ if(answers[16+i]===q.answer) readScore++; });
-  // Writing (32-35) — presence-based
-  WRITING_QS.forEach((q,i)=>{ if(answers[32+i] && String(answers[32+i]).trim().length>5) writeScore++; });
-  // Grammar (36-59)
-  GRAMMAR_QS.forEach((q,i)=>{ if(answers[36+i]===q.answer) gramScore++; });
+  // Reading (READ_START to READ_END)
+  READING_QS.forEach((q,i)=>{ if(answers[READ_START+i]===q.answer) readScore++; });
+  // Writing (WRITE_START to WRITE_END) — presence-based
+  WRITING_QS.forEach((q,i)=>{ if(answers[WRITE_START+i] && String(answers[WRITE_START+i]).trim().length>5) writeScore++; });
+  // Grammar (GRAMMAR_START to GRAMMAR_END)
+  GRAMMAR_QS.forEach((q,i)=>{ if(answers[GRAMMAR_START+i]===q.answer) gramScore++; });
 
   const total = listenScore + readScore + writeScore + gramScore;
-  const pct = total / 60;
+  const pct = total / TOTAL;
 
   // Map score to LEVEL_INFO index (0-9)
   let level;
@@ -1277,7 +1296,8 @@ async function pushResultAsLumioLead(fullData, levelNum) {
     } catch (e) { /* offline is fine — still add the lead locally below */ }
 
     const breakdown = `Professional test — Listening ${fullData.listening}, Reading ${fullData.reading}, `
-      + `Writing ${fullData.writing}, Grammar ${fullData.grammar} (${fullData.cefr})`;
+      + `Writing ${fullData.writing}, Grammar ${fullData.grammar} (${fullData.cefr})`
+      + (fullData.selfAssessedLevel ? ` · Self-assessed: "${fullData.selfAssessedLevel}"` : '');
     const now = new Date().toISOString();
     store.leads.push({
       id: 'lead_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
@@ -1285,7 +1305,7 @@ async function pushResultAsLumioLead(fullData, levelNum) {
       phone: fullData.student_id, // the pro test uses phone as the "student_id"
       age: fullData.age ? Number(fullData.age) : null,
       suggestedLevel: mapProTestLevelToLumioId(levelNum),
-      testScore: null, // the pro test's 0-60 scale isn't the same shape as the simple test's testScore/testTotal — full detail lives in notes instead
+      testScore: null, // the pro test's 0-30 scale isn't the same shape as the simple test's testScore/testTotal — full detail lives in notes instead
       testTotal: null,
       status: 'new',
       notes: breakdown,
@@ -1305,10 +1325,10 @@ async function pushResultAsLumioLead(fullData, levelNum) {
 function saveResultLocally(data){
   const fullData = {
     ...data,
-    answers_listening: answers.slice(0,16).map((a,i)=>({q:LISTENING_QS[i]?LISTENING_QS[i].text:'',selected:a,correct:LISTENING_QS[i]?LISTENING_QS[i].answer:null,isCorrect:a===(LISTENING_QS[i]?LISTENING_QS[i].answer:null),options:LISTENING_QS[i]?LISTENING_QS[i].options:[]})),
-    answers_reading:   answers.slice(16,32).map((a,i)=>({q:READING_QS[i]?READING_QS[i].text:'',selected:a,correct:READING_QS[i]?READING_QS[i].answer:null,isCorrect:a===(READING_QS[i]?READING_QS[i].answer:null),options:READING_QS[i]?READING_QS[i].options:[]})),
-    answers_writing:   answers.slice(32,36).map((a,i)=>({prompt:WRITING_QS[i]?WRITING_QS[i].text:'',text:a||'',minWords:WRITING_QS[i]?WRITING_QS[i].minWords:0})),
-    answers_grammar:   answers.slice(36,60).map((a,i)=>({q:GRAMMAR_QS[i]?GRAMMAR_QS[i].text:'',selected:a,correct:GRAMMAR_QS[i]?GRAMMAR_QS[i].answer:null,isCorrect:a===(GRAMMAR_QS[i]?GRAMMAR_QS[i].answer:null),options:GRAMMAR_QS[i]?GRAMMAR_QS[i].options:[]})),
+    answers_listening: answers.slice(0,READ_START).map((a,i)=>({q:LISTENING_QS[i]?LISTENING_QS[i].text:'',selected:a,correct:LISTENING_QS[i]?LISTENING_QS[i].answer:null,isCorrect:a===(LISTENING_QS[i]?LISTENING_QS[i].answer:null),options:LISTENING_QS[i]?LISTENING_QS[i].options:[]})),
+    answers_reading:   answers.slice(READ_START,WRITE_START).map((a,i)=>({q:READING_QS[i]?READING_QS[i].text:'',selected:a,correct:READING_QS[i]?READING_QS[i].answer:null,isCorrect:a===(READING_QS[i]?READING_QS[i].answer:null),options:READING_QS[i]?READING_QS[i].options:[]})),
+    answers_writing:   answers.slice(WRITE_START,GRAMMAR_START).map((a,i)=>({prompt:WRITING_QS[i]?WRITING_QS[i].text:'',text:a||'',minWords:WRITING_QS[i]?WRITING_QS[i].minWords:0})),
+    answers_grammar:   answers.slice(GRAMMAR_START,TOTAL).map((a,i)=>({q:GRAMMAR_QS[i]?GRAMMAR_QS[i].text:'',selected:a,correct:GRAMMAR_QS[i]?GRAMMAR_QS[i].answer:null,isCorrect:a===(GRAMMAR_QS[i]?GRAMMAR_QS[i].answer:null),options:GRAMMAR_QS[i]?GRAMMAR_QS[i].options:[]})),
   };
   try {
     const existing = JSON.parse(localStorage.getItem(TEST_LS_KEY)||'[]');
@@ -1331,6 +1351,14 @@ function showResult(){
   const info=LEVEL_INFO[level];
 
   const age=document.getElementById('student-age').value||'';
+  const selfLevel=document.getElementById('student-self-level').value||'';
+  const SELF_LEVEL_LABELS={
+    never:'Never learned English, knows a few simple words',
+    beginner:'Says/understands some simple words and expressions',
+    elementary:'Can have simple conversations about everyday topics',
+    intermediate:'Can talk about many topics, understands most conversations',
+    advanced:'Very comfortable in English, uses it often',
+  };
   const now=new Date();
   const timestamp=now.toLocaleDateString('en-GB')+' '+now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
   saveResultLocally({
@@ -1338,11 +1366,12 @@ function showResult(){
     name:studentName,
     student_id:studentId,
     age:age,
-    listening:listenScore+'/16',
-    reading:readScore+'/16',
-    writing:writeScore+'/4',
-    grammar:gramScore+'/24',
-    total:total+'/60',
+    selfAssessedLevel:SELF_LEVEL_LABELS[selfLevel]||'',
+    listening:listenScore+'/'+LISTENING_QS.length,
+    reading:readScore+'/'+READING_QS.length,
+    writing:writeScore+'/'+WRITING_QS.length,
+    grammar:gramScore+'/'+GRAMMAR_QS.length,
+    total:total+'/'+TOTAL,
     level:'Level '+level,
     levelNum:level,
     cefr:info.cefr+' — '+info.name
@@ -1350,14 +1379,14 @@ function showResult(){
 
   document.getElementById('result-name').textContent='Great job, '+studentName+'!';
   document.getElementById('ring-score').textContent=total;
-  document.getElementById('sb-listen').textContent=listenScore+'/16';
-  document.getElementById('sb-read').textContent=readScore+'/16';
-  document.getElementById('sb-write').textContent=writeScore+'/4';
-  document.getElementById('sb-gram').textContent=gramScore+'/24';
+  document.getElementById('sb-listen').textContent=listenScore+'/'+LISTENING_QS.length;
+  document.getElementById('sb-read').textContent=readScore+'/'+READING_QS.length;
+  document.getElementById('sb-write').textContent=writeScore+'/'+WRITING_QS.length;
+  document.getElementById('sb-gram').textContent=gramScore+'/'+GRAMMAR_QS.length;
 
   // Ring animation
   const arc=document.getElementById('ring-arc');
-  const pct=total/60;
+  const pct=total/TOTAL;
   const circ=2*Math.PI*68;
   setTimeout(()=>{arc.style.transition='stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)';arc.style.strokeDashoffset=circ*(1-pct);},100);
 
