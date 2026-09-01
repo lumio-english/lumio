@@ -46,4 +46,31 @@ DIALOGUES = {
        ("I remember lion, book, happy, and jump too!", "أتذكر أسد، كتاب، سعيد، وقفز أيضا!")],
 }
 
-run("pre-a", DIALOGUES, None, None, has_phonics=False)
+SKILLS_CHECKPOINTS = {
+  6: {
+    "listening": "recognize greetings, their name words, all 26 letter sounds, and numbers 1-5",
+    "speaking": "say hello and goodbye, tell someone their name, and count from 1 to 5",
+    "reading": "recognize all 26 uppercase and lowercase letters by sight",
+    "writing": "trace the uppercase and lowercase letters A-Z",
+  },
+  11: {
+    "listening": "recognize numbers 6-10, colors, family words, and body parts",
+    "speaking": "count all the way to 10, name their favorite color, and name family members",
+    "reading": "match printed number words and color words to the right picture",
+    "writing": "copy simple number words and color words",
+  },
+  16: {
+    "listening": "recognize animal names, food names, and school items",
+    "speaking": "name their favorite animal, say what food they like, and name school items",
+    "reading": "read simple two- or three-word phrases like \u201cred apple\u201d or \u201cbig lion\u201d",
+    "writing": "copy short animal, food, and school words",
+  },
+  20: {
+    "listening": "understand almost all the Pre-A words and phrases from this whole level",
+    "speaking": "speak in short phrases about family, animals, food, feelings, and more",
+    "reading": "read familiar words and short phrases on their own",
+    "writing": "write familiar words from memory, not just by tracing",
+  },
+}
+
+run("pre-a", DIALOGUES, None, None, has_phonics=False, skills_data=SKILLS_CHECKPOINTS)

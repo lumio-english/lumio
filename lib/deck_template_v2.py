@@ -721,6 +721,35 @@ def slide_describing_time(image_rel_path, n, total):
     '''
 
 
+def slide_skills_check(skills, n, total, ch="lumi-celebrate"):
+    """Checkpoint-only slide (lessons 6/11/16/20, when skills data is
+    supplied for that lesson number): a cumulative 4-skill (Listening/
+    Speaking/Reading/Writing) can-do summary of everything covered so
+    far in the level, not just this lesson's own vocabulary -- the
+    "Today I Learned!" recap already covers the single-lesson view.
+    `skills` is a dict with keys listening/speaking/reading/writing,
+    each a short can-do sentence.
+    """
+    ICONS = {"listening": "&#128066;", "speaking": "&#128172;", "reading": "&#128214;", "writing": "&#9999;&#65039;"}
+    LABELS = {"listening": "Listening", "speaking": "Speaking", "reading": "Reading", "writing": "Writing"}
+    cards = "".join(f'''
+      <div class="card" style="padding:16px 20px;display:flex;gap:14px;align-items:flex-start">
+        <div style="font-size:1.6rem;line-height:1">{ICONS[k]}</div>
+        <div>
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem;color:#F97316;letter-spacing:1px;margin-bottom:3px">{LABELS[k].upper()}</div>
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1rem;color:#43301F;line-height:1.35">{esc(skills[k])}</div>
+        </div>
+      </div>''' for k in ("listening", "speaking", "reading", "writing"))
+    return (bg_clean() + header("Your Skills Checkpoint! &#127775;", n, total) + COLORSTRIP + f'''
+    <div style="position:absolute;left:46px;top:150px;width:820px">
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.05rem;color:#8A7160;margin-bottom:16px">
+        Look how far you've come! Here's what you can do now:
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">{cards}</div>
+    </div>
+    ''' + char_img(ch, right=40, bottom=20, height=260))
+
+
 def slide_unscramble(word, n, total, ch):
     import random as _r
     letters = list(word["en"].replace(" ", ""))
@@ -775,7 +804,7 @@ def slide_reward_homework(lesson_num, n, total):
     </div>''')
 
 
-def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic=None, has_phonics=True, level="pre-a"):
+def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic=None, has_phonics=True, level="pre-a", skills_data=None):
     V = len(lesson["vocab"])
     tier = "preA" if level == "pre-a" else ("level1" if level == "level1" else "level2")
     plan = [("title", None)]
@@ -834,6 +863,8 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
         for i in extra_targets:
             plan.append(("quiz_review_extra", i))
     plan.append(("today_i_learned", None))
+    if skills_data and lesson_num in skills_data:
+        plan.append(("skills_check", skills_data[lesson_num]))
     plan.append(("reward_homework", None))
 
     total = len(plan)
@@ -904,15 +935,17 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
             distractors = random.Random(lesson_num * 17 + i).sample(distractors, min(3, len(distractors)))
             quiz_review_idx[0] += 1
             slides.append(slide_quiz(target, distractors, quiz_review_idx[0], quiz_total_q, n, total, lesson_num * 19 + i))
+        elif kind == "skills_check": slides.append(slide_skills_check(data, n, total))
         elif kind == "reward_homework": slides.append(slide_reward_homework(lesson_num, n, total))
     return slides
 
 
-def run(level, dialogues, phonics_units=None, grammar_units=None, has_phonics=True, out_root="slide-content", manifest_root="assets/slides"):
+def run(level, dialogues, phonics_units=None, grammar_units=None, has_phonics=True, out_root="slide-content", manifest_root="assets/slides", skills_data=None):
     global DIALOGUES
     DIALOGUES = dialogues
     phonics_units = phonics_units or {}  # {lesson_num: unit_dict}
     grammar_units = grammar_units or {}  # {lesson_num: topic_dict}
+    skills_data = skills_data or {}  # {lesson_num: {listening/speaking/reading/writing: str}}
     lesson_files = sorted(glob.glob(f"lessons/{level}/lesson*.json"))
     lessons = {}
     for f in lesson_files:
@@ -928,7 +961,7 @@ def run(level, dialogues, phonics_units=None, grammar_units=None, has_phonics=Tr
     for num in sorted(lessons):
         lesson = lessons[num]
         prev_lesson = lessons.get(num - 1)
-        slides = build_deck(num, lesson, prev_lesson, phonics_units.get(num), grammar_units.get(num), has_phonics, level)
+        slides = build_deck(num, lesson, prev_lesson, phonics_units.get(num), grammar_units.get(num), has_phonics, level, skills_data)
         nn = f"{num:02d}"
         lesson_dir = os.path.join(out_dir, nn)
         os.makedirs(lesson_dir, exist_ok=True)
