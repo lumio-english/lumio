@@ -833,6 +833,19 @@
   </div>
 </div>
 
+<!-- ===== Checkpoint diagnostic report modal ===== -->
+<div class="td-overlay" id="checkpointReportOverlay">
+  <div class="td-modal-box" style="max-width:560px">
+    <h3 id="checkpointReportTitle">Checkpoint Report</h3>
+    <p class="sub" style="margin:-6px 0 14px;font-size:.78rem">Built from real quiz scores, ready to share with a parent.</p>
+    <div id="checkpointReportBody"></div>
+    <div class="td-modal-actions">
+      <button class="td-btn" id="checkpointReportClose">Close</button>
+      <button class="td-btn td-btn-primary" id="checkpointReportCopy">📋 Copy for WhatsApp</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===== Add / Edit teacher modal ===== -->
 <div class="td-overlay" id="teacherModalOverlay">
   <div class="td-modal-box">
@@ -1051,6 +1064,133 @@
   }
   document.getElementById("recordingsClose").onclick = () => recordingsOverlay.classList.remove("show");
   recordingsOverlay.addEventListener("click", e => { if (e.target === recordingsOverlay) recordingsOverlay.classList.remove("show"); });
+
+  // ================= Checkpoint diagnostic report =================
+  // Mirrors SKILLS_CHECKPOINTS in gen_slides_prea_v2.py -- same can-do
+  // text, kept manually in sync since one lives in a Python build step
+  // and the other in this client-side app. Only Pre-A has content so
+  // far, matching what the slide deck itself currently covers.
+  const CHECKPOINT_SKILLS = {
+    "pre-a": {
+      6:  { range: [1, 6],   listening: "recognize greetings, their name words, all 26 letter sounds, and numbers 1-5",
+                              speaking: "say hello and goodbye, tell someone their name, and count from 1 to 5",
+                              reading: "recognize all 26 uppercase and lowercase letters by sight",
+                              writing: "trace the uppercase and lowercase letters A-Z" },
+      11: { range: [7, 11],  listening: "recognize numbers 6-10, colors, family words, and body parts",
+                              speaking: "count all the way to 10, name their favorite color, and name family members",
+                              reading: "match printed number words and color words to the right picture",
+                              writing: "copy simple number words and color words" },
+      16: { range: [12, 16], listening: "recognize animal names, food names, and school items",
+                              speaking: "name their favorite animal, say what food they like, and name school items",
+                              reading: "read simple two- or three-word phrases like \u201cred apple\u201d or \u201cbig lion\u201d",
+                              writing: "copy short animal, food, and school words" },
+      20: { range: [17, 20], listening: "understand almost all the Pre-A words and phrases from this whole level",
+                              speaking: "speak in short phrases about family, animals, food, feelings, and more",
+                              reading: "read familiar words and short phrases on their own",
+                              writing: "write familiar words from memory, not just by tracing" },
+    },
+  };
+
+  const checkpointReportOverlay = document.getElementById("checkpointReportOverlay");
+  const checkpointReportBody = document.getElementById("checkpointReportBody");
+  let checkpointReportText = ""; // plain-text version kept in sync for the Copy button
+
+  function openCheckpointReportModal(studentName, level) {
+    document.getElementById("checkpointReportTitle").textContent = `${studentName} \u2014 Checkpoint Report`;
+    checkpointReportOverlay.classList.add("show");
+    const copyBtn = document.getElementById("checkpointReportCopy");
+    const checkpoints = CHECKPOINT_SKILLS[level];
+    if (!checkpoints) {
+      checkpointReportBody.innerHTML = `<p class="sub">Checkpoint reports aren't available for ${levelName(level)} yet \u2014 currently built for Pre-A only.</p>`;
+      checkpointReportText = "";
+      copyBtn.style.display = "none";
+      return;
+    }
+    const prog = (typeof Lumio !== "undefined" && Lumio.progressFor) ? (Lumio.progressFor(studentName)[level] || {}) : {};
+    // Only offer a checkpoint once the student has at least one saved
+    // result inside its lesson range -- an empty report isn't useful to
+    // a parent, and a teacher can just wait a lesson or two.
+    const reachable = Object.entries(checkpoints).filter(([, cp]) =>
+      Array.from({length: cp.range[1]-cp.range[0]+1}, (_,i)=>cp.range[0]+i).some(n => prog[n])
+    ).map(([num]) => Number(num)).sort((a,b) => a-b);
+
+    if (!reachable.length) {
+      checkpointReportBody.innerHTML = `<p class="sub">${studentName} hasn't completed any lessons in a checkpoint range yet. A report becomes available once they've done at least one lesson between 1-6.</p>`;
+      checkpointReportText = "";
+      copyBtn.style.display = "none";
+      return;
+    }
+    copyBtn.style.display = "";
+
+    const defaultCp = reachable[reachable.length - 1]; // most recently reached
+    renderCheckpointReport(studentName, level, defaultCp, checkpoints, prog, reachable);
+  }
+
+  function renderCheckpointReport(studentName, level, cpNum, checkpoints, prog, reachable) {
+    const cp = checkpoints[cpNum];
+    const [start, end] = cp.range;
+    const lessonNums = Array.from({length: end - start + 1}, (_, i) => start + i);
+    const results = lessonNums.map(n => ({ n, r: prog[n] || null }));
+    const done = results.filter(x => x.r);
+    const scoreSum = done.reduce((s, x) => s + (x.r.score || 0), 0);
+    const totalSum = done.reduce((s, x) => s + (x.r.total || 0), 0);
+    const pct = totalSum ? Math.round((scoreSum / totalSum) * 100) : null;
+    // A lesson "needs more practice" if it's done but scored under 60% --
+    // deliberately not flagging lessons the student simply hasn't reached
+    // yet, since that's expected progress, not a struggle.
+    const needsPractice = done.filter(x => x.r.total && (x.r.score / x.r.total) < 0.6);
+
+    const skillRows = ["listening", "speaking", "reading", "writing"].map(k => {
+      const icon = {listening:"\u{1F442}", speaking:"\u{1F4AC}", reading:"\u{1F4D6}", writing:"\u270F\uFE0F"}[k];
+      const label = k[0].toUpperCase() + k.slice(1);
+      return `<div style="display:flex;gap:10px;padding:6px 0"><span>${icon}</span><span><b>${label}:</b> ${cp[k]}</span></div>`;
+    }).join("");
+
+    const picker = reachable.length > 1
+      ? `<select id="cpReportPicker" class="td-select" style="margin-bottom:12px">${reachable.map(n =>
+          `<option value="${n}" ${n===cpNum?"selected":""}>Checkpoint ${reachable.indexOf(n)+1} (lessons ${checkpoints[n].range[0]}-${checkpoints[n].range[1]})</option>`).join("")}</select>`
+      : "";
+
+    checkpointReportBody.innerHTML = `
+      ${picker}
+      <div style="background:var(--td-bg-soft,#FAF9FC);border-radius:12px;padding:14px 16px;margin-bottom:12px">
+        <div style="font-weight:800;margin-bottom:6px">What ${studentName} can do now:</div>
+        ${skillRows}
+      </div>
+      <div style="font-weight:800;margin-bottom:6px">How ${studentName} did (lessons ${start}-${end}):</div>
+      <p class="sub" style="margin-bottom:6px">${done.length}/${lessonNums.length} lessons completed${pct !== null ? ` \u2014 ${pct}% average score` : ""}.</p>
+      ${needsPractice.length
+        ? `<p class="sub" style="color:#C2530A">Could use a bit more practice: ${needsPractice.map(x => `Lesson ${x.n}`).join(", ")}.</p>`
+        : done.length ? `<p class="sub" style="color:#16A34A">Solid scores across the board \u2014 no lessons flagged for extra practice.</p>` : ""}
+    `;
+
+    const picked = document.getElementById("cpReportPicker");
+    if (picked) picked.onchange = () => renderCheckpointReport(studentName, level, Number(picked.value), checkpoints, prog, reachable);
+
+    // Plain-text version for the Copy button -- WhatsApp doesn't render
+    // the HTML above, so this is composed separately rather than trying
+    // to strip tags from it.
+    const lines = [];
+    lines.push(`${studentName}'s Checkpoint Report (${levelName(level)}, lessons ${start}-${end})`, "");
+    lines.push(`What ${studentName} can do now:`);
+    ["listening", "speaking", "reading", "writing"].forEach(k => lines.push(`- ${k[0].toUpperCase()+k.slice(1)}: ${cp[k]}`));
+    lines.push("", `Progress: ${done.length}/${lessonNums.length} lessons completed${pct !== null ? `, ${pct}% average score` : ""}.`);
+    if (needsPractice.length) lines.push(`Could use a bit more practice: ${needsPractice.map(x => `Lesson ${x.n}`).join(", ")}.`);
+    else if (done.length) lines.push("Solid scores across the board!");
+    checkpointReportText = lines.join("\n");
+  }
+
+  document.getElementById("checkpointReportClose").onclick = () => checkpointReportOverlay.classList.remove("show");
+  checkpointReportOverlay.addEventListener("click", e => { if (e.target === checkpointReportOverlay) checkpointReportOverlay.classList.remove("show"); });
+  document.getElementById("checkpointReportCopy").onclick = async () => {
+    if (!checkpointReportText) return;
+    try {
+      await navigator.clipboard.writeText(checkpointReportText);
+      showToast("Report copied \u2014 paste it straight into WhatsApp.", "success");
+    } catch (e) {
+      showToast("Couldn't copy \u2014 your browser may be blocking clipboard access.", "error");
+    }
+  };
 
 
   const all = ((typeof Lumio !== "undefined" && Lumio.progressAll) ? Lumio.progressAll() : {}) || {};
@@ -1528,6 +1668,7 @@
           <button type="button" data-act="edit">Edit</button>
           <button type="button" data-act="pin">New PIN</button>
           <button type="button" data-act="recordings">🎙️ Recordings</button>
+          <button type="button" data-act="report">📋 Report</button>
           <button type="button" class="danger" data-act="remove">Remove</button>
         </div>`;
       const pinVal = card.querySelector(".pinval");
@@ -1541,6 +1682,7 @@
       }
       card.querySelector('[data-act="edit"]').onclick = () => openStudentModal(p);
       card.querySelector('[data-act="recordings"]').onclick = () => openRecordingsModal(p.name);
+      card.querySelector('[data-act="report"]').onclick = () => openCheckpointReportModal(p.name, p.level);
       card.querySelector('[data-act="pin"]').onclick = async (e) => {
         await withLoading(e.currentTarget, async () => {
           const newPin = LumioProfiles.randomPin();
