@@ -97,9 +97,13 @@ function loadSlide(n) {
       // matching game) is paired alongside a level's own tailored game for
       // levels 1-2, but not for level3 -- Crew Chat is deliberately built
       // around text/typing instead of picture-tap, so pairing it with a
-      // picture-tap game would undercut the whole point of it.
+      // picture-tap game would undercut the whole point of it. Pre-A gets
+      // a third game, Fetch with Lumi's Puppy -- a genuinely different
+      // drag-to-character mechanic (not drag-to-slot like Match It, not
+      // tap-to-choose like Lumi's Pocket), closer to 51Talk's own "feed
+      // the pet" mini-game than either existing game was.
       const LEVEL_GAMES = {
-        "pre-a": [{ href: "lumis-pocket.html", label: "🔍 Lumi's Pocket" }, { href: "match-drag.html", label: "🧩 Match It" }],
+        "pre-a": [{ href: "lumis-pocket.html", label: "🔍 Lumi's Pocket" }, { href: "match-drag.html", label: "🧩 Match It" }, { href: "fetch-with-lumi.html", label: "🐶 Fetch!" }],
         "level1": [{ href: "treehouse-builder.html", label: "🌳 Treehouse Builder" }, { href: "match-drag.html", label: "🧩 Match It" }],
         "level2": [{ href: "twelve-months-calendar.html", label: "📅 Twelve Months Calendar" }, { href: "match-drag.html", label: "🧩 Match It" }],
         "level3": [{ href: "crew-chat.html", label: "💬 Crew Chat" }],
