@@ -792,6 +792,15 @@
       <div class="td-field-error" id="stuLevelError"></div>
     </div>
     <div class="td-field">
+      <label for="stuCohort">Cohort <span style="color:var(--td-muted);font-weight:600">(optional)</span></label>
+      <input type="text" id="stuCohort" placeholder="e.g. Sept 2026 Intake" maxlength="40">
+    </div>
+    <div class="td-field">
+      <label for="stuGroup">Group <span style="color:var(--td-muted);font-weight:600">(optional)</span></label>
+      <input type="text" id="stuGroup" placeholder="e.g. Group A" maxlength="40">
+      <p class="sub" style="margin:4px 0 0;font-size:.72rem">Students with the same cohort, group, and level are treated as groupmates for report comparisons.</p>
+    </div>
+    <div class="td-field">
       <label for="stuTeacher">Assign to teacher</label>
       <select id="stuTeacher"></select>
     </div>
@@ -1656,7 +1665,9 @@
       card.innerHTML = `
         <div class="top">
           <div class="av">${p.avatar}</div>
-          <div><div class="nm">${p.name}</div><div class="lv">${levelName(p.level)} · ${teacherLabel}</div></div>
+          <div><div class="nm">${p.name}</div><div class="lv">${levelName(p.level)} · ${teacherLabel}</div>
+            ${(p.cohort || p.group) ? `<div class="lv" style="opacity:.75">${[p.cohort, p.group].filter(Boolean).join(" · ")}</div>` : ""}
+          </div>
         </div>
         ${hw ? `<div class="hw-summary" style="font-size:.78rem;font-weight:800;color:#C2530A;background:#FFF3D6;
                 border-radius:8px;padding:5px 10px;margin:6px 0">📝 ${hw.count} homework${hw.count === 1 ? "" : "s"} done · avg ${(hw.starsSum / hw.count).toFixed(1)}★</div>` : ""}
@@ -1718,6 +1729,8 @@
     document.getElementById("studentModalTitle").textContent = profile ? "Edit student" : "Add student";
     stuNameInput.value = profile ? profile.name : (prefill && prefill.name) || "";
     stuLevelSelect.value = profile ? profile.level : (prefill && prefill.level) || "";
+    document.getElementById("stuCohort").value = profile ? (profile.cohort || "") : "";
+    document.getElementById("stuGroup").value = profile ? (profile.group || "") : "";
     stuPinInput.value = profile ? profile.pin : (window.LumioProfiles ? LumioProfiles.randomPin() : "1234");
     {
       const existingPhone = profile ? (profile.phone || "") : (prefill && prefill.phone) || "";
@@ -1760,14 +1773,16 @@
     const pinVal = stuPinInput.value.length === 4 ? stuPinInput.value : LumioProfiles.randomPin();
     const teacherIdVal = document.getElementById("stuTeacher").value || null;
     const phoneVal = combinePhone(stuPhoneCountry.value, stuPhoneInput.value);
+    const cohortVal = document.getElementById("stuCohort").value;
+    const groupVal = document.getElementById("stuGroup").value;
     const wasEditing = !!editingId;
     const leadIdToResolve = convertingLeadId;
     await withLoading(e.currentTarget, async () => {
       try {
         if (editingId) {
-          await LumioProfiles.updateStudent(editingId, { name, level: stuLevelSelect.value, avatar: selectedAvatar, pin: pinVal, teacherId: teacherIdVal, phone: phoneVal });
+          await LumioProfiles.updateStudent(editingId, { name, level: stuLevelSelect.value, avatar: selectedAvatar, pin: pinVal, teacherId: teacherIdVal, phone: phoneVal, cohort: cohortVal, group: groupVal });
         } else {
-          await LumioProfiles.addStudent({ name, level: stuLevelSelect.value, avatar: selectedAvatar, pin: pinVal, teacherId: teacherIdVal, phone: phoneVal });
+          await LumioProfiles.addStudent({ name, level: stuLevelSelect.value, avatar: selectedAvatar, pin: pinVal, teacherId: teacherIdVal, phone: phoneVal, cohort: cohortVal, group: groupVal });
         }
         closeStudentModal();
         renderRosterCards();

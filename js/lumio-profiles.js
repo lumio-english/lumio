@@ -159,6 +159,19 @@
   function listStudents() {
     return load().students.slice();
   }
+  // Groupmates: same cohort + group + level, case/whitespace-insensitive,
+  // excluding the student themself -- used both by the roster UI (showing
+  // a groupmate count) and, later, by the cohort-comparison report chart.
+  // A student with no cohort/group set has no groupmates by definition,
+  // since there's nothing to match against.
+  function groupmatesOf(studentId) {
+    const s = getStudent(studentId);
+    if (!s || !s.cohort || !s.group) return [];
+    const norm = v => (v || "").trim().toLowerCase();
+    return load().students.filter(x =>
+      x.id !== s.id && norm(x.cohort) === norm(s.cohort) && norm(x.group) === norm(s.group) && x.level === s.level
+    );
+  }
   function getStudent(id) {
     return load().students.find(s => s.id === id) || null;
   }
@@ -167,7 +180,7 @@
     if (!n) return null;
     return load().students.find(s => s.name.trim().toLowerCase() === n) || null;
   }
-  async function addStudent({ name, level, avatar, pin, teacherId, phone } = {}) {
+  async function addStudent({ name, level, avatar, pin, teacherId, phone, cohort, group } = {}) {
     const data = load();
     name = (name || "").trim();
     if (!name) throw new Error("A student needs a name.");
@@ -182,6 +195,13 @@
       pinHash: await hashPin(finalPin),
       teacherId: teacherId || getCurrentTeacherId() || (data.teachers[0] && data.teachers[0].id) || null,
       phone: (phone || "").trim(), // optional — parent/guardian contact, used for the inactivity check-in shortcut
+      // Free-text, not a managed list -- a cohort is an enrollment batch (e.g.
+      // "Sept 2026 Intake"), a group is a class section within that cohort at
+      // one level (multiple groups can share a level within the same cohort).
+      // Two students are "groupmates" for comparison purposes when their
+      // cohort + group + level all match exactly (case/whitespace-insensitive).
+      cohort: (cohort || "").trim(),
+      group: (group || "").trim(),
       createdAt: new Date().toISOString().slice(0, 10),
       updatedAt: new Date().toISOString(),
     };
@@ -209,6 +229,8 @@
     }
     if (patch.teacherId !== undefined) s.teacherId = patch.teacherId;
     if (patch.phone !== undefined) s.phone = (patch.phone || "").trim();
+    if (patch.cohort !== undefined) s.cohort = (patch.cohort || "").trim();
+    if (patch.group !== undefined) s.group = (patch.group || "").trim();
     s.updatedAt = new Date().toISOString();
     save(data);
     return s;
@@ -500,7 +522,7 @@
 
   global.LumioProfiles = {
     AVATARS, TEACHER_AVATARS,
-    listStudents, getStudent, findByName,
+    listStudents, getStudent, findByName, groupmatesOf,
     addStudent, updateStudent, removeStudent, assignStudent,
     verifyStudentLogin, randomPin,
     listTeachers, getTeacher, findTeacherByName,
