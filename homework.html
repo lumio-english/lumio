@@ -505,6 +505,15 @@ function submitHomework() {
     recorded, recordedTotal: lesson.vocab.length,
     hasDrawing: !!results.drawingDataUrl, drawingDataUrl: results.drawingDataUrl,
     skillType, skillCorrect, skillTotal,
+    // Kept separate from the combined score/total above specifically so a
+    // report can honestly attribute Reading vs Writing performance instead
+    // of only ever seeing one merged number -- spelling (typing the English
+    // word) is a writing-adjacent task, the multiple-choice quiz is reading
+    // comprehension of a written prompt. Added for the LSRW performance
+    // report; nothing existing reads these two fields yet, so this is a
+    // pure addition, not a change to what's already there.
+    spellingCorrect, spellingTotal: lesson.vocab.length,
+    quizCorrect, quizTotal: qWordsCountSafe(),
     date: new Date().toISOString().slice(0, 10),
   };
   if (typeof Lumio !== "undefined" && Lumio.saveHomework) {

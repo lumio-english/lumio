@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Report — Lumio English</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@600;700;800&family=Tajawal:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange:#F97316; --orange-deep:#EA580C; --teal:#0D9488; --purple:#7C3AED;
+    --cocoa:#43301F; --cocoa-soft:#8A7160; --bg:#FAF7F2; --card:#fff;
+    --green:#16A34A; --amber:#D97706; --red:#DC2626;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:'Nunito',sans-serif; background:var(--bg); color:var(--cocoa); }
+  .ar { font-family:'Tajawal',sans-serif; direction:rtl; }
+  header {
+    background:linear-gradient(135deg,var(--orange),var(--orange-deep)); color:#fff;
+    padding:22px 28px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
+  }
+  header .brand { font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1.1rem; }
+  header a { color:#fff; text-decoration:none; background:rgba(255,255,255,.18); padding:8px 16px; border-radius:999px; font-weight:800; font-size:.85rem; }
+  main { max-width:920px; margin:0 auto; padding:28px 20px 60px; }
+  .top-card {
+    background:var(--card); border-radius:24px; padding:26px 30px; box-shadow:0 6px 20px rgba(67,48,31,.08); margin-bottom:22px;
+  }
+  .top-card h1 { font-family:'Baloo 2',sans-serif; font-size:1.6rem; margin:0 0 4px; }
+  .top-card .meta { color:var(--cocoa-soft); font-weight:700; font-size:.92rem; }
+  .top-card .meta span { display:inline-block; margin-right:14px; }
+  .tags { display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
+  .tag { background:#FFF3E0; color:var(--orange-deep); font-weight:800; font-size:.78rem; padding:6px 14px; border-radius:999px; }
+  .tag.teal { background:#E0F5F3; color:var(--teal); }
+  .tag.purple { background:#F1E9FE; color:var(--purple); }
+  h2.section-title { font-family:'Baloo 2',sans-serif; font-size:1.15rem; margin:30px 0 14px; }
+  .skill-card {
+    background:var(--card); border-radius:20px; padding:22px 26px; box-shadow:0 4px 14px rgba(67,48,31,.06); margin-bottom:16px;
+    border-left:6px solid var(--tier-color, #ccc);
+  }
+  .skill-head { display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:10px; }
+  .skill-name { display:flex; align-items:center; gap:10px; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1.15rem; }
+  .skill-name .icon { font-size:1.4rem; }
+  .skill-pct { font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1.4rem; color:var(--tier-color, var(--cocoa)); }
+  .skill-tier-label { font-size:.78rem; font-weight:800; color:var(--tier-color, var(--cocoa-soft)); text-transform:uppercase; letter-spacing:.3px; margin-bottom:12px; }
+  .bar-track { height:10px; background:#F0EAE0; border-radius:99px; overflow:hidden; margin-bottom:16px; }
+  .bar-fill { height:100%; border-radius:99px; background:var(--tier-color, #ccc); transition:width .4s ease; }
+  .skill-text-block { margin-bottom:10px; }
+  .skill-text-block .label { font-size:.72rem; font-weight:800; color:var(--cocoa-soft); text-transform:uppercase; letter-spacing:.3px; margin-bottom:3px; }
+  .skill-text-block p { margin:0 0 4px; font-weight:700; line-height:1.5; }
+  .skill-text-block p.en { color:var(--cocoa); }
+  .skill-text-block p.ar { color:var(--cocoa); font-size:1.02rem; }
+  .cohort-row { display:flex; align-items:center; gap:10px; margin-top:14px; padding-top:14px; border-top:1px solid #F0EAE0; font-size:.85rem; font-weight:700; color:var(--cocoa-soft); }
+  .cohort-row b { color:var(--cocoa); }
+  .no-cohort { font-size:.82rem; color:var(--cocoa-soft); font-style:italic; margin-top:10px; }
+  .actions { display:flex; gap:12px; margin-top:26px; flex-wrap:wrap; }
+  .btn { border:none; border-radius:999px; padding:13px 26px; font-weight:800; font-size:.95rem; cursor:pointer; font-family:'Nunito',sans-serif; text-decoration:none; display:inline-flex; align-items:center; gap:8px; }
+  .btn-primary { background:var(--orange); color:#fff; }
+  .btn-primary:hover { background:var(--orange-deep); }
+  .btn-ghost { background:#fff; color:var(--cocoa); border:2px solid #E9E1D3; }
+  .empty-state { text-align:center; padding:60px 20px; color:var(--cocoa-soft); font-weight:700; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">📋 Lumio Student Report</div>
+  <a href="teacher.html">✕ Back to dashboard</a>
+</header>
+
+<main id="mainContent">
+  <div class="empty-state">Loading…</div>
+</main>
+
+<script src="js/app.js"></script>
+<script src="js/lumio-profiles.js"></script>
+<script>
+(() => {
+  // Teacher-only, same session-check pattern teacher.html itself uses.
+  if (sessionStorage && !sessionStorage.getItem("lumio_teacher")) { location.href = "teacher-portal.html"; return; }
+
+  const qs = k => new URLSearchParams(location.search).get(k);
+  const studentId = qs("student");
+  const main = document.getElementById("mainContent");
+  const student = studentId ? LumioProfiles.getStudent(studentId) : null;
+
+  if (!student) {
+    main.innerHTML = `<div class="empty-state">Student not found. <a href="teacher.html">Back to dashboard</a></div>`;
+    return;
+  }
+
+  const LEVEL_NAMES = {
+    "pre-a": "Level 0 · First Words", "level1": "Level 1", "level2": "Level 2",
+    "level3": "Level 3", "level4": "Level 4", "level5": "Level 5", "level6": "Level 6",
+  };
+  const levelName = LEVEL_NAMES[student.level] || student.level;
+
+  // ---------- gather real data ----------
+  const prep = (Lumio.progressFor(student.name)[student.level]) || {};
+  const hw = (Lumio.homeworkFor(student.name)[student.level]) || {};
+  const prepLessons = Object.values(prep);
+  const hwLessons = Object.values(hw);
+
+  function avgPct(items, num, den) {
+    const rows = items.filter(r => (r[den] || 0) > 0);
+    if (!rows.length) return null;
+    const sumNum = rows.reduce((s, r) => s + (r[num] || 0), 0);
+    const sumDen = rows.reduce((s, r) => s + (r[den] || 0), 0);
+    return sumDen ? Math.round((sumNum / sumDen) * 100) : null;
+  }
+
+  // Listening <- prep decks (audio-heavy: TPR, listen-and-choose, "Say It" playback)
+  // Speaking  <- homework's "Say It" recording completion
+  // Reading   <- homework's multiple-choice quiz (reading comprehension of a written prompt)
+  // Writing   <- homework's spelling (typing the English word correctly)
+  const skills = {
+    listening: { pct: avgPct(prepLessons, "score", "total"), icon: "👂", en: "Listening", ar: "الاستماع" },
+    speaking: { pct: avgPct(hwLessons, "said", "saidTotal"), icon: "💬", en: "Speaking", ar: "المحادثة" },
+    reading: { pct: avgPct(hwLessons, "quizCorrect", "quizTotal"), icon: "📖", en: "Reading", ar: "القراءة" },
+    writing: { pct: avgPct(hwLessons, "spellingCorrect", "spellingTotal"), icon: "✏️", en: "Writing", ar: "الكتابة" },
+  };
+
+  // Bilingual, tier-varied strength/weakness + suggestion text -- three
+  // genuinely different messages per skill (not one template with a
+  // number swapped in), since this goes straight to a parent and should
+  // read like a real observation, not a fill-in-the-blank.
+  const COPY = {
+    listening: {
+      strong: { en: "{n} listens closely and understands new words and instructions quickly during lessons.",
+                ar: "يستمع {n} باهتمام ويفهم الكلمات والتعليمات الجديدة بسرعة أثناء الدروس.",
+                sEn: "Keep it up by listening to English songs or short stories together at home.",
+                sAr: "حافظوا على هذا التقدم بالاستماع إلى الأغاني أو القصص القصيرة بالإنجليزية معاً في المنزل." },
+      developing: { en: "{n} understands most of what's said in class, but sometimes needs a word repeated.",
+                ar: "يفهم {n} معظم ما يُقال في الدرس، لكنه أحياناً يحتاج إلى إعادة الكلمة.",
+                sEn: "A few extra minutes of listening practice each day — even short cartoons in English — will help this grow.",
+                sAr: "بضع دقائق إضافية من التدريب على الاستماع يومياً حتى لو كانت رسوماً متحركة قصيرة بالإنجليزية ستساعد على تطوير هذه المهارة." },
+      needs: { en: "{n} is still getting used to hearing English regularly and benefits from repetition.",
+                ar: "ما زال {n} يتعود على سماع اللغة الإنجليزية بانتظام ويستفيد من التكرار.",
+                sEn: "Try replaying the lesson's audio at home, and celebrate every word they recognize.",
+                sAr: "جربوا إعادة تشغيل صوت الدرس في المنزل، واحتفلوا بكل كلمة يتعرف عليها." },
+    },
+    speaking: {
+      strong: { en: "{n} speaks up confidently and records nearly every word during homework practice.",
+                ar: "يتحدث {n} بثقة ويسجل تقريباً كل كلمة أثناء تدريب الواجب.",
+                sEn: "Encourage them to use new words in short sentences at home to build real conversation skills.",
+                sAr: "شجعوه على استخدام الكلمات الجديدة في جمل قصيرة في المنزل لبناء مهارات محادثة حقيقية." },
+      developing: { en: "{n} is willing to speak but still hesitates on some words.",
+                ar: "{n} مستعد للتحدث لكنه ما زال يتردد في بعض الكلمات.",
+                sEn: "Practicing the \"Say It\" recordings together, without rushing, builds real confidence.",
+                sAr: "التدرب معاً على تسجيلات \"قلها\" دون استعجال يبني ثقة حقيقية." },
+      needs: { en: "{n} is still warming up to speaking English out loud.",
+                ar: "ما زال {n} يتهيأ للتحدث بالإنجليزية بصوت عالٍ.",
+                sEn: "Start with just one word a day said out loud together — small wins add up quickly.",
+                sAr: "ابدأوا بكلمة واحدة فقط يومياً تُقال بصوت عالٍ معاً؛ الإنجازات الصغيرة تتراكم بسرعة." },
+    },
+    reading: {
+      strong: { en: "{n} reads and understands written words and short phrases with ease.",
+                ar: "يقرأ {n} ويفهم الكلمات والعبارات القصيرة المكتوبة بسهولة.",
+                sEn: "Point out English words on signs or packaging together to keep building this skill in daily life.",
+                sAr: "أشيروا معاً إلى الكلمات الإنجليزية على اللافتات أو العبوات لمواصلة تطوير هذه المهارة في الحياة اليومية." },
+      developing: { en: "{n} recognizes many words by sight but is still connecting letters to sounds.",
+                ar: "يتعرف {n} على العديد من الكلمات بصرياً لكنه ما زال يربط الحروف بالأصوات.",
+                sEn: "A few minutes tracing and sounding out letters together each day makes a real difference.",
+                sAr: "بضع دقائق من تتبع الحروف ونطقها معاً كل يوم تُحدث فرقاً حقيقياً." },
+      needs: { en: "{n} is at the beginning of connecting written words to their meaning.",
+                ar: "{n} في بداية ربط الكلمات المكتوبة بمعناها.",
+                sEn: "Reading the lesson's flashcards together, pointing at each word, builds this step by step.",
+                sAr: "قراءة بطاقات الدرس معاً مع الإشارة إلى كل كلمة تبني هذه المهارة خطوة بخطوة." },
+    },
+    writing: {
+      strong: { en: "{n} spells and writes new words correctly, most of the time on the first try.",
+                ar: "يكتب {n} ويتهجى الكلمات الجديدة بشكل صحيح، غالباً من المحاولة الأولى.",
+                sEn: "Try short writing games at home, like labeling toys or drawings with their English names.",
+                sAr: "جربوا ألعاب كتابة قصيرة في المنزل، مثل كتابة أسماء الألعاب أو الرسومات بالإنجليزية." },
+      developing: { en: "{n} can write familiar words but sometimes mixes up letters.",
+                ar: "يستطيع {n} كتابة الكلمات المألوفة لكنه أحياناً يخلط بين الحروف.",
+                sEn: "Practicing the same few words slowly, letter by letter, builds lasting memory.",
+                sAr: "التدرب على نفس الكلمات القليلة ببطء، حرفاً بحرف، يبني ذاكرة راسخة." },
+      needs: { en: "{n} is just starting to connect sounds to written letters.",
+                ar: "بدأ {n} للتو بربط الأصوات بالحروف المكتوبة.",
+                sEn: "Tracing letters together, with lots of encouragement, is the best next step.",
+                sAr: "تتبع الحروف معاً، مع الكثير من التشجيع، هو الخطوة التالية الأفضل." },
+    },
+  };
+
+  function tierOf(pct) {
+    if (pct === null) return null;
+    if (pct >= 85) return { key: "strong", color: "var(--green)", labelEn: "STRENGTH", labelAr: "نقطة قوة" };
+    if (pct >= 60) return { key: "developing", color: "var(--amber)", labelEn: "DEVELOPING", labelAr: "في تطور" };
+    return { key: "needs", color: "var(--red)", labelEn: "NEEDS PRACTICE", labelAr: "يحتاج إلى ممارسة" };
+  }
+
+  // ---------- cohort comparison ----------
+  const mates = LumioProfiles.groupmatesOf(student.id);
+  function cohortAvgFor(skillKey) {
+    if (!mates.length) return null;
+    const vals = mates.map(m => {
+      const mPrep = Object.values((Lumio.progressFor(m.name)[m.level]) || {});
+      const mHw = Object.values((Lumio.homeworkFor(m.name)[m.level]) || {});
+      if (skillKey === "listening") return avgPct(mPrep, "score", "total");
+      if (skillKey === "speaking") return avgPct(mHw, "said", "saidTotal");
+      if (skillKey === "reading") return avgPct(mHw, "quizCorrect", "quizTotal");
+      return avgPct(mHw, "spellingCorrect", "spellingTotal");
+    }).filter(v => v !== null);
+    if (!vals.length) return null;
+    return Math.round(vals.reduce((s, v) => s + v, 0) / vals.length);
+  }
+
+  // ---------- render ----------
+  const hasAnyData = prepLessons.length > 0 || hwLessons.length > 0;
+  if (!hasAnyData) {
+    main.innerHTML = `
+      <div class="top-card">
+        <h1>${student.name}</h1>
+        <div class="meta"><span>${levelName}</span>${student.cohort ? `<span>${student.cohort}${student.group ? " · " + student.group : ""}</span>` : ""}</div>
+      </div>
+      <div class="empty-state">${student.name} hasn't completed any lessons or homework yet — a report becomes available once they have.</div>`;
+    return;
+  }
+
+  const skillCardsHtml = Object.entries(skills).map(([key, s]) => {
+    if (s.pct === null) {
+      return `<div class="skill-card" style="--tier-color:#ccc">
+        <div class="skill-head"><div class="skill-name"><span class="icon">${s.icon}</span>${s.en} <span class="ar" style="font-size:.9rem;color:var(--cocoa-soft)">(${s.ar})</span></div></div>
+        <p style="color:var(--cocoa-soft);font-weight:700;font-size:.88rem;margin:0">Not enough data yet for this skill.</p>
+      </div>`;
+    }
+    const tier = tierOf(s.pct);
+    const copy = COPY[key][tier.key];
+    const enText = copy.en.replace("{n}", student.name);
+    const arText = copy.ar.replace("{n}", student.name);
+    const cohortAvg = cohortAvgFor(key);
+    return `<div class="skill-card" style="--tier-color:${tier.color}">
+      <div class="skill-head">
+        <div class="skill-name"><span class="icon">${s.icon}</span>${s.en} <span class="ar" style="font-size:.9rem;color:var(--cocoa-soft)">(${s.ar})</span></div>
+        <div class="skill-pct">${s.pct}%</div>
+      </div>
+      <div class="skill-tier-label">${tier.labelEn} · <span class="ar">${tier.labelAr}</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${s.pct}%"></div></div>
+      <div class="skill-text-block">
+        <div class="label">Observation</div>
+        <p class="en">${enText}</p>
+        <p class="ar">${arText}</p>
+      </div>
+      <div class="skill-text-block">
+        <div class="label">Suggestion for home</div>
+        <p class="en">${copy.sEn}</p>
+        <p class="ar">${copy.sAr}</p>
+      </div>
+      ${cohortAvg !== null
+        ? `<div class="cohort-row">📊 Cohort average: <b>${cohortAvg}%</b> ${s.pct >= cohortAvg ? "— at or above average" : "— below average"}</div>`
+        : ""}
+    </div>`;
+  }).join("");
+
+  const cohortNote = mates.length
+    ? `<p style="color:var(--cocoa-soft);font-weight:700;font-size:.85rem">Compared against ${mates.length} student${mates.length > 1 ? "s" : ""} in the same cohort, group, and level.</p>`
+    : `<p class="no-cohort">No cohort comparison available — assign ${student.name} a cohort and group to compare against groupmates.</p>`;
+
+  main.innerHTML = `
+    <div class="top-card">
+      <h1>${student.name}</h1>
+      <div class="meta"><span>${levelName}</span>${student.cohort ? `<span>${student.cohort}${student.group ? " · " + student.group : ""}</span>` : ""}</div>
+      <div class="tags">
+        <span class="tag">${prepLessons.length} lesson${prepLessons.length === 1 ? "" : "s"} prepped</span>
+        <span class="tag teal">${hwLessons.length} homework${hwLessons.length === 1 ? "" : "s"} done</span>
+        ${mates.length ? `<span class="tag purple">${mates.length} groupmate${mates.length > 1 ? "s" : ""}</span>` : ""}
+      </div>
+    </div>
+
+    <h2 class="section-title">Skills Breakdown · تفصيل المهارات</h2>
+    ${skillCardsHtml}
+
+    <h2 class="section-title">Cohort Comparison · مقارنة الدفعة</h2>
+    ${cohortNote}
+
+    <div class="actions">
+      <button class="btn btn-primary" id="copyBtn">📋 Copy for WhatsApp</button>
+      <a class="btn btn-ghost" href="teacher.html">← Back to dashboard</a>
+    </div>
+  `;
+
+  document.getElementById("copyBtn").onclick = async () => {
+    const lines = [`${student.name} — ${levelName} — Skills Report`, ""];
+    Object.entries(skills).forEach(([key, s]) => {
+      if (s.pct === null) return;
+      const tier = tierOf(s.pct);
+      const copy = COPY[key][tier.key];
+      lines.push(`${s.en} (${s.ar}): ${s.pct}% — ${tier.labelEn}`);
+      lines.push(copy.en.replace("{n}", student.name));
+      lines.push(copy.ar.replace("{n}", student.name));
+      lines.push(`💡 ${copy.sEn}`);
+      lines.push(`💡 ${copy.sAr}`);
+      lines.push("");
+    });
+    try {
+      await navigator.clipboard.writeText(lines.join("\n"));
+      const btn = document.getElementById("copyBtn");
+      const original = btn.textContent;
+      btn.textContent = "✓ Copied!";
+      setTimeout(() => { btn.textContent = original; }, 1800);
+    } catch (e) {
+      alert("Couldn't copy — your browser may be blocking clipboard access.");
+    }
+  };
+})();
+</script>
+</body>
+</html>

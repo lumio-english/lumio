@@ -323,13 +323,13 @@
   .td-roster-card .pinval{font-family:monospace;font-weight:800;letter-spacing:2px;color:var(--td-ink)}
   .td-roster-card .pintoggle{background:none;border:none;cursor:pointer;color:var(--td-indigo);font-weight:700;font-size:.72rem;padding:0}
   .td-roster-card .acts{display:flex;gap:6px}
-  .td-roster-card .acts button{
+  .td-roster-card .acts button, .td-roster-card .acts a{
     flex:1;padding:6px 0;border-radius:8px;border:1px solid var(--td-border);background:#fff;
-    font-weight:700;font-size:.74rem;cursor:pointer;color:var(--td-ink-soft);
+    font-weight:700;font-size:.74rem;cursor:pointer;color:var(--td-ink-soft);text-align:center;
     transition:transform .12s ease,border-color .15s ease,color .15s ease;
   }
-  .td-roster-card .acts button:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark);transform:translateY(-1px)}
-  .td-roster-card .acts button:active{transform:translateY(0) scale(.95)}
+  .td-roster-card .acts button:hover, .td-roster-card .acts a:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark);transform:translateY(-1px)}
+  .td-roster-card .acts button:active, .td-roster-card .acts a:active{transform:translateY(0) scale(.95)}
   .td-roster-card .acts button.danger:hover{border-color:var(--td-coral);color:var(--td-coral)}
 
   /* ---------- Modal (add/edit student) ---------- */
@@ -1679,7 +1679,7 @@
           <button type="button" data-act="edit">Edit</button>
           <button type="button" data-act="pin">New PIN</button>
           <button type="button" data-act="recordings">🎙️ Recordings</button>
-          <button type="button" data-act="report">📋 Report</button>
+          <a data-act="report" style="text-decoration:none">📋 Report</a>
           <button type="button" class="danger" data-act="remove">Remove</button>
         </div>`;
       const pinVal = card.querySelector(".pinval");
@@ -1693,7 +1693,7 @@
       }
       card.querySelector('[data-act="edit"]').onclick = () => openStudentModal(p);
       card.querySelector('[data-act="recordings"]').onclick = () => openRecordingsModal(p.name);
-      card.querySelector('[data-act="report"]').onclick = () => openCheckpointReportModal(p.name, p.level);
+      card.querySelector('[data-act="report"]').href = `report.html?student=${p.id}`;
       card.querySelector('[data-act="pin"]').onclick = async (e) => {
         await withLoading(e.currentTarget, async () => {
           const newPin = LumioProfiles.randomPin();
