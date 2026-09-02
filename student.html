@@ -470,6 +470,31 @@
 
   /* ---------- My Schedule ---------- */
   .sd-schedule-card{background:#fff;border-radius:var(--sd-radius);padding:20px 24px;box-shadow:0 4px 16px rgba(0,0,0,.05)}
+  /* The Prep -> Class -> Homework breadcrumb, showing exactly where the
+     student's current lesson sits in the 3-step cycle. Sits above the
+     upcoming-classes list within the same schedule card, since "what's
+     next in my lesson cycle" and "when's my next class" are naturally
+     one glance for a student, not two separate places to check. */
+  .sd-trail{margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid #F3EEE4}
+  .sd-trail-title{font-weight:800;font-size:.82rem;color:var(--sd-cocoa-soft);margin-bottom:10px;text-transform:uppercase;letter-spacing:.3px}
+  .sd-trail-row{display:flex;align-items:center}
+  .sd-trail-step{display:flex;flex-direction:column;align-items:center;gap:4px;width:76px;flex-shrink:0}
+  .sd-trail-icon{
+    width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:1.1rem;font-weight:800;background:#F6EFE3;color:#C9B79C;transition:all .2s ease;
+  }
+  .sd-trail-step.done .sd-trail-icon{background:linear-gradient(135deg,#4ADE80,#16A34A);color:#fff}
+  .sd-trail-step.active .sd-trail-icon{
+    background:linear-gradient(135deg,var(--sd-orange,#FF8A3D),var(--sd-orange-deep,#F9720C));color:#fff;
+    box-shadow:0 0 0 4px rgba(249,115,22,.18);animation:sdTrailPulse 1.8s ease-in-out infinite;
+  }
+  @keyframes sdTrailPulse{0%,100%{box-shadow:0 0 0 4px rgba(249,115,22,.18)}50%{box-shadow:0 0 0 8px rgba(249,115,22,.1)}}
+  .sd-trail-label{font-size:.68rem;font-weight:800;color:var(--sd-cocoa-soft);text-align:center}
+  .sd-trail-step.active .sd-trail-label{color:var(--sd-orange-deep,#F9720C)}
+  .sd-trail-step.done .sd-trail-label{color:#16A34A}
+  .sd-trail-connector{flex:1;height:3px;background:#F0E9DA;margin:0 -6px 20px;border-radius:2px}
+  .sd-trail-connector.done{background:#4ADE80}
+  .sd-trail-complete{font-weight:800;font-size:.92rem;color:#16A34A;text-align:center;padding:6px 0}
   .sd-next-class{
     display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,var(--sd-teal),var(--sd-teal-deep));
     color:#fff;border-radius:18px;padding:16px 18px;margin-bottom:14px;
@@ -637,6 +662,7 @@
   <!-- My Schedule -->
   <div class="sd-section-title" id="scheduleCard"><h3>My schedule</h3></div>
   <div class="sd-schedule-card">
+    <div id="scheduleTrail"></div>
     <div id="scheduleNext"></div>
     <div id="scheduleList"></div>
     <div class="sd-empty-note" id="scheduleEmptyNote" style="display:none">No classes booked yet — ask your teacher! 🙂</div>
@@ -1093,6 +1119,41 @@
   }
 
   // ---------- my schedule ----------
+  // Breadcrumb: which of the 3 cycle steps (Prep -> Class -> Homework) the
+  // student's current lesson is at, right where they'd naturally look to
+  // check "what's next" -- reuses current/isPrepDone/isLiveDone/
+  // isHomeworkDone computed above for the mission card and map, rather
+  // than recomputing the same gating logic a third time.
+  try {
+    const trailEl = document.getElementById("scheduleTrail");
+    if (current > total) {
+      trailEl.innerHTML = `<div class="sd-trail sd-trail-complete">🎉 You've finished every lesson in this level!</div>`;
+    } else {
+      const steps = [
+        { key: "prep", label: "Preparation", icon: "📖", done: isPrepDone(current) },
+        { key: "class", label: "Lesson", icon: "🎥", done: isLiveDone(current) },
+        { key: "hw", label: "Homework", icon: "📝", done: isHomeworkDone(current) },
+      ];
+      // The first not-done step is "active" -- the one thing standing
+      // between the student and unlocking the next lesson right now.
+      let activeFound = false;
+      const stepsHtml = steps.map((s, i) => {
+        let cls = "upcoming";
+        if (s.done) cls = "done";
+        else if (!activeFound) { cls = "active"; activeFound = true; }
+        const connector = i < steps.length - 1 ? `<div class="sd-trail-connector ${s.done ? "done" : ""}"></div>` : "";
+        return `<div class="sd-trail-step ${cls}">
+            <div class="sd-trail-icon">${s.done ? "✓" : s.icon}</div>
+            <div class="sd-trail-label">${s.label}</div>
+          </div>${connector}`;
+      }).join("");
+      trailEl.innerHTML = `
+        <div class="sd-trail-title">Lesson ${current} progress</div>
+        <div class="sd-trail-row">${stepsHtml}</div>`;
+    }
+  } catch (e) {
+    console.error("Lumio schedule trail render error:", e);
+  }
   try {
     if (window.LumioSchedule) {
       const upcoming = LumioSchedule.upcomingForStudent(u.name, 10);
