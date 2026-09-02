@@ -932,17 +932,20 @@
   const total = meta.lessons || 20;
   const stars = entries.reduce((s, [,r]) => s + (r.stars || 0), 0);
 
-  // A lesson only counts toward "done" once its prep (this data, prog[n])
-  // AND its live class with the teacher (LumioSchedule attendance) are
-  // both complete — same combined rule js/dashboard.js uses for the
-  // adventure map itself, kept in sync here since this block also drives
-  // the story-part unlock thresholds and the "today's mission" card.
+  // A lesson only counts toward "done" once its prep (this data, prog[n]),
+  // its live class with the teacher (LumioSchedule attendance), AND its
+  // homework (Lumio.homeworkFor) are all complete — same combined rule
+  // js/dashboard.js uses for the adventure map itself, kept in sync here
+  // since this block also drives the story-part unlock thresholds and the
+  // "today's mission" card.
   const attendedSet = (window.LumioSchedule && LumioSchedule.attendedLessonNumbers)
     ? LumioSchedule.attendedLessonNumbers(u.name, level)
     : new Set();
+  const hwProg = (typeof Lumio !== "undefined" && Lumio.homeworkFor) ? (Lumio.homeworkFor(u.name)[level] || {}) : {};
   const isPrepDone = n => !!prog[n];
   const isLiveDone = n => attendedSet.has(n);
-  const isFullyDone = n => isPrepDone(n) && isLiveDone(n);
+  const isHomeworkDone = n => !!hwProg[n];
+  const isFullyDone = n => isPrepDone(n) && isLiveDone(n) && isHomeworkDone(n);
   let current = total + 1; // sentinel: every lesson fully done
   for (let n = 1; n <= total; n++) {
     if (!isFullyDone(n)) { current = n; break; }
@@ -1017,6 +1020,7 @@
   // isn't fully done yet — it needs either its prep or its live class.
   const nextLessonNum = current;
   const awaitingClass = current <= total && isPrepDone(current) && !isLiveDone(current);
+  const awaitingHomework = current <= total && isPrepDone(current) && isLiveDone(current) && !isHomeworkDone(current);
   // Writing-practice sheets only exist for pre-a/level1/level2/level3 so far
   // — hide the button entirely for level4-6 rather than link to a PDF that
   // doesn't exist yet.
@@ -1039,6 +1043,19 @@
     document.getElementById("missionSub").textContent = "Your live class with your teacher unlocks the next lesson — check My Schedule below.";
     document.getElementById("missionBtn").textContent = "📅 My schedule";
     document.getElementById("missionBtn").href = "#scheduleCard";
+    document.getElementById("homeworkBtn").href = `homework.html?level=${level}&n=${nextLessonNum}`;
+    document.getElementById("worksheetBtn").href = `worksheets/${level}/lesson${String(nextLessonNum).padStart(2,"0")}-homework.pdf`;
+    if (hasWritingPractice) document.getElementById("writingBtn").href = `writing/${level}/lesson${String(nextLessonNum).padStart(2,"0")}-writing.pdf`;
+    document.getElementById("flashcardsBtn").href = `flashcards/${level}/lesson${String(nextLessonNum).padStart(2,"0")}-flashcards.pdf`;
+  } else if (awaitingHomework) {
+    // Prep and the live class are both done — homework is the one thing
+    // left before the next lesson's prep unlocks, so point straight at
+    // it rather than at lesson.html (already done) or the schedule
+    // (nothing more to book for this lesson).
+    document.getElementById("missionTitle").textContent = `Lesson ${nextLessonNum}: class done! 📝`;
+    document.getElementById("missionSub").textContent = "Finish this lesson's homework to unlock the next one.";
+    document.getElementById("missionBtn").textContent = "📝 Do homework";
+    document.getElementById("missionBtn").href = `homework.html?level=${level}&n=${nextLessonNum}`;
     document.getElementById("homeworkBtn").href = `homework.html?level=${level}&n=${nextLessonNum}`;
     document.getElementById("worksheetBtn").href = `worksheets/${level}/lesson${String(nextLessonNum).padStart(2,"0")}-homework.pdf`;
     if (hasWritingPractice) document.getElementById("writingBtn").href = `writing/${level}/lesson${String(nextLessonNum).padStart(2,"0")}-writing.pdf`;

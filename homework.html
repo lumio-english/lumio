@@ -100,6 +100,7 @@
 </div>
 
 <script src="js/app.js"></script>
+<script src="js/lumio-schedule.js"></script>
 <script src="js/lessons-data.js"></script>
 <script>
 const qs = k => new URLSearchParams(location.search).get(k);
@@ -526,6 +527,33 @@ function submitHomework() {
 function qWordsCountSafe() { return Math.min(4, lesson.vocab.length); }
 
 async function init() {
+  // Homework is the third step in the prep -> live class -> homework
+  // cycle -- gate it here for real, not just visually on the dashboard's
+  // map, so a student can't just navigate straight to this URL and finish
+  // homework before their class has actually happened. A student with no
+  // schedule data at all (LumioSchedule not loaded, or genuinely no
+  // classes booked yet) is let through rather than blocked, since that's
+  // a data-availability gap, not evidence the class hasn't happened.
+  if (user && window.LumioSchedule && LumioSchedule.attendedLessonNumbers) {
+    const attended = LumioSchedule.attendedLessonNumbers(user.name, level);
+    if (!attended.has(num)) {
+      document.getElementById("hwSections").innerHTML = `
+        <div class="hw-card" style="text-align:center">
+          <div style="font-size:2.4rem;margin-bottom:6px">🕐</div>
+          <h2 style="justify-content:center">Not quite yet!</h2>
+          <p style="color:var(--cocoa-soft);font-weight:700;margin:0 0 4px">
+            Homework for this lesson unlocks after your live class with your teacher.
+          </p>
+          <p style="color:var(--cocoa-soft);font-weight:700;margin:0">
+            Check <a href="student.html#scheduleCard" style="color:var(--orange-deep)">My Schedule</a> to see when your next class is.
+          </p>
+        </div>`;
+      document.getElementById("hwLevelLabel").textContent = "";
+      document.getElementById("hwSteps").style.display = "none";
+      return;
+    }
+  }
+
   let lessonData = (typeof window.LUMIO_LESSONS !== "undefined" && window.LUMIO_LESSONS[level]) ? window.LUMIO_LESSONS[level][num] : null;
   if (!lessonData) {
     try {

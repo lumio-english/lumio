@@ -278,6 +278,20 @@ label { font-weight: 800; display: block; margin: 16px 0 8px; font-size: .95rem;
   font-family: var(--font-body); font-weight: 800; font-size: .58rem;
   letter-spacing: .2px; margin-top: 1px; color: var(--teal);
 }
+/* Prep AND the live class are both done -- homework is the one thing left
+   before the next lesson's prep unlocks. Violet rather than .awaiting's
+   teal, so the two "waiting" states read as visually distinct at a glance
+   (this one still has an action the student can take right now; .awaiting
+   genuinely doesn't). */
+.node.awaiting-hw {
+  background: #EDE9FE; color: #7C3AED;
+  box-shadow: 0 2px 4px rgba(124,58,237,.15), inset 0 0 0 3px rgba(124,58,237,.18);
+}
+.node.awaiting-hw .n-clock { font-size: 1.05rem; line-height: 1; }
+.node.awaiting-hw .n-wait-label {
+  font-family: var(--font-body); font-weight: 800; font-size: .58rem;
+  letter-spacing: .2px; margin-top: 1px; color: #7C3AED;
+}
 .node.current::before {
   content: ""; position: absolute; top: -60px; width: 58px; height: 58px;
   background: url('../assets/story/characters/lumi-hero.png') center/contain no-repeat;
