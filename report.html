@@ -56,6 +56,18 @@
   .chart-legend span { display:flex; align-items:center; gap:7px; font-size:.82rem; font-weight:800; color:var(--cocoa-soft); }
   .chart-legend i { display:inline-block; width:16px; height:3px; border-radius:2px; }
   .chart-caption { font-size:.76rem; color:var(--cocoa-soft); font-weight:700; text-align:center; margin:10px 0 0; }
+  .habits-card { background:var(--card); border-radius:20px; padding:24px 26px; box-shadow:0 4px 14px rgba(67,48,31,.06); margin-bottom:10px; }
+  .habits-row { display:flex; gap:18px; flex-wrap:wrap; margin-bottom:18px; }
+  .habit-stat { flex:1; min-width:130px; text-align:center; background:#FAF7F2; border-radius:14px; padding:16px 10px; }
+  .habit-num { font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1.7rem; color:var(--cocoa); }
+  .habit-label { font-size:.74rem; font-weight:700; color:var(--cocoa-soft); margin-top:4px; line-height:1.4; }
+  .habit-label .ar { font-family:'Tajawal',sans-serif; direction:rtl; display:inline-block; }
+  .habit-insight { border-top:1px solid #F0EAE0; padding-top:16px; }
+  .habit-insight-title { font-family:'Baloo 2',sans-serif; font-weight:800; font-size:.95rem; margin-bottom:8px; }
+  .habit-insight p { font-weight:700; line-height:1.5; margin:0 0 6px; }
+  .habit-insight p.ar { font-size:1rem; }
+  .habit-tip { color:var(--teal); font-size:.85rem; }
+  .habit-note { color:var(--cocoa-soft); font-weight:700; font-size:.85rem; font-style:italic; margin:0; }
   .actions { display:flex; gap:12px; margin-top:26px; flex-wrap:wrap; }
   .btn { border:none; border-radius:999px; padding:13px 26px; font-weight:800; font-size:.95rem; cursor:pointer; font-family:'Nunito',sans-serif; text-decoration:none; display:inline-flex; align-items:center; gap:8px; }
   .btn-primary { background:var(--orange); color:#fff; }
@@ -306,8 +318,42 @@
     return;
   }
 
-  const skillCardsHtml = Object.entries(skills).map(([key, s]) => {
-    if (s.pct === null) {
+  // ---------- learning habits: connects prep quality to homework outcome,
+  // and surfaces study-consistency signals -- distinct from the LSRW skill
+  // breakdown above, closer to "how are they engaging" than "how skilled
+  // are they." Every number here comes from real dated records already
+  // being saved (prep, homework, and attended classes each carry their
+  // own date), nothing estimated.
+  const allDates = [
+    ...prepLessons.map(r => r.date), ...hwLessons.map(r => r.date),
+    ...((window.LumioSchedule && LumioSchedule.listClasses) ? LumioSchedule.listClasses({ studentName: student.name }).filter(c => c.attendance === "present").map(c => c.date) : []),
+  ].filter(Boolean).sort();
+  const lastActiveDate = allDates.length ? allDates[allDates.length - 1] : null;
+  const daysSinceActive = lastActiveDate ? Math.max(0, Math.floor((new Date() - new Date(lastActiveDate)) / 86400000)) : null;
+
+  // Prep -> homework correlation: for every lesson with BOTH a prep score
+  // and a homework score, split into "well-prepped" (prep >= 85%) vs
+  // "under-prepped" (prep < 85%) and compare the average homework score
+  // in each bucket -- a genuine, real comparison from the student's own
+  // paired data, not a general claim about prep mattering.
+  const pairedLessons = Object.keys(prep).filter(n => hw[n]).map(n => ({
+    prepPct: prep[n].total ? (prep[n].score / prep[n].total) * 100 : null,
+    hwPct: hw[n].total ? (hw[n].score / hw[n].total) * 100 : null,
+  })).filter(r => r.prepPct !== null && r.hwPct !== null);
+  const wellPrepped = pairedLessons.filter(r => r.prepPct >= 85);
+  const underPrepped = pairedLessons.filter(r => r.prepPct < 85);
+  const avgOf = arr => arr.length ? Math.round(arr.reduce((s, r) => s + r.hwPct, 0) / arr.length) : null;
+  const wellPreppedHwAvg = avgOf(wellPrepped);
+  const underPreppedHwAvg = avgOf(underPrepped);
+  // Only worth showing once there's at least 2 lessons in each bucket --
+  // fewer than that isn't a real pattern, it's a coincidence dressed up
+  // as one.
+  const hasCorrelation = wellPrepped.length >= 2 && underPrepped.length >= 2;
+
+  const prepAvgScore = avgPct(prepLessons, "score", "total");
+  const hwAvgScore = avgPct(hwLessons, "score", "total");
+
+  const skillCardsHtml = Object.entries(skills).map(([key, s]) => {    if (s.pct === null) {
       return `<div class="skill-card" style="--tier-color:#ccc">
         <div class="skill-head"><div class="skill-name"><span class="icon">${s.icon}</span>${s.en} <span class="ar" style="font-size:.9rem;color:var(--cocoa-soft)">(${s.ar})</span></div></div>
         <p style="color:var(--cocoa-soft);font-weight:700;font-size:.88rem;margin:0">Not enough data yet for this skill.</p>
@@ -356,6 +402,33 @@
       </div>
     </div>
 
+    <h2 class="section-title">Learning Habits · عادات التعلم</h2>
+    <div class="habits-card">
+      <div class="habits-row">
+        <div class="habit-stat">
+          <div class="habit-num">${prepAvgScore !== null ? prepAvgScore + "%" : "—"}</div>
+          <div class="habit-label">Average prep score<br><span class="ar">متوسط درجة التحضير</span></div>
+        </div>
+        <div class="habit-stat">
+          <div class="habit-num">${hwAvgScore !== null ? hwAvgScore + "%" : "—"}</div>
+          <div class="habit-label">Average homework score<br><span class="ar">متوسط درجة الواجب</span></div>
+        </div>
+        <div class="habit-stat">
+          <div class="habit-num" style="color:${daysSinceActive !== null && daysSinceActive > 7 ? "var(--red)" : "var(--cocoa)"}">${daysSinceActive !== null ? daysSinceActive : "—"}</div>
+          <div class="habit-label">Days since last activity<br><span class="ar">أيام منذ آخر نشاط</span></div>
+        </div>
+      </div>
+      ${hasCorrelation ? `
+      <div class="habit-insight">
+        <div class="habit-insight-title">📈 Prep-to-homework connection · العلاقة بين التحضير والواجب</div>
+        <p class="en">On lessons where ${student.name} finished prep strongly (85%+), homework scores averaged <b>${wellPreppedHwAvg}%</b>. On lessons with weaker prep, homework averaged <b>${underPreppedHwAvg}%</b>.</p>
+        <p class="ar">في الدروس التي أنهى فيها ${student.name} التحضير بشكل قوي (85% فأكثر)، بلغ متوسط درجات الواجب <b>${wellPreppedHwAvg}%</b>. أما في الدروس ذات التحضير الأضعف، بلغ المتوسط <b>${underPreppedHwAvg}%</b>.</p>
+        ${wellPreppedHwAvg !== null && underPreppedHwAvg !== null && wellPreppedHwAvg > underPreppedHwAvg
+          ? `<p class="habit-tip">💡 Strong prep is clearly paying off for ${student.name} — worth mentioning to keep the habit going. / التحضير القوي يُحدث فرقاً واضحاً؛ يستحق الإشارة إليه للحفاظ على هذه العادة.</p>`
+          : ""}
+      </div>` : `<p class="habit-note">Not enough paired prep + homework data yet for a reliable pattern — this appears once a few more lessons are done.</p>`}
+    </div>
+
     <h2 class="section-title">Skills Breakdown · تفصيل المهارات</h2>
     ${skillCardsHtml}
 
@@ -379,6 +452,11 @@
 
   document.getElementById("copyBtn").onclick = async () => {
     const lines = [`${student.name} — ${levelName} — Skills Report`, ""];
+    if (hasCorrelation) {
+      lines.push(`Learning habits: prep score ${prepAvgScore}%, homework score ${hwAvgScore}%.`);
+      lines.push(`When prep was strong (85%+), homework averaged ${wellPreppedHwAvg}%; with weaker prep, it averaged ${underPreppedHwAvg}%.`);
+      lines.push("");
+    }
     Object.entries(skills).forEach(([key, s]) => {
       if (s.pct === null) return;
       const tier = tierOf(s.pct);
