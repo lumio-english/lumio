@@ -2207,19 +2207,23 @@
   const gameMapOverlay = document.getElementById("gameMapOverlay");
   const gameMapPath = document.getElementById("gameMapPath");
   document.getElementById("gameMapTitle").textContent = `${gameInfo.icon} ${gameInfo.title}`;
-  document.getElementById("gameMapSub").textContent = "Pick any lesson you've already prepped to play!";
+  document.getElementById("gameMapSub").textContent = "Finish a lesson's homework to unlock its part of the game!";
 
   function renderGameMap() {
     const N = meta.lessons || 20;
     gameMapPath.innerHTML = "";
     for (let n = 1; n <= N; n++) {
-      const unlocked = !!prog[n];
+      // The mini-game is the 4th and final step of the cycle now, not a
+      // side activity available as soon as prep is done -- each part only
+      // unlocks once that lesson's homework is finished, same isHomeworkDone
+      // already computed above for the map and the schedule trail.
+      const unlocked = isHomeworkDone(n);
       const el = document.createElement(unlocked ? "a" : "div");
       el.className = `node ${unlocked ? "done" : "locked"}`;
       if (unlocked) {
         el.href = `games/${gameInfo.file}?level=${level}&n=${n}`;
       } else {
-        el.title = "Finish this lesson's prep to unlock its game";
+        el.title = "Finish this lesson's homework to unlock its part of the game";
       }
       el.innerHTML = unlocked
         ? `<span>${n}</span>`
