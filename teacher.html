@@ -150,6 +150,13 @@
   .td-badge.absent{background:var(--td-coral-soft);color:var(--td-coral)}
   .td-badge.noshow{background:var(--td-amber-soft);color:#B87A16}
   .td-badge.grade{background:var(--td-indigo-soft,#EDE9FE);color:var(--td-indigo,#6952E0)}
+  .td-rec-share{
+    flex-shrink:0;padding:6px 12px;border-radius:8px;border:1px solid var(--td-border);background:#fff;
+    font-weight:700;font-size:.74rem;cursor:pointer;color:var(--td-ink-soft);white-space:nowrap;
+    transition:transform .12s ease,border-color .15s ease,color .15s ease;
+  }
+  .td-rec-share:hover{border-color:var(--td-teal);color:var(--td-teal);transform:translateY(-1px)}
+  .td-rec-share:active{transform:translateY(0) scale(.95)}
   #needsAttendanceCount{
     display:inline-flex;align-items:center;justify-content:center;min-width:16px;height:16px;padding:0 4px;
     background:var(--td-coral);color:#fff;border-radius:99px;font-size:.65rem;font-weight:800;margin-left:4px;
@@ -1061,6 +1068,36 @@
   const recordingsOverlay = document.getElementById("recordingsOverlay");
   const recordingsList = document.getElementById("recordingsList");
   let recordingsObjectUrls = [];
+  // Shares one recording directly with a parent. Tries the native share
+  // sheet first (navigator.share with a real file attached) -- on a
+  // phone this is a single tap straight into WhatsApp, which is the
+  // actual point of this button given how much of this teacher's day
+  // already happens there. Falls back to a plain download when the
+  // browser can't share files (older/desktop browsers, mainly), so the
+  // button always does *something* useful rather than silently failing.
+  async function shareRecording(rec, studentName) {
+    const safeName = (s) => (s || "").replace(/[^a-zA-Z0-9\u0600-\u06FF]+/g, "-").replace(/^-+|-+$/g, "");
+    const ext = (rec.blob.type && rec.blob.type.split("/")[1]) || "webm";
+    const filename = `${safeName(studentName)}-Lesson${rec.lessonNum}-${safeName(rec.wordEn)}.${ext}`;
+    const file = new File([rec.blob], filename, { type: rec.blob.type || "audio/webm" });
+    const shareText = `${studentName} saying "${rec.wordEn}" \u2014 Lesson ${rec.lessonNum}`;
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], text: shareText, title: "Lumio recording" });
+        return;
+      } catch (e) {
+        if (e && e.name === "AbortError") return; // teacher cancelled the share sheet -- not an error
+        // fall through to download on any other failure
+      }
+    }
+    const url = URL.createObjectURL(file);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    showToast("Downloaded \u2014 attach it in WhatsApp to send.", "success");
+  }
+
   async function openRecordingsModal(studentName) {
     document.getElementById("recordingsTitle").textContent = `${studentName} \u2014 Recordings`;
     recordingsList.innerHTML = `<p class="sub">Loading\u2026</p>`;
@@ -1084,9 +1121,11 @@
         const rows = recs.map(r => {
           const url = URL.createObjectURL(r.blob);
           recordingsObjectUrls.push(url);
+          const shareId = "rec_" + r.id.replace(/[^a-zA-Z0-9]/g, "_");
           return `<div style="display:flex;align-items:center;gap:10px;padding:6px 0">
             <span style="font-weight:700;font-size:.85rem;min-width:90px">${r.wordEn}</span>
             <audio controls src="${url}" style="height:32px;flex:1"></audio>
+            <button type="button" class="td-rec-share" id="${shareId}" title="Share with a parent">📤 Share</button>
           </div>`;
         }).join("");
         return `<div style="margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--td-border)">
@@ -1094,6 +1133,15 @@
           ${rows}
         </div>`;
       }).join("");
+      // Wired up after the innerHTML write above so each button closes
+      // over its own recording's blob/word/lesson, not whichever was
+      // last in the loop.
+      mine.forEach(r => {
+        const shareId = "rec_" + r.id.replace(/[^a-zA-Z0-9]/g, "_");
+        const btn = document.getElementById(shareId);
+        if (!btn) return;
+        btn.onclick = () => shareRecording(r, studentName);
+      });
     } catch (e) {
       recordingsList.innerHTML = `<p class="sub">Couldn't load recordings on this device.</p>`;
     }
