@@ -502,6 +502,13 @@
   .sd-next-class .ic{font-size:1.8rem}
   .sd-next-class .when{font-weight:800;font-size:1.05rem}
   .sd-next-class .sub{font-weight:700;opacity:.9;font-size:.85rem}
+  .sd-join-link{
+    display:inline-block;margin-top:8px;background:rgba(255,255,255,.22);color:#fff;font-weight:800;
+    font-size:.8rem;padding:6px 12px;border-radius:999px;text-decoration:none;
+  }
+  .sd-class-row .sd-join-link{
+    background:var(--sd-teal-soft,#E0F5F3);color:var(--sd-teal,#0D9488);margin-top:3px;padding:4px 10px;font-size:.74rem;
+  }
   .sd-class-row{
     display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid #F3EEE4;
   }
@@ -1186,7 +1193,8 @@
             <div class="ic">🎥</div>
             <div>
               <div class="when">${fmtSchedDay(next.date)} at ${fmtSchedTime(next.startTime)}</div>
-              <div class="sub">Next class with ${next.teacherName || "your teacher"} · ${next.durationMinutes} min</div>
+              <div class="sub">Next class with ${next.teacherName || "your teacher"} · ${next.durationMinutes} min${next.students && next.students.length > 1 ? ` · with ${next.students.length - 1} classmate${next.students.length > 2 ? "s" : ""}` : ""}</div>
+              ${next.meetingLink ? `<a href="${next.meetingLink}" target="_blank" rel="noopener" class="sd-join-link">🔗 Join class link</a>` : ""}
             </div>
           </div>`;
         listEl.innerHTML = upcoming.slice(1).map(c => `
@@ -1195,6 +1203,7 @@
             <div>
               <div class="who">${c.teacherName || "Your teacher"}</div>
               <div class="meta">${c.durationMinutes} min${c.notes ? " · " + c.notes : ""}</div>
+              ${c.meetingLink ? `<a href="${c.meetingLink}" target="_blank" rel="noopener" class="sd-join-link">🔗 Join link</a>` : ""}
             </div>
           </div>`).join("");
       }

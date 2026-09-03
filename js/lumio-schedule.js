@@ -193,6 +193,22 @@
     });
     if (patch.durationMinutes !== undefined) c.durationMinutes = Number(patch.durationMinutes) || c.durationMinutes;
     if (patch.lessonNumber !== undefined) c.lessonNumber = patch.lessonNumber ? Number(patch.lessonNumber) : null;
+    // Replacing the roster preserves each remaining student's existing
+    // attendance/grade/rating rather than wiping it just because the
+    // class was re-saved -- only a genuinely new student (not in the
+    // old list) starts fresh, and a removed student's data simply drops
+    // with them.
+    if (patch.students !== undefined) {
+      const bySlotKey = s => (s.studentId || "") + "|" + normName(s.studentName);
+      const oldByKey = {};
+      c.students.forEach(s => { oldByKey[bySlotKey(s)] = s; });
+      c.students = patch.students.map(s => {
+        const key = (s.studentId || "") + "|" + normName(s.studentName);
+        const existing = oldByKey[key];
+        return existing || { studentId: s.studentId || null, studentName: s.studentName, attendance: null, grade: null, teacherRatingStars: null };
+      });
+      refreshStatus(c);
+    }
     c.updatedAt = new Date().toISOString();
     save(data);
     return c;

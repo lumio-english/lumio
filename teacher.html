@@ -129,12 +129,27 @@
   .td-class-acts button:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark);transform:translateY(-1px)}
   .td-class-acts button:active{transform:translateY(0) scale(.95)}
   .td-class-acts button.danger:hover{border-color:var(--td-coral);color:var(--td-coral)}
-  .td-class-acts button.att-present:hover{border-color:var(--td-teal);color:var(--td-teal)}
-  .td-class-acts button.att-absent:hover{border-color:var(--td-coral);color:var(--td-coral)}
-  .td-class-acts button.att-noshow:hover{border-color:var(--td-amber);color:#B87A16}
+  .td-class-students-list{display:flex;flex-direction:column;gap:5px;margin:4px 0}
+  .td-class-student{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:.82rem}
+  .td-class-student .nm{font-weight:700}
+  .td-student-acts{display:inline-flex;align-items:center;gap:4px;margin-right:auto}
+  .td-student-acts button{
+    width:24px;height:24px;border-radius:7px;border:1px solid var(--td-border);background:#fff;
+    font-size:.72rem;cursor:pointer;color:var(--td-ink-soft);
+    transition:transform .12s ease,border-color .15s ease,color .15s ease;
+  }
+  .td-student-acts button:hover{transform:translateY(-1px)}
+  .td-student-acts button.att-present:hover{border-color:var(--td-teal);color:var(--td-teal)}
+  .td-student-acts button.att-absent:hover{border-color:var(--td-coral);color:var(--td-coral)}
+  .td-student-acts button.att-noshow:hover{border-color:var(--td-amber);color:#B87A16}
+  .td-grade-select{
+    border-radius:7px;border:1px solid var(--td-border);background:#fff;font-size:.72rem;font-weight:700;
+    padding:3px 4px;color:var(--td-ink-soft);cursor:pointer;
+  }
   .td-badge.present{background:var(--td-teal-soft);color:var(--td-teal)}
   .td-badge.absent{background:var(--td-coral-soft);color:var(--td-coral)}
   .td-badge.noshow{background:var(--td-amber-soft);color:#B87A16}
+  .td-badge.grade{background:var(--td-indigo-soft,#EDE9FE);color:var(--td-indigo,#6952E0)}
   #needsAttendanceCount{
     display:inline-flex;align-items:center;justify-content:center;min-width:16px;height:16px;padding:0 4px;
     background:var(--td-coral);color:#fff;border-radius:99px;font-size:.65rem;font-weight:800;margin-left:4px;
@@ -893,10 +908,17 @@
 <!-- ===== Book / Edit class modal ===== -->
 <div class="td-overlay" id="classModalOverlay">
   <div class="td-modal-box">
-    <h3 id="classModalTitle">Book a class</h3>
+    <h3 id="classModalTitle">Book a group class</h3>
     <div class="td-field">
-      <label for="clsStudent">Student</label>
-      <select id="clsStudent"></select>
+      <label for="clsGroupPicker">Cohort &amp; group</label>
+      <select id="clsGroupPicker"></select>
+      <div class="td-field-hint" style="font-weight:600;color:var(--td-muted);font-size:.78rem;margin-top:4px">
+        Pick a level first if needed — only students sharing the same cohort, group, and level can be booked into one session together.
+      </div>
+    </div>
+    <div class="td-field">
+      <label>Students in this session <span style="font-weight:600;color:var(--td-muted)">(2–4 typical)</span></label>
+      <div id="clsStudentChecks" style="display:flex;flex-direction:column;gap:6px;max-height:160px;overflow-y:auto;border:1px solid var(--td-border);border-radius:10px;padding:8px"></div>
       <div class="td-field-error" id="clsStudentError"></div>
     </div>
     <div class="td-field" style="display:flex;gap:10px">
@@ -912,18 +934,22 @@
     <div class="td-field">
       <label for="clsDuration">Duration</label>
       <select id="clsDuration">
-        <option value="15">15 minutes</option>
-        <option value="30" selected>30 minutes</option>
-        <option value="45">45 minutes</option>
+        <option value="45" selected>45 minutes</option>
         <option value="60">60 minutes</option>
+        <option value="75">75 minutes</option>
+        <option value="90">90 minutes (level review lesson)</option>
       </select>
     </div>
     <div class="td-field">
       <label for="clsLesson">Lesson</label>
       <select id="clsLesson"></select>
       <div class="td-field-hint" style="font-weight:600;color:var(--td-muted);font-size:.78rem;margin-top:4px">
-        Which lesson this live class is for. The student's next lesson only unlocks once you mark this class present.
+        Which lesson this live class is for. Each student's next lesson only unlocks once you mark them present individually — the rest of the group doesn't block or get blocked by one student's attendance.
       </div>
+    </div>
+    <div class="td-field">
+      <label for="clsMeetingLink">Meeting link <span style="font-weight:600;color:var(--td-muted)">(Zoom or Google Meet)</span></label>
+      <input type="url" id="clsMeetingLink" placeholder="https://meet.google.com/xxx-xxxx-xxx">
     </div>
     <div class="td-field">
       <label for="clsNotes">Notes <span style="font-weight:600;color:var(--td-muted)">(optional)</span></label>
@@ -1944,7 +1970,6 @@
   const scheduleEmpty = document.getElementById("scheduleEmpty");
   const scheduleScope = document.getElementById("scheduleScope");
   const classModalOverlay = document.getElementById("classModalOverlay");
-  const clsStudentSelect = document.getElementById("clsStudent");
   const clsDateInput = document.getElementById("clsDate");
   const clsTimeInput = document.getElementById("clsTime");
   const clsDurationSelect = document.getElementById("clsDuration");
@@ -1983,11 +2008,11 @@
     return { from: "0000-01-01", to: "9999-12-31" };
   }
 
-  function attendanceBadge(c) {
-    if (c.attendance === "present") return '<span class="td-badge present">✓ present</span>';
-    if (c.attendance === "absent") return '<span class="td-badge absent">✕ absent</span>';
-    if (c.attendance === "no-show") return '<span class="td-badge noshow">⚠ no-show</span>';
-    return "";
+  function attendanceBadge(att) {
+    if (att === "present") return '<span class="td-badge present">✓ present</span>';
+    if (att === "absent") return '<span class="td-badge absent">✕ absent</span>';
+    if (att === "no-show") return '<span class="td-badge noshow">⚠ no-show</span>';
+    return '<span class="td-badge grey">not marked</span>';
   }
 
   function updateNeedsAttendanceBadge() {
@@ -2033,25 +2058,38 @@
         scheduleAgenda.appendChild(dayWrap);
       }
       const teacher = c.teacherId ? LumioProfiles.getTeacher(c.teacherId) : null;
-      const needsMarking = c.status !== "cancelled" && !c.attendance && c.date <= LumioSchedule.todayStr();
+      const needsMarking = c.status !== "cancelled" && !LumioSchedule.completionState(c).complete && c.date <= LumioSchedule.todayStr();
       const row = document.createElement("div");
       row.className = "td-class-row" + (c.status === "cancelled" ? " cancelled" : "");
+      const studentsHtml = c.students.map(s => `
+        <div class="td-class-student" data-sid="${s.studentId || ""}" data-sname="${s.studentName}">
+          <span class="nm">${s.studentName}</span>
+          ${attendanceBadge(s.attendance)}
+          ${s.grade ? `<span class="td-badge grade">${s.grade}</span>` : ""}
+          ${s.teacherRatingStars ? `<span class="td-badge grey">★${s.teacherRatingStars} from student</span>` : ""}
+          ${c.status !== "cancelled" && c.date <= LumioSchedule.todayStr() ? `
+            <span class="td-student-acts">
+              <button type="button" class="att-present" data-act="present" title="Mark present">✓</button>
+              <button type="button" class="att-absent" data-act="absent" title="Mark absent">✕</button>
+              <button type="button" class="att-noshow" data-act="no-show" title="Mark no-show">⚠</button>
+              <select class="td-grade-select" title="Letter grade">
+                <option value="">Grade…</option>
+                ${LumioSchedule.VALID_GRADES.map(g => `<option value="${g}" ${s.grade === g ? "selected" : ""}>${g}</option>`).join("")}
+              </select>
+            </span>` : ""}
+        </div>`).join("");
       row.innerHTML = `
         <div class="td-class-time">${fmtTime(c.startTime)}<span>${c.durationMinutes} min</span></div>
         <div class="td-class-info">
-          <div class="who">${c.studentName}
+          <div class="who">
             ${c.status === "cancelled" ? '<span class="td-badge grey">cancelled</span>' : ""}
-            ${attendanceBadge(c)}
           </div>
-          <div class="meta">${teacher ? teacher.name : (c.teacherName || "Unassigned")}${c.lessonNumber ? " · Lesson " + c.lessonNumber : ""}${c.notes ? " · " + c.notes : ""}</div>
+          <div class="td-class-students-list">${studentsHtml}</div>
+          <div class="meta">${teacher ? teacher.name : (c.teacherName || "Unassigned")}${c.lessonNumber ? " · Lesson " + c.lessonNumber : ""}${c.cohort ? " · " + c.cohort : ""}${c.group ? " · " + c.group : ""}${c.notes ? " · " + c.notes : ""}</div>
+          ${c.meetingLink ? `<div class="meta"><a href="${c.meetingLink}" target="_blank" rel="noopener">🔗 Join meeting link</a></div>` : ""}
           ${c.status === "completed" ? `<textarea class="td-session-notes" placeholder="What did you cover this session? Any homework given?">${c.sessionNotes || ""}</textarea>` : ""}
         </div>
         <div class="td-class-acts">
-          ${needsMarking ? `
-            <button type="button" class="att-present" data-act="present" title="Mark present">✓ Present</button>
-            <button type="button" class="att-absent" data-act="absent" title="Mark absent">✕ Absent</button>
-            <button type="button" class="att-noshow" data-act="no-show" title="Mark no-show">⚠ No-show</button>
-          ` : ""}
           <button type="button" data-act="edit">Edit</button>
           <button type="button" class="danger" data-act="remove">Remove</button>
         </div>`;
@@ -2060,22 +2098,35 @@
         sessionNotesEl.addEventListener("blur", () => {
           if (sessionNotesEl.value === (c.sessionNotes || "")) return;
           LumioSchedule.updateClass(c.id, { sessionNotes: sessionNotesEl.value });
-          showToast(`Session notes saved for ${c.studentName}.`, "success");
+          showToast(`Session notes saved.`, "success");
         });
       }
-      if (needsMarking) {
+      row.querySelectorAll(".td-class-student").forEach(studentRow => {
+        const sid = studentRow.dataset.sid || null;
+        const sname = studentRow.dataset.sname;
+        const ref = sid ? { studentId: sid, studentName: sname } : { studentName: sname };
         ["present", "absent", "no-show"].forEach(val => {
-          row.querySelector(`[data-act="${val}"]`).onclick = () => {
-            LumioSchedule.markAttendance(c.id, val);
+          const btn = studentRow.querySelector(`[data-act="${val}"]`);
+          if (!btn) return;
+          btn.onclick = () => {
+            LumioSchedule.markAttendance(c.id, ref, val);
             renderSchedule();
             const labels = { present: "present ✓", absent: "absent", "no-show": "a no-show" };
-            showToast(`Marked ${c.studentName} ${labels[val]}.`, val === "present" ? "success" : "error");
+            showToast(`Marked ${sname} ${labels[val]}.`, val === "present" ? "success" : "error");
           };
         });
-      }
+        const gradeSel = studentRow.querySelector(".td-grade-select");
+        if (gradeSel) {
+          gradeSel.onchange = () => {
+            LumioSchedule.gradeStudent(c.id, ref, gradeSel.value || null);
+            showToast(gradeSel.value ? `Graded ${sname}: ${gradeSel.value}.` : `Cleared ${sname}'s grade.`, "success");
+          };
+        }
+      });
       row.querySelector('[data-act="edit"]').onclick = () => openClassModal(c);
       row.querySelector('[data-act="remove"]').onclick = async () => {
-        const ok = await confirmDialog(`Remove this class with ${c.studentName}?`, "Remove");
+        const names = c.students.map(s => s.studentName).join(", ");
+        const ok = await confirmDialog(`Remove this class with ${names}?`, "Remove");
         if (ok) {
           LumioSchedule.removeClass(c.id);
           renderSchedule();
@@ -2086,33 +2137,89 @@
     });
   }
 
-  function renderClsStudentOptions() {
-    clsStudentSelect.innerHTML = "";
+  function renderClsGroupPicker(presetKey) {
+    const clsGroupPicker = document.getElementById("clsGroupPicker");
+    clsGroupPicker.innerHTML = "";
     const scope = scheduleScope.value;
     const activeTeacherId = LumioProfiles.getCurrentTeacherId();
     let students = window.LumioProfiles ? LumioProfiles.listStudents() : [];
     if (scope === "mine" && activeTeacherId) students = students.filter(s => s.teacherId === activeTeacherId);
-    if (!students.length) {
+    // Group students into cohort+group+level combos -- a class can only
+    // ever be booked within one combo, so that's the real unit being
+    // picked here, not an individual student.
+    const combos = {};
+    students.forEach(s => {
+      const key = `${s.cohort || ""}|||${s.group || ""}|||${s.level}`;
+      if (!combos[key]) combos[key] = { cohort: s.cohort || "", group: s.group || "", level: s.level, students: [] };
+      combos[key].students.push(s);
+    });
+    const keys = Object.keys(combos);
+    if (!keys.length) {
       const opt = document.createElement("option");
       opt.value = ""; opt.textContent = "No students available";
-      clsStudentSelect.appendChild(opt);
+      clsGroupPicker.appendChild(opt);
       return;
     }
-    students.forEach(s => {
+    keys.sort((a, b) => combos[a].level.localeCompare(combos[b].level)).forEach(key => {
+      const combo = combos[key];
       const opt = document.createElement("option");
-      opt.value = s.id; opt.textContent = `${s.avatar} ${s.name}`;
-      clsStudentSelect.appendChild(opt);
+      opt.value = key;
+      const label = [combo.cohort, combo.group].filter(Boolean).join(" · ") || "No cohort/group set";
+      opt.textContent = `${label} — ${levelName(combo.level)} (${combo.students.length} student${combo.students.length === 1 ? "" : "s"})`;
+      clsGroupPicker.appendChild(opt);
     });
+    clsGroupPicker.value = presetKey && combos[presetKey] ? presetKey : keys[0];
+    renderClsStudentChecks(new Set());
+  }
+  function currentComboStudents() {
+    const clsGroupPicker = document.getElementById("clsGroupPicker");
+    const scope = scheduleScope.value;
+    const activeTeacherId = LumioProfiles.getCurrentTeacherId();
+    let students = window.LumioProfiles ? LumioProfiles.listStudents() : [];
+    if (scope === "mine" && activeTeacherId) students = students.filter(s => s.teacherId === activeTeacherId);
+    const key = clsGroupPicker.value;
+    if (!key) return [];
+    const [cohort, group, level] = key.split("|||");
+    return students.filter(s => (s.cohort || "") === cohort && (s.group || "") === group && s.level === level);
+  }
+  // preselected: a Set of studentIds to check by default -- all of the
+  // combo's students when booking fresh, or exactly whoever was already
+  // booked when editing.
+  function renderClsStudentChecks(preselected) {
+    const wrap = document.getElementById("clsStudentChecks");
+    wrap.innerHTML = "";
+    const combo = currentComboStudents();
+    if (!combo.length) {
+      wrap.innerHTML = `<div class="sub" style="font-size:.78rem">No students in this cohort/group yet.</div>`;
+      return;
+    }
+    combo.forEach(s => {
+      const id = "clsChk_" + s.id;
+      const row = document.createElement("label");
+      row.style.cssText = "display:flex;align-items:center;gap:7px;font-size:.85rem;font-weight:600;cursor:pointer";
+      const checked = preselected.size ? preselected.has(s.id) : true;
+      row.innerHTML = `<input type="checkbox" id="${id}" value="${s.id}" ${checked ? "checked" : ""}> ${s.avatar} ${s.name}`;
+      wrap.appendChild(row);
+    });
+    renderClsLessonOptions();
+  }
+  function checkedStudents() {
+    const combo = currentComboStudents();
+    const boxes = Array.from(document.querySelectorAll("#clsStudentChecks input[type=checkbox]:checked"));
+    const ids = new Set(boxes.map(b => b.value));
+    return combo.filter(s => ids.has(s.id));
   }
 
-  // Fills clsLessonSelect with "Lesson 1".."Lesson N" for whichever
-  // student is currently picked (N = that student's level's lesson
-  // count), and defaults to their next lesson that still needs either
-  // prep or a live class — the teacher can always override it.
+  // Fills clsLessonSelect with "Lesson 1".."Lesson N" for the picked
+  // combo's shared level, defaulting to whichever lesson number the
+  // *least* advanced checked student still needs -- booking a session
+  // for lesson 4 when one student in the group is still on lesson 2
+  // wouldn't make sense, so the guess should reflect the group, not
+  // just the first student found.
   function renderClsLessonOptions(presetLessonNumber) {
-    const studentId = clsStudentSelect.value;
-    const student = studentId && window.LumioProfiles ? LumioProfiles.getStudent(studentId) : null;
-    const lvlMeta = student && window.Lumio ? (Lumio.LEVELS || []).find(l => l.id === student.level) : null;
+    const picked = checkedStudents();
+    const level = picked[0] ? picked[0].level : (currentComboStudents()[0] || {}).level;
+    const lvlMeta = level && window.Lumio ? (Lumio.LEVELS || []).find(l => l.id === level) : null;
     const N = (lvlMeta && lvlMeta.lessons) || 20;
     clsLessonSelect.innerHTML = "";
     for (let n = 1; n <= N; n++) {
@@ -2125,14 +2232,14 @@
       clsLessonSelect.value = String(presetLessonNumber);
       return;
     }
-    // Default: the next lesson that isn't fully prepped-and-attended yet,
-    // using the same prep-progress data the student's own map reads —
-    // this doesn't need to know about attendance itself since a teacher
-    // is about to record it right now.
     let guess = 1;
-    if (student && window.Lumio) {
-      const prog = (Lumio.progressFor(student.name)[student.level]) || {};
-      while (guess <= N && prog[guess]) guess++;
+    if (picked.length && window.Lumio) {
+      picked.forEach(student => {
+        const prog = (Lumio.progressFor(student.name)[student.level]) || {};
+        let g = 1;
+        while (g <= N && prog[g]) g++;
+        if (g > guess) guess = g; // least-advanced student's next lesson wins
+      });
       if (guess > N) guess = N;
     }
     clsLessonSelect.value = String(guess);
@@ -2140,26 +2247,33 @@
 
   function openClassModal(c) {
     editingClassId = c ? c.id : null;
-    document.getElementById("classModalTitle").textContent = c ? "Edit class" : "Book a class";
-    renderClsStudentOptions();
-    clsStudentError.textContent = "";
+    document.getElementById("classModalTitle").textContent = c ? "Edit class" : "Book a group class";
     if (c) {
-      clsStudentSelect.value = c.studentId || "";
+      const first = c.students[0];
+      const presetKey = `${c.cohort || ""}|||${c.group || ""}|||${c.level}`;
+      renderClsGroupPicker(presetKey);
+      const preselect = new Set(c.students.map(s => s.studentId).filter(Boolean));
+      renderClsStudentChecks(preselect);
       clsDateInput.value = c.date;
       clsTimeInput.value = c.startTime;
       clsDurationSelect.value = String(c.durationMinutes);
       clsNotesInput.value = c.notes || "";
+      document.getElementById("clsMeetingLink").value = c.meetingLink || "";
       renderClsLessonOptions(c.lessonNumber);
     } else {
+      renderClsGroupPicker();
       clsDateInput.value = LumioSchedule.todayStr();
       clsTimeInput.value = "16:00";
-      clsDurationSelect.value = "30";
+      clsDurationSelect.value = "45";
       clsNotesInput.value = "";
+      document.getElementById("clsMeetingLink").value = "";
       renderClsLessonOptions();
     }
+    clsStudentError.textContent = "";
     classModalOverlay.classList.add("show");
   }
-  clsStudentSelect.addEventListener("change", () => renderClsLessonOptions());
+  document.getElementById("clsGroupPicker").addEventListener("change", () => renderClsStudentChecks(new Set()));
+  document.getElementById("clsStudentChecks").addEventListener("change", () => renderClsLessonOptions());
   function closeClassModal() { classModalOverlay.classList.remove("show"); }
   document.getElementById("bookClassBtn").onclick = () => openClassModal(null);
   document.getElementById("classModalCancel").onclick = closeClassModal;
@@ -2167,21 +2281,24 @@
 
   document.getElementById("classModalSave").onclick = () => {
     if (!window.LumioSchedule || !window.LumioProfiles) { closeClassModal(); return; }
-    const studentId = clsStudentSelect.value;
-    const student = studentId ? LumioProfiles.getStudent(studentId) : null;
-    if (!student) { clsStudentError.textContent = "Pick a student for this class."; return; }
+    const picked = checkedStudents();
+    if (!picked.length) { clsStudentError.textContent = "Pick at least one student for this class."; return; }
+    const combo = currentComboStudents();
+    const first = combo[0];
     const activeTeacher = LumioProfiles.getCurrentTeacher();
     const wasEditing = !!editingClassId;
     const payload = {
-      studentId: student.id,
-      studentName: student.name,
-      teacherId: student.teacherId || (activeTeacher ? activeTeacher.id : null),
+      students: picked.map(s => ({ studentId: s.id, studentName: s.name })),
+      teacherId: (first && first.teacherId) || (activeTeacher ? activeTeacher.id : null),
       teacherName: activeTeacher ? activeTeacher.name : "",
       date: clsDateInput.value,
       startTime: clsTimeInput.value,
       durationMinutes: clsDurationSelect.value,
-      level: student.level,
+      level: first ? first.level : "",
+      cohort: first ? first.cohort : "",
+      group: first ? first.group : "",
       lessonNumber: clsLessonSelect.value ? Number(clsLessonSelect.value) : null,
+      meetingLink: document.getElementById("clsMeetingLink").value.trim(),
       notes: clsNotesInput.value.trim(),
     };
     try {
@@ -2192,7 +2309,8 @@
       }
       closeClassModal();
       renderSchedule();
-      showToast(wasEditing ? "Class updated." : `Class booked with ${student.name}.`, "success");
+      const names = picked.map(s => s.name).join(", ");
+      showToast(wasEditing ? "Class updated." : `Class booked with ${names}.`, "success");
     } catch (e) {
       clsStudentError.textContent = e.message || "Couldn't save that class.";
     }
