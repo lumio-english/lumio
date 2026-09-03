@@ -89,6 +89,7 @@
 
 <script src="js/app.js"></script>
 <script src="js/lumio-profiles.js"></script>
+<script src="js/lumio-schedule.js"></script>
 <script>
 (() => {
   // Teacher-only, same session-check pattern teacher.html itself uses.
@@ -135,6 +136,19 @@
     reading: { pct: avgPct(hwLessons, "quizCorrect", "quizTotal"), icon: "📖", en: "Reading", ar: "القراءة" },
     writing: { pct: avgPct(hwLessons, "spellingCorrect", "spellingTotal"), icon: "✏️", en: "Writing", ar: "الكتابة" },
   };
+
+  // ---------- teacher's letter grades + this student's own ratings of
+  // the teacher, pulled from real class sessions (js/lumio-schedule.js) ----------
+  // Grades convert to a 0-4.3 GPA-style scale purely to compute one
+  // overall percentage consistent with how every other score on this
+  // page is shown -- the letter itself is still what's displayed
+  // per-session, this number is only for the summary figure.
+  const GRADE_POINTS = { "A+": 4.3, "A": 4.0, "A-": 3.7, "B+": 3.3, "B": 3.0, "B-": 2.7, "C+": 2.3, "C": 2.0, "C-": 1.7, "D": 1.0, "F": 0.0 };
+  const grades = (window.LumioSchedule && LumioSchedule.gradesForStudent) ? LumioSchedule.gradesForStudent(student.name, student.level) : [];
+  const gradeAvgPct = grades.length
+    ? Math.round((grades.reduce((s, g) => s + (GRADE_POINTS[g.grade] || 0), 0) / grades.length / 4.3) * 100)
+    : null;
+  const ratingsGiven = (window.LumioSchedule && LumioSchedule.teacherRatingsGiven) ? LumioSchedule.teacherRatingsGiven(student.name) : [];
 
   // ---------- per-lesson trend, for the comparison chart ----------
   // Combines that lesson's prep % and homework % (when both exist) into
@@ -432,6 +446,21 @@
     <h2 class="section-title">Skills Breakdown · تفصيل المهارات</h2>
     ${skillCardsHtml}
 
+    ${grades.length ? `
+    <h2 class="section-title">Teacher's Assessment · تقييم المعلّم</h2>
+    <div class="skill-card" style="--tier-color:${tierOf(gradeAvgPct) ? tierOf(gradeAvgPct).color : "#ccc"}">
+      <div class="skill-head">
+        <div class="skill-name"><span class="icon">🎓</span>Average grade across ${grades.length} session${grades.length === 1 ? "" : "s"}</div>
+        <div class="skill-pct">${gradeAvgPct}%</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill" style="width:${gradeAvgPct}%"></div></div>
+      <div class="skill-text-block">
+        <div class="label">Grades by session</div>
+        <p class="en">${grades.slice().reverse().map(g => `Lesson ${g.lessonNumber || "?"} (${g.date}): <b>${g.grade}</b>`).join(" · ")}</p>
+      </div>
+      ${ratingsGiven.length ? `<div class="cohort-row">⭐ ${student.name} has rated ${ratingsGiven.length} class${ratingsGiven.length === 1 ? "" : "es"} with their teacher, averaging ${(ratingsGiven.reduce((s, r) => s + r.stars, 0) / ratingsGiven.length).toFixed(1)}/5 — a good sign of engagement, not a performance score.</div>` : ""}
+    </div>` : ""}
+
     <h2 class="section-title">Cohort Comparison · مقارنة الدفعة</h2>
     ${trendLabels.length > 1 ? `
     <div class="chart-card">
@@ -468,6 +497,11 @@
       lines.push(`💡 ${copy.sAr}`);
       lines.push("");
     });
+    if (grades.length) {
+      lines.push(`Teacher's average grade across ${grades.length} session${grades.length === 1 ? "" : "s"}: ${gradeAvgPct}%`);
+      lines.push(grades.slice().reverse().map(g => `Lesson ${g.lessonNumber || "?"}: ${g.grade}`).join(", "));
+      lines.push("");
+    }
     try {
       await navigator.clipboard.writeText(lines.join("\n"));
       const btn = document.getElementById("copyBtn");

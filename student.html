@@ -509,6 +509,16 @@
   .sd-class-row .sd-join-link{
     background:var(--sd-teal-soft,#E0F5F3);color:var(--sd-teal,#0D9488);margin-top:3px;padding:4px 10px;font-size:.74rem;
   }
+  .sd-rate-card{
+    background:#fff;border-radius:var(--sd-radius);padding:22px 24px;box-shadow:0 4px 16px rgba(0,0,0,.05);
+    text-align:center;
+  }
+  .sd-rate-title{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.05rem;color:var(--sd-cocoa);margin-bottom:12px}
+  .sd-rate-stars{display:flex;gap:8px;justify-content:center}
+  .sd-star{font-size:2.2rem;color:#E9E1D3;cursor:pointer;transition:color .12s ease,transform .12s ease;line-height:1}
+  .sd-star:hover{transform:scale(1.15)}
+  .sd-star.filled{color:var(--sd-sun,#FFC93C)}
+  .sd-rate-thanks{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.1rem;color:var(--sd-teal,#0D9488)}
   .sd-class-row{
     display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid #F3EEE4;
   }
@@ -674,6 +684,9 @@
     <div id="scheduleList"></div>
     <div class="sd-empty-note" id="scheduleEmptyNote" style="display:none">No classes booked yet — ask your teacher! 🙂</div>
   </div>
+
+  <!-- Rate your class -- only appears when there's a real attended, unrated session to rate -->
+  <div id="rateTeacherCard" style="display:none"></div>
 
   <!-- Badges -->
   <div class="sd-section-title"><h3>My badges</h3></div>
@@ -1210,6 +1223,51 @@
     }
   } catch (e) {
     console.error("Lumio schedule render error:", e);
+  }
+
+  // ---------- rate your teacher ----------
+  // Finds the most recent session this student was actually marked
+  // present for that they haven't rated yet -- absent/no-show sessions
+  // are skipped since rating a class you weren't in doesn't make sense,
+  // and a session they already rated never gets asked about again.
+  try {
+    if (window.LumioSchedule) {
+      const mine = LumioSchedule.listClasses({ studentName: u.name })
+        .filter(c => {
+          const slot = c.students.find(s => s.studentName.trim().toLowerCase() === u.name.trim().toLowerCase());
+          return slot && slot.attendance === "present" && !slot.teacherRatingStars;
+        })
+        .sort((a, b) => (b.date + b.startTime).localeCompare(a.date + a.startTime));
+      const target = mine[0];
+      const rateCard = document.getElementById("rateTeacherCard");
+      if (target) {
+        rateCard.style.display = "block";
+        rateCard.innerHTML = `
+          <div class="sd-rate-card">
+            <div class="sd-rate-title">How was your class with ${target.teacherName || "your teacher"}? ⭐</div>
+            <div class="sd-rate-stars" id="rateStars">
+              ${[1,2,3,4,5].map(n => `<span class="sd-star" data-n="${n}">★</span>`).join("")}
+            </div>
+          </div>`;
+        const stars = Array.from(rateCard.querySelectorAll(".sd-star"));
+        function paintStars(n) {
+          stars.forEach(s => s.classList.toggle("filled", Number(s.dataset.n) <= n));
+        }
+        stars.forEach(s => {
+          s.addEventListener("mouseenter", () => paintStars(Number(s.dataset.n)));
+          s.addEventListener("click", () => {
+            const n = Number(s.dataset.n);
+            LumioSchedule.rateTeacher(target.id, u.name, n);
+            rateCard.innerHTML = `<div class="sd-rate-card sd-rate-thanks">🎉 Thanks for rating your class!</div>`;
+          });
+        });
+        rateCard.addEventListener("mouseleave", () => paintStars(0), true);
+      } else {
+        rateCard.style.display = "none";
+      }
+    }
+  } catch (e) {
+    console.error("Lumio rate-teacher render error:", e);
   }
 
   // ---------- streak ----------
