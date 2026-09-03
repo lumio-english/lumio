@@ -322,10 +322,11 @@
   .td-roster-card .pinrow{display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--td-ink-soft);font-weight:600;margin-bottom:10px}
   .td-roster-card .pinval{font-family:monospace;font-weight:800;letter-spacing:2px;color:var(--td-ink)}
   .td-roster-card .pintoggle{background:none;border:none;cursor:pointer;color:var(--td-indigo);font-weight:700;font-size:.72rem;padding:0}
-  .td-roster-card .acts{display:flex;gap:6px}
+  .td-roster-card .acts{display:grid;grid-template-columns:repeat(2, 1fr);gap:6px}
   .td-roster-card .acts button, .td-roster-card .acts a{
-    flex:1;padding:6px 0;border-radius:8px;border:1px solid var(--td-border);background:#fff;
-    font-weight:700;font-size:.74rem;cursor:pointer;color:var(--td-ink-soft);text-align:center;
+    padding:6px 4px;border-radius:8px;border:1px solid var(--td-border);background:#fff;
+    font-weight:700;font-size:.72rem;cursor:pointer;color:var(--td-ink-soft);text-align:center;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
     transition:transform .12s ease,border-color .15s ease,color .15s ease;
   }
   .td-roster-card .acts button:hover, .td-roster-card .acts a:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark);transform:translateY(-1px)}
@@ -1677,10 +1678,10 @@
         </div>
         <div class="acts">
           <button type="button" data-act="edit">Edit</button>
-          <button type="button" data-act="pin">New PIN</button>
-          <button type="button" data-act="recordings">🎙️ Recordings</button>
-          <a data-act="report" style="text-decoration:none">📋 Report</a>
-          <button type="button" class="danger" data-act="remove">Remove</button>
+          <button type="button" data-act="pin">PIN</button>
+          <button type="button" data-act="recordings" title="Recordings">🎙️ Audio</button>
+          <a data-act="report" style="text-decoration:none" title="Report">📋 Report</a>
+          <button type="button" class="danger" data-act="remove" style="grid-column:1 / -1">Remove</button>
         </div>`;
       const pinVal = card.querySelector(".pinval");
       const pinToggle = card.querySelector(".pintoggle");
