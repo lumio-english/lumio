@@ -256,9 +256,9 @@ function setupColorGame() {
         sw.classList.add("done");
         sw.innerHTML = "✓";
         nextIndex++;
-        if (window.Lumio && Lumio.speak) Lumio.speak(sw.dataset.name);
+        if (typeof Lumio !== "undefined" && Lumio.speak) Lumio.speak(sw.dataset.name);
         if (nextIndex === colors.length) {
-          if (window.Lumio && Lumio.confetti) Lumio.confetti(60);
+          if (typeof Lumio !== "undefined" && Lumio.confetti) Lumio.confetti(60);
           document.getElementById("p3text").innerHTML = '<b>"You did it!"</b> The compass glowed with every color at once — red, orange, yellow, green, blue, and purple!';
           document.getElementById("p3textAr").textContent = "لقد نجحتم! توهجت البوصلة بكل الألوان معًا — أحمر، وبرتقالي، وأصفر، وأخضر، وأزرق، وبنفسجي!";
         }

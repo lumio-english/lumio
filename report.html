@@ -504,6 +504,7 @@
     }
     try {
       await navigator.clipboard.writeText(lines.join("\n"));
+      if (typeof Lumio !== "undefined" && Lumio.logReportSent) Lumio.logReportSent(student.name);
       const btn = document.getElementById("copyBtn");
       const original = btn.textContent;
       btn.textContent = "✓ Copied!";

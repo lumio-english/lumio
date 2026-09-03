@@ -67,6 +67,20 @@ const Lumio = (() => {
     set("lumio_homework", all);
   };
 
+  /* ---------- Report send log ----------
+     lumio_report_log = { studentName: "YYYY-MM-DD" }  -- the date a
+     teacher last generated+copied that student's report on report.html.
+     One date per student, not a full history -- all that's needed is
+     "when was this last sent" for a due/overdue reminder, not a log of
+     every send. */
+  const reportLogAll = () => get("lumio_report_log", {});
+  const lastReportDateFor = (name) => reportLogAll()[name] || null;
+  const logReportSent = (name) => {
+    const all = reportLogAll();
+    all[name] = new Date().toISOString().slice(0, 10);
+    set("lumio_report_log", all);
+  };
+
   /* ---------- Voice recordings (homework "Say It") ----------
      IndexedDB, not localStorage -- audio blobs are too large for
      localStorage's ~5-10MB quota. Same-origin, so both homework.html
@@ -310,6 +324,7 @@ const Lumio = (() => {
   return { LEVELS, AVAILABLE_LEVELS, login, user, logout, requireUser,
            progressAll, progressFor, saveResult, homeworkAll, homeworkFor, saveHomework,
            saveRecording, listRecordingsFor, listAllRecordings,
+           lastReportDateFor, logReportSent,
            speak, speakPhonicsSound, beep, confetti, toast, shuffle, qs, letterTile,
            COUNTRY_CODES, combinePhone, splitPhone };
 })();

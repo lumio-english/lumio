@@ -556,6 +556,11 @@
       <p class="sub">Students who haven't practiced in a while — a quick message might help them get back on track.</p>
       <div id="inactivityList"></div>
     </div>
+    <div class="td-panel" id="reportsDuePanel" style="display:none;margin-bottom:16px">
+      <div class="td-panel-head"><h2>📋 Reports due</h2></div>
+      <p class="sub">A monthly report keeps parents genuinely in the loop — these students haven't had one in 30+ days.</p>
+      <div id="reportsDueList"></div>
+    </div>
     <div class="td-grid">
       <div class="td-panel">
         <div class="td-panel-head"><h2>Progress by level</h2></div>
@@ -1419,6 +1424,39 @@
   }
   renderInactivity();
 
+  function renderReportsDue() {
+    const panel = document.getElementById("reportsDuePanel");
+    const list = document.getElementById("reportsDueList");
+    if (!window.LumioProfiles || typeof Lumio === "undefined") { panel.style.display = "none"; return; }
+    const REPORT_DUE_DAYS = 30;
+    const flagged = [];
+    LumioProfiles.listStudents().forEach(s => {
+      // Nothing to report on yet -- don't nag about a student who hasn't
+      // started, same "hasAnyData" principle report.html itself uses.
+      const prep = Lumio.progressFor(s.name)[s.level] || {};
+      const hw = Lumio.homeworkFor(s.name)[s.level] || {};
+      if (!Object.keys(prep).length && !Object.keys(hw).length) return;
+      const lastReport = Lumio.lastReportDateFor(s.name);
+      if (lastReport) {
+        const days = daysSince(lastReport);
+        if (days >= REPORT_DUE_DAYS) flagged.push({ student: s, days, never: false });
+      } else {
+        flagged.push({ student: s, days: Infinity, never: true });
+      }
+    });
+    flagged.sort((a, b) => b.days - a.days);
+    if (!flagged.length) { panel.style.display = "none"; return; }
+    panel.style.display = "block";
+    list.innerHTML = flagged.map(f => {
+      const label = f.never ? "No report sent yet" : `${f.days} days since last report`;
+      return `<div class="td-inactive-row">
+        <div><div class="who">${f.student.avatar || ""} ${f.student.name}</div><div class="meta">${label} · ${levelName(f.student.level)}</div></div>
+        <a class="td-wa-btn" href="report.html?student=${f.student.id}">📋 View report</a>
+      </div>`;
+    }).join("");
+  }
+  renderReportsDue();
+
   // ---------- level filter options ----------
   const levelFilter = document.getElementById("levelFilter");
   const allLevelIds = new Set([...rows.map(r => r.lvl), ...LEVEL_NAMES.map(l => l.id)]);
@@ -2267,7 +2305,7 @@
   function renderClsLessonOptions(presetLessonNumber) {
     const picked = checkedStudents();
     const level = picked[0] ? picked[0].level : (currentComboStudents()[0] || {}).level;
-    const lvlMeta = level && window.Lumio ? (Lumio.LEVELS || []).find(l => l.id === level) : null;
+    const lvlMeta = level && typeof Lumio !== "undefined" ? (Lumio.LEVELS || []).find(l => l.id === level) : null;
     const N = (lvlMeta && lvlMeta.lessons) || 20;
     clsLessonSelect.innerHTML = "";
     for (let n = 1; n <= N; n++) {
@@ -2281,7 +2319,7 @@
       return;
     }
     let guess = 1;
-    if (picked.length && window.Lumio) {
+    if (picked.length && typeof Lumio !== "undefined") {
       picked.forEach(student => {
         const prog = (Lumio.progressFor(student.name)[student.level]) || {};
         let g = 1;
