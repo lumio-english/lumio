@@ -706,14 +706,18 @@ function pickByLevel(bank, counts) {
 // ═══════════════════════════════════════════════════════════
 //  BUILD THIS SESSION'S QUESTION SET (called on page load)
 // ═══════════════════════════════════════════════════════════
-const LISTENING_QS = pickByLevel(BANK_LISTENING, {A1:2, A2:2, B1:2, B2:2});
-const READING_QS   = pickByLevel(BANK_READING,   {A1:2, A2:2, B1:2, B2:2});
-const WRITING_QS   = pickByLevel(BANK_WRITING,   {A1:1, B2:1});
-const GRAMMAR_QS   = pickByLevel(BANK_GRAMMAR,   {A1:3, A2:3, B1:3, B2:3});
+const LISTENING_QS = pickByLevel(BANK_LISTENING, {A1:3, A2:3, B1:2, B2:2});
+const READING_QS   = pickByLevel(BANK_READING,   {A1:3, A2:3, B1:2, B2:2});
+const WRITING_QS   = pickByLevel(BANK_WRITING,   {A1:1, A2:1, B1:1, B2:1});
+const GRAMMAR_QS   = pickByLevel(BANK_GRAMMAR,   {A1:4, A2:4, B1:4, B2:4});
 
 
 const ALL_QUESTIONS = [...LISTENING_QS,...READING_QS,...WRITING_QS,...GRAMMAR_QS];
-const TOTAL = ALL_QUESTIONS.length; // 30 (8 listening + 8 reading + 2 writing + 12 grammar)
+const TOTAL = ALL_QUESTIONS.length; // 40 (10 listening + 10 reading + 4 writing + 16 grammar)
+// Writing now draws one question from every CEFR level (A1/A2/B1/B2) instead
+// of only A1 and B2 -- the bank already had 3-4 questions per level sitting
+// unused at A2/B1, so this closes a real coverage gap rather than needing
+// new content.
 
 // Section boundaries computed from each section's real length rather than
 // hardcoded -- so changing a pickByLevel count above never silently
@@ -1263,9 +1267,19 @@ const TIPS={
 // to leads from the simpler placement test, ready for a teacher to
 // review and convert to an enrolled student.
 const LUMIO_SYNC_URL = 'https://script.google.com/macros/s/AKfycbxlKY07coAR_Uj6UQf2bvy6yi6I3cG9WsnTROvKI5v_l9MhhXlbP3Ke8jxbYx5btZzAGA/exec';
-// The pro test's 0-9 scale maps directly onto Lumio's level IDs.
+// The pro test's proficiency scale genuinely runs 0-9 (matching the
+// named-but-not-yet-built Level 7/8/9 in Lumio.LEVELS), and a student's
+// displayed result stays honest about that -- if they test at level 8,
+// they see level 8. But only levels 0-6 (Lumio.AVAILABLE_LEVELS) have
+// real lesson content today, so the level actually used to enroll them
+// clamps to 6, the same way teacher.html's trialLevelFor() already
+// clamps a too-high suggested level before starting a trial class --
+// same principle, applied at the same kind of boundary (an action that
+// needs a real, built level), not at the scoring/display layer where
+// the honest number still belongs.
 function mapProTestLevelToLumioId(n) {
-  return n === 0 ? 'pre-a' : 'level' + n;
+  const clamped = Math.min(n, 6);
+  return clamped === 0 ? 'pre-a' : 'level' + clamped;
 }
 async function pushResultAsLumioLead(fullData, levelNum) {
   if (!LUMIO_SYNC_URL) return;
