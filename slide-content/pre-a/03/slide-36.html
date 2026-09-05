@@ -1,25 +1,60 @@
 <div class="wall"></div><div class="teal-band"></div><div class="window"><div class="cross-v"></div><div class="cross-h"></div></div><div class="spark" style="left:375px;top:135px;font-size:1.6rem">&#10022;</div><div class="spark" style="left:415px;top:105px;font-size:1.1rem">&#10022;</div><div class="spark" style="left:392px;top:178px;font-size:1.3rem">&#10022;</div><div class="header">
       <div class="brand"><img src="assets/logo/lumio-logo.png"><div class="name">Lumio<small>ENGLISH</small></div></div>
-      <div class="pagetitle">Your Turn &bull; Round 2 of 3</div>
-      <div class="counter">36 / 53</div>
+      <div class="pagetitle">Sound Match &bull; 2/4</div>
+      <div class="counter">36 / 69</div>
     </div><div class="colorstrip"><div class="c1"></div><div class="c2"></div><div class="c3"></div><div class="c4"></div><div class="c5"></div></div>
-    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:40px;padding-bottom:60px">
-      <div class="card" id="ytCard2" style="width:320px;height:320px;display:flex;align-items:center;justify-content:center;
-                  background:linear-gradient(135deg,#FFF3D6,#FFE0B8);position:relative;overflow:hidden">
-        <div id="ytMystery2" style="font-size:4rem">&#128266;</div>
-        <img id="ytImg2" src="assets/vocab/ball.png" style="display:none;width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
-      </div>
-      <div class="card" style="width:400px;padding:40px 36px;text-align:center">
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.7rem;color:#43301F;margin-bottom:10px">Listen first!</div>
-        <div style="font-size:.95rem;color:#8A7160;font-weight:700">Play the sound, guess the word, then reveal the picture.</div>
-      </div>
-    </div>
     <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('ball')"
-            style="position:absolute;left:46px;bottom:32px;z-index:20;cursor:pointer;border:none;font-family:inherit;
-            background:linear-gradient(135deg,#0D9488,#0B7A6F);color:#fff;font-weight:800;padding:13px 26px;border-radius:999px;
-            font-size:1.02rem;box-shadow:0 8px 18px rgba(13,148,136,.35)">&#9654; Play sound</button>
-    <button onclick="document.getElementById('ytMystery2').style.display='none'; document.getElementById('ytImg2').style.display='block'; this.textContent='ball \u2014 كرة'; this.style.background='linear-gradient(135deg,#4ADE80,#16A34A)'"
-            style="position:absolute;left:230px;bottom:32px;z-index:20;cursor:pointer;border:none;font-family:inherit;
-            background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;padding:13px 26px;border-radius:999px;
-            font-size:1.02rem;box-shadow:0 8px 18px rgba(249,115,22,.35)">&#128064; Reveal picture</button>
-    <div class="floorshadow" style="right:95px;bottom:25px;width:230px;height:36px"></div><img class="char" src="assets/story/characters/omar-wave.png" style="right:95px;bottom:32px;height:250px" onerror="this.style.display='none'; this.previousElementSibling.style.display='none'">
+            style="position:absolute;left:80px;top:280px;width:180px;height:180px;border:none;cursor:pointer;background:linear-gradient(135deg,#0D9488,#0B7A6F);
+                   border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#fff">
+      <span style="font-size:2.2rem">&#128266;</span>
+      <span style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem">Tap to hear</span>
+    </button>
+    <div style="position:absolute;left:80px;top:200px;width:220px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.2rem;color:#43301F">Which word is this?</div>
+    
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'fish', 'ball')"
+              style="position:absolute;left:560px;top:260px;width:230px;height:96px;background:#fff;border:2.5px solid #F0E9DD;border-radius:16px;
+                  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer" data-quiz-option="fish">
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#F97316;
+                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">F</div><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#0D9488;
+                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">I</div><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#F59E0B;
+                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">S</div><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#2DD4BF;
+                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">H</div></div>
+      </button>
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'apple', 'ball')"
+              style="position:absolute;left:860px;top:260px;width:230px;height:96px;background:#fff;border:2.5px solid #F0E9DD;border-radius:16px;
+                  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer" data-quiz-option="apple">
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#F97316;
+                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">A</div><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#0D9488;
+                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">P</div><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#F59E0B;
+                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">P</div><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#2DD4BF;
+                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">L</div><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#DC5C33;
+                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">E</div></div>
+      </button>
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'ice cream', 'ball')"
+              style="position:absolute;left:560px;top:380px;width:230px;height:96px;background:#fff;border:2.5px solid #F0E9DD;border-radius:16px;
+                  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer" data-quiz-option="ice cream">
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.15rem;color:#43301F">ice cream</div>
+      </button>
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'ball', 'ball')"
+              style="position:absolute;left:860px;top:380px;width:230px;height:96px;background:#fff;border:2.5px solid #F0E9DD;border-radius:16px;
+                  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer" data-quiz-option="ball">
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#F97316;
+                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">B</div><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#0D9488;
+                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">A</div><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#F59E0B;
+                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">L</div><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#2DD4BF;
+                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">L</div></div>
+      </button>
+    

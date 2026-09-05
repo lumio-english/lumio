@@ -73,7 +73,19 @@ fetch(`assets/slides/${level}/manifest.json`).then(r => r.json()).then(manifest 
   let i = 1; i++;
   if (num === 1) i++;
   i++; i++; i++; i++; i++;
-  i += vocabN * 2;
+  // ABC lessons (Pre-A 3-5) replace the standard vocabN*2 vocab block
+  // with the new letter-focused structure -- 3 slides per letter,
+  // chunked in groups of 3 with a recap after each chunk, plus a
+  // closing letter-sound-match practice block. Estimating this
+  // separately keeps the "jump to games" shortcut landing in roughly
+  // the right place instead of drifting for these 3 lessons only.
+  const isAbcLesson = level === "pre-a" && [3, 4, 5].includes(num);
+  if (isAbcLesson) {
+    const numChunks = Math.ceil(vocabN / 3);
+    i += vocabN * 3 + numChunks + Math.min(4, vocabN);
+  } else {
+    i += vocabN * 2;
+  }
   i++; // dialogue
   i++; // sentence builder
   i++; // turn

@@ -189,6 +189,101 @@ def slide_vocab(w, idx, n, total, num_words, ch, verb_count=0):
     </div>
     ''' + char_img(ch, right=84, bottom=28, height=250))
 
+def slide_meet_the_letter(letter, n, total, ch):
+    """Pure shape-and-name recognition -- the letter itself, upper and
+    lower case side by side, nothing else on screen. No word, no sound
+    yet; tapping it hears the LETTER'S NAME (Lumio.speak), not its
+    phonics sound. First of the new 3-slide Pre-A alphabet sequence."""
+    up, low = letter.upper(), letter.lower()
+    return (bg_study() + header(f"Meet the Letter &bull; {up}{low}", n, total) + COLORSTRIP + f'''
+    <div style="position:absolute;left:0;right:0;top:150px;display:flex;justify-content:center">
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{up}')"
+              style="cursor:pointer;border:none;font-family:inherit;background:#fff;border-radius:40px;
+                     padding:50px 90px;box-shadow:0 16px 32px rgba(67,48,31,.2);display:flex;align-items:center;gap:36px">
+        <span style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:8rem;color:#F97316;line-height:1">{up}</span>
+        <span style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:8rem;color:#0D9488;line-height:1">{low}</span>
+      </button>
+    </div>
+    <div style="position:absolute;left:0;right:0;top:420px;text-align:center;font-family:'Baloo 2',sans-serif;
+                font-weight:700;font-size:1.15rem;color:#8A7160">&#128070; Tap the letter &mdash; what's its name?</div>
+    ''' + char_img(ch, bottom=32, height=260))
+
+def slide_hear_the_sound(letter, n, total, ch):
+    """Same letter, now tap to hear its phonics SOUND (speakPhonicsSound,
+    reusing slide_phonics_rule's exact tap-to-hear tile mechanic and
+    real recorded sound files) rather than its name -- the direct,
+    gentle bridge to Level 1's phonics system, introduced a full level
+    early. Second of the 3-slide sequence."""
+    low = letter.lower()
+    return (bg_plain() + header(f"Hear the Sound &bull; {low}", n, total) + COLORSTRIP + f'''
+    <div style="position:absolute;left:0;right:0;top:170px;display:flex;justify-content:center">
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speakPhonicsSound && Lumio.speakPhonicsSound('{low}')"
+              style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,#0D9488,#0B7A6F);
+                     border-radius:36px;padding:44px 80px;box-shadow:0 16px 32px rgba(13,148,136,.35);
+                     display:flex;flex-direction:column;align-items:center;gap:14px">
+        <span style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:6rem;color:#fff;line-height:1">{low}</span>
+        <span style="display:flex;align-items:center;gap:8px;color:#fff;font-weight:800;font-size:1.05rem">
+          <span style="font-size:1.4rem">&#128266;</span> Tap to hear the sound
+        </span>
+      </button>
+    </div>
+    <div style="position:absolute;left:0;right:0;top:440px;text-align:center;font-family:'Baloo 2',sans-serif;
+                font-weight:700;font-size:1.15rem;color:#8A7160">This letter's name and its sound aren't the same &mdash; listen closely!</div>
+    ''' + char_img(ch, bottom=32, height=260))
+
+def slide_letter_word(w, letter, n, total, ch):
+    """Now the letter meets its anchor word -- the existing vocab data
+    (image, Arabic, example sentence) plus the word spelled out with
+    the existing letter_tiles() color-block mechanic, so shape, sound,
+    and word land as one connected moment. Third of the 3-slide
+    sequence; visually modeled on slide_vocab but reframed around the
+    letter rather than the word being the headline."""
+    up = letter.upper()
+    quote = w.get("example", f"{up} is for {w['en']}.")
+    return (bg_plain() + header(f"{up} is for&hellip; &bull; {esc(w['en'])}", n, total) + COLORSTRIP + f'''
+    <div class="card" style="position:absolute;left:46px;top:180px;width:450px;padding:24px;background:#fff">
+      <div style="width:100%;aspect-ratio:1/1;border-radius:22px;overflow:hidden;margin-bottom:20px;
+                     box-shadow:0 12px 26px rgba(67,48,31,.22);border:7px solid #fff;outline:4px solid #FFDCA8;background:#fff">
+                     <img src="assets/vocab/{slug(w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.parentElement.style.background='#FFF3D6'; this.remove()"></div>
+      {letter_tiles(w["en"])}
+    </div>
+    <div class="card" style="position:absolute;left:518px;top:180px;width:620px;padding:36px 42px;">
+      <div style="display:flex;align-items:baseline;gap:14px">
+        <span style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:4rem;color:#F97316">{up}</span>
+        <span style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:3.1rem;color:#43301F">{esc(w["en"])}</span>
+      </div>
+      <div style="display:inline-block;margin-top:12px;padding:9px 24px;background:linear-gradient(135deg,#DDF6F0,#C8F0E7);color:#0D9488;
+                  border-radius:999px;font-weight:800;font-size:1.15rem">{w["ar"]}</div>
+      <div style="border-top:1.5px solid #F5EEE1;margin:24px 0 18px"></div>
+      <div style="font-size:.82rem;font-weight:800;color:#F97316;letter-spacing:1.8px;margin-bottom:8px">SAY IT</div>
+      <div style="font-family:'Baloo 2',sans-serif;font-style:italic;font-weight:700;font-size:1.4rem;color:#43301F;margin-bottom:24px">&ldquo;{esc(quote)}&rdquo;</div>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(w["en"])}')" style="cursor:pointer;border:none;display:inline-block;
+                  background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;font-family:inherit;
+                  padding:15px 32px;border-radius:999px;font-size:1.05rem;box-shadow:0 8px 18px rgba(249,115,22,.4)">&#9654; Listen &rarr; Repeat &times;3</button>
+    </div>
+    ''' + char_img(ch, right=84, bottom=28, height=250))
+
+def slide_letter_chunk_recap(letters_and_words, n, total, ch):
+    """Quick spaced-repetition check after each chunk of 3 letters --
+    distinct from slide_recap (which looks back at the *previous
+    lesson's* words); this looks back at the 3 letters just introduced,
+    a few slides ago, before moving on to the next chunk."""
+    tiles = ""
+    for letter, w in letters_and_words:
+        tiles += f'''
+      <div style="background:#fff;border-radius:18px;padding:18px 26px;display:flex;flex-direction:column;align-items:center;gap:6px;
+                  box-shadow:0 8px 16px rgba(67,48,31,.12)">
+        <span style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2.6rem;color:#F97316">{letter.upper()}{letter.lower()}</span>
+        <span style="font-size:.85rem;font-weight:800;color:#8A7160">{esc(w["en"])}</span>
+      </div>'''
+    return (bg_study() + header("Quick Recap! &#11088;", n, total) + COLORSTRIP + f'''
+    <div style="position:absolute;left:0;right:0;top:170px;text-align:center;font-family:'Baloo 2',sans-serif;
+                font-weight:800;font-size:1.3rem;color:#43301F">Which letter says &hellip;? Point and say its name!</div>
+    <div style="position:absolute;left:0;right:0;top:250px;display:flex;justify-content:center;gap:22px">
+      {tiles}
+    </div>
+    ''' + char_img(ch, bottom=32, height=260))
+
 DISCUSSION_TEMPLATES = [
     "Can you use \u201c{w}\u201d in your own sentence?",
     "Tell me about \u201c{w}\u201d \u2014 what do you know about it?",
@@ -814,12 +909,41 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
     if lesson_num == 1:
         plan.append(("meet_the_team", None))
     plan += [("lets_learn", None), ("unscramble", lesson["vocab"][0])]
+    is_abc_lesson = level == "pre-a" and lesson_num in (3, 4, 5)
     if lesson_num in (6, 11, 16, 20):
         img_path = f"assets/describing-time/{level}/lesson{lesson_num:02d}.jpg"
         if os.path.exists(img_path):
             plan.append(("describing_time", img_path))
     if prev_lesson:
         plan.append(("recap", None))
+    if is_abc_lesson:
+        # New letter-focused structure (Pre-A alphabet lessons only,
+        # see teacher-guide spec) -- replaces the standard vocab +
+        # practice_phonics loop with a 3-slide-per-letter sequence
+        # (Meet the Letter -> Hear the Sound -> Letter + Word), chunked
+        # in groups of 3 with a recap after each chunk, then a closing
+        # letter-scoped sound-match practice block. The letter for each
+        # vocab entry comes from its *sequential position* in the
+        # alphabet, not the word's own first character -- lesson 5's
+        # "box" stands for X (there's no simple X-starting picture word
+        # for this age), so parsing word[0] would get that one wrong.
+        # Placed after the previous-lesson recap (like the standard
+        # vocab loop it replaces) so new content still follows recap,
+        # not the other way around.
+        import string
+        start_letter_idx = {3: 0, 4: 9, 5: 18}[lesson_num]
+        letters = [string.ascii_uppercase[start_letter_idx + i] for i in range(V)]
+        letters_and_words = list(zip(letters, lesson["vocab"]))
+        for chunk_start in range(0, V, 3):
+            chunk = letters_and_words[chunk_start:chunk_start + 3]
+            for letter, w in chunk:
+                plan.append(("meet_letter", letter))
+                plan.append(("hear_sound", letter))
+                plan.append(("letter_word", (w, letter)))
+            plan.append(("letter_chunk_recap", chunk))
+        n_letter_practice = min(4, V)
+        for i in range(n_letter_practice):
+            plan.append(("letter_sound_match", i))
     if phonics_unit:
         plan.append(("phonics_rule", phonics_unit))
         plan.append(("phonics_practice", phonics_unit))
@@ -829,9 +953,10 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
     if tier == "preA":
         for w in lesson["vocab"]:
             plan.append(("tpr", tpr_action_for(w["en"])))
-    for i, w in enumerate(lesson["vocab"]):
-        plan.append(("vocab", (w, i)))
-        plan.append(("practice_phonics", (w, i)))
+    if not is_abc_lesson:
+        for i, w in enumerate(lesson["vocab"]):
+            plan.append(("vocab", (w, i)))
+            plan.append(("practice_phonics", (w, i)))
     if grammar_topic:
         plan.append(("grammar_rule", grammar_topic))
         plan.append(("grammar_practice", grammar_topic))
@@ -915,6 +1040,24 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
         elif kind == "practice_phonics":
             w, i = data
             slides.append(slide_practice_phonics(w, n, total, VOCAB_CHARS[i % len(VOCAB_CHARS)], has_phonics, seed=i))
+        elif kind == "meet_letter":
+            slides.append(slide_meet_the_letter(data, n, total, "sara-explain"))
+        elif kind == "hear_sound":
+            slides.append(slide_hear_the_sound(data, n, total, "sara-clap"))
+        elif kind == "letter_word":
+            w, letter = data
+            slides.append(slide_letter_word(w, letter, n, total, "omar-point"))
+        elif kind == "letter_chunk_recap":
+            slides.append(slide_letter_chunk_recap(data, n, total, "lumi-celebrate"))
+        elif kind == "letter_sound_match":
+            i = data
+            words = lesson["vocab"]
+            target_word = words[i % len(words)]
+            others = [w for w in words if w["en"] != target_word["en"]]
+            seed = lesson_num * 23 + i + n
+            distractor_words = random.Random(seed).sample(others, min(3, len(others)))
+            total_q = min(4, len(words)) or 1
+            slides.append(slide_sound_match(target_word, distractor_words, i + 1, total_q, n, total, seed))
         elif kind == "dialogue":
             slides.append(slide_dialogue(DIALOGUES[lesson_num], n, total, lesson_num))
         elif kind == "sentence":
