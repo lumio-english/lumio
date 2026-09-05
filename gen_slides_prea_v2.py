@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import sys
+import sys, json
 sys.path.insert(0, "lib")
 from deck_template_v2 import run
 
@@ -73,4 +73,13 @@ SKILLS_CHECKPOINTS = {
   },
 }
 
-run("pre-a", DIALOGUES, None, None, has_phonics=False, skills_data=SKILLS_CHECKPOINTS)
+# Introduces one Spelling Hub rule per checkpoint lesson, in the same
+# order they appear in spelling-hub/pre-a.json -- reuses the existing
+# checkpoint lessons (6, 11, 16, 20) rather than adding new special
+# lesson numbers, so the rules land at points already marked as
+# milestones for both teacher and parent.
+with open("spelling-hub/pre-a.json", encoding="utf-8") as f:
+    _spelling_data = json.load(f)
+SPELLING_RULES = dict(zip([6, 11, 16, 20], _spelling_data["rules"]))
+
+run("pre-a", DIALOGUES, None, None, has_phonics=False, skills_data=SKILLS_CHECKPOINTS, spelling_rules=SPELLING_RULES)

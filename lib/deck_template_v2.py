@@ -902,7 +902,59 @@ def slide_reward_homework(lesson_num, n, total):
     </div>''')
 
 
-def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic=None, has_phonics=True, level="pre-a", skills_data=None):
+def slide_spelling_rule(rule, n, total, ch):
+    """One of the 4 Spelling Hub rules, introduced live in a lesson --
+    reuses spellingExampleHtml's equivalent logic inline (this module
+    can't import the hub-present.html JS version, so the 4 example
+    shapes are handled directly here) rather than just linking out to
+    the Hub and hoping the student visits it on their own."""
+    ex = rule.get("example", {})
+    if "name" in ex and "sound" in ex:
+        example_html = f'''<div style="display:flex;align-items:center;gap:22px;justify-content:center">
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:3rem;color:#F97316">{esc(ex.get("letter",""))}</div>
+          <div style="text-align:center"><div style="font-size:.68rem;font-weight:800;color:#8A7160">NAME</div>
+            <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.2rem;color:#43301F">&ldquo;{esc(ex.get("name",""))}&rdquo;</div></div>
+          <div style="text-align:center"><div style="font-size:.68rem;font-weight:800;color:#8A7160">SOUND</div>
+            <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.2rem;color:#0D9488">&ldquo;{esc(ex.get("sound",""))}&rdquo;</div></div>
+          <div style="text-align:center"><div style="font-size:.68rem;font-weight:800;color:#8A7160">WORD</div>
+            <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.2rem;color:#43301F">{esc(ex.get("word",""))}</div></div>
+        </div>'''
+    elif "sounds" in ex:
+        blocks = "".join(f'''<div style="width:56px;height:56px;border-radius:14px;background:{["#F97316","#0D9488","#F59E0B","#2DD4BF"][i % 4]};
+                     color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem">{esc(s)}</div>'''
+                          for i, s in enumerate(ex.get("sounds", [])))
+        example_html = f'''<div style="display:flex;align-items:center;gap:10px;justify-content:center">
+          {blocks}<span style="font-size:1.2rem;color:#8A7160;margin:0 6px">=</span>
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.6rem;color:#43301F">{esc(ex.get("word",""))}</div>
+        </div>'''
+    elif "big" in ex and "small" in ex:
+        example_html = f'''<div style="display:flex;align-items:center;gap:16px;justify-content:center">
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:3.2rem;color:#F97316">{esc(ex.get("big",""))}</div>
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:3.2rem;color:#0D9488">{esc(ex.get("small",""))}</div>
+        </div>'''
+    elif "team" in ex:
+        example_html = f'''<div style="display:flex;align-items:center;gap:16px;justify-content:center">
+          <div style="background:linear-gradient(135deg,#F97316,#0D9488);color:#fff;border-radius:14px;padding:12px 20px;
+                      font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.7rem">{esc(ex.get("team",""))}</div>
+          <span style="font-size:1.2rem;color:#8A7160">&rarr;</span>
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.6rem;color:#43301F">{esc(ex.get("word",""))}</div>
+        </div>'''
+    else:
+        example_html = ""
+    return (bg_study() + header("Spelling Rule &#128295;", n, total) + COLORSTRIP + f'''
+    <div class="card" style="position:absolute;left:46px;top:130px;width:820px;padding:26px 34px">
+      <div style="font-size:.78rem;font-weight:800;color:#0D9488;letter-spacing:1.5px;margin-bottom:8px">TEACHER: EXPLAIN THIS RULE</div>
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.4rem;color:#43301F;margin-bottom:2px">{esc(rule.get("title",""))}</div>
+      <div style="direction:rtl;text-align:right;font-size:.85rem;color:#8A7160;font-weight:700;margin-bottom:16px">{rule.get("titleAr","")}</div>
+      <div style="background:#F7F2E8;border-radius:14px;padding:16px 18px;margin-bottom:14px">{example_html}</div>
+      <div style="background:#E6FAF7;border-radius:12px;padding:12px 16px">
+        <div style="font-size:.72rem;font-weight:800;color:#0D9488;letter-spacing:1.2px;margin-bottom:4px">WHY THIS MATTERS</div>
+        <div style="font-size:.85rem;color:#0F766E;font-weight:700;line-height:1.6">{esc(rule.get("goal",""))}</div>
+      </div>
+    </div>
+    ''' + char_img(ch, bottom=42, height=300))
+
+def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic=None, has_phonics=True, level="pre-a", skills_data=None, spelling_rules=None):
     V = len(lesson["vocab"])
     tier = "preA" if level == "pre-a" else ("level1" if level == "level1" else "level2")
     plan = [("title", None)]
@@ -950,6 +1002,8 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
         n_sound_match = min(4, len(phonics_unit.get("words", [])))
         for i in range(n_sound_match):
             plan.append(("sound_match", i))
+    if spelling_rules and lesson_num in spelling_rules:
+        plan.append(("spelling_rule", spelling_rules[lesson_num]))
     if tier == "preA":
         for w in lesson["vocab"]:
             plan.append(("tpr", tpr_action_for(w["en"])))
@@ -1082,16 +1136,18 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
             quiz_review_idx[0] += 1
             slides.append(slide_quiz(target, distractors, quiz_review_idx[0], quiz_total_q, n, total, lesson_num * 19 + i))
         elif kind == "skills_check": slides.append(slide_skills_check(data, n, total))
+        elif kind == "spelling_rule": slides.append(slide_spelling_rule(data, n, total, "sara-explain"))
         elif kind == "reward_homework": slides.append(slide_reward_homework(lesson_num, n, total))
     return slides
 
 
-def run(level, dialogues, phonics_units=None, grammar_units=None, has_phonics=True, out_root="slide-content", manifest_root="assets/slides", skills_data=None):
+def run(level, dialogues, phonics_units=None, grammar_units=None, has_phonics=True, out_root="slide-content", manifest_root="assets/slides", skills_data=None, spelling_rules=None):
     global DIALOGUES
     DIALOGUES = dialogues
     phonics_units = phonics_units or {}  # {lesson_num: unit_dict}
     grammar_units = grammar_units or {}  # {lesson_num: topic_dict}
     skills_data = skills_data or {}  # {lesson_num: {listening/speaking/reading/writing: str}}
+    spelling_rules = spelling_rules or {}  # {lesson_num: rule_dict, from spelling-hub/<level>.json}
     lesson_files = sorted(glob.glob(f"lessons/{level}/lesson*.json"))
     lessons = {}
     for f in lesson_files:
@@ -1107,7 +1163,7 @@ def run(level, dialogues, phonics_units=None, grammar_units=None, has_phonics=Tr
     for num in sorted(lessons):
         lesson = lessons[num]
         prev_lesson = lessons.get(num - 1)
-        slides = build_deck(num, lesson, prev_lesson, phonics_units.get(num), grammar_units.get(num), has_phonics, level, skills_data)
+        slides = build_deck(num, lesson, prev_lesson, phonics_units.get(num), grammar_units.get(num), has_phonics, level, skills_data, spelling_rules)
         nn = f"{num:02d}"
         lesson_dir = os.path.join(out_dir, nn)
         os.makedirs(lesson_dir, exist_ok=True)

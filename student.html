@@ -766,6 +766,17 @@
       <div class="sd-hubb-trail" id="hubPhonicsTrail"></div>
       <span class="sd-hubb-btn" id="hubPhonicsBtn">Open</span>
     </button>
+    <button class="sd-hubb" id="hubSpelling">
+      <div class="sd-hubb-left">
+        <div class="sd-hubb-icon">🔡</div>
+        <div>
+          <div class="sd-hubb-title">Spelling</div>
+          <div class="sd-hubb-sub" id="hubSpellingSub">The 4 rules behind every word</div>
+        </div>
+      </div>
+      <div class="sd-hubb-trail" id="hubSpellingTrail"></div>
+      <span class="sd-hubb-btn" id="hubSpellingBtn">Open</span>
+    </button>
     <button class="sd-hubb" id="hubWriting">
       <div class="sd-hubb-left">
         <div class="sd-hubb-icon">✍️</div>
@@ -842,6 +853,16 @@
     <h3>🔤 Phonics</h3>
     <p id="phonicsTitle" style="margin:-8px 0 16px;font-weight:700;color:var(--sd-cocoa-soft);font-size:.88rem"></p>
     <div id="phonicsUnits"></div>
+  </div>
+</div>
+
+<!-- Spelling Hub modal -->
+<div class="sd-modal-overlay" id="spellingOverlay">
+  <div class="sd-modal wide" style="position:relative">
+    <button class="sd-modal-close-x" id="spellingClose">✕</button>
+    <h3>🔡 Spelling</h3>
+    <p id="spellingIntro" style="margin:-8px 0 16px;font-weight:700;color:var(--sd-cocoa-soft);font-size:.88rem"></p>
+    <div id="spellingRules"></div>
   </div>
 </div>
 
@@ -1649,6 +1670,17 @@
   document.getElementById("hubPhonics").onclick = () => { location.href = `hub-present.html?type=phonics&level=${level}`; };
   document.getElementById("phonicsClose").onclick = () => phonicsOverlay.classList.remove("show");
   phonicsOverlay.addEventListener("click", e => { if (e.target === phonicsOverlay) phonicsOverlay.classList.remove("show"); });
+
+  // ================= English Hub: Spelling =================
+  // Pre-A only for now -- same hand-off pattern as every other hub tile
+  // (Vocab, Grammar, Phonics, Idioms all navigate to hub-present.html
+  // rather than opening an in-page modal), and the same generic
+  // "not ready for your level yet" fallback already built into
+  // hub-present.html handles every other level automatically, just by
+  // spelling-hub/ only having a pre-a.json file and nothing else.
+  document.getElementById("hubSpelling").onclick = () => { location.href = `hub-present.html?type=spelling&level=${level}`; };
+  document.getElementById("spellingClose").onclick = () => document.getElementById("spellingOverlay").classList.remove("show");
+  document.getElementById("spellingOverlay").addEventListener("click", e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove("show"); });
 
   // ================= English Hub: Grammar =================
   const grammarOverlay = document.getElementById("grammarOverlay");

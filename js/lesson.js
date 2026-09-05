@@ -242,6 +242,68 @@
   /* ============================================================
      ACTIVITY 5 — SPELL (unscramble letters)
      ============================================================ */
+  /* ============================================================
+     ACTIVITY — SPELL BLEND (real sound-by-sound blending practice,
+     the direct rehearsal for Rule 2 in the Spelling hub: "words are
+     sounds in order". Distinct from actSpell below in two real ways,
+     not just cosmetically: (1) each letter's REAL phonics sound plays
+     in sequence via speakPhonicsSound, not a single whole-word TTS
+     clip; (2) letters must be tapped in the correct order with
+     IMMEDIATE right/wrong feedback per tap, not just a check at the
+     very end -- closer to how blending is actually taught than a
+     scramble-and-guess game. Restricted to short words (<=5 letters,
+     no spaces) since blending is a beginning-reader skill; longer
+     words stay with the existing actSpell scramble game. ============================================================ */
+  function actSpellBlend(a) {
+    const words = Lumio.shuffle(lesson.vocab.filter(v => v.en.length <= 5 && !v.en.includes(" "))).slice(0, a.rounds || 3);
+    if (!words.length) return next();
+    let r = 0;
+    const DISTRACTOR_POOL = "bcdfghjklmnpqrstvwxyz".split("");
+    const draw = () => {
+      const w = words[r];
+      const target = w.en.toLowerCase().split("");
+      let nextIdx = 0; // how many correct letters tapped so far, in order
+      const distractors = Lumio.shuffle(DISTRACTOR_POOL.filter(l => !target.includes(l))).slice(0, 2);
+      const tiles = Lumio.shuffle(target.map((l, i) => ({ l, correctPos: i })).concat(distractors.map(l => ({ l, correctPos: -1 }))));
+      const render = () => {
+        stage.innerHTML = `
+          <div class="card center">
+            <span class="chip chip-orange">Spell Blend · ${r + 1}/${words.length}</span>
+            ${vocabImg(w.en, "height:110px;border-radius:16px;max-width:200px;margin:12px auto")}
+            <button class="btn btn-teal mt" id="hearSounds">🔊 Hear the sounds, one by one</button>
+            <div class="mt" style="font-family:var(--font-display);font-size:2.2rem;letter-spacing:10px;min-height:52px;border-bottom:4px dashed var(--cocoa);display:inline-block;padding:0 20px">
+              ${target.map((l, i) => i < nextIdx ? l : "_").join(" ")}
+            </div>
+            <div class="row mt" style="justify-content:center;flex-wrap:wrap" id="blendLetters">
+              ${tiles.map((t, i) => `<button class="btn btn-sun BL" data-i="${i}" style="font-size:1.5rem;min-width:56px">${t.l}</button>`).join("")}
+            </div>
+          </div>`;
+        document.getElementById("hearSounds").onclick = () => {
+          target.forEach((l, i) => setTimeout(() => Lumio.speakPhonicsSound && Lumio.speakPhonicsSound(l), i * 700));
+        };
+        document.querySelectorAll(".BL").forEach(b => {
+          b.onclick = () => {
+            const tile = tiles[+b.dataset.i];
+            if (tile.correctPos === nextIdx) {
+              b.disabled = true; b.style.opacity = "0.35";
+              Lumio.beep(true); Lumio.speakPhonicsSound && Lumio.speakPhonicsSound(tile.l);
+              nextIdx++;
+              if (nextIdx === target.length) {
+                total++; score++; Lumio.speak(w.en); Lumio.toast("You blended it!");
+                setTimeout(() => { r++; r < words.length ? draw() : next(); }, 900);
+              } else render();
+            } else {
+              Lumio.beep(false); Lumio.toast("Not that sound yet — try the next one!");
+              b.style.transform = "scale(.9)"; setTimeout(() => { b.style.transform = ""; }, 150);
+            }
+          };
+        });
+      };
+      render();
+    };
+    draw();
+  }
+
   function actSpell(a) {
     const words = Lumio.shuffle(lesson.vocab.filter(v => v.en.length <= 8 && !v.en.includes(" "))).slice(0, a.rounds || 3);
     if (!words.length) return next();
@@ -500,6 +562,7 @@
       case "match": return actMatch(a);
       case "quiz": return actQuiz(a);
       case "spell": return actSpell(a);
+      case "spell_blend": return actSpellBlend(a);
       case "speak": return actSpeak(a);
       case "sequence": return actSequence(a);
       default: return next();

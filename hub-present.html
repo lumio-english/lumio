@@ -94,7 +94,7 @@ if (["level3", "level4", "level5", "level6"].includes(level)) {
 }
 let cur = 1, total = 1, slides = [];
 
-const TITLES = { vocab: "📔 Vocabulary", grammar: "📐 Grammar", idioms: "💡 Idioms", phonics: "🔤 Phonics", writing: "✍️ Writing & Speaking" };
+const TITLES = { vocab: "📔 Vocabulary", grammar: "📐 Grammar", idioms: "💡 Idioms", phonics: "🔤 Phonics", spelling: "🔡 Spelling", writing: "✍️ Writing & Speaking" };
 document.getElementById("hubBrand").textContent = `${TITLES[type] || "English Hub"} · ${level.toUpperCase()}`;
 
 /* ============================================================
@@ -177,6 +177,91 @@ function buildGrammarSlides(data) {
   });
 }
 
+function spellingExampleHtml(ex) {
+  if (!ex) return "";
+  if (ex.name && ex.sound) {
+    // name-and-sound rule: letter, its NAME, and its (different) SOUND side by side
+    return `<div style="display:flex;align-items:center;gap:24px;justify-content:center">
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:3.4rem;color:#F97316">${esc(ex.letter)}</div>
+      <div style="text-align:center">
+        <div style="font-size:.72rem;font-weight:800;color:#8A7160;letter-spacing:1px">NAME</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;color:#43301F">&ldquo;${esc(ex.name)}&rdquo;</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:.72rem;font-weight:800;color:#8A7160;letter-spacing:1px">SOUND</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;color:#0D9488">&ldquo;${esc(ex.sound)}&rdquo;</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:.72rem;font-weight:800;color:#8A7160;letter-spacing:1px">IN A WORD</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;color:#43301F">${esc(ex.word)}</div>
+      </div>
+    </div>`;
+  }
+  if (ex.sounds) {
+    // sounds-in-order rule: the word broken into its individual sound blocks
+    return `<div style="display:flex;align-items:center;gap:14px;justify-content:center">
+      ${ex.sounds.map((s, i) => `<div style="display:flex;align-items:center;gap:14px">
+        <div style="width:64px;height:64px;border-radius:16px;background:${["#F97316","#0D9488","#F59E0B","#2DD4BF"][i % 4]};
+                    color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem">${esc(s)}</div>
+        ${i < ex.sounds.length - 1 ? '<span style="font-size:1.4rem;color:#8A7160">+</span>' : ""}
+      </div>`).join("")}
+      <span style="font-size:1.4rem;color:#8A7160;margin:0 6px">=</span>
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.8rem;color:#43301F">${esc(ex.word)}</div>
+    </div>`;
+  }
+  if (ex.big && ex.small) {
+    // big-small-family rule: the same letter's two forms, side by side
+    return `<div style="display:flex;align-items:center;gap:18px;justify-content:center">
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:3.6rem;color:#F97316">${esc(ex.big)}</div>
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:3.6rem;color:#0D9488">${esc(ex.small)}</div>
+    </div>`;
+  }
+  if (ex.team) {
+    // letter-teams-preview rule: the two-letter team plus its example word
+    return `<div style="display:flex;align-items:center;gap:18px;justify-content:center">
+      <div style="background:linear-gradient(135deg,#F97316,#0D9488);color:#fff;border-radius:16px;padding:14px 22px;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2rem">${esc(ex.team)}</div>
+      <span style="font-size:1.4rem;color:#8A7160">&rarr;</span>
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.8rem;color:#43301F">${esc(ex.word)}</div>
+    </div>`;
+  }
+  return "";
+}
+
+function buildSpellingSlides(data) {
+  const rules = data.rules || [];
+  const slides = [];
+  if (data.intro) {
+    slides.push(bgStudy() + header("Spelling", 1, rules.length + 1) + COLORSTRIP + `
+      <div class="card" style="position:absolute;left:46px;top:170px;width:820px;padding:34px 40px;text-align:center">
+        <div style="font-size:2rem;margin-bottom:10px">&#128295;</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.4rem;color:#43301F;margin-bottom:12px">${esc(data.levelName || "")} &bull; Spelling</div>
+        <div style="font-size:.95rem;color:#43301F;line-height:1.7;margin-bottom:10px">${esc(data.intro)}</div>
+        <div style="direction:rtl;text-align:right;font-size:.88rem;color:#8A7160;font-weight:700;line-height:1.7">${data.introAr || ""}</div>
+      </div>
+      ${charImg(isTeenLevel ? "sara-teen-explain" : "sara-explain", { bottom: 42, height: 300 })}`);
+  }
+  rules.forEach((rule, i) => {
+    const n = i + 1 + (data.intro ? 1 : 0);
+    const total = rules.length + (data.intro ? 1 : 0);
+    slides.push(bgPlain() + header(`Rule ${i + 1} of ${rules.length}`, n, total) + COLORSTRIP + `
+      <div class="card" style="position:absolute;left:46px;top:130px;width:820px;padding:26px 34px">
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;color:#43301F;margin-bottom:2px">${esc(rule.title)}</div>
+        <div style="direction:rtl;text-align:right;font-size:.85rem;color:#8A7160;font-weight:700;margin-bottom:16px">${rule.titleAr || ""}</div>
+        <div style="background:#F7F2E8;border-radius:14px;padding:18px 20px;margin-bottom:14px">${spellingExampleHtml(rule.example)}</div>
+        <div style="font-size:.88rem;color:#43301F;line-height:1.7;margin-bottom:6px">${esc(rule.explanation)}</div>
+        <div style="direction:rtl;text-align:right;font-size:.85rem;color:#8A7160;font-weight:700;line-height:1.7;margin-bottom:14px">${rule.explanationAr || ""}</div>
+        <div style="background:#E6FAF7;border-radius:12px;padding:12px 16px">
+          <div style="font-size:.72rem;font-weight:800;color:#0D9488;letter-spacing:1.2px;margin-bottom:4px">WHY THIS MATTERS &bull; \u0644\u0645\u0627\u0630\u0627 \u064a\u0647\u0645</div>
+          <div style="font-size:.85rem;color:#0F766E;font-weight:700;line-height:1.6">${esc(rule.goal)}</div>
+          <div style="direction:rtl;text-align:right;font-size:.82rem;color:#0F766E;font-weight:700;line-height:1.6;margin-top:4px">${rule.goalAr || ""}</div>
+        </div>
+      </div>
+      ${charImg(isTeenLevel ? "sara-teen-explain" : "sara-explain", { bottom: 20, height: 280 })}`);
+  });
+  return slides;
+}
+
 function buildPhonicsSlides(data) {
   return (data.units || []).map((u, i) => {
     const sounds = (u.sounds || []).map(s => `
@@ -242,8 +327,8 @@ function buildWritingSlides(data) {
   });
 }
 
-const BUILDERS = { vocab: buildVocabSlides, grammar: buildGrammarSlides, phonics: buildPhonicsSlides, idioms: buildIdiomsSlides, writing: buildWritingSlides };
-const HUB_DIRS = { vocab: "vocab-hub", grammar: "grammar-hub", phonics: "phonics-hub", idioms: "idioms-hub", writing: "writing-hub" };
+const BUILDERS = { vocab: buildVocabSlides, grammar: buildGrammarSlides, phonics: buildPhonicsSlides, spelling: buildSpellingSlides, idioms: buildIdiomsSlides, writing: buildWritingSlides };
+const HUB_DIRS = { vocab: "vocab-hub", grammar: "grammar-hub", phonics: "phonics-hub", spelling: "spelling-hub", idioms: "idioms-hub", writing: "writing-hub" };
 
 fetch(`${HUB_DIRS[type] || "vocab-hub"}/${level}.json`)
   .then(r => { if (!r.ok) throw new Error("not found"); return r.json(); })
