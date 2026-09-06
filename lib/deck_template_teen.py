@@ -384,7 +384,6 @@ def slide_sentence_trio(sentences, n, total, ch, seed):
     {rows}
     <style>
       .sbg-slot {{ width:70px; height:38px; border:2px dashed {BORDER}; border-radius:8px; background:rgba(0,0,0,.04); }}
-      .sbg-slot.sb-filled {{ border-style:solid; border-color:{ORANGE}; background:#FFF8EC; }}
       .sbg-tile {{ min-width:50px; height:38px; padding:0 10px; background:#FFF8EC; border-radius:8px; display:flex; align-items:center;
                    justify-content:center; font-family:'Fredoka',sans-serif; font-weight:600; font-size:.82rem; color:{CARD_TEXT};
                    box-shadow:0 3px 8px rgba(0,0,0,.15); cursor:grab; touch-action:none; user-select:none; }}

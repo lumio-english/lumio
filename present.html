@@ -201,7 +201,6 @@ window.checkQuizAnswer = function (el, chosen, correct) {
       if (over && !dropped) {
         if (s.firstChild && tray) tray.appendChild(s.firstChild);
         dragEl.removeAttribute("style");
-        dragEl.className = "sb-tile";
         s.appendChild(dragEl);
         s.classList.add("sb-filled");
         dropped = true;
@@ -209,7 +208,6 @@ window.checkQuizAnswer = function (el, chosen, correct) {
     });
     if (!dropped && tray) {
       dragEl.removeAttribute("style");
-      dragEl.className = "sb-tile";
       tray.appendChild(dragEl);
     }
     document.querySelectorAll(`.sb-slot[data-group="${group}"]`).forEach(s => { if (!s.firstChild) s.classList.remove("sb-filled"); });
