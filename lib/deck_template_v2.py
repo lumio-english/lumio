@@ -293,6 +293,37 @@ def discussion_question(word, seed):
     tmpl = DISCUSSION_TEMPLATES[seed % len(DISCUSSION_TEMPLATES)]
     return tmpl.format(w=word)
 
+REVIEW_BREAK_ACTIVITIES = [
+    ("Stand up and stretch tall!", "قف وتمدد للأعلى!"),
+    ("Shout your favorite word so far!", "اصرخ بكلمتك المفضلة حتى الآن!"),
+    ("Give yourself a big round of applause!", "صفق لنفسك تصفيقا حارا!"),
+    ("Take a deep breath and smile!", "خذ نفسا عميقا وابتسم!"),
+    ("Do a little happy dance!", "قم برقصة سعيدة صغيرة!"),
+]
+
+def slide_review_break(progress, n, total, ch):
+    done, out_of = progress
+    pct = round(done / out_of * 100)
+    activity_idx = (done // 9 - 1) % len(REVIEW_BREAK_ACTIVITIES)
+    activity_en, activity_ar = REVIEW_BREAK_ACTIVITIES[activity_idx]
+    return (f'''<div class="wall" style="background:linear-gradient(160deg,#FFE3C2,#FFD98C)"></div><div class="teal-band"></div>{SPARKS}''' +
+            header("Quick Break! &#127881;", n, total) + COLORSTRIP + f'''
+    <div style="position:absolute;left:0;right:0;top:150px;text-align:center">
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2.2rem;color:#43301F;margin-bottom:6px">You're doing great!</div>
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.6rem;color:#EA580C">{done} of {out_of} words done &bull; {pct}%</div>
+    </div>
+    <div style="position:absolute;left:0;right:0;top:250px;display:flex;justify-content:center">
+      <div style="width:70%;max-width:600px;height:20px;background:rgba(255,255,255,.6);border-radius:999px;overflow:hidden;box-shadow:inset 0 2px 4px rgba(67,48,31,.15)">
+        <div style="width:{pct}%;height:100%;background:linear-gradient(90deg,#F97316,#0D9488);border-radius:999px"></div>
+      </div>
+    </div>
+    <div class="card" style="position:absolute;left:0;right:0;margin:0 auto;top:320px;width:560px;padding:26px 32px;text-align:center">
+      <div style="font-size:.75rem;font-weight:800;color:#0D9488;letter-spacing:1.5px;margin-bottom:8px">QUICK BREAK</div>
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;color:#43301F;margin-bottom:4px">{activity_en}</div>
+      <div style="direction:rtl;text-align:center;font-size:.95rem;color:#8A7160;font-weight:700">{activity_ar}</div>
+    </div>
+    ''' + char_img(ch, bottom=24, height=270))
+
 def slide_practice_phonics(w, n, total, ch, show_phonics_link=True, seed=0):
     quote = w.get("example", w["en"])
     first_letter = w["en"][0].upper()
@@ -1033,9 +1064,22 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
         for w in lesson["vocab"]:
             plan.append(("tpr", tpr_action_for(w["en"])))
     if not is_abc_lesson:
+        # Review lessons (a big-review checkpoint, currently just lesson 20
+        # in every level) pack a huge vocab list -- 38 words means 76 back
+        # to back vocab+practice_phonics slides, a genuinely long
+        # undifferentiated stretch. A short, visually distinct break every
+        # ~9 words resets attention without cutting any content -- same
+        # principle as the letter-chunk recaps in the Pre-A alphabet
+        # lessons, just sized for a much longer list. Regular lessons
+        # (small vocab lists) get no breaks at all; there's nothing to
+        # break up.
+        BREAK_EVERY = 9
+        is_review_lesson = V > 20
         for i, w in enumerate(lesson["vocab"]):
             plan.append(("vocab", (w, i)))
             plan.append(("practice_phonics", (w, i)))
+            if is_review_lesson and (i + 1) % BREAK_EVERY == 0 and (i + 1) < V:
+                plan.append(("review_break", (i + 1, V)))
     if grammar_topic:
         plan.append(("grammar_rule", grammar_topic))
         plan.append(("grammar_practice", grammar_topic))
@@ -1119,6 +1163,8 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
         elif kind == "practice_phonics":
             w, i = data
             slides.append(slide_practice_phonics(w, n, total, VOCAB_CHARS[i % len(VOCAB_CHARS)], has_phonics, seed=i))
+        elif kind == "review_break":
+            slides.append(slide_review_break(data, n, total, "lumi-celebrate"))
         elif kind == "meet_letter":
             slides.append(slide_meet_the_letter(data, n, total, "sara-explain"))
         elif kind == "hear_sound":
