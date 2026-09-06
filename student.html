@@ -221,7 +221,9 @@
     display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--sd-orange-deep);
     padding:11px 22px;border-radius:999px;font-weight:800;font-size:1rem;box-shadow:0 6px 14px rgba(0,0,0,.15);
     position:relative;z-index:2;transition:transform .15s cubic-bezier(.22,1,.36,1),box-shadow .15s ease;
+    text-decoration:none;font-family:'Nunito',sans-serif;
   }
+  .sd-hero-btn-logo{width:18px;height:18px;border-radius:5px;flex-shrink:0}
   .sd-hero-btn:hover{transform:translateY(-2px);box-shadow:0 10px 20px rgba(0,0,0,.2)}
   .sd-hero-btn:active{transform:translateY(0) scale(.96)}
   .sd-hero-btn:focus-visible{outline:3px solid rgba(255,255,255,.6);outline-offset:2px}
@@ -630,11 +632,11 @@
       <div class="sd-hero-eyebrow">Today's mission</div>
       <div class="sd-hero-title" id="missionTitle">Let's play!</div>
       <div class="sd-hero-sub" id="missionSub">Pick up right where you left off.</div>
-      <a class="sd-hero-btn" id="missionBtn" href="#">▶ Continue</a>
-      <a class="sd-hero-btn" id="homeworkBtn" href="#" style="background:#F59E0B;margin-top:10px">🖥️ Interactive Homework</a>
-      <a class="sd-hero-btn" id="worksheetBtn" href="#" download style="background:#0D9488;margin-top:10px">📄 Homework Sheet</a>
-      <a class="sd-hero-btn" id="writingBtn" href="#" download style="background:#DB2777;margin-top:10px">✏️ Writing Practice</a>
-      <a class="sd-hero-btn" id="flashcardsBtn" href="#" download style="background:#7C3AED;margin-top:10px">🃏 Flashcards</a>
+      <a class="sd-hero-btn" id="missionBtn" href="#"><img class="sd-hero-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Continue</a>
+      <a class="sd-hero-btn" id="homeworkBtn" href="#" style="margin-top:10px"><img class="sd-hero-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Interactive Homework</a>
+      <a class="sd-hero-btn" id="worksheetBtn" href="#" download style="margin-top:10px"><img class="sd-hero-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Homework Sheet</a>
+      <a class="sd-hero-btn" id="writingBtn" href="#" download style="margin-top:10px"><img class="sd-hero-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Writing Practice</a>
+      <a class="sd-hero-btn" id="flashcardsBtn" href="#" download style="margin-top:10px"><img class="sd-hero-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Flashcards</a>
     </div>
     <div class="sd-side-stats">
       <div class="sd-stat-card sd-fade-up sd-anim-d1">
