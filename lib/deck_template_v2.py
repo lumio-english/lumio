@@ -325,21 +325,37 @@ DIALOGUE_CHAR_PAIRS = [
     ("hamad-happy", "ziad-wave"),
 ]
 
+def char_display_name(sprite_name):
+    # "noor-wave" -> "Noor", "sara-clap" -> "Sara" -- just the character's
+    # first name, dropping the pose suffix, for the speaker label on each
+    # dialogue bubble.
+    return sprite_name.split("-")[0].capitalize()
+
 def slide_dialogue(lines, n, total, lesson_num=0):
+    # Each line is (speaker, en, ar) where speaker is "L" or "R", matching
+    # which of the two characters below actually says it -- not just
+    # alternating by position. Real speaker attribution, not an implied
+    # left/right turn-taking pattern, is what makes "two characters having
+    # a conversation" mean something rather than just two people standing
+    # next to unattributed text.
     y_positions = [165, 271, 378, 484]
+    left_char, right_char = DIALOGUE_CHAR_PAIRS[lesson_num % len(DIALOGUE_CHAR_PAIRS)]
+    left_name, right_name = char_display_name(left_char), char_display_name(right_char)
     bubbles = ""
-    for i, (en, ar) in enumerate(lines):
-        left = i % 2 == 0
+    for i, (speaker, en, ar) in enumerate(lines):
+        left = speaker == "L"
         side = "left" if left else "right"
         tri = "left" if left else "right"
+        name = left_name if left else right_name
+        name_color = "#0D9488" if left else "#F97316"
         bubbles += f'''
         <div style="position:absolute;{side}:150px;top:{y_positions[i]}px;max-width:520px;background:#fff;border-radius:20px;
                     padding:14px 20px;box-shadow:0 10px 22px rgba(67,48,31,.16);z-index:6">
           <div style="position:absolute;top:20px;{tri}:-10px;border-{'right' if left else 'left'}-color:#fff;width:0;height:0;border:10px solid transparent"></div>
+          <div style="font-size:.72rem;font-weight:800;color:{name_color};letter-spacing:.5px;margin-bottom:2px">{esc(name)}</div>
           <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.08rem;color:#43301F">{esc(en)}</div>
           <div style="direction:rtl;text-align:right;font-size:.86rem;color:#8A7160;font-weight:700;margin-top:3px">{ar}</div>
         </div>'''
-    left_char, right_char = DIALOGUE_CHAR_PAIRS[lesson_num % len(DIALOGUE_CHAR_PAIRS)]
     return (bg_plain() + header("Dialogue &bull; Let's talk!", n, total) + COLORSTRIP + bubbles + f'''
     <img class="char" src="{CHAR}/{left_char}.png" style="left:280px;bottom:0px;height:230px;position:absolute;z-index:5;filter:drop-shadow(0 16px 22px rgba(67,48,31,.3))" onerror="this.style.display='none'">
     <img class="char" src="{CHAR}/{right_char}.png" style="right:280px;bottom:0px;height:230px;position:absolute;z-index:5;filter:drop-shadow(0 16px 22px rgba(67,48,31,.3));transform:scaleX(-1)" onerror="this.style.display='none'">
