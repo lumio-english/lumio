@@ -415,6 +415,31 @@ def slide_pair_check(prompt, n, total, theme_key="default"):
     </div>
     ''')
 
+REVIEW_BREAK_ACTIVITIES_TEEN = [
+    "Take a deep breath \u2014 you're doing great.",
+    "Quick stretch, then let's keep going.",
+    "Grab a sip of water if you need it.",
+    "Nice pace! A few more words to go.",
+    "High-five yourself for getting this far.",
+]
+
+def slide_review_break(progress, n, total, theme_key="default"):
+    done, out_of = progress
+    pct = round(done / out_of * 100)
+    activity = REVIEW_BREAK_ACTIVITIES_TEEN[(done // 9 - 1) % len(REVIEW_BREAK_ACTIVITIES_TEEN)]
+    return (bg_theme(theme_key) + header_themed("Quick Break", n, total, theme_key) + f'''
+    <div style="position:relative;z-index:5;display:flex;justify-content:center;margin-top:70px">
+      {card_open(600, "padding:36px 40px;text-align:center")}
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.2rem;color:{CARD_TEXT};margin-bottom:6px">{done} of {out_of} words reviewed</div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:700;font-size:1.6rem;color:#F97316;margin-bottom:16px">{pct}%</div>
+        <div style="width:100%;height:14px;background:#EEE8FA;border-radius:999px;overflow:hidden;margin-bottom:20px">
+          <div style="width:{pct}%;height:100%;background:linear-gradient(90deg,#F97316,#8B7CF6);border-radius:999px"></div>
+        </div>
+        <div style="font-size:.95rem;color:{CARD_TEXT};font-weight:700">{esc(activity)}</div>
+      </div>
+    </div>
+    ''')
+
 def slide_round_checkpoint(round_label, n, total, theme_key="default"):
     return (bg_theme(theme_key) + header_themed("Quick Check-In", n, total, theme_key) + f'''
     <div style="position:relative;z-index:5;display:flex;justify-content:center;margin-top:90px">
@@ -601,6 +626,16 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
     plan.append(("first_listen", None))
     for i, w in enumerate(lesson["vocab"]):
         plan.append(("vocab", (w, i)))
+        # Review lessons (currently just lesson 20) pack a 38-word vocab
+        # list -- 38 consecutive vocab slides with zero pacing beat. A
+        # short check-in every 9 words gives the same kind of breather
+        # the vocab_mcq section below already gets via its own
+        # "checkpoint" round-split, just applied to the plain vocab
+        # introduction loop too, which had nothing like it. Gated on a
+        # long list (V > 20) so a normal lesson's short vocab set is
+        # never touched.
+        if V > 20 and (i + 1) % 9 == 0 and (i + 1) < V:
+            plan.append(("review_break", (i + 1, V)))
     for i in range(3):
         w = lesson["vocab"][i % V]
         plan.append(("practice", (w, i)))
@@ -677,6 +712,8 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
             w, i = data
             verb_count = sum(1 for x in lesson["vocab"] if x.get("pos") == "verb")
             slides.append(slide_vocab(w, i, n, total, V, VOCAB_CHARS[i % len(VOCAB_CHARS)], verb_count))
+        elif kind == "review_break":
+            slides.append(slide_review_break(data, n, total, theme_key))
         elif kind == "grammar_rule":
             slides.append(grammar_slides.slide_grammar_rule(
                 data, n, total, ch3, header_themed_wrap(theme_key), "", bg_theme_wrap(theme_key),
