@@ -21,21 +21,52 @@
      drawing canvas, recording) lives inside white .hw-card elements
      whose --cocoa/--cocoa-soft text stays correct unchanged -- only
      .hw-header sits directly on the page background and needs an
-     explicit override. */
+     explicit override. -- update: .hw-header was replaced by .hw-hero,
+     a gradient card with its own white text that works unchanged on
+     both themes, so this override moved to .hw-top and .hw-step-label
+     instead, which still sit directly on the page background. */
   body.theme-teen { background: linear-gradient(160deg, #2B1B52 0%, #1C1038 100%); }
-  body.theme-teen .hw-header h1 { color: #EDE9FB; }
-  body.theme-teen .hw-header p { color: #A79BD1; }
-  .hw-top { position:sticky; top:0; z-index:20; background:#2B2118; color:#fff; display:flex; align-items:center; justify-content:space-between; padding:12px 20px; }
-  .hw-top .brand { font-family:'Baloo 2',sans-serif; font-weight:800; display:flex; align-items:center; gap:8px }
-  .hw-top a { color:#fff; text-decoration:none; background:rgba(255,255,255,.14); padding:8px 16px; border-radius:999px; font-weight:800; font-size:.85rem }
+  body.theme-teen .hw-top { background:rgba(255,255,255,.06); backdrop-filter:blur(6px); border-bottom-color:rgba(255,255,255,.1); }
+  body.theme-teen .hw-top .brand { color:#EDE9FB; }
+  body.theme-teen .hw-top a { color:#EDE9FB; }
+  body.theme-teen .hw-step-label { color:#A79BD1; }
+  .hw-top {
+    position:sticky; top:0; z-index:20; background:rgba(255,255,255,.75); backdrop-filter:blur(6px);
+    border-bottom:3px solid rgba(255,255,255,.9); display:flex; align-items:center; gap:12px; padding:12px 22px;
+  }
+  .hw-logo { width:34px; height:34px; border-radius:10px; }
+  .hw-top .brand { font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1.1rem; color:var(--cocoa); display:flex; align-items:center; gap:8px }
+  .hw-top .brand span { color:var(--orange-deep); }
+  .hw-top-spacer { flex:1; }
+  .hw-top a { color:var(--cocoa-soft); text-decoration:none; background:#fff; padding:8px 16px; border-radius:999px; font-weight:800; font-size:.85rem; box-shadow:0 3px 10px rgba(67,48,31,.08) }
   .hw-wrap { max-width:760px; margin:0 auto; padding:26px 18px; }
-  .hw-header { text-align:center; margin-bottom:22px; }
-  .hw-header h1 { font-family:'Baloo 2',sans-serif; font-size:1.7rem; margin:6px 0 2px; }
-  .hw-header p { color:var(--cocoa-soft); font-weight:700; margin:0 }
-  .hw-steps { display:flex; justify-content:center; gap:8px; margin-bottom:24px; flex-wrap:wrap }
-  .hw-step { background:#fff; border-radius:999px; padding:8px 16px; font-weight:800; font-size:.82rem; color:var(--cocoa-soft); box-shadow:0 4px 10px rgba(67,48,31,.08) }
-  .hw-step.active { background:linear-gradient(135deg,var(--orange),var(--orange-deep)); color:#fff }
-  .hw-step.done { background:linear-gradient(135deg,#4ADE80,#16A34A); color:#fff }
+  .hw-hero {
+    background:linear-gradient(135deg,var(--orange),var(--orange-deep)); border-radius:var(--radius); padding:26px 28px;
+    color:#fff; text-align:center; margin-bottom:22px; position:relative; overflow:hidden;
+    box-shadow:0 14px 30px -12px rgba(249,114,12,.5);
+  }
+  .hw-hero::after {
+    content:""; position:absolute; right:-30px; bottom:-30px; width:150px; height:150px; border-radius:50%;
+    background:rgba(255,255,255,.14);
+  }
+  .hw-hero-eyebrow { font-weight:800; font-size:.8rem; text-transform:uppercase; letter-spacing:.5px; opacity:.9; position:relative; z-index:1; margin:0; }
+  .hw-hero-title { font-family:'Baloo 2',sans-serif; font-size:1.7rem; margin:6px 0 4px; position:relative; z-index:1; }
+  .hw-hero-sub { font-weight:700; opacity:.95; font-size:.95rem; margin:0; position:relative; z-index:1; }
+  .hw-steps { display:flex; justify-content:center; align-items:flex-start; margin-bottom:26px; }
+  .hw-step { display:flex; flex-direction:column; align-items:center; gap:6px; position:relative; flex:1; max-width:130px; }
+  .hw-step-dot {
+    width:44px; height:44px; border-radius:50%; background:#fff; box-shadow:0 4px 10px rgba(67,48,31,.1);
+    display:flex; align-items:center; justify-content:center; font-size:1.2rem; color:var(--cocoa-soft);
+    border:3px solid #fff; z-index:1; transition:transform .15s ease;
+  }
+  .hw-step.active .hw-step-dot { background:linear-gradient(135deg,var(--orange),var(--orange-deep)); color:#fff; transform:scale(1.1); box-shadow:0 6px 14px rgba(249,114,12,.4); }
+  .hw-step.done .hw-step-dot { background:linear-gradient(135deg,#4ADE80,#16A34A); color:#fff; }
+  .hw-step-label { font-weight:800; font-size:.78rem; color:var(--cocoa-soft); text-align:center; }
+  .hw-step.active .hw-step-label { color:var(--orange-deep); }
+  .hw-step.done .hw-step-label { color:#16A34A; }
+  .hw-step-line { position:absolute; top:22px; left:calc(-50% + 22px); width:calc(100% - 44px); height:3px; background:#F0E4D4; z-index:0; }
+  .hw-step.done .hw-step-line, .hw-step.active .hw-step-line { background:linear-gradient(90deg,#4ADE80,var(--orange)); }
+  .hw-step:first-child .hw-step-line { display:none; }
   .hw-card { background:#fff; border-radius:var(--radius); box-shadow:0 14px 30px rgba(67,48,31,.12); padding:26px 24px; margin-bottom:20px; }
   .hw-card h2 { font-family:'Baloo 2',sans-serif; font-size:1.25rem; margin:0 0 4px; display:flex; align-items:center; gap:10px }
   .hw-card .hw-sub { color:var(--cocoa-soft); font-weight:700; font-size:.88rem; margin-bottom:18px }
@@ -84,16 +115,19 @@
 </head>
 <body>
 <div class="hw-top">
-  <div class="brand">📝 Lumio Homework</div>
+  <img class="hw-logo" src="assets/logo/lumio-logo.png" alt="Lumio English logo" onerror="this.style.display='none'">
+  <div class="brand">Lumio <span>English</span></div>
+  <div class="hw-top-spacer"></div>
   <a href="student.html">✕ Exit</a>
 </div>
 <div class="hw-preview-banner" id="hwPreviewBanner" style="display:none">
   🧪 Teacher preview — this is a test run. Nothing you do here is saved to any student's real homework record.
 </div>
 <div class="hw-wrap" id="hwWrap">
-  <div class="hw-header">
-    <p id="hwLevelLabel">Loading…</p>
-    <h1 id="hwTitle"></h1>
+  <div class="hw-hero">
+    <p class="hw-hero-eyebrow" id="hwLevelLabel">Loading…</p>
+    <h1 class="hw-hero-title" id="hwTitle"></h1>
+    <p class="hw-hero-sub">Let's practice what you learned in class! 🌟</p>
   </div>
   <div class="hw-steps" id="hwSteps"></div>
   <div id="hwSections"></div>
@@ -137,10 +171,16 @@ let skillData = null; // the matched unit/topic object
 
 function esc(s) { return (s == null ? "" : String(s)).replace(/&/g, "&amp;").replace(/"/g, "&quot;"); }
 
+const STEP_ICONS = { spelling: "✏️", draw: "🎨", sayit: "🎤", conversation: "💬", skill: "🧩", quiz: "❓" };
 function renderSteps() {
   document.getElementById("hwSteps").innerHTML = STEPS.map((s, i) => {
     const cls = i < currentStep ? "done" : (i === currentStep ? "active" : "");
-    return `<div class="hw-step ${cls}">${i + 1}. ${s.label}</div>`;
+    const icon = i < currentStep ? "✓" : (STEP_ICONS[s.key] || (i + 1));
+    return `<div class="hw-step ${cls}">
+      <div class="hw-step-line"></div>
+      <div class="hw-step-dot">${icon}</div>
+      <div class="hw-step-label">${esc(s.label)}</div>
+    </div>`;
   }).join("");
 }
 function goToStep(i) {
