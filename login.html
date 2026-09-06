@@ -18,24 +18,6 @@
   .btn:active{transform:translateY(0) scale(.96);box-shadow:0 3px 8px rgba(0,0,0,.1)}
   .btn:focus-visible{outline:3px solid rgba(255,138,61,.45);outline-offset:2px}
 
-  .lg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:12px;margin:14px 0}
-  .lg-profile{
-    background:#fff;border:2px solid var(--line,#eee);border-radius:16px;padding:14px 8px;text-align:center;
-    cursor:pointer;transition:transform .16s cubic-bezier(.22,1,.36,1),box-shadow .16s ease,border-color .16s ease;
-  }
-  .lg-profile:hover{border-color:var(--orange,#FF8A3D);transform:translateY(-3px);box-shadow:0 8px 18px rgba(0,0,0,.09)}
-  .lg-profile:active{transform:translateY(-1px) scale(.97)}
-  .lg-profile:focus-visible{outline:3px solid rgba(255,138,61,.45);outline-offset:2px}
-  .lg-profile.selected{border-color:var(--orange,#FF8A3D);background:#FFF6EC}
-  .lg-avatar{font-size:2.1rem;line-height:1}
-  .lg-name{font-weight:800;margin-top:6px;font-size:.88rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .lg-empty{
-    text-align:center;color:var(--cocoa-soft,#8A7160);font-weight:700;padding:18px 10px;
-    background:#FBF6EC;border-radius:14px;font-size:.9rem;
-  }
-  .lg-pinwrap{display:none;text-align:center;margin-top:6px;animation:lgPinIn .25s ease}
-  .lg-pinwrap.show{display:block}
-  @keyframes lgPinIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
   .lg-pin-dots{display:flex;gap:10px;justify-content:center;margin:14px 0}
   .lg-pin-dot{width:16px;height:16px;border-radius:50%;background:#ECE4D6;border:2px solid #DCD2BE;transition:transform .15s ease,background .15s ease}
   .lg-pin-dot.filled{background:var(--orange,#FF8A3D);border-color:var(--orange,#FF8A3D);transform:scale(1.15)}
@@ -49,8 +31,17 @@
   .lg-pin-error{color:var(--coral,#FF6B6B);font-weight:800;font-size:.85rem;text-align:center;height:18px;margin-top:6px}
   .lg-pin-error.shake{animation:lgshake .3s}
   @keyframes lgshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-  .lg-back{background:none;border:none;color:var(--cocoa-soft,#8A7160);font-weight:700;cursor:pointer;font-size:.82rem;margin-bottom:8px;transition:opacity .15s ease}
-  .lg-back:hover{opacity:.7}
+  .lg-tabs{display:flex;gap:8px;margin-bottom:20px;background:var(--cream,#FBF6EC);border-radius:14px;padding:5px}
+  .lg-tab{
+    flex:1;border:none;background:none;padding:11px 8px;border-radius:10px;font-weight:800;font-size:.92rem;
+    color:var(--cocoa-soft,#8A7160);cursor:pointer;font-family:inherit;transition:background .15s ease,color .15s ease,box-shadow .15s ease;
+  }
+  .lg-tab.active{background:#fff;color:var(--cocoa,#43301F);box-shadow:0 3px 8px rgba(0,0,0,.08)}
+  .lg-id-input{
+    width:100%;box-sizing:border-box;padding:14px 16px;border-radius:14px;border:2px solid var(--line,#eee);
+    font-family:inherit;font-weight:700;font-size:1rem;margin:14px 0;text-align:center;transition:border-color .15s ease;
+  }
+  .lg-id-input:focus{outline:none;border-color:var(--orange,#FF8A3D)}
 </style>
 </head>
 <body>
@@ -62,33 +53,36 @@
 
 <main class="wrap" style="max-width:560px">
 
-  <!-- Student login (the only visible path on this page) -->
   <div class="card" id="paneStudent">
-    <h2 class="center" id="studentHeading">Hi friend! Who are you?</h2>
-
-    <div id="rosterView">
-      <div class="lg-grid" id="rosterGrid"></div>
-      <div class="lg-empty" id="rosterEmpty" style="display:none">
-        No profiles yet! Ask your teacher to add you 🙂
-      </div>
+    <div class="lg-tabs">
+      <button class="lg-tab active" id="tabCurrentLearner" type="button">Current Learner</button>
+      <button class="lg-tab" id="tabNewStudent" type="button">New Student</button>
     </div>
 
-    <div style="margin-top:18px;padding-top:16px;border-top:1px dashed var(--line,#eee);text-align:center">
-      <p style="font-weight:700;font-size:.82rem;color:var(--cocoa-soft,#8A7160);margin:0 0 10px">New here and not on the list yet?</p>
-      <a class="btn btn-teal" href="lumio-pro-test.html" style="width:100%;display:block;text-align:center;box-sizing:border-box">🎯 Take our free placement test</a>
-    </div>
-
-    <div class="lg-pinwrap" id="pinView">
-      <button class="lg-back" id="pinBack">← Not me</button>
-      <p class="center" style="font-weight:800;margin:4px 0">
-        <span id="pinAvatar" style="font-size:1.6rem"></span><br>
-        Enter your PIN, <span id="pinName"></span>
-      </p>
+    <!-- Current Learner: an existing account (paid & enrolled, or a
+         "New Learner" who already registered during the placement test)
+         logs in with their Student ID or phone number, plus their PIN. -->
+    <div id="paneCurrentLearner">
+      <h2 class="center" style="margin-top:0">Welcome back!</h2>
+      <p class="center" style="font-weight:700;color:var(--cocoa-soft,#8A7160);margin-top:-6px">Enter your Student ID or phone number to log in.</p>
+      <input type="text" inputmode="numeric" class="lg-id-input" id="loginIdentifier" placeholder="Student ID or phone number" autocomplete="off">
       <div class="lg-pin-dots" id="pinDots"></div>
       <div class="lg-pad" id="pinPad"></div>
       <div class="lg-pin-error" id="pinError"></div>
     </div>
 
+    <!-- New Student: hasn't registered yet. Registration itself happens
+         inside the placement test (phone number -> create PIN -> see your
+         Student ID), not on this page -- a genuinely new student needs a
+         level before anything else here makes sense. -->
+    <div id="paneNewStudent" style="display:none">
+      <h2 class="center" style="margin-top:0">New here? Let's find your level!</h2>
+      <p class="center" style="font-weight:700;color:var(--cocoa-soft,#8A7160)">
+        Take our free placement test — you'll register your phone number and create your PIN
+        as part of it, and get a Student ID to log in with from then on.
+      </p>
+      <a class="btn btn-teal" href="lumio-pro-test.html" style="width:100%;display:block;text-align:center;box-sizing:border-box;margin-top:10px">🎯 Take our free placement test</a>
+    </div>
   </div>
 
   <!--
@@ -96,9 +90,9 @@
     #tabStudent, #tabTeacher, #paneTeacher, #sname, #slevel, #goStudent,
     #tpin, and #goTeacher to exist. There is deliberately no visible
     "start without a profile" option any more — a student can only reach
-    student.html by picking their roster avatar and entering the correct
-    PIN, which is what fills these hidden fields and clicks #goStudent
-    programmatically. Teachers use a completely separate page
+    student.html by entering their Student ID or phone number plus the
+    correct PIN, which is what fills these hidden fields and clicks
+    #goStudent programmatically. Teachers use a completely separate page
     (teacher-portal.html), not linked from anywhere on the public site.
   -->
   <div style="display:none" aria-hidden="true">
@@ -119,41 +113,33 @@
 <script src="js/lumio-profiles.js"></script>
 <script>
 (function () {
-  // ================= Student roster picker =================
-  // Note: real login/session logic still lives in js/auth.js and reacts to
-  // the existing #sname / #slevel / #goStudent elements — we just fill
-  // those in and click the existing button once a roster PIN checks out.
+  // ================= Current Learner / New Student tabs =================
+  // Real login/session logic still lives in js/auth.js and reacts to the
+  // existing #sname / #slevel / #goStudent elements — this fills those in
+  // and clicks the existing button once an ID-or-phone + PIN combination
+  // checks out, the same hand-off pattern the old roster picker used.
   try {
-    const grid = document.getElementById("rosterGrid");
-    const empty = document.getElementById("rosterEmpty");
-    const rosterView = document.getElementById("rosterView");
-    const pinView = document.getElementById("pinView");
+    const tabCurrent = document.getElementById("tabCurrentLearner");
+    const tabNew = document.getElementById("tabNewStudent");
+    const paneCurrent = document.getElementById("paneCurrentLearner");
+    const paneNew = document.getElementById("paneNewStudent");
+    const idInput = document.getElementById("loginIdentifier");
     const pinDots = document.getElementById("pinDots");
     const pinPad = document.getElementById("pinPad");
     const pinError = document.getElementById("pinError");
-    const heading = document.getElementById("studentHeading");
 
-    let students = (window.LumioProfiles && LumioProfiles.listStudents()) || [];
-    let activeStudent = null;
     let pinBuffer = "";
 
-    function renderRoster() {
-      grid.innerHTML = "";
-      if (!students.length) {
-        empty.style.display = "block";
-        return;
-      }
-      empty.style.display = "none";
-      students.forEach(s => {
-        const el = document.createElement("div");
-        el.className = "lg-profile";
-        el.tabIndex = 0;
-        el.innerHTML = `<div class="lg-avatar">${s.avatar || "🙂"}</div><div class="lg-name">${s.name}</div>`;
-        el.onclick = () => openPinFor(s);
-        el.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openPinFor(s); } };
-        grid.appendChild(el);
-      });
+    function showTab(which) {
+      const isCurrent = which === "current";
+      tabCurrent.classList.toggle("active", isCurrent);
+      tabNew.classList.toggle("active", !isCurrent);
+      paneCurrent.style.display = isCurrent ? "block" : "none";
+      paneNew.style.display = isCurrent ? "none" : "block";
+      if (isCurrent) idInput.focus();
     }
+    tabCurrent.onclick = () => showTab("current");
+    tabNew.onclick = () => showTab("new");
 
     function renderDots() {
       pinDots.innerHTML = "";
@@ -163,7 +149,6 @@
         pinDots.appendChild(d);
       }
     }
-
     function renderPad() {
       pinPad.innerHTML = "";
       const keys = ["1","2","3","4","5","6","7","8","9","","0","⌫"];
@@ -183,29 +168,16 @@
       });
     }
 
-    function openPinFor(s) {
-      activeStudent = s;
-      pinBuffer = "";
-      document.getElementById("pinAvatar").textContent = s.avatar || "🙂";
-      document.getElementById("pinName").textContent = s.name;
-      rosterView.style.display = "none";
-      heading.style.display = "none";
-      pinView.classList.add("show");
-      renderDots();
-      pinError.textContent = "";
-    }
-    function closePinView() {
-      activeStudent = null;
-      pinBuffer = "";
-      rosterView.style.display = "block";
-      heading.style.display = "block";
-      pinView.classList.remove("show");
-    }
-
     async function tryLogin() {
-      const ok = window.LumioProfiles && await LumioProfiles.verifyStudentLogin(activeStudent.name, pinBuffer);
+      const identifier = idInput.value.trim();
+      if (!identifier) {
+        pinError.textContent = "Enter your Student ID or phone number first.";
+        pinBuffer = ""; renderDots();
+        return;
+      }
+      const ok = window.LumioProfiles && await LumioProfiles.verifyStudentLogin(identifier, pinBuffer);
       if (!ok) {
-        pinError.textContent = "That PIN doesn't match — try again.";
+        pinError.textContent = "That ID/phone and PIN don't match — try again.";
         pinError.classList.remove("shake"); void pinError.offsetWidth; pinError.classList.add("shake");
         pinBuffer = "";
         renderDots();
@@ -215,38 +187,37 @@
       const levelField = document.getElementById("slevel");
       const goBtn = document.getElementById("goStudent");
       if (nameField) nameField.value = ok.name;
-      if (levelField && [...levelField.options].some(o => o.value === ok.level)) {
-        levelField.value = ok.level;
+      // A "New Learner" who registered mid-test but hasn't finished it yet
+      // has no level assigned (see js/lumio-profiles.js). Rather than block
+      // login entirely, fall back to Pre-A so they can still get into the
+      // dashboard; their real level fills in automatically the moment they
+      // complete the placement test.
+      const effectiveLevel = ok.level || "pre-a";
+      if (levelField && [...levelField.options].some(o => o.value === effectiveLevel)) {
+        levelField.value = effectiveLevel;
       }
       if (goBtn) goBtn.click();
     }
 
-    document.getElementById("pinBack").onclick = closePinView;
-    renderRoster();
+    idInput.addEventListener("keydown", e => { if (e.key === "Enter") pinPad.querySelector("button") && idInput.blur(); });
     renderPad();
+    renderDots();
+    showTab("current");
 
-    // Auto-refresh in the background — the roster URL is baked into the
-    // deployed site (see js/lumio-profiles.js), so this needs zero manual
-    // setup on this specific device. Renders instantly with whatever's
-    // cached first, then quietly re-renders if a fresher roster comes in.
-    // Never blocks login or shows an error if it fails — a student on a
-    // flaky connection should still be able to log in with cached data.
-    // Repeats every 5 minutes so a shared device left sitting on this
-    // screen (e.g. a classroom tablet) stays current without anyone
-    // touching it, skipping entirely while the tab isn't visible.
-    function refreshRosterInBackground() {
-      if (!window.LumioProfiles) return;
-      LumioProfiles.syncNow().then(res => {
-        if (res && res.ok) {
-          students = LumioProfiles.listStudents();
-          if (!activeStudent) renderRoster();
-        }
-      }).catch(() => {});
+    // A student may well have registered on a different device (e.g. a
+    // parent's phone, during the placement test) than the one they're
+    // logging in on now (a classroom tablet). verifyStudentLogin only
+    // sees this device's local roster, so without a sync a genuinely
+    // real account could fail to log in simply because this device
+    // hasn't heard about it yet. No roster to re-render any more, but
+    // still worth keeping fresh in the background before someone tries.
+    // Never blocks or shows an error on failure -- a student on a flaky
+    // connection should still be able to log in with whatever's cached.
+    if (window.LumioProfiles) {
+      LumioProfiles.syncNow().catch(() => {});
     }
-    refreshRosterInBackground();
-    setInterval(() => { if (!document.hidden) refreshRosterInBackground(); }, 5 * 60 * 1000);
   } catch (e) {
-    console.error("Lumio roster login error:", e);
+    console.error("Lumio login error:", e);
   }
 })();
 </script>

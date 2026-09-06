@@ -339,9 +339,18 @@ body { overflow-x: hidden; -webkit-text-size-adjust: 100%; }
   text-transform: uppercase;
   margin-bottom: 8px;
 }
+.lg-pin-dot{width:18px;height:18px;border-radius:50%;background:#ECE4D6;border:2px solid #DCD2BE;transition:transform .15s ease,background .15s ease}
+.lg-pin-dot.filled{background:#F97316;border-color:#F97316;transform:scale(1.15)}
+.lg-pad button{
+  padding:14px 0;border-radius:12px;border:1px solid #eee;background:#fff;font-weight:800;
+  font-size:1.1rem;cursor:pointer;font-family:inherit;transition:transform .12s ease,background .12s ease,box-shadow .12s ease;
+}
+.lg-pad button:hover{box-shadow:0 4px 10px rgba(0,0,0,.08);transform:translateY(-1px)}
+.lg-pad button:active{background:#FFF1E0;transform:translateY(0) scale(.94)}
 </style>
 </head>
 <body>
+<script src="js/lumio-profiles.js"></script>
 
 <!-- ========== PAGE 1: SPLASH ========== -->
 <div class="page active" id="page-splash">
@@ -381,6 +390,42 @@ body { overflow-x: hidden; -webkit-text-size-adjust: 100%; }
       <div class="level-chip">Level 4-6 - A2</div>
       <div class="level-chip">Level 7-9 - B1</div>
     </div>
+  </div>
+</div>
+
+<!-- ========== PAGE 1b: CREATE PIN ========== -->
+<div class="page" id="page-createpin">
+  <div class="splash-logo">
+    <img src="assets/logo/lumio-logo.png" alt="Lumio" style="height:64px" onerror="this.style.display='none'">
+  </div>
+  <div class="splash-card" style="max-width:420px;margin:0 auto;text-align:center">
+    <h2 style="margin-bottom:6px" id="pinStepTitle">Create your PIN</h2>
+    <p style="color:#8A7160;font-weight:700;margin-bottom:18px" id="pinStepSub">
+      Pick a 4-digit PIN. You'll use it to log back in and see your results.
+    </p>
+    <div class="lg-pin-dots" id="regPinDots" style="display:flex;gap:12px;justify-content:center;margin:18px 0">
+      <div class="lg-pin-dot"></div><div class="lg-pin-dot"></div><div class="lg-pin-dot"></div><div class="lg-pin-dot"></div>
+    </div>
+    <div class="lg-pad" id="regPinPad" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:240px;margin:0 auto"></div>
+    <div id="regPinError" style="color:#ef4444;font-weight:800;font-size:.88rem;height:20px;margin-top:10px"></div>
+  </div>
+</div>
+
+<!-- ========== PAGE 1c: SHOW STUDENT ID ========== -->
+<div class="page" id="page-showid">
+  <div class="splash-logo">
+    <img src="assets/logo/lumio-logo.png" alt="Lumio" style="height:64px" onerror="this.style.display='none'">
+  </div>
+  <div class="splash-card" style="max-width:440px;margin:0 auto;text-align:center">
+    <div style="font-size:2.4rem;margin-bottom:6px">🎉</div>
+    <h2 style="margin-bottom:6px">You're all set, <span id="showIdName"></span>!</h2>
+    <p style="color:#8A7160;font-weight:700;margin-bottom:16px">This is your Student ID — save it! You'll need it to log in next time.</p>
+    <div style="background:#FFF8EC;border:2px dashed #F97316;border-radius:16px;padding:18px;margin-bottom:8px">
+      <div style="font-size:.75rem;font-weight:800;color:#8A7160;letter-spacing:1px;margin-bottom:4px">YOUR STUDENT ID</div>
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2.2rem;letter-spacing:4px;color:#43301F" id="showIdCode"></div>
+    </div>
+    <p style="color:#C2530A;font-weight:800;font-size:.85rem;margin-bottom:20px">⚠️ Write this down or take a screenshot now!</p>
+    <button class="btn-start" onclick="actuallyBeginTest()">Continue to My Test →</button>
   </div>
 </div>
 
@@ -865,6 +910,21 @@ function startTest(){
   studentName=name;
   studentId=combinePhone(countryEl.value, phoneLocal); // "student ID" is now just the phone — kept the variable name to avoid touching every downstream reference
   document.getElementById('header-student').textContent=name;
+
+  // If this phone number already has a registered account (e.g. they're
+  // retaking the test, or came back after registering but before
+  // finishing), skip PIN creation entirely and go straight to the test --
+  // asking them to set a brand new PIN on an account they already have
+  // would just be confusing.
+  registeredStudent = (window.LumioProfiles && LumioProfiles.findByPhone(studentId)) || null;
+  if (registeredStudent) {
+    actuallyBeginTest();
+  } else {
+    showPage('createpin');
+  }
+}
+
+function actuallyBeginTest(){
   currentQ=0;
   answers=new Array(TOTAL).fill(null);
   sectionAnnounced={listening:false,reading:false,writing:false,grammar:false};
@@ -872,6 +932,85 @@ function startTest(){
   startTimer();
   showSectionAnnounce(0);
 }
+
+// =============================================
+//  CREATE PIN + SHOW STUDENT ID
+//  A "New Learner" account -- real ID, real PIN, can log back in -- is
+//  created right here, before the test even starts, with paid:false and
+//  level:null. The level gets filled in automatically once the test
+//  finishes (see saveResultLocally). This is deliberately a different,
+//  login-capable kind of record from a LumioLeads entry (see that
+//  module's own comments for why leads specifically can't log in).
+// =============================================
+let registeredStudent = null;
+let regPinBuffer = '';
+let regPinStage = 'create'; // 'create' -> 'confirm'
+let regFirstPin = '';
+
+function renderRegPinDots(){
+  const wrap = document.getElementById('regPinDots');
+  wrap.querySelectorAll('.lg-pin-dot').forEach((d,i) => {
+    d.classList.toggle('filled', i < regPinBuffer.length);
+  });
+}
+function renderRegPinPad(){
+  const pad = document.getElementById('regPinPad');
+  pad.innerHTML = '';
+  const keys = ['1','2','3','4','5','6','7','8','9','','0','⌫'];
+  keys.forEach(k => {
+    const btn = document.createElement('button');
+    if (k === '') { btn.style.visibility = 'hidden'; pad.appendChild(btn); return; }
+    btn.type = 'button';
+    btn.textContent = k;
+    btn.onclick = () => {
+      if (k === '⌫') { regPinBuffer = regPinBuffer.slice(0, -1); }
+      else if (regPinBuffer.length < 4) { regPinBuffer += k; }
+      renderRegPinDots();
+      document.getElementById('regPinError').textContent = '';
+      if (regPinBuffer.length === 4) handleRegPinComplete();
+    };
+    pad.appendChild(btn);
+  });
+}
+async function handleRegPinComplete(){
+  if (regPinStage === 'create') {
+    regFirstPin = regPinBuffer;
+    regPinBuffer = '';
+    regPinStage = 'confirm';
+    document.getElementById('pinStepTitle').textContent = 'Confirm your PIN';
+    document.getElementById('pinStepSub').textContent = 'Type the same 4 digits again.';
+    renderRegPinDots();
+    return;
+  }
+  // confirm stage
+  if (regPinBuffer !== regFirstPin) {
+    document.getElementById('regPinError').textContent = "Those didn't match — let's try again.";
+    regPinBuffer = ''; regFirstPin = ''; regPinStage = 'create';
+    document.getElementById('pinStepTitle').textContent = 'Create your PIN';
+    document.getElementById('pinStepSub').textContent = "Pick a 4-digit PIN. You'll use it to log back in and see your results.";
+    renderRegPinDots();
+    return;
+  }
+  try {
+    registeredStudent = await LumioProfiles.addStudent({
+      name: studentName,
+      phone: studentId,
+      pin: regFirstPin,
+      paid: false,
+      level: null,
+    });
+  } catch (e) {
+    document.getElementById('regPinError').textContent = e.message || "Couldn't create your account — please try again.";
+    regPinBuffer = ''; regFirstPin = ''; regPinStage = 'create';
+    renderRegPinDots();
+    return;
+  }
+  document.getElementById('showIdName').textContent = studentName;
+  document.getElementById('showIdCode').textContent = registeredStudent.loginCode;
+  showPage('showid');
+}
+renderRegPinPad();
+
 
 // =============================================
 //  SECTION ANNOUNCE
@@ -1353,6 +1492,14 @@ function saveResultLocally(data){
     try { const bc=new BroadcastChannel('lumio_test_sync'); bc.postMessage({type:'new_result',data:fullData}); bc.close(); } catch(e){}
   } catch(e){}
   pushResultAsLumioLead(fullData, data.levelNum).catch(()=>{});
+  // The account was created before the test started (paid:false,
+  // level:null) -- now that a real score exists, fill in the level the
+  // same way a lead's suggestedLevel is computed, and the account is
+  // ready for a trial class. Best-effort: never blocks showing the
+  // student their result if this fails for any reason.
+  if (registeredStudent && window.LumioProfiles) {
+    LumioProfiles.updateStudent(registeredStudent.id, { level: mapProTestLevelToLumioId(data.levelNum) }).catch(()=>{});
+  }
 }
 
 

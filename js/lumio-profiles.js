@@ -105,6 +105,26 @@
       needsSave = true;
     }
 
+    // safety net for students saved before loginCode/paid existed -- without
+    // this, a student created before this change, with no phone on file,
+    // would have no way at all to log in under the new ID/phone system.
+    // Generated inline (not via genLoginCode(), which itself calls load())
+    // to avoid infinite recursion, checking uniqueness against both the
+    // existing roster and codes already assigned earlier in this same pass.
+    data.students.forEach(s => {
+      if (!s.loginCode) {
+        let code;
+        do { code = String(Math.floor(100000 + Math.random() * 900000)); }
+        while (data.students.some(x => x.loginCode === code));
+        s.loginCode = code;
+        needsSave = true;
+      }
+      if (s.paid === undefined) {
+        s.paid = true; // every pre-existing student was a teacher-enrolled "Current Learner"
+        needsSave = true;
+      }
+    });
+
     if (needsSave) save(data);
     return data;
   }
@@ -180,7 +200,31 @@
     if (!n) return null;
     return load().students.find(s => s.name.trim().toLowerCase() === n) || null;
   }
-  async function addStudent({ name, level, avatar, pin, teacherId, phone, cohort, group } = {}) {
+  function findByPhone(phone) {
+    const p = (phone || "").trim();
+    if (!p) return null;
+    return load().students.find(s => s.phone && s.phone.trim() === p) || null;
+  }
+  function findByLoginCode(code) {
+    const c = (code || "").trim();
+    if (!c) return null;
+    return load().students.find(s => s.loginCode === c) || null;
+  }
+  // A student's real `id` (e.g. "s_mtl2xy8k") is an internal system key,
+  // not something a young child -- the platform's actual primary
+  // audience -- or a parent could reasonably type in or remember. This is
+  // a separate, short, numeric code generated purely for logging in --
+  // meant to be written on a sticker or read aloud over the phone.
+  // Regenerated on collision (astronomically rare at 6 digits for a
+  // roster this size, but checked rather than assumed).
+  function genLoginCode() {
+    const data = load();
+    let code;
+    do { code = String(Math.floor(100000 + Math.random() * 900000)); }
+    while (data.students.some(s => s.loginCode === code));
+    return code;
+  }
+  async function addStudent({ name, level, avatar, pin, teacherId, phone, cohort, group, paid } = {}) {
     const data = load();
     name = (name || "").trim();
     if (!name) throw new Error("A student needs a name.");
@@ -189,12 +233,29 @@
     const record = {
       id: genId("s"),
       name,
-      level: level || "pre-a",
+      // level is nullable on purpose: a student who has registered during
+      // the placement test but not finished it yet has no level until
+      // their score comes in. Distinguishes "explicitly passed null" from
+      // "the caller didn't pass this at all" (undefined), so every
+      // existing addStudent() call site that never mentions level keeps
+      // defaulting to pre-a exactly as before.
+      level: level === undefined ? "pre-a" : level,
       avatar: avatar || AVATARS[Math.floor(Math.random() * AVATARS.length)],
       pin: finalPin,
       pinHash: await hashPin(finalPin),
+      // A short, human-typeable login code, separate from the internal
+      // `id` above -- see genLoginCode() for why.
+      loginCode: genLoginCode(),
       teacherId: teacherId || getCurrentTeacherId() || (data.teachers[0] && data.teachers[0].id) || null,
       phone: (phone || "").trim(), // optional — parent/guardian contact, used for the inactivity check-in shortcut
+      // Whether this student has actually paid and been enrolled ("Current
+      // Learner") vs. having only registered a phone number and PIN during
+      // the placement test, possibly with no level decided yet ("New
+      // Learner"). Defaults true so every existing call site (teachers
+      // manually adding a real, paying student) is unaffected; the
+      // placement-test registration flow is the one caller that passes
+      // paid: false explicitly.
+      paid: paid === undefined ? true : !!paid,
       // Free-text, not a managed list -- a cohort is an enrollment batch (e.g.
       // "Sept 2026 Intake"), a group is a class section within that cohort at
       // one level (multiple groups can share a level within the same cohort).
@@ -231,6 +292,7 @@
     if (patch.phone !== undefined) s.phone = (patch.phone || "").trim();
     if (patch.cohort !== undefined) s.cohort = (patch.cohort || "").trim();
     if (patch.group !== undefined) s.group = (patch.group || "").trim();
+    if (patch.paid !== undefined) s.paid = !!patch.paid;
     s.updatedAt = new Date().toISOString();
     save(data);
     return s;
@@ -243,8 +305,12 @@
     data.students = data.students.filter(s => s.id !== id);
     save(data);
   }
-  async function verifyStudentLogin(name, pin) {
-    const s = findByName(name);
+  // identifier can be the student's login code (e.g. "482913"), their
+  // phone number, or (kept for any old callers) their name -- tried in
+  // that order since code and phone are the two ways login.html now
+  // actually asks for.
+  async function verifyStudentLogin(identifier, pin) {
+    const s = findByLoginCode(identifier) || findByPhone(identifier) || findByName(identifier);
     if (!s) return null;
     const p = normalizePin(pin);
     if (!p) return null;
@@ -522,7 +588,7 @@
 
   global.LumioProfiles = {
     AVATARS, TEACHER_AVATARS,
-    listStudents, getStudent, findByName, groupmatesOf,
+    listStudents, getStudent, findByName, findByPhone, findByLoginCode, groupmatesOf,
     addStudent, updateStudent, removeStudent, assignStudent,
     verifyStudentLogin, randomPin,
     listTeachers, getTeacher, findTeacherByName,
