@@ -902,6 +902,9 @@ def slide_reward_homework(lesson_num, n, total):
     </div>''')
 
 
+def mouth_img(letter, size=64):
+    return f'''<img src="assets/spelling/mouth-{letter}.png" style="width:{size}px;height:{size}px;object-fit:contain;display:block;margin:5px auto 0" onerror="this.style.display='none'">'''
+
 def slide_spelling_rule(rule, n, total, ch):
     """One of the 4 Spelling Hub rules, introduced live in a lesson --
     reuses spellingExampleHtml's equivalent logic inline (this module
@@ -915,17 +918,20 @@ def slide_spelling_rule(rule, n, total, ch):
           <div style="text-align:center"><div style="font-size:.68rem;font-weight:800;color:#8A7160">NAME</div>
             <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.2rem;color:#43301F">&ldquo;{esc(ex.get("name",""))}&rdquo;</div></div>
           <div style="text-align:center"><div style="font-size:.68rem;font-weight:800;color:#8A7160">SOUND</div>
-            <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.2rem;color:#0D9488">&ldquo;{esc(ex.get("sound",""))}&rdquo;</div></div>
+            <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.2rem;color:#0D9488">&ldquo;{esc(ex.get("sound",""))}&rdquo;</div>
+            {mouth_img(ex.get("letter","").lower(), 60)}</div>
           <div style="text-align:center"><div style="font-size:.68rem;font-weight:800;color:#8A7160">WORD</div>
             <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.2rem;color:#43301F">{esc(ex.get("word",""))}</div></div>
         </div>'''
     elif "sounds" in ex:
-        blocks = "".join(f'''<div style="width:56px;height:56px;border-radius:14px;background:{["#F97316","#0D9488","#F59E0B","#2DD4BF"][i % 4]};
-                     color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem">{esc(s)}</div>'''
+        blocks = "".join(f'''<div style="text-align:center">
+                     <div style="width:56px;height:56px;border-radius:14px;background:{["#F97316","#0D9488","#F59E0B","#2DD4BF"][i % 4]};
+                     color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;margin:0 auto">{esc(s)}</div>
+                     {mouth_img(s.lower(), 52)}</div>'''
                           for i, s in enumerate(ex.get("sounds", [])))
-        example_html = f'''<div style="display:flex;align-items:center;gap:10px;justify-content:center">
-          {blocks}<span style="font-size:1.2rem;color:#8A7160;margin:0 6px">=</span>
-          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.6rem;color:#43301F">{esc(ex.get("word",""))}</div>
+        example_html = f'''<div style="display:flex;align-items:flex-start;gap:10px;justify-content:center">
+          {blocks}<span style="font-size:1.2rem;color:#8A7160;margin:14px 6px 0">=</span>
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.6rem;color:#43301F;margin-top:10px">{esc(ex.get("word",""))}</div>
         </div>'''
     elif "big" in ex and "small" in ex:
         example_html = f'''<div style="display:flex;align-items:center;gap:16px;justify-content:center">
@@ -934,8 +940,10 @@ def slide_spelling_rule(rule, n, total, ch):
         </div>'''
     elif "team" in ex:
         example_html = f'''<div style="display:flex;align-items:center;gap:16px;justify-content:center">
-          <div style="background:linear-gradient(135deg,#F97316,#0D9488);color:#fff;border-radius:14px;padding:12px 20px;
-                      font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.7rem">{esc(ex.get("team",""))}</div>
+          <div style="text-align:center">
+            <div style="background:linear-gradient(135deg,#F97316,#0D9488);color:#fff;border-radius:14px;padding:12px 20px;
+                        font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.7rem">{esc(ex.get("team",""))}</div>
+            {mouth_img(ex.get("team","").lower(), 60)}</div>
           <span style="font-size:1.2rem;color:#8A7160">&rarr;</span>
           <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.6rem;color:#43301F">{esc(ex.get("word",""))}</div>
         </div>'''

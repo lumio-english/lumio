@@ -177,6 +177,10 @@ function buildGrammarSlides(data) {
   });
 }
 
+function mouthImg(letter, size) {
+  size = size || 76;
+  return `<img src="assets/spelling/mouth-${letter}.png" style="width:${size}px;height:${size}px;object-fit:contain;display:block;margin:6px auto 0" onerror="this.style.display='none'">`;
+}
 function spellingExampleHtml(ex) {
   if (!ex) return "";
   if (ex.name && ex.sound) {
@@ -190,6 +194,7 @@ function spellingExampleHtml(ex) {
       <div style="text-align:center">
         <div style="font-size:.72rem;font-weight:800;color:#8A7160;letter-spacing:1px">SOUND</div>
         <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;color:#0D9488">&ldquo;${esc(ex.sound)}&rdquo;</div>
+        ${mouthImg((ex.letter || "").toLowerCase(), 68)}
       </div>
       <div style="text-align:center">
         <div style="font-size:.72rem;font-weight:800;color:#8A7160;letter-spacing:1px">IN A WORD</div>
@@ -198,19 +203,27 @@ function spellingExampleHtml(ex) {
     </div>`;
   }
   if (ex.sounds) {
-    // sounds-in-order rule: the word broken into its individual sound blocks
-    return `<div style="display:flex;align-items:center;gap:14px;justify-content:center">
-      ${ex.sounds.map((s, i) => `<div style="display:flex;align-items:center;gap:14px">
-        <div style="width:64px;height:64px;border-radius:16px;background:${["#F97316","#0D9488","#F59E0B","#2DD4BF"][i % 4]};
-                    color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem">${esc(s)}</div>
-        ${i < ex.sounds.length - 1 ? '<span style="font-size:1.4rem;color:#8A7160">+</span>' : ""}
+    // sounds-in-order rule: the word broken into its individual sound
+    // blocks, each with its own mouth-shape image right underneath --
+    // this is the one rule where every sound gets a visual, since the
+    // whole point is hearing (and now seeing) each one distinctly.
+    return `<div style="display:flex;align-items:flex-start;gap:14px;justify-content:center">
+      ${ex.sounds.map((s, i) => `<div style="display:flex;align-items:flex-start;gap:14px">
+        <div style="text-align:center">
+          <div style="width:64px;height:64px;border-radius:16px;background:${["#F97316","#0D9488","#F59E0B","#2DD4BF"][i % 4]};
+                      color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;margin:0 auto">${esc(s)}</div>
+          ${mouthImg(s.toLowerCase(), 60)}
+        </div>
+        ${i < ex.sounds.length - 1 ? '<span style="font-size:1.4rem;color:#8A7160;margin-top:18px">+</span>' : ""}
       </div>`).join("")}
-      <span style="font-size:1.4rem;color:#8A7160;margin:0 6px">=</span>
-      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.8rem;color:#43301F">${esc(ex.word)}</div>
+      <span style="font-size:1.4rem;color:#8A7160;margin:18px 6px 0">=</span>
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.8rem;color:#43301F;margin-top:14px">${esc(ex.word)}</div>
     </div>`;
   }
   if (ex.big && ex.small) {
-    // big-small-family rule: the same letter's two forms, side by side
+    // big-small-family rule: the same letter's two forms, side by side --
+    // no mouth image here on purpose, this rule is about letter shape,
+    // not a new sound (Rule 2 already covers this letter's sound).
     return `<div style="display:flex;align-items:center;gap:18px;justify-content:center">
       <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:3.6rem;color:#F97316">${esc(ex.big)}</div>
       <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:3.6rem;color:#0D9488">${esc(ex.small)}</div>
@@ -219,8 +232,11 @@ function spellingExampleHtml(ex) {
   if (ex.team) {
     // letter-teams-preview rule: the two-letter team plus its example word
     return `<div style="display:flex;align-items:center;gap:18px;justify-content:center">
-      <div style="background:linear-gradient(135deg,#F97316,#0D9488);color:#fff;border-radius:16px;padding:14px 22px;
-                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2rem">${esc(ex.team)}</div>
+      <div style="text-align:center">
+        <div style="background:linear-gradient(135deg,#F97316,#0D9488);color:#fff;border-radius:16px;padding:14px 22px;
+                    font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2rem">${esc(ex.team)}</div>
+        ${mouthImg(ex.team.toLowerCase(), 68)}
+      </div>
       <span style="font-size:1.4rem;color:#8A7160">&rarr;</span>
       <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.8rem;color:#43301F">${esc(ex.word)}</div>
     </div>`;
