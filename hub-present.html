@@ -280,12 +280,16 @@ function buildSpellingSlides(data) {
 
 function buildPhonicsSlides(data) {
   return (data.units || []).map((u, i) => {
-    const sounds = (u.sounds || []).map(s => `
+    const sounds = (u.sounds || []).map(s => {
+      const key = s.letter.split(",")[0].split("-")[0].trim().toLowerCase();
+      return `
       <button style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:14px;padding:14px 18px;min-width:100px;
                     text-align:center;box-shadow:0 8px 16px rgba(67,48,31,.14)" ${speakPhonicsBtn(s.letter.split(",")[0].split("-")[0].trim())}>
         <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.6rem;color:#F97316">${esc(s.letter)}</div>
         <div style="font-size:.8rem;color:#8A7160;margin-top:2px">${esc(s.sound)}</div>
-      </button>`).join("");
+        ${mouthImg(key, 52)}
+      </button>`;
+    }).join("");
     const words = (u.words || []).map(w => `
       <button class="wgrid-card" style="width:120px" ${speakBtn(w.en)}>
         <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.1rem;color:#43301F">${esc(w.en)}</div>

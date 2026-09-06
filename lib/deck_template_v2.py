@@ -671,6 +671,7 @@ def slide_phonics_rule(unit, n, total, ch):
                         text-align:center;box-shadow:0 8px 16px rgba(67,48,31,.14)">
             <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.6rem;color:#F97316">{esc(s["letter"])}</div>
             <div style="font-size:.8rem;color:#8A7160;margin-top:2px">{esc(s["sound"])}</div>
+            {mouth_img(speak_token.lower(), 46)}
           </button>'''
         tiles_block = f'<div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:18px">{tiles}</div>'
     else:
