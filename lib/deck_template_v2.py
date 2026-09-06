@@ -1084,7 +1084,15 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
         plan.append(("grammar_rule", grammar_topic))
         plan.append(("grammar_practice", grammar_topic))
     plan.append(("dialogue", None))
-    plan.append(("sentence", None))
+    # Every vocab word already has a real, meaning-grounded example
+    # sentence in its own data -- previously only word 0 ever got turned
+    # into an actual exercise (build-the-sentence), leaving every other
+    # word's sentence sitting unused beyond its passive "SAY IT" quote on
+    # the vocab card. Covering the first 3 words (or fewer, for a short
+    # lesson) needs no new content authoring at all, just using data
+    # that was already there.
+    for sentence_i in range(min(3, V)):
+        plan.append(("sentence", sentence_i))
     plan.append(("sound_spot", None))
     your_turn_n = min(4, V) if V <= 4 else min(3, V)
     for i in range(your_turn_n):
@@ -1186,7 +1194,9 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
         elif kind == "dialogue":
             slides.append(slide_dialogue(DIALOGUES[lesson_num], n, total, lesson_num))
         elif kind == "sentence":
-            slides.append(slide_sentence_builder(lesson["vocab"][0]["example"], n, total, "sara-teach-board", lesson_num))
+            sentence_i = data
+            example = lesson["vocab"][sentence_i]["example"]
+            slides.append(slide_sentence_builder(example, n, total, "sara-teach-board", lesson_num * 10 + sentence_i))
         elif kind == "sound_spot":
             slides.append(slide_sound_spot(lesson["vocab"], n, total, "sara-clap"))
         elif kind == "your_turn":

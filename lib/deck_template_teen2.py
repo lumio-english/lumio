@@ -653,7 +653,12 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
         plan.append(("grammar_rule", grammar_topic))
     if notice_sentences:
         plan.append(("notice", None))
-    plan.append(("sentence", None))
+    # Same reasoning as the kid template: every vocab word already has a
+    # real example sentence, previously only word 0 ever became an actual
+    # exercise. No new content needed, just using the first 3 words (or
+    # fewer, for a short lesson).
+    for sentence_i in range(min(3, V)):
+        plan.append(("sentence", sentence_i))
     if grammar_topic:
         plan.append(("grammar_practice", grammar_topic))
     if grammar_recap_topics:
@@ -732,7 +737,9 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
             mode = "picture" if i % 2 == 0 else "translate"
             slides.append(slide_vocab_mcq(lesson["vocab"], mode, i, n_vocab_mcq, n, total, theme_key))
         elif kind == "sentence":
-            slides.append(v1.slide_sentence_builder(lesson["vocab"][0]["example"], n, total, "sara-teen-explain", lesson_num))
+            sentence_i = data
+            example = lesson["vocab"][sentence_i]["example"]
+            slides.append(v1.slide_sentence_builder(example, n, total, "sara-teen-explain", lesson_num * 10 + sentence_i))
         elif kind == "grammar_practice":
             slides.append(grammar_slides.slide_grammar_practice(
                 data, n, total, ch3, header_themed_wrap(theme_key), "", bg_theme_wrap(theme_key),

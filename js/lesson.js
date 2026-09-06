@@ -202,6 +202,54 @@
   /* ============================================================
      ACTIVITY 4 — QUIZ (see picture → pick the word, + custom Qs)
      ============================================================ */
+  /* ============================================================
+     ACTIVITY — SENTENCE FILL (real comprehension practice: blank the
+     target word out of its own real example sentence, pick the right
+     word to complete it). Every vocab word already carries a genuine
+     example sentence in its data; this is the first homework activity
+     to actually use that sentence as an exercise rather than only
+     showing it passively elsewhere. Falls back gracefully if a
+     sentence doesn't contain the word as a clean whole-word match
+     (skips that word for this round rather than showing a broken
+     blank). ============================================================ */
+  function actSentenceFill(a) {
+    const candidates = lesson.vocab.filter(v => {
+      const re = new RegExp(`\\b${v.en.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i");
+      return re.test(v.example || "");
+    });
+    const words = Lumio.shuffle(candidates).slice(0, a.rounds || 4);
+    if (!words.length) return next();
+    let r = 0;
+    const draw = () => {
+      const v = words[r];
+      const re = new RegExp(`\\b${v.en.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i");
+      const blanked = v.example.replace(re, "_____");
+      const distractorPool = lesson.vocab.filter(x => x.en !== v.en);
+      const options = Lumio.shuffle([v.en, ...Lumio.shuffle(distractorPool).slice(0, 3).map(x => x.en)]);
+      stage.innerHTML = `
+        <div class="card center">
+          <span class="chip chip-orange">Complete the Sentence · ${r + 1}/${words.length}</span>
+          <h2 class="mt" style="line-height:1.5">${blanked}</h2>
+          <div class="feature-grid mt">
+            ${options.map(o => `<button class="card q-opt" data-v="${o}" style="cursor:pointer;font-size:1.15rem;font-weight:800">${o}</button>`).join("")}
+          </div>
+        </div>`;
+      document.querySelectorAll(".q-opt").forEach(b => b.onclick = () => {
+        total++;
+        const ok = b.dataset.v === v.en;
+        if (ok) { score++; Lumio.beep(true); b.style.background = "var(--green)"; b.style.color = "#fff"; }
+        else {
+          Lumio.beep(false); b.style.background = "var(--coral)"; b.style.color = "#fff";
+          document.querySelectorAll(".q-opt").forEach(x => { if (x.dataset.v === v.en) { x.style.background = "var(--green)"; x.style.color = "#fff"; } });
+        }
+        Lumio.speak(v.example);
+        document.querySelectorAll(".q-opt").forEach(x => x.style.pointerEvents = "none");
+        setTimeout(() => { r++; r < words.length ? draw() : next(); }, 1200);
+      });
+    };
+    draw();
+  }
+
   function actQuiz(a) {
     const auto = Lumio.shuffle([...lesson.vocab]).slice(0, a.rounds || 4).map(v => ({
       prompt: `${vocabImg(v.en, "height:130px;border-radius:18px;max-width:220px;margin:0 auto")}<h2 class="mt">What is this?</h2>`,
@@ -563,6 +611,7 @@
       case "quiz": return actQuiz(a);
       case "spell": return actSpell(a);
       case "spell_blend": return actSpellBlend(a);
+      case "sentence_fill": return actSentenceFill(a);
       case "speak": return actSpeak(a);
       case "sequence": return actSequence(a);
       default: return next();
