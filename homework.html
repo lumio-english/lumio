@@ -622,7 +622,13 @@ async function init() {
   // schedule data at all (LumioSchedule not loaded, or genuinely no
   // classes booked yet) is let through rather than blocked, since that's
   // a data-availability gap, not evidence the class hasn't happened.
-  if (user && window.LumioSchedule && LumioSchedule.attendedLessonNumbers) {
+  // Teacher preview NEVER hits this gate, full stop -- everything in the
+  // teacher panel is there for testing, and locking/gating logic exists
+  // only for real students, never for a teacher checking their own
+  // content works. Checked first, before even looking at `user`, so this
+  // holds even if a real student happens to still be logged in on the
+  // same device a teacher is testing from.
+  if (!previewMode && user && window.LumioSchedule && LumioSchedule.attendedLessonNumbers) {
     const attended = LumioSchedule.attendedLessonNumbers(user.name, level);
     if (!attended.has(num)) {
       document.getElementById("hwSections").innerHTML = `
