@@ -17,35 +17,72 @@
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#EDE9FB;font-size:.85rem;letter-spacing:.5px">LUMIO ENGLISH</div>
       </div>
       <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#EDE9FB;font-size:.95rem;background:rgba(139,92,246,.14);
-                  padding:6px 16px;border-radius:8px">Build the Sentence</div>
-      <div style="font-family:'Nunito',sans-serif;font-weight:800;color:#A79BD1;font-size:.8rem">29 / 48</div>
+                  padding:6px 16px;border-radius:8px">Build the Sentences</div>
+      <div style="font-family:'Nunito',sans-serif;font-weight:800;color:#A79BD1;font-size:.8rem">29 / 47</div>
     </div>
     <div style="position:relative;z-index:5;margin:14px 40px 0;height:3px;background:#4A3B7A;border-radius:2px">
-      <div style="height:100%;width:60%;background:linear-gradient(90deg,#8B5CF6,#F97316);border-radius:2px"></div>
+      <div style="height:100%;width:62%;background:linear-gradient(90deg,#8B5CF6,#F97316);border-radius:2px"></div>
     </div>
-    <div style="position:relative;z-index:5;text-align:center;margin-top:40px;font-family:'Nunito',sans-serif;font-weight:700;color:#A79BD1">
+    <div style="position:relative;z-index:5;text-align:center;margin-top:30px;font-family:'Nunito',sans-serif;font-weight:700;color:#A79BD1">
       Drag the tiles into order.</div>
-    <div id="sbSlots" data-correct="We will graduate next year." style="position:relative;z-index:5;display:flex;justify-content:center;gap:10px;margin-top:30px;flex-wrap:wrap">
-      <div class="sb-slot" data-index="0"></div><div class="sb-slot" data-index="1"></div><div class="sb-slot" data-index="2"></div><div class="sb-slot" data-index="3"></div><div class="sb-slot" data-index="4"></div><div class="sb-tile sb-punct" style="cursor:default">.</div>
-    </div>
-    <div id="sbTray" style="position:relative;z-index:5;display:flex;justify-content:center;gap:10px;margin-top:40px;flex-wrap:wrap;padding:0 60px">
-      <div class="sb-tile" draggable="false" data-word="next">next</div><div class="sb-tile" draggable="false" data-word="year">year</div><div class="sb-tile" draggable="false" data-word="graduate">graduate</div><div class="sb-tile" draggable="false" data-word="will">will</div><div class="sb-tile" draggable="false" data-word="We">We</div>
-    </div>
-    <div id="sbFeedback" style="position:relative;z-index:5;text-align:center;margin-top:20px;font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.2rem;color:#EDE9FB;min-height:32px"></div>
-    <button onclick="window.checkSentenceBuilder && checkSentenceBuilder()"
-            style="position:absolute;left:40px;bottom:30px;z-index:20;cursor:pointer;border:none;font-family:'Fredoka',sans-serif;
-            background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:600;padding:12px 24px;border-radius:10px;font-size:.9rem">Check</button>
-    <div style="position:absolute;right:40px;bottom:26px;z-index:6;display:flex;align-items:center;gap:8px;
-                background:rgba(255,255,255,.06);border-radius:999px;padding:5px 14px 5px 5px">
-      <img src="assets/story/characters/sara-teen-explain.png" style="height:38px;border-radius:50%;background:#fff">
-      <span style="font-family:'Fredoka',sans-serif;color:#A79BD1;font-size:.72rem;font-weight:600">guide</span>
-    </div>
+    
+        <div style="position:absolute;left:40px;right:40px;top:130px;background:#FFFFFF;border-radius:12px;padding:12px 18px;
+                    box-shadow:0 6px 14px rgba(0,0,0,.18)">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <div style="font-size:.8rem;font-weight:700;color:#F97316;min-width:14px">1.</div>
+            <div id="sbSlots0" data-correct="Maybe he will invent something new." style="display:flex;gap:6px;flex-wrap:wrap;min-height:36px">
+              <div class="sb-slot sbg-slot" data-group="0" data-index="0"></div><div class="sb-slot sbg-slot" data-group="0" data-index="1"></div><div class="sb-slot sbg-slot" data-group="0" data-index="2"></div><div class="sb-slot sbg-slot" data-group="0" data-index="3"></div><div class="sb-slot sbg-slot" data-group="0" data-index="4"></div><div class="sb-slot sbg-slot" data-group="0" data-index="5"></div><div class="sbg-tile sbg-punct" style="cursor:default">.</div>
+            </div>
+            <div style="width:1.5px;align-self:stretch;background:#4A3B7A;margin:0 4px"></div>
+            <div id="sbTray0" style="display:flex;gap:6px;flex-wrap:wrap;flex:1">
+              <div class="sb-tile sbg-tile" draggable="false" data-group="0" data-word="new">new</div><div class="sb-tile sbg-tile" draggable="false" data-group="0" data-word="will">will</div><div class="sb-tile sbg-tile" draggable="false" data-group="0" data-word="he">he</div><div class="sb-tile sbg-tile" draggable="false" data-group="0" data-word="invent">invent</div><div class="sb-tile sbg-tile" draggable="false" data-group="0" data-word="Maybe">Maybe</div><div class="sb-tile sbg-tile" draggable="false" data-group="0" data-word="something">something</div>
+            </div>
+            <button onclick="window.checkSentenceBuilder && checkSentenceBuilder('0')"
+                    style="cursor:pointer;border:none;font-family:'Fredoka',sans-serif;background:linear-gradient(135deg,#F97316,#EA580C);
+                           color:#fff;font-weight:600;padding:7px 14px;border-radius:8px;font-size:.78rem;white-space:nowrap">Check</button>
+          </div>
+          <div id="sbFeedback0" style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.8rem;min-height:18px;margin-top:4px;color:#2B2640"></div>
+        </div>
+        <div style="position:absolute;left:40px;right:40px;top:285px;background:#FFFFFF;border-radius:12px;padding:12px 18px;
+                    box-shadow:0 6px 14px rgba(0,0,0,.18)">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <div style="font-size:.8rem;font-weight:700;color:#F97316;min-width:14px">2.</div>
+            <div id="sbSlots1" data-correct="I believe she will achieve her goals." style="display:flex;gap:6px;flex-wrap:wrap;min-height:36px">
+              <div class="sb-slot sbg-slot" data-group="1" data-index="0"></div><div class="sb-slot sbg-slot" data-group="1" data-index="1"></div><div class="sb-slot sbg-slot" data-group="1" data-index="2"></div><div class="sb-slot sbg-slot" data-group="1" data-index="3"></div><div class="sb-slot sbg-slot" data-group="1" data-index="4"></div><div class="sb-slot sbg-slot" data-group="1" data-index="5"></div><div class="sb-slot sbg-slot" data-group="1" data-index="6"></div><div class="sbg-tile sbg-punct" style="cursor:default">.</div>
+            </div>
+            <div style="width:1.5px;align-self:stretch;background:#4A3B7A;margin:0 4px"></div>
+            <div id="sbTray1" style="display:flex;gap:6px;flex-wrap:wrap;flex:1">
+              <div class="sb-tile sbg-tile" draggable="false" data-group="1" data-word="she">she</div><div class="sb-tile sbg-tile" draggable="false" data-group="1" data-word="believe">believe</div><div class="sb-tile sbg-tile" draggable="false" data-group="1" data-word="I">I</div><div class="sb-tile sbg-tile" draggable="false" data-group="1" data-word="achieve">achieve</div><div class="sb-tile sbg-tile" draggable="false" data-group="1" data-word="her">her</div><div class="sb-tile sbg-tile" draggable="false" data-group="1" data-word="will">will</div><div class="sb-tile sbg-tile" draggable="false" data-group="1" data-word="goals">goals</div>
+            </div>
+            <button onclick="window.checkSentenceBuilder && checkSentenceBuilder('1')"
+                    style="cursor:pointer;border:none;font-family:'Fredoka',sans-serif;background:linear-gradient(135deg,#F97316,#EA580C);
+                           color:#fff;font-weight:600;padding:7px 14px;border-radius:8px;font-size:.78rem;white-space:nowrap">Check</button>
+          </div>
+          <div id="sbFeedback1" style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.8rem;min-height:18px;margin-top:4px;color:#2B2640"></div>
+        </div>
+        <div style="position:absolute;left:40px;right:40px;top:440px;background:#FFFFFF;border-radius:12px;padding:12px 18px;
+                    box-shadow:0 6px 14px rgba(0,0,0,.18)">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <div style="font-size:.8rem;font-weight:700;color:#F97316;min-width:14px">3.</div>
+            <div id="sbSlots2" data-correct="Things will change a lot." style="display:flex;gap:6px;flex-wrap:wrap;min-height:36px">
+              <div class="sb-slot sbg-slot" data-group="2" data-index="0"></div><div class="sb-slot sbg-slot" data-group="2" data-index="1"></div><div class="sb-slot sbg-slot" data-group="2" data-index="2"></div><div class="sb-slot sbg-slot" data-group="2" data-index="3"></div><div class="sb-slot sbg-slot" data-group="2" data-index="4"></div><div class="sbg-tile sbg-punct" style="cursor:default">.</div>
+            </div>
+            <div style="width:1.5px;align-self:stretch;background:#4A3B7A;margin:0 4px"></div>
+            <div id="sbTray2" style="display:flex;gap:6px;flex-wrap:wrap;flex:1">
+              <div class="sb-tile sbg-tile" draggable="false" data-group="2" data-word="a">a</div><div class="sb-tile sbg-tile" draggable="false" data-group="2" data-word="will">will</div><div class="sb-tile sbg-tile" draggable="false" data-group="2" data-word="change">change</div><div class="sb-tile sbg-tile" draggable="false" data-group="2" data-word="Things">Things</div><div class="sb-tile sbg-tile" draggable="false" data-group="2" data-word="lot">lot</div>
+            </div>
+            <button onclick="window.checkSentenceBuilder && checkSentenceBuilder('2')"
+                    style="cursor:pointer;border:none;font-family:'Fredoka',sans-serif;background:linear-gradient(135deg,#F97316,#EA580C);
+                           color:#fff;font-weight:600;padding:7px 14px;border-radius:8px;font-size:.78rem;white-space:nowrap">Check</button>
+          </div>
+          <div id="sbFeedback2" style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.8rem;min-height:18px;margin-top:4px;color:#2B2640"></div>
+        </div>
     <style>
-      .sb-slot { width:110px; height:58px; border:2px dashed #4A3B7A; border-radius:10px; background:rgba(255,255,255,.04); }
-      .sb-slot.sb-filled { border-style:solid; border-color:#F97316; background:#FFFFFF; }
-      .sb-tile { min-width:80px; height:58px; padding:0 16px; background:#FFFFFF; border-radius:10px; display:flex; align-items:center;
-                  justify-content:center; font-family:'Fredoka',sans-serif; font-weight:600; font-size:1.05rem; color:#2B2640;
-                  box-shadow:0 8px 16px rgba(0,0,0,.2); cursor:grab; touch-action:none; user-select:none; }
-      .sb-tile.sb-dragging { opacity:.4; }
-      .sb-tile.sb-punct { background:transparent; box-shadow:none; font-size:1.6rem; min-width:16px; padding:0; color:#EDE9FB; }
+      .sbg-slot { width:70px; height:38px; border:2px dashed #4A3B7A; border-radius:8px; background:rgba(0,0,0,.04); }
+      .sbg-slot.sb-filled { border-style:solid; border-color:#F97316; background:#FFF8EC; }
+      .sbg-tile { min-width:50px; height:38px; padding:0 10px; background:#FFF8EC; border-radius:8px; display:flex; align-items:center;
+                   justify-content:center; font-family:'Fredoka',sans-serif; font-weight:600; font-size:.82rem; color:#2B2640;
+                   box-shadow:0 3px 8px rgba(0,0,0,.15); cursor:grab; touch-action:none; user-select:none; }
+      .sbg-tile.sb-dragging { opacity:.4; }
+      .sbg-punct { background:transparent !important; box-shadow:none !important; font-size:1.2rem; min-width:10px; padding:0; height:38px; color:#EDE9FB; }
     </style>

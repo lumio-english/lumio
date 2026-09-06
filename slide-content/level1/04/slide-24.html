@@ -1,25 +1,28 @@
 <div class="wall"></div><div class="teal-band"></div><div class="window"><div class="cross-v"></div><div class="cross-h"></div></div><div class="spark" style="left:375px;top:135px;font-size:1.6rem">&#10022;</div><div class="spark" style="left:415px;top:105px;font-size:1.1rem">&#10022;</div><div class="spark" style="left:392px;top:178px;font-size:1.3rem">&#10022;</div><div class="header">
       <div class="brand"><img src="assets/logo/lumio-logo.png"><div class="name">Lumio<small>ENGLISH</small></div></div>
-      <div class="pagetitle">Your Turn &bull; Round 3 of 3</div>
-      <div class="counter">24 / 37</div>
+      <div class="pagetitle">Quick Check &bull; 1/6</div>
+      <div class="counter">24 / 36</div>
     </div><div class="colorstrip"><div class="c1"></div><div class="c2"></div><div class="c3"></div><div class="c4"></div><div class="c5"></div></div>
-    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:40px;padding-bottom:60px">
-      <div class="card" id="ytCard3" style="width:320px;height:320px;display:flex;align-items:center;justify-content:center;
-                  background:linear-gradient(135deg,#FFF3D6,#FFE0B8);position:relative;overflow:hidden">
-        <div id="ytMystery3" style="font-size:4rem">&#128266;</div>
-        <img id="ytImg3" src="assets/vocab/elephant.png" style="display:none;width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
-      </div>
-      <div class="card" style="width:400px;padding:40px 36px;text-align:center">
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.7rem;color:#43301F;margin-bottom:10px">Listen first!</div>
-        <div style="font-size:.95rem;color:#8A7160;font-weight:700">Play the sound, guess the word, then reveal the picture.</div>
-      </div>
-    </div>
-    <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('elephant')"
-            style="position:absolute;left:46px;bottom:32px;z-index:20;cursor:pointer;border:none;font-family:inherit;
-            background:linear-gradient(135deg,#0D9488,#0B7A6F);color:#fff;font-weight:800;padding:13px 26px;border-radius:999px;
-            font-size:1.02rem;box-shadow:0 8px 18px rgba(13,148,136,.35)">&#9654; Play sound</button>
-    <button onclick="document.getElementById('ytMystery3').style.display='none'; document.getElementById('ytImg3').style.display='block'; this.textContent='elephant \u2014 فيل'; this.style.background='linear-gradient(135deg,#4ADE80,#16A34A)'"
-            style="position:absolute;left:230px;bottom:32px;z-index:20;cursor:pointer;border:none;font-family:inherit;
-            background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;padding:13px 26px;border-radius:999px;
-            font-size:1.02rem;box-shadow:0 8px 18px rgba(249,115,22,.35)">&#128064; Reveal picture</button>
-    <div class="floorshadow" style="right:95px;bottom:25px;width:230px;height:36px"></div><img class="char" src="assets/story/characters/omar-wave.png" style="right:95px;bottom:32px;height:250px" onerror="this.style.display='none'; this.previousElementSibling.style.display='none'">
+    <div class="card" style="position:absolute;left:280px;top:190px;width:280px;height:280px;overflow:hidden;padding:0">
+      <img src="assets/vocab/big.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+    <div style="position:absolute;left:610px;top:190px;width:540px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.9rem;color:#43301F">Which word matches the picture?</div>
+    
+          <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'ball', 'big')"
+                  style="position:absolute;left:560px;top:230px;width:180px;height:210px;background:#fff;border:3px solid #F0E9DD;border-radius:16px;
+                      padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px" data-quiz-option="ball">
+            <div style="width:100%;height:140px"><img src="assets/vocab/ball.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+            <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1rem;color:#43301F">ball</div>
+          </button>
+          <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'small', 'big')"
+                  style="position:absolute;left:790px;top:230px;width:180px;height:210px;background:#fff;border:3px solid #F0E9DD;border-radius:16px;
+                      padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px" data-quiz-option="small">
+            <div style="width:100%;height:140px"><img src="assets/vocab/small.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+            <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1rem;color:#43301F">small</div>
+          </button>
+          <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'big', 'big')"
+                  style="position:absolute;left:1020px;top:230px;width:180px;height:210px;background:#fff;border:3px solid #F0E9DD;border-radius:16px;
+                      padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px" data-quiz-option="big">
+            <div style="width:100%;height:140px"><img src="assets/vocab/big.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+            <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1rem;color:#43301F">big</div>
+          </button>
+    

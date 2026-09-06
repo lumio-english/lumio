@@ -1,31 +1,69 @@
 <div class="wall"></div><div class="teal-band"></div><div class="window"><div class="cross-v"></div><div class="cross-h"></div></div><div class="spark" style="left:375px;top:135px;font-size:1.6rem">&#10022;</div><div class="spark" style="left:415px;top:105px;font-size:1.1rem">&#10022;</div><div class="spark" style="left:392px;top:178px;font-size:1.3rem">&#10022;</div><div class="header">
       <div class="brand"><img src="assets/logo/lumio-logo.png"><div class="name">Lumio<small>ENGLISH</small></div></div>
-      <div class="pagetitle">Build the Sentence</div>
-      <div class="counter">20 / 38</div>
+      <div class="pagetitle">Build the Sentences</div>
+      <div class="counter">20 / 37</div>
     </div><div class="colorstrip"><div class="c1"></div><div class="c2"></div><div class="c3"></div><div class="c4"></div><div class="c5"></div></div>
-    <div style="position:absolute;left:0;right:0;top:190px;text-align:center">
-      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;color:#43301F;margin-bottom:8px">Put the words in the right order!</div>
-      <div style="font-size:.95rem;color:#8A7160;font-weight:700">Drag the tiles into the boxes below.</div>
+    <div style="position:absolute;left:0;right:0;top:118px;text-align:center">
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.15rem;color:#43301F">Put the words in the right order &mdash; drag the tiles!</div>
     </div>
-    <div id="sbSlots" data-correct="I eat rice for lunch." style="position:absolute;left:0;right:0;top:300px;display:flex;justify-content:center;gap:12px;min-height:80px;flex-wrap:wrap">
-      <div class="sb-slot" data-index="0"></div><div class="sb-slot" data-index="1"></div><div class="sb-slot" data-index="2"></div><div class="sb-slot" data-index="3"></div><div class="sb-slot" data-index="4"></div><div class="sb-tile sb-punct" style="cursor:default">.</div>
-    </div>
-    <div id="sbTray" style="position:absolute;left:0;right:0;top:430px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap;padding:0 60px">
-      <div class="sb-tile" draggable="false" data-word="for">for</div><div class="sb-tile" draggable="false" data-word="I">I</div><div class="sb-tile" draggable="false" data-word="rice">rice</div><div class="sb-tile" draggable="false" data-word="eat">eat</div><div class="sb-tile" draggable="false" data-word="lunch">lunch</div>
-    </div>
-    <div id="sbFeedback" style="position:absolute;left:0;right:0;top:560px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;min-height:40px"></div>
-    <button onclick="window.checkSentenceBuilder && checkSentenceBuilder()"
-            style="position:absolute;left:46px;bottom:32px;z-index:20;cursor:pointer;border:none;font-family:inherit;
-            background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;padding:13px 28px;border-radius:999px;
-            font-size:1.02rem;box-shadow:0 8px 18px rgba(249,115,22,.35)">&#10003; Check my sentence</button>
-    <div class="floorshadow" style="right:95px;bottom:17px;width:230px;height:36px"></div><img class="char" src="assets/story/characters/sara-teach-board.png" style="right:95px;bottom:24px;height:230px" onerror="this.style.display='none'; this.previousElementSibling.style.display='none'">
-    <style>
-      .sb-slot { width:120px; height:64px; border:3px dashed #E5DDD0; border-radius:14px; background:rgba(255,255,255,.5); }
-      .sb-slot.sb-filled { border-style:solid; border-color:#FFDCA8; background:#fff; }
-      .sb-tile { min-width:90px; height:64px; padding:0 18px; background:#fff; border-radius:14px; display:flex; align-items:center;
-                  justify-content:center; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1.25rem; color:#43301F;
-                  box-shadow:0 8px 16px rgba(67,48,31,.18); cursor:grab; touch-action:none; user-select:none; }
-      .sb-tile.sb-dragging { opacity:.4; }
-      .sb-tile.sb-punct { background:transparent; box-shadow:none; font-size:2rem; min-width:20px; padding:0; }
-    </style>
     
+        <div style="position:absolute;left:46px;right:46px;top:150px;background:#fff;border-radius:16px;padding:12px 20px;
+                    box-shadow:0 4px 12px rgba(67,48,31,.08)">
+          <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+            <div style="font-size:.85rem;font-weight:800;color:#F97316;min-width:16px">1.</div>
+            <div id="sbSlots0" data-correct="I have a snack after school." style="display:flex;gap:7px;flex-wrap:wrap;min-height:40px">
+              <div class="sb-slot sbg-slot" data-group="0" data-index="0"></div><div class="sb-slot sbg-slot" data-group="0" data-index="1"></div><div class="sb-slot sbg-slot" data-group="0" data-index="2"></div><div class="sb-slot sbg-slot" data-group="0" data-index="3"></div><div class="sb-slot sbg-slot" data-group="0" data-index="4"></div><div class="sb-slot sbg-slot" data-group="0" data-index="5"></div><div class="sbg-tile sbg-punct" style="cursor:default">.</div>
+            </div>
+            <div style="width:1.5px;align-self:stretch;background:#F0E9DA;margin:0 4px"></div>
+            <div id="sbTray0" style="display:flex;gap:7px;flex-wrap:wrap;flex:1">
+              <div class="sb-tile sbg-tile" draggable="false" data-group="0" data-word="have">have</div><div class="sb-tile sbg-tile" draggable="false" data-group="0" data-word="school">school</div><div class="sb-tile sbg-tile" draggable="false" data-group="0" data-word="snack">snack</div><div class="sb-tile sbg-tile" draggable="false" data-group="0" data-word="after">after</div><div class="sb-tile sbg-tile" draggable="false" data-group="0" data-word="a">a</div><div class="sb-tile sbg-tile" draggable="false" data-group="0" data-word="I">I</div>
+            </div>
+            <button onclick="window.checkSentenceBuilder && checkSentenceBuilder('0')"
+                    style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,#F97316,#EA580C);
+                           color:#fff;font-weight:800;padding:8px 16px;border-radius:999px;font-size:.82rem;white-space:nowrap">&#10003; Check</button>
+          </div>
+          <div id="sbFeedback0" style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem;min-height:20px;margin-top:4px"></div>
+        </div>
+        <div style="position:absolute;left:46px;right:46px;top:318px;background:#fff;border-radius:16px;padding:12px 20px;
+                    box-shadow:0 4px 12px rgba(67,48,31,.08)">
+          <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+            <div style="font-size:.85rem;font-weight:800;color:#F97316;min-width:16px">2.</div>
+            <div id="sbSlots1" data-correct="Vegetables are healthy food." style="display:flex;gap:7px;flex-wrap:wrap;min-height:40px">
+              <div class="sb-slot sbg-slot" data-group="1" data-index="0"></div><div class="sb-slot sbg-slot" data-group="1" data-index="1"></div><div class="sb-slot sbg-slot" data-group="1" data-index="2"></div><div class="sb-slot sbg-slot" data-group="1" data-index="3"></div><div class="sbg-tile sbg-punct" style="cursor:default">.</div>
+            </div>
+            <div style="width:1.5px;align-self:stretch;background:#F0E9DA;margin:0 4px"></div>
+            <div id="sbTray1" style="display:flex;gap:7px;flex-wrap:wrap;flex:1">
+              <div class="sb-tile sbg-tile" draggable="false" data-group="1" data-word="healthy">healthy</div><div class="sb-tile sbg-tile" draggable="false" data-group="1" data-word="food">food</div><div class="sb-tile sbg-tile" draggable="false" data-group="1" data-word="are">are</div><div class="sb-tile sbg-tile" draggable="false" data-group="1" data-word="Vegetables">Vegetables</div>
+            </div>
+            <button onclick="window.checkSentenceBuilder && checkSentenceBuilder('1')"
+                    style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,#F97316,#EA580C);
+                           color:#fff;font-weight:800;padding:8px 16px;border-radius:999px;font-size:.82rem;white-space:nowrap">&#10003; Check</button>
+          </div>
+          <div id="sbFeedback1" style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem;min-height:20px;margin-top:4px"></div>
+        </div>
+        <div style="position:absolute;left:46px;right:46px;top:486px;background:#fff;border-radius:16px;padding:12px 20px;
+                    box-shadow:0 4px 12px rgba(67,48,31,.08)">
+          <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+            <div style="font-size:.85rem;font-weight:800;color:#F97316;min-width:16px">3.</div>
+            <div id="sbSlots2" data-correct="I drink water every day." style="display:flex;gap:7px;flex-wrap:wrap;min-height:40px">
+              <div class="sb-slot sbg-slot" data-group="2" data-index="0"></div><div class="sb-slot sbg-slot" data-group="2" data-index="1"></div><div class="sb-slot sbg-slot" data-group="2" data-index="2"></div><div class="sb-slot sbg-slot" data-group="2" data-index="3"></div><div class="sb-slot sbg-slot" data-group="2" data-index="4"></div><div class="sbg-tile sbg-punct" style="cursor:default">.</div>
+            </div>
+            <div style="width:1.5px;align-self:stretch;background:#F0E9DA;margin:0 4px"></div>
+            <div id="sbTray2" style="display:flex;gap:7px;flex-wrap:wrap;flex:1">
+              <div class="sb-tile sbg-tile" draggable="false" data-group="2" data-word="every">every</div><div class="sb-tile sbg-tile" draggable="false" data-group="2" data-word="water">water</div><div class="sb-tile sbg-tile" draggable="false" data-group="2" data-word="I">I</div><div class="sb-tile sbg-tile" draggable="false" data-group="2" data-word="day">day</div><div class="sb-tile sbg-tile" draggable="false" data-group="2" data-word="drink">drink</div>
+            </div>
+            <button onclick="window.checkSentenceBuilder && checkSentenceBuilder('2')"
+                    style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,#F97316,#EA580C);
+                           color:#fff;font-weight:800;padding:8px 16px;border-radius:999px;font-size:.82rem;white-space:nowrap">&#10003; Check</button>
+          </div>
+          <div id="sbFeedback2" style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem;min-height:20px;margin-top:4px"></div>
+        </div>
+    <style>
+      .sbg-slot { width:78px; height:44px; border:2.5px dashed #E5DDD0; border-radius:10px; background:rgba(255,255,255,.5); }
+      .sbg-slot.sb-filled { border-style:solid; border-color:#FFDCA8; background:#FFF8EC; }
+      .sbg-tile { min-width:56px; height:44px; padding:0 12px; background:#FFF8EC; border-radius:10px; display:flex; align-items:center;
+                   justify-content:center; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:.88rem; color:#43301F;
+                   box-shadow:0 2px 6px rgba(67,48,31,.1); cursor:grab; touch-action:none; user-select:none; }
+      .sbg-tile.sb-dragging { opacity:.4; }
+      .sbg-punct { background:transparent !important; box-shadow:none !important; font-size:1.3rem; min-width:12px; padding:0; height:44px; }
+    </style>

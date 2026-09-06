@@ -653,12 +653,13 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
         plan.append(("grammar_rule", grammar_topic))
     if notice_sentences:
         plan.append(("notice", None))
-    # Same reasoning as the kid template: every vocab word already has a
-    # real example sentence, previously only word 0 ever became an actual
-    # exercise. No new content needed, just using the first 3 words (or
-    # fewer, for a short lesson).
-    for sentence_i in range(min(3, V)):
-        plan.append(("sentence", sentence_i))
+    # Same reasoning and layout as the kid template: 2 slides of 3
+    # sentences each, drawn from the lesson's own vocab in order,
+    # cycling back to the start for the rare lesson with fewer than 6
+    # words (none currently in Level 3-6, but kept safe regardless).
+    sentence_indices = [i % V for i in range(6)]
+    plan.append(("sentence_trio", sentence_indices[0:3]))
+    plan.append(("sentence_trio", sentence_indices[3:6]))
     if grammar_topic:
         plan.append(("grammar_practice", grammar_topic))
     if grammar_recap_topics:
@@ -736,10 +737,10 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
             i = data
             mode = "picture" if i % 2 == 0 else "translate"
             slides.append(slide_vocab_mcq(lesson["vocab"], mode, i, n_vocab_mcq, n, total, theme_key))
-        elif kind == "sentence":
-            sentence_i = data
-            example = lesson["vocab"][sentence_i]["example"]
-            slides.append(v1.slide_sentence_builder(example, n, total, "sara-teen-explain", lesson_num * 10 + sentence_i))
+        elif kind == "sentence_trio":
+            indices = data
+            examples = [lesson["vocab"][i]["example"] for i in indices]
+            slides.append(v1.slide_sentence_trio(examples, n, total, "sara-teen-explain", lesson_num * 10 + indices[0]))
         elif kind == "grammar_practice":
             slides.append(grammar_slides.slide_grammar_practice(
                 data, n, total, ch3, header_themed_wrap(theme_key), "", bg_theme_wrap(theme_key),

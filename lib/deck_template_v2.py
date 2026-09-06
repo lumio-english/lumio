@@ -433,6 +433,56 @@ def slide_sentence_builder(sentence, n, total, ch, seed):
     </style>
     ''')
 
+def slide_sentence_trio(sentences, n, total, ch, seed):
+    """Three compact build-the-sentence exercises on one slide, each with
+    its own independent drag-and-drop (data-group="0"/"1"/"2") and its own
+    Check button -- not three full-page exercises, one dense slide.
+    `sentences` is a list of 1-3 real example sentences; fewer than 3 is
+    handled gracefully (just fewer rows, no blank placeholders)."""
+    rows = ""
+    row_top = 150
+    row_height = 168
+    for i, sentence in enumerate(sentences):
+        words, punct = tokenize_sentence(sentence)
+        order = list(range(len(words)))
+        random.Random(seed * 10 + i).shuffle(order)
+        punct_tile = f'<div class="sbg-tile sbg-punct" style="cursor:default">{punct}</div>' if punct else ""
+        slots = "".join(f'<div class="sb-slot sbg-slot" data-group="{i}" data-index="{j}"></div>' for j in range(len(words)))
+        tray = "".join(f'<div class="sb-tile sbg-tile" draggable="false" data-group="{i}" data-word="{esc(words[j])}">{esc(words[j])}</div>' for j in order)
+        top = row_top + i * row_height
+        rows += f'''
+        <div style="position:absolute;left:46px;right:46px;top:{top}px;background:#fff;border-radius:16px;padding:12px 20px;
+                    box-shadow:0 4px 12px rgba(67,48,31,.08)">
+          <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+            <div style="font-size:.85rem;font-weight:800;color:#F97316;min-width:16px">{i + 1}.</div>
+            <div id="sbSlots{i}" data-correct="{esc(sentence.strip())}" style="display:flex;gap:7px;flex-wrap:wrap;min-height:40px">
+              {slots}{punct_tile}
+            </div>
+            <div style="width:1.5px;align-self:stretch;background:#F0E9DA;margin:0 4px"></div>
+            <div id="sbTray{i}" style="display:flex;gap:7px;flex-wrap:wrap;flex:1">
+              {tray}
+            </div>
+            <button onclick="window.checkSentenceBuilder && checkSentenceBuilder('{i}')"
+                    style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,#F97316,#EA580C);
+                           color:#fff;font-weight:800;padding:8px 16px;border-radius:999px;font-size:.82rem;white-space:nowrap">&#10003; Check</button>
+          </div>
+          <div id="sbFeedback{i}" style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem;min-height:20px;margin-top:4px"></div>
+        </div>'''
+    return (bg_plain() + header("Build the Sentences", n, total) + COLORSTRIP + f'''
+    <div style="position:absolute;left:0;right:0;top:118px;text-align:center">
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.15rem;color:#43301F">Put the words in the right order &mdash; drag the tiles!</div>
+    </div>
+    {rows}
+    <style>
+      .sbg-slot {{ width:78px; height:44px; border:2.5px dashed #E5DDD0; border-radius:10px; background:rgba(255,255,255,.5); }}
+      .sbg-slot.sb-filled {{ border-style:solid; border-color:#FFDCA8; background:#FFF8EC; }}
+      .sbg-tile {{ min-width:56px; height:44px; padding:0 12px; background:#FFF8EC; border-radius:10px; display:flex; align-items:center;
+                   justify-content:center; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:.88rem; color:#43301F;
+                   box-shadow:0 2px 6px rgba(67,48,31,.1); cursor:grab; touch-action:none; user-select:none; }}
+      .sbg-tile.sb-dragging {{ opacity:.4; }}
+      .sbg-punct {{ background:transparent !important; box-shadow:none !important; font-size:1.3rem; min-width:12px; padding:0; height:44px; }}
+    </style>''')
+
 def slide_sound_spot(vocab, n, total, ch):
     cards = ""
     for w in vocab:
@@ -1088,11 +1138,14 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
     # sentence in its own data -- previously only word 0 ever got turned
     # into an actual exercise (build-the-sentence), leaving every other
     # word's sentence sitting unused beyond its passive "SAY IT" quote on
-    # the vocab card. Covering the first 3 words (or fewer, for a short
-    # lesson) needs no new content authoring at all, just using data
-    # that was already there.
-    for sentence_i in range(min(3, V)):
-        plan.append(("sentence", sentence_i))
+    # the vocab card. 2 slides of 3 sentences each, drawn from the
+    # lesson's own vocab in order; only 2 of 140 lessons have fewer than
+    # 6 words at all (Pre-A lessons 6 and 8, 5 and 4 words respectively),
+    # so those two cycle back to the start of the list rather than ever
+    # showing fewer than 3 per slide.
+    sentence_indices = [i % V for i in range(6)]
+    plan.append(("sentence_trio", sentence_indices[0:3]))
+    plan.append(("sentence_trio", sentence_indices[3:6]))
     plan.append(("sound_spot", None))
     your_turn_n = min(4, V) if V <= 4 else min(3, V)
     for i in range(your_turn_n):
@@ -1193,10 +1246,10 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
             slides.append(slide_sound_match(target_word, distractor_words, i + 1, total_q, n, total, seed))
         elif kind == "dialogue":
             slides.append(slide_dialogue(DIALOGUES[lesson_num], n, total, lesson_num))
-        elif kind == "sentence":
-            sentence_i = data
-            example = lesson["vocab"][sentence_i]["example"]
-            slides.append(slide_sentence_builder(example, n, total, "sara-teach-board", lesson_num * 10 + sentence_i))
+        elif kind == "sentence_trio":
+            indices = data
+            examples = [lesson["vocab"][i]["example"] for i in indices]
+            slides.append(slide_sentence_trio(examples, n, total, "sara-teach-board", lesson_num * 10 + indices[0]))
         elif kind == "sound_spot":
             slides.append(slide_sound_spot(lesson["vocab"], n, total, "sara-clap"))
         elif kind == "your_turn":

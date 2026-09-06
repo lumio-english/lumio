@@ -160,6 +160,10 @@ window.checkQuizAnswer = function (el, chosen, correct) {
 };
 
 // ---- sentence builder drag-and-drop (global, works on whichever slide is currently shown) ----
+// Supports multiple independent sentence-builder groups on one slide
+// (data-group="0"/"1"/"2") -- a tile only ever snaps into a slot in its
+// own group, and a dropped-out tile always returns to its own group's
+// tray, never a different exercise's.
 (function () {
   let dragEl = null, offsetX = 0, offsetY = 0;
   function onPointerDown(e) {
@@ -177,7 +181,8 @@ window.checkQuizAnswer = function (el, chosen, correct) {
     dragEl.style.zIndex = "999";
     dragEl.style.left = (e.clientX - offsetX) + "px";
     dragEl.style.top = (e.clientY - offsetY) + "px";
-    document.querySelectorAll(".sb-slot").forEach(s => {
+    const group = dragEl.dataset.group || "";
+    document.querySelectorAll(`.sb-slot[data-group="${group}"]`).forEach(s => {
       const sr = s.getBoundingClientRect();
       const over = e.clientX >= sr.left && e.clientX <= sr.right && e.clientY >= sr.top && e.clientY <= sr.bottom;
       s.style.background = over ? "#FFF3D6" : "";
@@ -186,9 +191,10 @@ window.checkQuizAnswer = function (el, chosen, correct) {
   function onPointerUp(e) {
     if (!dragEl) return;
     dragEl.classList.remove("sb-dragging");
-    const tray = document.getElementById("sbTray");
+    const group = dragEl.dataset.group || "";
+    const tray = document.getElementById("sbTray" + group);
     let dropped = false;
-    document.querySelectorAll(".sb-slot").forEach(s => {
+    document.querySelectorAll(`.sb-slot[data-group="${group}"]`).forEach(s => {
       const sr = s.getBoundingClientRect();
       const over = e.clientX >= sr.left && e.clientX <= sr.right && e.clientY >= sr.top && e.clientY <= sr.bottom;
       s.style.background = "";
@@ -206,7 +212,7 @@ window.checkQuizAnswer = function (el, chosen, correct) {
       dragEl.className = "sb-tile";
       tray.appendChild(dragEl);
     }
-    document.querySelectorAll(".sb-slot").forEach(s => { if (!s.firstChild) s.classList.remove("sb-filled"); });
+    document.querySelectorAll(`.sb-slot[data-group="${group}"]`).forEach(s => { if (!s.firstChild) s.classList.remove("sb-filled"); });
     dragEl = null;
   }
   document.addEventListener("pointerdown", onPointerDown);
@@ -214,14 +220,17 @@ window.checkQuizAnswer = function (el, chosen, correct) {
   document.addEventListener("pointerup", onPointerUp);
 })();
 
-window.checkSentenceBuilder = function () {
-  const slotsWrap = document.getElementById("sbSlots");
+// groupId: "" for the original single-exercise slide (back-compat), or
+// "0"/"1"/"2" for one of a trio on the same slide.
+window.checkSentenceBuilder = function (groupId) {
+  groupId = groupId || "";
+  const slotsWrap = document.getElementById("sbSlots" + groupId);
   if (!slotsWrap) return;
   const correctSentence = slotsWrap.dataset.correct;
   const correctWords = correctSentence.replace(/[.!?]+$/, "").split(" ");
   const slots = slotsWrap.querySelectorAll(".sb-slot");
   const current = [...slots].map(s => s.firstChild ? s.firstChild.dataset.word : null);
-  const feedback = document.getElementById("sbFeedback");
+  const feedback = document.getElementById("sbFeedback" + groupId);
   if (current.includes(null)) {
     feedback.textContent = "Fill in all the boxes first!";
     feedback.style.color = "#C2530A";

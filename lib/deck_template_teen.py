@@ -343,6 +343,55 @@ def slide_sentence_builder(sentence, n, total, ch, seed):
       .sb-tile.sb-punct {{ background:transparent; box-shadow:none; font-size:1.6rem; min-width:16px; padding:0; color:{INK}; }}
     </style>''')
 
+def slide_sentence_trio(sentences, n, total, ch, seed):
+    """Three compact build-the-sentence exercises on one slide, teen-theme
+    version -- same data-group-scoped drag-and-drop as the kid template's
+    slide_sentence_trio, styled to match this module's dark theme instead
+    (bg_base, CARD_BG, Fredoka) rather than reusing the kid version's
+    cream/Baloo styling directly."""
+    rows = ""
+    row_top = 130
+    row_height = 155
+    for i, sentence in enumerate(sentences):
+        words, punct = tokenize_sentence(sentence)
+        order = list(range(len(words)))
+        random.Random(seed * 10 + i).shuffle(order)
+        punct_tile = f'<div class="sbg-tile sbg-punct" style="cursor:default">{punct}</div>' if punct else ""
+        slots = "".join(f'<div class="sb-slot sbg-slot" data-group="{i}" data-index="{j}"></div>' for j in range(len(words)))
+        tray = "".join(f'<div class="sb-tile sbg-tile" draggable="false" data-group="{i}" data-word="{esc(words[j])}">{esc(words[j])}</div>' for j in order)
+        top = row_top + i * row_height
+        rows += f'''
+        <div style="position:absolute;left:40px;right:40px;top:{top}px;background:{CARD_BG};border-radius:12px;padding:12px 18px;
+                    box-shadow:0 6px 14px rgba(0,0,0,.18)">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <div style="font-size:.8rem;font-weight:700;color:{ORANGE};min-width:14px">{i + 1}.</div>
+            <div id="sbSlots{i}" data-correct="{esc(sentence.strip())}" style="display:flex;gap:6px;flex-wrap:wrap;min-height:36px">
+              {slots}{punct_tile}
+            </div>
+            <div style="width:1.5px;align-self:stretch;background:{BORDER};margin:0 4px"></div>
+            <div id="sbTray{i}" style="display:flex;gap:6px;flex-wrap:wrap;flex:1">
+              {tray}
+            </div>
+            <button onclick="window.checkSentenceBuilder && checkSentenceBuilder('{i}')"
+                    style="cursor:pointer;border:none;font-family:'Fredoka',sans-serif;background:linear-gradient(135deg,{ORANGE},{ORANGE_DEEP});
+                           color:#fff;font-weight:600;padding:7px 14px;border-radius:8px;font-size:.78rem;white-space:nowrap">Check</button>
+          </div>
+          <div id="sbFeedback{i}" style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.8rem;min-height:18px;margin-top:4px;color:{CARD_TEXT}"></div>
+        </div>'''
+    return (bg_base() + header("Build the Sentences", n, total) + f'''
+    <div style="position:relative;z-index:5;text-align:center;margin-top:30px;font-family:'Nunito',sans-serif;font-weight:700;color:{INK_DIM}">
+      Drag the tiles into order.</div>
+    {rows}
+    <style>
+      .sbg-slot {{ width:70px; height:38px; border:2px dashed {BORDER}; border-radius:8px; background:rgba(0,0,0,.04); }}
+      .sbg-slot.sb-filled {{ border-style:solid; border-color:{ORANGE}; background:#FFF8EC; }}
+      .sbg-tile {{ min-width:50px; height:38px; padding:0 10px; background:#FFF8EC; border-radius:8px; display:flex; align-items:center;
+                   justify-content:center; font-family:'Fredoka',sans-serif; font-weight:600; font-size:.82rem; color:{CARD_TEXT};
+                   box-shadow:0 3px 8px rgba(0,0,0,.15); cursor:grab; touch-action:none; user-select:none; }}
+      .sbg-tile.sb-dragging {{ opacity:.4; }}
+      .sbg-punct {{ background:transparent !important; box-shadow:none !important; font-size:1.2rem; min-width:10px; padding:0; height:38px; color:{INK}; }}
+    </style>''')
+
 def slide_sound_spot(vocab, n, total, ch):
     cards = "".join(f'''
       <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(w["en"])}')"
