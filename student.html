@@ -271,6 +271,7 @@
     background:linear-gradient(120deg,#2B2118 0%,#43301F 55%,#5A4028 100%);border-radius:20px;padding:16px 22px;
     display:flex;align-items:center;gap:18px;flex-wrap:wrap;box-shadow:0 10px 22px rgba(43,33,24,.22);
     position:relative;overflow:hidden;border:none;font-family:inherit;text-align:left;cursor:pointer;width:100%;
+    text-decoration:none;color:inherit;
   }
   .sd-hubb::before{content:'';position:absolute;right:-30px;top:-50px;width:170px;height:170px;border-radius:50%;
     background:radial-gradient(circle,rgba(249,115,22,.2),transparent 70%)}
@@ -288,7 +289,8 @@
   .sd-hubb-stop.locked{background:rgba(255,255,255,.12);color:rgba(255,255,255,.5)}
   .sd-hubb-line{width:12px;height:2px;background:rgba(255,255,255,.18);flex-shrink:0}
   .sd-hubb-btn{background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;font-size:.84rem;
-    padding:9px 20px;border-radius:999px;position:relative;z-index:2;flex-shrink:0}
+    padding:9px 20px;border-radius:999px;position:relative;z-index:2;flex-shrink:0;display:inline-flex;align-items:center;gap:6px}
+  .sd-hubb-btn-logo{width:15px;height:15px;border-radius:4px;flex-shrink:0}
   .sd-hubb.locked .sd-hubb-btn{background:rgba(255,255,255,.12);color:rgba(255,255,255,.7)}
   @media (max-width:760px){.sd-hubb{flex-direction:column;align-items:stretch;text-align:center}
     .sd-hubb-left{justify-content:center}.sd-hubb-trail{justify-content:center;max-width:none}}
@@ -305,7 +307,13 @@
   .sd-cert-link{
     display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-weight:800;font-size:.85rem;
     background:var(--sd-sun);color:#7A4E00;padding:9px 18px;border-radius:999px;
+    text-decoration:none;font-family:'Nunito',sans-serif;box-shadow:0 4px 10px rgba(0,0,0,.08);
+    transition:transform .15s cubic-bezier(.22,1,.36,1),box-shadow .15s ease;
   }
+  .sd-cert-link:hover{transform:translateY(-2px);box-shadow:0 8px 16px rgba(0,0,0,.15)}
+  .sd-cert-link:active{transform:translateY(0) scale(.96)}
+  .sd-cert-link:focus-visible{outline:3px solid rgba(122,78,0,.35);outline-offset:2px}
+  .sd-cert-link-logo{width:16px;height:16px;border-radius:4px;flex-shrink:0}
 
   /* ---------- Section headers ---------- */
   .sd-section-title{display:flex;align-items:center;gap:8px;margin:26px 0 12px}
@@ -675,7 +683,7 @@
       </div>
     </div>
     <div class="sd-progressbar"><div id="levelBar" style="width:0%"></div></div>
-    <a class="sd-cert-link" href="certificates.html">🏆 My certificate</a>
+    <a class="sd-cert-link" href="certificates.html"><img class="sd-cert-link-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> My certificate</a>
   </div>
 
   <!-- My Schedule -->
@@ -733,7 +741,7 @@
         </div>
       </div>
       <div class="sd-hubb-trail" id="hubVocabTrail"></div>
-      <span class="sd-hubb-btn">Open</span>
+      <span class="sd-hubb-btn"><img class="sd-hubb-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Open</span>
     </button>
     <button class="sd-hubb" id="hubGrammar">
       <div class="sd-hubb-left">
@@ -744,7 +752,7 @@
         </div>
       </div>
       <div class="sd-hubb-trail" id="hubGrammarTrail"></div>
-      <span class="sd-hubb-btn" id="hubGrammarBtn">Open</span>
+      <span class="sd-hubb-btn" id="hubGrammarBtn"><img class="sd-hubb-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Open</span>
     </button>
     <button class="sd-hubb" id="hubIdioms">
       <div class="sd-hubb-left">
@@ -755,7 +763,7 @@
         </div>
       </div>
       <div class="sd-hubb-trail" id="hubIdiomsTrail"></div>
-      <span class="sd-hubb-btn" id="hubIdiomsBtn">Open</span>
+      <span class="sd-hubb-btn" id="hubIdiomsBtn"><img class="sd-hubb-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Open</span>
     </button>
     <button class="sd-hubb" id="hubPhonics">
       <div class="sd-hubb-left">
@@ -766,7 +774,7 @@
         </div>
       </div>
       <div class="sd-hubb-trail" id="hubPhonicsTrail"></div>
-      <span class="sd-hubb-btn" id="hubPhonicsBtn">Open</span>
+      <span class="sd-hubb-btn" id="hubPhonicsBtn"><img class="sd-hubb-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Open</span>
     </button>
     <button class="sd-hubb" id="hubSpelling">
       <div class="sd-hubb-left">
@@ -777,7 +785,7 @@
         </div>
       </div>
       <div class="sd-hubb-trail" id="hubSpellingTrail"></div>
-      <span class="sd-hubb-btn" id="hubSpellingBtn">Open</span>
+      <span class="sd-hubb-btn" id="hubSpellingBtn"><img class="sd-hubb-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Open</span>
     </button>
     <button class="sd-hubb" id="hubWriting">
       <div class="sd-hubb-left">
@@ -788,7 +796,7 @@
         </div>
       </div>
       <div class="sd-hubb-trail" id="hubWritingTrail"></div>
-      <span class="sd-hubb-btn">Open</span>
+      <span class="sd-hubb-btn"><img class="sd-hubb-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Open</span>
     </button>
   </div>
 
@@ -804,7 +812,7 @@
           <div class="sd-hubb-sub" id="manualSub">Every lesson in your level, explained for your family</div>
         </div>
       </div>
-      <span class="sd-hubb-btn">⬇ Download</span>
+      <span class="sd-hubb-btn"><img class="sd-hubb-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Download</span>
     </a>
   </div>
   </div>
