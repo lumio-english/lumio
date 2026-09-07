@@ -177,6 +177,10 @@
     <h2 class="center mb">The path, level by level</h2>
     <p class="center cf-sub">Every level already has real lessons behind it — nothing here is a placeholder.</p>
     <div class="lp-trail">
+      <div class="lp-trail-guide">
+        <img src="assets/story/characters/lumi-trail-guide.png" alt="Lumi leading the way">
+        <span class="lp-trail-guide-bubble">Follow me! 🐣</span>
+      </div>
       <div class="lp-trail-line" aria-hidden="true"></div>
       <div class="lp-trail-stop">
         <div class="lp-trail-dot" style="background:#F97316">Pre-A</div>
@@ -402,6 +406,12 @@
     }
 
     /* ---------- Curriculum: a winding trail, not a card grid ---------- */
+    .lp-trail-guide{display:flex;flex-direction:column;align-items:center;margin-bottom:12px;position:relative;z-index:2}
+    .lp-trail-guide img{width:130px;height:auto;filter:drop-shadow(0 8px 14px rgba(67,48,31,.18))}
+    .lp-trail-guide-bubble{
+      background:#fff;border:2px solid var(--orange);color:var(--cocoa);font-weight:800;font-size:.9rem;
+      padding:6px 16px;border-radius:999px;margin-top:-6px;box-shadow:0 4px 10px rgba(67,48,31,.1);
+    }
     .lp-trail{position:relative;max-width:820px;margin:40px auto 0;padding-left:0}
     .lp-trail-line{
       position:absolute;left:50%;top:6px;bottom:6px;width:3px;transform:translateX(-50%);
