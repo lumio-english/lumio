@@ -126,14 +126,10 @@
   </div>
 
   <!-- Testing-only shortcut: log straight in as any existing roster
-       student, no PIN, for a teacher who wants to see something from
-       the student side. Only ever shown when a teacher session is
-       already active (see isTeacherSession() below) -- a real visitor
-       to this page should never see every student's name and avatar
-       or be able to open their account without a PIN. Matches the
-       standing rule that testing surfaces stay unlocked for teachers,
-       while the real student-facing login stays exactly as strict as
-       it already is. -->
+       student, no PIN, to see something from the student side. Always
+       visible per explicit request -- no teacher-session gate any
+       more, so note this is a real trade-off (see the JS below) if
+       this page is ever exposed beyond internal testing. -->
   <button class="btn btn-ghost" id="virtualStudentsBtn" style="display:none;width:100%;margin-top:14px;border:2px solid var(--line,#eee)">
     🧪 Preview as a student (testing)
   </button>
@@ -245,13 +241,15 @@
     showTab("current");
 
     // ================= Testing-only: preview as any student =================
-    function isTeacherSession() {
-      try { return sessionStorage.getItem("lumio_teacher") === "1"; } catch (e) { return false; }
-    }
+    // Always visible per Eslam's explicit request, not gated behind a
+    // teacher session any more. Worth flagging plainly: this does mean
+    // anyone who reaches this page can see every student's name/photo
+    // and log into their account without a PIN -- a real trade-off if
+    // this page is ever exposed beyond internal testing.
     const vsBtn = document.getElementById("virtualStudentsBtn");
     const vsOverlay = document.getElementById("virtualStudentsOverlay");
     const vsGrid = document.getElementById("virtualStudentsGrid");
-    if (isTeacherSession() && window.LumioProfiles) {
+    if (window.LumioProfiles) {
       vsBtn.style.display = "block";
       vsBtn.onclick = () => {
         const students = LumioProfiles.listStudents();
