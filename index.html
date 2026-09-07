@@ -10,9 +10,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<script src="js/app.js"></script>
 <style>
-  body{opacity:0;animation:pageFadeIn .45s ease forwards}
-  @keyframes pageFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  body{opacity:1}
+  .lp-reveal{opacity:0;transform:translateY(14px);animation:lpReveal .55s cubic-bezier(.22,1,.36,1) forwards}
+  @keyframes lpReveal{to{opacity:1;transform:translateY(0)}}
+  @media (prefers-reduced-motion: reduce){.lp-reveal{opacity:1;transform:none;animation:none}}
   .btn{transition:transform .16s cubic-bezier(.22,1,.36,1),box-shadow .16s ease,filter .16s ease}
   .btn:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(0,0,0,.12)}
   .btn:active{transform:translateY(0) scale(.96);box-shadow:0 3px 8px rgba(0,0,0,.1)}
@@ -33,13 +36,30 @@
 
   <section class="hero">
     <div>
-      <h1>Let's learn English <span class="hl">the fun way!</span></h1>
-      <p class="lead">Join Lumi on a journey of games, songs and stories — made for young learners, with Arabic support every step of the way.</p>
-      <div class="row">
+      <h1 class="lp-reveal" style="animation-delay:.05s">Let's learn English <span class="hl">the fun way!</span></h1>
+      <p class="lead lp-reveal" style="animation-delay:.18s">Join Lumi on a journey of games, songs and stories — made for young learners, with Arabic support every step of the way.</p>
+      <div class="row lp-reveal" style="animation-delay:.3s">
         <a class="btn btn-primary btn-big" href="login.html">I'm a student</a>
       </div>
+      <div class="lp-hear-demo lp-reveal" style="animation-delay:.42s">
+        <p class="lp-hear-label">👆 Tap a word — hear it for yourself</p>
+        <div class="lp-hear-cards">
+          <button class="lp-hear-card" data-word="hello" data-ar="مرحبا">
+            <span class="lp-hear-emoji">👋</span><span>hello</span><span class="lp-hear-ar">مرحبا</span>
+          </button>
+          <button class="lp-hear-card" data-word="apple" data-ar="تفاحة">
+            <span class="lp-hear-emoji">🍎</span><span>apple</span><span class="lp-hear-ar">تفاحة</span>
+          </button>
+          <button class="lp-hear-card" data-word="star" data-ar="نجمة">
+            <span class="lp-hear-emoji">⭐</span><span>star</span><span class="lp-hear-ar">نجمة</span>
+          </button>
+          <button class="lp-hear-card" data-word="book" data-ar="كتاب">
+            <span class="lp-hear-emoji">📖</span><span>book</span><span class="lp-hear-ar">كتاب</span>
+          </button>
+        </div>
+      </div>
     </div>
-    <div class="hero-visual">
+    <div class="hero-visual lp-reveal" style="animation-delay:.15s">
       <span class="float-chip a">★ 3-star lessons</span>
       <span class="float-chip b">Listen &amp; speak</span>
       <img class="hero-art" src="assets/story/characters/lumi-welcome-hero.png" alt="Lumi the mascot waving with a book">
@@ -53,42 +73,50 @@
     <div class="card"><span class="emoji-badge">ع</span><h3>عربي + English</h3><p class="ar">كل كلمة معها الترجمة العربية لتفهم بسهولة.</p></div>
   </section>
 
-  <section class="lp-trust">
-    <div class="lp-trust-item"><div class="lp-trust-num">7</div><div class="lp-trust-label">Levels, start to finish</div></div>
-    <div class="lp-trust-item"><div class="lp-trust-num">140+</div><div class="lp-trust-label">Lessons already built</div></div>
-    <div class="lp-trust-item"><div class="lp-trust-num">4–15</div><div class="lp-trust-label">Ages, one clear path</div></div>
-    <div class="lp-trust-item"><div class="lp-trust-num">100%</div><div class="lp-trust-label">Arabic support, every word</div></div>
-  </section>
+  <div class="lp-wave-top" aria-hidden="true">
+    <svg viewBox="0 0 1200 40" preserveAspectRatio="none"><path d="M0,20 C300,45 900,-5 1200,20 L1200,40 L0,40 Z" fill="#FFF3D6"></path></svg>
+  </div>
+  <div class="lp-band">
+    <section class="lp-trust">
+      <div class="lp-trust-item"><div class="lp-trust-num">7</div><div class="lp-trust-label">Levels, start to finish</div></div>
+      <div class="lp-trust-item"><div class="lp-trust-num">140+</div><div class="lp-trust-label">Lessons already built</div></div>
+      <div class="lp-trust-item"><div class="lp-trust-num">4–15</div><div class="lp-trust-label">Ages, one clear path</div></div>
+      <div class="lp-trust-item"><div class="lp-trust-num">100%</div><div class="lp-trust-label">Arabic support, every word</div></div>
+    </section>
 
-  <section class="mt lp-how">
-    <h2 class="center mb">How a Lumio lesson works</h2>
-    <p class="center cf-sub">The same four steps, every single lesson.</p>
-    <div class="lp-steps">
-      <div class="lp-step">
-        <div class="lp-step-num">1</div>
-        <h3>Prepare</h3>
-        <p>Meet the new words and sounds in the app before class, so your child walks in ready, not cold.</p>
+    <section class="mt lp-how">
+      <h2 class="center mb">How a Lumio lesson works</h2>
+      <p class="center cf-sub">The same four steps, every single lesson.</p>
+      <div class="lp-steps">
+        <div class="lp-step">
+          <div class="lp-step-num">1</div>
+          <h3>Prepare</h3>
+          <p>Meet the new words and sounds in the app before class, so your child walks in ready, not cold.</p>
+        </div>
+        <div class="lp-step-connector" aria-hidden="true"></div>
+        <div class="lp-step">
+          <div class="lp-step-num">2</div>
+          <h3>Live class on Zoom</h3>
+          <p>A real teacher, live, guiding the lesson your child already previewed.</p>
+        </div>
+        <div class="lp-step-connector" aria-hidden="true"></div>
+        <div class="lp-step">
+          <div class="lp-step-num">3</div>
+          <h3>Practice at home</h3>
+          <p>Homework that uses real sentences, not just word lists — spelling, speaking, and short quizzes.</p>
+        </div>
+        <div class="lp-step-connector" aria-hidden="true"></div>
+        <div class="lp-step">
+          <div class="lp-step-num">4</div>
+          <h3>Grow on the map</h3>
+          <p>Each finished lesson lights up the Adventure Map, unlocking games, stories, and the next step.</p>
+        </div>
       </div>
-      <div class="lp-step-connector" aria-hidden="true"></div>
-      <div class="lp-step">
-        <div class="lp-step-num">2</div>
-        <h3>Live class on Zoom</h3>
-        <p>A real teacher, live, guiding the lesson your child already previewed.</p>
-      </div>
-      <div class="lp-step-connector" aria-hidden="true"></div>
-      <div class="lp-step">
-        <div class="lp-step-num">3</div>
-        <h3>Practice at home</h3>
-        <p>Homework that uses real sentences, not just word lists — spelling, speaking, and short quizzes.</p>
-      </div>
-      <div class="lp-step-connector" aria-hidden="true"></div>
-      <div class="lp-step">
-        <div class="lp-step-num">4</div>
-        <h3>Grow on the map</h3>
-        <p>Each finished lesson lights up the Adventure Map, unlocking games, stories, and the next step.</p>
-      </div>
-    </div>
   </section>
+  </div>
+  <div class="lp-wave-bottom" aria-hidden="true">
+    <svg viewBox="0 0 1200 40" preserveAspectRatio="none"><path d="M0,20 C300,-5 900,45 1200,20 L1200,0 L0,0 Z" fill="#FFF3D6"></path></svg>
+  </div>
 
   <section class="mt cf-section" id="friendsSection">
     <h2 class="center mb">Meet your learning friends</h2>
@@ -148,48 +176,63 @@
   <section class="mt lp-curriculum">
     <h2 class="center mb">The path, level by level</h2>
     <p class="center cf-sub">Every level already has real lessons behind it — nothing here is a placeholder.</p>
-    <div class="lp-level-grid">
-      <div class="lp-level-card">
-        <div class="lp-level-badge" style="background:#FFF3D6;color:#C2530A">Pre-A</div>
-        <h3>First Words</h3>
-        <p class="lp-level-meta">Ages 4–6 · CEFR Pre-A1</p>
-        <p>The alphabet, first sounds, and the very first spoken words — built for a child who's never studied English before.</p>
+    <div class="lp-trail">
+      <div class="lp-trail-line" aria-hidden="true"></div>
+      <div class="lp-trail-stop">
+        <div class="lp-trail-dot" style="background:#F97316">Pre-A</div>
+        <div class="lp-trail-card">
+          <h3>First Words</h3>
+          <p class="lp-level-meta">Ages 4–6 · CEFR Pre-A1</p>
+          <p>The alphabet, first sounds, and the very first spoken words — built for a child who's never studied English before.</p>
+        </div>
       </div>
-      <div class="lp-level-card">
-        <div class="lp-level-badge" style="background:#E6FAF7;color:#0D9488">Level 1</div>
-        <h3>About Me</h3>
-        <p class="lp-level-meta">Ages 6–8 · CEFR Pre-A1</p>
-        <p>Simple sentences about family, feelings, and daily routines — the first real conversations.</p>
+      <div class="lp-trail-stop">
+        <div class="lp-trail-dot" style="background:#0D9488">1</div>
+        <div class="lp-trail-card">
+          <h3>About Me</h3>
+          <p class="lp-level-meta">Ages 6–8 · CEFR Pre-A1</p>
+          <p>Simple sentences about family, feelings, and daily routines — the first real conversations.</p>
+        </div>
       </div>
-      <div class="lp-level-card">
-        <div class="lp-level-badge" style="background:#FFE3E3;color:#C2410C">Level 2</div>
-        <h3>My World</h3>
-        <p class="lp-level-meta">Ages 8–10 · CEFR Pre-A1</p>
-        <p>School, home, and everyday objects — describing the world right around them.</p>
+      <div class="lp-trail-stop">
+        <div class="lp-trail-dot" style="background:#DC2626">2</div>
+        <div class="lp-trail-card">
+          <h3>My World</h3>
+          <p class="lp-level-meta">Ages 8–10 · CEFR Pre-A1</p>
+          <p>School, home, and everyday objects — describing the world right around them.</p>
+        </div>
       </div>
-      <div class="lp-level-card">
-        <div class="lp-level-badge" style="background:#EDE9FE;color:#6D28D9">Level 3</div>
-        <h3>Everyday Life</h3>
-        <p class="lp-level-meta">Ages 10–12 · CEFR A1</p>
-        <p>Real-life situations — shopping, plans, opinions — with grammar that starts doing real work.</p>
+      <div class="lp-trail-stop">
+        <div class="lp-trail-dot" style="background:#6D28D9">3</div>
+        <div class="lp-trail-card">
+          <h3>Everyday Life</h3>
+          <p class="lp-level-meta">Ages 10–12 · CEFR A1</p>
+          <p>Real-life situations — shopping, plans, opinions — with grammar that starts doing real work.</p>
+        </div>
       </div>
-      <div class="lp-level-card">
-        <div class="lp-level-badge" style="background:#DBEAFE;color:#1D4ED8">Level 4</div>
-        <h3>Smart Choices</h3>
-        <p class="lp-level-meta">Ages 11–13 · CEFR A1</p>
-        <p>Making plans, giving reasons, and talking through decisions in longer, more confident sentences.</p>
+      <div class="lp-trail-stop">
+        <div class="lp-trail-dot" style="background:#1D4ED8">4</div>
+        <div class="lp-trail-card">
+          <h3>Smart Choices</h3>
+          <p class="lp-level-meta">Ages 11–13 · CEFR A1</p>
+          <p>Making plans, giving reasons, and talking through decisions in longer, more confident sentences.</p>
+        </div>
       </div>
-      <div class="lp-level-card">
-        <div class="lp-level-badge" style="background:#DCFCE7;color:#15803D">Level 5</div>
-        <h3>Telling My Story</h3>
-        <p class="lp-level-meta">Ages 12–14 · CEFR A2</p>
-        <p>Narrating experiences and opinions — the shift from answering questions to telling a story.</p>
+      <div class="lp-trail-stop">
+        <div class="lp-trail-dot" style="background:#15803D">5</div>
+        <div class="lp-trail-card">
+          <h3>Telling My Story</h3>
+          <p class="lp-level-meta">Ages 12–14 · CEFR A2</p>
+          <p>Narrating experiences and opinions — the shift from answering questions to telling a story.</p>
+        </div>
       </div>
-      <div class="lp-level-card">
-        <div class="lp-level-badge" style="background:#FCE7F3;color:#BE185D">Level 6</div>
-        <h3>Looking Ahead</h3>
-        <p class="lp-level-meta">Ages 13–15 · CEFR A2</p>
-        <p>The final stretch — future plans, bigger ideas, and real confidence speaking English.</p>
+      <div class="lp-trail-stop">
+        <div class="lp-trail-dot" style="background:#BE185D">6</div>
+        <div class="lp-trail-card">
+          <h3>Looking Ahead</h3>
+          <p class="lp-level-meta">Ages 13–15 · CEFR A2</p>
+          <p>The final stretch — future plans, bigger ideas, and real confidence speaking English.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -213,6 +256,17 @@
         <h3>📄 Worksheets you can print</h3>
         <p>A real printable page for every lesson, for the moments a screen isn't the right tool.</p>
       </div>
+    </div>
+  </section>
+
+  <section class="mt lp-preview">
+    <div class="lp-preview-text">
+      <h2>This is what a real lesson looks like</h2>
+      <p>Not a mockup, not a design sketch — a real screenshot from an actual Lumio lesson, exactly as a student sees it.</p>
+    </div>
+    <div class="lp-preview-frame">
+      <div class="lp-preview-bar"><span></span><span></span><span></span></div>
+      <img src="assets/marketing/real-lesson-screenshot.png" alt="A real Lumio lesson slide, showing the word apple with its Arabic translation and letter tiles">
     </div>
   </section>
 
@@ -301,14 +355,31 @@
     .cf-bubble .ar{display:block;color:var(--cocoa-soft,#8A7160);font-weight:700;margin-top:4px;direction:rtl}
     .cf-card.cf-talking .cf-bubble{opacity:1;transform:translate(-50%,0) scale(1);pointer-events:auto}
 
+    /* ---------- Hero "hear it yourself" tappable word cards ---------- */
+    .lp-hear-demo{margin-top:28px}
+    .lp-hear-label{font-weight:800;color:var(--cocoa-soft,#8A7160);font-size:.85rem;margin:0 0 10px}
+    .lp-hear-cards{display:flex;flex-wrap:wrap;gap:10px}
+    .lp-hear-card{
+      display:flex;flex-direction:column;align-items:center;gap:2px;background:#fff;border:2px solid var(--line);
+      border-radius:16px;padding:12px 16px;cursor:pointer;font-family:inherit;font-weight:800;color:var(--cocoa);
+      transition:transform .15s cubic-bezier(.22,1,.36,1),border-color .15s ease,box-shadow .15s ease;
+    }
+    .lp-hear-card:hover{transform:translateY(-3px);border-color:var(--orange);box-shadow:0 8px 18px rgba(249,115,22,.15)}
+    .lp-hear-card:active{transform:translateY(-1px) scale(.96)}
+    .lp-hear-card.playing{border-color:var(--teal);background:var(--teal-soft)}
+    .lp-hear-emoji{font-size:1.4rem}
+    .lp-hear-ar{font-size:.78rem;color:var(--cocoa-soft,#8A7160);font-weight:700}
+
     /* ---------- Trust bar: plain numbers, no cards, no shadows ---------- */
+    .lp-wave-top, .lp-wave-bottom{display:block;line-height:0}
+    .lp-wave-top svg, .lp-wave-bottom svg{width:100%;height:32px;display:block}
+    .lp-band{background:#FFF3D6}
     .lp-trust{
-      display:flex;justify-content:center;flex-wrap:wrap;gap:0;margin:56px 0;
-      border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:28px 0;
+      display:flex;justify-content:center;flex-wrap:wrap;gap:0;margin:0;padding:36px 0 44px;
     }
     .lp-trust-item{
       flex:1;min-width:150px;text-align:center;padding:0 24px;
-      border-left:1px solid var(--line);
+      border-left:1px solid rgba(67,48,31,.12);
     }
     .lp-trust-item:first-child{border-left:none}
     .lp-trust-num{font-family:var(--font-display,'Baloo 2',sans-serif);font-weight:800;font-size:2.2rem;color:var(--cocoa)}
@@ -330,24 +401,52 @@
       .lp-step-connector{display:none}
     }
 
-    /* ---------- Curriculum: color-coded level cards ---------- */
-    .lp-level-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:28px}
-    .lp-level-card{
-      background:var(--card);border-radius:18px;padding:20px;border:1px solid var(--line);
+    /* ---------- Curriculum: a winding trail, not a card grid ---------- */
+    .lp-trail{position:relative;max-width:820px;margin:40px auto 0;padding-left:0}
+    .lp-trail-line{
+      position:absolute;left:50%;top:6px;bottom:6px;width:3px;transform:translateX(-50%);
+      background:repeating-linear-gradient(to bottom,var(--line) 0,var(--line) 8px,transparent 8px,transparent 16px);
+    }
+    .lp-trail-stop{position:relative;display:flex;align-items:center;gap:28px;margin-bottom:36px}
+    .lp-trail-stop:nth-child(even){flex-direction:row-reverse}
+    .lp-trail-dot{
+      flex-shrink:0;width:64px;height:64px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;
+      font-family:var(--font-display,'Baloo 2',sans-serif);font-weight:800;font-size:.95rem;position:relative;z-index:2;
+      box-shadow:0 6px 16px rgba(0,0,0,.18);border:4px solid var(--paper);
+    }
+    .lp-trail-card{
+      flex:1;background:var(--card);border-radius:16px;padding:18px 22px;border:1px solid var(--line);
       transition:transform .18s cubic-bezier(.22,1,.36,1),box-shadow .18s ease;
     }
-    .lp-level-card:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(67,48,31,.08)}
-    .lp-level-badge{display:inline-block;font-weight:800;font-size:.78rem;padding:4px 12px;border-radius:999px;margin-bottom:10px}
-    .lp-level-card h3{margin:0 0 2px;font-size:1.15rem}
-    .lp-level-meta{font-weight:700;color:var(--cocoa-soft,#8A7160);font-size:.82rem;margin:0 0 10px}
-    .lp-level-card > p:last-child{font-size:.9rem;line-height:1.55;margin:0}
+    .lp-trail-card:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(67,48,31,.08)}
+    .lp-trail-card h3{margin:0 0 2px;font-size:1.1rem}
+    .lp-level-meta{font-weight:700;color:var(--cocoa-soft,#8A7160);font-size:.82rem;margin:0 0 8px}
+    .lp-trail-card > p:last-child{font-size:.88rem;line-height:1.5;margin:0}
+    @media (max-width:680px){
+      .lp-trail-line{left:32px}
+      .lp-trail-stop, .lp-trail-stop:nth-child(even){flex-direction:row;gap:18px}
+      .lp-trail-dot{width:52px;height:52px;font-size:.8rem}
+    }
 
     /* ---------- What Makes Different: quieter, text-led, no boxes ---------- */
     .lp-diff-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:28px;margin-top:32px}
     .lp-diff-card h3{font-size:1.05rem;margin:0 0 6px}
     .lp-diff-card p{color:var(--cocoa-soft,#8A7160);font-size:.92rem;line-height:1.6;margin:0}
 
-    /* ---------- FAQ: native accordion ---------- */
+    /* ---------- Real lesson preview: a browser-style frame, real screenshot ---------- */
+    .lp-preview{display:grid;grid-template-columns:1fr 1.4fr;gap:40px;align-items:center;max-width:1000px;margin-left:auto;margin-right:auto}
+    .lp-preview-text h2{margin:0 0 10px;font-size:1.6rem}
+    .lp-preview-text p{color:var(--cocoa-soft,#8A7160);line-height:1.6;margin:0}
+    .lp-preview-frame{
+      background:#2B2118;border-radius:16px;padding:8px;box-shadow:0 20px 44px rgba(43,33,24,.28);
+    }
+    .lp-preview-bar{display:flex;gap:6px;padding:4px 8px 10px}
+    .lp-preview-bar span{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.25)}
+    .lp-preview-frame img{width:100%;display:block;border-radius:8px}
+    @media (max-width:820px){
+      .lp-preview{grid-template-columns:1fr;text-align:center}
+    }
+
     .lp-faq-list{max-width:720px;margin:28px auto 0}
     .lp-faq-item{
       background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin-bottom:10px;
@@ -361,6 +460,18 @@
 
   <script>
   (function () {
+    // Hero "hear it yourself" word cards -- real audio, the same
+    // Lumio.speak() every lesson already uses, not a mock.
+    document.querySelectorAll(".lp-hear-card").forEach(function (card) {
+      card.addEventListener("click", function () {
+        if (typeof Lumio === "undefined" || !Lumio.speak) return;
+        Lumio.speak(card.dataset.word);
+        document.querySelectorAll(".lp-hear-card").forEach(function (c) { c.classList.remove("playing"); });
+        card.classList.add("playing");
+        setTimeout(function () { card.classList.remove("playing"); }, 900);
+      });
+    });
+
     // Scroll-in entrance for the character strip (progressive enhancement).
     var section = document.getElementById("friendsSection");
     if (section) {
