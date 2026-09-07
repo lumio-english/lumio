@@ -438,10 +438,18 @@ def slide_sentence_trio(sentences, n, total, ch, seed):
     its own independent drag-and-drop (data-group="0"/"1"/"2") and its own
     Check button -- not three full-page exercises, one dense slide.
     `sentences` is a list of 1-3 real example sentences; fewer than 3 is
-    handled gracefully (just fewer rows, no blank placeholders)."""
+    handled gracefully (just fewer rows, no blank placeholders).
+
+    Slots and tray each get their own full-width row (rather than
+    sharing one row side by side) specifically so a longer sentence
+    doesn't force both halves to wrap within half the available width --
+    discovered this the hard way once real sentences got noticeably
+    longer than the short examples this was first built against. Row
+    height is still computed per sentence (not a fixed constant) as a
+    safety net for any sentence long enough to wrap even at full width."""
     rows = ""
-    row_top = 150
-    row_height = 168
+    row_top = 148
+    TILES_PER_LINE_ESTIMATE = 10  # conservative at this slide's full content width
     for i, sentence in enumerate(sentences):
         words, punct = tokenize_sentence(sentence)
         order = list(range(len(words)))
@@ -449,22 +457,26 @@ def slide_sentence_trio(sentences, n, total, ch, seed):
         punct_tile = f'<div class="sbg-tile sbg-punct" style="cursor:default">{punct}</div>' if punct else ""
         slots = "".join(f'<div class="sb-slot sbg-slot" data-group="{i}" data-index="{j}"></div>' for j in range(len(words)))
         tray = "".join(f'<div class="sb-tile sbg-tile" draggable="false" data-group="{i}" data-word="{esc(words[j])}">{esc(words[j])}</div>' for j in order)
-        top = row_top + i * row_height
+        wrapped_lines = -(-len(words) // TILES_PER_LINE_ESTIMATE)  # ceil division; slots and tray wrap about the same
+        this_row_height = 108 + wrapped_lines * 46
+        top = row_top
+        row_top += this_row_height
         rows += f'''
         <div style="position:absolute;left:46px;right:46px;top:{top}px;background:#fff;border-radius:16px;padding:12px 20px;
                     box-shadow:0 4px 12px rgba(67,48,31,.08)">
-          <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
             <div style="font-size:.85rem;font-weight:800;color:#F97316;min-width:16px">{i + 1}.</div>
-            <div id="sbSlots{i}" data-correct="{esc(sentence.strip())}" style="display:flex;gap:7px;flex-wrap:wrap;min-height:40px">
+            <div id="sbSlots{i}" data-correct="{esc(sentence.strip())}" style="display:flex;gap:7px;flex-wrap:wrap;min-height:40px;flex:1">
               {slots}{punct_tile}
             </div>
-            <div style="width:1.5px;align-self:stretch;background:#F0E9DA;margin:0 4px"></div>
-            <div id="sbTray{i}" style="display:flex;gap:7px;flex-wrap:wrap;flex:1">
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div id="sbTray{i}" style="display:flex;gap:7px;flex-wrap:wrap;flex:1;padding-left:26px">
               {tray}
             </div>
             <button onclick="window.checkSentenceBuilder && checkSentenceBuilder('{i}')"
                     style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,#F97316,#EA580C);
-                           color:#fff;font-weight:800;padding:8px 16px;border-radius:999px;font-size:.82rem;white-space:nowrap">&#10003; Check</button>
+                           color:#fff;font-weight:800;padding:8px 16px;border-radius:999px;font-size:.82rem;white-space:nowrap;flex-shrink:0">&#10003; Check</button>
           </div>
           <div id="sbFeedback{i}" style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem;min-height:20px;margin-top:4px"></div>
         </div>'''
