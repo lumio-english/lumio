@@ -324,6 +324,24 @@ def slide_review_break(progress, n, total, ch):
     </div>
     ''' + char_img(ch, bottom=24, height=270))
 
+def slide_phonics_story(unit, n, total, ch):
+    """A short, connected-text reading passage using this unit's sounds --
+    real reading practice right after the rule and word list, not just a
+    word-level drill. See phonics-hub/<level>.json's own "story" field for
+    where the actual bilingual text lives per unit."""
+    story = unit.get("story", {})
+    unit_label = esc(unit.get("unit", "").split(":")[0].upper())
+    return (bg_study() + header("Read the Story!", n, total) + COLORSTRIP + f'''
+    <div class="card" style="position:absolute;left:46px;top:130px;width:820px;padding:28px 34px">
+      <div style="font-size:.75rem;font-weight:800;color:#0D9488;letter-spacing:1.5px;margin-bottom:10px">A STORY WITH {unit_label}</div>
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.15rem;color:#43301F;line-height:1.7;margin-bottom:14px">{esc(story.get("en", ""))}</div>
+      <div style="direction:rtl;text-align:right;font-size:.95rem;color:#8A7160;font-weight:700;line-height:1.8;border-top:1px solid #F0E9DA;padding-top:14px">{story.get("ar", "")}</div>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(story.get("en", "")).replace(chr(39), chr(92)+chr(39))}')"
+              style="margin-top:16px;border:none;cursor:pointer;font-family:inherit;background:linear-gradient(135deg,#F97316,#EA580C);
+                     color:#fff;font-weight:800;padding:11px 22px;border-radius:999px;font-size:.9rem">&#9654; Listen to the story</button>
+    </div>
+    ''' + char_img(ch, bottom=24, height=280))
+
 def slide_practice_phonics(w, n, total, ch, show_phonics_link=True, seed=0):
     quote = w.get("example", w["en"])
     first_letter = w["en"][0].upper()
@@ -1116,6 +1134,8 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
     if phonics_unit:
         plan.append(("phonics_rule", phonics_unit))
         plan.append(("phonics_practice", phonics_unit))
+        if phonics_unit.get("story"):
+            plan.append(("phonics_story", phonics_unit))
         n_sound_match = min(4, len(phonics_unit.get("words", [])))
         for i in range(n_sound_match):
             plan.append(("sound_match", i))
@@ -1215,6 +1235,7 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
             slides.append(slide_teacher_game(lesson["vocab"], n, total, "omar-wave", tier=tier, mode=data))
         elif kind == "phonics_rule": slides.append(slide_phonics_rule(data, n, total, "sara-explain"))
         elif kind == "phonics_practice": slides.append(slide_phonics_practice(data, n, total, "sara-clap"))
+        elif kind == "phonics_story": slides.append(slide_phonics_story(data, n, total, "omar-point"))
         elif kind == "sound_match":
             i = data
             words = phonics_unit.get("words", []) if phonics_unit else []

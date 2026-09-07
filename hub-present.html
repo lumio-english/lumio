@@ -279,7 +279,10 @@ function buildSpellingSlides(data) {
 }
 
 function buildPhonicsSlides(data) {
-  return (data.units || []).map((u, i) => {
+  const units = data.units || [];
+  const total = units.length * 2; // each unit is now its own slide plus a story-reading slide right after it
+  const slides = [];
+  units.forEach((u, i) => {
     const sounds = (u.sounds || []).map(s => {
       const key = s.letter.split(",")[0].split("-")[0].trim().toLowerCase();
       return `
@@ -295,7 +298,8 @@ function buildPhonicsSlides(data) {
         <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.1rem;color:#43301F">${esc(w.en)}</div>
         <div style="font-size:.78rem;color:#0D9488;font-weight:800">${w.ar}</div>
       </button>`).join("");
-    return bgPlain() + header("Phonics", i + 1, (data.units || []).length) + COLORSTRIP + `
+    const n = i * 2 + 1;
+    slides.push(bgPlain() + header("Phonics", n, total) + COLORSTRIP + `
       <div class="card" style="position:absolute;left:46px;top:130px;width:820px;padding:24px 32px">
         <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#43301F;margin-bottom:2px">${esc(u.unit)}</div>
         <div style="direction:rtl;text-align:right;font-size:.85rem;color:#8A7160;font-weight:700;margin-bottom:14px">${u.unitAr}</div>
@@ -303,8 +307,23 @@ function buildPhonicsSlides(data) {
         <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px">${words}</div>
         ${u.tip ? `<div style="background:#FFF3D6;border-radius:12px;padding:10px 14px;direction:rtl;text-align:right;font-size:.8rem;color:#43301F;line-height:1.6">${u.tip}</div>` : ""}
       </div>
-      ${charImg(isTeenLevel ? "sara-teen-celebrate" : "sara-clap", { bottom: 24, height: 290 })}`;
+      ${charImg(isTeenLevel ? "sara-teen-celebrate" : "sara-clap", { bottom: 24, height: 290 })}`);
+
+    // Story-reading slide: real connected-text practice for the sounds
+    // just introduced, right after them -- not a disconnected add-on.
+    if (u.story) {
+      slides.push(bgStudy() + header("Read the Story!", n + 1, total) + COLORSTRIP + `
+        <div class="card" style="position:absolute;left:46px;top:130px;width:820px;padding:28px 34px">
+          <div style="font-size:.75rem;font-weight:800;color:#0D9488;letter-spacing:1.5px;margin-bottom:10px">A STORY WITH ${esc(u.unit.split(":")[0].toUpperCase())}</div>
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.15rem;color:#43301F;line-height:1.7;margin-bottom:14px">${esc(u.story.en)}</div>
+          <div style="direction:rtl;text-align:right;font-size:.95rem;color:#8A7160;font-weight:700;line-height:1.8;border-top:1px solid #F0E9DA;padding-top:14px">${u.story.ar}</div>
+          <button ${speakBtn(u.story.en)} style="margin-top:16px;border:none;cursor:pointer;font-family:inherit;
+                  background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;padding:11px 22px;border-radius:999px;font-size:.9rem">&#9654; Listen to the story</button>
+        </div>
+        ${charImg(isTeenLevel ? "omar-teen-explain" : "omar-point", { bottom: 24, height: 280 })}`);
+    }
   });
+  return slides;
 }
 
 function buildIdiomsSlides(data) {
