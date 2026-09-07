@@ -29,6 +29,24 @@
   .lg-pad button:hover{box-shadow:0 4px 10px rgba(0,0,0,.08);transform:translateY(-1px)}
   .lg-pad button:active{background:#FFF1E0;transform:translateY(0) scale(.94)}
   .lg-pin-error{color:var(--coral,#FF6B6B);font-weight:800;font-size:.85rem;text-align:center;height:18px;margin-top:6px}
+  .lg-vs-overlay{
+    display:none;position:fixed;inset:0;background:rgba(43,33,24,.5);z-index:100;
+    align-items:center;justify-content:center;padding:20px;
+  }
+  .lg-vs-overlay.show{display:flex}
+  .lg-vs-modal{background:#fff;border-radius:20px;padding:26px;max-width:560px;width:100%;max-height:80vh;overflow-y:auto}
+  .lg-vs-close{float:right;border:none;background:#F7F1E6;width:32px;height:32px;border-radius:50%;font-weight:800;cursor:pointer}
+  .lg-vs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:12px;margin-top:14px;clear:both}
+  .lg-vs-profile{
+    background:#FBF6EC;border:2px solid transparent;border-radius:16px;padding:14px 8px;text-align:center;cursor:pointer;
+    transition:transform .16s cubic-bezier(.22,1,.36,1),box-shadow .16s ease,border-color .16s ease;
+  }
+  .lg-vs-profile:hover{border-color:var(--orange,#FF8A3D);transform:translateY(-3px);box-shadow:0 8px 18px rgba(0,0,0,.09)}
+  .lg-vs-profile:active{transform:translateY(-1px) scale(.97)}
+  .lg-vs-avatar{width:44px;height:44px;border-radius:50%;margin:0 auto;overflow:hidden;font-size:1.8rem;display:flex;align-items:center;justify-content:center;background:#fff}
+  .lg-vs-avatar img{width:100%;height:100%;object-fit:cover}
+  .lg-vs-name{font-weight:800;margin-top:6px;font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .lg-vs-empty{text-align:center;color:var(--cocoa-soft,#8A7160);font-weight:700;padding:18px;font-size:.9rem}
   .lg-pin-error.shake{animation:lgshake .3s}
   @keyframes lgshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
   .lg-tabs{display:flex;gap:8px;margin-bottom:20px;background:var(--cream,#FBF6EC);border-radius:14px;padding:5px}
@@ -107,7 +125,29 @@
     </div>
   </div>
 
+  <!-- Testing-only shortcut: log straight in as any existing roster
+       student, no PIN, for a teacher who wants to see something from
+       the student side. Only ever shown when a teacher session is
+       already active (see isTeacherSession() below) -- a real visitor
+       to this page should never see every student's name and avatar
+       or be able to open their account without a PIN. Matches the
+       standing rule that testing surfaces stay unlocked for teachers,
+       while the real student-facing login stays exactly as strict as
+       it already is. -->
+  <button class="btn btn-ghost" id="virtualStudentsBtn" style="display:none;width:100%;margin-top:14px;border:2px solid var(--line,#eee)">
+    🧪 Preview as a student (testing)
+  </button>
+
 </main>
+
+<div class="lg-vs-overlay" id="virtualStudentsOverlay">
+  <div class="lg-vs-modal">
+    <button class="lg-vs-close" id="virtualStudentsClose" type="button">✕</button>
+    <h3 style="margin-top:0">Preview as a student</h3>
+    <p class="sd-hint" style="margin-top:-4px">Testing only — logs straight in, no PIN. Not shown to real visitors.</p>
+    <div class="lg-vs-grid" id="virtualStudentsGrid"></div>
+  </div>
+</div>
 
 <script src="js/app.js"></script>
 <script src="js/lumio-profiles.js"></script>
@@ -203,6 +243,46 @@
     renderPad();
     renderDots();
     showTab("current");
+
+    // ================= Testing-only: preview as any student =================
+    function isTeacherSession() {
+      try { return sessionStorage.getItem("lumio_teacher") === "1"; } catch (e) { return false; }
+    }
+    const vsBtn = document.getElementById("virtualStudentsBtn");
+    const vsOverlay = document.getElementById("virtualStudentsOverlay");
+    const vsGrid = document.getElementById("virtualStudentsGrid");
+    if (isTeacherSession() && window.LumioProfiles) {
+      vsBtn.style.display = "block";
+      vsBtn.onclick = () => {
+        const students = LumioProfiles.listStudents();
+        vsGrid.innerHTML = "";
+        if (!students.length) {
+          vsGrid.innerHTML = `<div class="lg-vs-empty">No students on the roster yet.</div>`;
+        } else {
+          students.forEach(s => {
+            const el = document.createElement("div");
+            el.className = "lg-vs-profile";
+            const avatarInner = s.photoDataUrl ? `<img src="${s.photoDataUrl}" alt="">` : (s.avatar || "🙂");
+            el.innerHTML = `<div class="lg-vs-avatar">${avatarInner}</div><div class="lg-vs-name">${s.name}</div>`;
+            el.onclick = () => {
+              const nameField = document.getElementById("sname");
+              const levelField = document.getElementById("slevel");
+              const goBtn = document.getElementById("goStudent");
+              if (nameField) nameField.value = s.name;
+              const effectiveLevel = s.level || "pre-a";
+              if (levelField && [...levelField.options].some(o => o.value === effectiveLevel)) {
+                levelField.value = effectiveLevel;
+              }
+              if (goBtn) goBtn.click();
+            };
+            vsGrid.appendChild(el);
+          });
+        }
+        vsOverlay.classList.add("show");
+      };
+      document.getElementById("virtualStudentsClose").onclick = () => vsOverlay.classList.remove("show");
+      vsOverlay.addEventListener("click", e => { if (e.target === vsOverlay) vsOverlay.classList.remove("show"); });
+    }
 
     // A student may well have registered on a different device (e.g. a
     // parent's phone, during the placement test) than the one they're
