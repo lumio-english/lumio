@@ -195,7 +195,17 @@ const nn = String(num).padStart(2, "0");
 function isTeacherSession() {
   try { return sessionStorage.getItem("lumio_teacher") === "1"; } catch (e) { return false; }
 }
-const previewMode = qs("preview") === "1" && isTeacherSession();
+// Per the standing rule that teacher-panel testing surfaces stay open
+// unconditionally: this used to also require isTeacherSession(), but
+// that's sessionStorage-backed and scoped per tab, so a preview link
+// opened any way other than a fresh click from an already-logged-in
+// teacher.html tab (typed directly, bookmarked, browser-restored,
+// shared to another device) would silently fail the check and the
+// lock would reappear despite ?preview=1 being right there in the URL.
+// The URL parameter alone is already a deliberate, explicit choice --
+// not something a real student stumbles into -- so it doesn't need a
+// second, fragile check on top of it.
+const previewMode = qs("preview") === "1";
 if (previewMode) document.getElementById("hwPreviewBanner").style.display = "block";
 
 const user = (typeof Lumio !== "undefined" && Lumio.user) ? Lumio.user() : null;
