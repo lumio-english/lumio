@@ -283,6 +283,12 @@
     }
     if (patch.level !== undefined) s.level = patch.level;
     if (patch.avatar !== undefined) s.avatar = patch.avatar;
+    // A real uploaded photo, stored as a data URL exactly like homework
+    // drawings already are elsewhere in this app (no backend to upload
+    // to). Kept separate from `avatar` (the emoji) rather than replacing
+    // it, so switching back to an emoji later doesn't lose anything --
+    // pass null explicitly to clear a photo and fall back to the emoji.
+    if (patch.photoDataUrl !== undefined) s.photoDataUrl = patch.photoDataUrl;
     if (patch.pin !== undefined) {
       const newPin = normalizePin(patch.pin) || s.pin;
       s.pin = newPin;

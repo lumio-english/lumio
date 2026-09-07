@@ -1068,6 +1068,16 @@
   const LEVEL_LESSON_COUNT = {};
   LEVEL_NAMES.forEach(l => LEVEL_LESSON_COUNT[l.id] = l.lessons || 20);
   const levelName = id => (LEVEL_NAMES.find(l => l.id === id) || {}).name || id;
+  // Shared avatar renderer: a photo, if the student has uploaded one,
+  // otherwise their emoji exactly as before. Used anywhere a roster card
+  // shows a circular ".av" avatar -- the img fills that same circle via
+  // inline sizing rather than needing separate CSS per context.
+  function avatarHtml(person) {
+    if (person && person.photoDataUrl) {
+      return `<img src="${person.photoDataUrl}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    }
+    return (person && person.avatar) || "";
+  }
 
   // ================= Recordings modal =================
   const recordingsOverlay = document.getElementById("recordingsOverlay");
@@ -1652,7 +1662,7 @@
           </div>
         </div>
         <div class="pr-student">
-          <div class="av">${r.avatar || r.name.slice(0, 2).toUpperCase()}</div>
+          <div class="av">${avatarHtml(r) || r.name.slice(0, 2).toUpperCase()}</div>
           <div>
             <h1>${r.name}</h1>
             <p>${levelName(r.lvl)}</p>
@@ -1777,7 +1787,7 @@
       card.className = "td-roster-card";
       card.innerHTML = `
         <div class="top">
-          <div class="av">${p.avatar}</div>
+          <div class="av">${avatarHtml(p)}</div>
           <div><div class="nm">${p.name}</div><div class="lv">${levelName(p.level)} · ${teacherLabel}</div>
             ${(p.cohort || p.group) ? `<div class="lv" style="opacity:.75">${[p.cohort, p.group].filter(Boolean).join(" · ")}</div>` : ""}
           </div>
@@ -2555,7 +2565,7 @@
     const grid = document.getElementById("printCardsGrid");
     grid.innerHTML = printable.map(p => `
       <div class="pc-card">
-        <div class="av">${p.avatar}</div>
+        <div class="av">${avatarHtml(p)}</div>
         <div class="nm">${p.name}</div>
         <div class="lv">${levelName(p.level)} · your Lumio site</div>
         <div class="lbl">Your PIN</div>

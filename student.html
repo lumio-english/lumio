@@ -556,6 +556,20 @@
     display:flex;align-items:center;justify-content:center;cursor:pointer;
   }
   .sd-avatar-opt.selected{border-color:var(--sd-orange);background:#FFF1E0}
+  .sd-photo-row{display:flex;align-items:center;gap:16px;margin-bottom:8px}
+  .sd-photo-preview{
+    width:72px;height:72px;border-radius:50%;background:#F7F1E6;flex-shrink:0;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;font-size:2rem;border:3px solid #fff;box-shadow:0 3px 8px rgba(0,0,0,.08);
+  }
+  .sd-photo-preview img{width:100%;height:100%;object-fit:cover}
+  .sd-photo-btn{
+    border:2px solid var(--sd-orange);background:#FFF6EC;color:var(--sd-orange-deep,#C2530A);font-weight:800;
+    font-size:.85rem;padding:9px 14px;border-radius:999px;cursor:pointer;font-family:inherit;
+    transition:transform .15s cubic-bezier(.22,1,.36,1),box-shadow .15s ease;
+  }
+  .sd-photo-btn:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(0,0,0,.1)}
+  .sd-photo-btn:active{transform:translateY(0) scale(.96)}
+  .sd-photo-btn.ghost{border-color:#eee;background:#fff;color:var(--sd-cocoa-soft,#8A7160)}
   .sd-modal-close{
     width:100%;padding:11px;border-radius:999px;border:none;background:var(--sd-orange);color:#fff;
     font-weight:800;font-size:.95rem;cursor:pointer;
@@ -830,6 +844,15 @@
   <div class="sd-modal">
     <h3>Pick your avatar!</h3>
     <p class="sd-hint">You can change this anytime.</p>
+    <div class="sd-photo-row">
+      <div class="sd-photo-preview" id="photoPreview"></div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="sd-photo-btn" id="photoUploadBtn" type="button">📷 Upload my photo</button>
+        <button class="sd-photo-btn ghost" id="photoRemoveBtn" type="button" style="display:none">✕ Remove photo</button>
+        <input type="file" id="photoFileInput" accept="image/*" style="display:none">
+      </div>
+    </div>
+    <p class="sd-hint" style="margin:14px 0 6px">...or pick a fun avatar instead</p>
     <div class="sd-avatar-grid" id="avatarGrid"></div>
     <button class="sd-modal-close" id="avatarSave">Save</button>
   </div>
@@ -1355,7 +1378,68 @@
   const avatarKey = "lumio_avatar_" + u.name;
   const rosterProfile = window.LumioProfiles ? LumioProfiles.findByName(u.name) : null;
   let currentAvatar = (rosterProfile && rosterProfile.avatar) || safeGet(avatarKey) || "🦊";
-  document.getElementById("avatarBtn").textContent = currentAvatar;
+  let currentPhoto = (rosterProfile && rosterProfile.photoDataUrl) || null;
+  function renderAvatarBtn() {
+    const btn = document.getElementById("avatarBtn");
+    btn.innerHTML = currentPhoto ? `<img src="${currentPhoto}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : currentAvatar;
+  }
+  renderAvatarBtn();
+
+  function renderPhotoPreview() {
+    const preview = document.getElementById("photoPreview");
+    preview.innerHTML = currentPhoto ? `<img src="${currentPhoto}" alt="">` : currentAvatar;
+    document.getElementById("photoRemoveBtn").style.display = currentPhoto ? "block" : "none";
+  }
+  renderPhotoPreview();
+
+  // Resizes to a small square before storing -- a raw phone-camera photo
+  // can be several MB, and localStorage has a real, fairly small quota
+  // shared across everything else this app already stores there. 200px
+  // is plenty for an avatar-sized circle anywhere it's shown.
+  function resizeImageFile(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error("Couldn't read that file."));
+      reader.onload = () => {
+        const img = new Image();
+        img.onerror = () => reject(new Error("That doesn't look like a valid image."));
+        img.onload = () => {
+          const size = 200;
+          const canvas = document.createElement("canvas");
+          canvas.width = size; canvas.height = size;
+          const ctx = canvas.getContext("2d");
+          // Cover-crop to a square, same idea as CSS object-fit:cover
+          const scale = Math.max(size / img.width, size / img.height);
+          const w = img.width * scale, h = img.height * scale;
+          ctx.drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
+          resolve(canvas.toDataURL("image/jpeg", 0.85));
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  document.getElementById("photoUploadBtn").onclick = () => document.getElementById("photoFileInput").click();
+  document.getElementById("photoFileInput").onchange = async (e) => {
+    const file = e.target.files[0];
+    e.target.value = ""; // allow picking the same file again later
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      showToast("Please choose an image file.", "⚠️");
+      return;
+    }
+    try {
+      currentPhoto = await resizeImageFile(file);
+      renderPhotoPreview();
+    } catch (err) {
+      showToast(err.message || "Couldn't use that photo.", "⚠️");
+    }
+  };
+  document.getElementById("photoRemoveBtn").onclick = () => {
+    currentPhoto = null;
+    renderPhotoPreview();
+  };
 
   const avatarGrid = document.getElementById("avatarGrid");
   AVATARS.forEach(a => {
@@ -1369,15 +1453,18 @@
     };
     avatarGrid.appendChild(opt);
   });
-  document.getElementById("avatarBtn").onclick = () => document.getElementById("avatarOverlay").classList.add("show");
+  document.getElementById("avatarBtn").onclick = () => {
+    renderPhotoPreview();
+    document.getElementById("avatarOverlay").classList.add("show");
+  };
   document.getElementById("avatarSave").onclick = async () => {
     safeSet(avatarKey, currentAvatar);
     if (window.LumioProfiles && rosterProfile) {
-      try { await LumioProfiles.updateStudent(rosterProfile.id, { avatar: currentAvatar }); } catch (e) {}
+      try { await LumioProfiles.updateStudent(rosterProfile.id, { avatar: currentAvatar, photoDataUrl: currentPhoto }); } catch (e) {}
     }
-    document.getElementById("avatarBtn").textContent = currentAvatar;
+    renderAvatarBtn();
     document.getElementById("avatarOverlay").classList.remove("show");
-    showToast("Avatar updated!", currentAvatar);
+    showToast("Avatar updated!", currentPhoto ? "📷" : currentAvatar);
   };
   document.getElementById("avatarOverlay").addEventListener("click", e => {
     if (e.target.id === "avatarOverlay") document.getElementById("avatarOverlay").classList.remove("show");
