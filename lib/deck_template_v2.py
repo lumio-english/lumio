@@ -58,6 +58,29 @@ def dots(active_i, count):
 def char_img(name, right=95, bottom=42, height=300):
     return (f'<div class="floorshadow" style="right:{right}px;bottom:{bottom-7}px;width:230px;height:36px"></div>'
             f'<img class="char" src="{CHAR}/{name}.png" style="right:{right}px;bottom:{bottom}px;height:{height}px" onerror="this.style.display=\'none\'; this.previousElementSibling.style.display=\'none\'">')
+
+# Character pose rotation by role. The dispatcher previously hardcoded a
+# single pose per slide type (e.g. "sara-clap" reused across
+# phonics_practice, grammar_practice, and sound_spot alike), even though
+# 8-12 poses already exist per character and went completely unused --
+# real, existing art, not a design gap needing new assets. Grouped by
+# what the pose actually looks like doing, so a slide that needs
+# "explaining something" only ever rotates through poses that read as
+# explaining, never a mismatched one like "sara-sit" showing up on a
+# teaching slide.
+CHAR_POOLS = {
+    "explain": ["sara-clap", "sara-explain", "sara-teach-board", "noor-teach-board", "hamad-explain", "ziad-explain"],
+    "point":   ["omar-point", "sara-point", "noor-point", "ziad-point", "hamad-point", "lumi-point"],
+    "celebrate": ["sara-celebrate", "omar-celebrate", "noor-celebrate", "ziad-celebrate", "hamad-celebrate", "lumi-celebrate"],
+    "think":   ["sara-think", "omar-think", "noor-think", "ziad-think", "hamad-think"],
+}
+def pick_character(role, seed):
+    """Deterministic, not random: the same lesson always shows the same
+    rotation on re-generation, but different lessons land on different
+    poses -- pass lesson_num (or lesson_num + a small offset for two
+    different slide types in the same lesson that shouldn't match)."""
+    pool = CHAR_POOLS.get(role, CHAR_POOLS["explain"])
+    return pool[seed % len(pool)]
 LETTER_COLORS = ["#F97316", "#0D9488", "#F59E0B", "#2DD4BF", "#DC5C33"]
 def letter_tiles(word):
     if " " in word or len(word) > 10: return ""
@@ -1266,9 +1289,9 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
             slides.append(slide_quick_check(target, distractors, label, V, n, total, seed, tier=tier))
         elif kind == "teacher_game":
             slides.append(slide_teacher_game(lesson["vocab"], n, total, "omar-wave", tier=tier, mode=data))
-        elif kind == "phonics_rule": slides.append(slide_phonics_rule(data, n, total, "sara-explain"))
-        elif kind == "phonics_practice": slides.append(slide_phonics_practice(data, n, total, "sara-clap"))
-        elif kind == "phonics_story": slides.append(slide_phonics_story(data, n, total, "omar-point"))
+        elif kind == "phonics_rule": slides.append(slide_phonics_rule(data, n, total, pick_character("explain", lesson_num)))
+        elif kind == "phonics_practice": slides.append(slide_phonics_practice(data, n, total, pick_character("explain", lesson_num + 1)))
+        elif kind == "phonics_story": slides.append(slide_phonics_story(data, n, total, pick_character("point", lesson_num)))
         elif kind == "sound_match":
             i = data
             words = phonics_unit.get("words", []) if phonics_unit else []
@@ -1279,9 +1302,9 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
             total_q = min(4, len(words)) or 1
             slides.append(slide_sound_match(target_word, distractor_words, i + 1, total_q, n, total, seed))
         elif kind == "grammar_rule":
-            slides.append(grammar_slides.slide_grammar_rule(data, n, total, "sara-explain", header, COLORSTRIP, bg_study, char_img))
+            slides.append(grammar_slides.slide_grammar_rule(data, n, total, pick_character("explain", lesson_num), header, COLORSTRIP, bg_study, char_img))
         elif kind == "grammar_practice":
-            slides.append(grammar_slides.slide_grammar_practice(data, n, total, "sara-clap", header, COLORSTRIP, bg_plain, char_img))
+            slides.append(grammar_slides.slide_grammar_practice(data, n, total, pick_character("explain", lesson_num + 1), header, COLORSTRIP, bg_plain, char_img))
         elif kind == "vocab":
             w, i = data
             verb_count = sum(1 for x in lesson["vocab"] if x.get("pos") == "verb")
@@ -1294,10 +1317,10 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
         elif kind == "meet_letter":
             slides.append(slide_meet_the_letter(data, n, total, "sara-explain"))
         elif kind == "hear_sound":
-            slides.append(slide_hear_the_sound(data, n, total, "sara-clap"))
+            slides.append(slide_hear_the_sound(data, n, total, pick_character("explain", lesson_num)))
         elif kind == "letter_word":
             w, letter = data
-            slides.append(slide_letter_word(w, letter, n, total, "omar-point"))
+            slides.append(slide_letter_word(w, letter, n, total, pick_character("point", lesson_num)))
         elif kind == "letter_chunk_recap":
             slides.append(slide_letter_chunk_recap(data, n, total, "lumi-celebrate"))
         elif kind == "letter_sound_match":
@@ -1314,9 +1337,9 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
         elif kind == "sentence_trio":
             indices = data
             examples = [lesson["vocab"][i]["example"] for i in indices]
-            slides.append(slide_sentence_trio(examples, n, total, "sara-teach-board", lesson_num * 10 + indices[0]))
+            slides.append(slide_sentence_trio(examples, n, total, pick_character("explain", lesson_num + 2), lesson_num * 10 + indices[0]))
         elif kind == "sound_spot":
-            slides.append(slide_sound_spot(lesson["vocab"], n, total, "sara-clap"))
+            slides.append(slide_sound_spot(lesson["vocab"], n, total, pick_character("explain", lesson_num + 3)))
         elif kind == "your_turn":
             w, idx = data
             slides.append(slide_your_turn_listen_first(w, idx, your_turn_n, n, total, "omar-wave"))
