@@ -90,4 +90,13 @@ DIALOGUES = {
       ("R", "I can run in a circle! Great job, everyone!", "أستطيع الجري في دائرة! أحسنتم جميعا!")],
 }
 
-run("level1", DIALOGUES, PHONICS_UNITS)
+# See gen_slides_prea_v2.py's THEME_MAP for the reasoning behind reusable
+# themes instead of one background per lesson.
+THEME_MAP = {
+    1: "classroom", 2: "classroom", 3: "classroom", 4: "playroom", 5: "classroom",
+    6: "playroom", 7: "market", 8: "market", 9: "family-home", 10: "kitchen",
+    11: "closet", 12: "weather-sky", 13: "classroom", 14: "park", 15: "bedroom",
+    16: "animals", 17: "park", 18: "classroom", 19: "classroom", 20: "classroom",
+}
+
+run("level1", DIALOGUES, PHONICS_UNITS, theme_map=THEME_MAP)

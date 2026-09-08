@@ -7,6 +7,8 @@ live slide-content/{level}/{NN}/ decks and assets/slides/{level}/manifest.json.
 import json, os, re, glob, random
 import grammar_slides
 
+CURRENT_LESSON_BG = None  # set per-lesson in build_deck(), read by bg_plain()/bg_study()/etc below
+
 CHAR = "assets/story/characters"
 
 def esc(s):
@@ -24,10 +26,24 @@ SHELF_BOOKS = ('<div class="shelf"></div>'
     '<div class="book" style="left:126px;width:36px;height:92px;background:#F59E0B"></div>'
     '<div class="book" style="left:167px;width:26px;height:99px;background:#2DD4BF"></div>'
     '<div class="book" style="left:198px;width:32px;height:81px;background:#DC5C33"></div>')
-def bg_study(): return f'<div class="wall"></div><div class="teal-band"></div>{SHELF_BOOKS}{WINDOW}{SPARKS}'
-def bg_plain(): return f'<div class="wall"></div><div class="teal-band"></div>{WINDOW}{SPARKS}'
-def bg_bare(): return f'<div class="wall"></div><div class="teal-band"></div>{SPARKS}'
-def bg_clean(): return f'<div class="wall"></div><div class="teal-band"></div>{WINDOW}'
+def _themed_wall():
+    """If a theme background exists for the current lesson, use it
+    full-bleed with a very light warm wash, instead of the flat
+    .wall/.teal-band gradient every bg_*() below falls back to. Kept
+    deliberately subtle rather than a strong scrim: unlike the teen
+    template (white text sitting directly on the background, needing a
+    dark scrim for contrast), every kid-template slide already puts its
+    text inside opaque white cards, so the background only needs to read
+    as ambiance, not carry any text-legibility burden itself."""
+    if CURRENT_LESSON_BG:
+        return (f'''<div style="position:absolute;inset:0;background:url('{CURRENT_LESSON_BG}') center/cover no-repeat"></div>'''
+                '''<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,251,245,.2) 0%,rgba(255,243,214,.28) 62%,rgba(232,197,143,.4) 100%)"></div>''')
+    return '<div class="wall"></div><div class="teal-band"></div>'
+
+def bg_study(): return _themed_wall() + ('' if CURRENT_LESSON_BG else SHELF_BOOKS) + ('' if CURRENT_LESSON_BG else WINDOW) + SPARKS
+def bg_plain(): return _themed_wall() + ('' if CURRENT_LESSON_BG else WINDOW) + SPARKS
+def bg_bare(): return _themed_wall() + SPARKS
+def bg_clean(): return _themed_wall() + ('' if CURRENT_LESSON_BG else WINDOW)
 
 def header(pagetitle, n, total):
     return f'''<div class="header">
@@ -1089,7 +1105,24 @@ def slide_spelling_rule(rule, n, total, ch):
     </div>
     ''' + char_img(ch, bottom=42, height=300))
 
-def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic=None, has_phonics=True, level="pre-a", skills_data=None, spelling_rules=None):
+def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic=None, has_phonics=True, level="pre-a", skills_data=None, spelling_rules=None, theme_key=None):
+    global CURRENT_LESSON_BG
+    # Checked once per lesson rather than per-slide: a themed background
+    # image, if one has been generated for this theme, replaces the flat
+    # .wall gradient every bg_*() function below falls back to otherwise.
+    # Kid levels previously had zero visual variety across an entire
+    # lesson's worth of slides (every slide used the identical flat
+    # gradient) -- Level 3+ already solved this with its own per-lesson
+    # background system; this reuses the same graceful-fallback idea,
+    # scoped to a smaller set of reusable themes instead of one image per
+    # lesson, since generating 60 individual images wasn't practical.
+    CURRENT_LESSON_BG = None
+    if theme_key:
+        for ext in ("jpg", "png"):
+            candidate = f"assets/lesson-bg-kid/{theme_key}.{ext}"
+            if os.path.exists(candidate):
+                CURRENT_LESSON_BG = candidate
+                break
     V = len(lesson["vocab"])
     tier = "preA" if level == "pre-a" else ("level1" if level == "level1" else "level2")
     plan = [("title", None)]
@@ -1307,13 +1340,14 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
     return slides
 
 
-def run(level, dialogues, phonics_units=None, grammar_units=None, has_phonics=True, out_root="slide-content", manifest_root="assets/slides", skills_data=None, spelling_rules=None):
+def run(level, dialogues, phonics_units=None, grammar_units=None, has_phonics=True, out_root="slide-content", manifest_root="assets/slides", skills_data=None, spelling_rules=None, theme_map=None):
     global DIALOGUES
     DIALOGUES = dialogues
     phonics_units = phonics_units or {}  # {lesson_num: unit_dict}
     grammar_units = grammar_units or {}  # {lesson_num: topic_dict}
     skills_data = skills_data or {}  # {lesson_num: {listening/speaking/reading/writing: str}}
     spelling_rules = spelling_rules or {}  # {lesson_num: rule_dict, from spelling-hub/<level>.json}
+    theme_map = theme_map or {}  # {lesson_num: "theme-key"}, see assets/lesson-bg-kid/
     lesson_files = sorted(glob.glob(f"lessons/{level}/lesson*.json"))
     lessons = {}
     for f in lesson_files:
@@ -1329,7 +1363,7 @@ def run(level, dialogues, phonics_units=None, grammar_units=None, has_phonics=Tr
     for num in sorted(lessons):
         lesson = lessons[num]
         prev_lesson = lessons.get(num - 1)
-        slides = build_deck(num, lesson, prev_lesson, phonics_units.get(num), grammar_units.get(num), has_phonics, level, skills_data, spelling_rules)
+        slides = build_deck(num, lesson, prev_lesson, phonics_units.get(num), grammar_units.get(num), has_phonics, level, skills_data, spelling_rules, theme_map.get(num))
         nn = f"{num:02d}"
         lesson_dir = os.path.join(out_dir, nn)
         os.makedirs(lesson_dir, exist_ok=True)

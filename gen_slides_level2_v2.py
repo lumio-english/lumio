@@ -90,4 +90,13 @@ DIALOGUES = {
       ("R", "Happy birthday, by the way! Look at the clock — time for class!", "عيد ميلاد سعيد بالمناسبة! انظر إلى الساعة — حان وقت الحصة!")],
 }
 
-run("level2", DIALOGUES, PHONICS_UNITS)
+# See gen_slides_prea_v2.py's THEME_MAP for the reasoning behind reusable
+# themes instead of one background per lesson.
+THEME_MAP = {
+    1: "classroom", 2: "classroom", 3: "family-home", 4: "classroom", 5: "classroom",
+    6: "playroom", 7: "bedroom", 8: "school", 9: "school", 10: "classroom",
+    11: "classroom", 12: "party", 13: "bedroom", 14: "bedroom", 15: "bedroom",
+    16: "kitchen", 17: "market", 18: "classroom", 19: "classroom", 20: "classroom",
+}
+
+run("level2", DIALOGUES, PHONICS_UNITS, theme_map=THEME_MAP)

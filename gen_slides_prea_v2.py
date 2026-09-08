@@ -122,4 +122,16 @@ with open("spelling-hub/pre-a.json", encoding="utf-8") as f:
     _spelling_data = json.load(f)
 SPELLING_RULES = dict(zip([6, 11, 16, 20], _spelling_data["rules"]))
 
-run("pre-a", DIALOGUES, None, None, has_phonics=False, skills_data=SKILLS_CHECKPOINTS, spelling_rules=SPELLING_RULES)
+# Reusable theme backgrounds (see assets/lesson-bg-kid/<key>.jpg) --
+# mapped by lesson topic, not one image per lesson, since generating 20+
+# individual images per level wasn't practical. A lesson with no natural
+# concrete scene (numbers, ABCs, grammar-shaped lessons) defaults to the
+# generic "classroom" theme rather than forcing a theme that doesn't fit.
+THEME_MAP = {
+    1: "classroom", 2: "classroom", 3: "classroom", 4: "classroom", 5: "classroom",
+    6: "classroom", 7: "classroom", 8: "playroom", 9: "playroom", 10: "family-home",
+    11: "bedroom", 12: "animals", 13: "animals", 14: "market", 15: "market",
+    16: "school", 17: "playroom", 18: "park", 19: "classroom", 20: "classroom",
+}
+
+run("pre-a", DIALOGUES, None, None, has_phonics=False, skills_data=SKILLS_CHECKPOINTS, spelling_rules=SPELLING_RULES, theme_map=THEME_MAP)
