@@ -99,4 +99,72 @@ THEME_MAP = {
     16: "animals", 17: "park", 18: "classroom", 19: "classroom", 20: "classroom",
 }
 
-run("level1", DIALOGUES, PHONICS_UNITS, theme_map=THEME_MAP)
+# Real character-scene images illustrating this lesson's most important
+# words, shown right before the sentence-building slides. See
+# assets/vocab-scenes/level1/<NN>.jpg for the actual images.
+SCENE_DATA = [
+    (1, 1, ["boy", "girl"], "This is a boy. This is a girl."),
+    (1, 2, ["teacher", "friend"], "This is my teacher. This is my friend."),
+    (1, 3, ["mom", "dad"], "This is my mom. This is my dad."),
+    (2, 4, ["happy", "sad"], "I am happy. You are sad."),
+    (2, 5, ["fine", "tired"], "I am fine. You are tired."),
+    (2, 6, ["okay", "great"], "I am okay. You are great!"),
+    (3, 7, ["cat", "dog"], "It is a cat. It is a dog."),
+    (3, 8, ["bird", "fish"], "It is a bird. It is a fish."),
+    (3, 9, ["car", "ball"], "It is a car. It is a ball."),
+    (4, 10, ["big", "elephant"], "The elephant is big!"),
+    (4, 11, ["small", "mouse"], "The mouse is small!"),
+    (4, 12, ["ball", "box"], "The ball is big. The box is small."),
+    (5, 13, ["eleven", "twelve"], "I have eleven apples. I see twelve stars."),
+    (5, 14, ["Fifteen", "Twenty"], "Fifteen balloons! Twenty balls!"),
+    (5, 15, ["Thirteen", "Eighteen"], "Thirteen flowers. Eighteen books."),
+    (6, 16, ["Red", "blue"], "What color is it? Red and blue!"),
+    (6, 17, ["green", "yellow"], "The dress is green. The flowers are yellow."),
+    (6, 18, ["pink", "orange"], "A pink balloon and an orange balloon!"),
+    (7, 19, ["apples", "bananas"], "I like apples. I like bananas."),
+    (7, 20, ["juice", "milk", "pizza"], "I like juice, milk, and pizza."),
+    (7, 21, ["cake", "ice cream"], "I like cake. I like ice cream."),
+    (8, 22, ["broccoli", "onions"], "I don't like broccoli. I don't like onions."),
+    (8, 23, ["fish", "lemons"], "I don't like fish. I don't like lemons."),
+    (8, 24, ["beans", "peas"], "I don't like beans. I don't like peas."),
+    (9, 25, ["house", "door"], "This is my house. This is the door."),
+    (9, 26, ["bedroom", "window"], "This is my bedroom. This is the window."),
+    (9, 27, ["kitchen", "living room"], "The kitchen and the living room."),
+    (10, 28, ["plate", "cup"], "Here is a plate. Here is a cup."),
+    (10, 29, ["spoon", "fork", "knife"], "A spoon, a fork, and a knife."),
+    (10, 30, ["fridge", "table", "chair"], "The fridge is next to the table and chair."),
+    (11, 31, ["shirt", "pants"], "Ziad wears a shirt and pants."),
+    (11, 32, ["dress", "shoes"], "Sara wears a dress and shoes."),
+    (11, 33, ["hat", "jacket"], "Omar wears a hat and a jacket."),
+    (12, 34, ["sunny", "hot"], "It is sunny. It is hot."),
+    (12, 35, ["rainy", "cloudy"], "It is rainy. It is cloudy."),
+    (12, 36, ["windy", "snowy"], "It is windy. It is snowy."),
+    (13, 37, ["Monday", "Tuesday"], "Monday and Tuesday, I go to school."),
+    (13, 38, ["Friday", "Saturday"], "Friday! Saturday! Time to play!"),
+    (13, 39, ["Sunday"], "On Sunday, we rest together."),
+    (14, 40, ["run", "jump"], "I can run. I can jump."),
+    (14, 41, ["swim", "pool"], "I can swim in the pool."),
+    (14, 42, ["sing", "dance"], "I can sing. I can dance."),
+    (15, 43, ["in", "box"], "The toy is in the box."),
+    (15, 44, ["on", "table"], "The book is on the table."),
+    (15, 45, ["under", "chair"], "The ball is under the chair."),
+    (16, 46, ["dog", "cat"], "My dog and my cat play together."),
+    (16, 47, ["fish", "bird"], "This is my fish. This is my bird."),
+    (16, 48, ["rabbit", "turtle", "hamster"], "I have a rabbit, a turtle, and a hamster."),
+    (17, 49, ["slide", "swing"], "Omar plays on the slide. Ziad plays on the swing."),
+    (17, 50, ["kite", "ball"], "Hamad flies a kite. Sara plays with a ball."),
+    (17, 51, ["tree", "bench"], "Noor sits on a bench under the tree."),
+    (18, 52, ["circle", "square"], "This is a circle. This is a square."),
+    (18, 53, ["triangle", "star"], "The kite is a triangle. I see a star."),
+    (18, 54, ["heart", "diamond"], "Noor draws a heart. Ziad has a diamond kite."),
+    (19, 55, ["hot", "cold"], "It is hot. It is cold."),
+    (19, 56, ["fast", "slow"], "Ziad is fast. The turtle is slow."),
+    (19, 57, ["clean", "dirty"], "Sara's hands are clean. Hamad's hands are dirty."),
+]
+SCENE_MAP = {}
+for lesson_num, img_num, bold_words, sentence in SCENE_DATA:
+    SCENE_MAP.setdefault(lesson_num, []).append(
+        (f"assets/vocab-scenes/level1/{img_num:02d}.jpg", sentence, bold_words)
+    )
+
+run("level1", DIALOGUES, PHONICS_UNITS, theme_map=THEME_MAP, scene_map=SCENE_MAP)
