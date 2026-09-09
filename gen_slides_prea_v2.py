@@ -134,4 +134,67 @@ THEME_MAP = {
     16: "school", 17: "playroom", 18: "park", 19: "classroom", 20: "classroom",
 }
 
-run("pre-a", DIALOGUES, None, None, has_phonics=False, skills_data=SKILLS_CHECKPOINTS, spelling_rules=SPELLING_RULES, theme_map=THEME_MAP)
+# Real character-scene images illustrating this lesson's most important
+# words, shown right before the sentence-building slides. See
+# assets/vocab-scenes/pre-a/<NN>.jpg for the actual images.
+SCENE_DATA = [
+    (1, 1, ["Hello", "Hi"], "Hello! Hi, friend!"),
+    (1, 2, ["Good morning", "Good night"], "Good morning! Good night!"),
+    (1, 3, ["Thank you", "Goodbye"], "Thank you! Goodbye!"),
+    (2, 4, ["boy", "girl"], "This is a boy. This is a girl."),
+    (2, 5, ["friend", "name"], "My friend's name is Sara."),
+    (3, 6, ["apple", "ball", "cat"], "I see an apple, a ball, and a cat."),
+    (3, 7, ["dog", "egg", "fish"], "The dog looks at the egg and the fish."),
+    (3, 8, ["hat", "ice cream"], "Sara wears a hat and eats ice cream near the goat."),
+    (4, 9, ["juice", "kite"], "Ziad drinks juice and flies a kite."),
+    (4, 10, ["moon", "nose"], "Noor points to her nose under the moon."),
+    (4, 11, ["pen", "rabbit"], "The queen holds a pen. The rabbit hops by."),
+    (5, 12, ["sun", "tree"], "The sun is up. Omar sits under the tree."),
+    (5, 13, ["umbrella", "water"], "Noor holds her umbrella in the water."),
+    (5, 14, ["yellow", "zebra"], "Ziad wears yellow. The zebra is next to him."),
+    (6, 15, ["One", "two", "three"], "One, two, three balloons!"),
+    (6, 16, ["Four", "five"], "Four stars! Five fingers!"),
+    (7, 17, ["Six", "seven", "eight"], "Six apples, seven balls, eight blocks!"),
+    (7, 18, ["ten", "nine"], "The clock shows ten. I see nine stars."),
+    (8, 19, ["red", "blue"], "A red balloon and a blue balloon!"),
+    (8, 20, ["yellow", "green"], "A yellow flower grows in the green grass."),
+    (9, 21, ["Orange", "purple", "pink"], "Orange, purple, and pink \u2014 so many colors!"),
+    (9, 22, ["brown", "black", "white"], "A brown dog, a black cat, and a white rabbit."),
+    (10, 23, ["mom", "dad"], "I love my mom and dad."),
+    (10, 24, ["brother", "sister", "baby"], "My brother and sister play with the baby."),
+    (10, 25, ["Grandma", "Grandpa"], "Grandma bakes a cake. Grandpa tells a story."),
+    (11, 26, ["head", "eyes"], "This is my head. These are my eyes."),
+    (11, 27, ["nose", "mouth", "ears"], "My nose, my mouth, my ears!"),
+    (11, 28, ["hands", "feet"], "Clap your hands! Wiggle your feet!"),
+    (12, 29, ["cat", "dog"], "The cat and the dog play together."),
+    (12, 30, ["bird", "fish", "duck"], "A bird flies. A fish swims. A duck walks."),
+    (12, 31, ["on", "under"], "The cat is on the chair. The dog is under the table."),
+    (13, 32, ["lion", "elephant"], "Look at the lion! Look at the elephant!"),
+    (13, 33, ["giraffe", "monkey"], "The giraffe is tall. The monkey swings."),
+    (13, 34, ["zebra", "camel"], "I see a zebra and a camel."),
+    (14, 35, ["apple", "banana"], "I eat an apple and a banana."),
+    (14, 36, ["bread", "milk"], "I eat bread. I drink milk."),
+    (14, 37, ["water", "egg"], "I drink water. I eat an egg."),
+    (15, 38, ["rice", "chicken"], "I eat rice and chicken."),
+    (15, 39, ["cheese", "juice"], "I eat cheese. I drink juice."),
+    (15, 40, ["cake", "ice cream"], "We eat cake and ice cream!"),
+    (16, 41, ["school", "teacher"], "Welcome to school! This is my teacher."),
+    (16, 42, ["book", "pen", "pencil"], "I have a book, a pen, and a pencil."),
+    (16, 43, ["bag"], "This is my school bag."),
+    (17, 44, ["ball", "car"], "Omar plays with a ball. Ziad has a car."),
+    (17, 45, ["doll", "robot"], "Noor has a doll. Hamad has a robot."),
+    (17, 46, ["blocks", "teddy bear"], "Sara builds with blocks and hugs her teddy bear."),
+    (18, 47, ["runs", "jumps"], "Omar runs. Ziad jumps."),
+    (18, 48, ["sits", "stands"], "Noor sits. Sara stands."),
+    (18, 49, ["clap", "sing", "song", "playground"], "We clap and sing a song at the playground!"),
+    (19, 50, ["happy", "sad"], "Omar is happy. Noor is sad."),
+    (19, 51, ["angry", "tired"], "Ziad is angry. Sara is tired."),
+    (19, 52, ["hungry", "scared"], "Hamad is hungry. The cat is scared."),
+]
+SCENE_MAP = {}
+for lesson_num, img_num, bold_words, sentence in SCENE_DATA:
+    SCENE_MAP.setdefault(lesson_num, []).append(
+        (f"assets/vocab-scenes/pre-a/{img_num:02d}.jpg", sentence, bold_words)
+    )
+
+run("pre-a", DIALOGUES, None, None, has_phonics=False, skills_data=SKILLS_CHECKPOINTS, spelling_rules=SPELLING_RULES, theme_map=THEME_MAP, scene_map=SCENE_MAP)

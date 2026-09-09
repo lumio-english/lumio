@@ -363,6 +363,40 @@ def slide_review_break(progress, n, total, ch):
     </div>
     ''' + char_img(ch, bottom=24, height=270))
 
+def highlight_words(sentence, bold_words):
+    """Wraps each target word (matched whole-word, case-insensitive, but
+    keeping the sentence's own original casing) in a bold, differently
+    colored span. Used so the vocabulary this specific scene illustrates
+    visually stands out from the rest of the sentence around it."""
+    result = sentence
+    for w in bold_words:
+        pattern = re.compile(r'\b' + re.escape(w) + r'\b', re.IGNORECASE)
+        result = pattern.sub(lambda m: f'<span class="vs-key">{esc(m.group(0))}</span>', result, count=1)
+    return result
+
+def slide_vocab_scene(image_path, sentence, bold_words, n, total, seed):
+    """A full-bleed scene slide: real illustration of our characters
+    acting out 1-3 of the lesson's most important words, the sentence
+    that uses them displayed over it with those words highlighted, and a
+    tap-to-hear button for the whole sentence. Sits between the vocab/
+    practice loop and the sentence-building slides -- a chance to see and
+    hear the words in a real, connected scene before building sentences
+    with them."""
+    highlighted = highlight_words(esc(sentence), bold_words)
+    speak_text = sentence.replace("'", "\\'")
+    return f'''<div style="position:absolute;inset:0;background:url('{image_path}') center/cover no-repeat"></div>
+    <div style="position:absolute;left:0;right:0;top:0;height:120px;background:linear-gradient(180deg,rgba(43,33,24,.55),transparent)"></div>
+    {header("", n, total)}
+    <div style="position:absolute;left:0;right:0;bottom:0;padding:28px 46px 34px;background:linear-gradient(0deg,rgba(43,33,24,.82) 10%,rgba(43,33,24,.55) 60%,transparent 100%)">
+      <div style="display:flex;align-items:center;justify-content:center;gap:18px;max-width:1100px;margin:0 auto">
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.5rem;color:#fff;line-height:1.4;text-align:center">{highlighted}</div>
+        <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{speak_text}')"
+                style="flex-shrink:0;border:none;cursor:pointer;font-family:inherit;background:linear-gradient(135deg,#F97316,#EA580C);
+                       color:#fff;font-weight:800;width:56px;height:56px;border-radius:50%;font-size:1.3rem;box-shadow:0 6px 16px rgba(0,0,0,.3)">&#9654;</button>
+      </div>
+    </div>
+    <style>.vs-key{{color:#FFC53D;font-weight:800}}</style>'''
+
 def slide_phonics_story(unit, n, total, ch):
     """A short, connected-text reading passage using this unit's sounds --
     real reading practice right after the rule and word list, not just a
@@ -1128,7 +1162,7 @@ def slide_spelling_rule(rule, n, total, ch):
     </div>
     ''' + char_img(ch, bottom=42, height=300))
 
-def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic=None, has_phonics=True, level="pre-a", skills_data=None, spelling_rules=None, theme_key=None):
+def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic=None, has_phonics=True, level="pre-a", skills_data=None, spelling_rules=None, theme_key=None, scene_map=None):
     global CURRENT_LESSON_BG
     # Checked once per lesson rather than per-slide: a themed background
     # image, if one has been generated for this theme, replaces the flat
@@ -1221,6 +1255,14 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
         plan.append(("grammar_rule", grammar_topic))
         plan.append(("grammar_practice", grammar_topic))
     plan.append(("dialogue", None))
+    # Real scene images of our characters acting out this lesson's most
+    # important words, the sentence displayed with those words
+    # highlighted, right before the sentence-building slides -- seeing
+    # and hearing the words used together in a real scene first.
+    if scene_map and lesson_num in scene_map:
+        for scene in scene_map[lesson_num]:
+            plan.append(("vocab_scene", scene))
+
     # Every vocab word already has a real, meaning-grounded example
     # sentence in its own data -- previously only word 0 ever got turned
     # into an actual exercise (build-the-sentence), leaving every other
@@ -1292,6 +1334,9 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
         elif kind == "phonics_rule": slides.append(slide_phonics_rule(data, n, total, pick_character("explain", lesson_num)))
         elif kind == "phonics_practice": slides.append(slide_phonics_practice(data, n, total, pick_character("explain", lesson_num + 1)))
         elif kind == "phonics_story": slides.append(slide_phonics_story(data, n, total, pick_character("point", lesson_num)))
+        elif kind == "vocab_scene":
+            img_path, sentence, bold_words = data
+            slides.append(slide_vocab_scene(img_path, sentence, bold_words, n, total, lesson_num))
         elif kind == "sound_match":
             i = data
             words = phonics_unit.get("words", []) if phonics_unit else []
@@ -1363,7 +1408,7 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
     return slides
 
 
-def run(level, dialogues, phonics_units=None, grammar_units=None, has_phonics=True, out_root="slide-content", manifest_root="assets/slides", skills_data=None, spelling_rules=None, theme_map=None):
+def run(level, dialogues, phonics_units=None, grammar_units=None, has_phonics=True, out_root="slide-content", manifest_root="assets/slides", skills_data=None, spelling_rules=None, theme_map=None, scene_map=None):
     global DIALOGUES
     DIALOGUES = dialogues
     phonics_units = phonics_units or {}  # {lesson_num: unit_dict}
@@ -1371,6 +1416,7 @@ def run(level, dialogues, phonics_units=None, grammar_units=None, has_phonics=Tr
     skills_data = skills_data or {}  # {lesson_num: {listening/speaking/reading/writing: str}}
     spelling_rules = spelling_rules or {}  # {lesson_num: rule_dict, from spelling-hub/<level>.json}
     theme_map = theme_map or {}  # {lesson_num: "theme-key"}, see assets/lesson-bg-kid/
+    scene_map = scene_map or {}  # {lesson_num: [(img_path, sentence, [bold_words]), ...]}
     lesson_files = sorted(glob.glob(f"lessons/{level}/lesson*.json"))
     lessons = {}
     for f in lesson_files:
@@ -1386,7 +1432,7 @@ def run(level, dialogues, phonics_units=None, grammar_units=None, has_phonics=Tr
     for num in sorted(lessons):
         lesson = lessons[num]
         prev_lesson = lessons.get(num - 1)
-        slides = build_deck(num, lesson, prev_lesson, phonics_units.get(num), grammar_units.get(num), has_phonics, level, skills_data, spelling_rules, theme_map.get(num))
+        slides = build_deck(num, lesson, prev_lesson, phonics_units.get(num), grammar_units.get(num), has_phonics, level, skills_data, spelling_rules, theme_map.get(num), scene_map)
         nn = f"{num:02d}"
         lesson_dir = os.path.join(out_dir, nn)
         os.makedirs(lesson_dir, exist_ok=True)
