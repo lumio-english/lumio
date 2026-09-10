@@ -99,4 +99,71 @@ THEME_MAP = {
     16: "kitchen", 17: "market", 18: "classroom", 19: "classroom", 20: "classroom",
 }
 
-run("level2", DIALOGUES, PHONICS_UNITS, theme_map=THEME_MAP)
+# Real character-scene images illustrating this lesson's most important
+# words, shown right before the sentence-building slides. See
+# assets/vocab-scenes/level2/<NN>.jpg for the actual images.
+SCENE_DATA = [
+    (1, 1, ["Hello", "Goodbye"], "Hello! Goodbye, see you later!"),
+    (1, 2, ["Please", "Thank you"], "Please! Thank you very much!"),
+    (1, 3, ["Sorry", "Nice to meet you"], "Sorry! Nice to meet you!"),
+    (2, 4, ["old", "young"], "Grandpa is old. The baby is young."),
+    (2, 5, ["birthday", "years old"], "It's my birthday! I am seven years old."),
+    (2, 6, ["grow up"], "I grow up every year."),
+    (3, 7, ["parents", "grandparents"], "These are my parents. These are my grandparents."),
+    (3, 8, ["uncle", "aunt"], "This is my uncle. This is my aunt."),
+    (3, 9, ["cousin", "twins"], "This is my cousin. They are twins!"),
+    (4, 10, ["He", "man", "She", "woman"], "He is a man. She is a woman."),
+    (4, 11, ["brother", "sister"], "He is my brother. She is my sister."),
+    (5, 12, ["my", "your"], "This is my bag. Is this your pencil?"),
+    (5, 13, ["his", "her"], "This is his book. This is her doll."),
+    (5, 14, ["our", "their"], "This is our classroom. This is their house."),
+    (6, 15, ["phone", "watch"], "I have got a phone. I have got a watch."),
+    (6, 16, ["glasses", "wallet"], "I have got glasses. I have got a wallet."),
+    (6, 17, ["key", "umbrella", "camera"], "I have got a key, an umbrella, and a camera."),
+    (7, 18, ["eyebrow", "chin"], "This is my eyebrow. This is my chin."),
+    (7, 19, ["cheek", "neck"], "This is my cheek. This is my neck."),
+    (7, 20, ["elbow", "knee"], "This is my elbow. This is my knee."),
+    (8, 21, ["classroom", "board"], "This is my classroom. This is the board."),
+    (8, 22, ["playground", "student"], "This is the playground. I am a student."),
+    (8, 23, ["principal", "lesson"], "This is the principal. We are in a lesson."),
+    (9, 24, ["Stand up", "Sit down"], "Stand up, please. Sit down, please."),
+    (9, 25, ["Listen", "Look"], "Listen to the teacher. Look at the board."),
+    (9, 26, ["Open your book", "Raise your hand"], "Open your book. Raise your hand."),
+    (10, 27, ["Twenty", "Thirty"], "Twenty balloons! Thirty stars!"),
+    (10, 28, ["Fifty", "Eighty"], "Fifty flowers! Eighty blocks!"),
+    (10, 29, ["hundred"], "One hundred! Hooray!"),
+    (11, 30, ["January", "month"], "January is the first month."),
+    (11, 31, ["June", "September"], "June is warm. September is back to school."),
+    (11, 32, ["December"], "December is a festive month."),
+    (12, 33, ["birthday party", "cake"], "It's a birthday party! Here is the cake."),
+    (12, 34, ["candle", "present"], "Blow out the candles! Open your present!"),
+    (12, 35, ["balloon", "guest"], "Balloons everywhere! Welcome, guests!"),
+    (13, 36, ["clock", "o'clock"], "Look at the clock. It is three o'clock."),
+    (13, 37, ["half past", "morning"], "It is half past seven in the morning."),
+    (13, 38, ["afternoon", "night"], "Afternoon is for playing. Night is for sleeping."),
+    (14, 39, ["wake up", "alarm clock"], "My alarm clock rings. I wake up."),
+    (14, 40, ["brush my teeth", "get dressed"], "I brush my teeth. I get dressed."),
+    (14, 41, ["have breakfast", "go to school"], "I have breakfast. I go to school."),
+    (15, 42, ["come home", "do my homework"], "I come home. I do my homework."),
+    (15, 43, ["take a shower", "have dinner"], "I take a shower. I have dinner."),
+    (15, 44, ["read a book", "go to bed"], "I read a book in my pajamas. I go to bed."),
+    (16, 45, ["breakfast", "lunch"], "I eat breakfast. I eat lunch."),
+    (16, 46, ["dinner", "snack"], "We eat dinner. I eat a snack."),
+    (16, 47, ["healthy food", "water"], "I eat healthy food. I drink water."),
+    (17, 48, ["drawing", "painting"], "I like drawing. I like painting."),
+    (17, 49, ["singing", "dancing"], "I like singing. I like dancing."),
+    (17, 50, ["reading", "cooking"], "I like reading. I like cooking."),
+    (18, 51, ["This", "That"], "This is my pencil. That is your bag."),
+    (18, 52, ["These", "Those"], "These are my books. Those are yours."),
+    (18, 53, ["here", "there"], "Come here! The ball is over there."),
+    (19, 54, ["boxes", "watches"], "I have two boxes. He has two watches."),
+    (19, 55, ["children", "babies"], "The children play. The babies sleep."),
+    (19, 56, ["feet", "men"], "Wash your feet. Two men are talking."),
+]
+SCENE_MAP = {}
+for lesson_num, img_num, bold_words, sentence in SCENE_DATA:
+    SCENE_MAP.setdefault(lesson_num, []).append(
+        (f"assets/vocab-scenes/level2/{img_num:02d}.jpg", sentence, bold_words)
+    )
+
+run("level2", DIALOGUES, PHONICS_UNITS, theme_map=THEME_MAP, scene_map=SCENE_MAP)
