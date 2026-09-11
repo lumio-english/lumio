@@ -993,6 +993,7 @@ def slide_teacher_game(vocab, n, total, ch, tier="preA", mode="teacher"):
       <div style="display:inline-block;background:#fff;padding:8px 20px;border-radius:14px;box-shadow:0 6px 14px rgba(67,48,31,.1);font-family:'Baloo 2',sans-serif;font-weight:700;
                 font-size:1.05rem;color:#8A7160">{instruction}</div>
     </div>
+    {tiles}
     ''' + char_img(ch, right=40, bottom=30, height=150))
 
 
