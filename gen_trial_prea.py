@@ -44,12 +44,14 @@ celebration -> repeat per topic -> big finish):
 """
 import sys, os, json
 sys.path.insert(0, "lib")
+import deck_template_v2
 from deck_template_v2 import (
     bg_plain, bg_study, bg_clean, header, COLORSTRIP, SPARKS, char_img,
     slide_vocab, slide_quick_check, slide_tpr_activity, slide_teacher_game, esc, slug,
+    slide_vocab_scene,
 )
 
-TOTAL = 44
+TOTAL = 48
 
 
 def load_word(level, lesson_num, en):
@@ -216,14 +218,21 @@ def build():
     slides.append(slide_trial_welcome(1, TOTAL))
     slides.append(slide_team_assign(len(slides) + 1, TOTAL))
 
+    # Greetings section -- classroom theme + the real "hello/hi" scene,
+    # same assets already used in Pre-A's own Lesson 1.
+    deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/classroom.jpg"
     for w_en in ["hello", "hi", "good morning", "good night", "goodbye", "thank you"]:
         slides.append(slide_vocab(load_word("pre-a", 1, w_en), 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
+    slides.append(slide_vocab_scene("assets/vocab-scenes/pre-a/01.jpg", "Hello! Hi, friend!", ["Hello", "Hi"], len(slides) + 1, TOTAL, 1))
 
     slides.append(slide_trial_transition("Let's meet some animal friends!", "&#128062;", len(slides) + 1, TOTAL))
 
+    # Animals section -- animals theme + a real animal-lesson scene.
+    deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/animals.jpg"
     animal_words = [load_word("pre-a", 12, w) for w in ["cat", "dog", "bird", "fish", "rabbit", "duck"]]
     for w in animal_words:
         slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
+    slides.append(slide_vocab_scene("assets/vocab-scenes/pre-a/29.jpg", "The cat and the dog play together.", ["cat", "dog"], len(slides) + 1, TOTAL, 1))
 
     slides.append(slide_buzzer_challenge(animal_words[0], len(slides) + 1, TOTAL))
     slides.append(slide_buzzer_challenge(animal_words[3], len(slides) + 1, TOTAL))
@@ -231,19 +240,31 @@ def build():
     slides.append(slide_mini_celebrate("You're all Animal Experts!", len(slides) + 1, TOTAL))
 
     slides.append(slide_trial_transition("Let's paint with colors!", "&#127752;", len(slides) + 1, TOTAL))
+
+    # Colors section -- playroom theme + the real red/blue scene.
+    deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/playroom.jpg"
     color_words = [load_word("pre-a", 8, w) for w in ["red", "blue", "yellow", "green"]]
     for w in color_words:
         slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
+    slides.append(slide_vocab_scene("assets/vocab-scenes/pre-a/19.jpg", "A red balloon and a blue balloon!", ["red", "blue"], len(slides) + 1, TOTAL, 1))
     slides.append(slide_buzzer_challenge(color_words[1], len(slides) + 1, TOTAL))
     slides.append(slide_scoreboard("Halfway there! Here's the score so far...", len(slides) + 1, TOTAL))
 
     slides.append(slide_trial_transition("Let's meet my family!", "&#128106;", len(slides) + 1, TOTAL))
+
+    # Family section -- family-home theme + the real mom/dad scene.
+    deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/family-home.jpg"
     family_words = [load_word("pre-a", 10, w) for w in ["mom", "dad", "brother", "sister"]]
     for w in family_words:
         slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
+    slides.append(slide_vocab_scene("assets/vocab-scenes/pre-a/23.jpg", "I love my mom and dad.", ["mom", "dad"], len(slides) + 1, TOTAL, 1))
     slides.append(slide_team_relay(family_words[0], "Who is this?", len(slides) + 1, TOTAL))
     slides.append(slide_mini_celebrate("You're a Family Friend!", len(slides) + 1, TOTAL))
 
+    # Actions/closing section reverts to the plain background -- no
+    # single real lesson theme fits a mixed action/song/playground
+    # closing beat as naturally as the four topic sections above did.
+    deck_template_v2.CURRENT_LESSON_BG = None
     slides.append(slide_trial_transition("Let's move like Lumi!", "&#127939;", len(slides) + 1, TOTAL))
     unison_tpr = {
         "sit": "Sit down quickly! Say \u201cSit!\u201d &#128994;",
