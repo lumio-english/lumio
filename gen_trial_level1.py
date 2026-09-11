@@ -13,12 +13,14 @@ Content pulled entirely from real Level 1 lessons -- nothing invented.
 """
 import sys, os, json
 sys.path.insert(0, "lib")
+import deck_template_v2
 from deck_template_v2 import (
     bg_plain, bg_study, bg_clean, header, COLORSTRIP, SPARKS, char_img,
     slide_vocab, slide_quick_check, slide_tpr_activity, slide_teacher_game, esc, slug,
+    slide_vocab_scene,
 )
 
-TOTAL = 39
+TOTAL = 43
 
 
 def load_word(level, lesson_num, en):
@@ -185,14 +187,20 @@ def build():
     slides.append(slide_trial_welcome(1, TOTAL))
     slides.append(slide_team_assign(len(slides) + 1, TOTAL))
 
+    # Food section -- market theme + the real apple/banana scene.
+    deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/market.jpg"
     for w_en in ["apple", "banana", "juice", "milk", "cake", "ice cream", "pizza", "bread"]:
         slides.append(slide_vocab(load_word("level1", 7, w_en), 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
+    slides.append(slide_vocab_scene("assets/vocab-scenes/level1/19.jpg", "I like apples. I like bananas.", ["apples", "bananas"], len(slides) + 1, TOTAL, 1))
 
     slides.append(slide_trial_transition("Let's meet some pets!", "&#128054;", len(slides) + 1, TOTAL))
 
+    # Pets section -- animals theme + the real dog/cat scene.
+    deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/animals.jpg"
     pet_words = [load_word("level1", 16, w) for w in ["dog", "cat", "fish", "bird", "rabbit", "turtle"]]
     for w in pet_words:
         slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
+    slides.append(slide_vocab_scene("assets/vocab-scenes/level1/46.jpg", "My dog and my cat play together.", ["dog", "cat"], len(slides) + 1, TOTAL, 1))
 
     slides.append(slide_buzzer_challenge(pet_words[0], len(slides) + 1, TOTAL))
     slides.append(slide_buzzer_challenge(pet_words[3], len(slides) + 1, TOTAL))
@@ -200,23 +208,33 @@ def build():
     slides.append(slide_mini_celebrate("You're all Pet Experts!", len(slides) + 1, TOTAL))
 
     slides.append(slide_trial_transition("What's the weather like?", "&#9925;&#65039;", len(slides) + 1, TOTAL))
+
+    # Weather section -- weather-sky theme + the real sunny/hot scene.
+    deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/weather-sky.jpg"
     weather_words = [load_word("level1", 12, w) for w in ["sunny", "rainy", "cloudy", "hot"]]
     for w in weather_words:
         slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
+    slides.append(slide_vocab_scene("assets/vocab-scenes/level1/34.jpg", "It is sunny. It is hot.", ["sunny", "hot"], len(slides) + 1, TOTAL, 1))
     slides.append(slide_buzzer_challenge(weather_words[1], len(slides) + 1, TOTAL))
     slides.append(slide_scoreboard("Halfway there! Here's the score so far...", len(slides) + 1, TOTAL))
 
     slides.append(slide_trial_transition("Look what I can do!", "&#127939;", len(slides) + 1, TOTAL))
+
+    # Actions section -- park theme + the real sing/dance scene, since
+    # both those exact words appear as TPR activities right here.
+    deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/park.jpg"
     unison_tpr = {
         "swim": "Everyone pretend to swim! Say \u201cSwim!\u201d &#127946;",
         "sing": "Everyone sing \u201cLa la la!\u201d together! &#127925;",
     }
     for w_en, line in unison_tpr.items():
         slides.append(slide_tpr_activity(line, len(slides) + 1, TOTAL, "lumi-hero"))
+    slides.append(slide_vocab_scene("assets/vocab-scenes/level1/42.jpg", "I can sing. I can dance.", ["sing", "dance"], len(slides) + 1, TOTAL, 1))
 
     slides.append(slide_copycat_challenge("Who can run in place the fastest? Ready, go!", len(slides) + 1, TOTAL))
     slides.append(slide_copycat_challenge("Who can dance the best? Show me your moves!", len(slides) + 1, TOTAL))
 
+    deck_template_v2.CURRENT_LESSON_BG = None
     for w_en in ["read", "write", "draw"]:
         slides.append(slide_vocab(load_word("level1", 14, w_en), 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
 
