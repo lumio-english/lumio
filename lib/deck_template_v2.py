@@ -498,8 +498,10 @@ def slide_sentence_builder(sentence, n, total, ch, seed):
     tray = "".join(f'<div class="sb-tile" draggable="false" data-word="{esc(words[i])}">{esc(words[i])}</div>' for i in order)
     return (bg_plain() + header("Build the Sentence", n, total) + COLORSTRIP + f'''
     <div style="position:absolute;left:0;right:0;top:190px;text-align:center">
-      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;color:#43301F;margin-bottom:8px">Put the words in the right order!</div>
-      <div style="font-size:.95rem;color:#8A7160;font-weight:700">Drag the tiles into the boxes below.</div>
+      <div style="display:inline-block;background:#fff;padding:12px 30px;border-radius:20px;box-shadow:0 8px 18px rgba(67,48,31,.12)">
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;color:#43301F;margin-bottom:4px">Put the words in the right order!</div>
+        <div style="font-size:.95rem;color:#8A7160;font-weight:700">Drag the tiles into the boxes below.</div>
+      </div>
     </div>
     <div id="sbSlots" data-correct="{esc(sentence.strip())}" style="position:absolute;left:0;right:0;top:300px;display:flex;justify-content:center;gap:12px;min-height:80px;flex-wrap:wrap">
       {slots}{punct_tile}
@@ -573,7 +575,9 @@ def slide_sentence_trio(sentences, n, total, ch, seed):
         </div>'''
     return (bg_plain() + header("Build the Sentences", n, total) + COLORSTRIP + f'''
     <div style="position:absolute;left:0;right:0;top:118px;text-align:center">
-      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.15rem;color:#43301F">Put the words in the right order &mdash; drag the tiles!</div>
+      <div style="display:inline-block;background:#fff;padding:8px 24px;border-radius:16px;box-shadow:0 6px 14px rgba(67,48,31,.1)">
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.15rem;color:#43301F">Put the words in the right order &mdash; drag the tiles!</div>
+      </div>
     </div>
     {rows}
     <style>
@@ -837,7 +841,9 @@ def slide_tpr_activity(instruction, n, total, ch):
     return (bg_study() + header("Let's Move!", n, total) + COLORSTRIP + f'''
     <div style="position:absolute;left:0;right:0;top:220px;text-align:center">
       <div style="font-size:2.4rem;margin-bottom:20px">&#129323;</div>
-      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2rem;color:#43301F;padding:0 100px">{instruction}</div>
+      <div style="display:inline-block;background:#fff;padding:16px 44px;border-radius:22px;box-shadow:0 8px 18px rgba(67,48,31,.12);max-width:800px">
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2rem;color:#43301F">{instruction}</div>
+      </div>
     </div>
     ''' + char_img(ch, bottom=42, height=280))
 
