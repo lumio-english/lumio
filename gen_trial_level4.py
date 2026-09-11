@@ -15,6 +15,8 @@ from deck_template_teen import (
     CHAR, esc, slug, PURPLE, PURPLE_DEEP, ORANGE, ORANGE_DEEP, TEAL, TEAL_DEEP,
     CARD_BG, CARD_TEXT, INK, INK_DIM, MEET_THE_SQUAD_CAST,
 )
+import deck_template_teen2
+from deck_template_teen2 import bg_theme
 
 TOTAL = 33
 
@@ -37,7 +39,7 @@ def slide_trial_welcome(n, total):
         f'<img src="{CHAR}/{img}.png" style="height:170px" title="{name}">'
         for img, name, _ in MEET_THE_SQUAD_CAST
     )
-    return (bg_base() + f'''
+    return (bg_theme() + f'''
     <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 30px;z-index:5">
       <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.05rem;color:{ORANGE};letter-spacing:2px;margin-bottom:14px">TRIAL CLASS</div>
       <h1 style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:2.9rem;color:{INK};margin:0 0 10px">
@@ -53,7 +55,7 @@ def slide_trial_welcome(n, total):
 
 
 def slide_trial_transition(headline, emoji, n, total):
-    return (bg_base() + header("Trial Class", n, total) + f'''
+    return (bg_theme() + header("Trial Class", n, total) + f'''
     <div style="position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 40px 0">
       <div style="font-size:3.6rem;margin-bottom:18px">{emoji}</div>
       <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:2.1rem;color:{INK};max-width:900px">{headline}</div>
@@ -62,7 +64,7 @@ def slide_trial_transition(headline, emoji, n, total):
 
 
 def slide_mini_celebrate(headline, n, total):
-    return (bg_base() + header("Trial Class", n, total) + f'''
+    return (bg_theme() + header("Trial Class", n, total) + f'''
     <div style="position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:50px 40px 0">
       <div style="font-size:3rem;margin-bottom:10px">&#127775;</div>
       <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.9rem;color:{INK}">{headline}</div>
@@ -71,7 +73,7 @@ def slide_mini_celebrate(headline, n, total):
 
 
 def slide_team_assign(n, total):
-    return (bg_base() + header("Let's Make Teams!", n, total) + f'''
+    return (bg_theme() + header("Let's Make Teams!", n, total) + f'''
     <div data-challenge="team-assign" style="position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;padding:30px 40px 0;text-align:center">
       <div style="font-family:'Fredoka',sans-serif;font-weight:500;font-size:1.05rem;color:{INK_DIM};margin-bottom:16px">
         Tap any name to move it to the other team!
@@ -91,7 +93,7 @@ def slide_team_assign(n, total):
 
 
 def slide_buzzer_challenge(prompt_word, n, total):
-    return (bg_base() + header("Buzzer Challenge", n, total) + f'''
+    return (bg_theme() + header("Buzzer Challenge", n, total) + f'''
     <div data-challenge="buzzer" style="position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;padding:28px 40px 0">
       <div style="font-family:'Fredoka',sans-serif;font-weight:500;font-size:1rem;color:{INK_DIM};margin-bottom:14px;text-align:center">
         Who says it first? Tap the name of whoever answers correctly!
@@ -109,7 +111,7 @@ def slide_buzzer_challenge(prompt_word, n, total):
 
 
 def slide_team_relay(prompt_word, question_line, n, total):
-    return (bg_base() + header("Team Relay!", n, total) + f'''
+    return (bg_theme() + header("Team Relay!", n, total) + f'''
     <div data-challenge="team-relay" style="position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;padding:26px 40px 0;text-align:center">
       <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.25rem;color:{INK};margin-bottom:10px">{question_line}</div>
       {card_open(240, "padding:14px;margin-bottom:12px")}
@@ -127,7 +129,7 @@ def slide_team_relay(prompt_word, question_line, n, total):
 
 
 def slide_copycat_challenge(action_line, n, total):
-    return (bg_base() + header("Copy-Cat Challenge", n, total) + f'''
+    return (bg_theme() + header("Copy-Cat Challenge", n, total) + f'''
     <div data-challenge="copycat" style="position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;padding:34px 40px 0;text-align:center">
       <div style="font-size:2.4rem;margin-bottom:10px">&#127942;</div>
       <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.4rem;color:{INK};max-width:800px;margin-bottom:8px">{action_line}</div>
@@ -138,7 +140,7 @@ def slide_copycat_challenge(action_line, n, total):
 
 
 def slide_scoreboard(headline, n, total):
-    return (bg_base() + f'''
+    return (bg_theme() + f'''
     <div data-challenge="scoreboard" style="position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding-top:120px">
       <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.5rem;color:{INK};margin-bottom:24px">{headline}</div>
       <div id="scoreboardBig"></div>
@@ -147,7 +149,7 @@ def slide_scoreboard(headline, n, total):
 
 
 def slide_finale(n, total):
-    return (bg_base() + header("Class Champions!", n, total) + f'''
+    return (bg_theme() + header("Class Champions!", n, total) + f'''
     <div data-challenge="finale" style="position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;padding:22px 40px 0">
       <div style="font-family:'Fredoka',sans-serif;font-weight:500;font-size:.95rem;color:{INK_DIM};margin-bottom:14px;text-align:center">
         Everyone did great today! Pick a name for each shout-out:
@@ -158,7 +160,7 @@ def slide_finale(n, total):
 
 
 def slide_trial_finish(n, total):
-    return (bg_base() + f'''
+    return (bg_theme() + f'''
     <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 30px;z-index:5">
       <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1rem;color:{TEAL};letter-spacing:2px;margin-bottom:10px">GREAT JOB TODAY</div>
       <h1 style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:2.5rem;color:{INK};margin:0 0 6px">
@@ -182,6 +184,7 @@ def build():
     slides.append(slide_trial_welcome(1, TOTAL))
     slides.append(slide_team_assign(len(slides) + 1, TOTAL))
 
+    deck_template_teen2.CURRENT_LESSON_BG = "assets/lesson-bg/level4/05.jpg"
     text_words = [load_word("level4", 5, w) for w in ["message", "reply", "call", "invite", "emoji"]]
     for w in text_words:
         slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "ziad-teen-happy"))
@@ -192,6 +195,7 @@ def build():
     slides.append(slide_mini_celebrate("You're all Chat Champions!", len(slides) + 1, TOTAL))
 
     slides.append(slide_trial_transition("Got any snacks?", "&#127831;", len(slides) + 1, TOTAL))
+    deck_template_teen2.CURRENT_LESSON_BG = "assets/lesson-bg/level4/07.jpg"
     snack_words = [load_word("level4", 7, w) for w in ["snack", "fridge", "pantry", "ingredients"]]
     for w in snack_words:
         slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "hamad-teen-wave"))
@@ -199,6 +203,7 @@ def build():
     slides.append(slide_scoreboard("Halfway there! Here's the score so far...", len(slides) + 1, TOTAL))
 
     slides.append(slide_trial_transition("What makes someone the best?", "&#127775;", len(slides) + 1, TOTAL))
+    deck_template_teen2.CURRENT_LESSON_BG = "assets/lesson-bg/level4/10.jpg"
     show_words = [load_word("level4", 10, w) for w in ["talented", "impressive", "unique"]]
     for w in show_words:
         slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "noor-teen-point"))
@@ -206,11 +211,14 @@ def build():
     slides.append(slide_mini_celebrate("You're all Talented Word Experts!", len(slides) + 1, TOTAL))
 
     slides.append(slide_trial_transition("Let's be a great team!", "&#129309;", len(slides) + 1, TOTAL))
+    deck_template_teen2.CURRENT_LESSON_BG = None
     slides.append(slide_copycat_challenge("Who can act out \u201cencourage\u201d the best? Cheer someone on!", len(slides) + 1, TOTAL))
     slides.append(slide_copycat_challenge("Who can act out \u201csupport\u201d the best? Help a teammate!", len(slides) + 1, TOTAL))
 
+    deck_template_teen2.CURRENT_LESSON_BG = "assets/lesson-bg/level4/14.jpg"
     for w_en in ["cooperate", "teamwork", "trophy"]:
         slides.append(slide_vocab(load_word("level4", 14, w_en), 0, len(slides) + 1, TOTAL, 1, "sara-teen-explain"))
+    deck_template_teen2.CURRENT_LESSON_BG = None
 
     slides.append(slide_scoreboard("And the final score is...", len(slides) + 1, TOTAL))
     slides.append(slide_finale(len(slides) + 1, TOTAL))
