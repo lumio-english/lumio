@@ -112,8 +112,8 @@ def slide_meet_the_team(n, total):
           <div style="height:190px;display:flex;align-items:flex-end;justify-content:center">
             <img src="{CHAR}/{img_name}.png" style="max-height:190px;max-width:160px;filter:drop-shadow(0 10px 14px rgba(67,48,31,.25))" onerror="this.style.display='none'">
           </div>
-          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.05rem;color:#43301F;margin-top:8px">{esc(char_name)}</div>
-          <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:.78rem;color:#8A7160;margin-top:2px">{esc(line)}</div>
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.05rem;color:#43301F;margin-top:8px;background:#fff;display:inline-block;padding:3px 12px;border-radius:10px">{esc(char_name)}</div>
+          <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:.78rem;color:#8A7160;margin-top:4px;background:#fff;display:inline-block;padding:2px 10px;border-radius:8px">{esc(line)}</div>
         </div>'''
     return (bg_bare() + header("Meet Your Friends!", n, total) + COLORSTRIP + f'''
     <div style="position:absolute;left:0;right:0;top:130px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;color:#43301F">These friends will help you learn English!</div>
@@ -190,8 +190,10 @@ def slide_recap(prev_words, n, total):
         </button>'''
     return (bg_plain() + header("Quick Recap &bull; Do you remember?", n, total) + COLORSTRIP + f'''
     <div style="position:absolute;left:0;right:0;top:190px;display:flex;justify-content:center;gap:28px">{cards}</div>
-    <div style="position:absolute;left:0;right:0;bottom:52px;text-align:center;font-family:'Baloo 2',sans-serif;
+    <div style="position:absolute;left:0;right:0;bottom:52px;text-align:center">
+      <div style="display:inline-block;background:#fff;padding:8px 20px;border-radius:14px;box-shadow:0 6px 14px rgba(67,48,31,.1);font-family:'Baloo 2',sans-serif;
                 font-weight:700;font-size:1.05rem;color:#8A7160">From last lesson &mdash; tap each card to check!</div>
+    </div>
     ''' + char_img("noor-think", right=60, bottom=250, height=200))
 
 def slide_vocab(w, idx, n, total, num_words, ch, verb_count=0):
@@ -243,8 +245,10 @@ def slide_meet_the_letter(letter, n, total, ch):
         <span style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:8rem;color:#0D9488;line-height:1">{low}</span>
       </button>
     </div>
-    <div style="position:absolute;left:0;right:0;top:420px;text-align:center;font-family:'Baloo 2',sans-serif;
+    <div style="position:absolute;left:0;right:0;top:420px;text-align:center">
+      <div style="display:inline-block;background:#fff;padding:8px 20px;border-radius:14px;box-shadow:0 6px 14px rgba(67,48,31,.1);font-family:'Baloo 2',sans-serif;
                 font-weight:700;font-size:1.15rem;color:#8A7160">&#128070; Tap the letter &mdash; what's its name?</div>
+    </div>
     ''' + char_img(ch, bottom=32, height=260))
 
 def slide_hear_the_sound(letter, n, total, ch):
@@ -266,8 +270,10 @@ def slide_hear_the_sound(letter, n, total, ch):
         </span>
       </button>
     </div>
-    <div style="position:absolute;left:0;right:0;top:440px;text-align:center;font-family:'Baloo 2',sans-serif;
+    <div style="position:absolute;left:0;right:0;top:440px;text-align:center">
+      <div style="display:inline-block;background:#fff;padding:8px 20px;border-radius:14px;box-shadow:0 6px 14px rgba(67,48,31,.1);font-family:'Baloo 2',sans-serif;
                 font-weight:700;font-size:1.15rem;color:#8A7160">This letter's name and its sound aren't the same &mdash; listen closely!</div>
+    </div>
     ''' + char_img(ch, bottom=32, height=260))
 
 def slide_letter_word(w, letter, n, total, ch):
@@ -316,8 +322,10 @@ def slide_letter_chunk_recap(letters_and_words, n, total, ch):
         <span style="font-size:.85rem;font-weight:800;color:#8A7160">{esc(w["en"])}</span>
       </div>'''
     return (bg_study() + header("Quick Recap! &#11088;", n, total) + COLORSTRIP + f'''
-    <div style="position:absolute;left:0;right:0;top:170px;text-align:center;font-family:'Baloo 2',sans-serif;
+    <div style="position:absolute;left:0;right:0;top:170px;text-align:center">
+      <div style="display:inline-block;background:#fff;padding:8px 22px;border-radius:16px;box-shadow:0 6px 14px rgba(67,48,31,.1);font-family:'Baloo 2',sans-serif;
                 font-weight:800;font-size:1.3rem;color:#43301F">Which letter says &hellip;? Point and say its name!</div>
+    </div>
     <div style="position:absolute;left:0;right:0;top:250px;display:flex;justify-content:center;gap:22px">
       {tiles}
     </div>
@@ -601,8 +609,10 @@ def slide_sound_spot(vocab, n, total, ch):
         <div style="font-size:.78rem;color:#0D9488;font-weight:800">{w["ar"]}</div>
       </button>'''
     return (bg_study() + header("Sound &amp; Spot", n, total) + COLORSTRIP + f'''
-    <div style="position:absolute;left:0;right:0;top:158px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:700;
+    <div style="position:absolute;left:0;right:0;top:158px;text-align:center">
+      <div style="display:inline-block;background:#fff;padding:8px 20px;border-radius:14px;box-shadow:0 6px 14px rgba(67,48,31,.1);font-family:'Baloo 2',sans-serif;font-weight:700;
                 font-size:1.05rem;color:#8A7160">Tap any word to hear it &mdash; can you say it before it plays?</div>
+    </div>
     <div style="position:absolute;left:0;right:400px;top:210px;display:flex;flex-wrap:wrap;gap:16px;justify-content:center;padding:0 30px">
       {cards}
     </div>
@@ -692,7 +702,9 @@ def slide_quick_check(target, distractors, idx, total_q, n, total, seed, tier="p
     prompt_pos = "left:80px;top:200px;width:220px;text-align:center" if tier == "preA" else "left:610px;top:190px;width:540px"
     return (bg_plain() + header(f"Quick Check &bull; {idx}", n, total) + COLORSTRIP + f'''
     {img_block}
-    <div style="position:absolute;{prompt_pos};font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.9rem;color:#43301F">{prompt}</div>
+    <div style="position:absolute;{prompt_pos}">
+      <div style="display:inline-block;background:#fff;padding:10px 24px;border-radius:18px;box-shadow:0 8px 18px rgba(67,48,31,.12);font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.9rem;color:#43301F">{prompt}</div>
+    </div>
     {buttons}
     ''')
 
@@ -860,7 +872,9 @@ def slide_quiz(target, distractors, idx, total_q, n, total, seed):
                   color:#43301F;cursor:pointer" data-quiz-option="{esc(o["en"])}">{esc(o["en"])}</button>'''
     return (bg_plain() + header(f"Quiz &bull; {idx}/{total_q}", n, total) + COLORSTRIP + f'''
     <div class="card" style="position:absolute;left:280px;top:190px;width:280px;height:280px;overflow:hidden;padding:0"><img src="assets/vocab/{slug(target['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-    <div style="position:absolute;left:610px;top:190px;width:540px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.9rem;color:#43301F">What is this?</div>
+    <div style="position:absolute;left:610px;top:190px;width:540px">
+      <div style="display:inline-block;background:#fff;padding:10px 24px;border-radius:18px;box-shadow:0 8px 18px rgba(67,48,31,.12);font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.9rem;color:#43301F">What is this?</div>
+    </div>
     {buttons}
     ''')
 
@@ -904,8 +918,10 @@ def slide_phonics_practice(unit, n, total, ch):
         <div style="font-size:.85rem;color:#0D9488;font-weight:800">{w["ar"]}</div>
       </button>'''
     return (bg_plain() + header("Listen &amp; Spot", n, total) + COLORSTRIP + f'''
-    <div style="position:absolute;left:0;right:0;top:158px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:700;
+    <div style="position:absolute;left:0;right:0;top:158px;text-align:center">
+      <div style="display:inline-block;background:#fff;padding:8px 20px;border-radius:14px;box-shadow:0 6px 14px rgba(67,48,31,.1);font-family:'Baloo 2',sans-serif;font-weight:700;
                 font-size:1.05rem;color:#8A7160">Tap each word, sound it out, then say it together!</div>
+    </div>
     <div style="position:absolute;left:0;right:380px;top:220px;display:flex;flex-wrap:wrap;gap:18px;justify-content:center;padding:0 30px">
       {cards}
     </div>
@@ -935,7 +951,9 @@ def slide_sound_match(target_word, distractor_words, idx, total_q, n, total, see
       <span style="font-size:2.2rem">&#128266;</span>
       <span style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem">Tap to hear</span>
     </button>
-    <div style="position:absolute;left:80px;top:200px;width:220px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.2rem;color:#43301F">Which word is this?</div>
+    <div style="position:absolute;left:80px;top:200px;width:220px">
+      <div style="display:inline-block;background:#fff;padding:8px 20px;border-radius:14px;box-shadow:0 6px 14px rgba(67,48,31,.1);font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.2rem;color:#43301F">Which word is this?</div>
+    </div>
     {buttons}
     ''')
 
@@ -971,9 +989,10 @@ def slide_teacher_game(vocab, n, total, ch, tier="preA", mode="teacher"):
         "group": "Everyone stands up! Teacher calls a word and the whole class points to it together!",
     }.get(mode, "Teacher says a word out loud &mdash; first student to tap it wins!")
     return (bg_study() + header(title, n, total) + COLORSTRIP + f'''
-    <div style="position:absolute;left:0;right:0;top:150px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:700;
+    <div style="position:absolute;left:0;right:0;top:150px;text-align:center">
+      <div style="display:inline-block;background:#fff;padding:8px 20px;border-radius:14px;box-shadow:0 6px 14px rgba(67,48,31,.1);font-family:'Baloo 2',sans-serif;font-weight:700;
                 font-size:1.05rem;color:#8A7160">{instruction}</div>
-    {tiles}
+    </div>
     ''' + char_img(ch, right=40, bottom=30, height=150))
 
 
@@ -1046,7 +1065,7 @@ def slide_skills_check(skills, n, total, ch="lumi-celebrate"):
       </div>''' for k in ("listening", "speaking", "reading", "writing"))
     return (bg_clean() + header("Your Skills Checkpoint! &#127775;", n, total) + COLORSTRIP + f'''
     <div style="position:absolute;left:46px;top:150px;width:820px">
-      <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.05rem;color:#8A7160;margin-bottom:16px">
+      <div style="display:inline-block;background:#fff;padding:8px 20px;border-radius:14px;box-shadow:0 6px 14px rgba(67,48,31,.1);font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.05rem;color:#8A7160;margin-bottom:16px">
         Look how far you've come! Here's what you can do now:
       </div>
       <div style="display:flex;flex-direction:column;gap:12px">{cards}</div>
@@ -1063,8 +1082,10 @@ def slide_unscramble(word, n, total, ch):
                   font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:{LETTER_COLORS[i % len(LETTER_COLORS)]};
                   box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">{letters[order[i]].upper()}</div>''' for i in range(len(order)))
     return (bg_plain() + header("Warm-Up &bull; Unscramble!", n, total) + COLORSTRIP + f'''
-    <div style="position:absolute;left:0;right:0;top:190px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:700;
+    <div style="position:absolute;left:0;right:0;top:190px;text-align:center">
+      <div style="display:inline-block;background:#fff;padding:8px 20px;border-radius:14px;box-shadow:0 6px 14px rgba(67,48,31,.1);font-family:'Baloo 2',sans-serif;font-weight:700;
                 font-size:1.1rem;color:#43301F">Can you guess the word before it's revealed?</div>
+    </div>
     <div style="position:absolute;left:0;right:0;top:250px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding:0 60px">
       {tiles}
     </div>
