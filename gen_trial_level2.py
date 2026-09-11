@@ -11,12 +11,14 @@ challenge round).
 """
 import sys, os, json
 sys.path.insert(0, "lib")
+import deck_template_v2
 from deck_template_v2 import (
     bg_plain, bg_study, bg_clean, header, COLORSTRIP, SPARKS, char_img,
     slide_vocab, slide_quick_check, slide_tpr_activity, slide_teacher_game, esc, slug,
+    slide_vocab_scene,
 )
 
-TOTAL = 37
+TOTAL = 41
 
 
 def load_word(level, lesson_num, en):
@@ -183,9 +185,12 @@ def build():
     slides.append(slide_trial_welcome(1, TOTAL))
     slides.append(slide_team_assign(len(slides) + 1, TOTAL))
 
+    # Family Tree section -- family-home theme + the real parents/grandparents scene.
+    deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/family-home.jpg"
     family_words = [load_word("level2", 3, w) for w in ["parents", "grandparents", "uncle", "aunt", "cousin", "twins"]]
     for w in family_words:
         slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
+    slides.append(slide_vocab_scene("assets/vocab-scenes/level2/07.jpg", "These are my parents. These are my grandparents.", ["parents", "grandparents"], len(slides) + 1, TOTAL, 1))
 
     slides.append(slide_buzzer_challenge(family_words[2], len(slides) + 1, TOTAL))
     slides.append(slide_buzzer_challenge(family_words[4], len(slides) + 1, TOTAL))
@@ -193,16 +198,24 @@ def build():
     slides.append(slide_mini_celebrate("You're all Family Tree Experts!", len(slides) + 1, TOTAL))
 
     slides.append(slide_trial_transition("What do you eat every day?", "&#127869;&#65039;", len(slides) + 1, TOTAL))
+
+    # Food section -- kitchen theme + the real breakfast/lunch scene.
+    deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/kitchen.jpg"
     food_words = [load_word("level2", 16, w) for w in ["breakfast", "lunch", "dinner", "snack", "water"]]
     for w in food_words:
         slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
+    slides.append(slide_vocab_scene("assets/vocab-scenes/level2/45.jpg", "I eat breakfast. I eat lunch.", ["breakfast", "lunch"], len(slides) + 1, TOTAL, 1))
     slides.append(slide_buzzer_challenge(food_words[1], len(slides) + 1, TOTAL))
     slides.append(slide_scoreboard("Halfway there! Here's the score so far...", len(slides) + 1, TOTAL))
 
     slides.append(slide_trial_transition("Welcome to my classroom!", "&#127891;", len(slides) + 1, TOTAL))
+
+    # Classroom section -- school theme + the real classroom/board scene.
+    deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/school.jpg"
     room_words = [load_word("level2", 8, w) for w in ["board", "classroom"]]
     for w in room_words:
         slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
+    slides.append(slide_vocab_scene("assets/vocab-scenes/level2/21.jpg", "This is my classroom. This is the board.", ["classroom", "board"], len(slides) + 1, TOTAL, 1))
     slides.append(slide_team_relay(room_words[0], "What's this classroom object?", len(slides) + 1, TOTAL))
     slides.append(slide_mini_celebrate("You know your classroom!", len(slides) + 1, TOTAL))
 
@@ -218,8 +231,13 @@ def build():
     slides.append(slide_copycat_challenge("Who can raise their hand the fastest?", len(slides) + 1, TOTAL))
     slides.append(slide_copycat_challenge("Who can look around the room the silliest?", len(slides) + 1, TOTAL))
 
+    # Morning routine -- bedroom theme + the real brush-teeth/get-dressed scene,
+    # since both those exact words appear in this closing vocab set.
+    deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/bedroom.jpg"
     for w_en in ["wake up", "brush my teeth", "get dressed"]:
         slides.append(slide_vocab(load_word("level2", 14, w_en), 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
+    slides.append(slide_vocab_scene("assets/vocab-scenes/level2/40.jpg", "I brush my teeth. I get dressed.", ["brush my teeth", "get dressed"], len(slides) + 1, TOTAL, 1))
+    deck_template_v2.CURRENT_LESSON_BG = None
 
     slides.append(slide_scoreboard("And the final score is...", len(slides) + 1, TOTAL))
     slides.append(slide_finale(len(slides) + 1, TOTAL))
