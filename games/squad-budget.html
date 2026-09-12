@@ -116,6 +116,7 @@
       </button>
       <p id="promptText">Find this on the list!</p>
     </div>
+    <div id="dialogueContext" style="display:none;max-width:520px;margin:0 auto 14px;text-align:right"></div>
     <div id="stallGrid"></div>
   </div>
 </div>
@@ -154,17 +155,24 @@ document.getElementById("backBtn").href = backHref;
 const lesson = window.LUMIO_LESSONS?.[level]?.[num];
 const vocab = lesson ? lesson.vocab : [];
 
+// Real 4-line dialogues from this level's own lesson content (one per
+// lesson, each built around that lesson's grammar pattern) -- used for
+// "what comes next in the conversation?" rounds, kept lesson-aware so a
+// round never draws on a dialogue from a lesson not yet reached.
+const ALL_DIALOGUES = [["What is your daily routine?", "I wake up, brush my teeth, and have breakfast.", "Then I go to school. What about you?", "The same! Then I come home and go to bed."], ["What does your brother do every day?", "He wakes up early and eats breakfast fast.", "Does he play football?", "Yes, he plays every afternoon and reads at night."], ["How often do you read?", "I always read before bed. What about you?", "I sometimes read. I usually watch TV.", "I rarely watch TV, but I never skip reading!"], ["Let's go to the supermarket.", "Okay! I want to buy an apple.", "What is the price?", "It's cheap, not expensive at all!"], ["How many apples do you want?", "I want five apples. How much bread do we need?", "We need two. Do we have any eggs?", "Yes, here is your receipt!"], ["Is there any milk?", "Yes, and we have some rice too.", "Do we have any juice?", "No, we don't have any. Let's buy some water."], ["How much does this cost?", "It costs one dollar. Do you have a coin?", "Yes, here. Can I pay now?", "Sure, here is your change from my wallet."], ["Can I see the menu, please?", "Of course! What would you like to order?", "I would like pizza, please.", "The waiter will bring your plate and spoon."], ["I am so hungry!", "Me too, and thirsty! Let's order food.", "This food is delicious!", "Can we have more, please? Then the bill."], ["You should eat more vegetables.", "I know, and fruit has vitamins too.", "You shouldn't eat junk food every day.", "You're right, healthy food makes me strong!"], ["What do you do on Monday?", "On Monday, I go to school. What about Friday?", "I love Fridays! It's almost the weekend.", "What is your weekly schedule like?"], ["What do you do after school?", "I do my homework, then I practice piano.", "I go to art club and rest a little.", "I love my free time!"], ["Give it to me, please.", "Here you go! I see him at school.", "I like her too. She helps us a lot.", "I play with them every day."], ["Whose book is this?", "This book is mine. Is this pen yours?", "Yes, it's mine. That bag is hers.", "And this classroom is ours!"], ["I can see a bird in the tree.", "I can hear it singing too!", "I can smell the flowers here.", "And I can taste this delicious cake!"], ["What does your sister look like?", "She is tall and has curly hair.", "My brother is short with straight hair.", "And my grandpa has a beard!"], ["What is your teacher like?", "She is kind and very smart.", "My friend is funny and friendly too.", "Being honest and polite is important too!"], ["Who is your best friend?", "She is my best friend. She is very generous.", "We share our toys and help each other.", "I trust her, and we play together every day."], ["I read a story about Lumi today.", "What happens in the morning?", "Lumi wakes up happy and plays in the afternoon.", "And reads in the evening. What a nice day!"], ["Let's write in our week diary!", "Good idea! I bought vegetables at the market.", "I saw the menu at a new restaurant.", "And I played with my best friend all weekend!"]];
+const dialoguePool = ALL_DIALOGUES.slice(0, num); // only lessons up to and including this one
+
 if (!vocab.length) {
   document.getElementById("marketWrap").innerHTML = "<p style='padding:40px'>No lesson data found.</p>";
 } else {
-  const ROUNDS = Math.min(6, vocab.length);
+  const ROUNDS = 6;
+  // Round plan mixes the shopping vocab-match rounds with a "what comes
+  // next?" conversation round using this lesson's own real dialogue --
+  // covers dialogues/conversations alongside vocabulary, not vocabulary
+  // alone.
+  const PLAN = ["shop", "shop", "dialogue", "shop", "shop", "dialogue"];
+
   const order = Lumio.shuffle([...vocab]).slice(0, ROUNDS);
-  // Prices are randomized per item, but the starting budget is always
-  // computed AFTER prices are assigned (sum of every real price + a
-  // generous cushion) so the student can never run out of coins before
-  // finishing the list -- the countdown is a satisfying feeling, never a
-  // failure risk. Same "gentle by design" philosophy as the other games,
-  // just expressed through the shopping theme instead of lives/attempts.
   const prices = {};
   order.forEach(w => { prices[w.en] = [10, 15, 20, 25][Math.floor(Math.random() * 4)]; });
   let coins = Object.values(prices).reduce((a, b) => a + b, 0) + 40;
@@ -174,53 +182,102 @@ if (!vocab.length) {
   const stallGrid = document.getElementById("stallGrid");
   const shopList = document.getElementById("shopList");
   const receiptLines = document.getElementById("receiptLines");
+  const dialogueContext = document.getElementById("dialogueContext");
 
   shopList.innerHTML = order.map((w, i) => `
     <div class="list-item" id="item${i}"><span class="box"></span><span class="lbl">${w.ar}</span></div>`).join("");
 
-  function playPrompt() { Lumio.speak(order[r].en); }
+  let currentSpeakText = "";
+  function playPrompt() { Lumio.speak(currentSpeakText); }
 
   function drawRound() {
     locked = false;
     document.getElementById("roundPill").textContent = `${r + 1}/${ROUNDS}`;
+
+    if (PLAN[r] === "dialogue" && dialoguePool.length) {
+      drawDialogueRound();
+    } else {
+      drawShopRound();
+    }
+  }
+
+  function drawShopRound() {
+    dialogueContext.style.display = "none";
     document.getElementById("promptText").textContent = "Find this on the list!";
-    const target = order[r];
+    const shopOrderIdx = order[r % order.length];
+    const target = shopOrderIdx;
+    currentSpeakText = target.en;
     const distractorPool = Lumio.shuffle(vocab.filter(v => v.en !== target.en));
     const numOptions = Math.min(4, vocab.length);
     const opts = Lumio.shuffle([target, ...distractorPool.slice(0, numOptions - 1)]);
 
     stallGrid.innerHTML = opts.map(o => `
-      <button class="stall" data-en="${o.en}">
+      <button class="stall" data-key="${o.en}">
         <span class="tag">${prices[o.en] || [10,15,20,25][Math.floor(Math.random()*4)]}🪙</span>
         <span class="word">${o.en}</span>
       </button>`).join("");
 
-    document.querySelectorAll(".stall").forEach(card => { card.onclick = () => choose(card, target); });
+    document.querySelectorAll(".stall").forEach(card => { card.onclick = () => choose(card, target.en, r, true); });
     setTimeout(playPrompt, 350);
   }
 
-  function choose(card, target) {
+  // Dialogue round: shows the first two lines of this lesson's real
+  // conversation and asks what comes next -- the correct third line vs.
+  // two distractor lines drawn from other already-taught lessons' dialogues.
+  function drawDialogueRound() {
+    document.getElementById("promptText").textContent = "What comes next in the chat?";
+    const myDialogue = dialoguePool[num - 1] || dialoguePool[dialoguePool.length - 1];
+    dialogueContext.style.display = "block";
+    dialogueContext.innerHTML = `
+      <div style="background:#fff;border-radius:16px;padding:14px 18px;margin-bottom:6px;box-shadow:var(--sh-sm);text-align:right">
+        <div style="font-weight:800;color:var(--muted);font-size:.85rem;margin-bottom:4px">Omar</div>
+        <div>${myDialogue[0]}</div>
+      </div>
+      <div style="background:var(--teal-soft);border-radius:16px;padding:14px 18px;box-shadow:var(--sh-sm);text-align:right">
+        <div style="font-weight:800;color:var(--muted);font-size:.85rem;margin-bottom:4px">You</div>
+        <div>${myDialogue[1]}</div>
+      </div>`;
+    currentSpeakText = myDialogue[1];
+    const correct = myDialogue[2];
+    const distractorPool = [];
+    dialoguePool.forEach((dlg, i) => {
+      if (i === num - 1) return;
+      [dlg[1], dlg[2], dlg[3]].forEach(line => { if (line !== correct) distractorPool.push(line); });
+    });
+    const opts = Lumio.shuffle([correct, ...Lumio.shuffle(distractorPool).slice(0, 2)]);
+    stallGrid.innerHTML = opts.map(o => `
+      <button class="stall" data-key="${o}" style="min-height:auto">
+        <span class="word" style="font-size:.85rem;line-height:1.3">${o}</span>
+      </button>`).join("");
+    document.querySelectorAll(".stall").forEach(card => { card.onclick = () => choose(card, correct, r, false); });
+    setTimeout(playPrompt, 350);
+  }
+
+  function choose(card, targetKey, roundIdx, isShop) {
     if (locked) return;
-    const ok = card.dataset.en === target.en;
+    const ok = card.dataset.key === targetKey;
     if (ok) {
       locked = true;
       score++;
-      const price = prices[target.en];
-      coins -= price;
       document.getElementById("score").textContent = score;
-      document.getElementById("coins").textContent = coins;
       Lumio.beep(true);
       card.classList.add("correct", "correct-pop");
       document.querySelectorAll(".stall").forEach(c => c.classList.add("locked"));
 
-      const item = document.getElementById(`item${r}`);
-      item.classList.add("bought");
-      item.querySelector(".box").textContent = "✓";
-      item.querySelector(".lbl").textContent = `${target.en} — ${target.ar}`;
-
-      const line = document.createElement("div");
-      line.innerHTML = `<span>${target.en}</span><span>${price}🪙</span>`;
-      receiptLines.appendChild(line);
+      if (isShop) {
+        const price = prices[targetKey];
+        coins -= price;
+        document.getElementById("coins").textContent = coins;
+        const item = document.getElementById(`item${roundIdx % order.length}`);
+        if (item) {
+          item.classList.add("bought");
+          item.querySelector(".box").textContent = "✓";
+          item.querySelector(".lbl").textContent = `${targetKey} — ${order.find(w => w.en === targetKey)?.ar || ""}`;
+        }
+        const line = document.createElement("div");
+        line.innerHTML = `<span>${targetKey}</span><span>${price}🪙</span>`;
+        receiptLines.appendChild(line);
+      }
 
       const cart = document.getElementById("cart");
       cart.classList.add("bump");
@@ -230,7 +287,7 @@ if (!vocab.length) {
     } else {
       Lumio.beep(false);
       card.classList.add("wrong-shake", "wrong-dim");
-      // gentle -- no penalty, no coins lost, they simply try another stall
+      // gentle -- no penalty, no coins lost, they simply try another option
     }
   }
 
