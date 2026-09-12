@@ -113,6 +113,8 @@
   </button></div>
 
   <div id="optGrid" style="display:none"></div>
+  <div id="dialogueContext" style="display:none;max-width:520px;margin:0 auto 14px;color:#F5EFFF;font-weight:700;text-align:center;line-height:1.5"></div>
+  <div id="dialogueOpts" style="display:none"></div>
   <div id="tfOpts" style="display:none"></div>
 </div>
 
@@ -148,19 +150,25 @@ document.getElementById("backBtn").href = backHref;
 const lesson = window.LUMIO_LESSONS?.[level]?.[num];
 const vocab = lesson ? lesson.vocab : [];
 
+// Real 4-line dialogues from this level's own lesson content, used for
+// "what does the vision show next?" rounds -- kept lesson-aware so a round
+// never draws on a conversation from a lesson not yet reached.
+const ALL_DIALOGUES = [["So what's your actual plan for after this year? Have you decided anything?", "Honestly, I'm thinking about applying to a program abroad, if I'm brave enough.", "That's huge. Would you actually move, or just visit for a while first?", "Move eventually, I think, but I'd start by joining a summer program first.", "That sounds smart. Testing it out before committing to something that big.", "Exactly. No point diving in completely before I even know if I'll like it."], ["What do you predict will happen with technology in the next ten years?", "Honestly, I believe it'll probably change faster than we can even imagine.", "Definitely. Maybe we'll have things we can't even picture right now.", "That's kind of exciting, but also a little terrifying if I'm being honest.", "Same. The future is unpredictable, but I think that's what makes it interesting.", "Agreed. I'd rather not know everything -- surprises make life more interesting."], ["What are your actual plans this weekend? You seem busier than usual.", "I'm traveling Friday, then attending my cousin's graduation on Saturday.", "Wow, packed schedule. When are you even leaving to make that work?", "Early morning, honestly. I'm also hosting a small get-together Sunday night.", "That's a lot happening. Are you starting anything new after this weekend?", "Actually yes, I'm meeting with a mentor about a project I'm starting soon."], ["You'll never guess what happened while I was walking home yesterday.", "Tell me! Did something interrupt your walk, or did you just get soaked?", "Both, actually. It started raining right as I noticed I forgot my umbrella.", "Classic timing. What were you doing meanwhile, just running for shelter?", "Pretty much, until I arrived at a café and just waited it out completely soaked.", "That's rough, but honestly it sounds like a pretty funny story now."], ["Do you actually have to do chores at home, or is that optional for you?", "Required, unfortunately. My parents say it's part of my responsibility.", "Fair enough. I don't have to do much, but I choose to out of duty, honestly.", "That's a mature way to look at it. I usually complain before I even start.", "Same, honestly, but complaining doesn't actually get the dishes done either.", "True. Might as well just get it over with instead of dragging it out."], ["Do you usually work quickly, or do you take your time and go carefully?", "Carefully, always. I'd rather do something slowly than redo it because I rushed.", "That makes sense. I tend to work loudly and fast, then fix mistakes after.", "Honestly, that sounds stressful. Doesn't that make things harder eventually?", "Sometimes, but patiently redoing things quietly isn't really my style, unfortunately.", "Fair enough. I guess we both get there, just in completely different ways."], ["Which class do you think is more difficult, math or science, honestly?", "Science, definitely, but math is way more interesting to me personally.", "Fair. What about after school -- what's the most exciting part of your day?", "Probably just getting home and finally sitting in the most comfortable chair I own.", "Ha, relatable. Is comfort more important to you than something more expensive?", "Completely. I'd choose comfortable and affordable over expensive and impressive any day."], ["What's the plan for this weekend? Please say we're actually relaxing.", "Mostly, yeah. I want to sleep in and just catch up on everything I've missed.", "Same, honestly, but I also want to explore that new part of town.", "We could do both, hang out there Saturday and volunteer together Sunday.", "I like that balance. Relaxing and doing something meaningful in one weekend.", "Exactly. Best of both worlds, without completely wasting the whole two days."], ["Do you think we'll actually stay in touch after we graduate someday?", "Honestly, I believe we will. I think our friendship will only change a little.", "I hope so. I predict you'll travel a lot and probably achieve something huge.", "That's kind of you. I actually think you'll succeed at inventing something useful.", "Wow, big predictions from both of us. Let's remember this conversation someday.", "Definitely. We'll look back and see how close we actually got it right."], ["Is your curfew still early, or are your parents letting you be more independent?", "A little more independent now, honestly, since I've earned more of their trust.", "That's nice. Are you allowed to go out without asking permission every time?", "Mostly, as long as I still do my chores and let them know where I am.", "That sounds fair, actually. Trust seems to go both ways in your house.", "It does. I think that's why I don't mind the rules as much as I used to."], ["Do you usually speak confidently in front of people, or does it make you nervous?", "Honestly, nervously at first, but I try to speak clearly no matter how I feel.", "That's smart. Do you think it's better to speak politely or just be blunt?", "Politely, but still honestly. You can be kind and truthful at the same time.", "That's a good balance, actually. I struggle with saying things too bluntly sometimes.", "Practice helps. The more confidently you speak, the more naturally kindness comes through."], ["Between these two options, which one do you think is actually worth it?", "Honestly, the more expensive one seems more reliable, so probably worth it.", "That's reasonable. Is convenience important to you too, or just quality?", "Both, but the most useful option usually wins for me in the end.", "Fair point. I guess it depends on what you'll actually use it for daily.", "Exactly. No point picking something convenient if it's not useful long-term."], ["Were you actually studying earlier, or was that just background noise on a call?", "Honestly, I was studying while chatting a little, which probably wasn't smart.", "That explains it. I find it impossible to focus if I'm doing two things.", "Same, but I still try. Yesterday I was scrolling while my mom was cooking nearby.", "That sounds distracting either way. Did you actually get anything done though?", "Barely, honestly. I think tomorrow I'll actually just focus on one thing at a time."], ["Do you have an actual goal for next year, or are you not thinking that far?", "I do, honestly. My resolution is to challenge myself more instead of staying comfortable.", "That's a solid goal. What specifically do you hope to improve about yourself?", "Probably my confidence, if I'm being completely honest about it.", "I don't expect it to be easy, but I believe you can actually do it.", "Thanks, honestly. That kind of support makes the goal feel a lot more real."], ["Can you actually convince me your point of view is right, with real evidence?", "I can try. I think I have a fair point, even if you don't fully agree.", "I'll agree partly, honestly, but I still think you're missing something important.", "That's fine, I'm not trying to argue you into total agreement anyway.", "Good, because I respect a debate way more than someone forcing their opinion.", "Same here. That's honestly what makes this conversation actually worth having."], ["Do you feel ready for tomorrow, or do you still need more time to prepare?", "Honestly, I've practiced enough. I just need to organize my notes and rest.", "That's smart. Rest matters just as much as reviewing everything one more time.", "Exactly, over-preparing without resting just makes tomorrow harder, not easier.", "I completely agree. I'm going to review quickly, then actually get real sleep.", "Good plan. We'll both walk in tomorrow actually ready instead of exhausted."], ["Did everything go smoothly today, or did something go wrong again?", "Actually, pretty smoothly. I finally did the whole process correctly and efficiently.", "That's great! Did you do it safely too, or did you rush through it?", "Safely, properly, all of it, honestly. I even kept my notes neatly organized.", "Look at you, doing everything right for once. What changed?", "Practice, mostly. Doing something correctly the first time saves so much stress later."], ["Is your family's lifestyle similar to your grandparents', or completely different?", "Honestly, pretty different, but we still keep the most traditional customs alive.", "That's nice. What's the most colorful tradition your family actually celebrates?", "Probably our biggest holiday, it's genuinely the most colorful event of the year.", "That sounds amazing. I think traditions like that keep a culture alive, honestly.", "Completely agree. Even small customs matter more than people usually realize."], ["Were you excited for the field trip, or were you dreading the long bus ride?", "Excited, honestly, but something unexpected happened that made it even more memorable.", "What happened? Please tell me nobody got left behind or anything like that.", "Close, actually, but the teacher handled it so calmly it barely felt like a crisis.", "That's impressive. What's the actual lesson learned from that whole experience?", "Probably that staying calm handles unexpected problems way better than panicking does."], ["Looking ahead, what's the most exciting goal in your actual future plan?", "Honestly, I predict I'll achieve something I couldn't even imagine at the start of this level.", "That's a bold prediction. Do you have to work quickly toward it, or is there time?", "There's time, but I don't want to waste it either, if I'm being honest.", "Smart. This whole level has genuinely been memorable, watching everyone grow like this.", "Agreed. I can't wait to see how much closer we all get to these goals next year."]];
+const dialoguePool = ALL_DIALOGUES.slice(0, num);
+
 if (!vocab.length) {
   document.getElementById("stage").innerHTML = "<p style='padding:40px;color:#F5EFFF'>No lesson data found.</p>";
 } else {
-  const ROUNDS = Math.min(6, vocab.length);
+  const ROUNDS = 6;
+  // Round plan: read-the-ball and judge-the-prediction rounds (original
+  // mechanics) plus a "vision of a conversation" round using this lesson's
+  // real dialogue -- covers dialogues/conversations alongside vocabulary.
+  const PLAN = ["read", "judge", "vision", "read", "judge", "vision"];
   const order = Lumio.shuffle([...vocab]).slice(0, ROUNDS);
-  // Same reliable alternating pattern proven in Story Detective (read the
-  // vision / judge a prediction), reskinned as fortune-telling to match
-  // Level 6's actual grammar focus -- predictions and future plans. A
-  // streak ("Vision Power") makes the crystal ball itself glow brighter
-  // the longer the streak runs, real visual escalation rather than just a
-  // number going up.
   let r = 0, score = 0, power = 0, locked = false;
   const optGrid = document.getElementById("optGrid");
+  const dialogueOpts = document.getElementById("dialogueOpts");
+  const dialogueContext = document.getElementById("dialogueContext");
   const tfOpts = document.getElementById("tfOpts");
   const kicker = document.getElementById("kicker");
   const ballText = document.getElementById("ballText");
@@ -179,38 +187,91 @@ if (!vocab.length) {
     else if (power >= 3) ball.classList.add("power2");
   }
 
-  function playPrompt(word) { Lumio.speak(word); }
+  let currentSpeak = "";
+  function playPrompt() { Lumio.speak(currentSpeak); }
 
   function drawRound() {
     locked = false;
     document.getElementById("roundPill").textContent = `${r + 1}/${ROUNDS}`;
-    const target = order[r];
-    const isVerify = r % 2 === 1;
+    const target = order[r % order.length];
+    const type = dialoguePool.length ? PLAN[r] : (r % 2 === 1 ? "judge" : "read");
 
-    if (isVerify) {
+    optGrid.style.display = "none";
+    dialogueOpts.style.display = "none";
+    dialogueContext.style.display = "none";
+    tfOpts.style.display = "none";
+
+    if (type === "vision") {
+      drawVisionRound();
+    } else if (type === "judge") {
       kicker.textContent = "Judge the prediction";
-      optGrid.style.display = "none";
       tfOpts.style.display = "flex";
+      ballText.style.display = "block";
       const showCorrect = Math.random() < 0.5;
       const claim = showCorrect ? target.en : Lumio.shuffle(vocab.filter(v => v.en !== target.en))[0].en;
-      window.__isTrue = showCorrect;
       ballText.textContent = `"${target.ar}" = "${claim}" ?`;
+      currentSpeak = target.en;
       tfOpts.innerHTML = `
         <button class="tf-btn right" data-v="true">✅ Correct</button>
         <button class="tf-btn wrong" data-v="false">❌ Wrong</button>`;
-      document.querySelectorAll(".tf-btn").forEach(b => { b.onclick = () => verify(b, showCorrect, target); });
+      document.querySelectorAll(".tf-btn").forEach(b => { b.onclick = () => verify(b, showCorrect); });
+      setTimeout(playPrompt, 350);
     } else {
       kicker.textContent = "Read the crystal ball";
-      tfOpts.style.display = "none";
       optGrid.style.display = "grid";
+      ballText.style.display = "block";
       ballText.textContent = target.ar;
+      currentSpeak = target.en;
       const distractorPool = Lumio.shuffle(vocab.filter(v => v.en !== target.en));
       const numOptions = Math.min(3, vocab.length);
       const opts = Lumio.shuffle([target, ...distractorPool.slice(0, numOptions - 1)]);
       optGrid.innerHTML = opts.map(o => `<button class="opt-card" data-en="${o.en}">${o.en}</button>`).join("");
       document.querySelectorAll(".opt-card").forEach(card => { card.onclick = () => choose(card, target); });
+      setTimeout(playPrompt, 350);
     }
-    setTimeout(() => playPrompt(target.en), 350);
+  }
+
+  // Vision round: the crystal ball "shows" two lines of this lesson's real
+  // conversation, and the student must see what happens next -- the real
+  // third line vs. distractors from other already-taught lessons'
+  // dialogues.
+  function drawVisionRound() {
+    kicker.textContent = "A vision unfolds...";
+    ballText.style.display = "none";
+    dialogueContext.style.display = "block";
+    dialogueOpts.style.display = "grid";
+    const myDialogue = dialoguePool[num - 1] || dialoguePool[dialoguePool.length - 1];
+    dialogueContext.innerHTML = `"${myDialogue[0]}" <br>"${myDialogue[1]}" <br><span style="opacity:.7">What happens next?</span>`;
+    currentSpeak = myDialogue[1];
+    const correct = myDialogue[2];
+    const distractorPool = [];
+    dialoguePool.forEach((dlg, i) => {
+      if (i === num - 1) return;
+      [dlg[1], dlg[2], dlg[3]].forEach(line => { if (line !== correct) distractorPool.push(line); });
+    });
+    const opts = Lumio.shuffle([correct, ...Lumio.shuffle(distractorPool).slice(0, 2)]);
+    dialogueOpts.innerHTML = opts.map(o => `<button class="opt-card" data-key="${o}" style="min-height:auto;font-size:.85rem;line-height:1.3">${o}</button>`).join("");
+    document.querySelectorAll("#dialogueOpts .opt-card").forEach(card => { card.onclick = () => chooseVision(card, correct); });
+    setTimeout(playPrompt, 350);
+  }
+
+  function chooseVision(card, correct) {
+    if (locked) return;
+    const ok = card.dataset.key === correct;
+    if (ok) {
+      locked = true;
+      score++;
+      updatePower(true);
+      document.getElementById("score").textContent = score;
+      Lumio.beep(true);
+      card.classList.add("correct", "correct-pop");
+      document.querySelectorAll("#dialogueOpts .opt-card").forEach(c => c.classList.add("locked"));
+      setTimeout(() => { r++; r < ROUNDS ? drawRound() : endGame(); }, 1100);
+    } else {
+      Lumio.beep(false);
+      updatePower(false);
+      card.classList.add("wrong-shake", "wrong-dim");
+    }
   }
 
   function choose(card, target) {
@@ -259,7 +320,7 @@ if (!vocab.length) {
     document.getElementById("endcard").style.display = "flex";
   }
 
-  document.getElementById("hearBtn").onclick = () => playPrompt(order[r].en);
+  document.getElementById("hearBtn").onclick = playPrompt;
   drawRound();
 }
 </script>
