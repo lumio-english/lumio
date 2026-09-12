@@ -257,8 +257,8 @@
         <p>Every practice sentence is grounded in what a word actually means — not a random word list to memorize.</p>
       </div>
       <div class="lp-diff-card">
-        <h3>📄 Worksheets you can print</h3>
-        <p>A real printable page for every lesson, for the moments a screen isn't the right tool.</p>
+        <h3>📄 Worksheets and flashcards you can print</h3>
+        <p>A real printable homework page and flashcard set for every lesson, for the moments a screen isn't the right tool.</p>
       </div>
     </div>
   </section>
@@ -271,6 +271,29 @@
     <div class="lp-preview-frame">
       <div class="lp-preview-bar"><span></span><span></span><span></span></div>
       <img src="assets/marketing/real-lesson-screenshot.png" alt="A real Lumio lesson slide, showing the word apple with its Arabic translation and letter tiles">
+    </div>
+  </section>
+
+  <section class="mt lp-offline">
+    <h2 class="center mb">Real writing practice. Real flashcards. Off the screen.</h2>
+    <p class="center lp-offline-intro">Every single lesson, at every level, comes with two things you can print and hold: a homework sheet and a set of flashcards. Neither is an afterthought — both are written specifically for the age and stage your child is actually at.</p>
+    <div class="lp-offline-grid">
+      <div class="lp-offline-card">
+        <div class="lp-preview-frame lp-offline-frame">
+          <img src="assets/marketing/worksheet-sample.png" alt="A real Lumio homework sheet for Pre-A Lesson 1, with word tracing lines and a drawing box">
+        </div>
+        <h3>Writing exercises</h3>
+        <p><b>Who they're for:</b> every level, but the task grows with your child. Pre-A and the early levels trace and copy each word by hand, building letter formation and muscle memory before reading is even required. From Level 3 onward, the task becomes writing full original sentences in that day's grammar pattern — putting the rule to use, not just recognizing it.</p>
+        <p><b>Why it matters:</b> screen recognition and handwriting are different skills, and only one of them is practiced by tapping an answer. A short, guided writing task each lesson builds the one that a multiple-choice quiz can't.</p>
+      </div>
+      <div class="lp-offline-card">
+        <div class="lp-preview-frame lp-offline-frame">
+          <img src="assets/marketing/flashcard-sample.png" alt="A real Lumio flashcard sheet for Pre-A Lesson 1, with a picture and word on the front">
+        </div>
+        <h3>Flashcards</h3>
+        <p><b>Who they're for:</b> every level, and every parent — including parents who don't speak English themselves. Each card shows the picture and English word on one side and the Arabic translation on the other, so quizzing at home never requires knowing the answer in advance.</p>
+        <p><b>Why it matters:</b> spaced, repeated recall away from a screen is one of the most reliable ways vocabulary actually sticks. A five-minute flip-through before bed does real work that a single lesson session can't do alone.</p>
+      </div>
     </div>
   </section>
 
@@ -455,6 +478,17 @@
     .lp-preview-frame img{width:100%;display:block;border-radius:8px}
     @media (max-width:820px){
       .lp-preview{grid-template-columns:1fr;text-align:center}
+    }
+
+    /* ---------- Writing exercises & flashcards: two-up, same frame style as the lesson preview ---------- */
+    .lp-offline-intro{max-width:640px;margin:14px auto 0;color:var(--cocoa-soft,#8A7160);line-height:1.6}
+    .lp-offline-grid{display:grid;grid-template-columns:1fr 1fr;gap:36px;max-width:1000px;margin:36px auto 0}
+    .lp-offline-card h3{font-size:1.2rem;margin:18px 0 8px}
+    .lp-offline-card p{color:var(--cocoa-soft,#8A7160);line-height:1.6;margin:0 0 10px;font-size:.94rem}
+    .lp-offline-frame{padding:8px}
+    .lp-offline-frame img{width:100%;display:block;border-radius:8px}
+    @media (max-width:820px){
+      .lp-offline-grid{grid-template-columns:1fr}
     }
 
     .lp-faq-list{max-width:720px;margin:28px auto 0}
