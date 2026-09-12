@@ -145,6 +145,7 @@ document.getElementById("backBtn").href = backHref;
 
 const lesson = window.LUMIO_LESSONS?.[level]?.[num];
 const vocab = lesson ? lesson.vocab : [];
+const slug = w => w.toLowerCase().replace(/'/g, "").replace(/ /g, "-");
 
 const CREW = [
   { id: "ziad", name: "Ziad" }, { id: "sara", name: "Sara" }, { id: "omar", name: "Omar" },
@@ -165,10 +166,12 @@ if (!vocab.length) {
 } else {
   document.getElementById("crewAvatars").innerHTML = CREW.slice(0, 4).map(c => `<img src="${avatar(c)}" alt="${c.name}">`).join("");
 
-  const ROUNDS = Math.min(6, vocab.length);
-  const order = Lumio.shuffle([...vocab]).slice(0, ROUNDS);
-  // Alternate the two interaction types so the game genuinely varies round
-  // to round: odd rounds are quick-reply taps, even rounds are type-it-out.
+  const ROUNDS = 6;
+  // Round plan mixes the level's real focus (image description, general
+  // comprehension, grammar exposure through real example sentences)
+  // alongside the original vocabulary-translation rounds, rather than
+  // translation being the only thing this game practices.
+  const PLAN = ["tap", "caption", "type", "meaning", "tap", "caption"];
   let r = 0, score = 0, streak = 0, locked = false;
   const thread = document.getElementById("thread");
   const quickReplies = document.getElementById("quickReplies");
@@ -177,14 +180,15 @@ if (!vocab.length) {
 
   function scrollDown() { thread.scrollTop = thread.scrollHeight; }
 
-  function addMsg(who, text, cls) {
+  function addMsg(who, text, cls, imgSrc) {
     const row = document.createElement("div");
     row.className = `msg-row ${cls}`;
+    const photoHtml = imgSrc ? `<img src="${imgSrc}" style="width:100%;border-radius:12px;margin-bottom:6px;display:block" onerror="this.remove()">` : "";
     if (cls === "them") {
       row.innerHTML = `<img class="av" src="${avatar(who)}" alt="${who.name}">
-        <div><div class="msg-name">${who.name}</div><div class="bubble">${text}</div></div>`;
+        <div><div class="msg-name">${who.name}</div><div class="bubble">${photoHtml}${text}</div></div>`;
     } else {
-      row.innerHTML = `<div class="bubble" id="lastMeBubble">${text}</div>`;
+      row.innerHTML = `<div class="bubble" id="lastMeBubble">${photoHtml}${text}</div>`;
     }
     thread.appendChild(row);
     scrollDown();
@@ -205,14 +209,31 @@ if (!vocab.length) {
   function drawRound() {
     locked = false;
     document.getElementById("roundPill").textContent = `${r + 1}/${ROUNDS}`;
-    const target = order[r];
+    const target = Lumio.shuffle(vocab)[0];
     const who = pickCrew();
-    const isType = r % 2 === 1; // alternate: tap rounds, then type rounds
+    const roundType = PLAN[r % PLAN.length];
 
-    showTyping(who, () => {
-      addMsg(who, `How do you say <b>"${target.ar}"</b> in English? 🤔`, "them");
-      if (isType) drawTypeRound(target); else drawTapRound(target);
-    });
+    if (roundType === "tap") {
+      showTyping(who, () => {
+        addMsg(who, `How do you say <b>"${target.ar}"</b> in English? 🤔`, "them");
+        drawTapRound(target);
+      });
+    } else if (roundType === "type") {
+      showTyping(who, () => {
+        addMsg(who, `How do you say <b>"${target.ar}"</b> in English? 🤔`, "them");
+        drawTypeRound(target);
+      });
+    } else if (roundType === "caption") {
+      showTyping(who, () => {
+        addMsg(who, `look what I found 📸 what's happening here?`, "them", `../assets/vocab/${slug(target.en)}.png`);
+        drawCaptionRound(target);
+      });
+    } else if (roundType === "meaning") {
+      showTyping(who, () => {
+        addMsg(who, `"${target.example || target.en}" ... what does that mean? 🧐`, "them");
+        drawMeaningRound(target);
+      });
+    }
   }
 
   function drawTapRound(target) {
@@ -222,18 +243,46 @@ if (!vocab.length) {
     const distractorPool = Lumio.shuffle(vocab.filter(v => v.en !== target.en));
     const numOptions = Math.min(3, vocab.length);
     const opts = Lumio.shuffle([target, ...distractorPool.slice(0, numOptions - 1)]);
-    quickReplies.innerHTML = opts.map(o => `<button class="reply-chip" data-en="${o.en}">${o.en}</button>`).join("");
-    document.querySelectorAll(".reply-chip").forEach(chip => { chip.onclick = () => chooseTap(chip, target); });
+    quickReplies.innerHTML = opts.map(o => `<button class="reply-chip" data-key="${o.en}">${o.en}</button>`).join("");
+    document.querySelectorAll(".reply-chip").forEach(chip => { chip.onclick = () => chooseTap(chip, target.en, chip.textContent); });
   }
 
-  function chooseTap(chip, target) {
+  // Image-description round: crew "shares a photo" (a real vocab image) and
+  // asks what's happening -- child picks the sentence that actually
+  // describes it, from this lesson's own real example sentences.
+  function drawCaptionRound(target) {
+    typeZone.style.display = "none";
+    quickReplies.style.display = "flex";
+    hintRow.textContent = "Pick the caption that fits!";
+    const distractorPool = Lumio.shuffle(vocab.filter(v => v.en !== target.en && v.example));
+    const numOptions = Math.min(3, distractorPool.length + 1);
+    const opts = Lumio.shuffle([target, ...distractorPool.slice(0, numOptions - 1)]);
+    quickReplies.innerHTML = opts.map(o => `<button class="reply-chip" data-key="${o.en}">${o.example || o.en}</button>`).join("");
+    document.querySelectorAll(".reply-chip").forEach(chip => { chip.onclick = () => chooseTap(chip, target.en, chip.textContent); });
+  }
+
+  // Comprehension round: crew sends a full English sentence and asks what it
+  // means -- child picks the matching Arabic translation, practicing
+  // sentence-level understanding rather than single-word recall.
+  function drawMeaningRound(target) {
+    typeZone.style.display = "none";
+    quickReplies.style.display = "flex";
+    hintRow.textContent = "Pick what it means!";
+    const distractorPool = Lumio.shuffle(vocab.filter(v => v.en !== target.en));
+    const numOptions = Math.min(3, vocab.length);
+    const opts = Lumio.shuffle([target, ...distractorPool.slice(0, numOptions - 1)]);
+    quickReplies.innerHTML = opts.map(o => `<button class="reply-chip" data-key="${o.en}">${o.ar}</button>`).join("");
+    document.querySelectorAll(".reply-chip").forEach(chip => { chip.onclick = () => chooseTap(chip, target.en, chip.textContent); });
+  }
+
+  function chooseTap(chip, targetKey, replyText) {
     if (locked) return;
-    const ok = chip.dataset.en === target.en;
+    const ok = chip.dataset.key === targetKey;
     if (ok) {
       locked = true;
       document.querySelectorAll(".reply-chip").forEach(c => c.classList.add("locked"));
       Lumio.beep(true);
-      const bubble = addMsg(null, chip.textContent, "me");
+      const bubble = addMsg(null, replyText, "me");
       bubble.classList.add("correct-flash");
       onCorrect();
     } else {
