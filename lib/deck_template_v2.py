@@ -669,10 +669,10 @@ def slide_quick_check(target, distractors, idx, total_q, n, total, seed, tier="p
           </button>'''
         prompt = "Which one is it?"
         listen_btn = f'''<button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(target["en"])}')"
-                style="position:absolute;left:80px;top:280px;width:180px;height:180px;border:none;cursor:pointer;background:linear-gradient(135deg,#0D9488,#0B7A6F);
+                style="position:absolute;left:90px;top:330px;width:160px;height:160px;border:none;cursor:pointer;background:linear-gradient(135deg,#0D9488,#0B7A6F);
                        border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#fff">
-          <span style="font-size:2.4rem">&#128266;</span>
-          <span style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.9rem">Tap to hear</span>
+          <span style="font-size:2.2rem">&#128266;</span>
+          <span style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem">Tap to hear</span>
         </button>'''
     elif tier == "level1":
         positions = [(560, 230), (790, 230), (1020, 230)]
@@ -699,11 +699,12 @@ def slide_quick_check(target, distractors, idx, total_q, n, total, seed, tier="p
 
     img_block = listen_btn if tier == "preA" else f'''<div class="card" style="position:absolute;left:280px;top:190px;width:280px;height:280px;overflow:hidden;padding:0">
       <img src="assets/vocab/{slug(target['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>'''
-    prompt_pos = "left:80px;top:200px;width:220px;text-align:center" if tier == "preA" else "left:610px;top:190px;width:540px"
+    prompt_pos = "left:60px;top:180px;width:260px;text-align:center" if tier == "preA" else "left:610px;top:190px;width:540px"
+    prompt_font = "1.6rem" if tier == "preA" else "1.9rem"
     return (bg_plain() + header(f"Quick Check &bull; {idx}", n, total) + COLORSTRIP + f'''
     {img_block}
     <div style="position:absolute;{prompt_pos}">
-      <div style="display:inline-block;background:#fff;padding:10px 24px;border-radius:18px;box-shadow:0 8px 18px rgba(67,48,31,.12);font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.9rem;color:#43301F">{prompt}</div>
+      <div style="display:inline-block;background:#fff;padding:10px 24px;border-radius:18px;box-shadow:0 8px 18px rgba(67,48,31,.12);font-family:'Baloo 2',sans-serif;font-weight:800;font-size:{prompt_font};color:#43301F">{prompt}</div>
     </div>
     {buttons}
     ''')
