@@ -111,6 +111,7 @@
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="#43301F"/><path d="M16.5 8.5a5 5 0 010 7M19 6a9 9 0 010 12" stroke="#43301F" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
     </button></div>
     <div id="evidenceOpts" style="display:none"></div>
+    <div id="dialogueOpts" style="display:none"></div>
     <div id="tfOpts" style="display:none">
       <button class="tf-btn true" data-v="true">✅ TRUE</button>
       <button class="tf-btn false" data-v="false">❌ FALSE</button>
@@ -151,68 +152,119 @@ document.getElementById("backBtn").href = backHref;
 const lesson = window.LUMIO_LESSONS?.[level]?.[num];
 const vocab = lesson ? lesson.vocab : [];
 
+// Real 4-line dialogues from this level's own lesson content, used for
+// "what did the witness say next?" rounds -- kept lesson-aware so a round
+// never draws on a conversation from a lesson not yet reached.
+const ALL_DIALOGUES = [["So what did you actually do this weekend? Anything interesting happen?", "Not really exciting, honestly. I played video games and watched a movie.", "That sounds relaxing at least. I cleaned my whole room and cooked dinner.", "Wow, productive weekend. Did anyone help you with all of that?", "My little brother helped a little, mostly by getting in the way, but still.", "That counts! We also walked to the park after, so it wasn't a total waste."], ["Guess what happened to me yesterday, you're not going to believe it.", "Okay, tell me everything. Where did you even go?", "I went downtown and saw something I never expected to see there.", "What was it? And please tell me you took a picture.", "I did! I also got a free sample and ate the weirdest snack ever.", "Honestly, your yesterday sounds way more interesting than mine."], ["Did you finish the assignment, or did you completely forget about it?", "I almost forgot, honestly, but I checked my planner last night just in time.", "Lucky. I missed the deadline last week because I forgot to check my email.", "That's rough. Did you at least call the teacher to explain what happened?", "I tried, but she didn't answer, so I just emailed an apology instead.", "Smart move. Always have a backup plan when the first one doesn't work."], ["How was the concert last night? Was it as amazing as everyone said?", "Honestly, it was incredibly crowded, but the music itself was amazing.", "That sounds exciting. Was it difficult to actually see the stage though?", "A little, but not boring at all. Worth every uncomfortable moment, honestly.", "I'm kind of jealous now. My weekend was way more quiet in comparison.", "Quiet isn't always bad though. Sometimes boring weekends are exactly what you need."], ["Remember that huge crowd we got stuck in last year? What a nightmare.", "Don't remind me. The line alone took almost an hour, and then the traffic.", "At least we ended up winning that surprise prize at the end of it all.", "True, that made the whole problem worth it, looking back now.", "Honestly, it's a funny memory now, even though it wasn't funny back then.", "That's usually how it works. Bad moments become good stories eventually."], ["What's something interesting that happened to you a while ago that you still think about?", "Honestly, something from last summer still randomly pops into my head sometimes.", "Same, but for me it was something smaller, like just two days ago actually.", "Really? What happened two days ago that was so memorable?", "Nothing huge, just a really good conversation last night that stuck with me.", "That's the thing about memories -- sometimes the small ones matter more than yesterday's."], ["Can you tell me what actually happened at practice? Start from the beginning.", "Okay, so first we warmed up, then we ran through the whole routine twice.", "What happened next? Did the coach say anything about the mistakes?", "After that, yeah, but honestly it was helpful feedback, not harsh at all.", "That's good. So how did it finally end? Did everyone feel better?", "In the end, yeah, everyone left feeling like we actually improved something real."], ["Can you explain why you were late again? I want the real reason this time.", "Honestly, since my alarm didn't go off, I just completely overslept.", "That's a valid reason, not really an excuse. Did you at least text someone?", "I did, so at least everyone knew I was on my way and not just ignoring it.", "Good, because showing up late without warning is way worse, honestly.", "I know, that's exactly why I made sure to explain myself properly this time."], ["How did you feel right after the results came out? Be honest.", "Nervous the whole time, but honestly relieved once I actually saw my score.", "That makes sense. Were you disappointed with any part of it though?", "A little, but mostly just surprised it went better than I expected at all.", "I'm proud of you either way. That took real effort, not just luck.", "Thank you, honestly. I'm grateful you were there cheering me on the whole time."], ["What were you doing when I called you last night? You never picked up.", "Sorry, I was studying and completely lost track of everything around me.", "That's fair. It was raining so hard outside, I figured you were just inside.", "Exactly, and my parents were talking in the kitchen while my mom was cooking.", "Sounds cozy, honestly. We were just waiting around for the rain to stop.", "Next time text me first, I promise I'll actually answer if I'm not buried in books."], ["Tell me your actual study story. How did you go from struggling to passing?", "Honestly, I reviewed my notes every single night, even when I didn't feel like it.", "That's dedication. Did you memorize everything, or just understand the concepts?", "A mix, but mostly I practiced explaining it out loud until it made sense.", "That actually explains why you improved so much between the two tests.", "It does. Struggling at first wasn't fun, but it made passing feel so much better."], ["So how was the trip? Tell me everything from the moment you packed.", "Honestly chaotic. We packed way too much and almost missed our flight.", "Classic. Once you flew out and arrived though, was it worth the stress?", "Completely. We explored so much more than I expected in just one week.", "That sounds amazing. How long did you actually stay before you returned?", "Only five days, but it honestly felt like a much longer trip than that."], ["Okay, what actually went wrong today? You look completely exhausted.", "Where do I even start. I spilled coffee on my notes right before class.", "That's rough. Did anything else go wrong, or was that the only disaster?", "I also lost my bus pass and showed up late because of it, honestly.", "At least tell me you fixed something today, one small win at least.", "Barely. I fixed my broken headphones, so I guess today wasn't a total mistake."], ["How was the party? Did as many guests show up as you were hoping?", "Even more, honestly. The decorations looked amazing once everyone arrived.", "Nice! Was the music good, or did someone take control of the playlist?", "Both, actually. We played games for hours before we even got to the cake.", "Sounds like a great night. Did you get any interesting gifts?", "A few, but honestly the games and the people mattered way more than the gifts."], ["Tell me about the most unforgettable day you've had this year.", "Honestly, the day I woke up and just knew something good was coming.", "That's a good feeling. What happened after you got ready and left the house?", "We ended up celebrating something completely unexpected with the whole family.", "That sounds special. Is that a day you'll actually remember for years?", "Definitely. Some days you just know you'll never forget, and that was one."], ["What were you doing during the surprise announcement? I saw your face.", "Honestly, I was thinking about something completely unrelated at that exact moment.", "That explains the confused look. What was everyone else doing while you zoned out?", "They were watching closely, but I was laughing at something on my phone instead.", "Classic you. Were you even listening when they said the actual news?", "Barely, but I caught the important part while everyone else was still talking about it."], ["If I interviewed you right now, what's your favorite memory from this year?", "Honestly, probably the challenge I overcame during that group project earlier.", "That's a good answer. What about your biggest personal achievement so far?", "Learning to speak up more, actually. That felt like a real adventure for me.", "That's a great story, honestly. More people should hear that experience.", "Thanks, maybe I'll actually tell it properly one day instead of just summarizing it."], ["How was movie night? Did you actually pick something good this time?", "I chose a comedy, and honestly we laughed way more than I expected.", "Nice. Did anyone fall asleep halfway through, like always happens?", "Of course, my brother did, while he was still texting someone the whole time.", "Classic. Would you actually recommend it, or was it just okay?", "I'd recommend it, honestly. We even shared the ending with a friend who missed it."], ["You look stressed. What happened, did you lose something important?", "My backpack, actually. I searched everywhere and started getting really worried.", "That's terrifying. Did you eventually find it, or is it still missing?", "Found it, thankfully, under a bench where I'd forgotten I sat down.", "I bet you felt so relieved. That could've ruined your entire week.", "Completely. I'm being way more careful with my stuff from now on, honestly."], ["If you told your own story from this whole level, how would it start?", "Honestly, I'd say I went from nervous to excited because I finally understood past tense.", "That's a great start. What's the most unforgettable part of your story?", "Probably realizing I could actually tell a whole story without stopping to translate.", "That's something to be proud of, genuinely. Your story really did improve a lot.", "Thanks. I can't wait to see how the next chapter of this story goes."]];
+const dialoguePool = ALL_DIALOGUES.slice(0, num);
+
 if (!vocab.length) {
   document.getElementById("caseFile").innerHTML = "<p style='padding:40px;color:#FFF3D6'>No lesson data found.</p>";
 } else {
-  const ROUNDS = Math.min(6, vocab.length);
+  const ROUNDS = 6;
+  // Round plan: find-evidence and verify-clue rounds (original mechanics)
+  // plus a witness-testimony round using this lesson's real dialogue --
+  // covers dialogues/conversations alongside vocabulary judgment.
+  const PLAN = ["find", "verify", "dialogue", "find", "verify", "dialogue"];
   const order = Lumio.shuffle([...vocab]).slice(0, ROUNDS);
-  // Alternate interaction types: odd rounds ask the student to FIND the
-  // right evidence (pick the word), even rounds ask them to VERIFY a
-  // witness statement (true/false) about evidence already on the board --
-  // genuinely different judgment task, not just a re-skin, and 100%
-  // reliable since it reuses the word's own Arabic rather than generating
-  // new sentences.
   let r = 0, score = 0, locked = false;
   const evidenceRow = document.getElementById("evidenceRow");
   const evidenceOpts = document.getElementById("evidenceOpts");
+  const dialogueOpts = document.getElementById("dialogueOpts");
   const tfOpts = document.getElementById("tfOpts");
   const kicker = document.getElementById("kicker");
   const promptText = document.getElementById("promptText");
 
-  order.forEach((w, i) => {
+  for (let i = 0; i < ROUNDS; i++) {
     const card = document.createElement("div");
     card.className = "evidence";
     card.id = `ev${i}`;
     card.innerHTML = `<div class="pin"></div><div class="word">?</div><div class="stamp">CONFIRMED</div>`;
     evidenceRow.appendChild(card);
-  });
+  }
 
-  function playPrompt(word) { Lumio.speak(word); }
+  let currentSpeak = "";
+  function playPrompt() { Lumio.speak(currentSpeak); }
 
   function drawRound() {
     locked = false;
     document.getElementById("roundPill").textContent = `${r + 1}/${ROUNDS}`;
-    const target = order[r];
-    const isVerify = r % 2 === 1;
+    const target = order[r % order.length];
+    const type = dialoguePool.length ? PLAN[r] : (r % 2 === 1 ? "verify" : "find");
 
-    if (isVerify) {
+    evidenceOpts.style.display = "none";
+    dialogueOpts.style.display = "none";
+    tfOpts.style.display = "none";
+
+    if (type === "dialogue") {
+      drawDialogueRound();
+    } else if (type === "verify") {
       kicker.textContent = "Verify the clue";
-      evidenceOpts.style.display = "none";
       tfOpts.style.display = "flex";
       document.querySelectorAll(".tf-btn").forEach(b => { b.className = b.className.replace(" locked", "").replace(" chosen-right", ""); });
-      // Show either the correct word or a plausible wrong one from this
-      // lesson's own vocab -- never an invented word.
       const showCorrect = Math.random() < 0.5;
       const claim = showCorrect ? target.en : Lumio.shuffle(vocab.filter(v => v.en !== target.en))[0].en;
-      window.__isTrue = showCorrect;
       promptText.innerHTML = `A witness says: <br>"<b>${target.ar}</b>" means "<b>${claim}</b>"`;
-      document.querySelectorAll(".tf-btn").forEach(b => { b.onclick = () => verify(b, showCorrect, target, i => i); });
+      currentSpeak = target.en;
+      document.querySelectorAll(".tf-btn").forEach(b => { b.onclick = () => verify(b, showCorrect, target); });
+      setTimeout(playPrompt, 350);
     } else {
       kicker.textContent = "Find the evidence";
-      tfOpts.style.display = "none";
       evidenceOpts.style.display = "grid";
       promptText.innerHTML = `What does "<b>${target.ar}</b>" mean?`;
+      currentSpeak = target.en;
       const distractorPool = Lumio.shuffle(vocab.filter(v => v.en !== target.en));
       const numOptions = Math.min(3, vocab.length);
       const opts = Lumio.shuffle([target, ...distractorPool.slice(0, numOptions - 1)]);
       evidenceOpts.innerHTML = opts.map(o => `<button class="opt-card" data-en="${o.en}">${o.en}</button>`).join("");
       document.querySelectorAll(".opt-card").forEach(card => { card.onclick = () => chooseFind(card, target); });
+      setTimeout(playPrompt, 350);
     }
-    setTimeout(() => playPrompt(target.en), 350);
+  }
+
+  // Witness-testimony round: two lines of this lesson's real conversation
+  // are "overheard", and the detective (student) must identify what was
+  // really said next -- correct line vs. distractors from other
+  // already-taught lessons' dialogues.
+  function drawDialogueRound() {
+    kicker.textContent = "Witness testimony";
+    dialogueOpts.style.display = "grid";
+    const myDialogue = dialoguePool[num - 1] || dialoguePool[dialoguePool.length - 1];
+    promptText.innerHTML = `Overheard: <br>"<b>${myDialogue[0]}</b>" ... "<b>${myDialogue[1]}</b>" <br>What came next?`;
+    currentSpeak = myDialogue[1];
+    const correct = myDialogue[2];
+    const distractorPool = [];
+    dialoguePool.forEach((dlg, i) => {
+      if (i === num - 1) return;
+      [dlg[1], dlg[2], dlg[3]].forEach(line => { if (line !== correct) distractorPool.push(line); });
+    });
+    const opts = Lumio.shuffle([correct, ...Lumio.shuffle(distractorPool).slice(0, 2)]);
+    dialogueOpts.innerHTML = opts.map(o => `<button class="opt-card" data-key="${o}" style="min-height:auto;font-size:.85rem;line-height:1.3">${o}</button>`).join("");
+    document.querySelectorAll("#dialogueOpts .opt-card").forEach(card => { card.onclick = () => chooseDialogue(card, correct); });
+    setTimeout(playPrompt, 350);
+  }
+
+  function chooseDialogue(card, correct) {
+    if (locked) return;
+    const ok = card.dataset.key === correct;
+    if (ok) {
+      locked = true;
+      score++;
+      document.getElementById("score").textContent = score;
+      Lumio.beep(true);
+      card.classList.add("correct", "correct-pop");
+      document.querySelectorAll("#dialogueOpts .opt-card").forEach(c => c.classList.add("locked"));
+      pinEvidence(r, { en: "clue found" });
+      setTimeout(() => { r++; r < ROUNDS ? drawRound() : endGame(); }, 1200);
+    } else {
+      Lumio.beep(false);
+      card.classList.add("wrong-shake", "wrong-dim");
+    }
   }
 
   function pinEvidence(idx, target) {
     const card = document.getElementById(`ev${idx}`);
+    if (!card) return;
     card.querySelector(".word").textContent = target.en;
     card.classList.add("show");
   }
@@ -252,7 +304,6 @@ if (!vocab.length) {
       setTimeout(() => { r++; r < ROUNDS ? drawRound() : endGame(); }, 1200);
     } else {
       Lumio.beep(false);
-      // gentle -- reveal the right answer, then move on rather than stall
       pinEvidence(r, target);
       setTimeout(() => { r++; r < ROUNDS ? drawRound() : endGame(); }, 1400);
     }
@@ -266,7 +317,7 @@ if (!vocab.length) {
     document.getElementById("endcard").style.display = "flex";
   }
 
-  document.getElementById("hearBtn").onclick = () => playPrompt(order[r].en);
+  document.getElementById("hearBtn").onclick = playPrompt;
   drawRound();
 }
 </script>
