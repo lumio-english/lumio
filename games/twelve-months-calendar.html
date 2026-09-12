@@ -169,17 +169,43 @@ const MONTHS = [
   { name: "June", icon: "🏖️", sub: "Summer begins!" },
 ];
 
+// ---------- Curated phonics word bank (each entry has a confirmed real vocab image) ----------
+// Trimmed from phonics-hub/level2.json's own word lists down to the words that
+// have real illustrations -- several phonics-only words (e.g. "jam", "frog")
+// and all the sight-word units don't have picture support, so those are left
+// out here rather than shown as a broken image.
+const PHONICS_UNITS = [
+  { words: ["van", "box", "zoo"] },          // Unit 1 (lesson 1): j,v,w,x,y,z
+  { words: ["ship", "fish", "chair"] },      // Unit 2 (lesson 3): sh, ch
+  null,                                       // Unit 3 (lesson 5): th, ng -- only "this" has an image, skipped
+  { words: ["black", "clap", "slide"] },     // Unit 4 (lesson 7): l-blends
+  { words: ["crab", "tree"] },               // Unit 5 (lesson 9): r-blends
+  { words: ["star", "swim"] },               // Unit 6 (lesson 11): s-blends
+  { words: ["rain", "tree", "boat"] },       // Unit 7 (lesson 13): vowel teams
+  null,                                       // Unit 8 (lesson 15): sight words -- no picture support, skipped
+  { words: ["fish", "star", "tree", "black"] }, // Unit 9 (lesson 17): review
+];
+// Phonics units land on lesson 1, 3, 5, 7... (unit i unlocks at lesson 2i-1) --
+// so a round never draws on a sound group the child hasn't reached yet.
+function eligiblePhonicsWords(lessonNum) {
+  const words = new Set();
+  PHONICS_UNITS.forEach((unit, i) => {
+    if (unit && (2 * (i + 1) - 1) <= lessonNum) unit.words.forEach(w => words.add(w));
+  });
+  return [...words];
+}
+const phonicsPool = eligiblePhonicsWords(num);
+
 if (!vocab.length) {
   document.getElementById("playWrap").innerHTML = "<p style='padding:40px'>No lesson data found.</p>";
 } else {
-  const ROUNDS = Math.min(6, vocab.length);
-  const order = Lumio.shuffle([...vocab]).slice(0, ROUNDS);
+  const ROUNDS = 6;
   let r = 0, score = 0, locked = false;
   const optGrid = document.getElementById("optGrid");
   const calPages = document.getElementById("calPages");
   const calStrip = document.getElementById("calStrip");
 
-  MONTHS.slice(0, ROUNDS).forEach((m, i) => {
+  MONTHS.forEach((m, i) => {
     const page = document.createElement("div");
     page.className = "calPage" + (i === 0 ? " show" : "");
     page.id = `calPage${i}`;
@@ -200,34 +226,58 @@ if (!vocab.length) {
     if (dot) dot.classList.add("won");
   }
 
-  function playPrompt() { Lumio.speak(order[r].en); }
+  // Round plan: mostly phonics rounds (this level's main focus), with a
+  // sentence-pattern round mixed in so vocabulary and the lesson's own
+  // grammar pattern get covered too, not only sounds.
+  const plan = [];
+  for (let i = 0; i < ROUNDS; i++) {
+    plan.push((phonicsPool.length >= 2 && i % 3 !== 2) ? "phonics" : "sentence");
+  }
+  if (phonicsPool.length < 2) plan.forEach((_, i) => plan[i] = "sentence");
+
+  let currentTargetWord = "";
+  let currentSpeakText = "";
+
+  function playPrompt() { Lumio.speak(currentSpeakText); }
+
+  function makeCard(word, imgPath) {
+    return `
+      <button class="opt-card" data-en="${word}">
+        <div class="pic">
+          <div style="position:absolute;inset:0">${Lumio.letterTile(word)}</div>
+          <img src="${imgPath}" alt="${word}" onload="this.previousElementSibling.style.display='none'" onerror="this.remove()">
+        </div>
+        <div class="word">${word}</div>
+        <div class="check">✓</div>
+      </button>`;
+  }
 
   function drawRound() {
     locked = false;
     document.getElementById("roundPill").textContent = `${r + 1}/${ROUNDS}`;
-    const target = order[r];
-    const distractorPool = Lumio.shuffle(vocab.filter(v => v.en !== target.en));
-    const numOptions = Math.min(3, vocab.length);
-    const opts = Lumio.shuffle([target, ...distractorPool.slice(0, numOptions - 1)]);
 
-    optGrid.innerHTML = opts.map(o => `
-      <button class="opt-card" data-en="${o.en}">
-        <div class="pic">
-          <div style="position:absolute;inset:0">${Lumio.letterTile(o.en)}</div>
-          <img src="../assets/vocab/${slug(o.en)}.png" alt="${o.en}"
-               onload="this.previousElementSibling.style.display='none'" onerror="this.remove()">
-        </div>
-        <div class="word">${o.en}</div>
-        <div class="check">✓</div>
-      </button>`).join("");
+    if (plan[r] === "phonics") {
+      const words = Lumio.shuffle(phonicsPool).slice(0, Math.min(3, phonicsPool.length));
+      const target = words[0];
+      currentTargetWord = target;
+      currentSpeakText = target;
+      optGrid.innerHTML = Lumio.shuffle(words).map(w => makeCard(w, `../assets/vocab/${slug(w)}.png`)).join("");
+    } else {
+      const target = Lumio.shuffle(vocab)[0];
+      const distractorPool = Lumio.shuffle(vocab.filter(v => v.en !== target.en));
+      const opts = Lumio.shuffle([target, ...distractorPool.slice(0, 2)]);
+      currentTargetWord = target.en;
+      currentSpeakText = target.example ? target.example.en : target.en;
+      optGrid.innerHTML = opts.map(o => makeCard(o.en, `../assets/vocab/${slug(o.en)}.png`)).join("");
+    }
 
-    document.querySelectorAll(".opt-card").forEach(card => { card.onclick = () => choose(card, target); });
+    document.querySelectorAll(".opt-card").forEach(card => { card.onclick = () => choose(card); });
     setTimeout(playPrompt, 350);
   }
 
-  function choose(card, target) {
+  function choose(card) {
     if (locked) return;
-    const ok = card.dataset.en === target.en;
+    const ok = card.dataset.en === currentTargetWord;
     if (ok) {
       locked = true;
       score++;
