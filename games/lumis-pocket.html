@@ -34,6 +34,12 @@
   @keyframes bounce { 0%,100% { transform: translateY(0) scale(1); } 35% { transform: translateY(-18px) scale(1.06); } 60% { transform: translateY(4px) scale(.98); } }
   @keyframes wobble { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-6deg); } 75% { transform: rotate(6deg); } }
 
+  #letterBadge {
+    display: inline-flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 16px;
+    background: #fff; box-shadow: var(--sh-sm); font-family: var(--font-display); font-weight: 800; font-size: 1.6rem;
+    color: var(--orange); margin-bottom: 10px;
+  }
+
   #promptCard {
     background: #fff; border-radius: 24px; padding: 16px 26px; margin: 6px auto 22px;
     box-shadow: var(--sh-md); display: inline-flex; align-items: center; gap: 14px; max-width: 90%;
@@ -50,15 +56,16 @@
 
   #optGrid {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
-    max-width: 560px; margin: 0 auto;
+    max-width: 560px; margin: 0 auto; perspective: 800px;
   }
   @media (max-width: 620px) { #optGrid { grid-template-columns: repeat(2, 1fr); } }
   .opt-card {
     background: #fff; border: 5px solid transparent; border-radius: 26px; padding: 0;
     cursor: pointer; overflow: hidden; box-shadow: var(--sh-md);
     transition: transform .15s ease, border-color .2s ease, opacity .3s ease;
-    aspect-ratio: 1 / 1; position: relative;
+    aspect-ratio: 1 / 1; position: relative; transform-style: preserve-3d; touch-action: none;
   }
+  .opt-card.settling { transition: transform .4s cubic-bezier(.34,1.56,.64,1), border-color .2s ease, opacity .3s ease; }
   .opt-card:active { transform: scale(.94); }
   .opt-card .pic { position: relative; width: 100%; height: 100%; overflow: hidden; }
   .opt-card .pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 10%; box-sizing: border-box; background: #fff; }
@@ -108,11 +115,12 @@
 <div id="stageWrap">
   <div id="lumiZone"><img id="lumiImg" src="../assets/story/characters/lumi-magnify.png" alt="Lumi"></div>
 
+  <div id="letterBadge" style="display:none">A</div>
   <div id="promptCard">
     <button id="hearBtn" class="pulse" aria-label="Listen">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="#43301F"/><path d="M16.5 8.5a5 5 0 010 7M19 6a9 9 0 010 12" stroke="#43301F" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
     </button>
-    <p>Tap the picture you hear!</p>
+    <p id="promptText">Tap the picture you hear!</p>
   </div>
 
   <div id="optGrid"></div>
@@ -146,14 +154,54 @@ const lesson = window.LUMIO_LESSONS?.[level]?.[num];
 const vocab = lesson ? lesson.vocab : [];
 const slug = w => w.toLowerCase().replace(/'/g, "").replace(/ /g, "-");
 
-if (!vocab.length) {
+// ---------- Curated Pre-A letter word bank (each entry has a real vocab image) ----------
+// Kept separate from the general vocab library rather than pulling random words,
+// specifically so every option in a letter round genuinely starts with that letter.
+const LETTER_BANK = {
+  A: ["apple", "ant", "arm"], B: ["ball", "book", "banana"], C: ["cat", "car", "cup"],
+  D: ["dog", "duck", "door"], E: ["egg", "elephant", "ear"], F: ["fish", "foot", "flower"],
+  G: ["goat", "garden", "game"], H: ["hat", "house", "horse"],
+  J: ["juice", "jump", "jacket"], K: ["kite", "kitchen"], L: ["lion", "leg", "lamp"],
+  M: ["moon", "monkey", "milk"], N: ["nose", "nine", "nurse"], O: ["orange", "octopus", "oven"],
+  P: ["pen", "pig", "pizza"], Q: ["queen", "quiet"], R: ["rabbit", "rain", "roof"],
+  S: ["sun", "star", "snake"], T: ["table", "tree", "turtle"], U: ["umbrella", "under", "uncle"],
+  V: ["van", "vegetables"], W: ["water", "watch", "window"],
+  Y: ["yellow", "young"], Z: ["zebra", "zoo"],
+};
+// Which ABC lesson unlocks which letters -- so a round never quizzes a letter the
+// child hasn't been taught yet, matching wherever they currently are in Pre-A.
+function knownLetters(lessonNum) {
+  if (lessonNum >= 5) return "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+  if (lessonNum >= 4) return "ABCDEFGHIJKLMNOPQR".split("");
+  if (lessonNum >= 3) return "ABCDEFGHI".split("");
+  return []; // ABC hasn't started yet -- fall back to vocabulary rounds only
+}
+
+const eligibleLetters = knownLetters(num).filter(L => (LETTER_BANK[L] || []).length >= 2);
+
+if (!vocab.length && !eligibleLetters.length) {
   document.getElementById("stageWrap").innerHTML = "<p style='padding:40px'>No lesson data found.</p>";
 } else {
-  const ROUNDS = Math.min(6, vocab.length);
-  const order = Lumio.shuffle([...vocab]).slice(0, ROUNDS);
+  const ROUNDS = 6;
   let r = 0, score = 0, locked = false;
   const lumiImg = document.getElementById("lumiImg");
   const optGrid = document.getElementById("optGrid");
+  const letterBadge = document.getElementById("letterBadge");
+  const promptText = document.getElementById("promptText");
+
+  // Build the round plan up front: mostly letter rounds (fixed so every option
+  // really does start with the target letter), with a vocabulary-in-a-sentence
+  // round mixed in when this lesson's own vocab supports it (covers vocabulary
+  // and sentence patterns too, not only letters).
+  const plan = [];
+  for (let i = 0; i < ROUNDS; i++) {
+    if (eligibleLetters.length && (i % 3 !== 2 || vocab.length < 3)) {
+      plan.push({ type: "letter" });
+    } else {
+      plan.push({ type: "sentence" });
+    }
+  }
+  if (!eligibleLetters.length) plan.forEach(p => p.type = "sentence");
 
   // sticker row set up once we know round count
   const stickerRow = document.getElementById("stickerRow");
@@ -164,8 +212,23 @@ if (!vocab.length) {
     stickerRow.appendChild(s);
   }
 
-  function playPrompt() {
-    Lumio.speak(order[r].en);
+  let currentTargetWord = "";
+  let currentSpeakText = "";
+
+  function playPrompt() { Lumio.speak(currentSpeakText); }
+
+  function makeCard(word, imgPath) {
+    const card = document.createElement("button");
+    card.className = "opt-card";
+    card.dataset.en = word;
+    card.innerHTML = `
+      <div class="pic">
+        <div style="position:absolute;inset:0">${Lumio.letterTile(word)}</div>
+        <img src="${imgPath}" alt="${word}" onload="this.previousElementSibling.style.display='none'" onerror="this.remove()">
+      </div>
+      <div class="check">✓</div>`;
+    attachTilt(card);
+    return card;
   }
 
   function drawRound() {
@@ -173,32 +236,39 @@ if (!vocab.length) {
     document.getElementById("roundPill").textContent = `${r + 1}/${ROUNDS}`;
     lumiImg.src = "../assets/story/characters/lumi-magnify.png";
     lumiImg.className = "";
+    optGrid.innerHTML = "";
 
-    const target = order[r];
-    const distractorPool = Lumio.shuffle(vocab.filter(v => v.en !== target.en));
-    const numOptions = Math.min(3, vocab.length);
-    const opts = Lumio.shuffle([target, ...distractorPool.slice(0, numOptions - 1)]);
+    const roundType = plan[r].type;
 
-    optGrid.innerHTML = opts.map(o => `
-      <button class="opt-card" data-en="${o.en}">
-        <div class="pic">
-          <div style="position:absolute;inset:0">${Lumio.letterTile(o.en)}</div>
-          <img src="../assets/vocab/${slug(o.en)}.png" alt="${o.en}"
-               onload="this.previousElementSibling.style.display='none'" onerror="this.remove()">
-        </div>
-        <div class="check">✓</div>
-      </button>`).join("");
+    if (roundType === "letter") {
+      const L = Lumio.shuffle(eligibleLetters)[0];
+      const words = Lumio.shuffle(LETTER_BANK[L]).slice(0, Math.min(3, LETTER_BANK[L].length));
+      const target = words[0];
+      currentTargetWord = target;
+      currentSpeakText = target;
+      letterBadge.style.display = "inline-flex";
+      letterBadge.textContent = L;
+      promptText.textContent = `Find "${target}"!`;
+      Lumio.shuffle(words).forEach(w => optGrid.appendChild(makeCard(w, `../assets/vocab/${slug(w)}.png`)));
+    } else {
+      // Sentence/vocabulary round: reuses this lesson's own real vocab + sentence pattern
+      letterBadge.style.display = "none";
+      const target = Lumio.shuffle(vocab)[0];
+      const distractorPool = Lumio.shuffle(vocab.filter(v => v.en !== target.en));
+      const opts = Lumio.shuffle([target, ...distractorPool.slice(0, 2)]);
+      currentTargetWord = target.en;
+      currentSpeakText = target.example ? target.example.en : `This is a ${target.en}`;
+      promptText.textContent = `Which one is it?`;
+      opts.forEach(o => optGrid.appendChild(makeCard(o.en, `../assets/vocab/${slug(o.en)}.png`)));
+    }
 
-    document.querySelectorAll(".opt-card").forEach(card => {
-      card.onclick = () => choose(card, target);
-    });
-
+    document.querySelectorAll(".opt-card").forEach(card => { card.onclick = () => choose(card); });
     setTimeout(playPrompt, 350);
   }
 
-  function choose(card, target) {
+  function choose(card) {
     if (locked) return;
-    const ok = card.dataset.en === target.en;
+    const ok = card.dataset.en === currentTargetWord;
     if (ok) {
       locked = true;
       score++;
@@ -222,11 +292,38 @@ if (!vocab.length) {
     }
   }
 
+  // ---------- Subtle drag-to-tilt on each card (visual enhancement, not required to play) ----------
+  function attachTilt(card) {
+    let dragging = false, startX = 0, startY = 0, moved = false;
+    card.addEventListener("pointerdown", (e) => {
+      if (card.classList.contains("locked")) return;
+      dragging = true; moved = false; startX = e.clientX; startY = e.clientY;
+      card.classList.remove("settling");
+    });
+    card.addEventListener("pointermove", (e) => {
+      if (!dragging) return;
+      const dx = e.clientX - startX, dy = e.clientY - startY;
+      if (Math.abs(dx) + Math.abs(dy) > 4) moved = true;
+      const ry = Math.max(-20, Math.min(20, dx * 0.25));
+      const rx = Math.max(-16, Math.min(16, -dy * 0.2));
+      card.style.transform = `rotateY(${ry}deg) rotateX(${rx}deg)`;
+    });
+    function release() {
+      if (!dragging) return;
+      dragging = false;
+      card.classList.add("settling");
+      card.style.transform = "rotateY(0deg) rotateX(0deg)";
+      if (!moved) card.click();
+    }
+    card.addEventListener("pointerup", release);
+    card.addEventListener("pointercancel", release);
+  }
+
   function endGame() {
     Lumio.confetti(90);
     const pct = Math.round((score / ROUNDS) * 100);
     Lumio.speak(pct >= 80 ? "Wonderful! You found every picture!" : "Great listening! Let's play again soon!");
-    document.getElementById("finalScore").textContent = `You found ${score} out of ${ROUNDS} pictures!`;
+    document.getElementById("finalScore").textContent = `You found ${score} out of ${ROUNDS}!`;
     document.getElementById("endcard").style.display = "flex";
   }
 
