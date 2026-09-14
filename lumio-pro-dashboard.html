@@ -189,7 +189,7 @@ tbody tr:last-child td{border-bottom:none;}
       <div class="le" id="le"></div>
     </div>
     <button class="lbtn" onclick="doLogin()">Sign In</button>
-    <div class="lh">SS/LP agents: username = your CRM name &nbsp;·&nbsp; password = <strong>1234</strong></div>
+    <div class="lh">Teachers: sign in with your name and PIN from the Team tab.</div>
   </div>
 </div>
 
@@ -494,7 +494,7 @@ async function doLogin() {
   uEl.classList.remove('err'); pEl.classList.remove('err'); eEl.style.display='none';
   const acc = await resolveLogin(uEl.value, pEl.value);
   if (!acc) {
-    eEl.textContent = 'Not recognised. Agents: use your CRM name + password 1234. Admin: use admin credentials.';
+    eEl.textContent = 'Not recognised. Teachers: use your name and PIN from the Team tab. Admin: use admin credentials.';
     eEl.style.display='block'; uEl.classList.add('err'); pEl.classList.add('err');
     pEl.value=''; pEl.focus(); return;
   }
