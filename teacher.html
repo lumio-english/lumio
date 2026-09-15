@@ -162,6 +162,99 @@
     background:var(--td-coral);color:#fff;border-radius:99px;font-size:.65rem;font-weight:800;margin-left:4px;
   }
 
+  /* ---------- Week calendar ---------- */
+  .td-cal-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}
+  .td-cal-nav{display:flex;align-items:center;gap:6px}
+  .td-cal-nav button{
+    padding:6px 12px;border-radius:8px;border:1px solid var(--td-border);background:#fff;
+    font-weight:700;font-size:.8rem;cursor:pointer;color:var(--td-ink-soft);
+    transition:transform .12s ease,border-color .15s ease,color .15s ease;
+  }
+  .td-cal-nav button:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark);transform:translateY(-1px)}
+  .td-cal-nav button:active{transform:translateY(0) scale(.95)}
+  .td-cal-range{font-weight:800;font-size:.9rem}
+  .td-cal-tz{font-size:.76rem;color:var(--td-muted);font-weight:600;margin-left:auto}
+  .td-cal-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:.74rem;font-weight:700;color:var(--td-muted);margin:8px 0 4px}
+  .td-cal-legend span{display:inline-flex;align-items:center;gap:5px}
+  .td-cal-legend i{width:9px;height:9px;border-radius:2px;display:inline-block}
+  .td-cal-wrap{
+    display:grid;grid-template-columns:56px repeat(7,1fr);border:1px solid var(--td-border);
+    border-radius:12px;overflow:hidden;background:#fff;margin-top:10px;
+  }
+  .td-cal-corner{border-bottom:1px solid var(--td-border);border-right:1px solid var(--td-border-soft);background:var(--td-surface)}
+  .td-cal-daycol-head{
+    border-bottom:1px solid var(--td-border);border-right:1px solid var(--td-border-soft);background:var(--td-surface);
+    text-align:center;padding:9px 4px;
+  }
+  .td-cal-daycol-head:last-child{border-right:none}
+  .td-cal-daycol-head .dow{font-size:.7rem;font-weight:800;color:var(--td-muted);text-transform:uppercase}
+  .td-cal-daycol-head .dnum{font-size:.92rem;font-weight:800;margin-top:2px}
+  .td-cal-daycol-head.today .dnum{color:var(--td-indigo)}
+  .td-cal-timegutter{border-right:1px solid var(--td-border-soft);position:relative}
+  .td-cal-timegutter .tg-label{
+    position:absolute;right:6px;transform:translateY(-50%);font-size:.68rem;font-weight:700;color:var(--td-muted);
+  }
+  .td-cal-daycol{border-right:1px solid var(--td-border-soft);position:relative;background:#fff}
+  .td-cal-daycol:last-child{border-right:none}
+  .td-cal-daycol.today{background:#FAFAFF}
+  .td-cal-slot{
+    position:absolute;left:0;right:0;border-top:1px solid var(--td-border-soft);cursor:pointer;
+    transition:background .12s ease;
+  }
+  .td-cal-slot:hover{background:var(--td-indigo-soft,#EDE9FE)}
+  .td-cal-slot .create-hint{
+    display:none;align-items:center;justify-content:center;height:100%;font-size:.72rem;font-weight:700;
+    color:var(--td-indigo-dark);
+  }
+  .td-cal-slot:hover .create-hint{display:flex}
+  .td-cal-block{
+    position:absolute;left:2px;right:2px;border-radius:7px;padding:4px 6px;overflow:hidden;cursor:pointer;
+    font-size:.68rem;line-height:1.25;border-left:3px solid var(--td-indigo);background:var(--td-indigo-soft,#EDE9FE);
+    color:var(--td-indigo-dark,#3f2fa8);z-index:1;transition:box-shadow .12s ease,transform .12s ease;
+  }
+  .td-cal-block:hover{box-shadow:0 3px 10px rgba(0,0,0,.12);transform:translateY(-1px);z-index:2}
+  .td-cal-block .cb-title{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .td-cal-block .cb-meta{font-weight:600;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .td-cal-block.status-completed{border-left-color:var(--td-teal);background:var(--td-teal-soft);color:#0d6b5c}
+  .td-cal-block.status-cancelled{border-left-color:var(--td-coral);background:var(--td-coral-soft);color:#a33;opacity:.75}
+  .td-cal-block.needs-attn{border-left-color:var(--td-coral)}
+  .td-cal-nowline{position:absolute;left:0;right:0;height:0;border-top:2px solid var(--td-coral);z-index:3}
+  .td-cal-nowline::before{
+    content:"";position:absolute;left:-4px;top:-4px;width:8px;height:8px;border-radius:50%;background:var(--td-coral);
+  }
+
+  /* ---------- Course details modal ---------- */
+  .td-cd-status{
+    display:inline-block;padding:2px 10px;border-radius:99px;font-size:.7rem;font-weight:800;
+    background:var(--td-indigo-soft,#EDE9FE);color:var(--td-indigo-dark,#3f2fa8);margin-left:8px;vertical-align:middle;
+  }
+  .td-cd-status.completed{background:var(--td-teal-soft);color:#0d6b5c}
+  .td-cd-status.cancelled{background:var(--td-coral-soft);color:#a33}
+  .td-cd-row{display:flex;gap:10px;align-items:flex-start;margin:14px 0}
+  .td-cd-row .ic{font-size:1rem;flex-shrink:0;margin-top:2px;opacity:.7}
+  .td-cd-row .val{flex:1;min-width:0}
+  .td-cd-row .val .lbl{font-size:.72rem;font-weight:700;color:var(--td-muted);text-transform:uppercase;letter-spacing:.3px}
+  .td-cd-row .val .main{font-weight:800;font-size:.92rem;margin-top:2px}
+  .td-cd-row .val .sub{font-size:.78rem;color:var(--td-muted);font-weight:600}
+  .td-cd-students{max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+  .td-cd-student{
+    display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:9px;background:var(--td-bg);
+    border:1px solid var(--td-border-soft);font-size:.84rem;font-weight:700;
+  }
+  .td-cd-student .av{
+    width:26px;height:26px;border-radius:50%;background:var(--td-indigo-soft,#EDE9FE);color:var(--td-indigo-dark);
+    display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:800;flex-shrink:0;
+  }
+  .td-cd-head{display:flex;align-items:center;gap:6px}
+  .td-cd-head-acts{margin-left:auto;display:flex;gap:4px}
+  .td-cd-head-acts button{
+    width:30px;height:30px;border-radius:8px;border:1px solid var(--td-border);background:#fff;
+    cursor:pointer;font-size:.9rem;color:var(--td-ink-soft);
+    transition:transform .12s ease,border-color .15s ease,color .15s ease;
+  }
+  .td-cd-head-acts button:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark);transform:translateY(-1px)}
+  .td-cd-head-acts button.danger:hover{border-color:var(--td-coral);color:var(--td-coral)}
+
   /* ---------- Leads ---------- */
   .td-lead-row{
     display:flex;align-items:center;gap:14px;background:var(--td-bg);border:1px solid var(--td-border);
@@ -676,20 +769,65 @@
           <option value="mine">My classes</option>
           <option value="all">All classes</option>
         </select>
+        <div class="td-chip-row" style="flex-shrink:0">
+          <button class="td-chip active" id="scheduleViewCalendar" type="button">📅 Calendar</button>
+          <button class="td-chip" id="scheduleViewAgenda" type="button">☰ Agenda</button>
+        </div>
         <button class="td-btn td-btn-primary" id="bookClassBtn">+ Book a class</button>
       </div>
-      <div class="td-tools" style="margin-top:12px">
-        <div class="td-chip-row" id="scheduleRangeChips">
-          <button class="td-chip active" data-range="upcoming">Upcoming</button>
-          <button class="td-chip" data-range="today">Today</button>
-          <button class="td-chip" data-range="week">This week</button>
-          <button class="td-chip" data-range="needs-attendance">Needs attendance <span id="needsAttendanceCount" style="display:none"></span></button>
-          <button class="td-chip" data-range="past">Past</button>
-          <button class="td-chip" data-range="all">All</button>
+
+      <!-- ===== Week calendar view (default) ===== -->
+      <div id="scheduleCalendarView">
+        <div class="td-cal-toolbar">
+          <div class="td-cal-nav">
+            <button type="button" id="calTodayBtn">today</button>
+            <button type="button" id="calPrevBtn">‹</button>
+            <button type="button" id="calNextBtn">›</button>
+          </div>
+          <div class="td-cal-range" id="calRangeLabel"></div>
+          <div class="td-cal-tz" id="calTzLabel"></div>
+        </div>
+        <div class="td-cal-legend">
+          <span><i style="background:var(--td-indigo-soft,#EDE9FE);border:1px solid var(--td-indigo)"></i>Scheduled</span>
+          <span><i style="background:var(--td-teal-soft);border:1px solid var(--td-teal)"></i>Completed</span>
+          <span><i style="background:var(--td-coral-soft);border:1px solid var(--td-coral)"></i>Needs attention / cancelled</span>
+        </div>
+        <div id="calGridScroll" style="overflow-x:auto">
+          <div class="td-cal-wrap" id="calGrid"></div>
+        </div>
+        <div class="td-empty" id="calEmptyHint" style="display:none">No classes booked this week yet — click any empty slot to book one.</div>
+      </div>
+
+      <!-- ===== Agenda (list) view ===== -->
+      <div id="scheduleAgendaView" style="display:none">
+        <div class="td-tools" style="margin-top:12px">
+          <div class="td-chip-row" id="scheduleRangeChips">
+            <button class="td-chip active" data-range="upcoming">Upcoming</button>
+            <button class="td-chip" data-range="today">Today</button>
+            <button class="td-chip" data-range="week">This week</button>
+            <button class="td-chip" data-range="needs-attendance">Needs attendance <span id="needsAttendanceCount" style="display:none"></span></button>
+            <button class="td-chip" data-range="past">Past</button>
+            <button class="td-chip" data-range="all">All</button>
+          </div>
+        </div>
+        <div id="scheduleAgenda" class="mt"></div>
+        <div class="td-empty" id="scheduleEmpty" style="display:none">No classes booked in this range yet.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Course details modal (click a calendar block) ===== -->
+  <div class="td-overlay" id="courseDetailsOverlay">
+    <div class="td-modal-box" id="courseDetailsBox">
+      <div class="td-cd-head">
+        <h3 style="margin:0">Course Details<span class="td-cd-status" id="cdStatus"></span></h3>
+        <div class="td-cd-head-acts">
+          <button type="button" id="cdEditBtn" title="Edit">✎</button>
+          <button type="button" class="danger" id="cdDeleteBtn" title="Remove">🗑</button>
+          <button type="button" id="cdCloseBtn" title="Close">✕</button>
         </div>
       </div>
-      <div id="scheduleAgenda" class="mt"></div>
-      <div class="td-empty" id="scheduleEmpty" style="display:none">No classes booked in this range yet.</div>
+      <div id="cdBody"></div>
     </div>
   </div>
 
@@ -2233,6 +2371,219 @@
     });
   }
 
+  // ================= Week calendar view =================
+  const CAL_START_HOUR = 6;   // 06:00
+  const CAL_END_HOUR = 23;    // 23:00
+  const CAL_ROW_MIN = 30;     // one grid row = 30 minutes
+  const CAL_ROW_PX = 34;
+  const calGrid = document.getElementById("calGrid");
+  const calRangeLabel = document.getElementById("calRangeLabel");
+  const calTzLabel = document.getElementById("calTzLabel");
+  const calEmptyHint = document.getElementById("calEmptyHint");
+  let calWeekStart = mondayOf(new Date());
+
+  function mondayOf(d) {
+    const x = new Date(d); x.setHours(0, 0, 0, 0);
+    const day = x.getDay(); // 0=Sun..6=Sat
+    const diff = day === 0 ? -6 : 1 - day;
+    x.setDate(x.getDate() + diff);
+    return x;
+  }
+  function toDateStr(d) { return d.toISOString().slice(0, 10); }
+  function fmtHour(h) {
+    const ampm = h >= 12 ? "PM" : "AM";
+    const h12 = h % 12 === 0 ? 12 : h % 12;
+    return `${h12}:00 ${ampm}`;
+  }
+  function classEndMinutes(c) {
+    const [h, m] = c.startTime.split(":").map(Number);
+    return h * 60 + m + Number(c.durationMinutes || 45);
+  }
+  function classNeedsAttention(c) {
+    return c.status !== "cancelled" && !LumioSchedule.completionState(c).complete && c.date <= LumioSchedule.todayStr();
+  }
+
+  function renderWeekView() {
+    if (!window.LumioSchedule || !window.LumioProfiles) { calGrid.innerHTML = ""; return; }
+    const scope = scheduleScope.value;
+    const activeTeacherId = LumioProfiles.getCurrentTeacherId();
+    const days = [];
+    for (let i = 0; i < 7; i++) { const d = new Date(calWeekStart); d.setDate(d.getDate() + i); days.push(d); }
+    const from = toDateStr(days[0]), to = toDateStr(days[6]);
+    calRangeLabel.textContent = `${from} - ${to}`;
+    calTzLabel.textContent = "🌐 " + Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    let classes = LumioSchedule.listClasses({ from, to });
+    if (scope === "mine" && activeTeacherId) classes = classes.filter(c => c.teacherId === activeTeacherId);
+    calEmptyHint.style.display = classes.length ? "none" : "block";
+
+    const totalRows = ((CAL_END_HOUR - CAL_START_HOUR) * 60) / CAL_ROW_MIN;
+    const gridHeightPx = totalRows * CAL_ROW_PX;
+    const todayStr = LumioSchedule.todayStr();
+    const dow = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+    let html = `<div class="td-cal-corner"></div>`;
+    days.forEach((d, i) => {
+      const isToday = toDateStr(d) === todayStr;
+      html += `<div class="td-cal-daycol-head${isToday ? " today" : ""}">
+        <div class="dow">${dow[i]}</div>
+        <div class="dnum">${d.getMonth() + 1}.${d.getDate()}</div>
+      </div>`;
+    });
+
+    html += `<div class="td-cal-timegutter" style="height:${gridHeightPx}px">`;
+    for (let r = 0; r <= totalRows; r++) {
+      const mins = CAL_START_HOUR * 60 + r * CAL_ROW_MIN;
+      if (mins % 60 === 0) {
+        html += `<div class="tg-label" style="top:${r * CAL_ROW_PX}px">${fmtHour(mins / 60)}</div>`;
+      }
+    }
+    html += `</div>`;
+
+    days.forEach(d => {
+      const dateStr = toDateStr(d);
+      const isToday = dateStr === todayStr;
+      let col = `<div class="td-cal-daycol${isToday ? " today" : ""}" data-date="${dateStr}" style="height:${gridHeightPx}px">`;
+      for (let r = 0; r < totalRows; r++) {
+        const mins = CAL_START_HOUR * 60 + r * CAL_ROW_MIN;
+        const hh = String(Math.floor(mins / 60)).padStart(2, "0");
+        const mm = String(mins % 60).padStart(2, "0");
+        col += `<div class="td-cal-slot" style="top:${r * CAL_ROW_PX}px;height:${CAL_ROW_PX}px" data-time="${hh}:${mm}">
+          <div class="create-hint">+ Create</div>
+        </div>`;
+      }
+      const dayClasses = classes.filter(c => c.date === dateStr);
+      dayClasses.forEach(c => {
+        const [h, m] = c.startTime.split(":").map(Number);
+        const startMin = h * 60 + m;
+        const endMin = classEndMinutes(c);
+        const top = ((startMin - CAL_START_HOUR * 60) / CAL_ROW_MIN) * CAL_ROW_PX;
+        const height = Math.max(((endMin - startMin) / CAL_ROW_MIN) * CAL_ROW_PX, 20);
+        const statusClass = c.status === "cancelled" ? "status-cancelled" : (c.status === "completed" ? "status-completed" : "");
+        const attnClass = classNeedsAttention(c) ? "needs-attn" : "";
+        const title = `English Club${c.level ? " · " + c.level : ""}${c.lessonNumber ? " · Lesson " + c.lessonNumber : ""}`;
+        col += `<div class="td-cal-block ${statusClass} ${attnClass}" style="top:${top}px;height:${height}px" data-class-id="${c.id}" title="${title} — ${c.students.map(s=>s.studentName).join(', ')}">
+          <div class="cb-title">${fmtTime(c.startTime)} · ${c.students.length}/${c.students.length} student${c.students.length===1?"":"s"}</div>
+          <div class="cb-meta">${c.level || c.notes || "Class"}</div>
+        </div>`;
+      });
+      if (isToday) {
+        const now = new Date();
+        const nowMin = now.getHours() * 60 + now.getMinutes();
+        if (nowMin >= CAL_START_HOUR * 60 && nowMin <= CAL_END_HOUR * 60) {
+          const top = ((nowMin - CAL_START_HOUR * 60) / CAL_ROW_MIN) * CAL_ROW_PX;
+          col += `<div class="td-cal-nowline" style="top:${top}px"></div>`;
+        }
+      }
+      col += `</div>`;
+      html += col;
+    });
+
+    calGrid.innerHTML = html;
+    calGrid.style.setProperty("--cal-rows", totalRows);
+
+    calGrid.querySelectorAll(".td-cal-slot").forEach(slot => {
+      slot.addEventListener("click", () => {
+        const dateStr = slot.parentElement.dataset.date;
+        openClassModal(null, { date: dateStr, time: slot.dataset.time });
+      });
+    });
+    calGrid.querySelectorAll(".td-cal-block").forEach(block => {
+      block.addEventListener("click", e => {
+        e.stopPropagation();
+        const c = LumioSchedule.getClass(block.dataset.classId);
+        if (c) openCourseDetails(c);
+      });
+    });
+  }
+
+  document.getElementById("calTodayBtn").onclick = () => { calWeekStart = mondayOf(new Date()); renderWeekView(); };
+  document.getElementById("calPrevBtn").onclick = () => { calWeekStart.setDate(calWeekStart.getDate() - 7); renderWeekView(); };
+  document.getElementById("calNextBtn").onclick = () => { calWeekStart.setDate(calWeekStart.getDate() + 7); renderWeekView(); };
+
+  // ---- Calendar / Agenda toggle ----
+  const scheduleCalendarView = document.getElementById("scheduleCalendarView");
+  const scheduleAgendaView = document.getElementById("scheduleAgendaView");
+  const scheduleViewCalendar = document.getElementById("scheduleViewCalendar");
+  const scheduleViewAgenda = document.getElementById("scheduleViewAgenda");
+  scheduleViewCalendar.onclick = () => {
+    scheduleViewCalendar.classList.add("active"); scheduleViewAgenda.classList.remove("active");
+    scheduleCalendarView.style.display = ""; scheduleAgendaView.style.display = "none";
+    renderWeekView();
+  };
+  scheduleViewAgenda.onclick = () => {
+    scheduleViewAgenda.classList.add("active"); scheduleViewCalendar.classList.remove("active");
+    scheduleAgendaView.style.display = ""; scheduleCalendarView.style.display = "none";
+    renderSchedule();
+  };
+
+  // ---- Course details modal (opened by clicking a calendar block) ----
+  const courseDetailsOverlay = document.getElementById("courseDetailsOverlay");
+  let cdClassId = null;
+  function openCourseDetails(c) {
+    cdClassId = c.id;
+    const teacher = c.teacherId ? LumioProfiles.getTeacher(c.teacherId) : null;
+    const statusEl = document.getElementById("cdStatus");
+    statusEl.textContent = c.status === "cancelled" ? "Cancelled" : (c.status === "completed" ? "Completed" : "Wait");
+    statusEl.className = "td-cd-status" + (c.status === "cancelled" ? " cancelled" : (c.status === "completed" ? " completed" : ""));
+    const initials = n => (n || "?").trim().split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase();
+    const studentsHtml = c.students.map(s => `
+      <div class="td-cd-student">
+        <div class="av">${initials(s.studentName)}</div>
+        <span style="flex:1">${s.studentName}</span>
+        ${attendanceBadge(s.attendance)}
+      </div>`).join("");
+    document.getElementById("cdBody").innerHTML = `
+      <div class="td-cd-row">
+        <div class="ic">🎯</div>
+        <div class="val">
+          <div class="main">${c.level || "English Club"}${c.lessonNumber ? " · Lesson " + c.lessonNumber : ""}</div>
+          <div class="sub">${fmtDayLabel(c.date)} (${c.date}) ${fmtTime(c.startTime)}${c.durationMinutes ? " – " + fmtTime(minutesToHM(classEndMinutes(c))) : ""}</div>
+        </div>
+      </div>
+      <div class="td-cd-row">
+        <div class="ic">🧑‍🏫</div>
+        <div class="val">
+          <div class="lbl">Teacher</div>
+          <div class="main">${teacher ? teacher.name : (c.teacherName || "Unassigned")}</div>
+        </div>
+      </div>
+      ${c.meetingLink ? `<div class="td-cd-row"><div class="ic">🔗</div><div class="val"><div class="lbl">Meeting link</div><a class="main" href="${c.meetingLink}" target="_blank" rel="noopener" style="color:var(--td-indigo)">${c.meetingLink}</a></div></div>` : ""}
+      ${c.notes ? `<div class="td-cd-row"><div class="ic">📝</div><div class="val"><div class="lbl">Notes</div><div class="sub">${c.notes}</div></div></div>` : ""}
+      <div class="td-cd-row">
+        <div class="ic">👥</div>
+        <div class="val" style="width:100%">
+          <div class="lbl" style="margin-bottom:6px">${c.students.length} student${c.students.length === 1 ? "" : "s"} in class</div>
+          <div class="td-cd-students">${studentsHtml}</div>
+        </div>
+      </div>`;
+    courseDetailsOverlay.classList.add("show");
+  }
+  function minutesToHM(mins) {
+    const h = Math.floor(mins / 60) % 24, m = mins % 60;
+    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+  }
+  function closeCourseDetails() { courseDetailsOverlay.classList.remove("show"); cdClassId = null; }
+  document.getElementById("cdCloseBtn").onclick = closeCourseDetails;
+  courseDetailsOverlay.onclick = e => { if (e.target === courseDetailsOverlay) closeCourseDetails(); };
+  document.getElementById("cdEditBtn").onclick = () => {
+    const c = LumioSchedule.getClass(cdClassId);
+    closeCourseDetails();
+    if (c) openClassModal(c);
+  };
+  document.getElementById("cdDeleteBtn").onclick = async () => {
+    const c = LumioSchedule.getClass(cdClassId);
+    if (!c) return;
+    const names = c.students.map(s => s.studentName).join(", ");
+    const ok = await confirmDialog(`Remove this class with ${names}?`, "Remove");
+    if (ok) {
+      LumioSchedule.removeClass(c.id);
+      closeCourseDetails();
+      renderWeekView();
+      showToast("Class removed.");
+    }
+  };
+
   function renderClsGroupPicker(presetKey) {
     const clsGroupPicker = document.getElementById("clsGroupPicker");
     clsGroupPicker.innerHTML = "";
@@ -2341,7 +2692,7 @@
     clsLessonSelect.value = String(guess);
   }
 
-  function openClassModal(c) {
+  function openClassModal(c, prefill) {
     editingClassId = c ? c.id : null;
     document.getElementById("classModalTitle").textContent = c ? "Edit class" : "Book a group class";
     if (c) {
@@ -2358,8 +2709,12 @@
       renderClsLessonOptions(c.lessonNumber);
     } else {
       renderClsGroupPicker();
-      clsDateInput.value = LumioSchedule.todayStr();
-      clsTimeInput.value = "16:00";
+      // A slot clicked directly on the week calendar prefills date/time
+      // with exactly where the teacher clicked, same as the reference
+      // "+ Create" cell behavior — falls back to today/4pm when opened
+      // from the plain "+ Book a class" button instead.
+      clsDateInput.value = (prefill && prefill.date) || LumioSchedule.todayStr();
+      clsTimeInput.value = (prefill && prefill.time) || "16:00";
       clsDurationSelect.value = "45";
       clsNotesInput.value = "";
       document.getElementById("clsMeetingLink").value = "";
@@ -2404,7 +2759,7 @@
         LumioSchedule.addClass(payload);
       }
       closeClassModal();
-      renderSchedule();
+      renderScheduleActive();
       const names = picked.map(s => s.name).join(", ");
       showToast(wasEditing ? "Class updated." : `Class booked with ${names}.`, "success");
     } catch (e) {
@@ -2420,8 +2775,14 @@
       renderSchedule();
     });
   });
-  scheduleScope.addEventListener("change", renderSchedule);
-  renderSchedule();
+  function renderScheduleActive() {
+    if (scheduleCalendarView.style.display === "none") renderSchedule();
+    else renderWeekView();
+    updateNeedsAttendanceBadge();
+  }
+  scheduleScope.addEventListener("change", renderScheduleActive);
+  renderWeekView();
+  updateNeedsAttendanceBadge();
 
   // ================= Leads (placement test submissions) =================
   const leadsList = document.getElementById("leadsList");
@@ -2662,7 +3023,7 @@
 
     const ok = rosterRes.ok && scheduleRes.ok && leadsRes.ok;
     if (ok) {
-      renderRosterCards(); renderTable(); renderTeamGrid(); renderSchedule(); renderLeads(); updateLeadsBadge(); renderInactivity();
+      renderRosterCards(); renderTable(); renderTeamGrid(); renderScheduleActive(); renderLeads(); updateLeadsBadge(); renderInactivity();
     }
     if (!silent) {
       if (ok) {
