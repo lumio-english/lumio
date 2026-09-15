@@ -797,6 +797,8 @@
           <button class="td-chip active" id="scheduleViewCalendar" type="button">📅 Calendar</button>
           <button class="td-chip" id="scheduleViewAgenda" type="button">☰ Agenda</button>
         </div>
+        <button class="td-btn" id="manageHolidaysBtn">🚫 Holidays</button>
+        <button class="td-btn" id="bookFixedScheduleBtn">🔁 Fixed schedule</button>
         <button class="td-btn td-btn-primary" id="bookClassBtn">+ Book a class</button>
       </div>
 
@@ -852,6 +854,10 @@
         </div>
       </div>
       <div id="cdBody"></div>
+      <div id="cdPatternActions" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--td-border-soft)">
+        <p class="sub" style="margin:0 0 8px">🔁 Part of a fixed weekly schedule.</p>
+        <button type="button" class="td-btn" id="cdCancelSeriesBtn" style="width:100%">Cancel this and all future sessions</button>
+      </div>
     </div>
   </div>
 
@@ -1184,6 +1190,95 @@
     <div class="td-modal-actions">
       <button class="td-btn" id="classModalCancel">Cancel</button>
       <button class="td-btn td-btn-primary" id="classModalSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Fixed weekly schedule modal ===== -->
+<div class="td-overlay" id="fsModalOverlay">
+  <div class="td-modal-box">
+    <h3>Fixed weekly schedule</h3>
+    <p class="sub" style="margin-top:-4px">Books this group at the same day and time every week — subscribed students only. Cancelling one session doesn't touch the rest of the series; use "cancel this and all future" from a session's Course Details to stop it early.</p>
+    <div class="td-field">
+      <label for="fsGroupPicker">Cohort &amp; group</label>
+      <select id="fsGroupPicker"></select>
+    </div>
+    <div class="td-field">
+      <label>Students in this session</label>
+      <div id="fsStudentChecks" style="display:flex;flex-direction:column;gap:6px;max-height:160px;overflow-y:auto;border:1px solid var(--td-border);border-radius:10px;padding:8px"></div>
+      <div class="td-field-error" id="fsStudentError"></div>
+    </div>
+    <div class="td-field" style="display:flex;gap:10px">
+      <div style="flex:1">
+        <label for="fsDayOfWeek">Day of week</label>
+        <select id="fsDayOfWeek">
+          <option value="0">Sunday</option>
+          <option value="1">Monday</option>
+          <option value="2">Tuesday</option>
+          <option value="3">Wednesday</option>
+          <option value="4">Thursday</option>
+          <option value="5">Friday</option>
+          <option value="6">Saturday</option>
+        </select>
+      </div>
+      <div style="flex:1">
+        <label for="fsTime">Start time</label>
+        <input type="time" id="fsTime">
+      </div>
+    </div>
+    <div class="td-field" style="display:flex;gap:10px">
+      <div style="flex:1">
+        <label for="fsDuration">Duration</label>
+        <select id="fsDuration">
+          <option value="45" selected>45 minutes</option>
+          <option value="60">60 minutes</option>
+          <option value="75">75 minutes</option>
+          <option value="90">90 minutes</option>
+        </select>
+      </div>
+      <div style="flex:1">
+        <label for="fsStartDate">Starting from</label>
+        <input type="date" id="fsStartDate">
+      </div>
+    </div>
+    <div class="td-field">
+      <label for="fsLessonStart">First lesson number <span style="font-weight:600;color:var(--td-muted)">(optional — advances by 1 each week)</span></label>
+      <input type="number" id="fsLessonStart" min="1" placeholder="e.g. 5">
+    </div>
+    <div class="td-field">
+      <label for="fsMeetingLink">Meeting link <span style="font-weight:600;color:var(--td-muted)">(optional — leave blank if Zoom auto-links are set up)</span></label>
+      <input type="url" id="fsMeetingLink" placeholder="https://meet.google.com/xxx-xxxx-xxx">
+    </div>
+    <div class="td-field">
+      <label for="fsNotes">Notes <span style="font-weight:600;color:var(--td-muted)">(optional)</span></label>
+      <input type="text" id="fsNotes" placeholder="e.g. Standing weekly slot">
+    </div>
+    <div class="td-modal-actions">
+      <button class="td-btn" id="fsModalCancel">Cancel</button>
+      <button class="td-btn td-btn-primary" id="fsModalSave">Save fixed schedule</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Blocked dates / holidays modal ===== -->
+<div class="td-overlay" id="holidaysOverlay">
+  <div class="td-modal-box">
+    <h3>Blocked dates</h3>
+    <p class="sub" style="margin-top:-4px">Fixed schedules skip these dates automatically — public holidays, a teacher's day off, etc. A one-off class you book by hand isn't affected.</p>
+    <div class="td-field" style="display:flex;gap:8px;align-items:flex-end">
+      <div style="flex:1">
+        <label for="holDate">Date</label>
+        <input type="date" id="holDate">
+      </div>
+      <div style="flex:1">
+        <label for="holLabel">Label <span style="font-weight:600;color:var(--td-muted)">(optional)</span></label>
+        <input type="text" id="holLabel" placeholder="e.g. Eid holiday">
+      </div>
+      <button class="td-btn td-btn-primary" id="holAddBtn" type="button">+ Add</button>
+    </div>
+    <div id="holidaysList" style="margin-top:14px;display:flex;flex-direction:column;gap:6px"></div>
+    <div class="td-modal-actions">
+      <button class="td-btn" id="holidaysCloseBtn">Close</button>
     </div>
   </div>
 </div>
@@ -1817,6 +1912,7 @@
         <div class="item"><b>${p.subscribed ? "✅ Yes" : "❌ No"}</b><span>Subscribed</span></div>
         <div class="item"><b>${p.amountPaid ? p.amountPaid : 0}</b><span>Amount paid</span></div>
         <div class="item"><b>${p.levelsPurchased || 0}</b><span>Levels bought</span></div>
+        <div class="item"><b>${window.LumioSchedule ? LumioSchedule.fixedScheduleCountForStudent(p.name) : 0}</b><span>Fixed schedule</span></div>
       </div>`;
     renderDrawerRewards(p);
   }
@@ -2628,7 +2724,7 @@
         const attnClass = classNeedsAttention(c) ? "needs-attn" : "";
         const title = `English Club${c.level ? " · " + c.level : ""}${c.lessonNumber ? " · Lesson " + c.lessonNumber : ""}`;
         col += `<div class="td-cal-block ${statusClass} ${attnClass}" style="top:${top}px;height:${height}px" data-class-id="${c.id}" title="${title} — ${c.students.map(s=>s.studentName).join(', ')}">
-          <div class="cb-title">${fmtTime(c.startTime)} · ${c.students.length}/${c.students.length} student${c.students.length===1?"":"s"}</div>
+          <div class="cb-title">${c.patternId ? "🔁 " : ""}${fmtTime(c.startTime)} · ${c.students.length}/${c.students.length} student${c.students.length===1?"":"s"}</div>
           <div class="cb-meta">${c.level || c.notes || "Class"}</div>
         </div>`;
       });
@@ -2722,6 +2818,8 @@
           <div class="td-cd-students">${studentsHtml}</div>
         </div>
       </div>`;
+    const patternActions = document.getElementById("cdPatternActions");
+    patternActions.style.display = c.patternId ? "block" : "none";
     courseDetailsOverlay.classList.add("show");
   }
   function minutesToHM(mins) {
@@ -2747,6 +2845,162 @@
       renderWeekView();
       showToast("Class removed.");
     }
+  };
+  document.getElementById("cdCancelSeriesBtn").onclick = async () => {
+    const c = LumioSchedule.getClass(cdClassId);
+    if (!c || !c.patternId) return;
+    const ok = await confirmDialog("Cancel this session and every future session in this fixed schedule? Past sessions and their attendance stay on record.", "Cancel series");
+    if (ok) {
+      const { cancelledCount } = LumioSchedule.cancelPatternFromDate(c.patternId, c.date);
+      closeCourseDetails();
+      renderScheduleActive();
+      showToast(`Fixed schedule stopped — ${cancelledCount} upcoming session${cancelledCount === 1 ? "" : "s"} cancelled.`);
+    }
+  };
+
+  // ================= Fixed weekly schedules =================
+  const fsModalOverlay = document.getElementById("fsModalOverlay");
+  function fsCurrentCombo() {
+    const scope = scheduleScope.value;
+    const activeTeacherId = LumioProfiles.getCurrentTeacherId();
+    let students = window.LumioProfiles ? LumioProfiles.listStudents() : [];
+    if (scope === "mine" && activeTeacherId) students = students.filter(s => s.teacherId === activeTeacherId);
+    const key = document.getElementById("fsGroupPicker").value;
+    if (!key) return [];
+    const [cohort, group, level] = key.split("|||");
+    return students.filter(s => (s.cohort || "") === cohort && (s.group || "") === group && s.level === level);
+  }
+  function fsRenderStudentChecks() {
+    const wrap = document.getElementById("fsStudentChecks");
+    wrap.innerHTML = "";
+    const combo = fsCurrentCombo();
+    if (!combo.length) { wrap.innerHTML = `<div class="sub" style="font-size:.78rem">No students in this cohort/group yet.</div>`; return; }
+    combo.forEach(s => {
+      const row = document.createElement("label");
+      row.style.cssText = "display:flex;align-items:center;gap:7px;font-size:.85rem;font-weight:600;cursor:pointer";
+      const subLabel = s.subscribed ? "" : ' <span style="color:var(--td-coral);font-weight:800">(not subscribed — won\'t generate)</span>';
+      row.innerHTML = `<input type="checkbox" value="${s.id}" checked> ${s.avatar} ${s.name}${subLabel}`;
+      wrap.appendChild(row);
+    });
+  }
+  function fsRenderGroupPicker() {
+    const picker = document.getElementById("fsGroupPicker");
+    picker.innerHTML = "";
+    const scope = scheduleScope.value;
+    const activeTeacherId = LumioProfiles.getCurrentTeacherId();
+    let students = window.LumioProfiles ? LumioProfiles.listStudents() : [];
+    if (scope === "mine" && activeTeacherId) students = students.filter(s => s.teacherId === activeTeacherId);
+    const combos = {};
+    students.forEach(s => {
+      const key = `${s.cohort || ""}|||${s.group || ""}|||${s.level}`;
+      if (!combos[key]) combos[key] = { cohort: s.cohort || "", group: s.group || "", level: s.level, students: [] };
+      combos[key].students.push(s);
+    });
+    const keys = Object.keys(combos);
+    if (!keys.length) { picker.innerHTML = `<option value="">No students available</option>`; return; }
+    keys.sort((a, b) => combos[a].level.localeCompare(combos[b].level)).forEach(key => {
+      const combo = combos[key];
+      const opt = document.createElement("option");
+      opt.value = key;
+      const label = [combo.cohort, combo.group].filter(Boolean).join(" · ") || "No cohort/group set";
+      opt.textContent = `${label} — ${levelName(combo.level)} (${combo.students.length} student${combo.students.length === 1 ? "" : "s"})`;
+      picker.appendChild(opt);
+    });
+    picker.value = keys[0];
+    fsRenderStudentChecks();
+  }
+  document.getElementById("fsGroupPicker").addEventListener("change", fsRenderStudentChecks);
+  function openFsModal() {
+    if (!window.LumioSchedule || !window.LumioProfiles) return;
+    fsRenderGroupPicker();
+    document.getElementById("fsTime").value = "16:00";
+    document.getElementById("fsDuration").value = "45";
+    document.getElementById("fsStartDate").value = LumioSchedule.todayStr();
+    document.getElementById("fsLessonStart").value = "";
+    document.getElementById("fsMeetingLink").value = "";
+    document.getElementById("fsNotes").value = "";
+    document.getElementById("fsStudentError").textContent = "";
+    fsModalOverlay.classList.add("show");
+  }
+  document.getElementById("bookFixedScheduleBtn").onclick = openFsModal;
+  document.getElementById("fsModalCancel").onclick = () => fsModalOverlay.classList.remove("show");
+  fsModalOverlay.onclick = e => { if (e.target === fsModalOverlay) fsModalOverlay.classList.remove("show"); };
+  document.getElementById("fsModalSave").onclick = () => {
+    const combo = fsCurrentCombo();
+    const boxes = Array.from(document.querySelectorAll("#fsStudentChecks input[type=checkbox]:checked"));
+    const ids = new Set(boxes.map(b => b.value));
+    const picked = combo.filter(s => ids.has(s.id));
+    const errEl = document.getElementById("fsStudentError");
+    if (!picked.length) { errEl.textContent = "Pick at least one student for this fixed schedule."; return; }
+    const activeTeacher = LumioProfiles.getCurrentTeacher();
+    const first = picked[0];
+    try {
+      LumioSchedule.addPattern({
+        students: picked.map(s => ({ studentId: s.id, studentName: s.name })),
+        teacherId: (first && first.teacherId) || (activeTeacher ? activeTeacher.id : null),
+        teacherName: activeTeacher ? activeTeacher.name : "",
+        dayOfWeek: Number(document.getElementById("fsDayOfWeek").value),
+        startTime: document.getElementById("fsTime").value,
+        durationMinutes: document.getElementById("fsDuration").value,
+        level: first ? first.level : "",
+        cohort: first ? first.cohort : "",
+        group: first ? first.group : "",
+        startDate: document.getElementById("fsStartDate").value,
+        lessonStart: document.getElementById("fsLessonStart").value || null,
+        meetingLink: document.getElementById("fsMeetingLink").value.trim(),
+        notes: document.getElementById("fsNotes").value.trim(),
+      });
+      const result = LumioSchedule.generateUpcoming(4);
+      fsModalOverlay.classList.remove("show");
+      renderScheduleActive();
+      const names = picked.map(s => s.name).join(", ");
+      let msg = `Fixed weekly schedule set for ${names} — ${result.created} session${result.created === 1 ? "" : "s"} booked for the next few weeks.`;
+      if (result.skippedUnsubscribed.length) msg += ` Some weeks were skipped because a student isn't currently subscribed.`;
+      showToast(msg, "success");
+    } catch (err) {
+      errEl.textContent = err.message || "Couldn't save that fixed schedule.";
+    }
+  };
+
+  // ================= Blocked dates / holidays =================
+  const holidaysOverlay = document.getElementById("holidaysOverlay");
+  function renderHolidaysList() {
+    const list = document.getElementById("holidaysList");
+    if (!window.LumioSchedule) { list.innerHTML = ""; return; }
+    const dates = LumioSchedule.listBlockedDates();
+    if (!dates.length) { list.innerHTML = `<div class="td-empty">No blocked dates yet.</div>`; return; }
+    list.innerHTML = "";
+    dates.forEach(d => {
+      const dateStr = typeof d === "string" ? d : d.date;
+      const label = typeof d === "string" ? "" : (d.label || "");
+      const row = document.createElement("div");
+      row.style.cssText = "display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--td-bg);border-radius:9px;font-size:.84rem;font-weight:700";
+      row.innerHTML = `<span style="flex:1">${dateStr}${label ? " · " + label : ""}</span><button type="button" class="td-btn" style="padding:4px 10px">Remove</button>`;
+      row.querySelector("button").onclick = () => {
+        LumioSchedule.removeBlockedDate(dateStr);
+        renderHolidaysList();
+        showToast("Blocked date removed.");
+      };
+      list.appendChild(row);
+    });
+  }
+  document.getElementById("manageHolidaysBtn").onclick = () => {
+    document.getElementById("holDate").value = "";
+    document.getElementById("holLabel").value = "";
+    renderHolidaysList();
+    holidaysOverlay.classList.add("show");
+  };
+  document.getElementById("holidaysCloseBtn").onclick = () => holidaysOverlay.classList.remove("show");
+  holidaysOverlay.onclick = e => { if (e.target === holidaysOverlay) holidaysOverlay.classList.remove("show"); };
+  document.getElementById("holAddBtn").onclick = () => {
+    const date = document.getElementById("holDate").value;
+    const label = document.getElementById("holLabel").value.trim();
+    if (!date) return;
+    LumioSchedule.addBlockedDate(date, label);
+    document.getElementById("holDate").value = "";
+    document.getElementById("holLabel").value = "";
+    renderHolidaysList();
+    showToast("Blocked date added — fixed schedules will skip it.", "success");
   };
 
   function renderClsGroupPicker(presetKey) {
@@ -2946,6 +3200,7 @@
     updateNeedsAttendanceBadge();
   }
   scheduleScope.addEventListener("change", renderScheduleActive);
+  if (window.LumioSchedule) { try { LumioSchedule.generateUpcoming(4); } catch (e) { /* non-fatal */ } }
   renderWeekView();
   updateNeedsAttendanceBadge();
 

@@ -59,8 +59,24 @@ var SCHEDULE_SHEET = "Schedule";
 var SCHEDULE_COLUMNS = [
   "id", "teacherId", "teacherName", "date", "startTime", "durationMinutes",
   "level", "cohort", "group", "lessonNumber", "meetingLink", "notes",
-  "sessionNotes", "status", "studentsJson", "createdAt", "updatedAt"
+  "sessionNotes", "status", "patternId", "studentsJson", "createdAt", "updatedAt"
 ];
+
+// Fixed weekly schedules ("this group, every Tuesday at 5pm") — see the
+// FIXED SCHEDULES section of js/lumio-schedule.js for how these generate
+// real Schedule rows. studentsJson is that pattern's `students` array
+// serialized the same way as a class's.
+var PATTERNS_SHEET = "SchedulePatterns";
+var PATTERNS_COLUMNS = [
+  "id", "teacherId", "teacherName", "dayOfWeek", "startTime", "durationMinutes",
+  "level", "cohort", "group", "notes", "meetingLink", "studentsJson",
+  "startDate", "endDate", "lessonStart", "active", "createdAt", "updatedAt"
+];
+
+// Holidays / days off the fixed-schedule generator should never book
+// into. One row per blocked date.
+var BLOCKED_DATES_SHEET = "BlockedDates";
+var BLOCKED_DATES_COLUMNS = ["date", "label"];
 
 var PROGRESS_SHEET = "Progress";
 var PROGRESS_COLUMNS = ["studentName", "level", "lesson", "stars", "score", "total", "date"];
@@ -168,12 +184,38 @@ function rowToClass_(row) {
 }
 
 function pullScheduleV2_() {
-  return { classes: readRows_(SCHEDULE_SHEET, SCHEDULE_COLUMNS).map(rowToClass_) };
+  return {
+    classes: readRows_(SCHEDULE_SHEET, SCHEDULE_COLUMNS).map(rowToClass_),
+    patterns: readRows_(PATTERNS_SHEET, PATTERNS_COLUMNS).map(rowToPattern_),
+    blockedDates: readRows_(BLOCKED_DATES_SHEET, BLOCKED_DATES_COLUMNS),
+  };
 }
 
 function pushScheduleV2_(body) {
   if (Array.isArray(body.classes)) writeRows_(SCHEDULE_SHEET, SCHEDULE_COLUMNS, body.classes.map(classToRow_));
+  if (Array.isArray(body.patterns)) writeRows_(PATTERNS_SHEET, PATTERNS_COLUMNS, body.patterns.map(patternToRow_));
+  if (Array.isArray(body.blockedDates)) {
+    var rows = body.blockedDates.map(function (b) {
+      return typeof b === "string" ? { date: b, label: "" } : { date: b.date, label: b.label || "" };
+    });
+    writeRows_(BLOCKED_DATES_SHEET, BLOCKED_DATES_COLUMNS, rows);
+  }
   return { ok: true };
+}
+
+function patternToRow_(p) {
+  var row = {};
+  PATTERNS_COLUMNS.forEach(function (col) { row[col] = p[col] !== undefined ? p[col] : ""; });
+  row.studentsJson = JSON.stringify(p.students || []);
+  delete row.students;
+  return row;
+}
+function rowToPattern_(row) {
+  var p = {};
+  PATTERNS_COLUMNS.forEach(function (col) { if (col !== "studentsJson") p[col] = row[col]; });
+  try { p.students = JSON.parse(row.studentsJson || "[]"); } catch (e) { p.students = []; }
+  p.active = row.active === true || row.active === "true" || row.active === 1;
+  return p;
 }
 
 // ---------- progress ----------

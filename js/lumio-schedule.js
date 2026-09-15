@@ -95,6 +95,13 @@
     try { data = JSON.parse(safeGet(SCHEDULE_KEY) || "null"); } catch (e) { data = null; }
     if (!data || typeof data !== "object") data = {};
     if (!Array.isArray(data.classes)) data.classes = [];
+    // Recurring "fixed schedule" patterns (one per weekly slot, e.g. "this
+    // group, every Tuesday at 5pm") and a shared list of blocked dates
+    // (holidays / days off) the generator should never book into. Both
+    // additive to the v2 schema -- old data without them just gets these
+    // as empty arrays, no migration needed.
+    if (!Array.isArray(data.patterns)) data.patterns = [];
+    if (!Array.isArray(data.blockedDates)) data.blockedDates = [];
     return data;
   }
   function save(data) {
@@ -149,7 +156,7 @@
   // students: [{studentId, studentName}, ...] -- 1-4 in practice, but not
   // hard-limited here; the booking UI is what should keep it to a real
   // group size and to one cohort+group+level at a time, not this layer.
-  function addClass({ students, teacherId, teacherName, date, startTime, durationMinutes, level, cohort, group, notes, lessonNumber, meetingLink } = {}) {
+  function addClass({ students, teacherId, teacherName, date, startTime, durationMinutes, level, cohort, group, notes, lessonNumber, meetingLink, patternId } = {}) {
     if (!Array.isArray(students) || !students.length) throw new Error("Pick at least one student for this class.");
     students.forEach(s => { if (!s.studentName) throw new Error("Every student needs a name."); });
     if (!date) throw new Error("Pick a date for this class.");
@@ -170,6 +177,10 @@
       notes: notes || "",
       sessionNotes: "",
       status: "scheduled",
+      // Set only for a session the fixed-schedule generator created — lets
+      // the UI show "part of a fixed weekly schedule" and offer "cancel
+      // this and all future" without affecting a normal one-off booking.
+      patternId: patternId || null,
       students: students.map(s => ({
         studentId: s.studentId || null,
         studentName: s.studentName,
@@ -341,12 +352,25 @@
       const remote = await res.json();
       if (remote && Array.isArray(remote.classes)) {
         data.classes = mergeById(data.classes, remote.classes);
-        save(data);
       }
+      if (remote && Array.isArray(remote.patterns)) {
+        data.patterns = mergeById(data.patterns, remote.patterns);
+      }
+      // Blocked dates are a small, rarely-changed shared list -- simple
+      // union rather than per-record merge-by-id (plain date strings have
+      // no id/updatedAt to compare).
+      if (remote && Array.isArray(remote.blockedDates)) {
+        const seen = new Set(data.blockedDates.map(b => typeof b === "string" ? b : b.date));
+        remote.blockedDates.forEach(b => {
+          const key = typeof b === "string" ? b : b.date;
+          if (!seen.has(key)) { data.blockedDates.push(b); seen.add(key); }
+        });
+      }
+      save(data);
       await fetch(cfg.url + "?action=pushScheduleV2", {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ classes: data.classes }),
+        body: JSON.stringify({ classes: data.classes, patterns: data.patterns, blockedDates: data.blockedDates }),
       });
       return { ok: true, at: new Date().toISOString() };
     } catch (e) {
@@ -420,6 +444,219 @@
     return { average: stars.reduce((a, b) => a + b, 0) / stars.length, count: stars.length };
   }
 
+  // ═══════════════════════════════════════════════════════════════════
+  //  FIXED SCHEDULES (recurring weekly patterns)
+  // ═══════════════════════════════════════════════════════════════════
+  //
+  // A pattern is "this group, every <dayOfWeek> at <startTime>" — it does
+  // NOT replace individual class rows. Instead, generateUpcoming() reads
+  // every active pattern and creates normal classes (exactly the kind
+  // addClass() makes) a few weeks ahead, tagged with patternId. That way
+  // attendance, grading, Zoom auto-links, and the calendar all keep
+  // working completely unchanged — they just see ordinary classes.
+  //
+  // Skipping ONE date: cancel/remove that single generated class like any
+  // other class. Since the generator only ever creates a class for a
+  // given (patternId, date) pair once — see the "already exists" check
+  // in generateUpcoming() — a cancelled instance is never regenerated, so
+  // "cancel this session" already IS "skip just this date" for a fixed
+  // schedule. No separate skip-list needed.
+  //
+  // Stopping the WHOLE series from some date onward: cancelPatternFromDate().
+
+  function genPatternId() { return "p_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+
+  function listPatterns(filter) {
+    filter = filter || {};
+    let out = load().patterns.slice();
+    if (filter.teacherId) out = out.filter(p => p.teacherId === filter.teacherId);
+    if (filter.active !== undefined) out = out.filter(p => p.active === filter.active);
+    if (filter.studentName) {
+      const n = normName(filter.studentName);
+      out = out.filter(p => p.students.some(s => normName(s.studentName) === n));
+    }
+    return out;
+  }
+  function getPattern(id) {
+    return load().patterns.find(p => p.id === id) || null;
+  }
+  // dayOfWeek: 0=Sunday .. 6=Saturday (same convention as JS Date#getDay).
+  function addPattern({ students, teacherId, teacherName, dayOfWeek, startTime, durationMinutes, level, cohort, group, notes, meetingLink, startDate, lessonStart } = {}) {
+    if (!Array.isArray(students) || !students.length) throw new Error("Pick at least one student for this fixed schedule.");
+    students.forEach(s => { if (!s.studentName) throw new Error("Every student needs a name."); });
+    if (dayOfWeek === undefined || dayOfWeek === null || dayOfWeek < 0 || dayOfWeek > 6) throw new Error("Pick a day of the week.");
+    if (!startTime) throw new Error("Pick a start time.");
+    const data = load();
+    const record = {
+      id: genPatternId(),
+      teacherId: teacherId || null,
+      teacherName: teacherName || "",
+      dayOfWeek: Number(dayOfWeek),
+      startTime,
+      durationMinutes: Number(durationMinutes) || 45,
+      level: level || "",
+      cohort: cohort || "",
+      group: group || "",
+      notes: notes || "",
+      meetingLink: meetingLink || "",
+      students: students.map(s => ({ studentId: s.studentId || null, studentName: s.studentName })),
+      startDate: startDate || todayStr(), // first date the pattern is eligible to generate from
+      endDate: null,                       // set by cancelPatternFromDate() to stop the series
+      lessonStart: lessonStart ? Number(lessonStart) : null, // lesson number for the first generated week, +1 each week after
+      active: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    data.patterns.push(record);
+    save(data);
+    return record;
+  }
+  function updatePattern(id, patch) {
+    const data = load();
+    const p = data.patterns.find(x => x.id === id);
+    if (!p) throw new Error("Fixed schedule not found.");
+    ["teacherId", "teacherName", "startTime", "level", "cohort", "group", "notes", "meetingLink", "active"].forEach(k => {
+      if (patch[k] !== undefined) p[k] = patch[k];
+    });
+    if (patch.dayOfWeek !== undefined) p.dayOfWeek = Number(patch.dayOfWeek);
+    if (patch.durationMinutes !== undefined) p.durationMinutes = Number(patch.durationMinutes) || p.durationMinutes;
+    if (patch.students !== undefined) p.students = patch.students.map(s => ({ studentId: s.studentId || null, studentName: s.studentName }));
+    p.updatedAt = new Date().toISOString();
+    save(data);
+    return p;
+  }
+  // Stops a fixed schedule from `fromDate` onward: the pattern itself is
+  // kept (with endDate set) rather than deleted, so past generated
+  // sessions and their attendance history stay intact and visible — and
+  // cancels any already-generated future sessions tied to it that
+  // haven't happened yet, so they don't sit there orphaned.
+  function cancelPatternFromDate(id, fromDate) {
+    const data = load();
+    const p = data.patterns.find(x => x.id === id);
+    if (!p) throw new Error("Fixed schedule not found.");
+    const from = fromDate || todayStr();
+    p.endDate = from;
+    p.active = false;
+    p.updatedAt = new Date().toISOString();
+    let cancelledCount = 0;
+    data.classes.forEach(c => {
+      if (c.patternId === id && c.date >= from && c.status === "scheduled") {
+        c.status = "cancelled";
+        c.updatedAt = new Date().toISOString();
+        cancelledCount++;
+      }
+    });
+    save(data);
+    return { pattern: p, cancelledCount };
+  }
+  function removePattern(id) {
+    const data = load();
+    data.patterns = data.patterns.filter(p => p.id !== id);
+    save(data);
+  }
+
+  // ---- blocked dates (holidays / days the generator should skip) ----
+  function listBlockedDates() {
+    return load().blockedDates.slice().sort();
+  }
+  function addBlockedDate(date, label) {
+    if (!date) throw new Error("Pick a date to block.");
+    const data = load();
+    if (!data.blockedDates.some(b => (typeof b === "string" ? b : b.date) === date)) {
+      data.blockedDates.push(label ? { date, label } : date);
+      save(data);
+    }
+    return listBlockedDates();
+  }
+  function removeBlockedDate(date) {
+    const data = load();
+    data.blockedDates = data.blockedDates.filter(b => (typeof b === "string" ? b : b.date) !== date);
+    save(data);
+    return listBlockedDates();
+  }
+  function isDateBlocked(date) {
+    return load().blockedDates.some(b => (typeof b === "string" ? b : b.date) === date);
+  }
+
+  // How many active fixed weekly slots a student currently has — the
+  // "Fixed schedule: 4" style count shown on their profile.
+  function fixedScheduleCountForStudent(studentName) {
+    return listPatterns({ active: true, studentName }).length;
+  }
+
+  function addWeeks(dateStr, n) {
+    const d = new Date(dateStr + "T00:00:00");
+    d.setDate(d.getDate() + n * 7);
+    return d.toISOString().slice(0, 10);
+  }
+  function nextDateForDayOfWeek(fromDateStr, dayOfWeek) {
+    const d = new Date(fromDateStr + "T00:00:00");
+    const diff = (dayOfWeek - d.getDay() + 7) % 7;
+    d.setDate(d.getDate() + diff);
+    return d.toISOString().slice(0, 10);
+  }
+
+  // Materializes real class rows for every active pattern, `weeks` weeks
+  // ahead from today (default 4) — call this on dashboard load and it's
+  // safe to call as often as you like, since it never creates a
+  // duplicate for a date it's already generated.
+  //
+  // Subscription gate: every student in the pattern must currently be
+  // `subscribed` (per js/lumio-profiles.js) for that week's session to be
+  // generated. This is checked fresh each run rather than baked into the
+  // pattern once, so generation automatically pauses the moment someone
+  // lapses and automatically resumes the moment they renew — no manual
+  // re-enabling needed either way. A lapsed student doesn't cancel
+  // already-generated future sessions on their own (that stays an
+  // explicit "cancel this and all future" action) — it only stops NEW
+  // ones from being created while they're unsubscribed.
+  function generateUpcoming(weeks) {
+    weeks = weeks || 4;
+    const data = load();
+    const today = todayStr();
+    const horizon = addWeeks(today, weeks);
+    const created = [];
+    const skippedUnsubscribed = [];
+
+    data.patterns.forEach(p => {
+      if (!p.active) return;
+      let d = nextDateForDayOfWeek(p.startDate > today ? p.startDate : today, p.dayOfWeek);
+      while (d <= horizon) {
+        const inRange = d >= p.startDate && (!p.endDate || d < p.endDate);
+        const alreadyExists = data.classes.some(c => c.patternId === p.id && c.date === d);
+        const blocked = isDateBlocked(d);
+        if (inRange && !alreadyExists && !blocked) {
+          const allSubscribed = !global.LumioProfiles || p.students.every(s => {
+            const full = s.studentId ? global.LumioProfiles.getStudent(s.studentId) : global.LumioProfiles.findByName(s.studentName);
+            return full ? !!full.subscribed : true; // unknown/guest students don't block generation
+          });
+          if (allSubscribed) {
+            const weekIndex = Math.round((new Date(d) - new Date(p.startDate)) / (7 * 86400000));
+            const record = {
+              id: genId(),
+              teacherId: p.teacherId, teacherName: p.teacherName,
+              date: d, startTime: p.startTime, durationMinutes: p.durationMinutes,
+              level: p.level, cohort: p.cohort, group: p.group,
+              lessonNumber: p.lessonStart ? p.lessonStart + weekIndex : null,
+              meetingLink: p.meetingLink || "", notes: p.notes || "", sessionNotes: "",
+              status: "scheduled", patternId: p.id,
+              students: p.students.map(s => ({ studentId: s.studentId || null, studentName: s.studentName, attendance: null, grade: null, teacherRatingStars: null })),
+              createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+            };
+            data.classes.push(record);
+            created.push(record);
+          } else {
+            skippedUnsubscribed.push({ patternId: p.id, date: d });
+          }
+        }
+        d = addWeeks(d, 1);
+      }
+    });
+
+    if (created.length) save(data);
+    return { created: created.length, skippedUnsubscribed };
+  }
+
   global.LumioSchedule = {
     listClasses, getClass,
     addClass, updateClass, removeClass, cancelClass,
@@ -429,5 +666,9 @@
     upcomingForStudent, upcomingForTeacher, todayStr,
     getSyncConfig, syncNow,
     VALID_GRADES,
+    // fixed schedules
+    listPatterns, getPattern, addPattern, updatePattern, cancelPatternFromDate, removePattern,
+    listBlockedDates, addBlockedDate, removeBlockedDate, isDateBlocked,
+    fixedScheduleCountForStudent, generateUpcoming,
   };
 })(window);
