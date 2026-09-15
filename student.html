@@ -318,6 +318,11 @@
   /* ---------- Section headers ---------- */
   .sd-section-title{display:flex;align-items:center;gap:8px;margin:26px 0 12px}
   .sd-section-title h3{margin:0;font-size:1.15rem}
+  .sd-sessions-pill{
+    margin-left:auto;background:var(--sd-bg,#F7F3EA);border-radius:99px;padding:5px 13px;font-size:.76rem;
+    font-weight:800;color:var(--sd-cocoa,#5C4033);
+  }
+  .sd-sessions-pill.low{background:#FDEAEA;color:#B84545}
 
   /* ---------- Badges ---------- */
   .sd-badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:8px}
@@ -701,7 +706,10 @@
   </div>
 
   <!-- My Schedule -->
-  <div class="sd-section-title" id="scheduleCard"><h3>My schedule</h3></div>
+  <div class="sd-section-title" id="scheduleCard">
+    <h3>My schedule</h3>
+    <span class="sd-sessions-pill" id="sessionsRemainingPill" style="display:none"></span>
+  </div>
   <div class="sd-schedule-card">
     <div id="scheduleTrail"></div>
     <div id="scheduleNext"></div>
@@ -1395,6 +1403,17 @@
   const AVATARS = (window.LumioProfiles ? LumioProfiles.AVATARS : ["🦊","🐼","🦁","🐸","🐵","🐨","🦄","🐯","🐰","🐶"]);
   const avatarKey = "lumio_avatar_" + u.name;
   const rosterProfile = window.LumioProfiles ? LumioProfiles.findByName(u.name) : null;
+
+  // ---------- sessions remaining pill ----------
+  (function renderSessionsPill() {
+    const pill = document.getElementById("sessionsRemainingPill");
+    if (!rosterProfile || rosterProfile.sessionsRemaining === undefined || rosterProfile.sessionsRemaining === null) return;
+    const n = rosterProfile.sessionsRemaining;
+    pill.style.display = "inline-block";
+    pill.textContent = `${n} session${n === 1 ? "" : "s"} left`;
+    pill.classList.toggle("low", n <= 3);
+  })();
+
 
   // ---------- rewards (student can redeem their own points) ----------
   function renderRewardsCard() {

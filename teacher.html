@@ -257,14 +257,15 @@
   .td-cd-head-acts button.danger:hover{border-color:var(--td-coral);color:var(--td-coral)}
 
   /* ---------- Drawer: profile + rewards ---------- */
-  .td-dp-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;font-size:.8rem}
-  .td-dp-grid .lbl{color:var(--td-muted);font-weight:700;font-size:.68rem;text-transform:uppercase;letter-spacing:.3px}
-  .td-dp-grid .val{font-weight:700;margin-top:1px}
-  .td-dp-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
-  .td-dp-tag{background:var(--td-bg);border:1px solid var(--td-border);border-radius:99px;padding:3px 9px;font-size:.7rem;font-weight:700;color:var(--td-ink-soft)}
-  .td-dp-sub{margin-top:10px;padding-top:10px;border-top:1px solid var(--td-border-soft);display:flex;gap:14px;flex-wrap:wrap}
-  .td-dp-sub .item b{display:block;font-size:.92rem;font-weight:800}
-  .td-dp-sub .item span{font-size:.68rem;color:var(--td-muted);font-weight:700;text-transform:uppercase}
+  .td-dp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;font-size:.8rem;background:var(--td-bg);border-radius:14px;padding:14px}
+  .td-dp-grid .lbl{color:var(--td-muted);font-weight:700;font-size:.66rem;text-transform:uppercase;letter-spacing:.3px}
+  .td-dp-grid .val{font-weight:800;margin-top:2px;font-size:.88rem}
+  .td-dp-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+  .td-dp-tag{background:var(--td-indigo-soft,#EDE9FE);border:1px solid transparent;border-radius:99px;padding:4px 11px;font-size:.7rem;font-weight:800;color:var(--td-indigo-dark,#3f2fa8)}
+  .td-dp-sub{margin-top:12px;display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+  .td-dp-sub .item{background:#fff;border:1px solid var(--td-border-soft);border-radius:12px;padding:10px 8px;text-align:center}
+  .td-dp-sub .item b{display:block;font-size:1rem;font-weight:800}
+  .td-dp-sub .item span{font-size:.64rem;color:var(--td-muted);font-weight:700;text-transform:uppercase;letter-spacing:.2px}
   .td-rw-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
   .td-rw-points{flex:1;background:var(--td-bg);border-radius:12px;padding:10px 12px}
   .td-rw-points b{font-size:1.1rem;font-weight:800}
@@ -304,14 +305,34 @@
   .td-teacher-stats .item span{font-size:.62rem;color:var(--td-muted);font-weight:700;text-transform:uppercase}
 
   /* ---------- Drawer tabs ---------- */
-  .td-drawer-tabs{display:flex;gap:4px;border-bottom:1px solid var(--td-border-soft);margin:0 -4px}
-  .td-drawer-tab{
-    flex:1;padding:9px 4px;border:none;background:none;font-weight:700;font-size:.76rem;color:var(--td-muted);
-    cursor:pointer;border-bottom:2px solid transparent;transition:color .15s ease,border-color .15s ease;white-space:nowrap;
+  .td-drawer-tabs{
+    display:flex;gap:2px;background:var(--td-bg);border-radius:12px;padding:3px;margin-top:2px;
+    overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;
   }
+  .td-drawer-tabs::-webkit-scrollbar{display:none}
+  .td-drawer-tab{
+    flex:1 1 0;min-width:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    padding:8px 6px;border:none;border-radius:9px;background:none;font-weight:700;font-size:.68rem;
+    color:var(--td-muted);cursor:pointer;position:relative;transition:color .18s ease,background .18s ease,transform .12s ease;
+    white-space:nowrap;
+  }
+  .td-drawer-tab .ic{font-size:.98rem;line-height:1}
   .td-drawer-tab:hover{color:var(--td-ink-soft)}
-  .td-drawer-tab.active{color:var(--td-indigo-dark,#3f2fa8);border-bottom-color:var(--td-indigo)}
-  .td-drawer-tab.has-alert::after{content:"●";color:var(--td-coral);margin-left:3px;font-size:.6rem}
+  .td-drawer-tab:active{transform:scale(.95)}
+  .td-drawer-tab.active{
+    color:var(--td-indigo-dark,#3f2fa8);background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.08);
+  }
+  .td-drawer-tab .dot{
+    position:absolute;top:5px;right:10px;width:7px;height:7px;border-radius:50%;background:var(--td-coral);
+    display:none;box-shadow:0 0 0 2px #fff;
+  }
+  .td-drawer-tab.has-alert .dot{display:block}
+  .td-drawer-panel{animation:tdFadeIn .18s ease}
+  @keyframes tdFadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+  @media (max-width:480px){
+    #drawerBox{max-width:100vw !important}
+    .td-drawer-tab{font-size:.64rem;padding:7px 3px}
+  }
 
   /* ---------- Leads ---------- */
   .td-lead-row{
@@ -1080,11 +1101,11 @@
         </div>
       </div>
       <div class="td-drawer-tabs" id="drawerTabs">
-        <button type="button" class="td-drawer-tab active" data-tab="profile">Profile</button>
-        <button type="button" class="td-drawer-tab" data-tab="progress">Progress</button>
-        <button type="button" class="td-drawer-tab" data-tab="attendance">Attendance</button>
-        <button type="button" class="td-drawer-tab" data-tab="rewards">Rewards</button>
-        <button type="button" class="td-drawer-tab" data-tab="notes">Notes</button>
+        <button type="button" class="td-drawer-tab active" data-tab="profile"><span class="ic">👤</span>Profile<span class="dot"></span></button>
+        <button type="button" class="td-drawer-tab" data-tab="progress"><span class="ic">📈</span>Progress<span class="dot"></span></button>
+        <button type="button" class="td-drawer-tab" data-tab="attendance"><span class="ic">📅</span>Attend.<span class="dot"></span></button>
+        <button type="button" class="td-drawer-tab" data-tab="rewards"><span class="ic">🏆</span>Rewards<span class="dot"></span></button>
+        <button type="button" class="td-drawer-tab" data-tab="notes"><span class="ic">📝</span>Notes<span class="dot"></span></button>
       </div>
     </div>
 
