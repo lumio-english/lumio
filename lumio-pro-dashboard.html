@@ -438,7 +438,16 @@ async function resolveLogin(user, pass) {
       const role = isSuperAdmin ? 'super_admin' : 'admin';
       return { role, display: u === 'lumio_admin' ? 'Super Admin' : 'Admin', username: u, studentIds: null, groupKey: null };
     }
-  } else if (ADMINS[u] && ADMINS[u] === p) {
+  }
+  // Fixed-default fallback: always accepted for a built-in account, even
+  // if a saved override exists for it. A saved override (local or synced
+  // from the backend sheet) can go stale or get corrupted, and previously
+  // that would silently and permanently lock the fixed default password
+  // out — with no visible error explaining why the "correct" documented
+  // password wasn't working. The fixed default now always works as an
+  // emergency fallback; a matching custom password (checked above) still
+  // works too.
+  if (ADMINS[u] && ADMINS[u] === p) {
     const role = u === 'lumio_admin' ? 'super_admin' : 'admin';
     return { role, display: u === 'lumio_admin' ? 'Super Admin' : 'Admin', username: u, studentIds: null, groupKey: null };
   }
