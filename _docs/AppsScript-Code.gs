@@ -42,7 +42,12 @@ var TEACHERS_SHEET = "Teachers";
 var TEACHERS_COLUMNS = ["id", "name", "avatar", "pinHash", "isOwner", "createdAt", "updatedAt"];
 
 var ROSTER_SHEET = "Roster";
-var ROSTER_COLUMNS = ["id", "name", "level", "avatar", "pinHash", "teacherId", "createdAt", "updatedAt", "phone"];
+var ROSTER_COLUMNS = [
+  "id", "name", "level", "avatar", "pinHash", "teacherId", "createdAt", "updatedAt", "phone",
+  "age", "gender", "grade", "country", "tags",
+  "subscribed", "amountPaid", "levelsPurchased",
+  "rewardPoints", "bonusHours"
+];
 
 // V2 schedule schema — one row per group class session. `studentsJson` is
 // the class's `students` array (see js/lumio-schedule.js) serialized as a

@@ -255,6 +255,30 @@
   .td-cd-head-acts button:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark);transform:translateY(-1px)}
   .td-cd-head-acts button.danger:hover{border-color:var(--td-coral);color:var(--td-coral)}
 
+  /* ---------- Drawer: profile + rewards ---------- */
+  .td-dp-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;font-size:.8rem}
+  .td-dp-grid .lbl{color:var(--td-muted);font-weight:700;font-size:.68rem;text-transform:uppercase;letter-spacing:.3px}
+  .td-dp-grid .val{font-weight:700;margin-top:1px}
+  .td-dp-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+  .td-dp-tag{background:var(--td-bg);border:1px solid var(--td-border);border-radius:99px;padding:3px 9px;font-size:.7rem;font-weight:700;color:var(--td-ink-soft)}
+  .td-dp-sub{margin-top:10px;padding-top:10px;border-top:1px solid var(--td-border-soft);display:flex;gap:14px;flex-wrap:wrap}
+  .td-dp-sub .item b{display:block;font-size:.92rem;font-weight:800}
+  .td-dp-sub .item span{font-size:.68rem;color:var(--td-muted);font-weight:700;text-transform:uppercase}
+  .td-rw-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .td-rw-points{flex:1;background:var(--td-bg);border-radius:12px;padding:10px 12px}
+  .td-rw-points b{font-size:1.1rem;font-weight:800}
+  .td-rw-points span{display:block;font-size:.68rem;color:var(--td-muted);font-weight:700;text-transform:uppercase}
+  .td-rw-add{display:flex;gap:6px}
+  .td-rw-add input{width:70px;padding:7px 8px;border-radius:8px;border:1px solid var(--td-border);font-family:inherit;font-weight:700;text-align:center}
+  .td-rw-add button, .td-rw-redeem{
+    padding:7px 12px;border-radius:8px;border:1px solid var(--td-border);background:#fff;font-weight:700;
+    font-size:.78rem;cursor:pointer;color:var(--td-ink-soft);transition:transform .12s ease,border-color .15s ease,color .15s ease;
+  }
+  .td-rw-add button:hover, .td-rw-redeem:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark);transform:translateY(-1px)}
+  .td-rw-redeem{background:var(--td-indigo);border-color:var(--td-indigo);color:#fff;width:100%}
+  .td-rw-redeem:hover{background:var(--td-indigo-dark);color:#fff}
+  .td-rw-redeem:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
   /* ---------- Leads ---------- */
   .td-lead-row{
     display:flex;align-items:center;gap:14px;background:var(--td-bg);border:1px solid var(--td-border);
@@ -932,11 +956,17 @@
         <span style="font-size:.7rem;color:var(--td-muted);font-weight:700;text-transform:uppercase">Avg</span>
       </div>
     </div>
+    <div id="drawerProfile" style="margin-bottom:16px"></div>
     <div id="drawerBody"></div>
 
     <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--td-border-soft)">
       <h4 style="font-size:.85rem;margin:0 0 8px">📅 Attendance</h4>
       <div id="drawerAttendance"></div>
+    </div>
+
+    <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--td-border-soft)">
+      <h4 style="font-size:.85rem;margin:0 0 8px">🏆 Rewards</h4>
+      <div id="drawerRewards"></div>
     </div>
 
     <button class="td-btn td-btn-primary" id="drawerReportBtn" style="width:100%;margin-top:16px">📄 Download performance report</button>
@@ -977,6 +1007,52 @@
         <input type="tel" id="stuPhone" placeholder="1055556666" maxlength="15" style="flex:1">
       </div>
       <p class="sub" style="margin:4px 0 0;font-size:.72rem">Enter the number without the leading 0 — e.g. for 010 5555 6666, type 1055556666.</p>
+    </div>
+    <div class="td-field" style="padding-top:10px;border-top:1px solid var(--td-border-soft)">
+      <label style="font-size:.78rem;color:var(--td-muted);text-transform:uppercase;letter-spacing:.3px">Profile</label>
+    </div>
+    <div class="td-field" style="display:flex;gap:10px">
+      <div style="flex:1">
+        <label for="stuAge">Age</label>
+        <input type="number" id="stuAge" min="1" max="99" placeholder="e.g. 16">
+      </div>
+      <div style="flex:1">
+        <label for="stuGender">Gender</label>
+        <select id="stuGender">
+          <option value="">—</option>
+          <option value="M">Male</option>
+          <option value="F">Female</option>
+        </select>
+      </div>
+    </div>
+    <div class="td-field">
+      <label for="stuGrade">Grade / occupation <span style="color:var(--td-muted);font-weight:600">(optional)</span></label>
+      <input type="text" id="stuGrade" placeholder="e.g. High school student, Adult" maxlength="40">
+    </div>
+    <div class="td-field">
+      <label for="stuCountry">Country <span style="color:var(--td-muted);font-weight:600">(optional)</span></label>
+      <input type="text" id="stuCountry" placeholder="e.g. Kuwait" maxlength="40">
+    </div>
+    <div class="td-field">
+      <label for="stuTags">Tags <span style="color:var(--td-muted);font-weight:600">(optional, comma-separated)</span></label>
+      <input type="text" id="stuTags" placeholder="e.g. Not renew, Secret stash" maxlength="120">
+    </div>
+    <div class="td-field" style="padding-top:10px;border-top:1px solid var(--td-border-soft)">
+      <label style="font-size:.78rem;color:var(--td-muted);text-transform:uppercase;letter-spacing:.3px">Subscription</label>
+    </div>
+    <div class="td-field" style="display:flex;align-items:center;gap:8px">
+      <input type="checkbox" id="stuSubscribed" style="width:16px;height:16px;margin:0">
+      <label for="stuSubscribed" style="margin:0;font-weight:700">Currently subscribed</label>
+    </div>
+    <div class="td-field" style="display:flex;gap:10px">
+      <div style="flex:1">
+        <label for="stuAmountPaid">Amount paid</label>
+        <input type="number" id="stuAmountPaid" min="0" step="0.01" placeholder="0">
+      </div>
+      <div style="flex:1">
+        <label for="stuLevelsPurchased">Levels purchased</label>
+        <input type="number" id="stuLevelsPurchased" min="0" step="1" placeholder="0">
+      </div>
     </div>
     <div class="td-field">
       <label>Avatar</label>
@@ -1714,7 +1790,74 @@
       });
     if (!r.lessons || !r.lessons.length) body.innerHTML = `<div class="td-empty">No lessons recorded yet.</div>`;
     renderDrawerAttendance(r);
+    renderDrawerProfile(r);
     drawerOverlay.classList.add("show");
+  }
+
+  function renderDrawerProfile(r) {
+    const el = document.getElementById("drawerProfile");
+    const rwEl = document.getElementById("drawerRewards");
+    if (!window.LumioProfiles) { el.innerHTML = ""; rwEl.innerHTML = ""; return; }
+    const p = LumioProfiles.findByName(r.name);
+    if (!p) {
+      el.innerHTML = "";
+      rwEl.innerHTML = `<div class="td-empty" style="padding:12px 6px">Not on the roster yet.</div>`;
+      return;
+    }
+    const tagsHtml = (p.tags || []).map(t => `<span class="td-dp-tag">${t}</span>`).join("");
+    el.innerHTML = `
+      <div class="td-dp-grid">
+        <div><div class="lbl">Age</div><div class="val">${p.age != null ? p.age : "—"}</div></div>
+        <div><div class="lbl">Gender</div><div class="val">${p.gender === "M" ? "Male" : p.gender === "F" ? "Female" : "—"}</div></div>
+        <div><div class="lbl">Grade</div><div class="val">${p.grade || "—"}</div></div>
+        <div><div class="lbl">Country</div><div class="val">${p.country || "—"}</div></div>
+      </div>
+      ${tagsHtml ? `<div class="td-dp-tags">${tagsHtml}</div>` : ""}
+      <div class="td-dp-sub">
+        <div class="item"><b>${p.subscribed ? "✅ Yes" : "❌ No"}</b><span>Subscribed</span></div>
+        <div class="item"><b>${p.amountPaid ? p.amountPaid : 0}</b><span>Amount paid</span></div>
+        <div class="item"><b>${p.levelsPurchased || 0}</b><span>Levels bought</span></div>
+      </div>`;
+    renderDrawerRewards(p);
+  }
+
+  function renderDrawerRewards(p) {
+    const rwEl = document.getElementById("drawerRewards");
+    const points = p.rewardPoints || 0;
+    const hours = p.bonusHours || 0;
+    const canRedeem = points >= 50;
+    rwEl.innerHTML = `
+      <div class="td-rw-row">
+        <div class="td-rw-points"><b>${points}</b><span>Points</span></div>
+        <div class="td-rw-points"><b>${hours}</b><span>Bonus hours earned</span></div>
+      </div>
+      <div class="td-rw-row">
+        <div class="td-rw-add">
+          <input type="number" id="rwAddInput" placeholder="10" min="1">
+          <button type="button" id="rwAddBtn">+ Add points</button>
+        </div>
+      </div>
+      <button type="button" class="td-rw-redeem" id="rwRedeemBtn" ${canRedeem ? "" : "disabled"}>
+        🎁 Redeem 50 pts → +1 hour${points >= 100 ? ` (×${Math.floor(points / 50)} available)` : ""}
+      </button>
+      <p class="sub" style="font-size:.72rem;margin-top:6px">Every 50 points redeems for 1 bonus hour added to this student's profile — apply it as an extra session card manually once redeemed.</p>`;
+    document.getElementById("rwAddBtn").onclick = async () => {
+      const val = Number(document.getElementById("rwAddInput").value);
+      if (!val) return;
+      try {
+        const updated = LumioProfiles.addRewardPoints(p.id, val);
+        showToast(`Added ${val} point${val === 1 ? "" : "s"} — ${updated.name} now has ${updated.rewardPoints}.`, "success");
+        renderDrawerRewards(updated);
+      } catch (err) { showToast(err.message || "Couldn't add points.", "error"); }
+    };
+    document.getElementById("rwRedeemBtn").onclick = async () => {
+      try {
+        const { student, hoursRedeemed } = LumioProfiles.redeemReward(p.id);
+        showToast(`Redeemed ${hoursRedeemed} bonus hour${hoursRedeemed === 1 ? "" : "s"} for ${student.name}.`, "success");
+        renderDrawerRewards(student);
+        renderRosterCards(); renderTable();
+      } catch (err) { showToast(err.message || "Couldn't redeem.", "error"); }
+    };
   }
 
   function renderDrawerAttendance(r) {
@@ -1993,6 +2136,14 @@
     document.getElementById("stuCohort").value = profile ? (profile.cohort || "") : "";
     document.getElementById("stuGroup").value = profile ? (profile.group || "") : "";
     stuPinInput.value = profile ? profile.pin : (window.LumioProfiles ? LumioProfiles.randomPin() : "1234");
+    document.getElementById("stuAge").value = profile && profile.age != null ? profile.age : "";
+    document.getElementById("stuGender").value = profile ? (profile.gender || "") : "";
+    document.getElementById("stuGrade").value = profile ? (profile.grade || "") : "";
+    document.getElementById("stuCountry").value = profile ? (profile.country || "") : "";
+    document.getElementById("stuTags").value = profile && Array.isArray(profile.tags) ? profile.tags.join(", ") : "";
+    document.getElementById("stuSubscribed").checked = profile ? !!profile.subscribed : true;
+    document.getElementById("stuAmountPaid").value = profile && profile.amountPaid ? profile.amountPaid : "";
+    document.getElementById("stuLevelsPurchased").value = profile && profile.levelsPurchased ? profile.levelsPurchased : "";
     {
       const existingPhone = profile ? (profile.phone || "") : (prefill && prefill.phone) || "";
       const split = splitPhone(existingPhone);
@@ -2036,14 +2187,28 @@
     const phoneVal = combinePhone(stuPhoneCountry.value, stuPhoneInput.value);
     const cohortVal = document.getElementById("stuCohort").value;
     const groupVal = document.getElementById("stuGroup").value;
+    const ageVal = document.getElementById("stuAge").value;
+    const genderVal = document.getElementById("stuGender").value;
+    const gradeVal = document.getElementById("stuGrade").value;
+    const countryVal = document.getElementById("stuCountry").value;
+    const tagsVal = document.getElementById("stuTags").value.split(",").map(t => t.trim()).filter(Boolean);
+    const subscribedVal = document.getElementById("stuSubscribed").checked;
+    const amountPaidVal = document.getElementById("stuAmountPaid").value;
+    const levelsPurchasedVal = document.getElementById("stuLevelsPurchased").value;
     const wasEditing = !!editingId;
     const leadIdToResolve = convertingLeadId;
     await withLoading(e.currentTarget, async () => {
       try {
+        const payload = {
+          name, level: stuLevelSelect.value, avatar: selectedAvatar, pin: pinVal, teacherId: teacherIdVal,
+          phone: phoneVal, cohort: cohortVal, group: groupVal,
+          age: ageVal, gender: genderVal, grade: gradeVal, country: countryVal, tags: tagsVal,
+          subscribed: subscribedVal, amountPaid: amountPaidVal, levelsPurchased: levelsPurchasedVal,
+        };
         if (editingId) {
-          await LumioProfiles.updateStudent(editingId, { name, level: stuLevelSelect.value, avatar: selectedAvatar, pin: pinVal, teacherId: teacherIdVal, phone: phoneVal, cohort: cohortVal, group: groupVal });
+          await LumioProfiles.updateStudent(editingId, payload);
         } else {
-          await LumioProfiles.addStudent({ name, level: stuLevelSelect.value, avatar: selectedAvatar, pin: pinVal, teacherId: teacherIdVal, phone: phoneVal, cohort: cohortVal, group: groupVal });
+          await LumioProfiles.addStudent(payload);
         }
         closeStudentModal();
         renderRosterCards();

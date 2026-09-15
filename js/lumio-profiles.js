@@ -224,7 +224,7 @@
     while (data.students.some(s => s.loginCode === code));
     return code;
   }
-  async function addStudent({ name, level, avatar, pin, teacherId, phone, cohort, group, paid } = {}) {
+  async function addStudent({ name, level, avatar, pin, teacherId, phone, cohort, group, paid, age, gender, grade, country, tags, subscribed, amountPaid, levelsPurchased, rewardPoints, bonusHours } = {}) {
     const data = load();
     name = (name || "").trim();
     if (!name) throw new Error("A student needs a name.");
@@ -263,6 +263,29 @@
       // cohort + group + level all match exactly (case/whitespace-insensitive).
       cohort: (cohort || "").trim(),
       group: (group || "").trim(),
+      // ---- Profile info (CRM-style card, entered/edited by the teacher
+      // by hand -- nothing here is auto-computed) ----
+      age: age === undefined || age === null || age === "" ? null : Number(age),
+      gender: gender || "", // free-form short code, e.g. "M" / "F" -- not a managed enum
+      grade: (grade || "").trim(), // e.g. "High school", "Grade 8"
+      country: (country || "").trim(),
+      tags: Array.isArray(tags) ? tags.map(t => String(t).trim()).filter(Boolean) : [],
+      // ---- Subscription / billing status (separate from `paid` above,
+      // which only tracks placement-test registration vs. real
+      // enrollment) -- this is the actual "are they currently a paying
+      // subscriber, how much did they pay, how many levels did that
+      // cover" info a teacher fills in by hand after a payment. ----
+      subscribed: subscribed === undefined ? true : !!subscribed,
+      amountPaid: amountPaid === undefined || amountPaid === null || amountPaid === "" ? 0 : Number(amountPaid),
+      levelsPurchased: levelsPurchased === undefined || levelsPurchased === null || levelsPurchased === "" ? 0 : Number(levelsPurchased),
+      // ---- Rewards ----
+      // rewardPoints accumulates freely; every full 50 points can be
+      // redeemed (see redeemReward()) for 1 bonus hour, which just counts
+      // up in bonusHours for the teacher to track/apply manually (e.g. as
+      // an extra session card) -- this file doesn't touch scheduling or
+      // session-card counts itself.
+      rewardPoints: rewardPoints ? Number(rewardPoints) : 0,
+      bonusHours: bonusHours ? Number(bonusHours) : 0,
       createdAt: new Date().toISOString().slice(0, 10),
       updatedAt: new Date().toISOString(),
     };
@@ -299,9 +322,50 @@
     if (patch.cohort !== undefined) s.cohort = (patch.cohort || "").trim();
     if (patch.group !== undefined) s.group = (patch.group || "").trim();
     if (patch.paid !== undefined) s.paid = !!patch.paid;
+    if (patch.age !== undefined) s.age = patch.age === null || patch.age === "" ? null : Number(patch.age);
+    if (patch.gender !== undefined) s.gender = patch.gender || "";
+    if (patch.grade !== undefined) s.grade = (patch.grade || "").trim();
+    if (patch.country !== undefined) s.country = (patch.country || "").trim();
+    if (patch.tags !== undefined) s.tags = Array.isArray(patch.tags) ? patch.tags.map(t => String(t).trim()).filter(Boolean) : [];
+    if (patch.subscribed !== undefined) s.subscribed = !!patch.subscribed;
+    if (patch.amountPaid !== undefined) s.amountPaid = patch.amountPaid === null || patch.amountPaid === "" ? 0 : Number(patch.amountPaid);
+    if (patch.levelsPurchased !== undefined) s.levelsPurchased = patch.levelsPurchased === null || patch.levelsPurchased === "" ? 0 : Number(patch.levelsPurchased);
+    if (patch.rewardPoints !== undefined) s.rewardPoints = Math.max(0, Number(patch.rewardPoints) || 0);
+    if (patch.bonusHours !== undefined) s.bonusHours = Math.max(0, Number(patch.bonusHours) || 0);
     s.updatedAt = new Date().toISOString();
     save(data);
     return s;
+  }
+  // Adds (or, with a negative amount, removes) reward points -- the
+  // day-to-day action a teacher takes after a student does something
+  // reward-worthy. Kept separate from updateStudent's raw rewardPoints
+  // overwrite so callers don't have to read-then-write the current total
+  // themselves.
+  function addRewardPoints(id, amount) {
+    const data = load();
+    const s = data.students.find(x => x.id === id);
+    if (!s) throw new Error("Student not found.");
+    s.rewardPoints = Math.max(0, (s.rewardPoints || 0) + Number(amount || 0));
+    s.updatedAt = new Date().toISOString();
+    save(data);
+    return s;
+  }
+  // Redeems every full 50-point block currently available: 50 points -> 1
+  // bonus hour, 100 -> 2, and so on in one go, leaving any remainder
+  // (e.g. 130 points -> 2 hours redeemed, 30 points left) rather than
+  // requiring one redemption per block.
+  function redeemReward(id) {
+    const data = load();
+    const s = data.students.find(x => x.id === id);
+    if (!s) throw new Error("Student not found.");
+    const POINTS_PER_HOUR = 50;
+    const blocks = Math.floor((s.rewardPoints || 0) / POINTS_PER_HOUR);
+    if (blocks < 1) throw new Error(`Needs at least ${POINTS_PER_HOUR} points to redeem — has ${s.rewardPoints || 0}.`);
+    s.rewardPoints -= blocks * POINTS_PER_HOUR;
+    s.bonusHours = (s.bonusHours || 0) + blocks;
+    s.updatedAt = new Date().toISOString();
+    save(data);
+    return { student: s, hoursRedeemed: blocks };
   }
   async function assignStudent(studentId, teacherId) {
     return updateStudent(studentId, { teacherId });
@@ -466,7 +530,21 @@
   function stripPin(record) {
     const copy = Object.assign({}, record);
     delete copy.pin; // never leaves the device
+    // Sheets/Apps Script rows are flat key/value, so an array field would
+    // otherwise get mangled on the way through -- serialize to a simple
+    // comma-joined string for the wire, same idea as everywhere else here
+    // that keeps the Sheet schema flat. Restored back to an array in
+    // parseSyncedStudent() below on the way back in.
+    if (Array.isArray(copy.tags)) copy.tags = copy.tags.join(", ");
     return copy;
+  }
+  function parseSyncedStudent(s) {
+    if (s && typeof s.tags === "string") {
+      s.tags = s.tags.split(",").map(t => t.trim()).filter(Boolean);
+    } else if (!s || !Array.isArray(s.tags)) {
+      if (s) s.tags = [];
+    }
+    return s;
   }
   // Additive merge: keeps local-only records, adds remote-only records, and
   // for records both sides know about, remote wins on most fields but a
@@ -558,6 +636,7 @@
       const res = await fetch(cfg.url + "?action=pullRoster");
       const remote = await res.json();
       if (remote && Array.isArray(remote.students)) {
+        remote.students.forEach(parseSyncedStudent);
         data.students = mergeById(data.students, remote.students);
       }
       if (remote && Array.isArray(remote.teachers) && remote.teachers.length) {
@@ -596,6 +675,7 @@
     AVATARS, TEACHER_AVATARS,
     listStudents, getStudent, findByName, findByPhone, findByLoginCode, groupmatesOf,
     addStudent, updateStudent, removeStudent, assignStudent,
+    addRewardPoints, redeemReward,
     verifyStudentLogin, randomPin,
     listTeachers, getTeacher, findTeacherByName,
     addTeacher, updateTeacher, removeTeacher, verifyTeacherLogin,
