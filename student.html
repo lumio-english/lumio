@@ -363,6 +363,8 @@
   }
   .pg-body{padding:0 28px 8px;text-align:center}
   .pg-body h3{margin:0 0 10px;font-size:1.1rem;font-weight:800;color:var(--sd-cocoa)}
+  .pg-title-en{direction:ltr;text-align:center;font-size:.78rem;font-weight:800;color:var(--sd-cocoa-soft);
+    text-transform:uppercase;letter-spacing:.4px;margin:-6px 0 14px;opacity:.75}
   .pg-body p{margin:0;font-size:.9rem;line-height:1.8;color:var(--sd-cocoa-soft);font-weight:600}
   .pg-body ul{text-align:right;margin:14px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
   .pg-body ul li{
@@ -370,6 +372,8 @@
     font-size:.85rem;font-weight:700;color:var(--sd-cocoa);line-height:1.6;
   }
   .pg-body ul li .em{font-size:1.1rem;flex-shrink:0}
+  .pg-body ul li .en{display:block;direction:ltr;text-align:left;font-size:.72rem;font-weight:700;color:var(--sd-cocoa-soft);margin-top:4px;opacity:.85}
+  .pg-en-block{direction:ltr;text-align:left;margin-top:16px;padding-top:14px;border-top:1px dashed #E7DCC8;color:var(--sd-cocoa-soft);font-size:.8rem;line-height:1.7;font-weight:600}
   .pg-dots{display:flex;justify-content:center;gap:6px;padding:20px 0 6px}
   .pg-dot{width:7px;height:7px;border-radius:50%;background:var(--sd-cream);border:2px solid var(--sd-cream);transition:all .2s ease}
   .pg-dot.active{background:var(--sd-orange-deep);border-color:var(--sd-orange-deep);width:20px;border-radius:99px}
@@ -733,6 +737,7 @@
     <div class="pg-icon-badge" id="pgIcon">🎉</div>
     <div class="pg-body">
       <h3 id="pgTitle"></h3>
+      <div id="pgTitleEn" class="pg-title-en"></div>
       <div id="pgContent"></div>
     </div>
     <div class="pg-dots" id="pgDots"></div>
@@ -1543,62 +1548,128 @@
     btn.style.display = "inline-flex";
 
     const sessionsLeft = rosterProfile.sessionsRemaining || 0;
+    // Each slide covers one dashboard section for parents who don't read
+    // the UI itself day to day, in Arabic first (primary) with an English
+    // line under every point -- not a separate language toggle, both
+    // shown together every time so nothing needs translating twice.
     const slides = [
       {
         icon: "🎉",
-        headSub: "دليلكم السريع لمتابعة تقدّم طفلكم",
+        headSub: "دليلكم الشامل لصفحة الطالب",
         title: `تم تفعيل اشتراك ${u.name} بنجاح`,
+        titleEn: "Subscription activated",
         html: `<p>أهلاً بكم في عائلة Lumio English! 👋<br>
-          خلال الدقائق القليلة القادمة، سنُطلعكم بسرعة على أهم ما تحتاجون معرفته لمتابعة رحلة طفلكم التعليمية معنا خطوة بخطوة.</p>`,
+          في الصفحات القادمة سنشرح لكم كل قسم من أقسام صفحة طفلكم بالتفصيل.</p>
+          <div class="pg-en-block">Welcome to the Lumio English family! 👋<br>
+          On the next few pages, we'll walk you through every section of your child's dashboard.</div>`,
       },
       {
-        icon: "📅",
-        headSub: "جدول الحصص",
-        title: "كيف يعمل جدول الحصص؟",
+        icon: "🚀",
+        headSub: "مهمة اليوم",
+        title: "أين يبدأ طفلكم؟",
+        titleEn: "Today's Mission",
         html: `<ul>
-          <li><span class="em">🗓️</span> يظهر جدول الحصص الأسبوعي في قسم "جدولي" داخل صفحة الطالب.</li>
-          <li><span class="em">🔗</span> يتم إنشاء رابط "زووم" لكل حصة تلقائياً قبل موعدها بساعتين — لا حاجة لطلبه من المعلم.</li>
-          <li><span class="em">👩‍🏫</span> يظهر اسم المعلم/المعلمة بجانب كل حصة قادمة.</li>
+          <li><span class="em">▶️</span> زر "متابعة" ينقل الطالب مباشرة إلى الدرس التالي في رحلته.
+            <span class="en">The "Continue" button takes your child straight to their next lesson.</span></li>
+          <li><span class="em">📝</span> أزرار الواجب التفاعلي وورقة العمل والكتابة والبطاقات التعليمية تفتح تمارين إضافية لكل درس.
+            <span class="en">Interactive Homework, Homework Sheet, Writing Practice and Flashcards open extra practice for each lesson.</span></li>
         </ul>`,
       },
       {
         icon: "📈",
         headSub: "المستوى والتقدم",
         title: "متابعة تقدّم طفلكم",
+        titleEn: "Level & Progress",
         html: `<ul>
-          <li><span class="em">📖</span> كل درس يمرّ بثلاث مراحل: تحضير، ثم حصة مباشرة مع المعلم، ثم واجب منزلي.</li>
-          <li><span class="em">⭐</span> يحصل الطالب على نجوم عند إكمال كل درس بنجاح، وتظهر نسبة تقدّمه بشكل واضح في الصفحة الرئيسية.</li>
-          <li><span class="em">📄</span> يمكن للمعلم إرسال تقرير أداء مفصّل يوضّح نقاط القوة والمهارات التي تحتاج تدريباً إضافياً.</li>
+          <li><span class="em">📖</span> كل درس يمرّ بثلاث مراحل: تحضير، ثم حصة مباشرة مع المعلم، ثم واجب منزلي.
+            <span class="en">Every lesson has 3 stages: Preparation, then a live class, then Homework.</span></li>
+          <li><span class="em">⭐</span> يحصل الطالب على نجوم عند إكمال كل درس، وتظهر نسبة تقدّمه بوضوح في الصفحة الرئيسية.
+            <span class="en">Your child earns stars for finishing each lesson, and their progress % is shown right on the home page.</span></li>
+          <li><span class="em">🎓</span> عند إكمال المستوى، تظهر "شهادة الإنجاز" الخاصة به.
+            <span class="en">A completion certificate appears once the whole level is finished.</span></li>
+          <li><span class="em">📄</span> يمكن للمعلم إرسال تقرير أداء مفصّل يوضّح نقاط القوة والمهارات التي تحتاج تدريباً إضافياً.
+            <span class="en">The teacher can send a detailed report showing strengths and areas that need more practice.</span></li>
+        </ul>`,
+      },
+      {
+        icon: "🔥",
+        headSub: "سلسلة الأيام",
+        title: "حافظوا على استمرار السلسلة!",
+        titleEn: "Daily Streak",
+        html: `<ul>
+          <li><span class="em">🔥</span> يظهر رقم "السلسلة" أعلى الصفحة، ويزيد كل يوم يمارس فيه الطالب أي نشاط تعليمي.
+            <span class="en">The flame number at the top of the page grows by 1 for every day your child does any activity.</span></li>
+          <li><span class="em">💡</span> التدريب اليومي، ولو لبضع دقائق، أفضل بكثير من جلسة طويلة مرة واحدة أسبوعياً — والسلسلة تشجّع على هذه العادة.
+            <span class="en">A few minutes daily beats one long session a week — the streak is there to encourage that habit.</span></li>
         </ul>`,
       },
       {
         icon: "🏆",
         headSub: "نظام المكافآت",
         title: "تحفيز طفلكم بالمكافآت",
+        titleEn: "Rewards System",
         html: `<ul>
-          <li><span class="em">✨</span> يكسب الطالب نقاطاً مقابل التزامه بالحضور والمشاركة الجيدة في الحصص.</li>
-          <li><span class="em">🎁</span> عند جمع 50 نقطة، يمكن استبدالها بساعة حصة إضافية مجانية — ويستمر الأمر كلما جُمعت نقاط جديدة.</li>
-          <li><span class="em">🥇</span> تظهر أفضل النقاط في لوحة الصدارة كتحفيز إضافي للطالب.</li>
+          <li><span class="em">✨</span> يكسب الطالب نقاطاً مقابل الالتزام بالحضور والمشاركة الجيدة في الحصص.
+            <span class="en">Your child earns points for good attendance and active participation in class.</span></li>
+          <li><span class="em">🎁</span> عند جمع 50 نقطة، يمكن استبدالها بساعة حصة إضافية مجانية — ويستمر الأمر كلما جُمعت نقاط جديدة.
+            <span class="en">Every 50 points can be redeemed for 1 free bonus class hour — and it keeps going as more points are earned.</span></li>
+          <li><span class="em">🥇</span> يظهر أفضل الطلاب نقاطاً في لوحة الصدارة كتحفيز إضافي.
+            <span class="en">Top point-earners appear on a leaderboard as extra motivation.</span></li>
+        </ul>`,
+      },
+      {
+        icon: "🎖️",
+        headSub: "الشارات وأصدقاء الدراسة",
+        title: "إنجازات ومراجعة وأصدقاء",
+        titleEn: "Badges, Buddies & Review",
+        html: `<ul>
+          <li><span class="em">🎖️</span> قسم "شاراتي" يعرض الإنجازات التي حصل عليها الطالب حتى الآن.
+            <span class="en">"My Badges" shows every achievement your child has unlocked so far.</span></li>
+          <li><span class="em">🧑‍🤝‍🧑</span> قسم "أصدقاء الدراسة" يعرض زملاء الطالب في نفس المجموعة.
+            <span class="en">"Study Buddies" shows your child's classmates in the same group.</span></li>
+          <li><span class="em">🔄</span> قسم "مراجعة الكلمات الصعبة" يساعد الطالب على تثبيت الكلمات التي واجه صعوبة فيها سابقاً.
+            <span class="en">"Review Tricky Words" helps your child revisit words they've struggled with before.</span></li>
+        </ul>`,
+      },
+      {
+        icon: "🎮",
+        headSub: "الألعاب ومركز اللغة",
+        title: "التعلّم عن طريق اللعب",
+        titleEn: "Games & English Hub",
+        html: `<ul>
+          <li><span class="em">🎮</span> "الألعاب المصغّرة" و"خريطة المغامرة" تجعل مراجعة المفردات والقواعد ممتعة وتفاعلية.
+            <span class="en">Mini-Games and the Adventure Map make reviewing vocabulary and grammar fun and interactive.</span></li>
+          <li><span class="em">🌐</span> "English Hub" يجمع تمارين المفردات والصوتيات والإملاء والقواعد والكتابة في مكان واحد.
+            <span class="en">The English Hub gathers vocabulary, phonics, spelling, grammar and writing practice in one place.</span></li>
         </ul>`,
       },
       {
         icon: "🎟️",
         headSub: "الحصص والاشتراك",
         title: "عدد الحصص المتبقية",
-        html: `<p style="margin-bottom:14px">يتبقى لدى <b>${u.name}</b> حالياً
+        titleEn: "Sessions & Subscription",
+        html: `<p style="margin-bottom:6px">يتبقى لدى <b>${u.name}</b> حالياً
           <span style="color:var(--sd-orange-deep);font-weight:800">${sessionsLeft} حصة</span> ضمن الاشتراك الحالي.</p>
-          <ul>
-          <li><span class="em">➖</span> يُخصم عدد الحصص تلقائياً كلما حضر الطالب حصة مباشرة.</li>
-          <li><span class="em">🔔</span> سيتواصل معكم المعلم عبر واتساب عند اقتراب انتهاء الحصص لتجديد الاشتراك.</li>
+          <div class="pg-en-block" style="margin-top:0;padding-top:8px;border-top:none">
+            <b>${u.name}</b> currently has <b>${sessionsLeft} session(s)</b> left on the current plan.
+          </div>
+          <ul style="margin-top:14px">
+          <li><span class="em">➖</span> يُخصم عدد الحصص تلقائياً كلما حضر الطالب حصة مباشرة.
+            <span class="en">The session count goes down automatically each time your child attends a live class.</span></li>
+          <li><span class="em">🔔</span> سيتواصل معكم المعلم عبر واتساب عند اقتراب انتهاء الحصص لتجديد الاشتراك.
+            <span class="en">The teacher will reach out on WhatsApp when sessions are running low, to renew.</span></li>
         </ul>`,
       },
       {
         icon: "💬",
         headSub: "نحن هنا لمساعدتكم",
         title: "هل لديكم أي استفسار؟",
-        html: `<p>يمكنكم دائماً التواصل مباشرة مع معلم طفلكم لأي استفسار حول التقدّم الدراسي أو الجدول أو الاشتراك.</p>
-          <p style="margin-top:12px">يمكنكم أيضاً فتح هذا الدليل في أي وقت من زر "🧭 دليل ولي الأمر" أعلى الصفحة.</p>
-          <p style="margin-top:12px;font-weight:800;color:var(--sd-orange-deep)">نتمنى لطفلكم رحلة تعليمية ممتعة ومثمرة! 🌟</p>`,
+        titleEn: "Need help?",
+        html: `<p>يمكنكم دائماً التواصل مباشرة مع معلم طفلكم لأي استفسار.</p>
+          <div class="pg-en-block">You can always contact your child's teacher directly with any question.</div>
+          <p style="margin-top:14px">يمكنكم فتح هذا الدليل في أي وقت من زر "🧭 دليل ولي الأمر" أعلى الصفحة.</p>
+          <div class="pg-en-block">You can reopen this guide anytime from the "🧭 Parent Guide" button at the top of the page.</div>
+          <p style="margin-top:14px;font-weight:800;color:var(--sd-orange-deep)">نتمنى لطفلكم رحلة تعليمية ممتعة ومثمرة! 🌟</p>`,
       },
     ];
 
@@ -1607,6 +1678,7 @@
     const iconEl = document.getElementById("pgIcon");
     const headSubEl = document.getElementById("pgHeadSub");
     const titleEl = document.getElementById("pgTitle");
+    const titleEnEl = document.getElementById("pgTitleEn");
     const contentEl = document.getElementById("pgContent");
     const dotsEl = document.getElementById("pgDots");
     const backBtn = document.getElementById("pgBackBtn");
@@ -1618,10 +1690,12 @@
       iconEl.textContent = s.icon;
       headSubEl.textContent = s.headSub;
       titleEl.textContent = s.title;
+      titleEnEl.textContent = s.titleEn || "";
       contentEl.innerHTML = s.html;
       dotsEl.innerHTML = slides.map((_, i) => `<span class="pg-dot${i === step ? " active" : ""}"></span>`).join("");
       backBtn.style.visibility = step === 0 ? "hidden" : "visible";
-      nextBtn.textContent = step === slides.length - 1 ? "تم ✓" : "التالي";
+      nextBtn.textContent = step === slides.length - 1 ? "تم ✓ Done" : "التالي · Next";
+      skipBtn.textContent = "تخطي · Skip";
       skipBtn.style.display = step === slides.length - 1 ? "none" : "block";
     }
     function openGuide() { step = 0; renderStep(); overlay.classList.add("show"); }
