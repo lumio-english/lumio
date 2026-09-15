@@ -254,7 +254,26 @@
     if (!c) throw new Error("Class not found.");
     const slot = findStudentSlot(c, typeof studentRef === "string" ? { studentName: studentRef } : studentRef);
     if (!slot) throw new Error("That student isn't booked into this class.");
+    const wasPresent = slot.attendance === "present";
     slot.attendance = value;
+    // Auto-decrement the student's paid session-card count the first
+    // time this slot is marked "present" -- `sessionDeducted` guards
+    // against double-charging if a teacher toggles present -> absent ->
+    // present again on the same slot, or just re-clicks present twice.
+    // Switching AWAY from present after a deduction intentionally does
+    // NOT refund it here (a session that happened and was later
+    // re-marked isn't the common case, and silently refunding on every
+    // edit would make the count too easy to game) -- a teacher can
+    // still correct it by hand via the student's profile if truly needed.
+    if (value === "present" && !wasPresent && !slot.sessionDeducted && global.LumioProfiles) {
+      const full = slot.studentId ? global.LumioProfiles.getStudent(slot.studentId) : global.LumioProfiles.findByName(slot.studentName);
+      if (full) {
+        try {
+          global.LumioProfiles.updateStudent(full.id, { sessionsRemaining: Math.max(0, (full.sessionsRemaining || 0) - 1) });
+          slot.sessionDeducted = true;
+        } catch (e) { /* non-fatal -- attendance itself still gets marked */ }
+      }
+    }
     refreshStatus(c);
     c.updatedAt = new Date().toISOString();
     save(data);
@@ -442,6 +461,69 @@
     });
     if (!stars.length) return null;
     return { average: stars.reduce((a, b) => a + b, 0) / stars.length, count: stars.length };
+  }
+  // Current consecutive-attendance streak, counting back from the most
+  // recent MARKED session: how many in a row (most recent first) were
+  // "present" before hitting one that wasn't (absent/no-show) or running
+  // out of marked sessions. An unmarked/future session doesn't break or
+  // extend the streak -- it's simply skipped, since it hasn't happened
+  // from an attendance standpoint yet.
+  function attendanceStreakForStudent(studentName) {
+    const marked = listClasses({ studentName })
+      .filter(c => c.status !== "cancelled")
+      .map(c => findStudentSlot(c, { studentName }))
+      .filter(s => s && s.attendance)
+      .reverse(); // listClasses is date-ascending; walk most-recent-first
+    let streak = 0;
+    for (const s of marked) {
+      if (s.attendance === "present") streak++;
+      else break;
+    }
+    return streak;
+  }
+  // A teacher's own workload/quality snapshot: classes taught this
+  // calendar month (marked complete), their average student rating (see
+  // teacherAverageRating above), and a rough "punctuality" proxy -- the
+  // % of their PAST sessions that are fully attendance-marked rather
+  // than left sitting in needsAttendance(). This file has no timestamp
+  // for exactly when a teacher clicked "present", so it can't measure
+  // true on-time marking -- this is the closest honest signal available
+  // without adding new tracking.
+  function teacherStats(teacherId) {
+    const all = listClasses({ teacherId }).filter(c => c.status !== "cancelled");
+    const today = todayStr();
+    const past = all.filter(c => c.date <= today);
+    const now = new Date();
+    const ym = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
+    const classesThisMonth = all.filter(c => (c.date || "").slice(0, 7) === ym && c.status === "completed").length;
+    const fullyMarked = past.filter(c => completionState(c).complete).length;
+    const punctualityPct = past.length ? Math.round((fullyMarked / past.length) * 100) : null;
+    return {
+      classesThisMonth,
+      punctualityPct,
+      rating: teacherAverageRating(teacherId), // {average, count} | null
+      totalPastSessions: past.length,
+    };
+  }
+  // Reassigns every class in [fromDate, toDate] (inclusive) from one
+  // teacher to another -- the "substitute teacher" action for when a
+  // teacher is out sick. Only touches classes that haven't already
+  // happened/been cancelled, so past history keeps its real teacher on
+  // record.
+  function reassignTeacherForRange(fromTeacherId, toTeacherId, fromDate, toDate, toTeacherName) {
+    if (!fromTeacherId || !toTeacherId) throw new Error("Pick both the original and substitute teacher.");
+    const data = load();
+    let count = 0;
+    data.classes.forEach(c => {
+      if (c.teacherId === fromTeacherId && c.date >= fromDate && c.date <= toDate && c.status === "scheduled") {
+        c.teacherId = toTeacherId;
+        c.teacherName = toTeacherName || c.teacherName;
+        c.updatedAt = new Date().toISOString();
+        count++;
+      }
+    });
+    if (count) save(data);
+    return { reassigned: count };
   }
 
   // ═══════════════════════════════════════════════════════════════════
@@ -662,6 +744,7 @@
     addClass, updateClass, removeClass, cancelClass,
     markAttendance, gradeStudent, rateTeacher, completionState,
     needsAttendance, attendanceStatsForStudent, gradesForStudent, teacherRatingsGiven, teacherAverageRating,
+    attendanceStreakForStudent, teacherStats, reassignTeacherForRange,
     attendedLessonNumbers, classForLesson,
     upcomingForStudent, upcomingForTeacher, todayStr,
     getSyncConfig, syncNow,

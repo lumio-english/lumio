@@ -123,7 +123,15 @@
         s.paid = true; // every pre-existing student was a teacher-enrolled "Current Learner"
         needsSave = true;
       }
+      // safety net for students saved before profile/subscription/rewards
+      // fields existed -- plain defaults so every reader (drawer, rewards
+      // card, leaderboard, renewal list) can rely on these always existing.
+      if (!Array.isArray(s.pointsLog)) { s.pointsLog = []; needsSave = true; }
+      if (!Array.isArray(s.redemptions)) { s.redemptions = []; needsSave = true; }
+      if (!Array.isArray(s.notes)) { s.notes = []; needsSave = true; }
+      if (s.sessionsRemaining === undefined) { s.sessionsRemaining = 0; needsSave = true; }
     });
+    if (!Array.isArray(data.rewardCatalog)) { data.rewardCatalog = []; needsSave = true; }
 
     if (needsSave) save(data);
     return data;
@@ -224,7 +232,7 @@
     while (data.students.some(s => s.loginCode === code));
     return code;
   }
-  async function addStudent({ name, level, avatar, pin, teacherId, phone, cohort, group, paid, age, gender, grade, country, tags, subscribed, amountPaid, levelsPurchased, rewardPoints, bonusHours } = {}) {
+  async function addStudent({ name, level, avatar, pin, teacherId, phone, cohort, group, paid, age, gender, grade, country, tags, subscribed, amountPaid, levelsPurchased, rewardPoints, bonusHours, sessionsRemaining } = {}) {
     const data = load();
     name = (name || "").trim();
     if (!name) throw new Error("A student needs a name.");
@@ -286,6 +294,22 @@
       // session-card counts itself.
       rewardPoints: rewardPoints ? Number(rewardPoints) : 0,
       bonusHours: bonusHours ? Number(bonusHours) : 0,
+      // History of point awards, {date, amount} -- lets a leaderboard
+      // compute "points this month" instead of only lifetime totals.
+      // Redemptions (both the legacy 50pt/1hr and any catalog item) are
+      // logged separately below in `redemptions`.
+      pointsLog: [],
+      redemptions: [],
+      // How many paid session cards this student has left -- separate
+      // from `levelsPurchased` (a lifetime count of levels bought). Ticks
+      // down by 1 automatically the first time a class they're in gets
+      // marked "present" (see markAttendance's auto-decrement in
+      // js/lumio-schedule.js); never goes below 0.
+      sessionsRemaining: sessionsRemaining === undefined || sessionsRemaining === null || sessionsRemaining === "" ? 0 : Number(sessionsRemaining),
+      // Free-form CRM-style timeline -- call notes, parent complaints,
+      // praise -- separate from lesson/session notes, which live on the
+      // class record instead. {date, text, author}.
+      notes: [],
       createdAt: new Date().toISOString().slice(0, 10),
       updatedAt: new Date().toISOString(),
     };
@@ -332,6 +356,7 @@
     if (patch.levelsPurchased !== undefined) s.levelsPurchased = patch.levelsPurchased === null || patch.levelsPurchased === "" ? 0 : Number(patch.levelsPurchased);
     if (patch.rewardPoints !== undefined) s.rewardPoints = Math.max(0, Number(patch.rewardPoints) || 0);
     if (patch.bonusHours !== undefined) s.bonusHours = Math.max(0, Number(patch.bonusHours) || 0);
+    if (patch.sessionsRemaining !== undefined) s.sessionsRemaining = Math.max(0, Number(patch.sessionsRemaining) || 0);
     s.updatedAt = new Date().toISOString();
     save(data);
     return s;
@@ -340,12 +365,16 @@
   // day-to-day action a teacher takes after a student does something
   // reward-worthy. Kept separate from updateStudent's raw rewardPoints
   // overwrite so callers don't have to read-then-write the current total
-  // themselves.
+  // themselves. Logs to pointsLog so a leaderboard can total "this
+  // month" rather than only ever seeing the lifetime balance.
   function addRewardPoints(id, amount) {
     const data = load();
     const s = data.students.find(x => x.id === id);
     if (!s) throw new Error("Student not found.");
-    s.rewardPoints = Math.max(0, (s.rewardPoints || 0) + Number(amount || 0));
+    const amt = Number(amount || 0);
+    s.rewardPoints = Math.max(0, (s.rewardPoints || 0) + amt);
+    if (!Array.isArray(s.pointsLog)) s.pointsLog = [];
+    s.pointsLog.push({ date: new Date().toISOString(), amount: amt });
     s.updatedAt = new Date().toISOString();
     save(data);
     return s;
@@ -353,7 +382,9 @@
   // Redeems every full 50-point block currently available: 50 points -> 1
   // bonus hour, 100 -> 2, and so on in one go, leaving any remainder
   // (e.g. 130 points -> 2 hours redeemed, 30 points left) rather than
-  // requiring one redemption per block.
+  // requiring one redemption per block. This is the original, fixed
+  // "points -> hours" reward kept exactly as-is; see redeemCatalogItem()
+  // below for teacher-defined reward types on top of this one.
   function redeemReward(id) {
     const data = load();
     const s = data.students.find(x => x.id === id);
@@ -363,9 +394,79 @@
     if (blocks < 1) throw new Error(`Needs at least ${POINTS_PER_HOUR} points to redeem — has ${s.rewardPoints || 0}.`);
     s.rewardPoints -= blocks * POINTS_PER_HOUR;
     s.bonusHours = (s.bonusHours || 0) + blocks;
+    if (!Array.isArray(s.redemptions)) s.redemptions = [];
+    s.redemptions.push({ date: new Date().toISOString(), label: `+${blocks} bonus hour${blocks === 1 ? "" : "s"}`, cost: blocks * POINTS_PER_HOUR });
     s.updatedAt = new Date().toISOString();
     save(data);
     return { student: s, hoursRedeemed: blocks };
+  }
+
+  // ---- reward catalog (shared across all students, teacher-managed) ----
+  // A short list of extra redeemable items beyond the fixed "50pts=1hr"
+  // reward above, e.g. {label:"Sticker shoutout", cost:25} or
+  // {label:"Merch pack", cost:100}. Purely descriptive on this side --
+  // redeeming just deducts points and logs it to the student's
+  // `redemptions` for the teacher to actually go fulfil (mail the merch,
+  // give the shoutout, etc.); nothing here auto-ships anything.
+  function listRewardCatalog() {
+    return load().rewardCatalog ? load().rewardCatalog.slice() : [];
+  }
+  function addRewardCatalogItem({ label, cost } = {}) {
+    label = (label || "").trim();
+    const c = Number(cost);
+    if (!label) throw new Error("A reward needs a name.");
+    if (!c || c < 1) throw new Error("A reward needs a positive point cost.");
+    const data = load();
+    if (!Array.isArray(data.rewardCatalog)) data.rewardCatalog = [];
+    const item = { id: genId("rw"), label, cost: c };
+    data.rewardCatalog.push(item);
+    save(data);
+    return item;
+  }
+  function removeRewardCatalogItem(id) {
+    const data = load();
+    data.rewardCatalog = (data.rewardCatalog || []).filter(r => r.id !== id);
+    save(data);
+  }
+  function redeemCatalogItem(studentId, itemId) {
+    const data = load();
+    const s = data.students.find(x => x.id === studentId);
+    if (!s) throw new Error("Student not found.");
+    const item = (data.rewardCatalog || []).find(r => r.id === itemId);
+    if (!item) throw new Error("Reward not found.");
+    if ((s.rewardPoints || 0) < item.cost) throw new Error(`Needs ${item.cost} points — has ${s.rewardPoints || 0}.`);
+    s.rewardPoints -= item.cost;
+    if (!Array.isArray(s.redemptions)) s.redemptions = [];
+    s.redemptions.push({ date: new Date().toISOString(), label: item.label, cost: item.cost });
+    s.updatedAt = new Date().toISOString();
+    save(data);
+    return s;
+  }
+  // Total points a student earned within the current calendar month —
+  // for the leaderboard's "this month" ranking. Falls back to 0 for a
+  // student who has no pointsLog yet (e.g. created before this existed).
+  function pointsThisMonthForStudent(s) {
+    const now = new Date();
+    const ym = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
+    return (s.pointsLog || []).filter(e => (e.date || "").slice(0, 7) === ym).reduce((sum, e) => sum + (e.amount || 0), 0);
+  }
+
+  // ---- CRM-style notes timeline (separate from lesson/session notes) ----
+  function addNote(studentId, text, author) {
+    text = (text || "").trim();
+    if (!text) throw new Error("A note needs some text.");
+    const data = load();
+    const s = data.students.find(x => x.id === studentId);
+    if (!s) throw new Error("Student not found.");
+    if (!Array.isArray(s.notes)) s.notes = [];
+    s.notes.push({ date: new Date().toISOString(), text, author: author || "" });
+    s.updatedAt = new Date().toISOString();
+    save(data);
+    return s;
+  }
+  function listNotes(studentId) {
+    const s = getStudent(studentId);
+    return s && Array.isArray(s.notes) ? s.notes.slice().reverse() : [];
   }
   async function assignStudent(studentId, teacherId) {
     return updateStudent(studentId, { teacherId });
@@ -530,20 +631,25 @@
   function stripPin(record) {
     const copy = Object.assign({}, record);
     delete copy.pin; // never leaves the device
-    // Sheets/Apps Script rows are flat key/value, so an array field would
-    // otherwise get mangled on the way through -- serialize to a simple
-    // comma-joined string for the wire, same idea as everywhere else here
-    // that keeps the Sheet schema flat. Restored back to an array in
-    // parseSyncedStudent() below on the way back in.
+    // Sheets/Apps Script rows are flat key/value, so array/object fields
+    // would otherwise get mangled on the way through -- serialize each to
+    // a wire-safe string, same idea as everywhere else here that keeps
+    // the Sheet schema flat. Restored back in parseSyncedStudent() below.
     if (Array.isArray(copy.tags)) copy.tags = copy.tags.join(", ");
+    if (Array.isArray(copy.pointsLog)) copy.pointsLog = JSON.stringify(copy.pointsLog);
+    if (Array.isArray(copy.redemptions)) copy.redemptions = JSON.stringify(copy.redemptions);
+    if (Array.isArray(copy.notes)) copy.notes = JSON.stringify(copy.notes);
     return copy;
   }
   function parseSyncedStudent(s) {
-    if (s && typeof s.tags === "string") {
-      s.tags = s.tags.split(",").map(t => t.trim()).filter(Boolean);
-    } else if (!s || !Array.isArray(s.tags)) {
-      if (s) s.tags = [];
-    }
+    if (!s) return s;
+    if (typeof s.tags === "string") s.tags = s.tags.split(",").map(t => t.trim()).filter(Boolean);
+    else if (!Array.isArray(s.tags)) s.tags = [];
+    ["pointsLog", "redemptions", "notes"].forEach(k => {
+      if (typeof s[k] === "string") { try { s[k] = JSON.parse(s[k] || "[]"); } catch (e) { s[k] = []; } }
+      else if (!Array.isArray(s[k])) s[k] = [];
+    });
+    if (s.sessionsRemaining === undefined || s.sessionsRemaining === "") s.sessionsRemaining = 0;
     return s;
   }
   // Additive merge: keeps local-only records, adds remote-only records, and
@@ -654,6 +760,13 @@
         const curId = getCurrentTeacherId();
         if (curId && replacements[curId]) setCurrentTeacherId(replacements[curId]);
       }
+      // Reward catalog is a small shared list, not per-student -- simple
+      // union by id rather than a full merge-by-updatedAt, since these
+      // barely ever change.
+      if (remote && Array.isArray(remote.rewardCatalog)) {
+        const seen = new Set(data.rewardCatalog.map(r => r.id));
+        remote.rewardCatalog.forEach(r => { if (!seen.has(r.id)) { data.rewardCatalog.push(r); seen.add(r.id); } });
+      }
       await backfillMissingHashes(data);
       save(data);
 
@@ -663,6 +776,7 @@
         body: JSON.stringify({
           students: data.students.map(stripPin),
           teachers: data.teachers.map(stripPin),
+          rewardCatalog: data.rewardCatalog,
         }),
       });
       return { ok: true, at: new Date().toISOString() };
@@ -675,7 +789,9 @@
     AVATARS, TEACHER_AVATARS,
     listStudents, getStudent, findByName, findByPhone, findByLoginCode, groupmatesOf,
     addStudent, updateStudent, removeStudent, assignStudent,
-    addRewardPoints, redeemReward,
+    addRewardPoints, redeemReward, pointsThisMonthForStudent,
+    listRewardCatalog, addRewardCatalogItem, removeRewardCatalogItem, redeemCatalogItem,
+    addNote, listNotes,
     verifyStudentLogin, randomPin,
     listTeachers, getTeacher, findTeacherByName,
     addTeacher, updateTeacher, removeTeacher, verifyTeacherLogin,

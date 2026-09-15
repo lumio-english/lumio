@@ -202,6 +202,7 @@
     transition:background .12s ease;
   }
   .td-cal-slot:hover{background:var(--td-indigo-soft,#EDE9FE)}
+  .td-cal-slot.bulk-selected{background:var(--td-teal-soft) !important;border-top-color:var(--td-teal)}
   .td-cal-slot .create-hint{
     display:none;align-items:center;justify-content:center;height:100%;font-size:.72rem;font-weight:700;
     color:var(--td-indigo-dark);
@@ -278,6 +279,29 @@
   .td-rw-redeem{background:var(--td-indigo);border-color:var(--td-indigo);color:#fff;width:100%}
   .td-rw-redeem:hover{background:var(--td-indigo-dark);color:#fff}
   .td-rw-redeem:disabled{opacity:.45;cursor:not-allowed;transform:none}
+  .td-rw-catalog{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+  .td-rw-catalog-item{
+    display:flex;justify-content:space-between;align-items:center;padding:7px 12px;border-radius:8px;
+    border:1px solid var(--td-border);background:#fff;font-weight:700;font-size:.8rem;cursor:pointer;
+    color:var(--td-ink-soft);transition:transform .12s ease,border-color .15s ease,color .15s ease;
+  }
+  .td-rw-catalog-item span{color:var(--td-muted);font-weight:800}
+  .td-rw-catalog-item:hover:not(:disabled){border-color:var(--td-indigo);color:var(--td-indigo-dark);transform:translateY(-1px)}
+  .td-rw-catalog-item:disabled{opacity:.4;cursor:not-allowed}
+  .td-rw-manage{
+    width:100%;margin-top:8px;padding:7px 0;border-radius:8px;border:1px dashed var(--td-border);background:none;
+    font-weight:700;font-size:.76rem;cursor:pointer;color:var(--td-muted);
+  }
+  .td-rw-manage:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark)}
+  .td-note-row{padding:8px 0;border-bottom:1px solid var(--td-border-soft);font-size:.82rem}
+  .td-note-row:last-child{border-bottom:none}
+  .td-note-row .txt{font-weight:600}
+  .td-note-row .meta{font-size:.68rem;color:var(--td-muted);font-weight:700;margin-top:2px}
+  .td-cal-block.capacity-warn{border-left-color:#B87A16 !important}
+  .td-teacher-stats{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap}
+  .td-teacher-stats .item{background:var(--td-bg);border-radius:9px;padding:6px 10px;text-align:center;flex:1;min-width:70px}
+  .td-teacher-stats .item b{display:block;font-size:.88rem;font-weight:800}
+  .td-teacher-stats .item span{font-size:.62rem;color:var(--td-muted);font-weight:700;text-transform:uppercase}
 
   /* ---------- Leads ---------- */
   .td-lead-row{
@@ -626,6 +650,17 @@
       </span>
       <span id="leadsNavBadge" style="display:none;background:var(--td-coral);color:#fff;font-size:.68rem;font-weight:800;padding:1px 7px;border-radius:99px"></span>
     </button>
+    <button class="td-navitem" data-view="renewals" style="justify-content:space-between">
+      <span style="display:flex;align-items:center;gap:10px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+        Renewals
+      </span>
+      <span id="renewalsNavBadge" style="display:none;background:var(--td-coral);color:#fff;font-size:.68rem;font-weight:800;padding:1px 7px;border-radius:99px"></span>
+    </button>
+    <button class="td-navitem" data-view="insights">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg>
+      Insights
+    </button>
     <button class="td-navitem" data-view="materials">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H14l5 5v11.5A1.5 1.5 0 0 1 17.5 21h-12A1.5 1.5 0 0 1 4 19.5v-15Z"/><path d="M14 3v5h5"/></svg>
       Materials
@@ -774,6 +809,7 @@
     <div class="td-panel">
       <div class="td-roster-head">
         <h2 style="flex:1">Teacher accounts</h2>
+        <button class="td-btn" id="substituteSwapBtn">🔁 Substitute swap</button>
         <button class="td-btn td-btn-primary" id="addTeacherBtn">+ Add teacher</button>
       </div>
       <p class="sub" style="margin-top:4px">Each teacher gets their own login and roster. Removing a teacher unassigns (not deletes) their students.</p>
@@ -781,6 +817,37 @@
         👑 Only the platform owner can manage teacher accounts. Ask your owner to make changes here.
       </div>
       <div class="td-roster-grid" id="teamGrid"></div>
+    </div>
+  </div>
+
+  <!-- ===== Substitute-teacher swap modal ===== -->
+  <div class="td-overlay" id="substituteOverlay">
+    <div class="td-modal-box">
+      <h3>Substitute teacher swap</h3>
+      <p class="sub" style="margin-top:-4px">Reassigns every not-yet-happened class in this date range from one teacher to another. Past sessions keep their original teacher on record.</p>
+      <div class="td-field">
+        <label for="subFromTeacher">Original teacher</label>
+        <select id="subFromTeacher"></select>
+      </div>
+      <div class="td-field">
+        <label for="subToTeacher">Substitute teacher</label>
+        <select id="subToTeacher"></select>
+      </div>
+      <div class="td-field" style="display:flex;gap:10px">
+        <div style="flex:1">
+          <label for="subFromDate">From date</label>
+          <input type="date" id="subFromDate">
+        </div>
+        <div style="flex:1">
+          <label for="subToDate">To date</label>
+          <input type="date" id="subToDate">
+        </div>
+      </div>
+      <div class="td-field-error" id="subError"></div>
+      <div class="td-modal-actions">
+        <button class="td-btn" id="subCancelBtn">Cancel</button>
+        <button class="td-btn td-btn-primary" id="subSaveBtn">Reassign</button>
+      </div>
     </div>
   </div>
 
@@ -811,7 +878,9 @@
             <button type="button" id="calNextBtn">›</button>
           </div>
           <div class="td-cal-range" id="calRangeLabel"></div>
-          <div class="td-cal-tz" id="calTzLabel"></div>
+          <div class="td-cal-tz" id="calTzLabel" style="margin-left:0"></div>
+          <button type="button" class="td-btn" id="bulkBookToggle" style="margin-left:auto">🧷 Bulk book</button>
+          <button type="button" class="td-btn td-btn-primary" id="bulkBookConfirm" style="display:none">Book selected (0)</button>
         </div>
         <div class="td-cal-legend">
           <span><i style="background:var(--td-indigo-soft,#EDE9FE);border:1px solid var(--td-indigo)"></i>Scheduled</span>
@@ -885,6 +954,43 @@
       <p class="sub" style="margin-top:4px">People who took the placement test on your public site but aren't enrolled yet — reach out, then convert them straight into a student.</p>
       <div id="leadsList" class="mt"></div>
       <div class="td-empty" id="leadsEmpty" style="display:none">No leads in this status yet.</div>
+    </div>
+  </div>
+
+  <!-- ===== Renewals view ===== -->
+  <div id="viewRenewals" style="display:none">
+    <div class="td-panel">
+      <div class="td-roster-head">
+        <h2 style="flex:1">Running low on sessions</h2>
+        <select class="td-select" id="renewalThreshold">
+          <option value="3">3 or fewer sessions left</option>
+          <option value="5">5 or fewer</option>
+          <option value="10">10 or fewer</option>
+        </select>
+      </div>
+      <p class="sub" style="margin-top:4px">Sorted soonest-to-run-out first. Session counts tick down automatically when a class is marked present — set a student's starting count from their profile.</p>
+      <div id="renewalsList" class="mt"></div>
+      <div class="td-empty" id="renewalsEmpty" style="display:none">Nobody's running low right now.</div>
+    </div>
+  </div>
+
+  <!-- ===== Insights view (leaderboard + cohort comparison) ===== -->
+  <div id="viewInsights" style="display:none">
+    <div class="td-panel" style="margin-bottom:16px">
+      <div class="td-roster-head">
+        <h2 style="flex:1">🏆 Points leaderboard</h2>
+        <select class="td-select" id="leaderboardRange">
+          <option value="month">This month</option>
+          <option value="alltime">All time</option>
+        </select>
+      </div>
+      <div id="leaderboardList" class="mt"></div>
+    </div>
+    <div class="td-panel">
+      <div class="td-panel-head"><h2>📊 Cohort comparison</h2></div>
+      <p class="sub">Average lesson progress and attendance rate per cohort/group — helps spot which class formats are actually working.</p>
+      <div id="cohortCompareList" class="mt"></div>
+      <div class="td-empty" id="cohortCompareEmpty" style="display:none">Set a cohort and group on your students to compare them here.</div>
     </div>
   </div>
 
@@ -975,7 +1081,35 @@
       <div id="drawerRewards"></div>
     </div>
 
+    <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--td-border-soft)">
+      <h4 style="font-size:.85rem;margin:0 0 8px">📝 Notes</h4>
+      <div id="drawerNotes"></div>
+    </div>
+
     <button class="td-btn td-btn-primary" id="drawerReportBtn" style="width:100%;margin-top:16px">📄 Download performance report</button>
+  </div>
+</div>
+
+<!-- ===== Reward catalog manager ===== -->
+<div class="td-overlay" id="catalogOverlay">
+  <div class="td-modal-box">
+    <h3>Reward catalog</h3>
+    <p class="sub" style="margin-top:-4px">Extra redeemable items beyond the built-in 50pts → 1 hour reward. Redeeming just deducts points and logs it — you still fulfil the reward yourself (mail the merch, give the shoutout, etc).</p>
+    <div id="catalogList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px"></div>
+    <div class="td-field" style="display:flex;gap:8px;align-items:flex-end">
+      <div style="flex:1">
+        <label for="catItemLabel">Reward name</label>
+        <input type="text" id="catItemLabel" placeholder="e.g. Sticker shoutout">
+      </div>
+      <div style="flex:0 0 100px">
+        <label for="catItemCost">Cost</label>
+        <input type="number" id="catItemCost" min="1" placeholder="25">
+      </div>
+      <button class="td-btn td-btn-primary" id="catAddBtn" type="button">+ Add</button>
+    </div>
+    <div class="td-modal-actions">
+      <button class="td-btn" id="catalogCloseBtn">Close</button>
+    </div>
   </div>
 </div>
 
@@ -1058,6 +1192,10 @@
       <div style="flex:1">
         <label for="stuLevelsPurchased">Levels purchased</label>
         <input type="number" id="stuLevelsPurchased" min="0" step="1" placeholder="0">
+      </div>
+      <div style="flex:1">
+        <label for="stuSessionsRemaining">Sessions left</label>
+        <input type="number" id="stuSessionsRemaining" min="0" step="1" placeholder="0">
       </div>
     </div>
     <div class="td-field">
@@ -1900,6 +2038,7 @@
       return;
     }
     const tagsHtml = (p.tags || []).map(t => `<span class="td-dp-tag">${t}</span>`).join("");
+    const streak = window.LumioSchedule ? LumioSchedule.attendanceStreakForStudent(p.name) : 0;
     el.innerHTML = `
       <div class="td-dp-grid">
         <div><div class="lbl">Age</div><div class="val">${p.age != null ? p.age : "—"}</div></div>
@@ -1912,9 +2051,12 @@
         <div class="item"><b>${p.subscribed ? "✅ Yes" : "❌ No"}</b><span>Subscribed</span></div>
         <div class="item"><b>${p.amountPaid ? p.amountPaid : 0}</b><span>Amount paid</span></div>
         <div class="item"><b>${p.levelsPurchased || 0}</b><span>Levels bought</span></div>
+        <div class="item"><b>${p.sessionsRemaining || 0}</b><span>Sessions left</span></div>
         <div class="item"><b>${window.LumioSchedule ? LumioSchedule.fixedScheduleCountForStudent(p.name) : 0}</b><span>Fixed schedule</span></div>
+        ${streak > 0 ? `<div class="item"><b>🔥 ${streak}</b><span>Week streak</span></div>` : ""}
       </div>`;
     renderDrawerRewards(p);
+    renderDrawerNotes(p);
   }
 
   function renderDrawerRewards(p) {
@@ -1922,6 +2064,11 @@
     const points = p.rewardPoints || 0;
     const hours = p.bonusHours || 0;
     const canRedeem = points >= 50;
+    const catalog = window.LumioProfiles ? LumioProfiles.listRewardCatalog() : [];
+    const catalogHtml = catalog.map(item => `
+      <button type="button" class="td-rw-catalog-item" data-item="${item.id}" ${points >= item.cost ? "" : "disabled"}>
+        ${item.label} <span>${item.cost} pts</span>
+      </button>`).join("");
     rwEl.innerHTML = `
       <div class="td-rw-row">
         <div class="td-rw-points"><b>${points}</b><span>Points</span></div>
@@ -1936,6 +2083,8 @@
       <button type="button" class="td-rw-redeem" id="rwRedeemBtn" ${canRedeem ? "" : "disabled"}>
         🎁 Redeem 50 pts → +1 hour${points >= 100 ? ` (×${Math.floor(points / 50)} available)` : ""}
       </button>
+      ${catalog.length ? `<div class="td-rw-catalog">${catalogHtml}</div>` : ""}
+      <button type="button" class="td-rw-manage" id="rwManageCatalogBtn">⚙ Manage reward catalog</button>
       <p class="sub" style="font-size:.72rem;margin-top:6px">Every 50 points redeems for 1 bonus hour added to this student's profile — apply it as an extra session card manually once redeemed.</p>`;
     document.getElementById("rwAddBtn").onclick = async () => {
       const val = Number(document.getElementById("rwAddInput").value);
@@ -1953,6 +2102,43 @@
         renderDrawerRewards(student);
         renderRosterCards(); renderTable();
       } catch (err) { showToast(err.message || "Couldn't redeem.", "error"); }
+    };
+    rwEl.querySelectorAll(".td-rw-catalog-item").forEach(btn => {
+      btn.onclick = () => {
+        try {
+          const updated = LumioProfiles.redeemCatalogItem(p.id, btn.dataset.item);
+          showToast(`Redeemed for ${updated.name}.`, "success");
+          renderDrawerRewards(updated);
+        } catch (err) { showToast(err.message || "Couldn't redeem.", "error"); }
+      };
+    });
+    document.getElementById("rwManageCatalogBtn").onclick = () => openCatalogModal(p);
+  }
+
+  function renderDrawerNotes(p) {
+    const wrap = document.getElementById("drawerNotes");
+    if (!wrap) return;
+    const notes = window.LumioProfiles ? LumioProfiles.listNotes(p.id) : [];
+    const listHtml = notes.length
+      ? notes.map(n => `<div class="td-note-row"><div class="txt">${n.text}</div><div class="meta">${new Date(n.date).toLocaleDateString()}${n.author ? " · " + n.author : ""}</div></div>`).join("")
+      : `<div class="td-empty" style="padding:8px 0">No notes yet.</div>`;
+    wrap.innerHTML = `
+      <div style="display:flex;gap:6px;margin-bottom:10px">
+        <input type="text" id="noteInput" placeholder="Add a note…" style="flex:1;padding:7px 10px;border-radius:8px;border:1px solid var(--td-border);font-family:inherit">
+        <button type="button" class="td-btn" id="noteAddBtn">Add</button>
+      </div>
+      ${listHtml}`;
+    document.getElementById("noteAddBtn").onclick = () => {
+      const input = document.getElementById("noteInput");
+      const text = input.value.trim();
+      if (!text) return;
+      const activeTeacher = window.LumioProfiles ? LumioProfiles.getCurrentTeacher() : null;
+      try {
+        LumioProfiles.addNote(p.id, text, activeTeacher ? activeTeacher.name : "");
+        input.value = "";
+        renderDrawerNotes(p);
+        showToast("Note added.");
+      } catch (err) { showToast(err.message || "Couldn't add note.", "error"); }
     };
   }
 
@@ -2029,6 +2215,30 @@
     const teacherName = (window.LumioProfiles && LumioProfiles.getCurrentTeacher()) ? LumioProfiles.getCurrentTeacher().name : "Lumio English";
     const today = new Date().toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" });
 
+    // ---- Attendance, rewards, and grades (pulled in only if the shared
+    // schedule/rewards data is available -- this report still works fine
+    // for a guest row that isn't on the roster, just without this section) ----
+    let extraSection = "";
+    const profile = window.LumioProfiles ? LumioProfiles.findByName(r.name) : null;
+    if (window.LumioSchedule && profile) {
+      const attStats = LumioSchedule.attendanceStatsForStudent(r.name);
+      const attPct = attStats.total ? Math.round((attStats.present / attStats.total) * 100) : null;
+      const grades = LumioSchedule.gradesForStudent(r.name, r.lvl);
+      const gradesHtml = grades.length
+        ? grades.map(g => `Lesson ${g.lessonNumber || "–"}: ${g.grade}`).join(" · ")
+        : "No grades recorded yet.";
+      extraSection = `
+        <div class="pr-section">
+          <h2>📅 Attendance &amp; rewards</h2>
+          <div class="pr-stats">
+            <div class="pr-stat"><b>${attPct != null ? attPct + "%" : "—"}</b><span>Attendance (${attStats.total} marked)</span></div>
+            <div class="pr-stat"><b>${profile.rewardPoints || 0}</b><span>Reward points</span></div>
+            <div class="pr-stat"><b>${profile.bonusHours || 0}</b><span>Bonus hours earned</span></div>
+          </div>
+          <div class="pr-note-box info"><b>Grades</b>${gradesHtml}</div>
+        </div>`;
+    }
+
     return `
       <div class="pr-page">
         <div class="pr-head">
@@ -2055,6 +2265,7 @@
           <div class="pr-note-box info">${summary}</div>
         </div>
         ${strongHtml || weakHtml || notStartedHtml ? `<div class="pr-section"><h2>🔍 Highlights</h2>${strongHtml}${weakHtml}${notStartedHtml}</div>` : ""}
+        ${extraSection}
         <div class="pr-section">
           <h2>📋 Lesson-by-lesson</h2>
           ${lessons.length
@@ -2240,6 +2451,7 @@
     document.getElementById("stuSubscribed").checked = profile ? !!profile.subscribed : true;
     document.getElementById("stuAmountPaid").value = profile && profile.amountPaid ? profile.amountPaid : "";
     document.getElementById("stuLevelsPurchased").value = profile && profile.levelsPurchased ? profile.levelsPurchased : "";
+    document.getElementById("stuSessionsRemaining").value = profile && profile.sessionsRemaining ? profile.sessionsRemaining : "";
     {
       const existingPhone = profile ? (profile.phone || "") : (prefill && prefill.phone) || "";
       const split = splitPhone(existingPhone);
@@ -2291,6 +2503,7 @@
     const subscribedVal = document.getElementById("stuSubscribed").checked;
     const amountPaidVal = document.getElementById("stuAmountPaid").value;
     const levelsPurchasedVal = document.getElementById("stuLevelsPurchased").value;
+    const sessionsRemainingVal = document.getElementById("stuSessionsRemaining").value;
     const wasEditing = !!editingId;
     const leadIdToResolve = convertingLeadId;
     await withLoading(e.currentTarget, async () => {
@@ -2300,6 +2513,7 @@
           phone: phoneVal, cohort: cohortVal, group: groupVal,
           age: ageVal, gender: genderVal, grade: gradeVal, country: countryVal, tags: tagsVal,
           subscribed: subscribedVal, amountPaid: amountPaidVal, levelsPurchased: levelsPurchasedVal,
+          sessionsRemaining: sessionsRemainingVal,
         };
         if (editingId) {
           await LumioProfiles.updateStudent(editingId, payload);
@@ -2360,6 +2574,7 @@
     teachers.forEach(t => {
       const studentCount = LumioProfiles.listStudents().filter(s => s.teacherId === t.id).length;
       const pinKnown = !!t.pin;
+      const stats = window.LumioSchedule ? LumioSchedule.teacherStats(t.id) : null;
       const card = document.createElement("div");
       card.className = "td-roster-card";
       card.innerHTML = `
@@ -2367,6 +2582,11 @@
           <div class="av">${t.avatar}</div>
           <div><div class="nm">${t.name}${t.isOwner ? ' <span class="td-owner-crown" title="Platform owner">👑</span>' : ""}${t.id === activeId ? ' <span class="td-badge teal">you</span>' : ""}</div><div class="lv">${studentCount} student${studentCount === 1 ? "" : "s"}</div></div>
         </div>
+        ${stats ? `<div class="td-teacher-stats">
+          <div class="item"><b>${stats.classesThisMonth}</b><span>This month</span></div>
+          <div class="item"><b>${stats.rating ? stats.rating.average.toFixed(1) + "★" : "—"}</b><span>Rating</span></div>
+          <div class="item"><b>${stats.punctualityPct != null ? stats.punctualityPct + "%" : "—"}</b><span>Marked</span></div>
+        </div>` : ""}
         <div class="pinrow">PIN: ${pinKnown
           ? `<span class="pinval" data-pin="${t.pin}">••••</span><button class="pintoggle" type="button">show</button>`
           : `<span class="pinval" style="opacity:.6">set on another device</span>`}
@@ -2459,6 +2679,42 @@
     });
   };
   renderTeamGrid();
+
+  // ================= Substitute-teacher swap =================
+  const substituteOverlay = document.getElementById("substituteOverlay");
+  function openSubstituteModal() {
+    if (!window.LumioProfiles) return;
+    const teachers = LumioProfiles.listTeachers();
+    const fromSel = document.getElementById("subFromTeacher");
+    const toSel = document.getElementById("subToTeacher");
+    fromSel.innerHTML = teachers.map(t => `<option value="${t.id}">${t.name}</option>`).join("");
+    toSel.innerHTML = teachers.map(t => `<option value="${t.id}">${t.name}</option>`).join("");
+    document.getElementById("subFromDate").value = LumioSchedule.todayStr();
+    document.getElementById("subToDate").value = LumioSchedule.todayStr();
+    document.getElementById("subError").textContent = "";
+    substituteOverlay.classList.add("show");
+  }
+  document.getElementById("substituteSwapBtn").onclick = openSubstituteModal;
+  document.getElementById("subCancelBtn").onclick = () => substituteOverlay.classList.remove("show");
+  substituteOverlay.onclick = e => { if (e.target === substituteOverlay) substituteOverlay.classList.remove("show"); };
+  document.getElementById("subSaveBtn").onclick = () => {
+    const fromId = document.getElementById("subFromTeacher").value;
+    const toId = document.getElementById("subToTeacher").value;
+    const fromDate = document.getElementById("subFromDate").value;
+    const toDate = document.getElementById("subToDate").value;
+    const errEl = document.getElementById("subError");
+    if (fromId === toId) { errEl.textContent = "Pick two different teachers."; return; }
+    if (!fromDate || !toDate || fromDate > toDate) { errEl.textContent = "Pick a valid date range."; return; }
+    try {
+      const toTeacher = LumioProfiles.getTeacher(toId);
+      const { reassigned } = LumioSchedule.reassignTeacherForRange(fromId, toId, fromDate, toDate, toTeacher ? toTeacher.name : "");
+      substituteOverlay.classList.remove("show");
+      renderScheduleActive();
+      showToast(`Reassigned ${reassigned} session${reassigned === 1 ? "" : "s"} to ${toTeacher ? toTeacher.name : "the substitute"}.`, "success");
+    } catch (err) {
+      errEl.textContent = err.message || "Couldn't reassign those sessions.";
+    }
+  };
 
   // ================= Schedule =================
   const scheduleAgenda = document.getElementById("scheduleAgenda");
@@ -2722,9 +2978,11 @@
         const height = Math.max(((endMin - startMin) / CAL_ROW_MIN) * CAL_ROW_PX, 20);
         const statusClass = c.status === "cancelled" ? "status-cancelled" : (c.status === "completed" ? "status-completed" : "");
         const attnClass = classNeedsAttention(c) ? "needs-attn" : "";
-        const title = `English Club${c.level ? " · " + c.level : ""}${c.lessonNumber ? " · Lesson " + c.lessonNumber : ""}`;
-        col += `<div class="td-cal-block ${statusClass} ${attnClass}" style="top:${top}px;height:${height}px" data-class-id="${c.id}" title="${title} — ${c.students.map(s=>s.studentName).join(', ')}">
-          <div class="cb-title">${c.patternId ? "🔁 " : ""}${fmtTime(c.startTime)} · ${c.students.length}/${c.students.length} student${c.students.length===1?"":"s"}</div>
+        const capacityWarn = c.status !== "cancelled" && (c.students.length < 2 || c.students.length > 4);
+        const capClass = capacityWarn ? "capacity-warn" : "";
+        const title = `English Club${c.level ? " · " + c.level : ""}${c.lessonNumber ? " · Lesson " + c.lessonNumber : ""}${capacityWarn ? " — ⚠ group size outside 2–4" : ""}`;
+        col += `<div class="td-cal-block ${statusClass} ${attnClass} ${capClass}" style="top:${top}px;height:${height}px" data-class-id="${c.id}" title="${title} — ${c.students.map(s=>s.studentName).join(', ')}">
+          <div class="cb-title">${c.patternId ? "🔁 " : ""}${capacityWarn ? "⚠ " : ""}${fmtTime(c.startTime)} · ${c.students.length}/${c.students.length} student${c.students.length===1?"":"s"}</div>
           <div class="cb-meta">${c.level || c.notes || "Class"}</div>
         </div>`;
       });
@@ -2744,19 +3002,50 @@
     calGrid.style.setProperty("--cal-rows", totalRows);
 
     calGrid.querySelectorAll(".td-cal-slot").forEach(slot => {
+      const key = slot.parentElement.dataset.date + "|" + slot.dataset.time;
+      if (bulkSelections.has(key)) slot.classList.add("bulk-selected");
       slot.addEventListener("click", () => {
         const dateStr = slot.parentElement.dataset.date;
-        openClassModal(null, { date: dateStr, time: slot.dataset.time });
+        if (bulkModeActive) {
+          const k = dateStr + "|" + slot.dataset.time;
+          if (bulkSelections.has(k)) bulkSelections.delete(k); else bulkSelections.add(k);
+          slot.classList.toggle("bulk-selected");
+          updateBulkConfirmBtn();
+        } else {
+          openClassModal(null, { date: dateStr, time: slot.dataset.time });
+        }
       });
     });
     calGrid.querySelectorAll(".td-cal-block").forEach(block => {
       block.addEventListener("click", e => {
         e.stopPropagation();
+        if (bulkModeActive) return; // don't open details mid-selection
         const c = LumioSchedule.getClass(block.dataset.classId);
         if (c) openCourseDetails(c);
       });
     });
   }
+
+  // ================= Bulk booking mode =================
+  let bulkModeActive = false;
+  let bulkSelections = new Set();
+  function updateBulkConfirmBtn() {
+    const btn = document.getElementById("bulkBookConfirm");
+    btn.style.display = bulkModeActive && bulkSelections.size ? "inline-flex" : "none";
+    btn.textContent = `Book selected (${bulkSelections.size})`;
+  }
+  document.getElementById("bulkBookToggle").onclick = () => {
+    bulkModeActive = !bulkModeActive;
+    document.getElementById("bulkBookToggle").classList.toggle("td-btn-primary", bulkModeActive);
+    if (!bulkModeActive) { bulkSelections.clear(); }
+    updateBulkConfirmBtn();
+    renderWeekView();
+    showToast(bulkModeActive ? "Bulk book mode on — click slots to select them." : "Bulk book mode off.");
+  };
+  document.getElementById("bulkBookConfirm").onclick = () => {
+    if (!bulkSelections.size) return;
+    openClassModal(null, { bulk: true });
+  };
 
   document.getElementById("calTodayBtn").onclick = () => { calWeekStart = mondayOf(new Date()); renderWeekView(); };
   document.getElementById("calPrevBtn").onclick = () => { calWeekStart.setDate(calWeekStart.getDate() - 7); renderWeekView(); };
@@ -3111,9 +3400,11 @@
     clsLessonSelect.value = String(guess);
   }
 
+  let bulkBookingActive = false;
   function openClassModal(c, prefill) {
     editingClassId = c ? c.id : null;
-    document.getElementById("classModalTitle").textContent = c ? "Edit class" : "Book a group class";
+    bulkBookingActive = !!(prefill && prefill.bulk);
+    document.getElementById("classModalTitle").textContent = c ? "Edit class" : (bulkBookingActive ? `Book ${bulkSelections.size} selected slots` : "Book a group class");
     if (c) {
       const first = c.students[0];
       const presetKey = `${c.cohort || ""}|||${c.group || ""}|||${c.level}`;
@@ -3131,7 +3422,9 @@
       // A slot clicked directly on the week calendar prefills date/time
       // with exactly where the teacher clicked, same as the reference
       // "+ Create" cell behavior — falls back to today/4pm when opened
-      // from the plain "+ Book a class" button instead.
+      // from the plain "+ Book a class" button instead. In bulk mode the
+      // date/time fields are hidden entirely since each selected slot
+      // supplies its own.
       clsDateInput.value = (prefill && prefill.date) || LumioSchedule.todayStr();
       clsTimeInput.value = (prefill && prefill.time) || "16:00";
       clsDurationSelect.value = "45";
@@ -3139,12 +3432,18 @@
       document.getElementById("clsMeetingLink").value = "";
       renderClsLessonOptions();
     }
+    document.getElementById("clsDate").closest(".td-field").style.display = bulkBookingActive ? "none" : "";
     clsStudentError.textContent = "";
     classModalOverlay.classList.add("show");
   }
   document.getElementById("clsGroupPicker").addEventListener("change", () => renderClsStudentChecks(new Set()));
   document.getElementById("clsStudentChecks").addEventListener("change", () => renderClsLessonOptions());
-  function closeClassModal() { classModalOverlay.classList.remove("show"); }
+  function closeClassModal() {
+    classModalOverlay.classList.remove("show");
+    bulkBookingActive = false;
+    const dateField = document.getElementById("clsDate").closest(".td-field");
+    if (dateField) dateField.style.display = "";
+  }
   document.getElementById("bookClassBtn").onclick = () => openClassModal(null);
   document.getElementById("classModalCancel").onclick = closeClassModal;
   classModalOverlay.onclick = e => { if (e.target === classModalOverlay) closeClassModal(); };
@@ -3157,6 +3456,37 @@
     const first = combo[0];
     const activeTeacher = LumioProfiles.getCurrentTeacher();
     const wasEditing = !!editingClassId;
+
+    if (bulkBookingActive) {
+      const slots = Array.from(bulkSelections).map(k => { const [date, time] = k.split("|"); return { date, time }; }).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+      const baseLesson = clsLessonSelect.value ? Number(clsLessonSelect.value) : null;
+      let created = 0;
+      slots.forEach((slot, i) => {
+        try {
+          LumioSchedule.addClass({
+            students: picked.map(s => ({ studentId: s.id, studentName: s.name })),
+            teacherId: (first && first.teacherId) || (activeTeacher ? activeTeacher.id : null),
+            teacherName: activeTeacher ? activeTeacher.name : "",
+            date: slot.date, startTime: slot.time,
+            durationMinutes: clsDurationSelect.value,
+            level: first ? first.level : "", cohort: first ? first.cohort : "", group: first ? first.group : "",
+            lessonNumber: baseLesson ? baseLesson + i : null,
+            meetingLink: document.getElementById("clsMeetingLink").value.trim(),
+            notes: clsNotesInput.value.trim(),
+          });
+          created++;
+        } catch (e) { /* skip a slot that fails validation, keep going */ }
+      });
+      bulkSelections.clear();
+      bulkModeActive = false;
+      document.getElementById("bulkBookToggle").classList.remove("td-btn-primary");
+      updateBulkConfirmBtn();
+      closeClassModal();
+      renderScheduleActive();
+      showToast(`Booked ${created} class${created === 1 ? "" : "es"} across the selected slots.`, "success");
+      return;
+    }
+
     const payload = {
       students: picked.map(s => ({ studentId: s.id, studentName: s.name })),
       teacherId: (first && first.teacherId) || (activeTeacher ? activeTeacher.id : null),
@@ -3703,14 +4033,65 @@
     });
   }
 
+  // ================= Reward catalog manager =================
+  const catalogOverlay = document.getElementById("catalogOverlay");
+  let catalogForStudentId = null;
+  function renderCatalogList() {
+    const list = document.getElementById("catalogList");
+    const items = window.LumioProfiles ? LumioProfiles.listRewardCatalog() : [];
+    if (!items.length) { list.innerHTML = `<div class="td-empty">No custom rewards yet — add one below.</div>`; return; }
+    list.innerHTML = "";
+    items.forEach(item => {
+      const row = document.createElement("div");
+      row.style.cssText = "display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--td-bg);border-radius:9px;font-size:.84rem;font-weight:700";
+      row.innerHTML = `<span style="flex:1">${item.label}</span><span style="color:var(--td-muted)">${item.cost} pts</span><button type="button" class="td-btn" style="padding:4px 10px">Remove</button>`;
+      row.querySelector("button").onclick = () => {
+        LumioProfiles.removeRewardCatalogItem(item.id);
+        renderCatalogList();
+        showToast("Reward removed.");
+      };
+      list.appendChild(row);
+    });
+  }
+  function openCatalogModal(p) {
+    catalogForStudentId = p ? p.id : null;
+    document.getElementById("catItemLabel").value = "";
+    document.getElementById("catItemCost").value = "";
+    renderCatalogList();
+    catalogOverlay.classList.add("show");
+  }
+  document.getElementById("catalogCloseBtn").onclick = () => {
+    catalogOverlay.classList.remove("show");
+    // Refresh the open drawer's rewards section so newly added/removed
+    // catalog items show up immediately without needing to reopen it.
+    if (catalogForStudentId && window.LumioProfiles) {
+      const p = LumioProfiles.getStudent(catalogForStudentId);
+      if (p) renderDrawerRewards(p);
+    }
+  };
+  catalogOverlay.onclick = e => { if (e.target === catalogOverlay) document.getElementById("catalogCloseBtn").click(); };
+  document.getElementById("catAddBtn").onclick = () => {
+    const label = document.getElementById("catItemLabel").value.trim();
+    const cost = document.getElementById("catItemCost").value;
+    try {
+      LumioProfiles.addRewardCatalogItem({ label, cost });
+      document.getElementById("catItemLabel").value = "";
+      document.getElementById("catItemCost").value = "";
+      renderCatalogList();
+      showToast("Reward added.", "success");
+    } catch (err) { showToast(err.message || "Couldn't add that reward.", "error"); }
+  };
+
   // ---------- nav ----------
-  const views = { overview: "viewOverview", students: "viewStudents", team: "viewTeam", schedule: "viewSchedule", leads: "viewLeads", materials: "viewMaterials", manuals: "viewManuals", story: "viewStory" };
+  const views = { overview: "viewOverview", students: "viewStudents", team: "viewTeam", schedule: "viewSchedule", leads: "viewLeads", renewals: "viewRenewals", insights: "viewInsights", materials: "viewMaterials", manuals: "viewManuals", story: "viewStory" };
   const titles = {
     overview: ["Overview", "A snapshot of how your students are doing right now."],
     students: ["Students", "Manage your roster and dig into individual progress."],
     team: ["Team", "Manage teacher accounts and see who's assigned to whom."],
     schedule: ["Schedule", "Book classes and see who's up next."],
     leads: ["Leads", "People who took the placement test but aren't enrolled yet."],
+    renewals: ["Renewals", "Students running low on paid sessions — reach out before they lapse."],
+    insights: ["Insights", "Leaderboard and cohort comparison across your roster."],
     materials: ["Materials", "Present or download your Zoom-ready decks."],
     manuals: ["Levels Manuals", "The full curriculum guide, plus a detailed manual for each level — share these with parents."],
     story: ["Story", "Preview Lumi's Magic Map — full access, no lesson requirements."]
@@ -3726,8 +4107,106 @@
       document.getElementById("pageTitle").textContent = titles[view][0];
       document.getElementById("pageSub").textContent = titles[view][1];
       document.getElementById("sidebar").classList.remove("show");
+      if (view === "renewals") renderRenewalsList();
+      if (view === "insights") { renderLeaderboard(); renderCohortCompare(); }
     });
   });
+
+  // ================= Renewals =================
+  function renderRenewalsList() {
+    const list = document.getElementById("renewalsList");
+    const empty = document.getElementById("renewalsEmpty");
+    if (!window.LumioProfiles) { list.innerHTML = ""; return; }
+    const threshold = Number(document.getElementById("renewalThreshold").value);
+    const students = LumioProfiles.listStudents()
+      .filter(s => s.subscribed && (s.sessionsRemaining || 0) <= threshold)
+      .sort((a, b) => (a.sessionsRemaining || 0) - (b.sessionsRemaining || 0));
+    list.innerHTML = "";
+    empty.style.display = students.length ? "none" : "block";
+    students.forEach(s => {
+      const row = document.createElement("div");
+      row.className = "td-class-row";
+      const waMessage = `Hi! Just a heads up — ${s.name} has ${s.sessionsRemaining || 0} class${(s.sessionsRemaining || 0) === 1 ? "" : "es"} left. Would you like to renew?`;
+      const waBtn = s.phone
+        ? `<a class="td-wa-btn" target="_blank" rel="noopener" href="https://wa.me/${s.phone.replace(/\D/g, "")}?text=${encodeURIComponent(waMessage)}">💬 WhatsApp</a>`
+        : `<span class="sub" style="font-size:.72rem">No phone on file</span>`;
+      row.innerHTML = `
+        <div class="td-class-time"><span style="color:var(--td-coral);font-weight:800;font-size:1rem">${s.sessionsRemaining || 0}</span><span>left</span></div>
+        <div class="td-class-info">
+          <div class="who">${s.avatar} <b>${s.name}</b></div>
+          <div class="meta">${levelName(s.level)} · Paid ${s.amountPaid || 0} for ${s.levelsPurchased || 0} level${(s.levelsPurchased || 0) === 1 ? "" : "s"}</div>
+        </div>
+        <div class="td-class-acts">${waBtn}</div>`;
+      list.appendChild(row);
+    });
+    const badge = document.getElementById("renewalsNavBadge");
+    if (students.length) { badge.style.display = "inline-flex"; badge.textContent = students.length; }
+    else badge.style.display = "none";
+  }
+  document.getElementById("renewalThreshold").addEventListener("change", renderRenewalsList);
+
+  // ================= Insights: leaderboard =================
+  function renderLeaderboard() {
+    const list = document.getElementById("leaderboardList");
+    if (!window.LumioProfiles) { list.innerHTML = ""; return; }
+    const range = document.getElementById("leaderboardRange").value;
+    let students = LumioProfiles.listStudents().map(s => ({
+      s, score: range === "month" ? LumioProfiles.pointsThisMonthForStudent(s) : (s.rewardPoints || 0),
+    }));
+    students = students.filter(x => x.score > 0).sort((a, b) => b.score - a.score).slice(0, 15);
+    if (!students.length) { list.innerHTML = `<div class="td-empty">No points earned ${range === "month" ? "this month" : "yet"}.</div>`; return; }
+    const medals = ["🥇", "🥈", "🥉"];
+    list.innerHTML = students.map((x, i) => `
+      <div class="td-lead-row">
+        <div style="width:32px;text-align:center;font-size:1.1rem">${medals[i] || (i + 1)}</div>
+        <div class="td-lead-info">
+          <div class="who">${x.s.avatar} <b>${x.s.name}</b></div>
+          <div class="meta">${levelName(x.s.level)}</div>
+        </div>
+        <div class="td-lead-score"><b>${x.score}</b><span>points</span></div>
+      </div>`).join("");
+  }
+  document.getElementById("leaderboardRange").addEventListener("change", renderLeaderboard);
+
+  // ================= Insights: cohort comparison =================
+  function renderCohortCompare() {
+    const list = document.getElementById("cohortCompareList");
+    const empty = document.getElementById("cohortCompareEmpty");
+    if (!window.LumioProfiles) { list.innerHTML = ""; return; }
+    const students = LumioProfiles.listStudents().filter(s => s.cohort || s.group);
+    const groups = {};
+    students.forEach(s => {
+      const key = `${s.cohort || "—"} · ${s.group || "—"}`;
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(s);
+    });
+    const keys = Object.keys(groups);
+    empty.style.display = keys.length ? "none" : "block";
+    if (!keys.length) { list.innerHTML = ""; return; }
+    const merged = buildTableRows();
+    list.innerHTML = keys.map(key => {
+      const members = groups[key];
+      const rows = members.map(s => merged.find(r => r.name === s.name)).filter(Boolean);
+      const avgProgressPct = rows.length ? Math.round(rows.reduce((sum, r) => sum + (r.done / (LEVEL_LESSON_COUNT[r.lvl] || 20)) * 100, 0) / rows.length) : 0;
+      const attRates = members.map(s => window.LumioSchedule ? LumioSchedule.attendanceStatsForStudent(s.name) : { present: 0, total: 0 })
+        .filter(a => a.total > 0).map(a => a.present / a.total);
+      const avgAttPct = attRates.length ? Math.round((attRates.reduce((a, b) => a + b, 0) / attRates.length) * 100) : null;
+      return `
+        <div style="margin-bottom:14px">
+          <div style="font-weight:800;font-size:.86rem;margin-bottom:6px">${key} <span class="sub" style="font-weight:600">(${members.length} student${members.length === 1 ? "" : "s"})</span></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <span style="width:110px;font-size:.72rem;color:var(--td-muted);font-weight:700">Avg progress</span>
+            <span class="td-mini-track" style="flex:1"><span class="td-mini-fill" style="width:${avgProgressPct}%"></span></span>
+            <span style="font-size:.78rem;font-weight:800;width:38px;text-align:right">${avgProgressPct}%</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="width:110px;font-size:.72rem;color:var(--td-muted);font-weight:700">Avg attendance</span>
+            <span class="td-mini-track" style="flex:1"><span class="td-mini-fill" style="width:${avgAttPct || 0}%;background:var(--td-teal)"></span></span>
+            <span style="font-size:.78rem;font-weight:800;width:38px;text-align:right">${avgAttPct != null ? avgAttPct + "%" : "—"}</span>
+          </div>
+        </div>`;
+    }).join("");
+  }
   document.getElementById("menuBtn").onclick = () => document.getElementById("sidebar").classList.toggle("show");
  } catch (e) {
    console.error("Lumio teacher dashboard error:", e);

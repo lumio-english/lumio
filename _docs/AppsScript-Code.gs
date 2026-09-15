@@ -46,8 +46,14 @@ var ROSTER_COLUMNS = [
   "id", "name", "level", "avatar", "pinHash", "teacherId", "createdAt", "updatedAt", "phone",
   "age", "gender", "grade", "country", "tags",
   "subscribed", "amountPaid", "levelsPurchased",
-  "rewardPoints", "bonusHours"
+  "rewardPoints", "bonusHours", "sessionsRemaining",
+  "pointsLog", "redemptions", "notes"
 ];
+
+// Reward catalog is shared across all students (teacher-managed list of
+// extra redeemable items), not per-student -- its own small sheet.
+var REWARD_CATALOG_SHEET = "RewardCatalog";
+var REWARD_CATALOG_COLUMNS = ["id", "label", "cost"];
 
 // V2 schedule schema — one row per group class session. `studentsJson` is
 // the class's `students` array (see js/lumio-schedule.js) serialized as a
@@ -154,12 +160,14 @@ function pullRoster_() {
   return {
     students: readRows_(ROSTER_SHEET, ROSTER_COLUMNS),
     teachers: readRows_(TEACHERS_SHEET, TEACHERS_COLUMNS),
+    rewardCatalog: readRows_(REWARD_CATALOG_SHEET, REWARD_CATALOG_COLUMNS),
   };
 }
 
 function pushRoster_(body) {
   if (Array.isArray(body.students)) writeRows_(ROSTER_SHEET, ROSTER_COLUMNS, body.students);
   if (Array.isArray(body.teachers)) writeRows_(TEACHERS_SHEET, TEACHERS_COLUMNS, body.teachers);
+  if (Array.isArray(body.rewardCatalog)) writeRows_(REWARD_CATALOG_SHEET, REWARD_CATALOG_COLUMNS, body.rewardCatalog);
   return { ok: true };
 }
 
