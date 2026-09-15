@@ -324,6 +324,75 @@
   }
   .sd-sessions-pill.low{background:#FDEAEA;color:#B84545}
 
+  /* ---------- Parent guide (Arabic tour) ---------- */
+  .pg-launch-btn{
+    display:inline-flex;align-items:center;gap:6px;background:#fff;border:none;border-radius:99px;padding:9px 15px;
+    font-weight:800;font-size:.82rem;color:var(--sd-cocoa);cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.06);
+    transition:transform .15s ease,box-shadow .15s ease;
+  }
+  .pg-launch-btn:hover{transform:translateY(-1px);box-shadow:0 6px 14px rgba(0,0,0,.09)}
+  .pg-overlay{
+    position:fixed;inset:0;background:rgba(38,26,18,.55);backdrop-filter:blur(3px);z-index:9000;
+    display:none;align-items:center;justify-content:center;padding:18px;
+  }
+  .pg-overlay.show{display:flex}
+  .pg-card{
+    direction:rtl;font-family:'Tajawal','Cairo','Segoe UI',Nunito,sans-serif;background:#fff;border-radius:26px;
+    max-width:460px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 30px 70px rgba(0,0,0,.35);
+    animation:pgPop .28s cubic-bezier(.22,1,.36,1);position:relative;
+  }
+  @keyframes pgPop{from{opacity:0;transform:scale(.92) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+  .pg-head{
+    background:linear-gradient(135deg,var(--sd-orange),var(--sd-orange-deep));color:#fff;padding:26px 26px 60px;
+    border-radius:26px 26px 0 0;position:relative;overflow:hidden;text-align:center;
+  }
+  .pg-head::after{
+    content:"";position:absolute;inset:0;background:radial-gradient(circle at 30% 120%,rgba(255,255,255,.25),transparent 60%);
+  }
+  .pg-head img{width:52px;height:52px;border-radius:14px;background:#fff;padding:6px;margin-bottom:10px;position:relative;z-index:1}
+  .pg-head h2{margin:0 0 4px;font-size:1.25rem;font-weight:800;position:relative;z-index:1}
+  .pg-head p{margin:0;font-size:.86rem;opacity:.95;font-weight:700;position:relative;z-index:1}
+  .pg-close{
+    position:absolute;top:14px;left:14px;width:30px;height:30px;border-radius:50%;border:none;background:rgba(255,255,255,.25);
+    color:#fff;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2;
+  }
+  .pg-close:hover{background:rgba(255,255,255,.4)}
+  .pg-icon-badge{
+    width:74px;height:74px;border-radius:20px;background:#fff;display:flex;align-items:center;justify-content:center;
+    font-size:2rem;margin:-48px auto 14px;box-shadow:0 10px 24px rgba(0,0,0,.15);position:relative;z-index:1;
+  }
+  .pg-body{padding:0 28px 8px;text-align:center}
+  .pg-body h3{margin:0 0 10px;font-size:1.1rem;font-weight:800;color:var(--sd-cocoa)}
+  .pg-body p{margin:0;font-size:.9rem;line-height:1.8;color:var(--sd-cocoa-soft);font-weight:600}
+  .pg-body ul{text-align:right;margin:14px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+  .pg-body ul li{
+    display:flex;align-items:flex-start;gap:10px;background:var(--sd-cream);border-radius:14px;padding:11px 13px;
+    font-size:.85rem;font-weight:700;color:var(--sd-cocoa);line-height:1.6;
+  }
+  .pg-body ul li .em{font-size:1.1rem;flex-shrink:0}
+  .pg-dots{display:flex;justify-content:center;gap:6px;padding:20px 0 6px}
+  .pg-dot{width:7px;height:7px;border-radius:50%;background:var(--sd-cream);border:2px solid var(--sd-cream);transition:all .2s ease}
+  .pg-dot.active{background:var(--sd-orange-deep);border-color:var(--sd-orange-deep);width:20px;border-radius:99px}
+  .pg-foot{display:flex;gap:10px;padding:14px 26px 26px}
+  .pg-btn{
+    flex:1;padding:13px;border-radius:14px;border:none;font-weight:800;font-size:.9rem;cursor:pointer;
+    transition:transform .15s ease,box-shadow .15s ease;font-family:inherit;
+  }
+  .pg-btn.primary{background:linear-gradient(135deg,var(--sd-orange),var(--sd-orange-deep));color:#fff;box-shadow:0 8px 18px rgba(249,114,12,.3)}
+  .pg-btn.primary:hover{transform:translateY(-2px);box-shadow:0 12px 22px rgba(249,114,12,.4)}
+  .pg-btn.secondary{background:var(--sd-cream);color:var(--sd-cocoa-soft)}
+  .pg-btn.secondary:hover{background:#F0E6D6}
+  .pg-skip{
+    display:block;text-align:center;font-size:.78rem;font-weight:700;color:var(--sd-cocoa-soft);opacity:.7;
+    padding-bottom:14px;cursor:pointer;background:none;border:none;width:100%;font-family:inherit;
+  }
+  .pg-skip:hover{opacity:1;text-decoration:underline}
+  @media (max-width:480px){
+    .pg-head{padding:22px 20px 54px}
+    .pg-body{padding:0 20px 8px}
+    .pg-foot{padding:12px 20px 22px}
+  }
+
   /* ---------- Badges ---------- */
   .sd-badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:8px}
   .sd-badge{
@@ -646,10 +715,34 @@
   <div class="sd-brand">Lumio <span>English</span></div>
   <div class="sd-spacer"></div>
   <span id="helloChip" style="display:none"></span>
+  <button class="pg-launch-btn" id="parentGuideBtn" style="display:none">🧭 دليل ولي الأمر</button>
   <div class="sd-streak" id="streakChip"><span class="flame">🔥</span> <span id="streakVal">0</span><span class="sd-streak-label"> day streak</span></div>
   <button class="sd-avatar-btn" id="avatarBtn">🦊</button>
   <button class="sd-logout" onclick="Lumio.logout()">Log out</button>
 </header>
+
+<!-- ===== Parent guide (Arabic onboarding tour) ===== -->
+<div class="pg-overlay" id="parentGuideOverlay">
+  <div class="pg-card">
+    <div class="pg-head">
+      <button class="pg-close" id="pgCloseBtn">✕</button>
+      <img src="assets/logo/lumio-logo.png" alt="Lumio English" onerror="this.style.display='none'">
+      <h2>مرحباً بكم في Lumio English</h2>
+      <p id="pgHeadSub">دليلكم السريع لمتابعة تقدّم طفلكم</p>
+    </div>
+    <div class="pg-icon-badge" id="pgIcon">🎉</div>
+    <div class="pg-body">
+      <h3 id="pgTitle"></h3>
+      <div id="pgContent"></div>
+    </div>
+    <div class="pg-dots" id="pgDots"></div>
+    <div class="pg-foot">
+      <button class="pg-btn secondary" id="pgBackBtn">السابق</button>
+      <button class="pg-btn primary" id="pgNextBtn">التالي</button>
+    </div>
+    <button class="pg-skip" id="pgSkipBtn">تخطي الدليل</button>
+  </div>
+</div>
 
 <main class="sd-wrap">
 
@@ -1442,6 +1535,116 @@
     };
   }
   renderRewardsCard();
+
+  // ---------- Parent guide (Arabic onboarding tour) ----------
+  (function setupParentGuide() {
+    if (!rosterProfile) return;
+    const btn = document.getElementById("parentGuideBtn");
+    btn.style.display = "inline-flex";
+
+    const sessionsLeft = rosterProfile.sessionsRemaining || 0;
+    const slides = [
+      {
+        icon: "🎉",
+        headSub: "دليلكم السريع لمتابعة تقدّم طفلكم",
+        title: `تم تفعيل اشتراك ${u.name} بنجاح`,
+        html: `<p>أهلاً بكم في عائلة Lumio English! 👋<br>
+          خلال الدقائق القليلة القادمة، سنُطلعكم بسرعة على أهم ما تحتاجون معرفته لمتابعة رحلة طفلكم التعليمية معنا خطوة بخطوة.</p>`,
+      },
+      {
+        icon: "📅",
+        headSub: "جدول الحصص",
+        title: "كيف يعمل جدول الحصص؟",
+        html: `<ul>
+          <li><span class="em">🗓️</span> يظهر جدول الحصص الأسبوعي في قسم "جدولي" داخل صفحة الطالب.</li>
+          <li><span class="em">🔗</span> يتم إنشاء رابط "زووم" لكل حصة تلقائياً قبل موعدها بساعتين — لا حاجة لطلبه من المعلم.</li>
+          <li><span class="em">👩‍🏫</span> يظهر اسم المعلم/المعلمة بجانب كل حصة قادمة.</li>
+        </ul>`,
+      },
+      {
+        icon: "📈",
+        headSub: "المستوى والتقدم",
+        title: "متابعة تقدّم طفلكم",
+        html: `<ul>
+          <li><span class="em">📖</span> كل درس يمرّ بثلاث مراحل: تحضير، ثم حصة مباشرة مع المعلم، ثم واجب منزلي.</li>
+          <li><span class="em">⭐</span> يحصل الطالب على نجوم عند إكمال كل درس بنجاح، وتظهر نسبة تقدّمه بشكل واضح في الصفحة الرئيسية.</li>
+          <li><span class="em">📄</span> يمكن للمعلم إرسال تقرير أداء مفصّل يوضّح نقاط القوة والمهارات التي تحتاج تدريباً إضافياً.</li>
+        </ul>`,
+      },
+      {
+        icon: "🏆",
+        headSub: "نظام المكافآت",
+        title: "تحفيز طفلكم بالمكافآت",
+        html: `<ul>
+          <li><span class="em">✨</span> يكسب الطالب نقاطاً مقابل التزامه بالحضور والمشاركة الجيدة في الحصص.</li>
+          <li><span class="em">🎁</span> عند جمع 50 نقطة، يمكن استبدالها بساعة حصة إضافية مجانية — ويستمر الأمر كلما جُمعت نقاط جديدة.</li>
+          <li><span class="em">🥇</span> تظهر أفضل النقاط في لوحة الصدارة كتحفيز إضافي للطالب.</li>
+        </ul>`,
+      },
+      {
+        icon: "🎟️",
+        headSub: "الحصص والاشتراك",
+        title: "عدد الحصص المتبقية",
+        html: `<p style="margin-bottom:14px">يتبقى لدى <b>${u.name}</b> حالياً
+          <span style="color:var(--sd-orange-deep);font-weight:800">${sessionsLeft} حصة</span> ضمن الاشتراك الحالي.</p>
+          <ul>
+          <li><span class="em">➖</span> يُخصم عدد الحصص تلقائياً كلما حضر الطالب حصة مباشرة.</li>
+          <li><span class="em">🔔</span> سيتواصل معكم المعلم عبر واتساب عند اقتراب انتهاء الحصص لتجديد الاشتراك.</li>
+        </ul>`,
+      },
+      {
+        icon: "💬",
+        headSub: "نحن هنا لمساعدتكم",
+        title: "هل لديكم أي استفسار؟",
+        html: `<p>يمكنكم دائماً التواصل مباشرة مع معلم طفلكم لأي استفسار حول التقدّم الدراسي أو الجدول أو الاشتراك.</p>
+          <p style="margin-top:12px">يمكنكم أيضاً فتح هذا الدليل في أي وقت من زر "🧭 دليل ولي الأمر" أعلى الصفحة.</p>
+          <p style="margin-top:12px;font-weight:800;color:var(--sd-orange-deep)">نتمنى لطفلكم رحلة تعليمية ممتعة ومثمرة! 🌟</p>`,
+      },
+    ];
+
+    let step = 0;
+    const overlay = document.getElementById("parentGuideOverlay");
+    const iconEl = document.getElementById("pgIcon");
+    const headSubEl = document.getElementById("pgHeadSub");
+    const titleEl = document.getElementById("pgTitle");
+    const contentEl = document.getElementById("pgContent");
+    const dotsEl = document.getElementById("pgDots");
+    const backBtn = document.getElementById("pgBackBtn");
+    const nextBtn = document.getElementById("pgNextBtn");
+    const skipBtn = document.getElementById("pgSkipBtn");
+
+    function renderStep() {
+      const s = slides[step];
+      iconEl.textContent = s.icon;
+      headSubEl.textContent = s.headSub;
+      titleEl.textContent = s.title;
+      contentEl.innerHTML = s.html;
+      dotsEl.innerHTML = slides.map((_, i) => `<span class="pg-dot${i === step ? " active" : ""}"></span>`).join("");
+      backBtn.style.visibility = step === 0 ? "hidden" : "visible";
+      nextBtn.textContent = step === slides.length - 1 ? "تم ✓" : "التالي";
+      skipBtn.style.display = step === slides.length - 1 ? "none" : "block";
+    }
+    function openGuide() { step = 0; renderStep(); overlay.classList.add("show"); }
+    function closeGuide() {
+      overlay.classList.remove("show");
+      try { localStorage.setItem(`lumio_parent_guide_seen_v1_${rosterProfile.id}`, "1"); } catch (e) {}
+    }
+    nextBtn.onclick = () => { if (step < slides.length - 1) { step++; renderStep(); } else closeGuide(); };
+    backBtn.onclick = () => { if (step > 0) { step--; renderStep(); } };
+    skipBtn.onclick = closeGuide;
+    document.getElementById("pgCloseBtn").onclick = closeGuide;
+    overlay.onclick = e => { if (e.target === overlay) closeGuide(); };
+    btn.onclick = openGuide;
+
+    // Auto-launch once, the first time a subscribed student's profile is
+    // opened after subscribing -- afterwards it's only ever reopened
+    // manually via the header button, never shown again automatically.
+    let alreadySeen = false;
+    try { alreadySeen = !!localStorage.getItem(`lumio_parent_guide_seen_v1_${rosterProfile.id}`); } catch (e) {}
+    if (rosterProfile.subscribed && !alreadySeen) {
+      setTimeout(openGuide, 600); // let the dashboard render first
+    }
+  })();
 
   let currentAvatar = (rosterProfile && rosterProfile.avatar) || safeGet(avatarKey) || "🦊";
   let currentPhoto = (rosterProfile && rosterProfile.photoDataUrl) || null;
