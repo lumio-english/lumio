@@ -303,6 +303,16 @@
   .td-teacher-stats .item b{display:block;font-size:.88rem;font-weight:800}
   .td-teacher-stats .item span{font-size:.62rem;color:var(--td-muted);font-weight:700;text-transform:uppercase}
 
+  /* ---------- Drawer tabs ---------- */
+  .td-drawer-tabs{display:flex;gap:4px;border-bottom:1px solid var(--td-border-soft);margin:0 -4px}
+  .td-drawer-tab{
+    flex:1;padding:9px 4px;border:none;background:none;font-weight:700;font-size:.76rem;color:var(--td-muted);
+    cursor:pointer;border-bottom:2px solid transparent;transition:color .15s ease,border-color .15s ease;white-space:nowrap;
+  }
+  .td-drawer-tab:hover{color:var(--td-ink-soft)}
+  .td-drawer-tab.active{color:var(--td-indigo-dark,#3f2fa8);border-bottom-color:var(--td-indigo)}
+  .td-drawer-tab.has-alert::after{content:"●";color:var(--td-coral);margin-left:3px;font-size:.6rem}
+
   /* ---------- Leads ---------- */
   .td-lead-row{
     display:flex;align-items:center;gap:14px;background:var(--td-bg);border:1px solid var(--td-border);
@@ -1050,43 +1060,57 @@
 
 <!-- ===== Student detail drawer (click a table row) ===== -->
 <div class="td-overlay" id="drawerOverlay" style="justify-content:flex-end;align-items:stretch">
-  <div class="td-modal-box" id="drawerBox" style="max-width:380px;width:100%;border-radius:0;height:100%;overflow-y:auto;transform:none">
-    <button class="td-btn" id="drawerClose" style="float:right">✕</button>
-    <h3 id="drawerName" style="clear:both">Student</h3>
-    <div style="color:var(--td-muted);font-size:.8rem;font-weight:600;margin-top:-10px;margin-bottom:14px" id="drawerLevel">Level</div>
-    <div style="display:flex;gap:10px;margin-bottom:16px">
-      <div style="flex:1;background:var(--td-bg);border-radius:12px;padding:10px;text-align:center">
-        <b style="display:block;font-size:1.1rem;font-weight:800" id="drawerDone">0</b>
-        <span style="font-size:.7rem;color:var(--td-muted);font-weight:700;text-transform:uppercase">Done</span>
+  <div class="td-modal-box" id="drawerBox" style="max-width:380px;width:100%;border-radius:0;height:100%;overflow-y:auto;transform:none;display:flex;flex-direction:column">
+    <div style="flex-shrink:0">
+      <button class="td-btn" id="drawerClose" style="float:right">✕</button>
+      <h3 id="drawerName" style="clear:both">Student</h3>
+      <div style="color:var(--td-muted);font-size:.8rem;font-weight:600;margin-top:-10px;margin-bottom:14px" id="drawerLevel">Level</div>
+      <div style="display:flex;gap:10px;margin-bottom:16px">
+        <div style="flex:1;background:var(--td-bg);border-radius:12px;padding:10px;text-align:center">
+          <b style="display:block;font-size:1.1rem;font-weight:800" id="drawerDone">0</b>
+          <span style="font-size:.7rem;color:var(--td-muted);font-weight:700;text-transform:uppercase">Done</span>
+        </div>
+        <div style="flex:1;background:var(--td-bg);border-radius:12px;padding:10px;text-align:center">
+          <b style="display:block;font-size:1.1rem;font-weight:800" id="drawerStars">0</b>
+          <span style="font-size:.7rem;color:var(--td-muted);font-weight:700;text-transform:uppercase">Stars</span>
+        </div>
+        <div style="flex:1;background:var(--td-bg);border-radius:12px;padding:10px;text-align:center">
+          <b style="display:block;font-size:1.1rem;font-weight:800" id="drawerAvg">0%</b>
+          <span style="font-size:.7rem;color:var(--td-muted);font-weight:700;text-transform:uppercase">Avg</span>
+        </div>
       </div>
-      <div style="flex:1;background:var(--td-bg);border-radius:12px;padding:10px;text-align:center">
-        <b style="display:block;font-size:1.1rem;font-weight:800" id="drawerStars">0</b>
-        <span style="font-size:.7rem;color:var(--td-muted);font-weight:700;text-transform:uppercase">Stars</span>
+      <div class="td-drawer-tabs" id="drawerTabs">
+        <button type="button" class="td-drawer-tab active" data-tab="profile">Profile</button>
+        <button type="button" class="td-drawer-tab" data-tab="progress">Progress</button>
+        <button type="button" class="td-drawer-tab" data-tab="attendance">Attendance</button>
+        <button type="button" class="td-drawer-tab" data-tab="rewards">Rewards</button>
+        <button type="button" class="td-drawer-tab" data-tab="notes">Notes</button>
       </div>
-      <div style="flex:1;background:var(--td-bg);border-radius:12px;padding:10px;text-align:center">
-        <b style="display:block;font-size:1.1rem;font-weight:800" id="drawerAvg">0%</b>
-        <span style="font-size:.7rem;color:var(--td-muted);font-weight:700;text-transform:uppercase">Avg</span>
+    </div>
+
+    <div style="flex:1;overflow-y:auto;padding-top:14px">
+      <div class="td-drawer-panel" data-panel="profile">
+        <div id="drawerProfile"></div>
+      </div>
+
+      <div class="td-drawer-panel" data-panel="progress" style="display:none">
+        <div id="drawerBody"></div>
+      </div>
+
+      <div class="td-drawer-panel" data-panel="attendance" style="display:none">
+        <div id="drawerAttendance"></div>
+      </div>
+
+      <div class="td-drawer-panel" data-panel="rewards" style="display:none">
+        <div id="drawerRewards"></div>
+      </div>
+
+      <div class="td-drawer-panel" data-panel="notes" style="display:none">
+        <div id="drawerNotes"></div>
       </div>
     </div>
-    <div id="drawerProfile" style="margin-bottom:16px"></div>
-    <div id="drawerBody"></div>
 
-    <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--td-border-soft)">
-      <h4 style="font-size:.85rem;margin:0 0 8px">📅 Attendance</h4>
-      <div id="drawerAttendance"></div>
-    </div>
-
-    <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--td-border-soft)">
-      <h4 style="font-size:.85rem;margin:0 0 8px">🏆 Rewards</h4>
-      <div id="drawerRewards"></div>
-    </div>
-
-    <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--td-border-soft)">
-      <h4 style="font-size:.85rem;margin:0 0 8px">📝 Notes</h4>
-      <div id="drawerNotes"></div>
-    </div>
-
-    <button class="td-btn td-btn-primary" id="drawerReportBtn" style="width:100%;margin-top:16px">📄 Download performance report</button>
+    <button class="td-btn td-btn-primary" id="drawerReportBtn" style="width:100%;margin-top:16px;flex-shrink:0">📄 Download performance report</button>
   </div>
 </div>
 
@@ -2024,8 +2048,17 @@
     if (!r.lessons || !r.lessons.length) body.innerHTML = `<div class="td-empty">No lessons recorded yet.</div>`;
     renderDrawerAttendance(r);
     renderDrawerProfile(r);
+    setDrawerTab("profile");
     drawerOverlay.classList.add("show");
   }
+
+  function setDrawerTab(tab) {
+    document.querySelectorAll(".td-drawer-tab").forEach(btn => btn.classList.toggle("active", btn.dataset.tab === tab));
+    document.querySelectorAll(".td-drawer-panel").forEach(p => p.style.display = p.dataset.panel === tab ? "block" : "none");
+  }
+  document.querySelectorAll(".td-drawer-tab").forEach(btn => {
+    btn.addEventListener("click", () => setDrawerTab(btn.dataset.tab));
+  });
 
   function renderDrawerProfile(r) {
     const el = document.getElementById("drawerProfile");
@@ -2064,6 +2097,8 @@
     const points = p.rewardPoints || 0;
     const hours = p.bonusHours || 0;
     const canRedeem = points >= 50;
+    const rewardsTab = document.querySelector('.td-drawer-tab[data-tab="rewards"]');
+    if (rewardsTab) rewardsTab.classList.toggle("has-alert", canRedeem);
     const catalog = window.LumioProfiles ? LumioProfiles.listRewardCatalog() : [];
     const catalogHtml = catalog.map(item => `
       <button type="button" class="td-rw-catalog-item" data-item="${item.id}" ${points >= item.cost ? "" : "disabled"}>
