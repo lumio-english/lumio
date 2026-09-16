@@ -737,8 +737,8 @@
   }
   .td-sm-banner h3{margin:0 0 4px;font-size:1.2rem;font-weight:800}
   .td-sm-banner p{margin:0;font-size:.82rem;opacity:.92;font-weight:700}
-  .td-drawer-content{min-height:0}
-  .td-sm-content{flex:1;overflow-y:auto;padding:18px 22px;min-height:0}
+  .td-drawer-content{}
+  .td-sm-content{padding:18px 22px}
   .td-sm-section{max-width:720px;margin:0 auto 18px;background:var(--td-bg);border-radius:16px;padding:16px}
   .td-sm-section-head{
     display:flex;align-items:center;gap:8px;font-weight:800;font-size:.8rem;color:var(--td-ink-soft);
@@ -1290,7 +1290,7 @@
 
 <!-- ===== Student detail drawer (click a table row) ===== -->
 <div class="td-overlay" id="drawerOverlay">
-  <div class="td-modal-box td-modal-box-wide" id="drawerBox" style="width:100%;overflow:hidden;transform:none;display:flex;flex-direction:column;padding:0">
+  <div class="td-modal-box td-modal-box-wide" id="drawerBox" style="width:100%;overflow-y:auto;transform:none;display:block;padding:0">
     <div style="flex-shrink:0">
       <div class="td-dh-banner">
         <button class="td-dh-close" id="drawerClose">✕</button>
@@ -1323,7 +1323,7 @@
       </div>
     </div>
 
-    <div style="flex:1;overflow-y:auto;padding:14px 22px 0" class="td-drawer-content">
+    <div style="padding:14px 22px 0" class="td-drawer-content">
       <div class="td-drawer-panel" data-panel="profile">
         <div id="drawerProfile"></div>
       </div>
@@ -1374,7 +1374,7 @@
 
 <!-- ===== Add / Edit student modal ===== -->
 <div class="td-overlay" id="studentModalOverlay">
-  <div class="td-modal-box td-modal-box-wide" id="studentModalBox" style="width:100%;overflow:hidden;transform:none;display:flex;flex-direction:column;padding:0">
+  <div class="td-modal-box td-modal-box-wide" id="studentModalBox" style="width:100%;overflow-y:auto;transform:none;display:block;padding:0">
     <div class="td-sm-banner">
       <button class="td-dh-close" id="studentModalCloseX" type="button">✕</button>
       <div class="td-sm-banner-inner">
@@ -2391,6 +2391,7 @@
       document.getElementById("drawerApproveBtn").onclick = async () => {
         try {
           await LumioProfiles.updateStudent(p.id, { approved: true });
+          LumioProfiles.syncNow().catch(() => {}); // so the student's own device unlocks right away
           showToast(`${p.name} is approved and can now log in.`, "success");
           renderDrawerProfile(r);
           renderRosterCards();
@@ -2755,6 +2756,7 @@
         await withLoading(e.currentTarget, async () => {
           const newPin = LumioProfiles.randomPin();
           await LumioProfiles.updateStudent(p.id, { pin: newPin });
+          LumioProfiles.syncNow().catch(() => {}); // a stale PIN elsewhere would otherwise lock the student out
           renderRosterCards(); renderTable();
           showToast(`New PIN set for ${p.name}.`, "success");
         });
@@ -2763,6 +2765,7 @@
         const ok = await confirmDialog(`Remove ${p.name} from the roster? They won't be able to log in until re-added.`, "Remove");
         if (ok) {
           LumioProfiles.removeStudent(p.id);
+          LumioProfiles.syncNow().catch(() => {});
           renderRosterCards(); renderTable(); renderInactivity();
           showToast(`${p.name} removed from the roster.`);
         }
@@ -2870,6 +2873,13 @@
         } else {
           await LumioProfiles.addStudent(payload);
         }
+        // Push this change out immediately rather than waiting for the
+        // next periodic auto-sync (up to 5 minutes) or a manual "Sync
+        // now" click -- a teacher editing a student expects it to show
+        // up on the student's own device (or another teacher's) right
+        // away, not eventually. Best-effort: the edit is already saved
+        // locally regardless of whether this succeeds.
+        LumioProfiles.syncNow().catch(() => {});
         closeStudentModal();
         renderRosterCards();
         renderTable();
@@ -4596,7 +4606,7 @@
         window.scrollTo(0, 0);
         document.documentElement.style.overflow = "hidden";
         document.body.style.overflow = "hidden";
-        overlay.querySelectorAll(".td-modal-box, .td-drawer-content, .td-sm-content").forEach(el => { el.scrollTop = 0; });
+        overlay.querySelectorAll(".td-modal-box").forEach(el => { el.scrollTop = 0; });
       } else if (!document.querySelector(".td-overlay.show")) {
         document.documentElement.style.overflow = "";
         document.body.style.overflow = "";
