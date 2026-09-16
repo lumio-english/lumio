@@ -262,10 +262,40 @@
   .td-dp-grid .val{font-weight:800;margin-top:2px;font-size:.88rem}
   .td-dp-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
   .td-dp-tag{background:var(--td-indigo-soft,#EDE9FE);border:1px solid transparent;border-radius:99px;padding:4px 11px;font-size:.7rem;font-weight:800;color:var(--td-indigo-dark,#3f2fa8)}
-  .td-dp-sub{margin-top:12px;display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-  .td-dp-sub .item{background:#fff;border:1px solid var(--td-border-soft);border-radius:12px;padding:10px 8px;text-align:center}
-  .td-dp-sub .item b{display:block;font-size:1rem;font-weight:800}
-  .td-dp-sub .item span{font-size:.64rem;color:var(--td-muted);font-weight:700;text-transform:uppercase;letter-spacing:.2px}
+
+  /* ---------- Drawer profile: fields, subscription banner, stat tiles ---------- */
+  .td-dp-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .td-dp-field{
+    display:flex;align-items:center;gap:9px;background:var(--td-bg);border-radius:13px;padding:10px 11px;
+  }
+  .td-dp-field .ic{font-size:1.2rem;flex-shrink:0}
+  .td-dp-field .lbl{color:var(--td-muted);font-weight:700;font-size:.62rem;text-transform:uppercase;letter-spacing:.3px}
+  .td-dp-field .val{font-weight:800;margin-top:1px;font-size:.85rem;color:var(--td-ink,#1F2430)}
+  .td-dp-field .val i{font-weight:600;font-style:normal;color:var(--td-muted);opacity:.7}
+  .td-dp-streak{
+    margin-top:10px;background:linear-gradient(135deg,#FFF4E0,#FFE7C2);border-radius:12px;padding:9px 14px;
+    font-size:.8rem;font-weight:800;color:#8A5A0A;text-align:center;
+  }
+  .td-dp-subbanner{
+    display:flex;align-items:center;gap:8px;margin-top:14px;padding:11px 14px;border-radius:13px;font-weight:800;font-size:.84rem;
+  }
+  .td-dp-subbanner .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+  .td-dp-subbanner.yes{background:#E7F8F1;color:#0D8C5C}
+  .td-dp-subbanner.yes .dot{background:#1FBE7A;box-shadow:0 0 0 4px rgba(31,190,122,.18)}
+  .td-dp-subbanner.no{background:#FDEDED;color:#C23A3A}
+  .td-dp-subbanner.no .dot{background:#E14545;box-shadow:0 0 0 4px rgba(225,69,69,.18)}
+  .td-dp-tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+  .td-dp-tile{
+    border-radius:14px;padding:12px 10px;text-align:center;position:relative;overflow:hidden;
+  }
+  .td-dp-tile .ic{font-size:1rem;display:block;margin-bottom:4px;opacity:.85}
+  .td-dp-tile b{display:block;font-size:1.1rem;font-weight:800}
+  .td-dp-tile span{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.3px;opacity:.8}
+  .td-dp-tile.blue{background:#EAF1FE;color:#2451B8}
+  .td-dp-tile.purple{background:#F1EBFE;color:#6B2FB8}
+  .td-dp-tile.teal{background:var(--td-teal-soft);color:#0d6b5c}
+  .td-dp-tile.coral{background:var(--td-coral-soft);color:#B8342E}
+  .td-dp-tile.amber{background:#FFF3DE;color:#96650A}
   .td-rw-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
   .td-rw-points{flex:1;background:var(--td-bg);border-radius:12px;padding:10px 12px}
   .td-rw-points b{font-size:1.1rem;font-weight:800}
@@ -304,9 +334,47 @@
   .td-teacher-stats .item b{display:block;font-size:.88rem;font-weight:800}
   .td-teacher-stats .item span{font-size:.62rem;color:var(--td-muted);font-weight:700;text-transform:uppercase}
 
+  /* ---------- Drawer header ---------- */
+  .td-dh-banner{
+    position:relative;padding:22px 22px 20px;text-align:center;color:#fff;
+    background:linear-gradient(135deg,var(--td-indigo,#6D5BD0),var(--td-indigo-dark,#3f2fa8));
+    overflow:hidden;
+  }
+  .td-dh-banner::after{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(circle at 85% -10%,rgba(255,255,255,.22),transparent 55%),
+               radial-gradient(circle at -10% 110%,rgba(255,255,255,.12),transparent 50%);
+  }
+  .td-dh-close{
+    position:absolute;top:14px;left:14px;width:30px;height:30px;border-radius:50%;border:none;
+    background:rgba(255,255,255,.2);color:#fff;font-size:.95rem;cursor:pointer;z-index:2;
+    display:flex;align-items:center;justify-content:center;transition:background .15s ease,transform .15s ease;
+  }
+  .td-dh-close:hover{background:rgba(255,255,255,.32);transform:scale(1.06)}
+  .td-dh-avatar{
+    width:64px;height:64px;border-radius:20px;background:#fff;display:flex;align-items:center;justify-content:center;
+    font-size:2rem;margin:0 auto 10px;box-shadow:0 10px 24px rgba(0,0,0,.2);position:relative;z-index:1;
+    background-size:cover;background-position:center;
+  }
+  .td-dh-banner h3{margin:0 0 4px;font-size:1.15rem;font-weight:800;position:relative;z-index:1}
+  .td-dh-level{
+    display:inline-block;background:rgba(255,255,255,.22);border-radius:99px;padding:4px 14px;font-size:.74rem;
+    font-weight:800;letter-spacing:.2px;position:relative;z-index:1;
+  }
+  .td-dh-stats{display:flex;gap:8px;padding:14px 22px 4px;margin-top:-14px;position:relative;z-index:1}
+  .td-dh-stat{
+    flex:1;background:#fff;border-radius:14px;padding:10px 6px;text-align:center;box-shadow:0 6px 16px rgba(0,0,0,.09);
+    border-bottom:3px solid transparent;
+  }
+  .td-dh-stat.done{border-bottom-color:var(--td-indigo)}
+  .td-dh-stat.stars{border-bottom-color:var(--td-amber,#E8A23D)}
+  .td-dh-stat.avg{border-bottom-color:var(--td-teal)}
+  .td-dh-stat b{display:block;font-size:1.15rem;font-weight:800}
+  .td-dh-stat span{font-size:.64rem;color:var(--td-muted);font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+
   /* ---------- Drawer tabs ---------- */
   .td-drawer-tabs{
-    display:flex;gap:2px;background:var(--td-bg);border-radius:12px;padding:3px;margin-top:2px;
+    display:flex;gap:2px;background:var(--td-bg);border-radius:12px;padding:3px;margin:10px 22px 0;
     overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;
   }
   .td-drawer-tabs::-webkit-scrollbar{display:none}
@@ -1081,23 +1149,26 @@
 
 <!-- ===== Student detail drawer (click a table row) ===== -->
 <div class="td-overlay" id="drawerOverlay" style="justify-content:flex-end;align-items:stretch">
-  <div class="td-modal-box" id="drawerBox" style="max-width:380px;width:100%;border-radius:0;height:100%;overflow-y:auto;transform:none;display:flex;flex-direction:column">
+  <div class="td-modal-box" id="drawerBox" style="max-width:400px;width:100%;border-radius:0;height:100%;overflow-y:auto;transform:none;display:flex;flex-direction:column;padding:0">
     <div style="flex-shrink:0">
-      <button class="td-btn" id="drawerClose" style="float:right">✕</button>
-      <h3 id="drawerName" style="clear:both">Student</h3>
-      <div style="color:var(--td-muted);font-size:.8rem;font-weight:600;margin-top:-10px;margin-bottom:14px" id="drawerLevel">Level</div>
-      <div style="display:flex;gap:10px;margin-bottom:16px">
-        <div style="flex:1;background:var(--td-bg);border-radius:12px;padding:10px;text-align:center">
-          <b style="display:block;font-size:1.1rem;font-weight:800" id="drawerDone">0</b>
-          <span style="font-size:.7rem;color:var(--td-muted);font-weight:700;text-transform:uppercase">Done</span>
+      <div class="td-dh-banner">
+        <button class="td-dh-close" id="drawerClose">✕</button>
+        <div class="td-dh-avatar" id="drawerAvatar">🦊</div>
+        <h3 id="drawerName">Student</h3>
+        <div class="td-dh-level" id="drawerLevel">Level</div>
+      </div>
+      <div class="td-dh-stats">
+        <div class="td-dh-stat done">
+          <b id="drawerDone">0</b>
+          <span>Done</span>
         </div>
-        <div style="flex:1;background:var(--td-bg);border-radius:12px;padding:10px;text-align:center">
-          <b style="display:block;font-size:1.1rem;font-weight:800" id="drawerStars">0</b>
-          <span style="font-size:.7rem;color:var(--td-muted);font-weight:700;text-transform:uppercase">Stars</span>
+        <div class="td-dh-stat stars">
+          <b id="drawerStars">0</b>
+          <span>Stars</span>
         </div>
-        <div style="flex:1;background:var(--td-bg);border-radius:12px;padding:10px;text-align:center">
-          <b style="display:block;font-size:1.1rem;font-weight:800" id="drawerAvg">0%</b>
-          <span style="font-size:.7rem;color:var(--td-muted);font-weight:700;text-transform:uppercase">Avg</span>
+        <div class="td-dh-stat avg">
+          <b id="drawerAvg">0%</b>
+          <span>Avg</span>
         </div>
       </div>
       <div class="td-drawer-tabs" id="drawerTabs">
@@ -1109,7 +1180,7 @@
       </div>
     </div>
 
-    <div style="flex:1;overflow-y:auto;padding-top:14px">
+    <div style="flex:1;overflow-y:auto;padding:14px 22px 0">
       <div class="td-drawer-panel" data-panel="profile">
         <div id="drawerProfile"></div>
       </div>
@@ -1131,7 +1202,7 @@
       </div>
     </div>
 
-    <button class="td-btn td-btn-primary" id="drawerReportBtn" style="width:100%;margin-top:16px;flex-shrink:0">📄 Download performance report</button>
+    <button class="td-btn td-btn-primary" id="drawerReportBtn" style="width:calc(100% - 44px);margin:16px 22px;flex-shrink:0">📄 Download performance report</button>
   </div>
 </div>
 
@@ -2051,6 +2122,15 @@
     currentDrawerRow = r;
     document.getElementById("drawerName").textContent = r.name;
     document.getElementById("drawerLevel").textContent = levelName(r.lvl);
+    const avatarEl = document.getElementById("drawerAvatar");
+    const profileForAvatar = window.LumioProfiles ? LumioProfiles.findByName(r.name) : null;
+    if (profileForAvatar && profileForAvatar.photoDataUrl) {
+      avatarEl.style.backgroundImage = `url(${profileForAvatar.photoDataUrl})`;
+      avatarEl.textContent = "";
+    } else {
+      avatarEl.style.backgroundImage = "none";
+      avatarEl.textContent = (profileForAvatar && profileForAvatar.avatar) || "🦊";
+    }
     document.getElementById("drawerDone").textContent = r.done;
     document.getElementById("drawerStars").textContent = r.stars;
     document.getElementById("drawerAvg").textContent = r.avg + "%";
@@ -2093,21 +2173,27 @@
     }
     const tagsHtml = (p.tags || []).map(t => `<span class="td-dp-tag">${t}</span>`).join("");
     const streak = window.LumioSchedule ? LumioSchedule.attendanceStreakForStudent(p.name) : 0;
+    const fixedCount = window.LumioSchedule ? LumioSchedule.fixedScheduleCountForStudent(p.name) : 0;
     el.innerHTML = `
-      <div class="td-dp-grid">
-        <div><div class="lbl">Age</div><div class="val">${p.age != null ? p.age : "—"}</div></div>
-        <div><div class="lbl">Gender</div><div class="val">${p.gender === "M" ? "Male" : p.gender === "F" ? "Female" : "—"}</div></div>
-        <div><div class="lbl">Grade</div><div class="val">${p.grade || "—"}</div></div>
-        <div><div class="lbl">Country</div><div class="val">${p.country || "—"}</div></div>
+      <div class="td-dp-fields">
+        <div class="td-dp-field"><span class="ic">🎂</span><div><div class="lbl">Age</div><div class="val">${p.age != null ? p.age : "<i>Not set</i>"}</div></div></div>
+        <div class="td-dp-field"><span class="ic">${p.gender === "F" ? "♀️" : "♂️"}</span><div><div class="lbl">Gender</div><div class="val">${p.gender === "M" ? "Male" : p.gender === "F" ? "Female" : "<i>Not set</i>"}</div></div></div>
+        <div class="td-dp-field"><span class="ic">🎓</span><div><div class="lbl">Grade</div><div class="val">${p.grade || "<i>Not set</i>"}</div></div></div>
+        <div class="td-dp-field"><span class="ic">🌍</span><div><div class="lbl">Country</div><div class="val">${p.country || "<i>Not set</i>"}</div></div></div>
       </div>
       ${tagsHtml ? `<div class="td-dp-tags">${tagsHtml}</div>` : ""}
-      <div class="td-dp-sub">
-        <div class="item"><b>${p.subscribed ? "✅ Yes" : "❌ No"}</b><span>Subscribed</span></div>
-        <div class="item"><b>${p.amountPaid ? p.amountPaid : 0}</b><span>Amount paid</span></div>
-        <div class="item"><b>${p.levelsPurchased || 0}</b><span>Levels bought</span></div>
-        <div class="item"><b>${p.sessionsRemaining || 0}</b><span>Sessions left</span></div>
-        <div class="item"><b>${window.LumioSchedule ? LumioSchedule.fixedScheduleCountForStudent(p.name) : 0}</b><span>Fixed schedule</span></div>
-        ${streak > 0 ? `<div class="item"><b>🔥 ${streak}</b><span>Week streak</span></div>` : ""}
+      ${streak > 0 ? `<div class="td-dp-streak">🔥 <b>${streak}</b>-week attendance streak</div>` : ""}
+
+      <div class="td-dp-subbanner ${p.subscribed ? "yes" : "no"}">
+        <span class="dot"></span>
+        <span>${p.subscribed ? "Subscribed &amp; active" : "Not currently subscribed"}</span>
+      </div>
+
+      <div class="td-dp-tiles">
+        <div class="td-dp-tile blue"><span class="ic">💳</span><b>${p.amountPaid || 0}</b><span>Amount paid</span></div>
+        <div class="td-dp-tile purple"><span class="ic">📚</span><b>${p.levelsPurchased || 0}</b><span>Levels bought</span></div>
+        <div class="td-dp-tile ${p.sessionsRemaining > 0 && p.sessionsRemaining <= 3 ? "coral" : "teal"}"><span class="ic">🎟️</span><b>${p.sessionsRemaining || 0}</b><span>Sessions left</span></div>
+        <div class="td-dp-tile amber"><span class="ic">🔁</span><b>${fixedCount}</b><span>Fixed schedule</span></div>
       </div>`;
     renderDrawerRewards(p);
     renderDrawerNotes(p);
