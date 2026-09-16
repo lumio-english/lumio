@@ -4174,6 +4174,9 @@
       } else if (rosterRes.reason === "not-configured") {
         syncStatus.textContent = "Add a Web App URL first.";
         showToast("Add a Web App URL first.", "error");
+      } else if (rosterRes.reason === "timeout" || scheduleRes.reason === "timeout" || leadsRes.reason === "timeout") {
+        syncStatus.textContent = "Sync timed out — check your internet connection and try again.";
+        showToast("Sync timed out.", "error");
       } else {
         syncStatus.textContent = "Sync failed — check the URL and that your Apps Script is deployed as a Web App.";
         showToast("Sync failed.", "error");

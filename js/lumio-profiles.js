@@ -778,6 +778,21 @@
       if (!s.pinHash && s.pin) s.pinHash = await hashPin(s.pin);
     }
   }
+  // A bare fetch() never times out on its own -- on a flaky mobile
+  // connection (a weak signal, a captive wifi portal, a request that
+  // stalls mid-flight) it can simply hang forever with no error and no
+  // success, leaving the UI stuck on "Syncing..." indefinitely with
+  // nothing to show for it and no way to tell the user what's wrong.
+  // Every sync request goes through this instead, so a stalled request
+  // always eventually fails loudly (caught by syncNow's try/catch,
+  // which already reports it) rather than hanging silently.
+  function fetchWithTimeout(url, opts, ms) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), ms || 20000);
+    return fetch(url, Object.assign({}, opts, { signal: controller.signal }))
+      .finally(() => clearTimeout(timer));
+  }
+
   async function syncNow() {
     const cfg = getSyncConfig();
     if (!cfg.enabled || !cfg.url) return { ok: false, reason: "not-configured" };
@@ -785,7 +800,7 @@
     try {
       // Pull + merge first, so a brand-new device can never push an empty
       // local roster over whatever's already shared.
-      const res = await fetch(cfg.url + "?action=pullRoster");
+      const res = await fetchWithTimeout(cfg.url + "?action=pullRoster");
       const remote = await res.json();
       if (remote && Array.isArray(remote.students)) {
         remote.students.forEach(parseSyncedStudent);
@@ -816,7 +831,7 @@
       await backfillMissingHashes(data);
       save(data);
 
-      await fetch(cfg.url + "?action=pushRoster", {
+      await fetchWithTimeout(cfg.url + "?action=pushRoster", {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify({
@@ -827,7 +842,7 @@
       });
       return { ok: true, at: new Date().toISOString() };
     } catch (e) {
-      return { ok: false, reason: "network", error: e && e.message };
+      return { ok: false, reason: e && e.name === "AbortError" ? "timeout" : "network", error: e && e.message };
     }
   }
 

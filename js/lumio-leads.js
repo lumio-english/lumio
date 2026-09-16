@@ -136,25 +136,35 @@
     });
     return Object.values(byId);
   }
+  // See the identical helper + comment in js/lumio-profiles.js -- a bare
+  // fetch() can hang forever on a flaky connection with no error and no
+  // success, leaving "Syncing..." stuck indefinitely.
+  function fetchWithTimeout(url, opts, ms) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), ms || 20000);
+    return fetch(url, Object.assign({}, opts, { signal: controller.signal }))
+      .finally(() => clearTimeout(timer));
+  }
+
   async function syncNow() {
     const cfg = getSyncConfig();
     if (!cfg.enabled || !cfg.url) return { ok: false, reason: "not-configured" };
     const data = load();
     try {
-      const res = await fetch(cfg.url + "?action=pullLeads");
+      const res = await fetchWithTimeout(cfg.url + "?action=pullLeads");
       const remote = await res.json();
       if (remote && Array.isArray(remote.leads)) {
         data.leads = mergeById(data.leads, remote.leads);
         save(data);
       }
-      await fetch(cfg.url + "?action=pushLeads", {
+      await fetchWithTimeout(cfg.url + "?action=pushLeads", {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" }, // avoids a CORS preflight against Apps Script
         body: JSON.stringify({ leads: data.leads }),
       });
       return { ok: true, at: new Date().toISOString() };
     } catch (e) {
-      return { ok: false, reason: "network", error: e && e.message };
+      return { ok: false, reason: e && e.name === "AbortError" ? "timeout" : "network", error: e && e.message };
     }
   }
 
