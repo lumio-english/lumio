@@ -211,7 +211,23 @@
         pinBuffer = ""; renderDots();
         return;
       }
-      const ok = window.LumioProfiles && await LumioProfiles.verifyStudentLogin(identifier, pinBuffer);
+      let ok;
+      try {
+        ok = window.LumioProfiles && await LumioProfiles.verifyStudentLogin(identifier, pinBuffer);
+      } catch (err) {
+        // Right ID + right PIN, but the teacher hasn't approved this
+        // account yet (fresh placement-test signup) -- a clearly
+        // different message from "wrong PIN" so a family isn't left
+        // thinking they mistyped something when the real answer is
+        // "wait for your teacher."
+        pinError.textContent = err && err.code === "pending_approval"
+          ? "Your account is pending your teacher's approval — please check back soon!"
+          : "Something went wrong — please try again.";
+        pinError.classList.remove("shake"); void pinError.offsetWidth; pinError.classList.add("shake");
+        pinBuffer = "";
+        renderDots();
+        return;
+      }
       if (!ok) {
         pinError.textContent = "That ID/phone and PIN don't match — try again.";
         pinError.classList.remove("shake"); void pinError.offsetWidth; pinError.classList.add("shake");

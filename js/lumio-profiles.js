@@ -123,6 +123,10 @@
         s.paid = true; // every pre-existing student was a teacher-enrolled "Current Learner"
         needsSave = true;
       }
+      if (s.approved === undefined) {
+        s.approved = true; // pre-existing students could already log in -- don't retroactively lock anyone out
+        needsSave = true;
+      }
       // safety net for students saved before profile/subscription/rewards
       // fields existed -- plain defaults so every reader (drawer, rewards
       // card, leaderboard, renewal list) can rely on these always existing.
@@ -232,7 +236,7 @@
     while (data.students.some(s => s.loginCode === code));
     return code;
   }
-  async function addStudent({ name, level, avatar, pin, teacherId, phone, cohort, group, paid, age, gender, grade, country, tags, subscribed, amountPaid, levelsPurchased, rewardPoints, bonusHours, sessionsRemaining } = {}) {
+  async function addStudent({ name, level, avatar, pin, teacherId, phone, cohort, group, paid, age, gender, grade, country, tags, subscribed, amountPaid, levelsPurchased, rewardPoints, bonusHours, sessionsRemaining, approved } = {}) {
     const data = load();
     name = (name || "").trim();
     if (!name) throw new Error("A student needs a name.");
@@ -264,6 +268,18 @@
       // placement-test registration flow is the one caller that passes
       // paid: false explicitly.
       paid: paid === undefined ? true : !!paid,
+      // Whether this student is allowed to actually LOG IN yet. Separate
+      // from `subscribed`/`paid` on purpose: this is a one-time gate on a
+      // brand-new self-registered account (placement test), not an
+      // ongoing status that should flip back and forth as a subscription
+      // lapses and renews later. Defaults true so every existing call
+      // site (a teacher manually adding a student they've already
+      // vetted) is unaffected; the placement-test registration flow is
+      // the one caller that passes approved: false explicitly, so a kid
+      // can't start using the student dashboard the moment they finish a
+      // test -- only once the teacher has reviewed their profile, taken
+      // payment, and approved them from the dashboard.
+      approved: approved === undefined ? true : !!approved,
       // Free-text, not a managed list -- a cohort is an enrollment batch (e.g.
       // "Sept 2026 Intake"), a group is a class section within that cohort at
       // one level (multiple groups can share a level within the same cohort).
@@ -346,6 +362,7 @@
     if (patch.cohort !== undefined) s.cohort = (patch.cohort || "").trim();
     if (patch.group !== undefined) s.group = (patch.group || "").trim();
     if (patch.paid !== undefined) s.paid = !!patch.paid;
+    if (patch.approved !== undefined) s.approved = !!patch.approved;
     if (patch.age !== undefined) s.age = patch.age === null || patch.age === "" ? null : Number(patch.age);
     if (patch.gender !== undefined) s.gender = patch.gender || "";
     if (patch.grade !== undefined) s.grade = (patch.grade || "").trim();
@@ -485,14 +502,27 @@
     if (!s) return null;
     const p = normalizePin(pin);
     if (!p) return null;
+    let matched = false;
     if (s.pinHash) {
-      if ((await hashPin(p)) !== s.pinHash) return null;
-      return s;
+      matched = (await hashPin(p)) === s.pinHash;
+    } else {
+      // legacy record with no pinHash yet (created before hashing existed) —
+      // fall back to a plaintext check, then self-heal by adding the hash.
+      matched = p === s.pin;
+      if (matched) { try { await updateStudent(s.id, { pin: p }); } catch (e) { /* non-fatal */ } }
     }
-    // legacy record with no pinHash yet (created before hashing existed) —
-    // fall back to a plaintext check, then self-heal by adding the hash.
-    if (p !== s.pin) return null;
-    try { await updateStudent(s.id, { pin: p }); } catch (e) { /* non-fatal */ }
+    if (!matched) return null;
+    // Right ID/phone and right PIN -- but if the teacher hasn't approved
+    // this account yet (e.g. it was just self-registered via the
+    // placement test), block the login here rather than in the caller,
+    // so every login surface gets this for free. Thrown rather than
+    // returned null so the caller can tell "wrong PIN" apart from
+    // "correct PIN, just not approved yet" and show the right message.
+    if (s.approved === false) {
+      const err = new Error("Your teacher hasn't activated your account yet — check back soon!");
+      err.code = "pending_approval";
+      throw err;
+    }
     return s;
   }
 
@@ -650,6 +680,22 @@
       else if (!Array.isArray(s[k])) s[k] = [];
     });
     if (s.sessionsRemaining === undefined || s.sessionsRemaining === "") s.sessionsRemaining = 0;
+    // Sheets can hand these back as the literal strings "true"/"false"
+    // rather than real booleans -- and the string "false" is truthy in
+    // JS, so a naive `!!s.approved` here would silently let a
+    // NOT-approved student log in the moment their record round-trips
+    // through a sync. `approved` in particular gates real student
+    // dashboard access, so it gets an explicit, unambiguous parse rather
+    // than relying on JS truthiness; an empty/missing value defaults to
+    // true, same as brand-new local records and the load() migration.
+    const toBool = (v, dflt) => {
+      if (v === "" || v === undefined || v === null) return dflt;
+      if (typeof v === "string") return v.trim().toLowerCase() === "true";
+      return !!v;
+    };
+    s.approved = toBool(s.approved, true);
+    s.paid = toBool(s.paid, true);
+    s.subscribed = toBool(s.subscribed, true);
     return s;
   }
   // Additive merge: keeps local-only records, adds remote-only records, and

@@ -45,6 +45,7 @@ var ROSTER_SHEET = "Roster";
 var ROSTER_COLUMNS = [
   "id", "name", "level", "avatar", "pinHash", "teacherId", "createdAt", "updatedAt", "phone",
   "age", "gender", "grade", "country", "tags",
+  "paid", "approved",
   "subscribed", "amountPaid", "levelsPurchased",
   "rewardPoints", "bonusHours", "sessionsRemaining",
   "pointsLog", "redemptions", "notes"

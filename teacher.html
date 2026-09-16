@@ -284,6 +284,16 @@
   .td-dp-subbanner.yes .dot{background:#1FBE7A;box-shadow:0 0 0 4px rgba(31,190,122,.18)}
   .td-dp-subbanner.no{background:#FDEDED;color:#C23A3A}
   .td-dp-subbanner.no .dot{background:#E14545;box-shadow:0 0 0 4px rgba(225,69,69,.18)}
+  .td-dp-approval{
+    background:#FFF6E8;border:1.5px solid #F3D8A6;border-radius:14px;padding:13px 14px;margin-bottom:14px;
+  }
+  .td-dp-approval .txt{font-size:.82rem;font-weight:700;color:#8A5A0A;line-height:1.5;margin-bottom:10px}
+  .td-dp-approval button{
+    width:100%;padding:10px;border-radius:10px;border:none;background:linear-gradient(135deg,#1FBE7A,#0D8C5C);
+    color:#fff;font-weight:800;font-size:.86rem;cursor:pointer;transition:transform .12s ease,box-shadow .15s ease;
+    box-shadow:0 6px 14px rgba(13,140,92,.3);
+  }
+  .td-dp-approval button:hover{transform:translateY(-1px);box-shadow:0 9px 18px rgba(13,140,92,.4)}
   .td-dp-tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
   .td-dp-tile{
     border-radius:14px;padding:12px 10px;text-align:center;position:relative;overflow:hidden;
@@ -435,6 +445,7 @@
     font-size:.76rem;font-weight:700;color:#0d6b5c;background:var(--td-teal-soft);display:inline-block;
     padding:3px 9px;border-radius:99px;margin-top:5px;
   }
+  .td-lead-account.pending{color:#8A5A0A;background:#FFF3D6}
   .td-lead-notes{
     width:100%;margin-top:6px;padding:6px 9px;border-radius:8px;border:1px solid var(--td-border);
     background:#fff;font-family:inherit;font-size:.78rem;color:var(--td-ink);resize:vertical;min-height:32px;
@@ -612,6 +623,10 @@
   .td-roster-card .lv{
     display:inline-flex;align-items:center;font-size:.68rem;font-weight:800;color:var(--td-teal);
     background:var(--td-teal-soft);padding:2px 8px;border-radius:99px;margin-top:3px;
+  }
+  .td-pending-badge{
+    display:inline-flex;align-items:center;font-size:.64rem;font-weight:800;color:#8A5A0A;
+    background:#FFF3D6;padding:2px 8px;border-radius:99px;margin-top:3px;margin-left:4px;
   }
   .td-roster-card .teacher-line{font-size:.72rem;color:var(--td-muted);font-weight:700;margin-top:4px}
   .td-roster-card .group-line{font-size:.68rem;color:var(--td-muted);font-weight:600;opacity:.85;margin-top:2px}
@@ -1466,6 +1481,16 @@
             <input type="number" id="stuSessionsRemaining" min="0" step="1" placeholder="0">
           </div>
         </div>
+      </div>
+
+      <div class="td-sm-section" id="stuApprovalSection">
+        <div class="td-sm-section-head"><span class="ic">🔓</span>Account access</div>
+        <label class="td-sm-toggle" for="stuApproved">
+          <input type="checkbox" id="stuApproved">
+          <span class="track"><span class="thumb"></span></span>
+          <span class="lbl">Approved — can log in to the student dashboard</span>
+        </label>
+        <p class="sub" style="margin:8px 0 0;font-size:.74rem">Accounts created by a student finishing the placement test start out <b>not approved</b> — they can't log in until you've reviewed their profile and turned this on. Students you add here yourself are approved automatically.</p>
       </div>
 
       <div class="td-sm-section">
@@ -2333,7 +2358,13 @@
     const tagsHtml = (p.tags || []).map(t => `<span class="td-dp-tag">${t}</span>`).join("");
     const streak = window.LumioSchedule ? LumioSchedule.attendanceStreakForStudent(p.name) : 0;
     const fixedCount = window.LumioSchedule ? LumioSchedule.fixedScheduleCountForStudent(p.name) : 0;
+    const isApproved = p.approved !== false;
     el.innerHTML = `
+      ${!isApproved ? `
+      <div class="td-dp-approval">
+        <div class="txt">🔒 <b>Not approved yet</b> — this student can't log in until you approve them.</div>
+        <button type="button" id="drawerApproveBtn">✅ Approve &amp; activate login</button>
+      </div>` : ""}
       <div class="td-dp-fields">
         <div class="td-dp-field"><span class="ic">🎂</span><div><div class="lbl">Age</div><div class="val">${p.age != null ? p.age : "<i>Not set</i>"}</div></div></div>
         <div class="td-dp-field"><span class="ic">${p.gender === "F" ? "♀️" : "♂️"}</span><div><div class="lbl">Gender</div><div class="val">${p.gender === "M" ? "Male" : p.gender === "F" ? "Female" : "<i>Not set</i>"}</div></div></div>
@@ -2354,6 +2385,18 @@
         <div class="td-dp-tile ${p.sessionsRemaining > 0 && p.sessionsRemaining <= 3 ? "coral" : "teal"}"><span class="ic">🎟️</span><b>${p.sessionsRemaining || 0}</b><span>Sessions left</span></div>
         <div class="td-dp-tile amber"><span class="ic">🔁</span><b>${fixedCount}</b><span>Fixed schedule</span></div>
       </div>`;
+    const profileTab = document.querySelector('.td-drawer-tab[data-tab="profile"]');
+    if (profileTab) profileTab.classList.toggle("has-alert", !isApproved);
+    if (!isApproved) {
+      document.getElementById("drawerApproveBtn").onclick = async () => {
+        try {
+          await LumioProfiles.updateStudent(p.id, { approved: true });
+          showToast(`${p.name} is approved and can now log in.`, "success");
+          renderDrawerProfile(r);
+          renderRosterCards();
+        } catch (err) { showToast(err.message || "Couldn't approve this student.", "error"); }
+      };
+    }
     renderDrawerRewards(p);
     renderDrawerNotes(p);
   }
@@ -2679,7 +2722,7 @@
           <div class="av">${avatarHtml(p)}</div>
           <div>
             <div class="nm">${p.name}</div>
-            <div><span class="lv">${levelName(p.level)}</span></div>
+            <div><span class="lv">${levelName(p.level)}</span>${p.approved === false ? ' <span class="td-pending-badge">⏳ Pending approval</span>' : ""}</div>
             <div class="teacher-line">👩‍🏫 ${teacherLabel}</div>
             ${(p.cohort || p.group) ? `<div class="group-line">${[p.cohort, p.group].filter(Boolean).join(" · ")}</div>` : ""}
           </div>
@@ -2753,6 +2796,7 @@
     document.getElementById("stuCountry").value = profile ? (profile.country || "") : "";
     document.getElementById("stuTags").value = profile && Array.isArray(profile.tags) ? profile.tags.join(", ") : "";
     document.getElementById("stuSubscribed").checked = profile ? !!profile.subscribed : true;
+    document.getElementById("stuApproved").checked = profile ? profile.approved !== false : true;
     document.getElementById("stuAmountPaid").value = profile && profile.amountPaid ? profile.amountPaid : "";
     document.getElementById("stuLevelsPurchased").value = profile && profile.levelsPurchased ? profile.levelsPurchased : "";
     document.getElementById("stuSessionsRemaining").value = profile && profile.sessionsRemaining ? profile.sessionsRemaining : "";
@@ -2806,6 +2850,7 @@
     const countryVal = document.getElementById("stuCountry").value;
     const tagsVal = document.getElementById("stuTags").value.split(",").map(t => t.trim()).filter(Boolean);
     const subscribedVal = document.getElementById("stuSubscribed").checked;
+    const approvedVal = document.getElementById("stuApproved").checked;
     const amountPaidVal = document.getElementById("stuAmountPaid").value;
     const levelsPurchasedVal = document.getElementById("stuLevelsPurchased").value;
     const sessionsRemainingVal = document.getElementById("stuSessionsRemaining").value;
@@ -2818,7 +2863,7 @@
           phone: phoneVal, cohort: cohortVal, group: groupVal,
           age: ageVal, gender: genderVal, grade: gradeVal, country: countryVal, tags: tagsVal,
           subscribed: subscribedVal, amountPaid: amountPaidVal, levelsPurchased: levelsPurchasedVal,
-          sessionsRemaining: sessionsRemainingVal,
+          sessionsRemaining: sessionsRemainingVal, approved: approvedVal,
         };
         if (editingId) {
           await LumioProfiles.updateStudent(editingId, payload);
@@ -3883,8 +3928,8 @@
       // it here so the teacher doesn't have to go hunting in Students.
       const linkedAccount = window.LumioProfiles ? LumioProfiles.findByPhone(lead.phone) : null;
       const accountHtml = linkedAccount ? `
-          <div class="td-lead-account">
-            🪪 Already has a login — ID: <b>${linkedAccount.loginCode}</b>
+          <div class="td-lead-account ${linkedAccount.approved === false ? "pending" : ""}">
+            ${linkedAccount.approved === false ? "🔒 Account created — pending approval" : "✅ Approved &amp; can log in"} — ID: <b>${linkedAccount.loginCode}</b>
             ${linkedAccount.pin ? ` · PIN: <b>${linkedAccount.pin}</b>` : ` · PIN set on another device`}
           </div>` : "";
       row.innerHTML = `

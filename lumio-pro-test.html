@@ -998,6 +998,11 @@ async function handleRegPinComplete(){
       pin: regFirstPin,
       paid: false,
       level: null,
+      // A self-registered account from the placement test can't log in
+      // to the student dashboard until the teacher has reviewed it,
+      // taken payment, and explicitly approved it from Lumio Teach —
+      // see the "Account access" section of the student's profile there.
+      approved: false,
     });
     // This account (with its real login ID + PIN, shown to the student
     // next) is created on THEIR device, not the teacher's -- without an
