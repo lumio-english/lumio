@@ -1473,8 +1473,22 @@ async function pushResultAsLumioLead(fullData, levelNum) {
       phone: fullData.student_id, // the pro test uses phone as the "student_id"
       age: fullData.age ? Number(fullData.age) : null,
       suggestedLevel: mapProTestLevelToLumioId(levelNum),
-      testScore: null, // the pro test's 0-30 scale isn't the same shape as the simple test's testScore/testTotal — full detail lives in notes instead
-      testTotal: null,
+      // fullData.total is a "correct/outOf" string (e.g. "12/60") -- split
+      // it back into the two numeric columns the Leads sheet and the
+      // dashboard's "Test score" tile actually read. Previously both were
+      // left null here on the reasoning that the section breakdown in
+      // `notes` was richer, which meant every Professional-test lead
+      // showed a blank score in the sheet and a "—" on the dashboard even
+      // though a perfectly good overall score existed. The detailed
+      // per-section breakdown still goes in `notes` as before.
+      testScore: (function () {
+        const n = Number(String(fullData.total || "").split("/")[0]);
+        return Number.isFinite(n) ? n : null;
+      })(),
+      testTotal: (function () {
+        const n = Number(String(fullData.total || "").split("/")[1]);
+        return Number.isFinite(n) ? n : null;
+      })(),
       status: 'new',
       notes: breakdown,
       createdAt: now,
