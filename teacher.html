@@ -431,6 +431,10 @@
   .td-lead-info{flex:1;min-width:0}
   .td-lead-info .who{font-weight:700;font-size:.9rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
   .td-lead-info .meta{font-size:.78rem;color:var(--td-muted);font-weight:600;margin-top:2px}
+  .td-lead-account{
+    font-size:.76rem;font-weight:700;color:#0d6b5c;background:var(--td-teal-soft);display:inline-block;
+    padding:3px 9px;border-radius:99px;margin-top:5px;
+  }
   .td-lead-notes{
     width:100%;margin-top:6px;padding:6px 9px;border-radius:8px;border:1px solid var(--td-border);
     background:#fff;font-family:inherit;font-size:.78rem;color:var(--td-ink);resize:vertical;min-height:32px;
@@ -3846,6 +3850,16 @@
       const row = document.createElement("div");
       row.className = "td-lead-row" + (lead.status === "dismissed" ? " dismissed" : "");
       const scoreLabel = (lead.testScore !== null && lead.testTotal) ? `${lead.testScore}/${lead.testTotal}` : "—";
+      // The Professional placement test creates a real, login-capable
+      // roster account (with its own ID + PIN) up front, separately from
+      // this lead record -- linked only by matching phone number. Surface
+      // it here so the teacher doesn't have to go hunting in Students.
+      const linkedAccount = window.LumioProfiles ? LumioProfiles.findByPhone(lead.phone) : null;
+      const accountHtml = linkedAccount ? `
+          <div class="td-lead-account">
+            🪪 Already has a login — ID: <b>${linkedAccount.loginCode}</b>
+            ${linkedAccount.pin ? ` · PIN: <b>${linkedAccount.pin}</b>` : ` · PIN set on another device`}
+          </div>` : "";
       row.innerHTML = `
         <div class="td-lead-info">
           <div class="who">${lead.name}
@@ -3853,6 +3867,7 @@
             ${lead.suggestedLevel ? `<span class="td-badge teal">${levelName(lead.suggestedLevel)}</span>` : ""}
           </div>
           <div class="meta">📞 <a href="tel:+${lead.phone}">+${lead.phone}</a>${lead.age ? ` · Age ${lead.age}` : ""} · Submitted ${fmtLeadDate(lead.createdAt)}</div>
+          ${accountHtml}
           <textarea class="td-lead-notes" placeholder="Add a note — e.g. spoke to mom, wants to start next week…">${lead.notes || ""}</textarea>
         </div>
         <div class="td-lead-score"><b>${scoreLabel}</b><span>Test score</span></div>

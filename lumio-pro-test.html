@@ -999,6 +999,16 @@ async function handleRegPinComplete(){
       paid: false,
       level: null,
     });
+    // This account (with its real login ID + PIN, shown to the student
+    // next) is created on THEIR device, not the teacher's -- without an
+    // explicit sync here it would sit invisible in this one browser
+    // forever and never reach the teacher's roster. Best-effort: a
+    // failed/offline sync here still lets the student see their ID/PIN
+    // and take the test; it just won't be visible to the teacher until
+    // a later sync succeeds (e.g. the next time this same device is
+    // online, or the teacher's own auto-sync picks it up once this
+    // device eventually does push through).
+    if (window.LumioProfiles) LumioProfiles.syncNow().catch(() => {});
   } catch (e) {
     document.getElementById('regPinError').textContent = e.message || "Couldn't create your account — please try again.";
     regPinBuffer = ''; regFirstPin = ''; regPinStage = 'create';
@@ -1405,7 +1415,7 @@ const TIPS={
 // reads from), so a completed professional test shows up right next
 // to leads from the simpler placement test, ready for a teacher to
 // review and convert to an enrolled student.
-const LUMIO_SYNC_URL = 'https://script.google.com/macros/s/AKfycbxlKY07coAR_Uj6UQf2bvy6yi6I3cG9WsnTROvKI5v_l9MhhXlbP3Ke8jxbYx5btZzAGA/exec';
+const LUMIO_SYNC_URL = 'https://script.google.com/macros/s/AKfycbxlKY07coAR_Uj6UQf2bvy6yi6I3cG9WsnTROvKI5v_l9MhhXIbP3Ke8jxbYx5btZzAGA/exec';
 // The pro test's proficiency scale genuinely runs 0-9 (matching the
 // named-but-not-yet-built Level 7/8/9 in Lumio.LEVELS), and a student's
 // displayed result stays honest about that -- if they test at level 8,
@@ -1498,7 +1508,9 @@ function saveResultLocally(data){
   // ready for a trial class. Best-effort: never blocks showing the
   // student their result if this fails for any reason.
   if (registeredStudent && window.LumioProfiles) {
-    LumioProfiles.updateStudent(registeredStudent.id, { level: mapProTestLevelToLumioId(data.levelNum) }).catch(()=>{});
+    LumioProfiles.updateStudent(registeredStudent.id, { level: mapProTestLevelToLumioId(data.levelNum) })
+      .then(() => { LumioProfiles.syncNow().catch(() => {}); })
+      .catch(()=>{});
   }
 }
 
