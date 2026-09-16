@@ -329,7 +329,7 @@
   .td-note-row .txt{font-weight:600}
   .td-note-row .meta{font-size:.68rem;color:var(--td-muted);font-weight:700;margin-top:2px}
   .td-cal-block.capacity-warn{border-left-color:#B87A16 !important}
-  .td-teacher-stats{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap}
+  .td-teacher-stats{display:flex;gap:10px;margin:8px 16px 12px;flex-wrap:wrap}
   .td-teacher-stats .item{background:var(--td-bg);border-radius:9px;padding:6px 10px;text-align:center;flex:1;min-width:70px}
   .td-teacher-stats .item b{display:block;font-size:.88rem;font-weight:800}
   .td-teacher-stats .item span{font-size:.62rem;color:var(--td-muted);font-weight:700;text-transform:uppercase}
@@ -596,28 +596,53 @@
 
   /* roster cards */
   .td-roster-head{display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap}
-  .td-roster-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-top:16px}
-  .td-roster-card{background:var(--td-bg);border:1px solid var(--td-border);border-radius:14px;padding:14px}
-  .td-roster-card .top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .td-roster-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;margin-top:16px}
+  .td-roster-card{
+    background:#fff;border:1px solid var(--td-border-soft);border-radius:18px;padding:0;overflow:hidden;
+    box-shadow:0 2px 10px rgba(20,25,45,.05);transition:transform .15s ease,box-shadow .15s ease;
+  }
+  .td-roster-card:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(20,25,45,.1)}
+  .td-roster-card .top{display:flex;align-items:center;gap:11px;padding:16px 16px 10px}
   .td-roster-card .av{
-    width:38px;height:38px;border-radius:11px;background:#fff;border:1px solid var(--td-border);
-    display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;
+    width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--td-indigo-soft,#EDE9FE),#fff);
+    display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.6);
   }
-  .td-roster-card .nm{font-weight:800;font-size:.9rem}
-  .td-roster-card .lv{font-size:.72rem;font-weight:700;color:var(--td-teal)}
-  .td-roster-card .pinrow{display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--td-ink-soft);font-weight:600;margin-bottom:10px}
-  .td-roster-card .pinval{font-family:monospace;font-weight:800;letter-spacing:2px;color:var(--td-ink)}
-  .td-roster-card .pintoggle{background:none;border:none;cursor:pointer;color:var(--td-indigo);font-weight:700;font-size:.72rem;padding:0}
-  .td-roster-card .acts{display:grid;grid-template-columns:repeat(2, 1fr);gap:6px}
+  .td-roster-card .nm{font-weight:800;font-size:1rem;color:var(--td-ink)}
+  .td-roster-card .lv{
+    display:inline-flex;align-items:center;font-size:.68rem;font-weight:800;color:var(--td-teal);
+    background:var(--td-teal-soft);padding:2px 8px;border-radius:99px;margin-top:3px;
+  }
+  .td-roster-card .teacher-line{font-size:.72rem;color:var(--td-muted);font-weight:700;margin-top:4px}
+  .td-roster-card .group-line{font-size:.68rem;color:var(--td-muted);font-weight:600;opacity:.85;margin-top:2px}
+  .td-roster-card .hw-summary{
+    margin:0 16px 10px;font-size:.74rem;font-weight:800;color:#C2530A;background:#FFF3D6;
+    border-radius:10px;padding:6px 10px;
+  }
+  .td-roster-card .pinrow{
+    display:flex;align-items:center;gap:8px;margin:0 16px 12px;padding:8px 12px;background:var(--td-bg);
+    border-radius:12px;font-size:.72rem;color:var(--td-muted);font-weight:700;
+  }
+  .td-roster-card .pinrow .lbl{text-transform:uppercase;letter-spacing:.3px;font-size:.62rem;flex-shrink:0}
+  .td-roster-card .pinval{font-family:monospace;font-weight:800;letter-spacing:3px;color:var(--td-ink);font-size:.9rem;flex:1}
+  .td-roster-card .pintoggle{
+    background:none;border:none;cursor:pointer;color:var(--td-indigo);font-weight:800;font-size:.68rem;padding:2px 6px;
+    border-radius:6px;flex-shrink:0;
+  }
+  .td-roster-card .pintoggle:hover{background:var(--td-indigo-soft,#EDE9FE)}
+  .td-roster-card .acts{display:grid;grid-template-columns:repeat(2, 1fr);gap:7px;padding:0 16px 16px}
   .td-roster-card .acts button, .td-roster-card .acts a{
-    padding:6px 4px;border-radius:8px;border:1px solid var(--td-border);background:#fff;
-    font-weight:700;font-size:.72rem;cursor:pointer;color:var(--td-ink-soft);text-align:center;
+    padding:8px 4px;border-radius:10px;border:1px solid var(--td-border);background:var(--td-bg);
+    font-weight:700;font-size:.74rem;cursor:pointer;color:var(--td-ink-soft);text-align:center;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-    transition:transform .12s ease,border-color .15s ease,color .15s ease;
+    transition:transform .12s ease,border-color .15s ease,color .15s ease,background .15s ease;
   }
-  .td-roster-card .acts button:hover, .td-roster-card .acts a:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark);transform:translateY(-1px)}
+  .td-roster-card .acts button:hover, .td-roster-card .acts a:hover{border-color:var(--td-indigo);color:var(--td-indigo-dark);background:#fff;transform:translateY(-1px)}
   .td-roster-card .acts button:active, .td-roster-card .acts a:active{transform:translateY(0) scale(.95)}
-  .td-roster-card .acts button.danger:hover{border-color:var(--td-coral);color:var(--td-coral)}
+  .td-roster-card .acts button[data-act="edit"]{background:var(--td-indigo);border-color:var(--td-indigo);color:#fff}
+  .td-roster-card .acts button[data-act="edit"]:hover{background:var(--td-indigo-dark);color:#fff}
+  .td-roster-card .acts button.danger{background:none;border:none;color:var(--td-muted);font-weight:600;padding:6px 4px}
+  .td-roster-card .acts button.danger:hover{color:var(--td-coral);background:none;transform:none}
 
   /* ---------- Modal (add/edit student) ---------- */
   .td-overlay{position:fixed;inset:0;background:rgba(20,25,45,.35);z-index:90;opacity:0;pointer-events:none;transition:.2s;display:flex;align-items:center;justify-content:center;padding:20px}
@@ -2652,22 +2677,24 @@
       card.innerHTML = `
         <div class="top">
           <div class="av">${avatarHtml(p)}</div>
-          <div><div class="nm">${p.name}</div><div class="lv">${levelName(p.level)} · ${teacherLabel}</div>
-            ${(p.cohort || p.group) ? `<div class="lv" style="opacity:.75">${[p.cohort, p.group].filter(Boolean).join(" · ")}</div>` : ""}
+          <div>
+            <div class="nm">${p.name}</div>
+            <div><span class="lv">${levelName(p.level)}</span></div>
+            <div class="teacher-line">👩‍🏫 ${teacherLabel}</div>
+            ${(p.cohort || p.group) ? `<div class="group-line">${[p.cohort, p.group].filter(Boolean).join(" · ")}</div>` : ""}
           </div>
         </div>
-        ${hw ? `<div class="hw-summary" style="font-size:.78rem;font-weight:800;color:#C2530A;background:#FFF3D6;
-                border-radius:8px;padding:5px 10px;margin:6px 0">📝 ${hw.count} homework${hw.count === 1 ? "" : "s"} done · avg ${(hw.starsSum / hw.count).toFixed(1)}★</div>` : ""}
-        <div class="pinrow">PIN: ${pinKnown
+        ${hw ? `<div class="hw-summary">📝 ${hw.count} homework${hw.count === 1 ? "" : "s"} done · avg ${(hw.starsSum / hw.count).toFixed(1)}★</div>` : ""}
+        <div class="pinrow"><span class="lbl">PIN</span>${pinKnown
           ? `<span class="pinval" data-pin="${p.pin}">••••</span><button class="pintoggle" type="button">show</button>`
-          : `<span class="pinval" style="opacity:.6">set on another device</span>`}
+          : `<span class="pinval" style="opacity:.6;letter-spacing:0;font-size:.72rem">set on another device</span>`}
         </div>
         <div class="acts">
-          <button type="button" data-act="edit">Edit</button>
-          <button type="button" data-act="pin">PIN</button>
+          <button type="button" data-act="edit">✎ Edit</button>
+          <button type="button" data-act="pin">🔑 New PIN</button>
           <button type="button" data-act="recordings" title="Recordings">🎙️ Audio</button>
           <a data-act="report" style="text-decoration:none" title="Report">📋 Report</a>
-          <button type="button" class="danger" data-act="remove" style="grid-column:1 / -1">Remove</button>
+          <button type="button" class="danger" data-act="remove" style="grid-column:1 / -1">Remove student</button>
         </div>`;
       const pinVal = card.querySelector(".pinval");
       const pinToggle = card.querySelector(".pintoggle");
@@ -2858,21 +2885,21 @@
       card.innerHTML = `
         <div class="top">
           <div class="av">${t.avatar}</div>
-          <div><div class="nm">${t.name}${t.isOwner ? ' <span class="td-owner-crown" title="Platform owner">👑</span>' : ""}${t.id === activeId ? ' <span class="td-badge teal">you</span>' : ""}</div><div class="lv">${studentCount} student${studentCount === 1 ? "" : "s"}</div></div>
+          <div><div class="nm">${t.name}${t.isOwner ? ' <span class="td-owner-crown" title="Platform owner">👑</span>' : ""}${t.id === activeId ? ' <span class="td-badge teal">you</span>' : ""}</div><div><span class="lv">${studentCount} student${studentCount === 1 ? "" : "s"}</span></div></div>
         </div>
         ${stats ? `<div class="td-teacher-stats">
           <div class="item"><b>${stats.classesThisMonth}</b><span>This month</span></div>
           <div class="item"><b>${stats.rating ? stats.rating.average.toFixed(1) + "★" : "—"}</b><span>Rating</span></div>
           <div class="item"><b>${stats.punctualityPct != null ? stats.punctualityPct + "%" : "—"}</b><span>Marked</span></div>
         </div>` : ""}
-        <div class="pinrow">PIN: ${pinKnown
+        <div class="pinrow"><span class="lbl">PIN</span>${pinKnown
           ? `<span class="pinval" data-pin="${t.pin}">••••</span><button class="pintoggle" type="button">show</button>`
-          : `<span class="pinval" style="opacity:.6">set on another device</span>`}
+          : `<span class="pinval" style="opacity:.6;letter-spacing:0;font-size:.72rem">set on another device</span>`}
         </div>
         ${IS_OWNER ? `<div class="acts">
-          <button type="button" data-act="edit">Edit</button>
-          <button type="button" data-act="pin">New PIN</button>
-          <button type="button" class="danger" data-act="remove">Remove</button>
+          <button type="button" data-act="edit">✎ Edit</button>
+          <button type="button" data-act="pin">🔑 New PIN</button>
+          <button type="button" class="danger" data-act="remove" style="grid-column:1 / -1">Remove teacher</button>
         </div>` : ""}`;
       const pinVal = card.querySelector(".pinval");
       const pinToggle = card.querySelector(".pintoggle");
