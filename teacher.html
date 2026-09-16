@@ -665,7 +665,15 @@
   .td-roster-card .acts button.danger:hover{color:var(--td-coral);background:none;transform:none}
 
   /* ---------- Modal (add/edit student) ---------- */
-  .td-overlay{position:fixed;inset:0;background:rgba(20,25,45,.35);z-index:90;opacity:0;pointer-events:none;transition:.2s;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+  /* align-items:flex-start (not center) is deliberate: centering an
+     overflowing flex child has real cross-browser inconsistencies
+     (notably Safari can clip the "before" overflow of a centered item
+     so only part of it is ever reachable by scrolling, no matter what
+     overflow rule is set) -- anchoring to the top instead means any
+     modal taller than the screen simply continues downward, which every
+     browser scrolls correctly and predictably with no special cases. */
+  .td-overlay{position:fixed;inset:0;background:rgba(20,25,45,.35);z-index:90;opacity:0;pointer-events:none;transition:.2s;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
+  .td-overlay > .td-modal-box{margin:auto 0}
   .td-overlay.show{opacity:1;pointer-events:auto}
   .td-modal-box{
     background:var(--td-surface);border-radius:20px;padding:24px;max-width:400px;width:100%;
