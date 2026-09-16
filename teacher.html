@@ -3858,6 +3858,14 @@
   // shows any loading state or toast — it should be invisible when it
   // works and only matter because the data on screen quietly updates.
   const AUTO_SYNC_INTERVAL_MS = 5 * 60 * 1000;
+  // Also sync once immediately on load (silently) -- without this, a
+  // teacher opening the dashboard fresh would see stale data for up to
+  // the first 5 minutes, even though something new (e.g. a placement
+  // test lead submitted from a parent's phone) is already waiting on
+  // the shared backend.
+  if (window.LumioProfiles && LumioProfiles.getSyncConfig().enabled) {
+    performFullSync(true).catch(() => {});
+  }
   setInterval(() => {
     if (document.hidden) return;
     if (window.LumioProfiles && LumioProfiles.getSyncConfig().enabled) {

@@ -228,6 +228,7 @@
     document.getElementById("resultLevel").textContent = levelName;
     document.getElementById("resultScore").textContent = `Score: ${correctCount}/${total} correct`;
 
+    let leadSaved = false;
     try {
       if (window.LumioLeads) {
         LumioLeads.addLead({
@@ -238,6 +239,7 @@
           testScore: correctCount,
           testTotal: total,
         });
+        leadSaved = true;
       }
     } catch (e) {
       console.error("Lumio lead save error:", e);
@@ -245,6 +247,17 @@
 
     stepTest.classList.remove("show");
     stepResults.classList.add("show");
+
+    // The test is almost always taken on the FAMILY's own phone or
+    // tablet, not the teacher's device -- addLead() above only saves to
+    // THIS browser's local storage. Without pushing it to the shared
+    // backend here, the lead would sit invisibly on the parent's device
+    // forever and never reach the teacher's Leads tab. Fired after the
+    // results screen is already showing, so a slow/failed connection
+    // never makes the student sit and wait for their score.
+    if (leadSaved && window.LumioLeads) {
+      LumioLeads.syncNow().catch(err => console.error("Lumio lead sync error:", err));
+    }
   }
 })();
 </script>
