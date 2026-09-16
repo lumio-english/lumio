@@ -294,6 +294,11 @@
     box-shadow:0 6px 14px rgba(13,140,92,.3);
   }
   .td-dp-approval button:hover{transform:translateY(-1px);box-shadow:0 9px 18px rgba(13,140,92,.4)}
+  .td-dp-login{background:var(--td-bg);border-radius:14px;padding:12px 14px;margin-bottom:14px}
+  .td-dp-login .row{display:flex;justify-content:space-between;align-items:center;font-size:.84rem;padding:3px 0}
+  .td-dp-login .lbl{font-weight:700;color:var(--td-muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.3px}
+  .td-dp-login .val{font-weight:800;font-family:monospace;letter-spacing:1px;color:var(--td-ink)}
+  .td-dp-login .hint{margin:8px 0 0;font-size:.7rem;color:var(--td-muted);font-weight:600;line-height:1.5}
   .td-dp-tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
   .td-dp-tile{
     border-radius:14px;padding:12px 10px;text-align:center;position:relative;overflow:hidden;
@@ -2359,7 +2364,13 @@
     const streak = window.LumioSchedule ? LumioSchedule.attendanceStreakForStudent(p.name) : 0;
     const fixedCount = window.LumioSchedule ? LumioSchedule.fixedScheduleCountForStudent(p.name) : 0;
     const isApproved = p.approved !== false;
+    const pinKnownDrawer = !!p.pin;
     el.innerHTML = `
+      <div class="td-dp-login">
+        <div class="row"><span class="lbl">Login ID</span><span class="val">${p.loginCode || "—"}</span></div>
+        <div class="row"><span class="lbl">PIN</span><span class="val">${pinKnownDrawer ? p.pin : '<i>set on another device</i>'}</span></div>
+        ${!pinKnownDrawer ? `<p class="hint">Only the device that created this account knows the current PIN — use "🔑 New PIN" from the roster card to set one you can see and share.</p>` : ""}
+      </div>
       ${!isApproved ? `
       <div class="td-dp-approval">
         <div class="txt">🔒 <b>Not approved yet</b> — this student can't log in until you approve them.</div>
@@ -2729,9 +2740,10 @@
           </div>
         </div>
         ${hw ? `<div class="hw-summary">📝 ${hw.count} homework${hw.count === 1 ? "" : "s"} done · avg ${(hw.starsSum / hw.count).toFixed(1)}★</div>` : ""}
+        <div class="pinrow"><span class="lbl">ID</span><span class="pinval" style="letter-spacing:1px">${p.loginCode || "—"}</span></div>
         <div class="pinrow"><span class="lbl">PIN</span>${pinKnown
           ? `<span class="pinval" data-pin="${p.pin}">••••</span><button class="pintoggle" type="button">show</button>`
-          : `<span class="pinval" style="opacity:.6;letter-spacing:0;font-size:.72rem">set on another device</span>`}
+          : `<span class="pinval" style="opacity:.6;letter-spacing:0;font-size:.68rem">set on another device — click "New PIN" to set one you can see</span>`}
         </div>
         <div class="acts">
           <button type="button" data-act="edit">✎ Edit</button>
