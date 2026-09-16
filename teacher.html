@@ -2154,7 +2154,7 @@
       </div>`;
     }).join("");
   }
-  renderInactivity();
+  try { renderInactivity(); } catch (e) { console.error('Lumio init error (renderInactivity();):', e); }
 
   function renderReportsDue() {
     const panel = document.getElementById("reportsDuePanel");
@@ -2187,7 +2187,7 @@
       </div>`;
     }).join("");
   }
-  renderReportsDue();
+  try { renderReportsDue(); } catch (e) { console.error('Lumio init error (renderReportsDue();):', e); }
 
   // ---------- level filter options ----------
   const levelFilter = document.getElementById("levelFilter");
@@ -2272,7 +2272,7 @@
       renderTable();
     });
   });
-  renderTable();
+  try { renderTable(); } catch (e) { console.error('Lumio init error (renderTable();):', e); }
 
   // ---------- student detail drawer ----------
   const drawerOverlay = document.getElementById("drawerOverlay");
@@ -2842,7 +2842,7 @@
     });
   };
 
-  renderRosterCards();
+  try { renderRosterCards(); } catch (e) { console.error('Lumio init error (renderRosterCards();):', e); }
 
   // ================= Team (teacher accounts) management =================
   const teamGrid = document.getElementById("teamGrid");
@@ -2983,7 +2983,7 @@
       }
     });
   };
-  renderTeamGrid();
+  try { renderTeamGrid(); } catch (e) { console.error('Lumio init error (renderTeamGrid();):', e); }
 
   // ================= Substitute-teacher swap =================
   const substituteOverlay = document.getElementById("substituteOverlay");
@@ -3836,8 +3836,8 @@
   }
   scheduleScope.addEventListener("change", renderScheduleActive);
   if (window.LumioSchedule) { try { LumioSchedule.generateUpcoming(4); } catch (e) { /* non-fatal */ } }
-  renderWeekView();
-  updateNeedsAttendanceBadge();
+  try { renderWeekView(); } catch (e) { console.error('Lumio init error (renderWeekView();):', e); }
+  try { updateNeedsAttendanceBadge(); } catch (e) { console.error('Lumio init error (updateNeedsAttendanceBadge();):', e); }
 
   // ================= Leads (placement test submissions) =================
   const leadsList = document.getElementById("leadsList");
@@ -3949,8 +3949,8 @@
     });
   }
   leadsStatusFilter.addEventListener("change", renderLeads);
-  renderLeads();
-  updateLeadsBadge();
+  try { renderLeads(); } catch (e) { console.error('Lumio init error (renderLeads();):', e); }
+  try { updateLeadsBadge(); } catch (e) { console.error('Lumio init error (updateLeadsBadge();):', e); }
 
   // ---------- switch teacher (log out of this teacher account only) ----------
   document.getElementById("switchTeacherLink").onclick = (e) => {
@@ -4283,7 +4283,7 @@
     });
     if (!matGrid.children.length) matGrid.innerHTML = `<div class="td-empty">No lessons match your search.</div>`;
   }
-  renderMaterials();
+  try { renderMaterials(); } catch (e) { console.error('Lumio init error (renderMaterials();):', e); }
   document.getElementById("matSearch").addEventListener("input", e => renderMaterials(e.target.value));
   matLevelSelect.addEventListener("change", e => {
     currentMatLevel = e.target.value;
@@ -4325,10 +4325,10 @@
       </a>
     `).join("");
   }
-  renderStoryGrid("storyPartsGrid", STORY_PARTS, "pre-a");
-  renderStoryGrid("storyPartsGridL1", STORY_PARTS_L1, "level1");
-  renderStoryGrid("storyPartsGridL2", STORY_PARTS_L2, "level2");
-  renderStoryGrid("storyPartsGridL3", STORY_PARTS_L3, "level3");
+  try { renderStoryGrid("storyPartsGrid", STORY_PARTS, "pre-a"); } catch (e) { console.error('Lumio init error (renderStoryGrid("storyPartsGrid", STORY_PARTS, "pre-a");):', e); }
+  try { renderStoryGrid("storyPartsGridL1", STORY_PARTS_L1, "level1"); } catch (e) { console.error('Lumio init error (renderStoryGrid("storyPartsGridL1", STORY_PARTS_L1, "level1");):', e); }
+  try { renderStoryGrid("storyPartsGridL2", STORY_PARTS_L2, "level2"); } catch (e) { console.error('Lumio init error (renderStoryGrid("storyPartsGridL2", STORY_PARTS_L2, "level2");):', e); }
+  try { renderStoryGrid("storyPartsGridL3", STORY_PARTS_L3, "level3"); } catch (e) { console.error('Lumio init error (renderStoryGrid("storyPartsGridL3", STORY_PARTS_L3, "level3");):', e); }
 
   // ---------- level manuals ----------
   const MANUALS = [
