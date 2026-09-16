@@ -628,20 +628,50 @@
   .td-modal-box h3{margin:0 0 16px;font-size:1.05rem}
   .td-field{margin-bottom:12px}
   .td-field label{display:block;font-weight:700;font-size:.8rem;margin-bottom:5px;color:var(--td-ink-soft)}
-  .td-field input[type=text], .td-field select{
-    width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--td-border);font-size:.88rem;font-family:inherit;
+  .td-field input[type=text], .td-field input[type=number], .td-field input[type=tel],
+  .td-field input[type=url], .td-field input[type=date], .td-field input[type=time],
+  .td-field input[type=email], .td-field input[type=password], .td-field select{
+    width:100%;padding:10px 13px;border-radius:11px;border:1.5px solid var(--td-border);font-size:.88rem;
+    font-family:inherit;background:#fff;color:var(--td-ink);transition:border-color .15s ease,box-shadow .15s ease;
+    box-sizing:border-box;height:42px;
   }
+  .td-field input[type=text]:focus, .td-field input[type=number]:focus, .td-field input[type=tel]:focus,
+  .td-field input[type=url]:focus, .td-field input[type=date]:focus, .td-field input[type=time]:focus,
+  .td-field input[type=email]:focus, .td-field input[type=password]:focus, .td-field select:focus{
+    outline:none;border-color:var(--td-indigo);box-shadow:0 0 0 3px var(--td-indigo-soft,#EDE9FE);
+  }
+  .td-field input[type=text]::placeholder, .td-field input[type=number]::placeholder,
+  .td-field input[type=tel]::placeholder, .td-field input[type=url]::placeholder{color:var(--td-muted);opacity:.75}
+  /* Native number-input spin arrows look cramped and inconsistent across
+     browsers -- remove them everywhere in favor of the plain typed value,
+     consistent with every other field's look. */
+  .td-field input[type=number]{appearance:textfield;-moz-appearance:textfield}
+  .td-field input[type=number]::-webkit-outer-spin-button,
+  .td-field input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  /* Phone: country-code select + number, styled as one merged pill instead
+     of two separate boxes butted together. */
+  .td-phone-group{display:flex;border:1.5px solid var(--td-border);border-radius:11px;overflow:hidden;transition:border-color .15s ease,box-shadow .15s ease;background:#fff}
+  .td-phone-group:focus-within{border-color:var(--td-indigo);box-shadow:0 0 0 3px var(--td-indigo-soft,#EDE9FE)}
+  .td-phone-group select{
+    flex:0 0 96px;border:none;border-right:1.5px solid var(--td-border);border-radius:0;background:var(--td-bg);
+    font-weight:700;padding:0 8px;height:42px;
+  }
+  .td-phone-group select:focus{outline:none;box-shadow:none}
+  .td-phone-group input{flex:1;border:none;border-radius:0;padding:10px 13px;height:42px;font-family:inherit;font-size:.88rem}
+  .td-phone-group input:focus{outline:none;box-shadow:none}
   .td-avatar-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}
   .td-avatar-opt{
     aspect-ratio:1;border-radius:10px;border:2px solid var(--td-border);background:var(--td-bg);font-size:1.2rem;
-    display:flex;align-items:center;justify-content:center;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .12s ease,border-color .15s ease;
   }
+  .td-avatar-opt:hover{transform:translateY(-1px)}
   .td-avatar-opt.selected{border-color:var(--td-indigo);background:var(--td-indigo-soft)}
   .td-pin-field{display:flex;align-items:center;gap:8px}
   .td-pin-field input{
-    flex:1;padding:9px 12px;border-radius:10px;border:1px solid var(--td-border);font-family:monospace;
-    font-weight:800;letter-spacing:3px;font-size:.95rem;
+    flex:1;padding:10px 13px;border-radius:11px;border:1.5px solid var(--td-border);font-family:monospace;
+    font-weight:800;letter-spacing:3px;font-size:.95rem;height:42px;box-sizing:border-box;transition:border-color .15s ease,box-shadow .15s ease;
   }
+  .td-pin-field input:focus{outline:none;border-color:var(--td-indigo);box-shadow:0 0 0 3px var(--td-indigo-soft,#EDE9FE)}
   .td-modal-actions{display:flex;gap:10px;margin-top:18px}
   .td-modal-actions button{flex:1}
   .td-field-error{color:var(--td-coral);font-size:.78rem;font-weight:700;min-height:16px;margin-top:2px}
@@ -1346,9 +1376,9 @@
         <div class="td-sm-section-head"><span class="ic">📱</span>Contact</div>
         <div class="td-field">
           <label for="stuPhone">Parent/guardian phone <span style="color:var(--td-muted);font-weight:600">(optional)</span></label>
-          <div style="display:flex;gap:8px">
-            <select id="stuPhoneCountry" style="flex:0 0 108px"></select>
-            <input type="tel" id="stuPhone" placeholder="1055556666" maxlength="15" style="flex:1">
+          <div class="td-phone-group">
+            <select id="stuPhoneCountry"></select>
+            <input type="tel" id="stuPhone" placeholder="1055556666" maxlength="15">
           </div>
           <p class="sub" style="margin:4px 0 0;font-size:.72rem">Enter the number without the leading 0 — e.g. for 010 5555 6666, type 1055556666.</p>
         </div>
@@ -4460,6 +4490,33 @@
     }).join("");
   }
   document.getElementById("menuBtn").onclick = () => document.getElementById("sidebar").classList.toggle("show");
+
+  // ================= Modal scroll fix =================
+  // Every modal/drawer in this app opens by adding a "show" class to a
+  // .td-overlay -- watch for that generically here rather than editing
+  // every individual open/close function. Fixes two related problems:
+  //   1. The background page could still be scrolled while a modal was
+  //      open, and on some mobile browsers a scrolled background page
+  //      combined with position:fixed causes the modal to render offset
+  //      from where it visually should be, so it opens with its top
+  //      (header/avatar/tabs) already scrolled out of view.
+  //   2. A modal reused for a second student kept whatever internal
+  //      scroll position it was left at from the previous time it was
+  //      open, so it could open already scrolled partway down.
+  document.querySelectorAll(".td-overlay").forEach(overlay => {
+    const obs = new MutationObserver(() => {
+      if (overlay.classList.contains("show")) {
+        window.scrollTo(0, 0);
+        document.documentElement.style.overflow = "hidden";
+        document.body.style.overflow = "hidden";
+        overlay.querySelectorAll(".td-modal-box, .td-drawer-content, .td-sm-content").forEach(el => { el.scrollTop = 0; });
+      } else if (!document.querySelector(".td-overlay.show")) {
+        document.documentElement.style.overflow = "";
+        document.body.style.overflow = "";
+      }
+    });
+    obs.observe(overlay, { attributes: true, attributeFilter: ["class"] });
+  });
  } catch (e) {
    console.error("Lumio teacher dashboard error:", e);
  }
