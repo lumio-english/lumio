@@ -645,6 +645,7 @@
   }
   .td-roster-card .pinrow .lbl{text-transform:uppercase;letter-spacing:.3px;font-size:.62rem;flex-shrink:0}
   .td-roster-card .pinval{font-family:monospace;font-weight:800;letter-spacing:3px;color:var(--td-ink);font-size:.9rem;flex:1}
+  .td-roster-card .idval{font-family:monospace;font-weight:800;letter-spacing:1px;color:var(--td-ink);font-size:.9rem;flex:1}
   .td-roster-card .pintoggle{
     background:none;border:none;cursor:pointer;color:var(--td-indigo);font-weight:800;font-size:.68rem;padding:2px 6px;
     border-radius:6px;flex-shrink:0;
@@ -2768,7 +2769,7 @@
           </div>
         </div>
         ${hw ? `<div class="hw-summary">📝 ${hw.count} homework${hw.count === 1 ? "" : "s"} done · avg ${(hw.starsSum / hw.count).toFixed(1)}★</div>` : ""}
-        <div class="pinrow"><span class="lbl">ID</span><span class="pinval" style="letter-spacing:1px">${p.loginCode || "—"}</span></div>
+        <div class="pinrow"><span class="lbl">ID</span><span class="idval">${p.loginCode || "—"}</span></div>
         <div class="pinrow"><span class="lbl">PIN</span>${pinKnown
           ? `<span class="pinval" data-pin="${p.pin}">••••</span><button class="pintoggle" type="button">show</button>`
           : `<span class="pinval" style="opacity:.6;letter-spacing:0;font-size:.68rem">set on another device — click "New PIN" to set one you can see</span>`}
@@ -2780,7 +2781,7 @@
           <a data-act="report" style="text-decoration:none" title="Report">📋 Report</a>
           <button type="button" class="danger" data-act="remove" style="grid-column:1 / -1">Remove student</button>
         </div>`;
-      const pinVal = card.querySelector(".pinval");
+      const pinVal = card.querySelector(".pinrow .pinval");
       const pinToggle = card.querySelector(".pintoggle");
       if (pinToggle) {
         pinToggle.onclick = () => {
@@ -3014,7 +3015,7 @@
           <button type="button" data-act="pin">🔑 New PIN</button>
           <button type="button" class="danger" data-act="remove" style="grid-column:1 / -1">Remove teacher</button>
         </div>` : ""}`;
-      const pinVal = card.querySelector(".pinval");
+      const pinVal = card.querySelector(".pinrow .pinval");
       const pinToggle = card.querySelector(".pintoggle");
       if (pinToggle) {
         pinToggle.onclick = () => {
