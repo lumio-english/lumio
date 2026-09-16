@@ -43,7 +43,7 @@ var TEACHERS_COLUMNS = ["id", "name", "avatar", "pinHash", "isOwner", "createdAt
 
 var ROSTER_SHEET = "Roster";
 var ROSTER_COLUMNS = [
-  "id", "name", "level", "avatar", "pinHash", "teacherId", "createdAt", "updatedAt", "phone",
+  "id", "name", "level", "avatar", "pinHash", "loginCode", "teacherId", "createdAt", "updatedAt", "phone",
   "age", "gender", "grade", "country", "tags",
   "paid", "approved",
   "subscribed", "amountPaid", "levelsPurchased",

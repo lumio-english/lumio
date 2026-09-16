@@ -722,6 +722,17 @@
     remoteList.forEach(r => {
       const local = byId[r.id];
       if (!local) { byId[r.id] = r; return; }
+      // A student's login ID is the credential they actually type in --
+      // it must never change once issued. If the remote copy is missing
+      // it (an older Sheet that predates the loginCode column, or a row
+      // where that cell is blank), keep whatever this device already has
+      // rather than letting the blank overwrite it -- otherwise load()'s
+      // migration sees an empty loginCode and mints a brand-new random
+      // one, silently changing the ID out from under the student.
+      const keepIdentity = (chosen) => {
+        if (!chosen.loginCode && local.loginCode) chosen.loginCode = local.loginCode;
+        return chosen;
+      };
       const localTime = local.updatedAt ? Date.parse(local.updatedAt) : 0;
       const remoteTime = r.updatedAt ? Date.parse(r.updatedAt) : 0;
       if (localTime > remoteTime) {
@@ -731,9 +742,9 @@
       } else if (local.pin && local.pinHash && local.pinHash === r.pinHash) {
         // remote is newer or tied, but this device still knows the
         // matching plaintext PIN — keep that for local reveal/print.
-        byId[r.id] = Object.assign({}, r, { pin: local.pin });
+        byId[r.id] = keepIdentity(Object.assign({}, r, { pin: local.pin }));
       } else {
-        byId[r.id] = r;
+        byId[r.id] = keepIdentity(Object.assign({}, r));
       }
     });
     return Object.values(byId);
