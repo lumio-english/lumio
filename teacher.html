@@ -751,7 +751,22 @@
   .td-sm-banner h3{margin:0 0 4px;font-size:1.2rem;font-weight:800}
   .td-sm-banner p{margin:0;font-size:.82rem;opacity:.92;font-weight:700}
   .td-drawer-content{}
-  .td-sm-content{padding:18px 22px}
+  .td-sm-content{padding:18px 22px;min-height:230px}
+  /* Tabbed form: each panel is short enough to fit on screen without
+     scrolling, which is the point -- a single long scrolling form was
+     the whole problem on shorter desktop windows. */
+  .td-sm-tabs{display:flex;gap:2px;background:var(--td-bg);border-radius:12px;padding:3px;margin:14px 22px 0}
+  .td-sm-tab{
+    flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 6px;border:none;
+    border-radius:9px;background:none;font-weight:700;font-size:.72rem;color:var(--td-muted);cursor:pointer;
+    transition:color .18s ease,background .18s ease,transform .12s ease;
+  }
+  .td-sm-tab .ic{font-size:1rem;line-height:1}
+  .td-sm-tab:hover{color:var(--td-ink-soft)}
+  .td-sm-tab:active{transform:scale(.95)}
+  .td-sm-tab.active{color:var(--td-indigo-dark,#3f2fa8);background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+  .td-sm-tab.has-error{color:var(--td-coral)}
+  .td-sm-panel{animation:tdFadeIn .18s ease}
   .td-sm-section{max-width:720px;margin:0 auto 18px;background:var(--td-bg);border-radius:16px;padding:16px}
   .td-sm-section-head{
     display:flex;align-items:center;gap:8px;font-weight:800;font-size:.8rem;color:var(--td-ink-soft);
@@ -1397,9 +1412,15 @@
       </div>
     </div>
 
+    <div class="td-sm-tabs" id="stuModalTabs">
+      <button type="button" class="td-sm-tab active" data-smtab="basic"><span class="ic">📇</span>Basic</button>
+      <button type="button" class="td-sm-tab" data-smtab="profile"><span class="ic">🧑</span>Profile</button>
+      <button type="button" class="td-sm-tab" data-smtab="billing"><span class="ic">💳</span>Billing</button>
+      <button type="button" class="td-sm-tab" data-smtab="login"><span class="ic">🔐</span>Login</button>
+    </div>
+
     <div class="td-sm-content">
-      <div class="td-sm-section">
-        <div class="td-sm-section-head"><span class="ic">📇</span>Basic info</div>
+      <div class="td-sm-panel" data-smpanel="basic">
         <div class="td-field">
           <label for="stuName">Name</label>
           <input type="text" id="stuName" placeholder="e.g. Salem" maxlength="24">
@@ -1426,23 +1447,17 @@
             <input type="text" id="stuGroup" placeholder="e.g. Group A" maxlength="40">
           </div>
         </div>
-        <p class="sub" style="margin:-4px 0 0;font-size:.72rem">Students with the same cohort, group, and level are treated as groupmates for report comparisons.</p>
-      </div>
-
-      <div class="td-sm-section">
-        <div class="td-sm-section-head"><span class="ic">📱</span>Contact</div>
         <div class="td-field">
           <label for="stuPhone">Parent/guardian phone <span style="color:var(--td-muted);font-weight:600">(optional)</span></label>
           <div class="td-phone-group">
             <select id="stuPhoneCountry"></select>
             <input type="tel" id="stuPhone" placeholder="1055556666" maxlength="15">
           </div>
-          <p class="sub" style="margin:4px 0 0;font-size:.72rem">Enter the number without the leading 0 — e.g. for 010 5555 6666, type 1055556666.</p>
+          <p class="sub" style="margin:4px 0 0;font-size:.72rem">Without the leading 0 — e.g. for 010 5555 6666, type 1055556666.</p>
         </div>
       </div>
 
-      <div class="td-sm-section">
-        <div class="td-sm-section-head"><span class="ic">🧑</span>Profile details</div>
+      <div class="td-sm-panel" data-smpanel="profile" style="display:none">
         <div class="td-field-row">
           <div class="td-field">
             <label for="stuAge">Age</label>
@@ -1460,7 +1475,7 @@
         <div class="td-field-row">
           <div class="td-field">
             <label for="stuGrade">Grade / occupation <span style="color:var(--td-muted);font-weight:600">(optional)</span></label>
-            <input type="text" id="stuGrade" placeholder="e.g. High school student, Adult" maxlength="40">
+            <input type="text" id="stuGrade" placeholder="e.g. High school student" maxlength="40">
           </div>
           <div class="td-field">
             <label for="stuCountry">Country <span style="color:var(--td-muted);font-weight:600">(optional)</span></label>
@@ -1473,8 +1488,7 @@
         </div>
       </div>
 
-      <div class="td-sm-section">
-        <div class="td-sm-section-head"><span class="ic">💳</span>Subscription</div>
+      <div class="td-sm-panel" data-smpanel="billing" style="display:none">
         <label class="td-sm-toggle" for="stuSubscribed">
           <input type="checkbox" id="stuSubscribed">
           <span class="track"><span class="thumb"></span></span>
@@ -1486,7 +1500,7 @@
             <input type="number" id="stuAmountPaid" min="0" step="0.01" placeholder="0">
           </div>
           <div class="td-field">
-            <label for="stuLevelsPurchased">Levels purchased</label>
+            <label for="stuLevelsPurchased">Levels bought</label>
             <input type="number" id="stuLevelsPurchased" min="0" step="1" placeholder="0">
           </div>
           <div class="td-field">
@@ -1496,28 +1510,23 @@
         </div>
       </div>
 
-      <div class="td-sm-section" id="stuApprovalSection">
-        <div class="td-sm-section-head"><span class="ic">🔓</span>Account access</div>
+      <div class="td-sm-panel" data-smpanel="login" style="display:none">
         <label class="td-sm-toggle" for="stuApproved">
           <input type="checkbox" id="stuApproved">
           <span class="track"><span class="thumb"></span></span>
-          <span class="lbl">Approved — can log in to the student dashboard</span>
+          <span class="lbl">Approved — can log in</span>
         </label>
-        <p class="sub" style="margin:8px 0 0;font-size:.74rem">Accounts created by a student finishing the placement test start out <b>not approved</b> — they can't log in until you've reviewed their profile and turned this on. Students you add here yourself are approved automatically.</p>
-      </div>
-
-      <div class="td-sm-section">
-        <div class="td-sm-section-head"><span class="ic">🔐</span>Login &amp; avatar</div>
-        <div class="td-field">
-          <label>Avatar</label>
-          <div class="td-avatar-grid" id="stuAvatarGrid"></div>
-        </div>
+        <p class="sub" style="margin:-6px 0 12px;font-size:.73rem">Placement-test signups start <b>not approved</b> and can't log in until you turn this on. Students you add here are approved automatically.</p>
         <div class="td-field">
           <label for="stuPin">4-digit PIN</label>
           <div class="td-pin-field">
             <input type="text" id="stuPin" maxlength="4" inputmode="numeric" placeholder="1234">
             <button class="td-btn" id="stuPinRandom" type="button">🎲 Random</button>
           </div>
+        </div>
+        <div class="td-field">
+          <label>Avatar</label>
+          <div class="td-avatar-grid" id="stuAvatarGrid"></div>
         </div>
       </div>
     </div>
@@ -2838,6 +2847,8 @@
     stuTeacherSelect.value = profile
       ? (profile.teacherId || "")
       : (window.LumioProfiles ? (LumioProfiles.getCurrentTeacherId() || "") : "");
+    setStudentModalTab("basic"); // always land on the first tab, never mid-form
+    document.querySelectorAll(".td-sm-tab").forEach(b => b.classList.remove("has-error"));
     studentModalOverlay.classList.add("show");
     stuNameInput.focus();
   }
@@ -2846,6 +2857,15 @@
   document.getElementById("addStudentBtn").onclick = () => openStudentModal(null);
   document.getElementById("studentModalCancel").onclick = closeStudentModal;
   document.getElementById("studentModalCloseX").onclick = closeStudentModal;
+
+  // ---- Add/Edit student modal tabs ----
+  function setStudentModalTab(tab) {
+    document.querySelectorAll(".td-sm-tab").forEach(b => b.classList.toggle("active", b.dataset.smtab === tab));
+    document.querySelectorAll(".td-sm-panel").forEach(p => p.style.display = p.dataset.smpanel === tab ? "block" : "none");
+  }
+  document.querySelectorAll(".td-sm-tab").forEach(btn => {
+    btn.addEventListener("click", () => setStudentModalTab(btn.dataset.smtab));
+  });
   studentModalOverlay.onclick = e => { if (e.target === studentModalOverlay) closeStudentModal(); };
   document.getElementById("stuPinRandom").onclick = () => {
     stuPinInput.value = window.LumioProfiles ? LumioProfiles.randomPin() : "1234";
@@ -2859,6 +2879,11 @@
     const name = stuNameInput.value.trim();
     stuLevelError.textContent = "";
     if (!stuLevelSelect.value) {
+      // Both validated fields live on the "Basic" tab -- jump there so the
+      // error message isn't sitting on a hidden panel with the save
+      // silently doing nothing from the teacher's point of view.
+      setStudentModalTab("basic");
+      document.querySelector('.td-sm-tab[data-smtab="basic"]').classList.add("has-error");
       stuLevelError.textContent = "Pick a level — this decides which lessons, games, and materials match this student.";
       return;
     }
@@ -2912,6 +2937,8 @@
           renderLeads();
         }
       } catch (err) {
+        setStudentModalTab("basic");
+        document.querySelector('.td-sm-tab[data-smtab="basic"]').classList.add("has-error");
         stuNameError.textContent = err.message || "Couldn't save that student.";
       }
     });
