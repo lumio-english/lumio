@@ -672,16 +672,27 @@
      overflow rule is set) -- anchoring to the top instead means any
      modal taller than the screen simply continues downward, which every
      browser scrolls correctly and predictably with no special cases. */
-  .td-overlay{position:fixed;inset:0;background:rgba(20,25,45,.35);z-index:90;opacity:0;pointer-events:none;transition:.2s;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
-  .td-overlay > .td-modal-box{margin:auto 0}
+  /* Deliberately NOT a flex container and NOT using auto margins.
+     Both vertical-centering tricks (align-items:center, or margin:auto
+     on a flex child) push a too-tall modal's overflow ABOVE the scroll
+     origin, where no scrollbar can ever reach it -- the modal then looks
+     like it simply never opened, even though the backdrop dims. A plain
+     block container with the box centered by margin-left/right:auto has
+     no such failure mode: the modal always starts at the top of the
+     scrollable area and grows downward, which always scrolls correctly. */
+  .td-overlay{position:fixed;inset:0;background:rgba(20,25,45,.35);z-index:90;opacity:0;pointer-events:none;transition:.2s;display:block;padding:20px;overflow-y:auto;text-align:left}
+  .td-overlay > .td-modal-box{margin-left:auto;margin-right:auto}
   .td-overlay.show{opacity:1;pointer-events:auto}
   .td-modal-box{
     background:var(--td-surface);border-radius:20px;padding:24px;max-width:400px;width:100%;
     box-shadow:0 24px 60px rgba(20,25,45,.25);transform:scale(.96);transition:.15s;
   }
   .td-overlay.show .td-modal-box{transform:scale(1)}
-  .td-modal-box-wide{max-width:760px;max-height:88vh}
-  @media (max-width:820px){.td-modal-box-wide{max-height:94vh}}
+  /* No max-height: the overlay above is the single scroll region, so the
+     box just grows to fit its content. Capping it here instead would
+     create a second nested scroller inside the first, which is exactly
+     the fragile arrangement that kept hiding the Save button. */
+  .td-modal-box-wide{max-width:760px}
   .td-modal-box h3{margin:0 0 16px;font-size:1.05rem}
   .td-field{margin-bottom:12px}
   .td-field label{display:block;font-weight:700;font-size:.8rem;margin-bottom:5px;color:var(--td-ink-soft)}
@@ -1318,7 +1329,7 @@
 
 <!-- ===== Student detail drawer (click a table row) ===== -->
 <div class="td-overlay" id="drawerOverlay">
-  <div class="td-modal-box td-modal-box-wide" id="drawerBox" style="width:100%;overflow-y:auto;transform:none;display:block;padding:0">
+  <div class="td-modal-box td-modal-box-wide" id="drawerBox" style="width:100%;transform:none;display:block;padding:0">
     <div style="flex-shrink:0">
       <div class="td-dh-banner">
         <button class="td-dh-close" id="drawerClose">✕</button>
@@ -1402,7 +1413,7 @@
 
 <!-- ===== Add / Edit student modal ===== -->
 <div class="td-overlay" id="studentModalOverlay">
-  <div class="td-modal-box td-modal-box-wide" id="studentModalBox" style="width:100%;overflow-y:auto;transform:none;display:block;padding:0">
+  <div class="td-modal-box td-modal-box-wide" id="studentModalBox" style="width:100%;transform:none;display:block;padding:0">
     <div class="td-sm-banner">
       <button class="td-dh-close" id="studentModalCloseX" type="button">✕</button>
       <div class="td-sm-banner-inner">
@@ -4683,6 +4694,7 @@
         window.scrollTo(0, 0);
         document.documentElement.style.overflow = "hidden";
         document.body.style.overflow = "hidden";
+        overlay.scrollTop = 0;
         overlay.querySelectorAll(".td-modal-box").forEach(el => { el.scrollTop = 0; });
       } else if (!document.querySelector(".td-overlay.show")) {
         document.documentElement.style.overflow = "";
