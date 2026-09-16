@@ -645,6 +645,50 @@
   .td-modal-actions button{flex:1}
   .td-field-error{color:var(--td-coral);font-size:.78rem;font-weight:700;min-height:16px;margin-top:2px}
 
+  /* ---------- Add/Edit student modal: full-width, sectioned ---------- */
+  .td-sm-banner{
+    position:relative;padding:22px 22px 26px;text-align:center;color:#fff;flex-shrink:0;
+    background:linear-gradient(135deg,var(--td-teal,#2AB3A6),var(--td-teal-deep,#0D9488));overflow:hidden;
+  }
+  .td-sm-banner::after{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(circle at 85% -10%,rgba(255,255,255,.22),transparent 55%),
+               radial-gradient(circle at -10% 110%,rgba(255,255,255,.12),transparent 50%);
+  }
+  .td-sm-banner-inner{max-width:720px;margin:0 auto;position:relative;z-index:1}
+  .td-sm-icon{
+    width:56px;height:56px;border-radius:18px;background:#fff;display:flex;align-items:center;justify-content:center;
+    font-size:1.7rem;margin:0 auto 10px;box-shadow:0 10px 22px rgba(0,0,0,.18);
+  }
+  .td-sm-banner h3{margin:0 0 4px;font-size:1.2rem;font-weight:800}
+  .td-sm-banner p{margin:0;font-size:.82rem;opacity:.92;font-weight:700}
+  .td-sm-content{flex:1;overflow-y:auto;padding:18px 22px}
+  .td-sm-section{max-width:720px;margin:0 auto 18px;background:var(--td-bg);border-radius:16px;padding:16px}
+  .td-sm-section-head{
+    display:flex;align-items:center;gap:8px;font-weight:800;font-size:.8rem;color:var(--td-ink-soft);
+    text-transform:uppercase;letter-spacing:.3px;margin-bottom:12px;
+  }
+  .td-sm-section-head .ic{font-size:1rem}
+  .td-sm-section .td-field:last-child{margin-bottom:0}
+  .td-sm-section .td-field input, .td-sm-section .td-field select{background:#fff}
+  .td-field-row{display:flex;gap:10px}
+  .td-field-row .td-field{flex:1;margin-bottom:12px}
+  .td-field-row.three .td-field{flex:1}
+  @media (max-width:520px){.td-field-row{flex-direction:column;gap:0}.td-field-row.three{flex-direction:row}}
+  .td-sm-toggle{display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:14px;width:fit-content}
+  .td-sm-toggle input{position:absolute;opacity:0;width:0;height:0}
+  .td-sm-toggle .track{
+    width:40px;height:23px;border-radius:99px;background:var(--td-border);position:relative;flex-shrink:0;transition:background .2s ease;
+  }
+  .td-sm-toggle .thumb{
+    position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:#fff;
+    box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s ease;
+  }
+  .td-sm-toggle input:checked + .track{background:var(--td-teal,#2AB3A6)}
+  .td-sm-toggle input:checked + .track .thumb{transform:translateX(17px)}
+  .td-sm-toggle .lbl{font-weight:700;font-size:.86rem;color:var(--td-ink)}
+  .td-sm-footer{max-width:720px;margin:0 auto;width:100%;padding:14px 22px;flex-shrink:0;box-sizing:border-box}
+
   /* ---------- Materials view ---------- */
   #viewMaterials{display:none}
   .td-mat-tools{display:flex;align-items:center;gap:10px;margin-bottom:16px}
@@ -1253,102 +1297,133 @@
 </div>
 
 <!-- ===== Add / Edit student modal ===== -->
-<div class="td-overlay" id="studentModalOverlay">
-  <div class="td-modal-box">
-    <h3 id="studentModalTitle">Add student</h3>
-    <div class="td-field">
-      <label for="stuName">Name</label>
-      <input type="text" id="stuName" placeholder="e.g. Salem" maxlength="24">
-      <div class="td-field-error" id="stuNameError"></div>
-    </div>
-    <div class="td-field">
-      <label for="stuLevel">Starting level <span style="color:var(--td-coral)">*</span></label>
-      <select id="stuLevel"></select>
-      <div class="td-field-error" id="stuLevelError"></div>
-    </div>
-    <div class="td-field">
-      <label for="stuCohort">Cohort <span style="color:var(--td-muted);font-weight:600">(optional)</span></label>
-      <input type="text" id="stuCohort" placeholder="e.g. Sept 2026 Intake" maxlength="40">
-    </div>
-    <div class="td-field">
-      <label for="stuGroup">Group <span style="color:var(--td-muted);font-weight:600">(optional)</span></label>
-      <input type="text" id="stuGroup" placeholder="e.g. Group A" maxlength="40">
-      <p class="sub" style="margin:4px 0 0;font-size:.72rem">Students with the same cohort, group, and level are treated as groupmates for report comparisons.</p>
-    </div>
-    <div class="td-field">
-      <label for="stuTeacher">Assign to teacher</label>
-      <select id="stuTeacher"></select>
-    </div>
-    <div class="td-field">
-      <label for="stuPhone">Parent/guardian phone <span style="color:var(--td-muted);font-weight:600">(optional)</span></label>
-      <div style="display:flex;gap:8px">
-        <select id="stuPhoneCountry" style="flex:0 0 108px"></select>
-        <input type="tel" id="stuPhone" placeholder="1055556666" maxlength="15" style="flex:1">
-      </div>
-      <p class="sub" style="margin:4px 0 0;font-size:.72rem">Enter the number without the leading 0 — e.g. for 010 5555 6666, type 1055556666.</p>
-    </div>
-    <div class="td-field" style="padding-top:10px;border-top:1px solid var(--td-border-soft)">
-      <label style="font-size:.78rem;color:var(--td-muted);text-transform:uppercase;letter-spacing:.3px">Profile</label>
-    </div>
-    <div class="td-field" style="display:flex;gap:10px">
-      <div style="flex:1">
-        <label for="stuAge">Age</label>
-        <input type="number" id="stuAge" min="1" max="99" placeholder="e.g. 16">
-      </div>
-      <div style="flex:1">
-        <label for="stuGender">Gender</label>
-        <select id="stuGender">
-          <option value="">—</option>
-          <option value="M">Male</option>
-          <option value="F">Female</option>
-        </select>
+<div class="td-overlay" id="studentModalOverlay" style="align-items:stretch;padding:0">
+  <div class="td-modal-box" id="studentModalBox" style="width:100%;max-width:none;border-radius:0;height:100%;overflow-y:auto;transform:none;display:flex;flex-direction:column;padding:0">
+    <div class="td-sm-banner">
+      <button class="td-dh-close" id="studentModalCloseX" type="button">✕</button>
+      <div class="td-sm-banner-inner">
+        <div class="td-sm-icon">🧑‍🎓</div>
+        <h3 id="studentModalTitle">Add student</h3>
+        <p id="studentModalSub">A new student on your roster</p>
       </div>
     </div>
-    <div class="td-field">
-      <label for="stuGrade">Grade / occupation <span style="color:var(--td-muted);font-weight:600">(optional)</span></label>
-      <input type="text" id="stuGrade" placeholder="e.g. High school student, Adult" maxlength="40">
-    </div>
-    <div class="td-field">
-      <label for="stuCountry">Country <span style="color:var(--td-muted);font-weight:600">(optional)</span></label>
-      <input type="text" id="stuCountry" placeholder="e.g. Kuwait" maxlength="40">
-    </div>
-    <div class="td-field">
-      <label for="stuTags">Tags <span style="color:var(--td-muted);font-weight:600">(optional, comma-separated)</span></label>
-      <input type="text" id="stuTags" placeholder="e.g. Not renew, Secret stash" maxlength="120">
-    </div>
-    <div class="td-field" style="padding-top:10px;border-top:1px solid var(--td-border-soft)">
-      <label style="font-size:.78rem;color:var(--td-muted);text-transform:uppercase;letter-spacing:.3px">Subscription</label>
-    </div>
-    <div class="td-field" style="display:flex;align-items:center;gap:8px">
-      <input type="checkbox" id="stuSubscribed" style="width:16px;height:16px;margin:0">
-      <label for="stuSubscribed" style="margin:0;font-weight:700">Currently subscribed</label>
-    </div>
-    <div class="td-field" style="display:flex;gap:10px">
-      <div style="flex:1">
-        <label for="stuAmountPaid">Amount paid</label>
-        <input type="number" id="stuAmountPaid" min="0" step="0.01" placeholder="0">
+
+    <div class="td-sm-content">
+      <div class="td-sm-section">
+        <div class="td-sm-section-head"><span class="ic">📇</span>Basic info</div>
+        <div class="td-field">
+          <label for="stuName">Name</label>
+          <input type="text" id="stuName" placeholder="e.g. Salem" maxlength="24">
+          <div class="td-field-error" id="stuNameError"></div>
+        </div>
+        <div class="td-field-row">
+          <div class="td-field">
+            <label for="stuLevel">Starting level <span style="color:var(--td-coral)">*</span></label>
+            <select id="stuLevel"></select>
+            <div class="td-field-error" id="stuLevelError"></div>
+          </div>
+          <div class="td-field">
+            <label for="stuTeacher">Assign to teacher</label>
+            <select id="stuTeacher"></select>
+          </div>
+        </div>
+        <div class="td-field-row">
+          <div class="td-field">
+            <label for="stuCohort">Cohort <span style="color:var(--td-muted);font-weight:600">(optional)</span></label>
+            <input type="text" id="stuCohort" placeholder="e.g. Sept 2026 Intake" maxlength="40">
+          </div>
+          <div class="td-field">
+            <label for="stuGroup">Group <span style="color:var(--td-muted);font-weight:600">(optional)</span></label>
+            <input type="text" id="stuGroup" placeholder="e.g. Group A" maxlength="40">
+          </div>
+        </div>
+        <p class="sub" style="margin:-4px 0 0;font-size:.72rem">Students with the same cohort, group, and level are treated as groupmates for report comparisons.</p>
       </div>
-      <div style="flex:1">
-        <label for="stuLevelsPurchased">Levels purchased</label>
-        <input type="number" id="stuLevelsPurchased" min="0" step="1" placeholder="0">
+
+      <div class="td-sm-section">
+        <div class="td-sm-section-head"><span class="ic">📱</span>Contact</div>
+        <div class="td-field">
+          <label for="stuPhone">Parent/guardian phone <span style="color:var(--td-muted);font-weight:600">(optional)</span></label>
+          <div style="display:flex;gap:8px">
+            <select id="stuPhoneCountry" style="flex:0 0 108px"></select>
+            <input type="tel" id="stuPhone" placeholder="1055556666" maxlength="15" style="flex:1">
+          </div>
+          <p class="sub" style="margin:4px 0 0;font-size:.72rem">Enter the number without the leading 0 — e.g. for 010 5555 6666, type 1055556666.</p>
+        </div>
       </div>
-      <div style="flex:1">
-        <label for="stuSessionsRemaining">Sessions left</label>
-        <input type="number" id="stuSessionsRemaining" min="0" step="1" placeholder="0">
+
+      <div class="td-sm-section">
+        <div class="td-sm-section-head"><span class="ic">🧑</span>Profile details</div>
+        <div class="td-field-row">
+          <div class="td-field">
+            <label for="stuAge">Age</label>
+            <input type="number" id="stuAge" min="1" max="99" placeholder="e.g. 16">
+          </div>
+          <div class="td-field">
+            <label for="stuGender">Gender</label>
+            <select id="stuGender">
+              <option value="">—</option>
+              <option value="M">Male</option>
+              <option value="F">Female</option>
+            </select>
+          </div>
+        </div>
+        <div class="td-field-row">
+          <div class="td-field">
+            <label for="stuGrade">Grade / occupation <span style="color:var(--td-muted);font-weight:600">(optional)</span></label>
+            <input type="text" id="stuGrade" placeholder="e.g. High school student, Adult" maxlength="40">
+          </div>
+          <div class="td-field">
+            <label for="stuCountry">Country <span style="color:var(--td-muted);font-weight:600">(optional)</span></label>
+            <input type="text" id="stuCountry" placeholder="e.g. Kuwait" maxlength="40">
+          </div>
+        </div>
+        <div class="td-field">
+          <label for="stuTags">Tags <span style="color:var(--td-muted);font-weight:600">(optional, comma-separated)</span></label>
+          <input type="text" id="stuTags" placeholder="e.g. Not renew, Secret stash" maxlength="120">
+        </div>
+      </div>
+
+      <div class="td-sm-section">
+        <div class="td-sm-section-head"><span class="ic">💳</span>Subscription</div>
+        <label class="td-sm-toggle" for="stuSubscribed">
+          <input type="checkbox" id="stuSubscribed">
+          <span class="track"><span class="thumb"></span></span>
+          <span class="lbl">Currently subscribed</span>
+        </label>
+        <div class="td-field-row three">
+          <div class="td-field">
+            <label for="stuAmountPaid">Amount paid</label>
+            <input type="number" id="stuAmountPaid" min="0" step="0.01" placeholder="0">
+          </div>
+          <div class="td-field">
+            <label for="stuLevelsPurchased">Levels purchased</label>
+            <input type="number" id="stuLevelsPurchased" min="0" step="1" placeholder="0">
+          </div>
+          <div class="td-field">
+            <label for="stuSessionsRemaining">Sessions left</label>
+            <input type="number" id="stuSessionsRemaining" min="0" step="1" placeholder="0">
+          </div>
+        </div>
+      </div>
+
+      <div class="td-sm-section">
+        <div class="td-sm-section-head"><span class="ic">🔐</span>Login &amp; avatar</div>
+        <div class="td-field">
+          <label>Avatar</label>
+          <div class="td-avatar-grid" id="stuAvatarGrid"></div>
+        </div>
+        <div class="td-field">
+          <label for="stuPin">4-digit PIN</label>
+          <div class="td-pin-field">
+            <input type="text" id="stuPin" maxlength="4" inputmode="numeric" placeholder="1234">
+            <button class="td-btn" id="stuPinRandom" type="button">🎲 Random</button>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="td-field">
-      <label>Avatar</label>
-      <div class="td-avatar-grid" id="stuAvatarGrid"></div>
-    </div>
-    <div class="td-field">
-      <label for="stuPin">4-digit PIN</label>
-      <div class="td-pin-field">
-        <input type="text" id="stuPin" maxlength="4" inputmode="numeric" placeholder="1234">
-        <button class="td-btn" id="stuPinRandom" type="button">🎲 Random</button>
-      </div>
-    </div>
-    <div class="td-modal-actions">
+
+    <div class="td-modal-actions td-sm-footer">
       <button class="td-btn" id="studentModalCancel">Cancel</button>
       <button class="td-btn td-btn-primary" id="studentModalSave">Save</button>
     </div>
@@ -2603,6 +2678,7 @@
   function openStudentModal(profile, prefill) {
     editingId = profile ? profile.id : null;
     document.getElementById("studentModalTitle").textContent = profile ? "Edit student" : "Add student";
+    document.getElementById("studentModalSub").textContent = profile ? `Update ${profile.name}'s profile and settings` : "A new student on your roster";
     stuNameInput.value = profile ? profile.name : (prefill && prefill.name) || "";
     stuLevelSelect.value = profile ? profile.level : (prefill && prefill.level) || "";
     document.getElementById("stuCohort").value = profile ? (profile.cohort || "") : "";
@@ -2639,6 +2715,7 @@
 
   document.getElementById("addStudentBtn").onclick = () => openStudentModal(null);
   document.getElementById("studentModalCancel").onclick = closeStudentModal;
+  document.getElementById("studentModalCloseX").onclick = closeStudentModal;
   studentModalOverlay.onclick = e => { if (e.target === studentModalOverlay) closeStudentModal(); };
   document.getElementById("stuPinRandom").onclick = () => {
     stuPinInput.value = window.LumioProfiles ? LumioProfiles.randomPin() : "1234";
