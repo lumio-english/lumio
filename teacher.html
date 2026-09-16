@@ -4148,10 +4148,24 @@
     // though the other two synced fine, so freshly-pulled data (like a
     // brand-new placement-test lead) could sit correctly merged into
     // local storage yet never actually get drawn on screen until some
-    // later, fully-successful sync happened to run.
-    if (rosterRes.ok) { renderRosterCards(); renderTable(); renderTeamGrid(); renderInactivity(); }
-    if (scheduleRes.ok) { renderScheduleActive(); }
-    if (leadsRes.ok) { renderLeads(); updateLeadsBadge(); }
+    // later, fully-successful sync happened to run. Each is also its own
+    // try/catch: a rendering bug in any one of them must never be able
+    // to stop this function from reaching the status message below --
+    // the sync itself can genuinely succeed even if painting the result
+    // on screen then hits a snag, and the teacher still needs to see
+    // that the sync worked rather than a permanently blank status line.
+    if (rosterRes.ok) {
+      try { renderRosterCards(); renderTable(); renderTeamGrid(); renderInactivity(); }
+      catch (e) { console.error("Lumio post-sync render error (roster):", e); }
+    }
+    if (scheduleRes.ok) {
+      try { renderScheduleActive(); }
+      catch (e) { console.error("Lumio post-sync render error (schedule):", e); }
+    }
+    if (leadsRes.ok) {
+      try { renderLeads(); updateLeadsBadge(); }
+      catch (e) { console.error("Lumio post-sync render error (leads):", e); }
+    }
     const ok = rosterRes.ok && scheduleRes.ok && leadsRes.ok;
     if (!silent) {
       if (ok) {
@@ -4169,7 +4183,13 @@
   }
 
   document.getElementById("syncNowBtn").onclick = async (e) => {
-    await withLoading(e.currentTarget, () => performFullSync(false));
+    try {
+      await withLoading(e.currentTarget, () => performFullSync(false));
+    } catch (err) {
+      console.error("Lumio sync button error:", err);
+      syncStatus.textContent = "Something went wrong during sync — check the browser console for details.";
+      showToast("Sync hit an unexpected error.", "error");
+    }
   };
 
   // Auto-sync every 5 minutes while this tab is open and visible, so a
