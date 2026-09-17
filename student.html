@@ -1607,6 +1607,31 @@
   const avatarKey = "lumio_avatar_" + u.name;
   const rosterProfile = window.LumioProfiles ? LumioProfiles.findByName(u.name) : null;
 
+  // ---------- one-time fresh sync on entering the dashboard ----------
+  // Nothing on this page ever pulled from the shared backend before --
+  // login.html syncs once on ITS OWN load, but everything after that
+  // (rewards a teacher granted, sessions a class attendance just used up,
+  // a fixed schedule, a just-flipped approval) stayed frozen at whatever
+  // was true the moment that one earlier sync finished. A single silent
+  // reload right after the first successful sync of this browser tab's
+  // session means the dashboard the student actually sees is never more
+  // than a few seconds stale, without having to rewire every render
+  // function in this file to be re-callable after the fact. Guarded by
+  // sessionStorage so it happens once per tab, not on every reload.
+  (function syncFreshOnce() {
+    if (!window.LumioProfiles) return;
+    let already = false;
+    try { already = sessionStorage.getItem("lumio_student_synced_v1") === "1"; } catch (e) {}
+    if (already) return;
+    try { sessionStorage.setItem("lumio_student_synced_v1", "1"); } catch (e) {}
+    Promise.all([
+      LumioProfiles.syncNow(),
+      window.LumioSchedule ? LumioSchedule.syncNow() : Promise.resolve({ ok: true }),
+    ]).then(([r1, r2]) => {
+      if (r1.ok || r2.ok) location.reload();
+    }).catch(() => {});
+  })();
+
   // ---------- sessions remaining pill ----------
   (function renderSessionsPill() {
     const pill = document.getElementById("sessionsRemainingPill");
@@ -1639,6 +1664,7 @@
         const { student, hoursRedeemed } = LumioProfiles.redeemReward(p.id);
         showToast(`Redeemed ${hoursRedeemed} bonus hour${hoursRedeemed === 1 ? "" : "s"}! 🎉`, "🏆");
         renderRewardsCard();
+        if (window.LumioProfiles) LumioProfiles.syncNow().catch(() => {});
       } catch (err) {
         showToast(err.message || "Couldn't redeem right now.", "⚠️");
       }
@@ -1647,7 +1673,7 @@
   renderRewardsCard();
 
   // ---------- Parent guide (Arabic onboarding tour) ----------
-  (function setupParentGuide() {
+  try { (function setupParentGuide() {
     if (!rosterProfile) return;
     const btn = document.getElementById("parentGuideBtn");
     btn.style.display = "inline-flex";
@@ -1862,10 +1888,10 @@
     if (rosterProfile.subscribed && !alreadySeen) {
       setTimeout(openGuide, 600); // let the dashboard render first
     }
-  })();
+  })(); } catch (e) { console.error("Lumio parent guide error:", e); }
 
   // ---------- My Profile (student/parent read-only view + report) ----------
-  (function setupMyProfile() {
+  try { (function setupMyProfile() {
     if (!rosterProfile) return;
     const btn = document.getElementById("myProfileBtn");
     btn.style.display = "inline-flex";
@@ -1972,7 +1998,7 @@
       document.getElementById("printMyReport").innerHTML = buildMyReportHtml();
       window.print();
     };
-  })();
+  })(); } catch (e) { console.error("Lumio my-profile error:", e); }
 
 
   let currentPhoto = (rosterProfile && rosterProfile.photoDataUrl) || null;

@@ -1016,6 +1016,15 @@ async function handleRegPinComplete(){
       // taken payment, and explicitly approved it from Lumio Teach —
       // see the "Account access" section of the student's profile there.
       approved: false,
+      // `subscribed` defaults to true everywhere else (a teacher adding
+      // a real student manually IS enrolling a payer) -- explicitly
+      // false here because a fresh self-registration is the exact
+      // opposite case, and this is also what the "already subscribed,
+      // can't retest" check on this page's phone-number gate reads. Left
+      // at the default true, EVERY self-registered account looked
+      // "subscribed" from the moment it was created, which silently
+      // blocked that same person from ever retaking/resuming the test.
+      subscribed: false,
     });
     // This account (with its real login ID + PIN, shown to the student
     // next) is created on THEIR device, not the teacher's -- without an

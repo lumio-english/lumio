@@ -2496,6 +2496,8 @@
         const updated = LumioProfiles.addRewardPoints(p.id, val);
         showToast(`Added ${val} point${val === 1 ? "" : "s"} — ${updated.name} now has ${updated.rewardPoints}.`, "success");
         renderDrawerRewards(updated);
+        const res = await LumioProfiles.syncNow();
+        if (!res.ok) showToast(`Points saved here, but syncing to the student's device failed (${res.reason || "unknown error"}) — try "Sync now".`, "error");
       } catch (err) { showToast(err.message || "Couldn't add points.", "error"); }
     };
     document.getElementById("rwRedeemBtn").onclick = async () => {
@@ -2504,14 +2506,21 @@
         showToast(`Redeemed ${hoursRedeemed} bonus hour${hoursRedeemed === 1 ? "" : "s"} for ${student.name}.`, "success");
         renderDrawerRewards(student);
         renderRosterCards(); renderTable();
+        // The redemption needs to reach the shared Sheet before the
+        // STUDENT's own device (a different browser entirely) can ever
+        // see it -- without this, "redeemed" only ever happened on the
+        // teacher's screen.
+        const res = await LumioProfiles.syncNow();
+        if (!res.ok) showToast(`Redeemed here, but syncing to the student's device failed (${res.reason || "unknown error"}) — try "Sync now".`, "error");
       } catch (err) { showToast(err.message || "Couldn't redeem.", "error"); }
     };
     rwEl.querySelectorAll(".td-rw-catalog-item").forEach(btn => {
-      btn.onclick = () => {
+      btn.onclick = async () => {
         try {
           const updated = LumioProfiles.redeemCatalogItem(p.id, btn.dataset.item);
           showToast(`Redeemed for ${updated.name}.`, "success");
           renderDrawerRewards(updated);
+          LumioProfiles.syncNow().catch(() => {});
         } catch (err) { showToast(err.message || "Couldn't redeem.", "error"); }
       };
     });
