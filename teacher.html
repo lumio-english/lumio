@@ -4874,6 +4874,27 @@
   });
  } catch (e) {
    console.error("Lumio teacher dashboard error:", e);
+   // Same fix as student.html: this catch wraps the ENTIRE dashboard
+   // script, so swallowing the error here with only a console.error meant
+   // that if anything failed partway through setup, everything AFTER that
+   // point -- every remaining button binding on the page -- silently never
+   // happened, with no way for the teacher to know why or to report it
+   // usefully. Show it instead of hiding it.
+   try {
+     const banner = document.createElement("div");
+     banner.style.cssText = "position:fixed;left:12px;right:12px;top:12px;z-index:99999;"
+       + "background:#FEF2F2;border:2px solid #ef4444;color:#7f1d1d;border-radius:14px;"
+       + "padding:14px 16px;font-family:inherit;font-weight:700;font-size:.85rem;"
+       + "box-shadow:0 8px 24px rgba(0,0,0,.15)";
+     const msg = (e && e.message) ? e.message : String(e);
+     banner.innerHTML = "\u26a0\ufe0f Something on this page failed to load, so some buttons or "
+       + "sections may not work yet. Please screenshot this message: <br>"
+       + "<span style=\"font-weight:400;font-family:monospace\">" + msg.replace(/</g, "&lt;") + "</span>"
+       + "<div style=\"margin-top:8px\"><button type=\"button\" style=\"font-weight:800;padding:4px 10px;"
+       + "border-radius:8px;border:none;background:#ef4444;color:#fff;cursor:pointer\">Dismiss</button></div>";
+     banner.querySelector("button").onclick = () => banner.remove();
+     document.body.appendChild(banner);
+   } catch (e2) { /* if even this fails, the console.error above is all we have left */ }
  }
 })();
 </script>
