@@ -63,6 +63,23 @@
     try { sessionStorage.removeItem(key); } catch (e) { delete sessionMemory[key]; }
   }
 
+  // Stable 6-digit code derived from a student's internal id. Same input
+  // always yields the same output, so a student's login ID never changes.
+  function deriveLoginCode(seed, existing) {
+    let hash = 0;
+    const str = String(seed || "");
+    for (let i = 0; i < str.length; i++) {
+      hash = ((hash << 5) - hash + str.charCodeAt(i)) | 0;
+    }
+    const base = Math.abs(hash) % 900000;
+    for (let attempt = 0; attempt < 900000; attempt++) {
+      const code = String(100000 + ((base + attempt) % 900000));
+      const clash = (existing || []).some(x => x.id !== seed && x.loginCode === code);
+      if (!clash) return code;
+    }
+    return String(100000 + (base % 900000));
+  }
+
   function load() {
     let data;
     try { data = JSON.parse(safeGet(ROSTER_KEY) || "null"); } catch (e) { data = null; }
@@ -105,18 +122,23 @@
       needsSave = true;
     }
 
-    // safety net for students saved before loginCode/paid existed -- without
-    // this, a student created before this change, with no phone on file,
-    // would have no way at all to log in under the new ID/phone system.
-    // Generated inline (not via genLoginCode(), which itself calls load())
-    // to avoid infinite recursion, checking uniqueness against both the
-    // existing roster and codes already assigned earlier in this same pass.
+    // Safety net for students saved before loginCode existed, or whose
+    // loginCode came back empty from a sync.
+    //
+    // This is DELIBERATELY deterministic rather than random. A student's
+    // login ID is the number they're shown once (at the end of the
+    // placement test) and then type in forever -- it must be the same
+    // number every time, on every device. Minting a fresh random code
+    // here meant that any time the field arrived blank, the student's ID
+    // silently changed out from under them and the number they'd written
+    // down stopped working. Deriving it from the student's immutable
+    // internal id instead means the same student always resolves to the
+    // same 6-digit number, no matter which device rebuilds it or how
+    // many times. Collisions fall back to a probe that is itself
+    // deterministic, so even that stays stable across devices.
     data.students.forEach(s => {
       if (!s.loginCode) {
-        let code;
-        do { code = String(Math.floor(100000 + Math.random() * 900000)); }
-        while (data.students.some(x => x.loginCode === code));
-        s.loginCode = code;
+        s.loginCode = deriveLoginCode(s.id, data.students);
         needsSave = true;
       }
       if (s.paid === undefined) {
