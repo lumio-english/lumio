@@ -1055,6 +1055,17 @@
           <div class="td-sync-status mt" id="backupStatus"></div>
         </div>
       </details>
+
+      <details style="margin-top:12px" id="resetDetails">
+        <summary style="cursor:pointer;font-weight:700;font-size:.83rem;color:var(--td-coral)">⚠️ Danger zone <span class="td-owner-badge">👑 Owner only</span></summary>
+        <div class="mt" style="margin-top:10px">
+          <p class="sub" style="margin-bottom:8px">
+            Removes every student and every teacher except <b>Teacher Lumi</b>, then creates one fresh test student for trying out the platform and all levels. This deletes real roster data on this device and, once synced, on the shared Sheet too — <b>it cannot be undone</b>. Use "Download backup" above first if you want a copy.
+          </p>
+          <button class="td-btn" id="resetRosterBtn" style="border-color:var(--td-coral);color:var(--td-coral)">🗑 Remove all students &amp; teachers, keep one test student</button>
+          <div class="td-sync-status mt" id="resetStatus"></div>
+        </div>
+      </details>
     </div>
 
     <div class="td-panel">
@@ -4288,6 +4299,7 @@
 
   // ---------- backup & restore ----------
   document.getElementById("backupDetails").style.display = IS_OWNER ? "block" : "none";
+  document.getElementById("resetDetails").style.display = IS_OWNER ? "block" : "none";
   const backupStatus = document.getElementById("backupStatus");
   document.getElementById("downloadBackupBtn").onclick = () => {
     if (!window.LumioBackup) return;
@@ -4322,6 +4334,62 @@
     });
     e.target.value = "";
   });
+
+  // ---------- danger zone: reset roster to one test student ----------
+  document.getElementById("resetRosterBtn").onclick = async () => {
+    if (!window.LumioProfiles) return;
+    const resetStatus = document.getElementById("resetStatus");
+    const first = await confirmDialog(
+      "This permanently deletes every real student and every teacher account except the owner (Teacher Lumi), then creates one fresh test student. This cannot be undone — use \"Download backup\" first if you want a copy. Continue?",
+      "Continue"
+    );
+    if (!first) return;
+    const second = await confirmDialog(
+      "Really sure? All current student progress, PINs, and payment records will be gone for good once this syncs.",
+      "Yes, delete everything and reset"
+    );
+    if (!second) return;
+
+    await withLoading(document.getElementById("resetRosterBtn"), async () => {
+      try {
+        const data0 = LumioProfiles.listStudents();
+        data0.forEach(s => LumioProfiles.removeStudent(s.id));
+
+        const teachers = LumioProfiles.listTeachers();
+        const owner = teachers.find(t => t.isOwner) || teachers[0];
+        teachers.forEach(t => {
+          if (owner && t.id !== owner.id) {
+            try { LumioProfiles.removeTeacher(t.id); } catch (e) { /* e.g. can't remove the last owner -- fine, skip */ }
+          }
+        });
+
+        // One permanent, generously-provisioned account for trying out
+        // every part of the student platform -- subscribed/approved so
+        // login works immediately, and enough sessions/levels that
+        // nothing runs out mid-testing. Its level can just be edited by
+        // hand afterward to try a different one.
+        const testStudent = await LumioProfiles.addStudent({
+          name: "Test Student",
+          level: "pre-a",
+          teacherId: owner ? owner.id : null,
+          paid: true,
+          approved: true,
+          subscribed: true,
+          amountPaid: 0,
+          levelsPurchased: 99,
+          sessionsRemaining: 999,
+        });
+
+        LumioProfiles.syncNow().catch(() => {});
+        resetStatus.textContent = `Done. Test student ID: ${testStudent.loginCode}, PIN: ${testStudent.pin}. Reloading…`;
+        showToast("Roster reset. Reloading…", "success");
+        setTimeout(() => location.reload(), 1400);
+      } catch (err) {
+        resetStatus.textContent = err.message || "Couldn't reset the roster.";
+        showToast(err.message || "Couldn't reset the roster.", "error");
+      }
+    });
+  };
 
   // ---------- materials ----------
   // Which levels actually have real lesson content — same source of
