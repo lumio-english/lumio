@@ -48,6 +48,7 @@
   #promptCard {
     background: #fff; border-radius: 24px; padding: 16px 22px; margin: 6px auto 18px;
     box-shadow: var(--sh-md); display: inline-flex; align-items: center; gap: 12px; max-width: 100%;
+   cursor:pointer;
   }
   #promptCard p { font-family: var(--font-display); font-weight: 800; color: var(--cocoa); font-size: 1.1rem; margin: 0; }
   #hearBtn {
@@ -302,7 +303,7 @@ if (!vocab.length) {
     document.getElementById("endcard").style.display = "flex";
   }
 
-  document.getElementById("hearBtn").onclick = playPrompt;
+  document.getElementById("promptCard").onclick = playPrompt;
   drawRound();
 }
 </script>
