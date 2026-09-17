@@ -1525,7 +1525,7 @@
               <select id="stuCurrency" style="flex:0 0 82px">
                 <option value="KWD">KWD</option>
                 <option value="SAR">SR</option>
-                <option value="AED">درهم</option>
+                <option value="AED">AED</option>
               </select>
             </div>
           </div>
@@ -2824,9 +2824,15 @@
         const ok = await confirmDialog(`Remove ${p.name} from the roster? They won't be able to log in until re-added.`, "Remove");
         if (ok) {
           LumioProfiles.removeStudent(p.id);
-          LumioProfiles.syncNow().catch(() => {});
           renderRosterCards(); renderTable(); renderInactivity();
           showToast(`${p.name} removed from the roster.`);
+          // The removal itself is local-only until this succeeds -- surfacing
+          // a failure here (rather than swallowing it) matters because
+          // otherwise a teacher sees "removed" and has no idea it never
+          // actually reached the shared Sheet, and the student quietly
+          // reappears on every other device's next sync.
+          const res = await LumioProfiles.syncNow();
+          if (!res.ok) showToast(`${p.name} was removed here, but the sync to your Sheet failed (${res.reason || "unknown error"}) — click "Sync now" once you're back online.`, "error");
         }
       };
       rosterGrid.appendChild(card);
@@ -3060,6 +3066,11 @@
             LumioProfiles.removeTeacher(t.id);
             renderTeamGrid(); renderRosterCards(); renderTable(); renderTeacherOptions();
             showToast(`${t.name} removed.`);
+            // Same reasoning as the student "remove" handler: without this,
+            // a teacher account that failed to sync out would silently
+            // keep showing up on the Sheet and on every other device.
+            const res = await LumioProfiles.syncNow();
+            if (!res.ok) showToast(`${t.name} was removed here, but the sync to your Sheet failed (${res.reason || "unknown error"}) — click "Sync now" once you're back online.`, "error");
             if (t.id === activeId) location.href = "teacher-portal.html";
           } catch (e) {
             showToast(e.message || "Couldn't remove that teacher.", "error");
@@ -3321,6 +3332,9 @@
           LumioSchedule.removeClass(c.id);
           renderSchedule();
           showToast("Class removed.");
+          LumioSchedule.syncNow().then(res => {
+            if (!res.ok) showToast(`This class was removed here, but syncing to your Sheet failed (${res.reason || "unknown error"}).`, "error");
+          });
         }
       };
       dayWrap.appendChild(row);
@@ -4077,6 +4091,9 @@
           LumioLeads.removeLead(lead.id);
           renderLeads(); updateLeadsBadge();
           showToast("Lead removed.");
+          LumioLeads.syncNow().then(res => {
+            if (!res.ok) showToast(`This lead was removed here, but syncing to your Sheet failed (${res.reason || "unknown error"}).`, "error");
+          });
         }
       };
       leadsList.appendChild(row);
@@ -4344,32 +4361,57 @@
     await withLoading(document.getElementById("ensureTestStudentBtn"), async () => {
       try {
         let testStudent = LumioProfiles.findByLoginCode(TEST_STUDENT_ID);
+        let created = false;
         if (!testStudent) {
-          const teachers = LumioProfiles.listTeachers();
-          const owner = teachers.find(t => t.isOwner) || teachers[0];
-          // A fixed, memorable ID/PIN rather than the usual randomly
-          // generated ones -- the whole point of a permanent test
-          // account is that the same credentials work every time,
-          // without having to look them up again after each reset.
-          testStudent = await LumioProfiles.addStudent({
-            name: "Test Student",
-            level: "pre-a",
-            teacherId: owner ? owner.id : null,
-            paid: true,
-            approved: true,
-            subscribed: true,
-            amountPaid: 0,
-            levelsPurchased: 99,
-            sessionsRemaining: 999,
-            loginCode: TEST_STUDENT_ID,
-            pin: TEST_STUDENT_PIN,
-          });
-          LumioProfiles.syncNow().catch(() => {});
-          showToast("Test student created.", "success");
+          // A student literally named "Test Student" may already exist
+          // from an earlier attempt (e.g. one created before this fixed
+          // ID/PIN existed) -- addStudent() would refuse as a duplicate
+          // name, so repair that record in place instead of erroring.
+          const existingByName = LumioProfiles.findByName("Test Student");
+          if (existingByName) {
+            testStudent = await LumioProfiles.updateStudent(existingByName.id, {
+              pin: TEST_STUDENT_PIN, loginCode: TEST_STUDENT_ID,
+              paid: true, approved: true, subscribed: true,
+              levelsPurchased: 99, sessionsRemaining: 999,
+            });
+            showToast("Existing test student repaired with the fixed ID/PIN.", "success");
+          } else {
+            const teachers = LumioProfiles.listTeachers();
+            const owner = teachers.find(t => t.isOwner) || teachers[0];
+            // A fixed, memorable ID/PIN rather than the usual randomly
+            // generated ones -- the whole point of a permanent test
+            // account is that the same credentials work every time,
+            // without having to look them up again after each reset.
+            testStudent = await LumioProfiles.addStudent({
+              name: "Test Student",
+              level: "pre-a",
+              teacherId: owner ? owner.id : null,
+              paid: true,
+              approved: true,
+              subscribed: true,
+              amountPaid: 0,
+              levelsPurchased: 99,
+              sessionsRemaining: 999,
+              loginCode: TEST_STUDENT_ID,
+              pin: TEST_STUDENT_PIN,
+            });
+            showToast("Test student created.", "success");
+          }
+          created = true;
         } else {
           showToast("Test student already exists.");
         }
         testStatus.innerHTML = `Test student — <b>ID: ${testStudent.loginCode}</b>, <b>PIN: ${testStudent.pin || TEST_STUDENT_PIN}</b>`;
+        if (created) {
+          // Surfaced rather than swallowed: if this fails, the test
+          // account only exists on THIS device/browser, and logging in
+          // from anywhere else (a different browser, a phone) will
+          // correctly fail to find it until a sync actually succeeds.
+          const res = await LumioProfiles.syncNow();
+          if (!res.ok) {
+            testStatus.innerHTML += `<br><span style="color:var(--td-coral)">⚠️ Sync to your Sheet failed (${res.reason || "unknown error"}) — this account only exists on this device until you click "Sync now" successfully.</span>`;
+          }
+        }
       } catch (err) {
         testStatus.textContent = err.message || "Couldn't create the test student.";
         showToast(err.message || "Couldn't create the test student.", "error");

@@ -406,6 +406,16 @@
     if (patch.subscribed !== undefined) s.subscribed = !!patch.subscribed;
     if (patch.amountPaid !== undefined) s.amountPaid = patch.amountPaid === null || patch.amountPaid === "" ? 0 : Number(patch.amountPaid);
     if (patch.currency !== undefined) s.currency = patch.currency || "KWD";
+    // loginCode is deliberately NOT patchable through the normal edit
+    // flow (see addStudent's comment on why it must never change once
+    // issued) -- this narrow exception exists only for repairing/
+    // repurposing the fixed test-student account, and refuses outright
+    // if the requested code is already used by a DIFFERENT student.
+    if (patch.loginCode !== undefined && patch.loginCode) {
+      const clash = data.students.find(x => x.id !== id && x.loginCode === patch.loginCode);
+      if (clash) throw new Error(`Login ID ${patch.loginCode} is already in use.`);
+      s.loginCode = patch.loginCode;
+    }
     if (patch.levelsPurchased !== undefined) s.levelsPurchased = patch.levelsPurchased === null || patch.levelsPurchased === "" ? 0 : Number(patch.levelsPurchased);
     if (patch.rewardPoints !== undefined) s.rewardPoints = Math.max(0, Number(patch.rewardPoints) || 0);
     if (patch.bonusHours !== undefined) s.bonusHours = Math.max(0, Number(patch.bonusHours) || 0);

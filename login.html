@@ -179,6 +179,7 @@
       try {
         ok = window.LumioProfiles && await LumioProfiles.verifyStudentLogin(identifier, pinBuffer);
       } catch (err) {
+        console.error("Lumio login error:", err);
         // Right ID + right PIN, but the teacher hasn't approved this
         // account yet (fresh placement-test signup) -- a clearly
         // different message from "wrong PIN" so a family isn't left
@@ -186,7 +187,7 @@
         // "wait for your teacher."
         pinError.textContent = err && err.code === "pending_approval"
           ? "Your account is pending your teacher's approval — please check back soon!"
-          : "Something went wrong — please try again.";
+          : "Something went wrong — please try again. (" + ((err && err.message) || "unknown error") + ")";
         pinError.classList.remove("shake"); void pinError.offsetWidth; pinError.classList.add("shake");
         pinBuffer = "";
         renderDots();
