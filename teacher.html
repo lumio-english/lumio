@@ -51,12 +51,21 @@
   #td-confirm-overlay{
     position:fixed;inset:0;background:rgba(20,25,45,.4);z-index:410;display:none;
     align-items:center;justify-content:center;padding:20px;
+    /* A centered flex item that's taller than the viewport (a long
+       student-name list, or the viewport shrunk by an on-screen mobile
+       keyboard) used to just get clipped top/bottom with no way to reach
+       it -- flex centering alone doesn't make an overflowing child
+       scrollable. overflow-y:auto here, plus min-height:min-content and
+       margin:auto on the box below, let the whole overlay scroll instead
+       so Confirm/Cancel are always reachable. */
+    overflow-y:auto;
   }
   #td-confirm-overlay.show{display:flex}
   .td-confirm-box{
     background:var(--td-surface);border-radius:18px;padding:22px;max-width:360px;width:100%;
     box-shadow:0 24px 60px rgba(20,25,45,.28);transform:scale(.94);opacity:0;
     animation:tdConfirmIn .18s cubic-bezier(.22,1,.36,1) forwards;
+    margin:auto;flex-shrink:0;
   }
   @keyframes tdConfirmIn{to{transform:scale(1);opacity:1}}
   .td-confirm-box p{font-size:.9rem;font-weight:600;color:var(--td-ink);line-height:1.5;margin:0 0 18px}
@@ -2499,7 +2508,7 @@
       </button>
       ${catalog.length ? `<div class="td-rw-catalog">${catalogHtml}</div>` : ""}
       <button type="button" class="td-rw-manage" id="rwManageCatalogBtn">⚙ Manage reward catalog</button>
-      <p class="sub" style="font-size:.72rem;margin-top:6px">Every 50 points redeems for 1 bonus hour added to this student's profile — apply it as an extra session card manually once redeemed.</p>`;
+      <p class="sub" style="font-size:.72rem;margin-top:6px">Every 50 points redeems for 1 bonus hour, added straight to the student's sessions left automatically.</p>`;
     document.getElementById("rwAddBtn").onclick = async () => {
       const val = Number(document.getElementById("rwAddInput").value);
       if (!val) return;
@@ -3228,7 +3237,8 @@
     const today = LumioSchedule.todayStr();
     const d = new Date(dateStr + "T00:00:00");
     const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowStr = tomorrow.toISOString().slice(0, 10);
+    // Same UTC-vs-local fix as LumioSchedule.todayStr() -- see its comment.
+    const tomorrowStr = tomorrow.getFullYear() + "-" + String(tomorrow.getMonth() + 1).padStart(2, "0") + "-" + String(tomorrow.getDate()).padStart(2, "0");
     if (dateStr === today) return "Today";
     if (dateStr === tomorrowStr) return "Tomorrow";
     return d.toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
@@ -3244,7 +3254,9 @@
     if (range === "today") return { from: today, to: today };
     if (range === "week") {
       const end = new Date(); end.setDate(end.getDate() + 7);
-      return { from: today, to: end.toISOString().slice(0, 10) };
+      // Same UTC-vs-local fix as LumioSchedule.todayStr() -- see its comment.
+      const endStr = end.getFullYear() + "-" + String(end.getMonth() + 1).padStart(2, "0") + "-" + String(end.getDate()).padStart(2, "0");
+      return { from: today, to: endStr };
     }
     if (range === "past") return { from: "0000-01-01", to: today };
     if (range === "upcoming") return { from: today, to: "9999-12-31" };
@@ -3401,7 +3413,18 @@
     x.setDate(x.getDate() + diff);
     return x;
   }
-  function toDateStr(d) { return d.toISOString().slice(0, 10); }
+  function toDateStr(d) {
+    // Same bug and same fix as LumioSchedule.todayStr(): .toISOString()
+    // returns the UTC date, but `d` here is a Date built from local
+    // midnight (see mondayOf, and the `d.setDate(d.getDate()+i)` loop
+    // above). For any timezone ahead of UTC, local midnight is still the
+    // PREVIOUS day in UTC, so this shifted every day column's actual
+    // data-date (and therefore which classes.filter(c => c.date ===
+    // dateStr) matched it) back by one day from what the column's own
+    // visible header -- built correctly from d.getMonth()/d.getDate() --
+    // showed. A class truly dated today rendered under tomorrow's column.
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
   function fmtHour(h) {
     const ampm = h >= 12 ? "PM" : "AM";
     const h12 = h % 12 === 0 ? 12 : h % 12;
@@ -3572,11 +3595,27 @@
     statusEl.textContent = c.status === "cancelled" ? "Cancelled" : (c.status === "completed" ? "Completed" : "Wait");
     statusEl.className = "td-cd-status" + (c.status === "cancelled" ? " cancelled" : (c.status === "completed" ? " completed" : ""));
     const initials = n => (n || "?").trim().split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase();
+    // This modal used to only show attendanceBadge() -- a read-only "not
+    // marked" label -- with no way to actually mark it, even though the
+    // exact same present/absent/no-show buttons already existed one click
+    // away in the Agenda list view. A teacher clicking a class straight
+    // from the calendar (this popup) had no way to do it from here at
+    // all. Added the same controls here too, gated the same way the
+    // agenda view gates them: only for a class that's today or in the
+    // past, and not cancelled -- you can't mark attendance for a class
+    // that hasn't happened yet.
+    const canMarkHere = c.status !== "cancelled" && c.date <= LumioSchedule.todayStr();
     const studentsHtml = c.students.map(s => `
-      <div class="td-cd-student">
+      <div class="td-cd-student" data-sid="${s.studentId || ""}" data-sname="${s.studentName}">
         <div class="av">${initials(s.studentName)}</div>
         <span style="flex:1">${s.studentName}</span>
         ${attendanceBadge(s.attendance)}
+        ${canMarkHere ? `
+          <span class="td-student-acts">
+            <button type="button" class="att-present" data-act="present" title="Mark present">✓</button>
+            <button type="button" class="att-absent" data-act="absent" title="Mark absent">✕</button>
+            <button type="button" class="att-noshow" data-act="no-show" title="Mark no-show">⚠</button>
+          </span>` : ""}
       </div>`).join("");
     document.getElementById("cdBody").innerHTML = `
       <div class="td-cd-row">
@@ -3604,6 +3643,23 @@
       </div>`;
     const patternActions = document.getElementById("cdPatternActions");
     patternActions.style.display = c.patternId ? "block" : "none";
+    document.getElementById("cdBody").querySelectorAll(".td-cd-student").forEach(studentRow => {
+      const sid = studentRow.dataset.sid || null;
+      const sname = studentRow.dataset.sname;
+      const ref = sid ? { studentId: sid, studentName: sname } : { studentName: sname };
+      ["present", "absent", "no-show"].forEach(val => {
+        const btn = studentRow.querySelector(`[data-act="${val}"]`);
+        if (!btn) return;
+        btn.onclick = () => {
+          LumioSchedule.markAttendance(c.id, ref, val);
+          const fresh = LumioSchedule.getClass(c.id);
+          if (fresh) openCourseDetails(fresh); // re-render this popup with the updated badge
+          renderSchedule();
+          const labels = { present: "present ✓", absent: "absent", "no-show": "a no-show" };
+          showToast(`Marked ${sname} ${labels[val]}.`, val === "present" ? "success" : "error");
+        };
+      });
+    });
     courseDetailsOverlay.classList.add("show");
   }
   function minutesToHM(mins) {

@@ -941,7 +941,7 @@
       </div>
     </div>
     <button class="sd-game-wide-play" id="rwRedeemBtn" style="width:100%">🎁 Redeem 50 points → +1 hour</button>
-    <p class="sd-hint" style="margin:8px 0 0;font-weight:700;color:var(--sd-cocoa-soft);font-size:.8rem">Every 50 points you collect can be redeemed for 1 bonus class hour — ask your teacher to book it in!</p>
+    <p class="sd-hint" style="margin:8px 0 0;font-weight:700;color:var(--sd-cocoa-soft);font-size:.8rem">Every 50 points you collect can be redeemed for 1 bonus class hour, added straight to your sessions left!</p>
   </div>
 
 
@@ -1471,7 +1471,10 @@
       function fmtSchedDay(dateStr) {
         const today = LumioSchedule.todayStr();
         const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
-        const tomorrowStr = tomorrow.toISOString().slice(0, 10);
+        // Same UTC-vs-local bug as LumioSchedule.todayStr() (see its
+        // comment) -- built from local getters instead of .toISOString()
+        // so "Tomorrow" lines up with the student's own calendar day.
+        const tomorrowStr = tomorrow.getFullYear() + "-" + String(tomorrow.getMonth() + 1).padStart(2, "0") + "-" + String(tomorrow.getDate()).padStart(2, "0");
         if (dateStr === today) return "Today";
         if (dateStr === tomorrowStr) return "Tomorrow";
         const d = new Date(dateStr + "T00:00:00");
@@ -1624,10 +1627,23 @@
   // sessionStorage so it happens once per tab, not on every reload.
   (function syncFreshOnce() {
     if (!window.LumioProfiles) return;
-    let already = false;
-    try { already = sessionStorage.getItem("lumio_student_synced_v1") === "1"; } catch (e) {}
-    if (already) return;
-    try { sessionStorage.setItem("lumio_student_synced_v1", "1"); } catch (e) {}
+    // This used to be a one-time-EVER-per-tab flag ("lumio_student_synced_v1"
+    // === "1"), so once a student loaded the dashboard once, every later
+    // refresh in that same tab silently skipped syncing forever -- a class
+    // the teacher booked afterward, or a redeemed reward, would never show
+    // up until the student fully closed and reopened the tab (not just hit
+    // refresh, which most people would try first and reasonably expect to
+    // work). Switched to a time-based cooldown instead: still short-circuits
+    // rapid repeat reloads (e.g. an accidental double-refresh) but a normal
+    // "wait a bit, then refresh" pattern -- which is exactly what a teacher
+    // would tell a student to do after booking something -- now actually
+    // picks up the change.
+    const SYNC_KEY = "lumio_student_last_synced_at";
+    const MIN_INTERVAL_MS = 30 * 1000;
+    let lastSync = 0;
+    try { lastSync = Number(sessionStorage.getItem(SYNC_KEY)) || 0; } catch (e) {}
+    if (Date.now() - lastSync < MIN_INTERVAL_MS) return;
+    try { sessionStorage.setItem(SYNC_KEY, String(Date.now())); } catch (e) {}
     Promise.all([
       LumioProfiles.syncNow(),
       window.LumioSchedule ? LumioSchedule.syncNow() : Promise.resolve({ ok: true }),

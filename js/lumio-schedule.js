@@ -322,7 +322,19 @@
   }
 
   function todayStr() {
-    return new Date().toISOString().slice(0, 10);
+    // Used to be `new Date().toISOString().slice(0, 10)` -- .toISOString()
+    // always returns the UTC date, not the browser's local date. For any
+    // timezone ahead of UTC (Egypt, the Gulf -- exactly this platform's
+    // audience, per its own GCC/KSA market focus), the local calendar day
+    // rolls over to the next day BEFORE UTC's does: e.g. at 12:30 AM local
+    // time in Cairo (UTC+2/+3), it's still the previous day in UTC. Every
+    // caller of todayStr() (calendar "today" highlighting, which classes
+    // count as upcoming vs needing attention, default date-picker values,
+    // when attendance-marking buttons appear) means "today" as the person
+    // actually using the app understands it -- their own wall clock, not
+    // UTC -- so this now builds the date string from local getters instead.
+    const d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
   }
   function upcomingForStudent(studentName, limit) {
     const today = todayStr();

@@ -505,6 +505,14 @@
     if (blocks < 1) throw new Error(`Needs at least ${POINTS_PER_HOUR} points to redeem — has ${s.rewardPoints || 0}.`);
     s.rewardPoints -= blocks * POINTS_PER_HOUR;
     s.bonusHours = (s.bonusHours || 0) + blocks;
+    // Redeeming used to only bump the separate bonusHours counter shown on
+    // the rewards card, with a "ask your teacher to book it in!" note --
+    // meaning the student's actual usable session count never changed, so
+    // it looked like redeeming did nothing where it mattered. A redeemed
+    // bonus hour is a real extra session, so credit it straight to
+    // sessionsRemaining too -- it shows up immediately, same as any other
+    // session, with no separate manual step for the teacher to remember.
+    s.sessionsRemaining = (s.sessionsRemaining || 0) + blocks;
     if (!Array.isArray(s.redemptions)) s.redemptions = [];
     s.redemptions.push({ date: new Date().toISOString(), label: `+${blocks} bonus hour${blocks === 1 ? "" : "s"}`, cost: blocks * POINTS_PER_HOUR });
     s.updatedAt = new Date().toISOString();
