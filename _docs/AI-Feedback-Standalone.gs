@@ -78,13 +78,29 @@ function writingFeedback_(body) {
     "Student's actual answer (quote from this directly): " + answer;
 
   var payload = {
-    model: "llama-3.3-70b-versatile",
+    // llama-3.3-70b-versatile was deprecated by Groq (shutdown 08/16/2026 --
+    // see https://console.groq.com/docs/deprecations) and now returns
+    // "The model `llama-3.3-70b-versatile` does not exist or you do not
+    // have access to it." on every request. openai/gpt-oss-120b is Groq's
+    // own recommended replacement for it.
+    //
+    // gpt-oss-120b is a reasoning model, which changes two things from a
+    // plain chat model: (1) by default it also generates internal
+    // "reasoning" content alongside the real answer -- include_reasoning:
+    // false keeps that out of the response so `content` stays just the
+    // feedback text; reasoning_effort: "low" is enough for a short,
+    // templated writing-feedback reply and keeps latency down. (2) Groq's
+    // current docs use max_completion_tokens rather than max_tokens for
+    // this model family.
+    model: "openai/gpt-oss-120b",
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt }
     ],
     temperature: 0.5,
-    max_tokens: 260
+    max_completion_tokens: 300,
+    reasoning_effort: "low",
+    include_reasoning: false
   };
 
   try {
@@ -98,10 +114,16 @@ function writingFeedback_(body) {
     var code = res.getResponseCode();
     var data = JSON.parse(res.getContentText());
     if (code !== 200) {
-      var msg = (data.error && data.error.message) ? data.error.message : ("Groq API returned status " + code);
-      return { ok: false, error: msg };
+      var errMsg = (data.error && data.error.message) ? data.error.message : ("Groq API returned status " + code);
+      return { ok: false, error: errMsg };
     }
-    var feedback = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+    var msg = data.choices && data.choices[0] && data.choices[0].message;
+    // gpt-oss models have a known, occasionally-triggered Groq platform
+    // quirk (see community.groq.com) where despite include_reasoning:
+    // false, a reply's real text still lands in `reasoning` instead of
+    // `content`. Fall back to it rather than surfacing a confusing "empty
+    // response" error when the model actually did answer.
+    var feedback = (msg && msg.content) || (msg && msg.reasoning) || "";
     if (!feedback) return { ok: false, error: "Empty response from Groq." };
     return { ok: true, feedback: feedback.trim() };
   } catch (err) {
