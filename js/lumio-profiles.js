@@ -149,6 +149,7 @@
         s.approved = true; // pre-existing students could already log in -- don't retroactively lock anyone out
         needsSave = true;
       }
+      if (!s.currency) { s.currency = "KWD"; needsSave = true; }
       // safety net for students saved before profile/subscription/rewards
       // fields existed -- plain defaults so every reader (drawer, rewards
       // card, leaderboard, renewal list) can rely on these always existing.
@@ -258,7 +259,7 @@
     while (data.students.some(s => s.loginCode === code));
     return code;
   }
-  async function addStudent({ name, level, avatar, pin, teacherId, phone, cohort, group, paid, age, gender, grade, country, tags, subscribed, amountPaid, levelsPurchased, rewardPoints, bonusHours, sessionsRemaining, approved } = {}) {
+  async function addStudent({ name, level, avatar, pin, teacherId, phone, cohort, group, paid, age, gender, grade, country, tags, subscribed, amountPaid, currency, levelsPurchased, rewardPoints, bonusHours, sessionsRemaining, approved } = {}) {
     const data = load();
     name = (name || "").trim();
     if (!name) throw new Error("A student needs a name.");
@@ -323,6 +324,10 @@
       // cover" info a teacher fills in by hand after a payment. ----
       subscribed: subscribed === undefined ? true : !!subscribed,
       amountPaid: amountPaid === undefined || amountPaid === null || amountPaid === "" ? 0 : Number(amountPaid),
+      // Which currency `amountPaid` is in -- KWD/SAR/AED are the ones the
+      // teacher actually collects payment in; defaults to KWD only
+      // because it has to default to something, not because it's assumed.
+      currency: currency || "KWD",
       levelsPurchased: levelsPurchased === undefined || levelsPurchased === null || levelsPurchased === "" ? 0 : Number(levelsPurchased),
       // ---- Rewards ----
       // rewardPoints accumulates freely; every full 50 points can be
@@ -392,6 +397,7 @@
     if (patch.tags !== undefined) s.tags = Array.isArray(patch.tags) ? patch.tags.map(t => String(t).trim()).filter(Boolean) : [];
     if (patch.subscribed !== undefined) s.subscribed = !!patch.subscribed;
     if (patch.amountPaid !== undefined) s.amountPaid = patch.amountPaid === null || patch.amountPaid === "" ? 0 : Number(patch.amountPaid);
+    if (patch.currency !== undefined) s.currency = patch.currency || "KWD";
     if (patch.levelsPurchased !== undefined) s.levelsPurchased = patch.levelsPurchased === null || patch.levelsPurchased === "" ? 0 : Number(patch.levelsPurchased);
     if (patch.rewardPoints !== undefined) s.rewardPoints = Math.max(0, Number(patch.rewardPoints) || 0);
     if (patch.bonusHours !== undefined) s.bonusHours = Math.max(0, Number(patch.bonusHours) || 0);
@@ -718,6 +724,7 @@
     s.approved = toBool(s.approved, true);
     s.paid = toBool(s.paid, true);
     s.subscribed = toBool(s.subscribed, true);
+    if (!s.currency) s.currency = "KWD";
     return s;
   }
   // Additive merge: keeps local-only records, adds remote-only records, and

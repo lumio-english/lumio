@@ -1509,7 +1509,14 @@
         <div class="td-field-row three">
           <div class="td-field">
             <label for="stuAmountPaid">Amount paid</label>
-            <input type="number" id="stuAmountPaid" min="0" step="0.01" placeholder="0">
+            <div style="display:flex;gap:6px">
+              <input type="number" id="stuAmountPaid" min="0" step="0.01" placeholder="0" style="flex:1">
+              <select id="stuCurrency" style="flex:0 0 82px">
+                <option value="KWD">KWD</option>
+                <option value="SAR">SR</option>
+                <option value="AED">درهم</option>
+              </select>
+            </div>
           </div>
           <div class="td-field">
             <label for="stuLevelsPurchased">Levels bought</label>
@@ -2420,7 +2427,7 @@
       </div>
 
       <div class="td-dp-tiles">
-        <div class="td-dp-tile blue"><span class="ic">💳</span><b>${p.amountPaid || 0}</b><span>Amount paid</span></div>
+        <div class="td-dp-tile blue"><span class="ic">💳</span><b>${p.amountPaid || 0} <span style="font-size:.6em">${p.currency || "KWD"}</span></b><span>Amount paid</span></div>
         <div class="td-dp-tile purple"><span class="ic">📚</span><b>${p.levelsPurchased || 0}</b><span>Levels bought</span></div>
         <div class="td-dp-tile ${p.sessionsRemaining > 0 && p.sessionsRemaining <= 3 ? "coral" : "teal"}"><span class="ic">🎟️</span><b>${p.sessionsRemaining || 0}</b><span>Sessions left</span></div>
         <div class="td-dp-tile amber"><span class="ic">🔁</span><b>${fixedCount}</b><span>Fixed schedule</span></div>
@@ -2842,6 +2849,7 @@
     document.getElementById("stuSubscribed").checked = profile ? !!profile.subscribed : true;
     document.getElementById("stuApproved").checked = profile ? profile.approved !== false : true;
     document.getElementById("stuAmountPaid").value = profile && profile.amountPaid ? profile.amountPaid : "";
+    document.getElementById("stuCurrency").value = (profile && profile.currency) || "KWD";
     document.getElementById("stuLevelsPurchased").value = profile && profile.levelsPurchased ? profile.levelsPurchased : "";
     document.getElementById("stuSessionsRemaining").value = profile && profile.sessionsRemaining ? profile.sessionsRemaining : "";
     {
@@ -2912,6 +2920,7 @@
     const subscribedVal = document.getElementById("stuSubscribed").checked;
     const approvedVal = document.getElementById("stuApproved").checked;
     const amountPaidVal = document.getElementById("stuAmountPaid").value;
+    const currencyVal = document.getElementById("stuCurrency").value;
     const levelsPurchasedVal = document.getElementById("stuLevelsPurchased").value;
     const sessionsRemainingVal = document.getElementById("stuSessionsRemaining").value;
     const wasEditing = !!editingId;
@@ -2922,7 +2931,7 @@
           name, level: stuLevelSelect.value, avatar: selectedAvatar, pin: pinVal, teacherId: teacherIdVal,
           phone: phoneVal, cohort: cohortVal, group: groupVal,
           age: ageVal, gender: genderVal, grade: gradeVal, country: countryVal, tags: tagsVal,
-          subscribed: subscribedVal, amountPaid: amountPaidVal, levelsPurchased: levelsPurchasedVal,
+          subscribed: subscribedVal, amountPaid: amountPaidVal, currency: currencyVal, levelsPurchased: levelsPurchasedVal,
           sessionsRemaining: sessionsRemainingVal, approved: approvedVal,
         };
         if (editingId) {

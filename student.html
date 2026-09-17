@@ -396,6 +396,93 @@
   }
   .pg-skip:hover{opacity:1;text-decoration:underline}
 
+  /* ---------- My Profile (student/parent read-only view) ---------- */
+  .mp-overlay{
+    position:fixed;inset:0;background:rgba(38,26,18,.5);z-index:8500;display:none;
+    align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto;
+  }
+  .mp-overlay.show{display:flex}
+  .mp-card{
+    background:#fff;border-radius:24px;max-width:420px;width:100%;margin:auto 0;
+    box-shadow:0 24px 60px rgba(0,0,0,.3);position:relative;overflow:hidden;
+    animation:pgPop .22s cubic-bezier(.22,1,.36,1);
+  }
+  .mp-close{
+    position:absolute;top:14px;left:14px;width:30px;height:30px;border-radius:50%;border:none;
+    background:rgba(255,255,255,.25);color:#fff;font-size:1rem;cursor:pointer;z-index:2;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .mp-close:hover{background:rgba(255,255,255,.4)}
+  .mp-banner{
+    background:linear-gradient(135deg,var(--sd-orange),var(--sd-orange-deep));color:#fff;
+    padding:26px 24px 20px;text-align:center;position:relative;overflow:hidden;
+  }
+  .mp-banner::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 85% -10%,rgba(255,255,255,.22),transparent 55%)}
+  .mp-avatar{
+    width:64px;height:64px;border-radius:20px;background:#fff;display:flex;align-items:center;justify-content:center;
+    font-size:2rem;margin:0 auto 10px;box-shadow:0 10px 24px rgba(0,0,0,.2);position:relative;z-index:1;
+    background-size:cover;background-position:center;
+  }
+  .mp-banner h3{margin:0 0 4px;font-size:1.15rem;font-weight:800;position:relative;z-index:1}
+  .mp-level{
+    display:inline-block;background:rgba(255,255,255,.22);border-radius:99px;padding:4px 14px;font-size:.74rem;
+    font-weight:800;position:relative;z-index:1;
+  }
+  .mp-body{padding:18px 22px 22px}
+  .mp-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:var(--sd-cream);border-radius:14px;padding:14px}
+  .mp-field .lbl{color:var(--sd-cocoa-soft);font-weight:700;font-size:.66rem;text-transform:uppercase;letter-spacing:.3px}
+  .mp-field .val{font-weight:800;margin-top:1px;font-size:.85rem;color:var(--sd-cocoa)}
+  .mp-field .val i{font-weight:600;font-style:normal;opacity:.6}
+  .mp-subbanner{
+    display:flex;align-items:center;gap:8px;margin-top:12px;padding:10px 14px;border-radius:13px;font-weight:800;font-size:.82rem;
+  }
+  .mp-subbanner .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+  .mp-subbanner.yes{background:#E7F8F1;color:#0D8C5C}
+  .mp-subbanner.yes .dot{background:#1FBE7A}
+  .mp-subbanner.no{background:#FDEDED;color:#C23A3A}
+  .mp-subbanner.no .dot{background:#E14545}
+  .mp-tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+  .mp-tile{border-radius:14px;padding:12px 10px;text-align:center}
+  .mp-tile .ic{font-size:1rem;display:block;margin-bottom:4px;opacity:.85}
+  .mp-tile b{display:block;font-size:1.05rem;font-weight:800}
+  .mp-tile span{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.3px;opacity:.8}
+  .mp-tile.blue{background:#EAF1FE;color:#2451B8}
+  .mp-tile.purple{background:#F1EBFE;color:#6B2FB8}
+  .mp-tile.teal{background:#E3F7F1;color:#0d6b5c}
+  .mp-tile.coral{background:#FDECEC;color:#B8342E}
+  .mp-report-btn{
+    width:100%;margin-top:16px;padding:13px;border-radius:14px;border:none;font-weight:800;font-size:.9rem;cursor:pointer;
+    background:linear-gradient(135deg,var(--sd-orange),var(--sd-orange-deep));color:#fff;
+    box-shadow:0 8px 18px rgba(249,114,12,.3);transition:transform .15s ease,box-shadow .15s ease;font-family:inherit;
+  }
+  .mp-report-btn:hover{transform:translateY(-2px);box-shadow:0 12px 22px rgba(249,114,12,.4)}
+  #printMyReport{display:none}
+  .pr-page{padding:28px;font-family:'Inter',system-ui,sans-serif;color:#1B2233;max-width:760px;margin:0 auto}
+  .pr-head{display:flex;align-items:center;gap:14px;border-bottom:3px solid #F97316;padding-bottom:16px;margin-bottom:20px}
+  .pr-head img{width:42px;height:42px;border-radius:10px}
+  .pr-head .brand{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.2rem}
+  .pr-head .brand span{color:#F97316}
+  .pr-head .sub{color:#8891A3;font-size:.8rem;font-weight:600}
+  .pr-student{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+  .pr-student .av{width:52px;height:52px;border-radius:50%;background:#FFF1E0;display:flex;align-items:center;justify-content:center;font-size:1.7rem}
+  .pr-student h1{font-size:1.3rem;margin:0}
+  .pr-student p{margin:2px 0 0;color:#6B5D4E;font-weight:700;font-size:.85rem}
+  .pr-stats{display:flex;gap:10px;margin-bottom:22px}
+  .pr-stat{flex:1;background:#FAF8F4;border-radius:12px;padding:12px;text-align:center;border:1px solid #EAE3D8}
+  .pr-stat b{display:block;font-size:1.4rem;font-family:'Baloo 2',sans-serif}
+  .pr-stat span{font-size:.68rem;color:#8891A3;font-weight:800;text-transform:uppercase}
+  .pr-section{margin-bottom:20px}
+  .pr-section h2{font-size:.95rem;margin:0 0 10px;display:flex;align-items:center;gap:6px}
+  .pr-table{width:100%;border-collapse:collapse;font-size:.82rem}
+  .pr-table th{text-align:left;padding:6px 8px;border-bottom:2px solid #EAE3D8;color:#8891A3;font-size:.72rem;text-transform:uppercase}
+  .pr-table td{padding:7px 8px;border-bottom:1px solid #F1ECE2}
+  .pr-foot{margin-top:24px;padding-top:14px;border-top:1px solid #EAE3D8;font-size:.72rem;color:#948573;text-align:center}
+  @media print{
+    body *{visibility:hidden}
+    #printMyReport, #printMyReport *{visibility:visible}
+    #printMyReport{display:block !important;position:absolute;top:0;left:0;width:100%}
+  }
+
   /* ---------- Badges ---------- */
   .sd-badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:8px}
   .sd-badge{
@@ -718,6 +805,7 @@
   <div class="sd-brand">Lumio <span>English</span></div>
   <div class="sd-spacer"></div>
   <span id="helloChip" style="display:none"></span>
+  <button class="pg-launch-btn" id="myProfileBtn" style="display:none">👤 My Profile</button>
   <button class="pg-launch-btn" id="parentGuideBtn" style="display:none">🧭 دليل ولي الأمر</button>
   <div class="sd-streak" id="streakChip"><span class="flame">🔥</span> <span id="streakVal">0</span><span class="sd-streak-label"> day streak</span></div>
   <button class="sd-avatar-btn" id="avatarBtn">🦊</button>
@@ -744,6 +832,26 @@
     <button class="pg-skip" id="pgSkipBtn">تخطي الدليل</button>
   </div>
 </div>
+
+<!-- ===== My Profile (read-only, for the student/parent) ===== -->
+<div class="mp-overlay" id="myProfileOverlay">
+  <div class="mp-card">
+    <button class="mp-close" id="mpCloseBtn">✕</button>
+    <div class="mp-banner">
+      <div class="mp-avatar" id="mpAvatar">🦊</div>
+      <h3 id="mpName">Student</h3>
+      <div class="mp-level" id="mpLevel">Level</div>
+    </div>
+    <div class="mp-body">
+      <div class="mp-fields" id="mpFields"></div>
+      <div class="mp-subbanner" id="mpSubBanner"></div>
+      <div class="mp-tiles" id="mpTiles"></div>
+      <button class="mp-report-btn" id="mpReportBtn">📄 Download my performance report</button>
+    </div>
+  </div>
+</div>
+
+<div id="printMyReport"></div>
 
 <main class="sd-wrap">
 
@@ -1756,7 +1864,117 @@
     }
   })();
 
-  let currentAvatar = (rosterProfile && rosterProfile.avatar) || safeGet(avatarKey) || "🦊";
+  // ---------- My Profile (student/parent read-only view + report) ----------
+  (function setupMyProfile() {
+    if (!rosterProfile) return;
+    const btn = document.getElementById("myProfileBtn");
+    btn.style.display = "inline-flex";
+    const overlay = document.getElementById("myProfileOverlay");
+
+    function renderProfile() {
+      const p = window.LumioProfiles ? LumioProfiles.getStudent(rosterProfile.id) : rosterProfile;
+      document.getElementById("mpName").textContent = p.name;
+      const levelMeta = (Lumio.LEVELS || []).find(l => l.id === p.level) || { name: p.level || "—" };
+      document.getElementById("mpLevel").textContent = levelMeta.name;
+      const avatarEl = document.getElementById("mpAvatar");
+      if (p.photoDataUrl) { avatarEl.style.backgroundImage = `url(${p.photoDataUrl})`; avatarEl.textContent = ""; }
+      else { avatarEl.style.backgroundImage = "none"; avatarEl.textContent = p.avatar || "🦊"; }
+
+      document.getElementById("mpFields").innerHTML = `
+        <div class="mp-field"><div class="lbl">Age</div><div class="val">${p.age != null ? p.age : "<i>Not set</i>"}</div></div>
+        <div class="mp-field"><div class="lbl">Gender</div><div class="val">${p.gender === "M" ? "Male" : p.gender === "F" ? "Female" : "<i>Not set</i>"}</div></div>
+        <div class="mp-field"><div class="lbl">Grade</div><div class="val">${p.grade || "<i>Not set</i>"}</div></div>
+        <div class="mp-field"><div class="lbl">Country</div><div class="val">${p.country || "<i>Not set</i>"}</div></div>
+      `;
+      document.getElementById("mpSubBanner").outerHTML = `
+        <div class="mp-subbanner ${p.subscribed ? "yes" : "no"}" id="mpSubBanner">
+          <span class="dot"></span><span>${p.subscribed ? "Subscribed & active" : "Not currently subscribed"}</span>
+        </div>`;
+      document.getElementById("mpTiles").innerHTML = `
+        <div class="mp-tile blue"><span class="ic">💳</span><b>${p.amountPaid || 0} ${p.currency || "KWD"}</b><span>Amount paid</span></div>
+        <div class="mp-tile purple"><span class="ic">📚</span><b>${p.levelsPurchased || 0}</b><span>Levels bought</span></div>
+        <div class="mp-tile ${(p.sessionsRemaining || 0) <= 3 ? "coral" : "teal"}"><span class="ic">🎟️</span><b>${p.sessionsRemaining || 0}</b><span>Sessions left</span></div>
+        <div class="mp-tile teal"><span class="ic">🏆</span><b>${p.rewardPoints || 0}</b><span>Reward points</span></div>
+      `;
+    }
+
+    btn.onclick = () => { renderProfile(); overlay.classList.add("show"); };
+    document.getElementById("mpCloseBtn").onclick = () => overlay.classList.remove("show");
+    overlay.onclick = e => { if (e.target === overlay) overlay.classList.remove("show"); };
+
+    // ---- Performance report (own-device print/download, PDF via the browser's print dialog) ----
+    function buildMyReportHtml() {
+      const p = window.LumioProfiles ? LumioProfiles.getStudent(rosterProfile.id) : rosterProfile;
+      const level = p.level || "pre-a";
+      const meta = (Lumio.LEVELS || []).find(l => l.id === level) || { name: "Pre-A", lessons: 20 };
+      const progAll = Lumio.progressFor(p.name) || {};
+      const prog = progAll[level] || {};
+      const entries = Object.entries(prog);
+      const total = meta.lessons || 20;
+      const stars = entries.reduce((s, [, r]) => s + (r.stars || 0), 0);
+      const scores = entries.map(([, r]) => r.score || 0).filter(n => n > 0);
+      const avgScore = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
+      const attendedSet = (window.LumioSchedule && LumioSchedule.attendedLessonNumbers)
+        ? LumioSchedule.attendedLessonNumbers(p.name, level) : new Set();
+      const hwProg = (typeof Lumio !== "undefined" && Lumio.homeworkFor) ? (Lumio.homeworkFor(p.name)[level] || {}) : {};
+      let current = total + 1;
+      for (let n = 1; n <= total; n++) {
+        if (!(!!prog[n] && attendedSet.has(n) && !!hwProg[n])) { current = n; break; }
+      }
+      const done = current - 1;
+      const attStats = window.LumioSchedule ? LumioSchedule.attendanceStatsForStudent(p.name) : { present: 0, total: 0 };
+      const attPct = attStats.total ? Math.round((attStats.present / attStats.total) * 100) : null;
+      const today = new Date().toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" });
+
+      const lessonRows = entries
+        .map(([n, r]) => ({ n: Number(n), r }))
+        .sort((a, b) => a.n - b.n)
+        .map(({ n, r }) => `<tr><td>Lesson ${n}</td><td>${"★".repeat(r.stars || 0)}</td><td>${r.score || 0}%</td><td>${r.date || "—"}</td></tr>`)
+        .join("");
+
+      return `
+        <div class="pr-page">
+          <div class="pr-head">
+            <img src="assets/logo/lumio-logo.png" alt="Lumio English logo" onerror="this.style.display='none'">
+            <div>
+              <div class="brand">Lumio <span>English</span></div>
+              <div class="sub">Performance Report · generated ${today}</div>
+            </div>
+          </div>
+          <div class="pr-student">
+            <div class="av">${p.avatar || "🦊"}</div>
+            <div><h1>${p.name}</h1><p>${meta.name}</p></div>
+          </div>
+          <div class="pr-stats">
+            <div class="pr-stat"><b>${done}/${total}</b><span>Lessons done</span></div>
+            <div class="pr-stat"><b>★ ${stars}</b><span>Stars earned</span></div>
+            <div class="pr-stat"><b>${avgScore}%</b><span>Avg score</span></div>
+          </div>
+          <div class="pr-section">
+            <h2>📅 Attendance &amp; rewards</h2>
+            <div class="pr-stats">
+              <div class="pr-stat"><b>${attPct != null ? attPct + "%" : "—"}</b><span>Attendance (${attStats.total} marked)</span></div>
+              <div class="pr-stat"><b>${p.rewardPoints || 0}</b><span>Reward points</span></div>
+              <div class="pr-stat"><b>${p.sessionsRemaining || 0}</b><span>Sessions left</span></div>
+            </div>
+          </div>
+          <div class="pr-section">
+            <h2>📋 Lesson-by-lesson</h2>
+            ${lessonRows
+              ? `<table class="pr-table"><thead><tr><th>Lesson</th><th>Stars</th><th>Score</th><th>Date</th></tr></thead><tbody>${lessonRows}</tbody></table>`
+              : `<p style="color:#8891A3;font-size:.85rem">No lessons recorded yet.</p>`}
+          </div>
+          <div class="pr-foot">Lumio English · Learn · Speak · Grow</div>
+        </div>`;
+    }
+
+    document.getElementById("mpReportBtn").onclick = () => {
+      document.getElementById("printMyReport").innerHTML = buildMyReportHtml();
+      window.print();
+    };
+  })();
+
+
   let currentPhoto = (rosterProfile && rosterProfile.photoDataUrl) || null;
   function renderAvatarBtn() {
     const btn = document.getElementById("avatarBtn");
