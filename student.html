@@ -2016,6 +2016,19 @@
   })(); } catch (e) { console.error("Lumio my-profile error:", e); }
 
 
+  // currentAvatar was being READ here (and further down, in the avatar
+  // picker grid and the Save handler) with no declaration anywhere above
+  // it -- only ever WRITTEN to via `currentAvatar = a` inside the picker's
+  // onclick and saved to avatarKey, never initialized first. Reading an
+  // undeclared variable throws a ReferenceError unconditionally, on every
+  // single page load for every student, the instant renderAvatarBtn()
+  // runs two lines below -- which killed every remaining top-level
+  // statement in this script from here on: the avatar button's own
+  // onclick (further down), the whole English Hub section, and the game
+  // widget all silently never got wired up. Same fallback chain as
+  // photoDataUrl just above: the synced roster record's avatar first,
+  // then whatever this device saved locally before, then a sane default.
+  let currentAvatar = (rosterProfile && rosterProfile.avatar) || safeGet(avatarKey) || AVATARS[0] || "🦊";
   let currentPhoto = (rosterProfile && rosterProfile.photoDataUrl) || null;
   function renderAvatarBtn() {
     const btn = document.getElementById("avatarBtn");
