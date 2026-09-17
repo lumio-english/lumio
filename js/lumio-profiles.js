@@ -259,12 +259,20 @@
     while (data.students.some(s => s.loginCode === code));
     return code;
   }
-  async function addStudent({ name, level, avatar, pin, teacherId, phone, cohort, group, paid, age, gender, grade, country, tags, subscribed, amountPaid, currency, levelsPurchased, rewardPoints, bonusHours, sessionsRemaining, approved } = {}) {
+  async function addStudent({ name, level, avatar, pin, loginCode, teacherId, phone, cohort, group, paid, age, gender, grade, country, tags, subscribed, amountPaid, currency, levelsPurchased, rewardPoints, bonusHours, sessionsRemaining, approved } = {}) {
     const data = load();
     name = (name || "").trim();
     if (!name) throw new Error("A student needs a name.");
     if (findByName(name)) throw new Error(`"${name}" is already on the roster.`);
     const finalPin = normalizePin(pin) || randomPin();
+    // A caller can request a specific login ID (used only for the
+    // permanent test-student account, which needs the same fixed,
+    // memorable ID every time rather than a random one) -- falls back to
+    // the normal random generator otherwise, and never silently reuses
+    // a code that's already taken.
+    const finalLoginCode = (loginCode && !data.students.some(s => s.loginCode === loginCode))
+      ? loginCode
+      : genLoginCode();
     const record = {
       id: genId("s"),
       name,
@@ -280,7 +288,7 @@
       pinHash: await hashPin(finalPin),
       // A short, human-typeable login code, separate from the internal
       // `id` above -- see genLoginCode() for why.
-      loginCode: genLoginCode(),
+      loginCode: finalLoginCode,
       teacherId: teacherId || getCurrentTeacherId() || (data.teachers[0] && data.teachers[0].id) || null,
       phone: (phone || "").trim(), // optional — parent/guardian contact, used for the inactivity check-in shortcut
       // Whether this student has actually paid and been enrolled ("Current
