@@ -92,8 +92,12 @@
 <script src="js/lumio-schedule.js?v=20260917d"></script>
 <script>
 (() => {
-  // Teacher-only, same session-check pattern teacher.html itself uses.
-  if (sessionStorage && !sessionStorage.getItem("lumio_teacher")) { location.href = "teacher-portal.html"; return; }
+  // Teacher-only, same localStorage-based check teacher.html itself uses
+  // (switched from sessionStorage -- see the comment on this flag in
+  // js/auth.js/teacher.html for why: sessionStorage is per-tab, and a
+  // report link can easily be opened in a tab that never itself saw a
+  // login).
+  if (localStorage && !localStorage.getItem("lumio_teacher")) { location.href = "teacher-portal.html"; return; }
 
   const qs = k => new URLSearchParams(location.search).get(k);
   const studentId = qs("student");

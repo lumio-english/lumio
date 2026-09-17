@@ -1819,7 +1819,12 @@
 <script src="js/lumio-backup.js?v=20260917d"></script>
 <script>
 (() => {
-  if (sessionStorage && !sessionStorage.getItem("lumio_teacher")) { location.href = "teacher-portal.html"; return; }
+  // localStorage, not sessionStorage -- see the comment on this same flag
+  // in js/auth.js. sessionStorage is per-tab, so a teacher landing here
+  // via a link from a different, previously-unauthenticated tab (e.g.
+  // "Exit" from a lesson preview) would fail this check even though
+  // they're genuinely already logged in elsewhere.
+  if (localStorage && !localStorage.getItem("lumio_teacher")) { location.href = "teacher-portal.html"; return; }
 
  try {
   // ================= Shared UI helpers (toasts, confirm dialog, button loading) =================
@@ -4226,7 +4231,7 @@
   document.getElementById("switchTeacherLink").onclick = (e) => {
     e.preventDefault();
     if (window.LumioProfiles) LumioProfiles.clearCurrentTeacher();
-    try { sessionStorage.removeItem("lumio_teacher"); } catch (err) {}
+    try { localStorage.removeItem("lumio_teacher"); } catch (err) {}
     location.href = "teacher-portal.html";
   };
 

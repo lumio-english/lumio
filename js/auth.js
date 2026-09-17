@@ -37,7 +37,18 @@ const TEACHER_PIN = "2026";
 
   $("goTeacher").onclick = () => {
     if ($("tpin").value === TEACHER_PIN) {
-      sessionStorage.setItem("lumio_teacher", "1");
+      // localStorage, not sessionStorage: sessionStorage is scoped to one
+      // browser TAB, not shared across tabs even on the same site. A
+      // teacher who opens a lesson-material preview or a game in what
+      // ends up being a separate tab (e.g. clicking "Exit" from a
+      // presentation, which links back to teacher.html) would hit that
+      // tab's own, never-set sessionStorage flag and get bounced back to
+      // this login screen even though they were already logged in
+      // moments earlier in another tab. localStorage is shared across
+      // every tab of the same site, so logging in once now really means
+      // staying logged in everywhere, matching what a teacher reasonably
+      // expects from their own dashboard.
+      localStorage.setItem("lumio_teacher", "1");
       location.href = "teacher.html";
     } else Lumio.toast("Wrong PIN");
   };

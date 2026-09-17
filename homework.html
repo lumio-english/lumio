@@ -193,7 +193,10 @@ const nn = String(num).padStart(2, "0");
 // obviously-fake identity and skips the save entirely (see
 // submitHomework() below), so testing here can never touch real data.
 function isTeacherSession() {
-  try { return sessionStorage.getItem("lumio_teacher") === "1"; } catch (e) { return false; }
+  // localStorage, not sessionStorage -- see the comment on this flag in
+  // js/auth.js: it's now set/cleared via localStorage so a teacher login
+  // is recognized from any tab, not just the one it happened in.
+  try { return localStorage.getItem("lumio_teacher") === "1"; } catch (e) { return false; }
 }
 // Per the standing rule that teacher-panel testing surfaces stay open
 // unconditionally: this used to also require isTeacherSession(), but

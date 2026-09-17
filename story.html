@@ -159,7 +159,8 @@ function getDoneCount() {
 }
 
 function isTeacherSession() {
-  try { return sessionStorage.getItem("lumio_teacher") === "1"; } catch (e) { return false; }
+  // See the matching comment in homework.html -- same reasoning, same fix.
+  try { return localStorage.getItem("lumio_teacher") === "1"; } catch (e) { return false; }
 }
 // See the matching comment in homework.html -- same reasoning, same fix.
 const previewMode = qs("preview") === "1";
