@@ -350,7 +350,7 @@ body { overflow-x: hidden; -webkit-text-size-adjust: 100%; }
 </style>
 </head>
 <body>
-<script src="js/lumio-profiles.js"></script>
+<script src="js/lumio-profiles.js?v=20260917"></script>
 
 <!-- ========== PAGE 1: SPLASH ========== -->
 <div class="page active" id="page-splash">
@@ -532,6 +532,25 @@ body { overflow-x: hidden; -webkit-text-size-adjust: 100%; }
 </div>
 
 <script>
+// =============================================
+//  FAIL LOUDLY, NEVER SILENTLY
+// =============================================
+// If any top-level statement in this script throws, every `let`/`const`
+// declared after it stays in the temporal dead zone. Hoisted functions like
+// startTest() remain callable but blow up the instant they touch one of those
+// variables -- producing a button that appears completely dead. This handler
+// makes that situation self-diagnosing instead of invisible.
+window.addEventListener('error', function (ev) {
+  var msg = (ev && ev.error && ev.error.message) ? ev.error.message : (ev && ev.message) || 'unknown error';
+  var where = (ev && ev.lineno) ? (' (line ' + ev.lineno + ')') : '';
+  var box = document.getElementById('id-error');
+  if (box) {
+    box.textContent = 'Page error: ' + msg + where + ' — please screenshot this and send it to your teacher.';
+    box.style.display = 'block';
+  }
+  console.error('[Lumio] page error:', msg, where, ev && ev.error);
+});
+
 // =============================================
 //  DATA
 // =============================================
@@ -798,6 +817,10 @@ let timerInterval=null;
 let secondsLeft=2700;
 let synth=window.speechSynthesis||null;
 let speechUtterance=null;
+// Deliberately `var`, and deliberately declared here rather than next to the
+// PIN code that uses it: `var` is hoisted and has no temporal dead zone, so
+// startTest() can never again fail silently on it if something above throws.
+var registeredStudent = null;
 
 // =============================================
 //  PAGES
@@ -866,7 +889,28 @@ function combinePhone(countryCode, local) {
   setSelected('20'); // Egypt default
 })();
 
+// Public entry point for the inline onclick. Everything real happens in
+// startTestInner(); this wrapper exists so that a thrown error becomes a
+// VISIBLE message instead of a dead button. A button that does nothing at
+// all is the single most expensive kind of bug to chase.
 function startTest(){
+  try {
+    startTestInner();
+  } catch (err) {
+    console.error('[Lumio] startTest failed:', err);
+    const box = document.getElementById('id-error');
+    if (box) {
+      box.textContent = 'Something went wrong starting the test: '
+        + ((err && err.message) ? err.message : String(err))
+        + ' — please screenshot this and send it to your teacher.';
+      box.style.display = 'block';
+    } else {
+      alert('Something went wrong starting the test: ' + (err && err.message ? err.message : err));
+    }
+  }
+}
+
+function startTestInner(){
   window._resultShown = false;  // reset submission guard
   const nameEl=document.getElementById('student-name');
   const phoneEl=document.getElementById('student-phone');
@@ -921,7 +965,19 @@ function startTest(){
   // re-register) a number that's already a real, paid student, not a
   // legitimate "I forgot my account" case. Only an unsubscribed/pending
   // account (or a brand-new number) can proceed.
-  registeredStudent = (window.LumioProfiles && LumioProfiles.findByPhone(studentId)) || null;
+  // Guard the METHOD, not just the namespace: if lumio-profiles.js failed to
+  // load, or loaded an older build without findByPhone, the old check passed
+  // and then threw "LumioProfiles.findByPhone is not a function". A failed
+  // lookup must never block a student from starting -- worst case we treat
+  // the number as new and let them set a PIN.
+  try {
+    registeredStudent = (window.LumioProfiles
+      && typeof LumioProfiles.findByPhone === 'function'
+      && LumioProfiles.findByPhone(studentId)) || null;
+  } catch (e) {
+    console.error('[Lumio] findByPhone lookup failed, treating number as new:', e);
+    registeredStudent = null;
+  }
   if (registeredStudent && registeredStudent.subscribed) {
     phoneEl.style.borderColor = '#ef4444';
     phoneEl.style.background = 'rgba(239,68,68,0.15)';
@@ -955,7 +1011,12 @@ function actuallyBeginTest(){
 //  login-capable kind of record from a LumioLeads entry (see that
 //  module's own comments for why leads specifically can't log in).
 // =============================================
-let registeredStudent = null;
+// registeredStudent is declared with `var` ABOVE startTest (see the STATE
+// block). It used to be a `let` down here, which meant that if ANY top-level
+// statement earlier in this script threw, `registeredStudent` stayed in the
+// temporal dead zone -- startTest() was still hoisted and callable, but died
+// with a silent ReferenceError the moment it touched this variable. That is
+// exactly the "clicking Start My Test does nothing" failure mode.
 let regPinBuffer = '';
 let regPinStage = 'create'; // 'create' -> 'confirm'
 let regFirstPin = '';
