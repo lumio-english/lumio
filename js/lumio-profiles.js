@@ -236,10 +236,39 @@
     return load().students.find(s => s.name.trim().toLowerCase() === n) || null;
   }
   function findByPhone(phone) {
-    const p = (phone || "").trim();
-    if (!p) return null;
-    return load().students.find(s => s.phone && s.phone.trim() === p) || null;
+    const raw = (phone || "").trim();
+    if (!raw) return null;
+    const students = load().students;
+    // Exact match first (covers the number saved verbatim, whatever format
+    // that was).
+    const exact = students.find(s => s.phone && s.phone.trim() === raw);
+    if (exact) return exact;
+
+    // Stored numbers are digits-only with the country code prepended and NO
+    // leading zero on the local part (see combinePhone in js/app.js and
+    // lumio-pro-test.html — e.g. Egypt "01155167475" is saved as
+    // "201155167475"). login.html, though, is just a plain text field with
+    // no country picker, so a student who registered by picking a country
+    // and typing their local number will very naturally log back in by
+    // typing that same *local* number alone, without the country code —
+    // and the exact-match above would never find them. Normalize both
+    // sides to bare digits with any leading zeros stripped, then accept a
+    // suffix match: the input is what the student actually dialled, so the
+    // saved number should end with it.
+    const digits = raw.replace(/\D/g, "").replace(/^0+/, "");
+    if (digits.length < 6) return null; // too short to safely suffix-match
+    const suffixMatches = students.filter(s => {
+      if (!s.phone) return false;
+      const stored = String(s.phone).replace(/\D/g, "");
+      return stored.length >= digits.length && stored.endsWith(digits);
+    });
+    // Only trust the suffix match when it's unambiguous — if two different
+    // students' numbers happen to share the same local digits under
+    // different country codes, refuse to guess rather than log the wrong
+    // person in.
+    return suffixMatches.length === 1 ? suffixMatches[0] : null;
   }
+
   function findByLoginCode(code) {
     const c = (code || "").trim();
     if (!c) return null;
