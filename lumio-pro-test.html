@@ -915,8 +915,21 @@ function startTest(){
   // retaking the test, or came back after registering but before
   // finishing), skip PIN creation entirely and go straight to the test --
   // asking them to set a brand new PIN on an account they already have
-  // would just be confusing.
+  // would just be confusing. EXCEPT: a number that's already an active,
+  // paying subscriber shouldn't be able to just retake the placement
+  // test at all -- that's a signal someone is trying to re-test (or
+  // re-register) a number that's already a real, paid student, not a
+  // legitimate "I forgot my account" case. Only an unsubscribed/pending
+  // account (or a brand-new number) can proceed.
   registeredStudent = (window.LumioProfiles && LumioProfiles.findByPhone(studentId)) || null;
+  if (registeredStudent && registeredStudent.subscribed) {
+    phoneEl.style.borderColor = '#ef4444';
+    phoneEl.style.background = 'rgba(239,68,68,0.15)';
+    errorEl.textContent = "This phone number already belongs to an active, subscribed student. Please use a different number, or log in from the student dashboard instead of retaking the test.";
+    errorEl.style.display = 'block';
+    phoneEl.focus();
+    return;
+  }
   if (registeredStudent) {
     actuallyBeginTest();
   } else {

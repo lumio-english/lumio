@@ -119,6 +119,7 @@
 </main>
 
 <script src="js/app.js"></script>
+<script src="js/lumio-profiles.js"></script>
 <script src="js/lumio-leads.js"></script>
 <script>
 (() => {
@@ -171,6 +172,16 @@
     const phone = (typeof Lumio !== "undefined" && Lumio.combinePhone)
       ? Lumio.combinePhone(ptPhoneCountry.value, phoneLocal)
       : phoneLocal;
+    // A phone number that's already an active, subscribed student
+    // shouldn't be able to take the placement test again -- that's not
+    // a legitimate "trying it out" case, it's a real paying student's
+    // number, and letting it through would just create a duplicate/stale
+    // lead for someone who's already enrolled.
+    const existing = window.LumioProfiles ? LumioProfiles.findByPhone(phone) : null;
+    if (existing && existing.subscribed) {
+      infoError.textContent = "This phone number already belongs to an active, subscribed student. Please contact your teacher directly instead of retaking the test.";
+      return;
+    }
     studentInfo = { name, phone, age };
     stepInfo.classList.remove("show");
     stepTest.classList.add("show");
