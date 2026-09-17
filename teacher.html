@@ -4913,21 +4913,79 @@
   //   2. A modal reused for a second student kept whatever internal
   //      scroll position it was left at from the previous time it was
   //      open, so it could open already scrolled partway down.
+  //
+  // The original version of this lock just set overflow:hidden on
+  // documentElement/body. That's well known to NOT reliably stop
+  // background touch-scrolling on mobile Safari specifically -- the
+  // background page can still shift under a finger even with overflow:
+  // hidden set, which visually detaches a position:fixed modal from
+  // where it should be relative to the (still-moving) background, and a
+  // "scroll to reach it" gesture does nothing because the modal itself
+  // never needed scrolling -- the page underneath moved instead. Now
+  // uses the standard, iOS-safe technique instead: pin body itself with
+  // position:fixed at its current scroll offset while any overlay is
+  // open, and restore the exact scroll position on close.
+  //
+  // Ref-counted (openOverlayCount) because two overlays can legitimately
+  // be open at once -- e.g. the "Remove this class?" confirm dialog
+  // (#td-confirm-overlay, a separate element, not a .td-overlay) stacks
+  // on top of an already-open Course Details (.td-overlay) -- so closing
+  // the confirm dialog must not unlock the body while Course Details is
+  // still open behind it.
+  let openOverlayCount = 0;
+  let savedScrollY = 0;
+  function lockBodyScroll() {
+    if (openOverlayCount === 0) {
+      savedScrollY = window.scrollY || window.pageYOffset || 0;
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${savedScrollY}px`;
+      document.body.style.left = "0";
+      document.body.style.right = "0";
+      document.body.style.width = "100%";
+    }
+    openOverlayCount++;
+  }
+  function unlockBodyScroll() {
+    openOverlayCount = Math.max(0, openOverlayCount - 1);
+    if (openOverlayCount === 0) {
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
+      document.body.style.width = "";
+      window.scrollTo(0, savedScrollY);
+    }
+  }
   document.querySelectorAll(".td-overlay").forEach(overlay => {
     const obs = new MutationObserver(() => {
       if (overlay.classList.contains("show")) {
-        window.scrollTo(0, 0);
-        document.documentElement.style.overflow = "hidden";
-        document.body.style.overflow = "hidden";
+        lockBodyScroll();
         overlay.scrollTop = 0;
         overlay.querySelectorAll(".td-modal-box").forEach(el => { el.scrollTop = 0; });
-      } else if (!document.querySelector(".td-overlay.show")) {
-        document.documentElement.style.overflow = "";
-        document.body.style.overflow = "";
+      } else {
+        unlockBodyScroll();
       }
     });
     obs.observe(overlay, { attributes: true, attributeFilter: ["class"] });
   });
+  // #td-confirm-overlay ("Remove this class?" etc.) is a separate element,
+  // not a .td-overlay, but must share the exact same lock mechanism --
+  // not a separately-triggered one -- so its open/close can never race
+  // against an already-open .td-overlay's async MutationObserver lock (a
+  // real bug hit while building this: calling lockBodyScroll/
+  // unlockBodyScroll synchronously from confirmDialog() while Course
+  // Details' own lock was still pending via its MutationObserver caused
+  // cancelling the confirm dialog to unlock the body even though Course
+  // Details was still open behind it).
+  (() => {
+    const overlay = document.getElementById("td-confirm-overlay");
+    if (!overlay) return;
+    const obs = new MutationObserver(() => {
+      if (overlay.classList.contains("show")) lockBodyScroll();
+      else unlockBodyScroll();
+    });
+    obs.observe(overlay, { attributes: true, attributeFilter: ["class"] });
+  })();
  } catch (e) {
    console.error("Lumio teacher dashboard error:", e);
    // Same fix as student.html: this catch wraps the ENTIRE dashboard
