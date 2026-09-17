@@ -684,7 +684,19 @@ function goPg(n){curP=n;renderT();scrollTo(0,0);}
 // ══════════════════════════════════════════
 //  DETAIL PANEL
 // ══════════════════════════════════════════
-function openD(idx){
+// Wrapper: openD/openW used to be the only definition, so any throw
+// partway through building the details/writing panel died silently --
+// the row button's onclick just did nothing, with zero sign of why,
+// which is indistinguishable from "button doesn't work" to whoever
+// clicked it. Wrapping in try/catch surfaces the real reason instead.
+function openD(idx) {
+  try { openDInner(idx); }
+  catch (e) {
+    console.error('[Lumio] openD failed:', e);
+    alert('Could not open this student\'s results: ' + (e && e.message ? e.message : e) + '\n\nPlease screenshot this and report it.');
+  }
+}
+function openDInner(idx){
   const r=filtR[idx]; if(!r)return;
   const lv=parseInt((r.level||'Level 0').replace('Level ',''))||0;
   document.getElementById('pt').textContent=(r.name||'Student')+' — Results';
@@ -701,7 +713,7 @@ function openD(idx){
       <div>
         <div style="font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;color:var(--b)">${h(r.name||'Unknown')}</div>
         <div style="font-size:.78rem;color:var(--mu);margin-top:2px">ID: ${h(r.student_id||'—')} · Age: ${h(r.age||'—')} · ${h(r.timestamp||'')}</div>
-        <div style="font-size:.78rem;color:var(--mu)">${h(LL[lv]||'')} · Total: <strong>${h(r.total||'—')}</strong></div>
+        <div style="font-size:.78rem;color:var(--mu)">${h(RPT.ll[lv]||'')} · Total: <strong>${h(r.total||'—')}</strong></div>
         ${crm}
       </div>
     </div>
@@ -754,7 +766,14 @@ function buildMist(r){
 // ══════════════════════════════════════════
 //  WRITING PANEL
 // ══════════════════════════════════════════
-function openW(idx){
+function openW(idx) {
+  try { openWInner(idx); }
+  catch (e) {
+    console.error('[Lumio] openW failed:', e);
+    alert('Could not open the writing review: ' + (e && e.message ? e.message : e) + '\n\nPlease screenshot this and report it.');
+  }
+}
+function openWInner(idx){
   const r=filtR[idx]; if(!r)return;
   document.getElementById('pt').textContent='✨ Writing — '+(r.name||'Student');
   const ws=Array.isArray(r.answers_writing)?r.answers_writing:[];
