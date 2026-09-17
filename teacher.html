@@ -1629,55 +1629,65 @@
 
 <!-- ===== Book / Edit class modal ===== -->
 <div class="td-overlay" id="classModalOverlay">
-  <div class="td-modal-box">
-    <h3 id="classModalTitle">Book a group class</h3>
-    <div class="td-field">
-      <label for="clsGroupPicker">Cohort &amp; group</label>
-      <select id="clsGroupPicker"></select>
-      <div class="td-field-hint" style="font-weight:600;color:var(--td-muted);font-size:.78rem;margin-top:4px">
-        Pick a level first if needed — only students sharing the same cohort, group, and level can be booked into one session together.
+  <div class="td-modal-box td-modal-box-wide" id="classModalBox" style="width:100%;padding:0">
+    <div style="padding:20px 22px 0"><h3 id="classModalTitle" style="margin:0 0 4px">Book a group class</h3></div>
+    <div class="td-sm-tabs" id="clsModalTabs">
+      <button type="button" class="td-sm-tab active" data-clstab="class"><span class="ic">👥</span>Class</button>
+      <button type="button" class="td-sm-tab" data-clstab="lesson"><span class="ic">📚</span>Lesson &amp; link</button>
+    </div>
+    <div class="td-sm-content">
+      <div class="td-sm-panel" data-clspanel="class">
+        <div class="td-field">
+          <label for="clsGroupPicker">Cohort &amp; group</label>
+          <select id="clsGroupPicker"></select>
+          <div class="td-field-hint" style="font-weight:600;color:var(--td-muted);font-size:.78rem;margin-top:4px">
+            Pick a level first if needed — only students sharing the same cohort, group, and level can be booked into one session together.
+          </div>
+        </div>
+        <div class="td-field">
+          <label>Students in this session <span style="font-weight:600;color:var(--td-muted)">(2–4 typical)</span></label>
+          <div id="clsStudentChecks" style="display:flex;flex-direction:column;gap:6px;max-height:140px;overflow-y:auto;border:1px solid var(--td-border);border-radius:10px;padding:8px"></div>
+          <div class="td-field-error" id="clsStudentError"></div>
+        </div>
+        <div class="td-field-row">
+          <div class="td-field">
+            <label for="clsDate">Date</label>
+            <input type="date" id="clsDate">
+          </div>
+          <div class="td-field">
+            <label for="clsTime">Start time</label>
+            <input type="time" id="clsTime">
+          </div>
+        </div>
+        <div class="td-field">
+          <label for="clsDuration">Duration</label>
+          <select id="clsDuration">
+            <option value="45" selected>45 minutes</option>
+            <option value="60">60 minutes</option>
+            <option value="75">75 minutes</option>
+            <option value="90">90 minutes (level review lesson)</option>
+          </select>
+        </div>
+      </div>
+      <div class="td-sm-panel" data-clspanel="lesson" style="display:none">
+        <div class="td-field">
+          <label for="clsLesson">Lesson</label>
+          <select id="clsLesson"></select>
+          <div class="td-field-hint" style="font-weight:600;color:var(--td-muted);font-size:.78rem;margin-top:4px">
+            Which lesson this live class is for. Each student's next lesson only unlocks once you mark them present individually — the rest of the group doesn't block or get blocked by one student's attendance.
+          </div>
+        </div>
+        <div class="td-field">
+          <label for="clsMeetingLink">Meeting link <span style="font-weight:600;color:var(--td-muted)">(Zoom or Google Meet)</span></label>
+          <input type="url" id="clsMeetingLink" placeholder="https://meet.google.com/xxx-xxxx-xxx">
+        </div>
+        <div class="td-field">
+          <label for="clsNotes">Notes <span style="font-weight:600;color:var(--td-muted)">(optional)</span></label>
+          <input type="text" id="clsNotes" placeholder="e.g. Focus on Lesson 5 vocabulary">
+        </div>
       </div>
     </div>
-    <div class="td-field">
-      <label>Students in this session <span style="font-weight:600;color:var(--td-muted)">(2–4 typical)</span></label>
-      <div id="clsStudentChecks" style="display:flex;flex-direction:column;gap:6px;max-height:160px;overflow-y:auto;border:1px solid var(--td-border);border-radius:10px;padding:8px"></div>
-      <div class="td-field-error" id="clsStudentError"></div>
-    </div>
-    <div class="td-field" style="display:flex;gap:10px">
-      <div style="flex:1">
-        <label for="clsDate">Date</label>
-        <input type="date" id="clsDate">
-      </div>
-      <div style="flex:1">
-        <label for="clsTime">Start time</label>
-        <input type="time" id="clsTime">
-      </div>
-    </div>
-    <div class="td-field">
-      <label for="clsDuration">Duration</label>
-      <select id="clsDuration">
-        <option value="45" selected>45 minutes</option>
-        <option value="60">60 minutes</option>
-        <option value="75">75 minutes</option>
-        <option value="90">90 minutes (level review lesson)</option>
-      </select>
-    </div>
-    <div class="td-field">
-      <label for="clsLesson">Lesson</label>
-      <select id="clsLesson"></select>
-      <div class="td-field-hint" style="font-weight:600;color:var(--td-muted);font-size:.78rem;margin-top:4px">
-        Which lesson this live class is for. Each student's next lesson only unlocks once you mark them present individually — the rest of the group doesn't block or get blocked by one student's attendance.
-      </div>
-    </div>
-    <div class="td-field">
-      <label for="clsMeetingLink">Meeting link <span style="font-weight:600;color:var(--td-muted)">(Zoom or Google Meet)</span></label>
-      <input type="url" id="clsMeetingLink" placeholder="https://meet.google.com/xxx-xxxx-xxx">
-    </div>
-    <div class="td-field">
-      <label for="clsNotes">Notes <span style="font-weight:600;color:var(--td-muted)">(optional)</span></label>
-      <input type="text" id="clsNotes" placeholder="e.g. Focus on Lesson 5 vocabulary">
-    </div>
-    <div class="td-modal-actions">
+    <div class="td-modal-actions" style="padding:0 22px 20px">
       <button class="td-btn" id="classModalCancel">Cancel</button>
       <button class="td-btn td-btn-primary" id="classModalSave">Save</button>
     </div>
@@ -1686,7 +1696,7 @@
 
 <!-- ===== Fixed weekly schedule modal ===== -->
 <div class="td-overlay" id="fsModalOverlay">
-  <div class="td-modal-box">
+  <div class="td-modal-box td-modal-box-wide">
     <h3>Fixed weekly schedule</h3>
     <p class="sub" style="margin-top:-4px">Books this group at the same day and time every week — subscribed students only. Cancelling one session doesn't touch the rest of the series; use "cancel this and all future" from a session's Course Details to stop it early.</p>
     <div class="td-field">
@@ -3894,16 +3904,24 @@
       document.getElementById("clsMeetingLink").value = "";
       renderClsLessonOptions();
     }
-    document.getElementById("clsDate").closest(".td-field").style.display = bulkBookingActive ? "none" : "";
+    document.getElementById("clsDate").closest(".td-field-row").style.display = bulkBookingActive ? "none" : "";
+    setClassModalTab("class");
     clsStudentError.textContent = "";
     classModalOverlay.classList.add("show");
   }
+  function setClassModalTab(tab) {
+    document.querySelectorAll("#clsModalTabs .td-sm-tab").forEach(b => b.classList.toggle("active", b.dataset.clstab === tab));
+    document.querySelectorAll("[data-clspanel]").forEach(p => p.style.display = p.dataset.clspanel === tab ? "block" : "none");
+  }
+  document.querySelectorAll("#clsModalTabs .td-sm-tab").forEach(btn => {
+    btn.addEventListener("click", () => setClassModalTab(btn.dataset.clstab));
+  });
   document.getElementById("clsGroupPicker").addEventListener("change", () => renderClsStudentChecks(new Set()));
   document.getElementById("clsStudentChecks").addEventListener("change", () => renderClsLessonOptions());
   function closeClassModal() {
     classModalOverlay.classList.remove("show");
     bulkBookingActive = false;
-    const dateField = document.getElementById("clsDate").closest(".td-field");
+    const dateField = document.getElementById("clsDate").closest(".td-field-row");
     if (dateField) dateField.style.display = "";
   }
   document.getElementById("bookClassBtn").onclick = () => openClassModal(null);
@@ -4058,7 +4076,9 @@
         <div class="td-lead-acts">
           ${lead.status === "new" ? `<button type="button" data-act="contacted">Mark contacted</button>` : ""}
           ${lead.status !== "enrolled" ? `<a href="present-trial.html?level=${trialLevelFor(lead.suggestedLevel)}&names=${encodeURIComponent(lead.name)}" target="_blank" rel="noopener" class="trial-link" data-act="trial">▶ Start Trial Class</a>` : ""}
-          ${lead.status !== "enrolled" ? `<button type="button" class="primary" data-act="convert">Convert to student</button>` : ""}
+          ${linkedAccount && linkedAccount.approved === false
+            ? `<button type="button" class="primary" data-act="approve">✅ Approve into student</button>`
+            : (lead.status !== "enrolled" ? `<button type="button" class="primary" data-act="convert">Convert to student</button>` : "")}
           ${lead.status !== "dismissed" && lead.status !== "enrolled" ? `<button type="button" class="danger" data-act="dismiss">Dismiss</button>` : ""}
           <button type="button" class="danger" data-act="remove">Remove</button>
         </div>`;
@@ -4088,6 +4108,17 @@
       if (convertBtn) convertBtn.onclick = () => {
         convertingLeadId = lead.id;
         openStudentModal(null, { name: lead.name, level: lead.suggestedLevel || "", phone: lead.phone || "" });
+      };
+      const approveBtn = row.querySelector('[data-act="approve"]');
+      if (approveBtn) approveBtn.onclick = async () => {
+        try {
+          await LumioProfiles.updateStudent(linkedAccount.id, { approved: true, subscribed: true });
+          LumioLeads.updateLead(lead.id, { status: "enrolled" });
+          const res = await LumioProfiles.syncNow();
+          renderLeads(); updateLeadsBadge(); renderRosterCards(); renderTable();
+          showToast(`${linkedAccount.name} approved and can now log in.`, "success");
+          if (!res.ok) showToast(`Approved here, but syncing to their device failed (${res.reason || "unknown error"}) — try "Sync now".`, "error");
+        } catch (err) { showToast(err.message || "Couldn't approve this account.", "error"); }
       };
       const dismissBtn = row.querySelector('[data-act="dismiss"]');
       if (dismissBtn) dismissBtn.onclick = () => {

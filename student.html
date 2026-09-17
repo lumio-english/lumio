@@ -352,6 +352,10 @@
        has to track whichever real element it's pointing at. */
   }
   @keyframes pgPop{from{opacity:0;transform:scale(.94) translateY(6px)}to{opacity:1;transform:scale(1) translateY(0)}}
+  .pg-tour-card.pg-sheet{
+    top:auto !important;bottom:14px;left:14px !important;right:14px;max-width:none;width:auto;
+    max-height:60vh;overflow-y:auto;
+  }
   .pg-tour-head{
     display:flex;align-items:flex-start;gap:10px;padding:18px 18px 4px;
   }
@@ -1815,10 +1819,15 @@
     }
 
     // Positions the floating card next to whatever's spotlighted -- below
-    // it if there's room, above it otherwise, clamped so it never runs
-    // off the left/right edge of the screen either.
+    // it if there's room, above it otherwise. If the target itself is
+    // tall enough that neither fits (a big hero/level card on a short or
+    // mobile screen), pin the card as a bottom sheet instead of centering
+    // it -- centering it over a large spotlighted element just meant the
+    // card rendered mostly behind/under the target, an unreadable overlap
+    // rather than a real fallback.
     function positionCard(targetEl) {
       const margin = 14;
+      card.classList.remove("pg-sheet");
       if (!targetEl) {
         card.style.top = "50%";
         card.style.left = "50%";
@@ -1829,11 +1838,17 @@
       const rect = targetEl.getBoundingClientRect();
       const cardRect = card.getBoundingClientRect();
       const vw = window.innerWidth, vh = window.innerHeight;
-      let top = rect.bottom + margin;
-      if (top + cardRect.height > vh - margin) {
-        top = rect.top - cardRect.height - margin;
-        if (top < margin) top = Math.max(margin, (vh - cardRect.height) / 2);
+      const fitsBelow = rect.bottom + margin + cardRect.height <= vh - margin;
+      const fitsAbove = rect.top - margin - cardRect.height >= margin;
+      if (!fitsBelow && !fitsAbove) {
+        // Bottom sheet: full-width-ish, pinned to the bottom edge, clear
+        // of the spotlighted element regardless of how tall it is.
+        card.classList.add("pg-sheet");
+        card.style.top = "";
+        card.style.left = "";
+        return;
       }
+      let top = fitsBelow ? rect.bottom + margin : rect.top - cardRect.height - margin;
       let left = rect.left + rect.width / 2 - cardRect.width / 2;
       left = Math.min(Math.max(left, margin), vw - cardRect.width - margin);
       card.style.top = top + "px";
