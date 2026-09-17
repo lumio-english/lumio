@@ -4942,22 +4942,41 @@
   function lockBodyScroll() {
     if (openOverlayCount === 0) {
       savedScrollY = window.scrollY || window.pageYOffset || 0;
+      // window.scrollTo(0,0) + overflow:hidden was the ORIGINAL, working
+      // technique. Replacing it outright with position:fixed (below) for
+      // iOS Safari's background-scroll bug turned out to be a real
+      // regression: two separate reports (the student drawer, and the
+      // Edit-student modal) showed the popup rendering wherever the page
+      // happened to be scrolled to, instead of covering the viewport --
+      // exactly what you'd expect if the viewport's actual scroll offset
+      // is left non-zero while a position:fixed;inset:0 overlay is shown.
+      // Keeping both techniques together: scrollTo+overflow:hidden
+      // guarantees correct positioning at any scroll depth (matches the
+      // known-working original behavior), and position:fixed keeps the
+      // extra iOS-specific protection against the background page still
+      // moving under a finger that overflow:hidden alone doesn't fully
+      // stop there.
+      window.scrollTo(0, 0);
+      document.documentElement.style.overflow = "hidden";
       document.body.style.position = "fixed";
-      document.body.style.top = `-${savedScrollY}px`;
+      document.body.style.top = "0";
       document.body.style.left = "0";
       document.body.style.right = "0";
       document.body.style.width = "100%";
+      document.body.style.overflow = "hidden";
     }
     openOverlayCount++;
   }
   function unlockBodyScroll() {
     openOverlayCount = Math.max(0, openOverlayCount - 1);
     if (openOverlayCount === 0) {
+      document.documentElement.style.overflow = "";
       document.body.style.position = "";
       document.body.style.top = "";
       document.body.style.left = "";
       document.body.style.right = "";
       document.body.style.width = "";
+      document.body.style.overflow = "";
       window.scrollTo(0, savedScrollY);
     }
   }
