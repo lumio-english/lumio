@@ -159,6 +159,11 @@
       if (s.sessionsRemaining === undefined) { s.sessionsRemaining = 0; needsSave = true; }
     });
     if (!Array.isArray(data.rewardCatalog)) { data.rewardCatalog = []; needsSave = true; }
+    // Tombstones: ids removed on THIS device, so a later sync's additive
+    // merge (see mergeById below) never resurrects them just because an
+    // older copy is still sitting on the shared Sheet.
+    if (!Array.isArray(data.deletedStudentIds)) { data.deletedStudentIds = []; needsSave = true; }
+    if (!Array.isArray(data.deletedTeacherIds)) { data.deletedTeacherIds = []; needsSave = true; }
 
     if (needsSave) save(data);
     return data;
@@ -233,15 +238,20 @@
   function findByName(name) {
     const n = (name || "").trim().toLowerCase();
     if (!n) return null;
-    return load().students.find(s => s.name.trim().toLowerCase() === n) || null;
+    return load().students.find(s => s.name && String(s.name).trim().toLowerCase() === n) || null;
   }
   function findByPhone(phone) {
     const raw = (phone || "").trim();
     if (!raw) return null;
     const students = load().students;
-    // Exact match first (covers the number saved verbatim, whatever format
-    // that was).
-    const exact = students.find(s => s.phone && s.phone.trim() === raw);
+    // Stored/synced phone values are supposed to be strings, but a Google
+    // Sheets round-trip hands back any purely-numeric cell as a JS Number
+    // (e.g. "201155167475" comes back as 201155167475), and that broke
+    // EVERY login attempt system-wide the moment any one student on the
+    // roster had a numeric phone -- .find() throws on the first record it
+    // touches, not just the one being looked up. String(...) everywhere a
+    // phone value is read, rather than trusting it was already a string.
+    const exact = students.find(s => s.phone && String(s.phone).trim() === raw);
     if (exact) return exact;
 
     // Stored numbers are digits-only with the country code prepended and NO
@@ -269,10 +279,19 @@
     return suffixMatches.length === 1 ? suffixMatches[0] : null;
   }
 
+
   function findByLoginCode(code) {
     const c = (code || "").trim();
     if (!c) return null;
-    return load().students.find(s => s.loginCode === c) || null;
+    // Same root cause as findByPhone: loginCode is a purely-numeric string
+    // ("482913"), and a Google Sheets round-trip hands numeric-looking
+    // cells back as a JS Number, not a string. The old `===` here didn't
+    // crash on that (unlike .trim() elsewhere) but it DID silently stop
+    // matching -- 482913 === "482913" is false -- so a student's own ID
+    // login could quietly break the moment their record round-tripped
+    // through a sync, falling through to findByPhone/findByName instead.
+    return load().students.find(s => s.loginCode !== undefined && s.loginCode !== null
+      && String(s.loginCode).trim() === c) || null;
   }
   // A student's real `id` (e.g. "s_mtl2xy8k") is an internal system key,
   // not something a young child -- the platform's actual primary
@@ -566,6 +585,15 @@
   function removeStudent(id) {
     const data = load();
     data.students = data.students.filter(s => s.id !== id);
+    // Without this, the next syncNow() pulls this student back from the
+    // Sheet (mergeById is deliberately additive — see its comment) and
+    // re-adds them locally, making removal look like it silently undoes
+    // itself. Recording the id here means the merge step below can
+    // exclude it from the incoming remote list, and since the outgoing
+    // push only ever contains what's left in data.students afterwards,
+    // the very next sync also removes the row from the shared Sheet for
+    // good.
+    if (!data.deletedStudentIds.includes(id)) data.deletedStudentIds.push(id);
     save(data);
   }
   // identifier can be the student's login code (e.g. "482913"), their
@@ -671,6 +699,8 @@
       throw new Error("You can't remove the last owner. Make someone else an owner first.");
     }
     data.teachers = data.teachers.filter(t => t.id !== id);
+    // Same tombstone mechanism as removeStudent -- see its comment.
+    if (!data.deletedTeacherIds.includes(id)) data.deletedTeacherIds.push(id);
     // unassign any students who belonged to this teacher rather than leave a dangling reference
     data.students.forEach(s => { if (s.teacherId === id) s.teacherId = data.teachers[0].id; });
     save(data);
@@ -772,6 +802,16 @@
     s.paid = toBool(s.paid, true);
     s.subscribed = toBool(s.subscribed, true);
     if (!s.currency) s.currency = "KWD";
+    // Google Sheets hands back any cell that looks purely numeric as a JS
+    // Number rather than a string -- phone ("201155167475") and loginCode
+    // ("482913") both look numeric to Sheets. Left as numbers, every
+    // string method called on them elsewhere (findByPhone's .trim(),
+    // findByLoginCode's comparison, the roster card's phone formatting,
+    // the WhatsApp link builder) either throws outright or silently stops
+    // matching. Fixed at the source here so nothing downstream has to
+    // guess the type.
+    if (s.phone !== undefined && s.phone !== null && s.phone !== "") s.phone = String(s.phone);
+    if (s.loginCode !== undefined && s.loginCode !== null && s.loginCode !== "") s.loginCode = String(s.loginCode);
     return s;
   }
   // Additive merge: keeps local-only records, adds remote-only records, and
@@ -891,10 +931,15 @@
       const remote = await res.json();
       if (remote && Array.isArray(remote.students)) {
         remote.students.forEach(parseSyncedStudent);
-        data.students = mergeById(data.students, remote.students);
+        // Drop anything removed on this device before it ever reaches the
+        // additive merge below -- otherwise a still-present Sheet row for
+        // an id we deliberately deleted comes right back as "remote-only".
+        const incomingStudents = remote.students.filter(s => !data.deletedStudentIds.includes(s.id));
+        data.students = mergeById(data.students, incomingStudents);
       }
       if (remote && Array.isArray(remote.teachers) && remote.teachers.length) {
-        const merged = mergeById(data.teachers, remote.teachers);
+        const incomingTeachers = remote.teachers.filter(t => !data.deletedTeacherIds.includes(t.id));
+        const merged = mergeById(data.teachers, incomingTeachers);
         // A brand-new device auto-seeds its own local-only "Teacher Lumi"
         // placeholder (see load() below) before anyone's had a chance to
         // sync — so the very first sync would otherwise end up with two
@@ -903,7 +948,7 @@
         // Sheet, and if the browser's current session was pointed at the
         // placeholder that just got dropped, repoint it to the real one
         // so this tab doesn't lose owner access mid-session.
-        const { teachers: deduped, replacements } = dedupeTeachersByName(merged, remote.teachers);
+        const { teachers: deduped, replacements } = dedupeTeachersByName(merged, incomingTeachers);
         data.teachers = deduped;
         const curId = getCurrentTeacherId();
         if (curId && replacements[curId]) setCurrentTeacherId(replacements[curId]);

@@ -2233,7 +2233,7 @@
         ? `Hi! Just checking in — we haven't seen ${f.student.name} start their English lessons on Lumio yet. Happy to help if you need a hand getting set up! 🌟`
         : `Hi! Just checking in on ${f.student.name}'s English lessons — it's been a little while since their last one. Let us know if there's anything we can help with! 🌟`;
       const action = f.student.phone
-        ? `<a class="td-wa-btn" target="_blank" rel="noopener" href="https://wa.me/${f.student.phone.replace(/\D/g, "")}?text=${encodeURIComponent(message)}">💬 WhatsApp</a>`
+        ? `<a class="td-wa-btn" target="_blank" rel="noopener" href="https://wa.me/${String(f.student.phone).replace(/\D/g, "")}?text=${encodeURIComponent(message)}">💬 WhatsApp</a>`
         : `<span class="sub" style="font-size:.72rem;flex-shrink:0">No phone on file</span>`;
       return `<div class="td-inactive-row">
         <div><div class="who">${f.student.avatar || ""} ${f.student.name}</div><div class="meta">${label} · ${levelName(f.student.level)}</div></div>
@@ -4764,7 +4764,7 @@
       row.className = "td-class-row";
       const waMessage = `Hi! Just a heads up — ${s.name} has ${s.sessionsRemaining || 0} class${(s.sessionsRemaining || 0) === 1 ? "" : "es"} left. Would you like to renew?`;
       const waBtn = s.phone
-        ? `<a class="td-wa-btn" target="_blank" rel="noopener" href="https://wa.me/${s.phone.replace(/\D/g, "")}?text=${encodeURIComponent(waMessage)}">💬 WhatsApp</a>`
+        ? `<a class="td-wa-btn" target="_blank" rel="noopener" href="https://wa.me/${String(s.phone).replace(/\D/g, "")}?text=${encodeURIComponent(waMessage)}">💬 WhatsApp</a>`
         : `<span class="sub" style="font-size:.72rem">No phone on file</span>`;
       row.innerHTML = `
         <div class="td-class-time"><span style="color:var(--td-coral);font-weight:800;font-size:1rem">${s.sessionsRemaining || 0}</span><span>left</span></div>
