@@ -43,6 +43,34 @@
 
   const AVATARS = ["🦊", "🐼", "🦁", "🐸", "🐵", "🐨", "🦄", "🐯", "🐰", "🐶", "🐱"];
   const TEACHER_AVATARS = ["🦉", "🎓", "📚", "🍎", "⭐", "🧑‍🏫", "👩‍🏫", "👨‍🏫", "✏️", "🌟", "💡", "🏆"];
+  // Country -> currency table used by currencyForCountry() (defined
+  // further down). Lives up here with the other module constants because
+  // load() -- which can run before the rest of this file finishes
+  // evaluating -- already needs it for its currency-fixup migration.
+  const COUNTRY_CURRENCY = [
+    { cur: "EGP", names: ["egypt", "مصر", "eg"] },
+    { cur: "KWD", names: ["kuwait", "الكويت", "kw"] },
+    { cur: "SAR", names: ["saudi arabia", "saudi", "ksa", "السعودية", "المملكة العربية السعودية", "sa"] },
+    { cur: "AED", names: ["uae", "united arab emirates", "emirates", "الإمارات", "الامارات", "dubai", "abu dhabi", "ae"] },
+    { cur: "QAR", names: ["qatar", "قطر", "qa"] },
+    { cur: "BHD", names: ["bahrain", "البحرين", "bh"] },
+    { cur: "OMR", names: ["oman", "عمان", "عُمان", "om"] },
+    { cur: "JOD", names: ["jordan", "الأردن", "الاردن", "jo"] },
+    { cur: "IQD", names: ["iraq", "العراق", "iq"] },
+    { cur: "LBP", names: ["lebanon", "لبنان", "lb"] },
+    { cur: "MAD", names: ["morocco", "المغرب", "ma"] },
+    { cur: "DZD", names: ["algeria", "الجزائر", "dz"] },
+    { cur: "TND", names: ["tunisia", "تونس", "tn"] },
+    { cur: "LYD", names: ["libya", "ليبيا", "ly"] },
+    { cur: "SDG", names: ["sudan", "السودان", "sd"] },
+    { cur: "YER", names: ["yemen", "اليمن", "ye"] },
+    { cur: "SYP", names: ["syria", "سوريا", "sy"] },
+    { cur: "TRY", names: ["turkey", "türkiye", "turkiye", "تركيا", "tr"] },
+    { cur: "GBP", names: ["uk", "united kingdom", "england", "britain", "بريطانيا", "gb"] },
+    { cur: "EUR", names: ["germany", "france", "italy", "spain", "netherlands", "ألمانيا", "فرنسا"] },
+    { cur: "USD", names: ["usa", "united states", "america", "us", "أمريكا", "الولايات المتحدة"] },
+    { cur: "CAD", names: ["canada", "كندا", "ca"] },
+  ];
 
   // ---- storage helpers (never let a blocked/opaque-origin storage crash the page) ----
   const memory = {};
@@ -172,6 +200,10 @@
       if (!Array.isArray(s.redemptions)) { s.redemptions = []; needsSave = true; }
       if (!Array.isArray(s.notes)) { s.notes = []; needsSave = true; }
       if (!Array.isArray(s.messages)) { s.messages = []; needsSave = true; }
+      if (!Array.isArray(s.referrals)) { s.referrals = []; needsSave = true; }
+      // Currency follows country (see currencyForCountry). Fix up any
+      // record saved before that rule existed.
+      { const derived = currencyForCountry(s.country); if (derived && s.currency !== derived) { s.currency = derived; needsSave = true; } }
       if (s.sessionsRemaining === undefined) { s.sessionsRemaining = 0; needsSave = true; }
     });
     if (!Array.isArray(data.rewardCatalog)) { data.rewardCatalog = []; needsSave = true; }
@@ -329,6 +361,19 @@
     while (data.students.some(s => s.loginCode === code));
     return code;
   }
+  // ---------- currency follows country ----------
+  // The "Amount paid" currency is derived from the student's country
+  // rather than picked separately, so a student in Egypt is always shown
+  // in EGP, one in Kuwait in KWD, etc. Matches English and Arabic names
+  // plus common short forms. Returns null for an unknown/blank country so
+  // callers keep whatever currency was already set.
+  function currencyForCountry(country) {
+    const key = String(country || "").trim().toLowerCase();
+    if (!key) return null;
+    const hit = COUNTRY_CURRENCY.find(e => e.names.some(n => n === key || key.includes(n) && n.length > 2));
+    return hit ? hit.cur : null;
+  }
+
   async function addStudent({ name, level, avatar, pin, loginCode, teacherId, phone, cohort, group, paid, age, gender, grade, country, tags, subscribed, amountPaid, currency, levelsPurchased, rewardPoints, bonusHours, sessionsRemaining, approved } = {}) {
     const data = load();
     name = (name || "").trim();
@@ -405,7 +450,7 @@
       // Which currency `amountPaid` is in -- KWD/SAR/AED are the ones the
       // teacher actually collects payment in; defaults to KWD only
       // because it has to default to something, not because it's assumed.
-      currency: currency || "KWD",
+      currency: currencyForCountry(country) || currency || "KWD",
       levelsPurchased: levelsPurchased === undefined || levelsPurchased === null || levelsPurchased === "" ? 0 : Number(levelsPurchased),
       // ---- Rewards ----
       // rewardPoints accumulates freely; every full 50 points can be
@@ -438,6 +483,12 @@
       // -- travels between them as part of the student record via the
       // normal roster sync, so no separate sheet or endpoint is needed.
       messages: [],
+      // People this student referred to Lumio. {id, name, phone, status,
+      // date, rewardedAt}. status: "added" -> "tested" (took the placement
+      // test) -> "trial" (attended a trial class) -> "subscribed". The
+      // moment one reaches "subscribed", the referring student is
+      // credited 5 free sessions, exactly once per referral (rewardedAt).
+      referrals: [],
       createdAt: new Date().toISOString().slice(0, 10),
       updatedAt: new Date().toISOString(),
     };
@@ -482,11 +533,15 @@
     if (patch.age !== undefined) s.age = patch.age === null || patch.age === "" ? null : Number(patch.age);
     if (patch.gender !== undefined) s.gender = patch.gender || "";
     if (patch.grade !== undefined) s.grade = (patch.grade || "").trim();
-    if (patch.country !== undefined) s.country = (patch.country || "").trim();
+    if (patch.country !== undefined) {
+      s.country = (patch.country || "").trim();
+      const derived = currencyForCountry(s.country);
+      if (derived) s.currency = derived;
+    }
     if (patch.tags !== undefined) s.tags = Array.isArray(patch.tags) ? patch.tags.map(t => String(t).trim()).filter(Boolean) : [];
     if (patch.subscribed !== undefined) s.subscribed = !!patch.subscribed;
     if (patch.amountPaid !== undefined) s.amountPaid = patch.amountPaid === null || patch.amountPaid === "" ? 0 : Number(patch.amountPaid);
-    if (patch.currency !== undefined) s.currency = patch.currency || "KWD";
+    if (patch.currency !== undefined && !currencyForCountry(s.country)) s.currency = patch.currency || "KWD";
     // loginCode is deliberately NOT patchable through the normal edit
     // flow (see addStudent's comment on why it must never change once
     // issued) -- this narrow exception exists only for repairing/
@@ -745,6 +800,84 @@
     save(data);
     return s;
   }
+
+  // ---------- referrals ----------
+  const REFERRAL_STATUSES = ["added", "tested", "trial", "subscribed"];
+  const REFERRAL_REWARD_SESSIONS = 5;
+  function addReferral(studentId, { name, phone } = {}) {
+    const data = load();
+    const s = data.students.find(x => x.id === studentId);
+    if (!s) throw new Error("Student not found.");
+    const n = String(name || "").trim();
+    if (!n) throw new Error("The referred person needs a name.");
+    if (!Array.isArray(s.referrals)) s.referrals = [];
+    const ref = {
+      id: "r_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+      name: n,
+      phone: String(phone || "").trim(),
+      status: "added",
+      date: new Date().toISOString(),
+      rewardedAt: null,
+    };
+    s.referrals.push(ref);
+    s.referralsUpdatedAt = new Date().toISOString();
+    pushMessage_(s, "referral", `🤝 Thanks for referring ${n}! We'll let you know when they take the test, join a trial, and subscribe — a subscription earns you ${REFERRAL_REWARD_SESSIONS} free sessions.`, { referralId: ref.id });
+    s.updatedAt = new Date().toISOString();
+    save(data);
+    return ref;
+  }
+  function updateReferralStatus(studentId, referralId, status) {
+    if (!REFERRAL_STATUSES.includes(status)) throw new Error("Unknown referral status: " + status);
+    const data = load();
+    const s = data.students.find(x => x.id === studentId);
+    if (!s) throw new Error("Student not found.");
+    const ref = (s.referrals || []).find(r => r.id === referralId);
+    if (!ref) throw new Error("Referral not found.");
+    const prev = ref.status;
+    ref.status = status;
+    if (status !== prev) {
+      if (status === "tested") pushMessage_(s, "referral", `📝 ${ref.name} took the placement test!`, { referralId });
+      if (status === "trial") pushMessage_(s, "referral", `🎓 ${ref.name} attended a trial class!`, { referralId });
+    }
+    // Reward exactly once per referral, on first reaching "subscribed" --
+    // moving the status back and forward again never re-credits.
+    let rewarded = false;
+    if (status === "subscribed" && !ref.rewardedAt) {
+      ref.rewardedAt = new Date().toISOString();
+      s.sessionsRemaining = (Number(s.sessionsRemaining) || 0) + REFERRAL_REWARD_SESSIONS;
+      pushMessage_(s, "referral_reward", `🎁 ${ref.name} subscribed! You earned ${REFERRAL_REWARD_SESSIONS} free sessions — they've been added to your sessions left.`, { referralId, sessions: REFERRAL_REWARD_SESSIONS });
+      rewarded = true;
+    }
+    s.referralsUpdatedAt = new Date().toISOString();
+    s.updatedAt = new Date().toISOString();
+    save(data);
+    return { referral: ref, rewarded, sessionsRemaining: s.sessionsRemaining };
+  }
+  function removeReferral(studentId, referralId) {
+    const data = load();
+    const s = data.students.find(x => x.id === studentId);
+    if (!s) throw new Error("Student not found.");
+    s.referrals = (s.referrals || []).filter(r => r.id !== referralId);
+    s.referralsUpdatedAt = new Date().toISOString();
+    s.updatedAt = new Date().toISOString();
+    save(data);
+  }
+  function listReferrals(studentId) {
+    const s = getStudent(studentId);
+    return s && Array.isArray(s.referrals) ? s.referrals.slice().reverse() : [];
+  }
+  function referralStats(studentId) {
+    const refs = listReferrals(studentId);
+    const rank = st => REFERRAL_STATUSES.indexOf(st);
+    return {
+      total: refs.length,
+      tested: refs.filter(r => rank(r.status) >= rank("tested")).length,
+      trial: refs.filter(r => rank(r.status) >= rank("trial")).length,
+      subscribed: refs.filter(r => r.status === "subscribed").length,
+      sessionsEarned: refs.filter(r => r.rewardedAt).length * REFERRAL_REWARD_SESSIONS,
+      rewardPerSubscription: REFERRAL_REWARD_SESSIONS,
+    };
+  }
   async function assignStudent(studentId, teacherId) {
     return updateStudent(studentId, { teacherId });
   }
@@ -941,13 +1074,14 @@
     if (Array.isArray(copy.redemptions)) copy.redemptions = JSON.stringify(copy.redemptions);
     if (Array.isArray(copy.notes)) copy.notes = JSON.stringify(copy.notes);
     if (Array.isArray(copy.messages)) copy.messages = JSON.stringify(copy.messages);
+    if (Array.isArray(copy.referrals)) copy.referrals = JSON.stringify(copy.referrals);
     return copy;
   }
   function parseSyncedStudent(s) {
     if (!s) return s;
     if (typeof s.tags === "string") s.tags = s.tags.split(",").map(t => t.trim()).filter(Boolean);
     else if (!Array.isArray(s.tags)) s.tags = [];
-    ["pointsLog", "redemptions", "notes", "messages"].forEach(k => {
+    ["pointsLog", "redemptions", "notes", "messages", "referrals"].forEach(k => {
       if (typeof s[k] === "string") { try { s[k] = JSON.parse(s[k] || "[]"); } catch (e) { s[k] = []; } }
       else if (!Array.isArray(s[k])) s[k] = [];
     });
@@ -1051,6 +1185,29 @@
       // mergeById also merges teacher records, which have no inbox --
       // only attach when at least one side actually carries messages.
       if (Array.isArray(local.messages) || Array.isArray(r.messages)) chosen.messages = mergedMessages;
+      // Referrals are only ever edited on the teacher's side, so instead
+      // of an additive union (which would resurrect a removed referral
+      // from the other device's stale copy, exactly the old
+      // deleted-student bug) the side that last EDITED referrals wins
+      // outright -- tracked by referralsUpdatedAt, bumped only by
+      // addReferral/updateReferralStatus/removeReferral. A student device
+      // marking messages read bumps updatedAt but never referralsUpdatedAt,
+      // so its stale referral copy can no longer overwrite the teacher's.
+      // rewardedAt stays sticky by id as a last line of defence against a
+      // subscription reward ever being granted twice.
+      if (Array.isArray(local.referrals) || Array.isArray(r.referrals)) {
+        const lt = local.referralsUpdatedAt ? Date.parse(local.referralsUpdatedAt) : 0;
+        const rt = r.referralsUpdatedAt ? Date.parse(r.referralsUpdatedAt) : 0;
+        const winner = lt >= rt ? local : r;
+        const other = winner === local ? r : local;
+        const otherById = {};
+        (Array.isArray(other.referrals) ? other.referrals : []).forEach(x => { if (x && x.id) otherById[x.id] = x; });
+        chosen.referrals = (Array.isArray(winner.referrals) ? winner.referrals : []).map(x => {
+          const o = otherById[x.id];
+          return o && o.rewardedAt && !x.rewardedAt ? Object.assign({}, x, { rewardedAt: o.rewardedAt }) : x;
+        });
+        chosen.referralsUpdatedAt = winner.referralsUpdatedAt || chosen.referralsUpdatedAt || "";
+      }
       byId[r.id] = chosen;
     });
     return Object.values(byId);
@@ -1210,6 +1367,8 @@
     addNote, listNotes,
     addMessage, addMessageOnce, listMessages, unreadMessageCount, markMessagesRead,
     isStudentActive, requestAccountDeletion, confirmAccountDeletion, declineAccountDeletion,
+    currencyForCountry,
+    addReferral, updateReferralStatus, removeReferral, listReferrals, referralStats,
     verifyStudentLogin, randomPin,
     listTeachers, getTeacher, findTeacherByName,
     addTeacher, updateTeacher, removeTeacher, verifyTeacherLogin,

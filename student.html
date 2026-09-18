@@ -859,6 +859,7 @@
   <span id="helloChip" style="display:none"></span>
   <button class="pg-launch-btn" id="myProfileBtn" style="display:none">👤 My Profile</button>
   <button class="pg-launch-btn" id="messagesBtn" style="display:none;position:relative">📬 Messages<span class="msg-badge" id="msgBadge" style="display:none">0</span></button>
+  <button class="pg-launch-btn" id="referralsBtn" style="display:none;position:relative">🤝 Referrals<span class="msg-badge" id="refBadge" style="display:none;background:#14B8A6">0</span></button>
   <button class="pg-launch-btn" id="parentGuideBtn" style="display:none">🧭 دليل ولي الأمر</button>
   <div class="sd-streak" id="streakChip"><span class="flame">🔥</span> <span id="streakVal">0</span><span class="sd-streak-label"> day streak</span></div>
   <button class="sd-avatar-btn" id="avatarBtn">🦊</button>
@@ -918,6 +919,24 @@
     <div class="mp-body">
       <div class="msg-list" id="msgList"></div>
       <div class="msg-empty" id="msgEmpty" style="display:none">No messages yet. You'll see class reminders, new lessons, and notes from your teacher here. 🙂</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Referrals (student view) ===== -->
+<div class="mp-overlay" id="referralsOverlay">
+  <div class="mp-card">
+    <button class="mp-close" id="refCloseBtn">✕</button>
+    <div class="mp-banner">
+      <div class="mp-avatar">🤝</div>
+      <h3>My Referrals</h3>
+      <div class="mp-level" id="refSubtitle">Invite friends, earn free sessions</div>
+    </div>
+    <div class="mp-body">
+      <div class="mp-tiles" id="refTiles"></div>
+      <p class="sd-hint" id="refHint" style="margin:10px 0 12px;font-weight:700;color:var(--sd-cocoa);font-size:.8rem"></p>
+      <div class="msg-list" id="refList"></div>
+      <div class="msg-empty" id="refEmpty" style="display:none">No referrals yet. Tell a friend about Lumio and ask your teacher to add them here — every friend who subscribes earns you free sessions! 🎉</div>
     </div>
   </div>
 </div>
@@ -2133,6 +2152,54 @@
     setInterval(checkClassReminders, 60 * 1000);
     refreshBadge();
   })(); } catch (e) { console.error("Lumio messages setup error:", e); }
+
+  // ---------- Referrals (student view) ----------
+  try { (function setupReferrals() {
+    if (!rosterProfile || !window.LumioProfiles) return;
+    const btn = document.getElementById("referralsBtn");
+    const badge = document.getElementById("refBadge");
+    const overlay = document.getElementById("referralsOverlay");
+    btn.style.display = "inline-flex";
+    const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+    const STATUS = {
+      added: { label: "Referred", icon: "👋", cls: "" },
+      tested: { label: "Took the test", icon: "📝", cls: "" },
+      trial: { label: "Attended a trial", icon: "🎓", cls: "" },
+      subscribed: { label: "Subscribed!", icon: "🎁", cls: "unread" },
+    };
+    function refreshBadge() {
+      const st = LumioProfiles.referralStats(rosterProfile.id);
+      badge.textContent = String(st.total);
+      badge.style.display = st.total > 0 ? "flex" : "none";
+    }
+    function render() {
+      const st = LumioProfiles.referralStats(rosterProfile.id);
+      const refs = LumioProfiles.listReferrals(rosterProfile.id);
+      document.getElementById("refTiles").innerHTML = `
+        <div class="mp-tile blue"><span class="ic">🤝</span><b>${st.total}</b><span>Referred</span></div>
+        <div class="mp-tile purple"><span class="ic">📝</span><b>${st.tested}</b><span>Took test</span></div>
+        <div class="mp-tile teal"><span class="ic">🎓</span><b>${st.trial}</b><span>Trial</span></div>
+        <div class="mp-tile coral"><span class="ic">🎁</span><b>${st.subscribed}</b><span>Subscribed</span></div>`;
+      document.getElementById("refHint").textContent = st.sessionsEarned
+        ? `🎉 You've earned ${st.sessionsEarned} free session${st.sessionsEarned === 1 ? "" : "s"} from referrals so far. Every friend who subscribes adds ${st.rewardPerSubscription} more!`
+        : `Every friend who subscribes earns you ${st.rewardPerSubscription} free sessions — added straight to your sessions left.`;
+      const list = document.getElementById("refList");
+      const empty = document.getElementById("refEmpty");
+      list.innerHTML = "";
+      empty.style.display = refs.length ? "none" : "block";
+      refs.forEach(r => {
+        const s = STATUS[r.status] || STATUS.added;
+        const el = document.createElement("div");
+        el.className = "msg-item " + s.cls;
+        el.innerHTML = `<span class="ic">${s.icon}</span><b>${esc(r.name)}</b> — ${s.label}${r.rewardedAt ? ` <span style="color:#14B8A6;font-weight:800">+${st.rewardPerSubscription} sessions</span>` : ""}<span class="when">${new Date(r.date).toLocaleDateString()}</span>`;
+        list.appendChild(el);
+      });
+    }
+    btn.onclick = () => { render(); overlay.classList.add("show"); };
+    document.getElementById("refCloseBtn").onclick = () => overlay.classList.remove("show");
+    overlay.onclick = e => { if (e.target === overlay) overlay.classList.remove("show"); };
+    refreshBadge();
+  })(); } catch (e) { console.error("Lumio referrals setup error:", e); }
 
   // ---------- My Profile (student/parent read-only view + report) ----------
   try { (function setupMyProfile() {

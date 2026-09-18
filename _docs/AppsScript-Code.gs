@@ -63,7 +63,10 @@ var ROSTER_COLUMNS = [
   // account, student hasn't answered / has confirmed" flags -- both
   // travel with the student record so the two devices involved can
   // see each other's side of the exchange through the normal sync.
-  "messages", "pendingDeletion", "deletionConfirmed"
+  "messages", "pendingDeletion", "deletionConfirmed",
+  // People this student referred (JSON array) -- see referrals in
+  // js/lumio-profiles.js.
+  "referrals", "referralsUpdatedAt"
 ];
 
 // Reward catalog is shared across all students (teacher-managed list of

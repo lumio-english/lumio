@@ -1378,6 +1378,7 @@
         <button type="button" class="td-drawer-tab" data-tab="attendance"><span class="ic">📅</span>Attend.<span class="dot"></span></button>
         <button type="button" class="td-drawer-tab" data-tab="rewards"><span class="ic">🏆</span>Rewards<span class="dot"></span></button>
         <button type="button" class="td-drawer-tab" data-tab="notes"><span class="ic">📝</span>Notes<span class="dot"></span></button>
+        <button type="button" class="td-drawer-tab" data-tab="referrals"><span class="ic">🤝</span>Referrals<span class="dot"></span></button>
       </div>
     </div>
 
@@ -1400,6 +1401,10 @@
 
       <div class="td-drawer-panel" data-panel="notes" style="display:none">
         <div id="drawerNotes"></div>
+      </div>
+
+      <div class="td-drawer-panel" data-panel="referrals" style="display:none">
+        <div id="drawerReferrals"></div>
       </div>
     </div>
 
@@ -1529,10 +1534,29 @@
             <label for="stuAmountPaid">Amount paid</label>
             <div style="display:flex;gap:6px">
               <input type="number" id="stuAmountPaid" min="0" step="0.01" placeholder="0" style="flex:1">
-              <select id="stuCurrency" style="flex:0 0 82px">
+              <select id="stuCurrency" style="flex:0 0 82px" title="Follows the student's country automatically">
+                <option value="EGP">EGP</option>
                 <option value="KWD">KWD</option>
-                <option value="SAR">SR</option>
+                <option value="SAR">SAR</option>
                 <option value="AED">AED</option>
+                <option value="QAR">QAR</option>
+                <option value="BHD">BHD</option>
+                <option value="OMR">OMR</option>
+                <option value="JOD">JOD</option>
+                <option value="IQD">IQD</option>
+                <option value="LBP">LBP</option>
+                <option value="MAD">MAD</option>
+                <option value="DZD">DZD</option>
+                <option value="TND">TND</option>
+                <option value="LYD">LYD</option>
+                <option value="SDG">SDG</option>
+                <option value="YER">YER</option>
+                <option value="SYP">SYP</option>
+                <option value="TRY">TRY</option>
+                <option value="GBP">GBP</option>
+                <option value="EUR">EUR</option>
+                <option value="USD">USD</option>
+                <option value="CAD">CAD</option>
               </select>
             </div>
           </div>
@@ -2541,6 +2565,7 @@
     }
     renderDrawerRewards(p);
     renderDrawerNotes(p);
+    renderDrawerReferrals(p);
   }
 
   function renderDrawerRewards(p) {
@@ -2636,6 +2661,72 @@
         showToast("Note added.");
       } catch (err) { showToast(err.message || "Couldn't add note.", "error"); }
     };
+  }
+
+  function renderDrawerReferrals(p) {
+    const wrap = document.getElementById("drawerReferrals");
+    if (!wrap || !window.LumioProfiles) return;
+    const refs = LumioProfiles.listReferrals(p.id);
+    const st = LumioProfiles.referralStats(p.id);
+    const STATUS_LABELS = { added: "Added", tested: "Took the test", trial: "Attended trial", subscribed: "Subscribed ✓" };
+    const rows = refs.length ? refs.map(r => `
+      <div class="td-note-row" data-ref="${r.id}" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <div style="flex:1;min-width:120px">
+          <div class="txt" style="font-weight:800">${r.name}${r.rewardedAt ? ' <span class="td-badge green" style="margin-left:4px">+' + st.rewardPerSubscription + ' sessions</span>' : ""}</div>
+          <div class="meta">${r.phone ? "+" + r.phone + " · " : ""}${new Date(r.date).toLocaleDateString()}</div>
+        </div>
+        <select data-act="status" style="padding:6px 8px;border-radius:8px;border:1px solid var(--td-border);font-family:inherit;font-weight:700">
+          ${Object.keys(STATUS_LABELS).map(k => `<option value="${k}" ${r.status === k ? "selected" : ""}>${STATUS_LABELS[k]}</option>`).join("")}
+        </select>
+        <button type="button" class="td-btn" data-act="del" title="Remove referral" style="padding:6px 9px">✕</button>
+      </div>`).join("") : `<div class="td-empty" style="padding:8px 0">No referrals yet. Add the people ${p.name} has referred below.</div>`;
+    wrap.innerHTML = `
+      <div class="td-dp-tiles" style="margin-bottom:12px">
+        <div class="td-dp-tile"><b>${st.total}</b><span>Referred</span></div>
+        <div class="td-dp-tile"><b>${st.tested}</b><span>Took test</span></div>
+        <div class="td-dp-tile"><b>${st.trial}</b><span>Trial</span></div>
+        <div class="td-dp-tile"><b>${st.subscribed}</b><span>Subscribed</span></div>
+      </div>
+      <p class="sub" style="font-size:.74rem;margin:0 0 10px">Each subscribed referral credits ${p.name} <b>${st.rewardPerSubscription} free sessions</b> automatically (once per referral). Earned so far: <b>${st.sessionsEarned}</b>.</p>
+      <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+        <input type="text" id="refNameInput" placeholder="Referred person's name" style="flex:2;min-width:140px;padding:7px 10px;border-radius:8px;border:1px solid var(--td-border);font-family:inherit">
+        <input type="text" id="refPhoneInput" placeholder="Phone (optional)" style="flex:1;min-width:110px;padding:7px 10px;border-radius:8px;border:1px solid var(--td-border);font-family:inherit">
+        <button type="button" class="td-btn td-btn-primary" id="refAddBtn">Add</button>
+      </div>
+      ${rows}`;
+    const syncQuiet = async () => {
+      const res = await LumioProfiles.syncNow();
+      if (!res.ok) showToast(`Saved here, but syncing failed (${res.reason || "unknown error"}) — ${p.name} won't see it until you click "Sync now".`, "error");
+    };
+    document.getElementById("refAddBtn").onclick = async () => {
+      const name = document.getElementById("refNameInput").value.trim();
+      const phone = document.getElementById("refPhoneInput").value.trim();
+      if (!name) return;
+      try {
+        LumioProfiles.addReferral(p.id, { name, phone });
+        renderDrawerReferrals(p); renderRosterCards();
+        showToast(`Referral added for ${p.name}.`, "success");
+        await syncQuiet();
+      } catch (err) { showToast(err.message || "Couldn't add referral.", "error"); }
+    };
+    wrap.querySelectorAll('[data-ref]').forEach(row => {
+      const refId = row.dataset.ref;
+      row.querySelector('[data-act="status"]').onchange = async (e) => {
+        try {
+          const res = LumioProfiles.updateReferralStatus(p.id, refId, e.target.value);
+          renderDrawerReferrals(p); renderRosterCards(); renderTable();
+          if (res.rewarded) showToast(`🎁 ${res.referral.name} subscribed — ${p.name} earned ${st.rewardPerSubscription} free sessions (now ${res.sessionsRemaining} left).`, "success");
+          else showToast("Referral status updated.");
+          await syncQuiet();
+        } catch (err) { showToast(err.message || "Couldn't update referral.", "error"); }
+      };
+      row.querySelector('[data-act="del"]').onclick = async () => {
+        if (!confirm("Remove this referral from the list?")) return;
+        LumioProfiles.removeReferral(p.id, refId);
+        renderDrawerReferrals(p); renderRosterCards();
+        await syncQuiet();
+      };
+    });
   }
 
   function renderDrawerAttendance(r) {
@@ -3090,6 +3181,13 @@
   function closeStudentModal() { studentModalOverlay.classList.remove("show"); convertingLeadId = null; }
 
   document.getElementById("addStudentBtn").onclick = () => openStudentModal(null);
+  // Currency follows country: as the teacher types a country, the currency
+  // dropdown updates to match (the data layer enforces the same rule on
+  // save, so this is just so what they see matches what will be stored).
+  document.getElementById("stuCountry").addEventListener("input", (e) => {
+    const cur = window.LumioProfiles ? LumioProfiles.currencyForCountry(e.target.value) : null;
+    if (cur) document.getElementById("stuCurrency").value = cur;
+  });
   document.getElementById("studentModalCancel").onclick = closeStudentModal;
   document.getElementById("studentModalCloseX").onclick = closeStudentModal;
 
