@@ -44,7 +44,6 @@
  * this script's Script Properties (Project Settings -> Script
  * Properties), never in the Sheet or in the site's code, so they're
  * never exposed to a browser.
- * a browser.
  */
 
 // ---------- tab + column definitions ----------
