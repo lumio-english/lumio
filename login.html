@@ -243,13 +243,28 @@
         setTimeout(() => resolve({ ok: false, reason: "timeout" }), 6000)
       );
 
-      Promise.race([LumioProfiles.syncNow(), timeoutPromise]).finally(() => {
-        syncStatus.style.color = "";
-        syncStatus.textContent = "";
-        pinPad.querySelectorAll("button").forEach(b => b.disabled = false);
-        idInput.disabled = false;
-        idInput.focus();
-      });
+      Promise.race([LumioProfiles.syncNow(), timeoutPromise])
+        .catch(e => ({ ok: false, reason: "exception", error: e && e.message }))
+        .then(res => {
+          // Make a failed roster pull VISIBLE instead of silently falling
+          // back to an empty local roster (which then shows the misleading
+          // "ID/PIN don't match" on a brand-new device). The most common
+          // real-world cause is the Apps Script deployment not being set
+          // to "Anyone" -- signed-out browsers get a Google sign-in page
+          // instead of JSON and the pull fails.
+          console.info("Lumio roster sync on login:", res);
+          const haveRoster = LumioProfiles.listStudents().length > 0;
+          if (res && !res.ok && !haveRoster) {
+            syncStatus.style.color = "";
+            syncStatus.textContent = "Couldn't reach the Lumio server to load your account (" + (res.reason || "unknown") + "). Check your connection and reload, or ask your teacher.";
+          } else {
+            syncStatus.style.color = "";
+            syncStatus.textContent = "";
+          }
+          pinPad.querySelectorAll("button").forEach(b => b.disabled = false);
+          idInput.disabled = false;
+          idInput.focus();
+        });
     }
   } catch (e) {
     console.error("Lumio login error:", e);
