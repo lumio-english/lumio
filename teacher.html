@@ -5030,8 +5030,22 @@
     const overlay = document.getElementById("td-confirm-overlay");
     if (!overlay) return;
     const obs = new MutationObserver(() => {
-      if (overlay.classList.contains("show")) lockBodyScroll();
-      else unlockBodyScroll();
+      if (overlay.classList.contains("show")) {
+        lockBodyScroll();
+        // The generic .td-overlay observer above resets scrollTop to 0
+        // before showing; this one, being a separate element, never did
+        // -- so if a PREVIOUS confirm dialog had scrolled this overlay's
+        // own internal scroll area (it has overflow-y:auto), the next
+        // time it opened it could still be scrolled away from its own
+        // content, leaving just the dimmed backdrop visible with the
+        // actual confirm box scrolled out of view. Same fix as every
+        // other overlay: reset it every time, right before showing.
+        overlay.scrollTop = 0;
+        const box = overlay.querySelector(".td-confirm-box");
+        if (box) box.scrollTop = 0;
+      } else {
+        unlockBodyScroll();
+      }
     });
     obs.observe(overlay, { attributes: true, attributeFilter: ["class"] });
   })();
