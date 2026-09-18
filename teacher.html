@@ -63,11 +63,9 @@
   #td-confirm-overlay.show{display:flex}
   .td-confirm-box{
     background:var(--td-surface);border-radius:18px;padding:22px;max-width:360px;width:100%;
-    box-shadow:0 24px 60px rgba(20,25,45,.28);transform:scale(.94);opacity:0;
-    animation:tdConfirmIn .18s cubic-bezier(.22,1,.36,1) forwards;
+    box-shadow:0 24px 60px rgba(20,25,45,.28);
     margin:auto;flex-shrink:0;
   }
-  @keyframes tdConfirmIn{to{transform:scale(1);opacity:1}}
   .td-confirm-box p{font-size:.9rem;font-weight:600;color:var(--td-ink);line-height:1.5;margin:0 0 18px}
   .td-confirm-actions{display:flex;gap:10px}
   .td-confirm-actions button{flex:1}
@@ -1849,9 +1847,24 @@
     return new Promise(resolve => {
       confirmMessage.textContent = message;
       confirmOkBtn.textContent = okLabel || "Confirm";
+      // Locking and resetting scroll HERE, directly and synchronously,
+      // rather than through the separate MutationObserver further down
+      // this file (which has been removed) -- that observer fires as a
+      // microtask, which should in principle still land before paint,
+      // but this dialog specifically has been the site of two rounds of
+      // "confirm box invisible/off-screen" reports despite fixes that
+      // looked correct on paper. Doing it inline, in the same
+      // synchronous call that shows the dialog, removes every
+      // asynchronous or CSS-animation-timing variable at once rather
+      // than trying to reason about exactly which one was responsible.
+      lockBodyScroll();
       confirmOverlay.classList.add("show");
+      confirmOverlay.scrollTop = 0;
+      const box = confirmOverlay.querySelector(".td-confirm-box");
+      if (box) box.scrollTop = 0;
       const cleanup = (result) => {
         confirmOverlay.classList.remove("show");
+        unlockBodyScroll();
         confirmOkBtn.onclick = null;
         confirmCancelBtn.onclick = null;
         resolve(result);
@@ -5017,38 +5030,10 @@
     });
     obs.observe(overlay, { attributes: true, attributeFilter: ["class"] });
   });
-  // #td-confirm-overlay ("Remove this class?" etc.) is a separate element,
-  // not a .td-overlay, but must share the exact same lock mechanism --
-  // not a separately-triggered one -- so its open/close can never race
-  // against an already-open .td-overlay's async MutationObserver lock (a
-  // real bug hit while building this: calling lockBodyScroll/
-  // unlockBodyScroll synchronously from confirmDialog() while Course
-  // Details' own lock was still pending via its MutationObserver caused
-  // cancelling the confirm dialog to unlock the body even though Course
-  // Details was still open behind it).
-  (() => {
-    const overlay = document.getElementById("td-confirm-overlay");
-    if (!overlay) return;
-    const obs = new MutationObserver(() => {
-      if (overlay.classList.contains("show")) {
-        lockBodyScroll();
-        // The generic .td-overlay observer above resets scrollTop to 0
-        // before showing; this one, being a separate element, never did
-        // -- so if a PREVIOUS confirm dialog had scrolled this overlay's
-        // own internal scroll area (it has overflow-y:auto), the next
-        // time it opened it could still be scrolled away from its own
-        // content, leaving just the dimmed backdrop visible with the
-        // actual confirm box scrolled out of view. Same fix as every
-        // other overlay: reset it every time, right before showing.
-        overlay.scrollTop = 0;
-        const box = overlay.querySelector(".td-confirm-box");
-        if (box) box.scrollTop = 0;
-      } else {
-        unlockBodyScroll();
-      }
-    });
-    obs.observe(overlay, { attributes: true, attributeFilter: ["class"] });
-  })();
+  // #td-confirm-overlay's own lock/scroll-reset now happens directly and
+  // synchronously inside confirmDialog() itself (see its definition
+  // earlier in this file) instead of through a separate MutationObserver
+  // here. No observer needed for it any more.
  } catch (e) {
    console.error("Lumio teacher dashboard error:", e);
    // Same fix as student.html: this catch wraps the ENTIRE dashboard
