@@ -10,7 +10,34 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
-<script src="js/app.js?v=20260918a"></script>
+<script>
+(function() {
+  // Single source of truth for cache-busting every shared script on
+  // every page. Previously each <script> tag carried its own manually-
+  // maintained "?v=XXXXXXXX" query string, which had to be bumped by
+  // hand across every HTML file on every single edit to any shared
+  // script -- forgotten three separate times in one session, each time
+  // leaving a real, already-committed fix invisible to already-open
+  // browsers with no way to tell anything had changed. This fetches
+  // js/version.json FRESH (cache: no-store equivalent, via a random
+  // query string on this one tiny file only) and uses whatever it says
+  // as the version for every script below -- so the only thing that
+  // ever needs to change, for any future fix to any shared script, is
+  // the single value inside js/version.json. No HTML file ever needs
+  // hand-editing again.
+  var v = "20260918a"; // fallback only, used if version.json can't be reached (e.g. offline)
+  try {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "js/version.json?_=" + Date.now(), false);
+    xhr.send(null);
+    if (xhr.status === 200) {
+      var parsed = JSON.parse(xhr.responseText);
+      if (parsed && parsed.v) v = parsed.v;
+    }
+  } catch (e) {}
+  document.write('<script src="js/app.js?v=' + v + '"><' + '/script>');
+})();
+</script>
 <style>
   body{opacity:1}
   .lp-reveal{opacity:0;transform:translateY(14px);animation:lpReveal .55s cubic-bezier(.22,1,.36,1) forwards}
