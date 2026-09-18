@@ -54,13 +54,28 @@
   }
   const sessionMemory = {};
   function safeSessionGet(key) {
-    try { return sessionStorage.getItem(key); } catch (e) { return sessionMemory[key] || null; }
+    // Despite the name (kept to avoid touching every call site), this is
+    // now localStorage-backed, not sessionStorage. CURRENT_TEACHER_KEY is
+    // the only thing that ever used this, and it has exactly the same
+    // "which tab did this happen in" bug the teacher-login flag itself
+    // had (see js/auth.js's own comment on that fix): sessionStorage is
+    // scoped to one browser tab, so a tab that never itself went through
+    // teacher-portal.html's picker -- which is most of them, once a
+    // teacher has the dashboard, a game preview, and a report all open
+    // in separate tabs -- had no idea which teacher was "you" even
+    // though localStorage's lumio_teacher flag correctly let it into
+    // teacher.html at all. isCurrentTeacherOwner() (and anything else
+    // gated on "is this the owner") came back false in every tab except
+    // the one exact tab the owner originally logged in from, hiding
+    // every owner-only control (Edit/New PIN/Remove on teacher cards,
+    // etc.) everywhere else.
+    try { return localStorage.getItem(key); } catch (e) { return sessionMemory[key] || null; }
   }
   function safeSessionSet(key, val) {
-    try { sessionStorage.setItem(key, val); } catch (e) { sessionMemory[key] = val; }
+    try { localStorage.setItem(key, val); } catch (e) { sessionMemory[key] = val; }
   }
   function safeSessionRemove(key) {
-    try { sessionStorage.removeItem(key); } catch (e) { delete sessionMemory[key]; }
+    try { localStorage.removeItem(key); } catch (e) { delete sessionMemory[key]; }
   }
 
   // Stable 6-digit code derived from a student's internal id. Same input
