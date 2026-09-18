@@ -171,6 +171,7 @@
       if (!Array.isArray(s.pointsLog)) { s.pointsLog = []; needsSave = true; }
       if (!Array.isArray(s.redemptions)) { s.redemptions = []; needsSave = true; }
       if (!Array.isArray(s.notes)) { s.notes = []; needsSave = true; }
+      if (!Array.isArray(s.messages)) { s.messages = []; needsSave = true; }
       if (s.sessionsRemaining === undefined) { s.sessionsRemaining = 0; needsSave = true; }
     });
     if (!Array.isArray(data.rewardCatalog)) { data.rewardCatalog = []; needsSave = true; }
@@ -430,6 +431,13 @@
       // praise -- separate from lesson/session notes, which live on the
       // class record instead. {date, text, author}.
       notes: [],
+      // The student's own inbox, shown behind the "Messages" button on
+      // their dashboard. {id, type, text, date, read, meta}. Written by
+      // the teacher's device (PIN/phone/level changes, delete requests,
+      // content-available alerts) and read/marked-read on the student's
+      // -- travels between them as part of the student record via the
+      // normal roster sync, so no separate sheet or endpoint is needed.
+      messages: [],
       createdAt: new Date().toISOString().slice(0, 10),
       updatedAt: new Date().toISOString(),
     };
@@ -441,6 +449,10 @@
     const data = load();
     const s = data.students.find(x => x.id === id);
     if (!s) throw new Error("Student not found.");
+    // Snapshot the fields that should notify the student when they
+    // change, so the messages added at the bottom reflect a real change
+    // and not just a re-save of the same value.
+    const before = { pinHash: s.pinHash, phone: s.phone, level: s.level };
     if (patch.name !== undefined) {
       const newName = patch.name.trim();
       if (!newName) throw new Error("A student needs a name.");
@@ -489,6 +501,24 @@
     if (patch.rewardPoints !== undefined) s.rewardPoints = Math.max(0, Number(patch.rewardPoints) || 0);
     if (patch.bonusHours !== undefined) s.bonusHours = Math.max(0, Number(patch.bonusHours) || 0);
     if (patch.sessionsRemaining !== undefined) s.sessionsRemaining = Math.max(0, Number(patch.sessionsRemaining) || 0);
+    // Notify the student's inbox about changes to the things they rely
+    // on to log in or that change what they're studying. Compared
+    // against the snapshot taken at the top so an edit that re-saves
+    // the same value doesn't spam them. The new PIN's value itself is
+    // deliberately NOT included: PINs never leave the device that set
+    // them (see stripPin), and a message travels through the shared
+    // Sheet in plain text -- so the notification tells them it changed
+    // and to ask their teacher, rather than leaking it.
+    if (!Array.isArray(s.messages)) s.messages = [];
+    if (patch.pin !== undefined && s.pinHash !== before.pinHash) {
+      pushMessage_(s, "pin_changed", "Your PIN was changed by your teacher. Ask them for your new PIN before your next login.");
+    }
+    if (patch.phone !== undefined && (s.phone || "") !== (before.phone || "")) {
+      pushMessage_(s, "phone_changed", s.phone ? `The phone number on your account was updated to +${s.phone}.` : "The phone number was removed from your account.");
+    }
+    if (patch.level !== undefined && s.level !== before.level) {
+      pushMessage_(s, "level_changed", `Your level was changed to ${s.level || "unassigned"}. Your lessons and games will update to match.`);
+    }
     s.updatedAt = new Date().toISOString();
     save(data);
     return s;
@@ -607,6 +637,113 @@
   function listNotes(studentId) {
     const s = getStudent(studentId);
     return s && Array.isArray(s.notes) ? s.notes.slice().reverse() : [];
+  }
+
+  // ---------- student inbox (the "Messages" button on their dashboard) ----------
+  // Internal: appends to an already-loaded student object. Callers that
+  // hold `data` save it themselves; addMessage() below is the public,
+  // load-and-save version.
+  function pushMessage_(s, type, text, meta) {
+    if (!Array.isArray(s.messages)) s.messages = [];
+    s.messages.push({
+      id: "m_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+      type: type,
+      text: text,
+      meta: meta || null,
+      date: new Date().toISOString(),
+      read: false,
+    });
+    // Keep the inbox from growing without bound on a long-lived account
+    // (every class reminder, every content alert...). Oldest drop off.
+    if (s.messages.length > 200) s.messages = s.messages.slice(-200);
+  }
+  function addMessage(studentId, { type, text, meta } = {}) {
+    const data = load();
+    const s = data.students.find(x => x.id === studentId);
+    if (!s) throw new Error("Student not found.");
+    if (!text) throw new Error("A message needs text.");
+    pushMessage_(s, type || "info", text, meta);
+    s.updatedAt = new Date().toISOString();
+    save(data);
+    return s.messages[s.messages.length - 1];
+  }
+  // Only adds if no message with this dedupeKey already exists -- for
+  // things like "class in 1 hour" reminders and "lesson N is ready"
+  // alerts that get re-evaluated on every dashboard load and must not
+  // pile up duplicates.
+  function addMessageOnce(studentId, dedupeKey, { type, text, meta } = {}) {
+    const data = load();
+    const s = data.students.find(x => x.id === studentId);
+    if (!s) return null;
+    if (!Array.isArray(s.messages)) s.messages = [];
+    if (s.messages.some(m => m.meta && m.meta.dedupeKey === dedupeKey)) return null;
+    pushMessage_(s, type || "info", text, Object.assign({}, meta || {}, { dedupeKey }));
+    s.updatedAt = new Date().toISOString();
+    save(data);
+    return s.messages[s.messages.length - 1];
+  }
+  function listMessages(studentId) {
+    const s = getStudent(studentId);
+    return s && Array.isArray(s.messages) ? s.messages.slice().reverse() : [];
+  }
+  function unreadMessageCount(studentId) {
+    const s = getStudent(studentId);
+    return s && Array.isArray(s.messages) ? s.messages.filter(m => !m.read).length : 0;
+  }
+  function markMessagesRead(studentId) {
+    const data = load();
+    const s = data.students.find(x => x.id === studentId);
+    if (!s || !Array.isArray(s.messages)) return;
+    let changed = false;
+    s.messages.forEach(m => { if (!m.read) { m.read = true; changed = true; } });
+    if (changed) { s.updatedAt = new Date().toISOString(); save(data); }
+  }
+
+  // ---------- account deletion with student confirmation ----------
+  // An "active" account is one the student still has something invested
+  // in: paid session cards they haven't used, or money on record. For
+  // those, the teacher's "Delete Account" doesn't delete outright -- it
+  // sends the student a message asking them to confirm, and only their
+  // confirmation (from their own dashboard) finalizes it. Anything not
+  // active is deleted immediately, same as before.
+  function isStudentActive(s) {
+    if (!s) return false;
+    return (Number(s.sessionsRemaining) || 0) > 0 || (Number(s.amountPaid) || 0) > 0;
+  }
+  function requestAccountDeletion(studentId, requestedBy) {
+    const data = load();
+    const s = data.students.find(x => x.id === studentId);
+    if (!s) throw new Error("Student not found.");
+    s.pendingDeletion = true;
+    s.deletionConfirmed = false;
+    pushMessage_(s, "delete_request",
+      `${requestedBy || "Your teacher"} wants to delete your Lumio account. You still have ${Number(s.sessionsRemaining) || 0} session${(Number(s.sessionsRemaining) || 0) === 1 ? "" : "s"} left. Please confirm below if you agree, or keep your account.`,
+      { requestedBy: requestedBy || "" });
+    s.updatedAt = new Date().toISOString();
+    save(data);
+    return s;
+  }
+  // Student's side, from their own dashboard.
+  function confirmAccountDeletion(studentId) {
+    const data = load();
+    const s = data.students.find(x => x.id === studentId);
+    if (!s) throw new Error("Student not found.");
+    s.deletionConfirmed = true;
+    s.updatedAt = new Date().toISOString();
+    save(data);
+    return s;
+  }
+  function declineAccountDeletion(studentId) {
+    const data = load();
+    const s = data.students.find(x => x.id === studentId);
+    if (!s) throw new Error("Student not found.");
+    s.pendingDeletion = false;
+    s.deletionConfirmed = false;
+    // Tell the teacher's side too, so they see why nothing happened.
+    pushMessage_(s, "delete_declined", "You chose to keep your account. Your teacher has been notified.", null);
+    s.updatedAt = new Date().toISOString();
+    save(data);
+    return s;
   }
   async function assignStudent(studentId, teacherId) {
     return updateStudent(studentId, { teacherId });
@@ -803,13 +940,14 @@
     if (Array.isArray(copy.pointsLog)) copy.pointsLog = JSON.stringify(copy.pointsLog);
     if (Array.isArray(copy.redemptions)) copy.redemptions = JSON.stringify(copy.redemptions);
     if (Array.isArray(copy.notes)) copy.notes = JSON.stringify(copy.notes);
+    if (Array.isArray(copy.messages)) copy.messages = JSON.stringify(copy.messages);
     return copy;
   }
   function parseSyncedStudent(s) {
     if (!s) return s;
     if (typeof s.tags === "string") s.tags = s.tags.split(",").map(t => t.trim()).filter(Boolean);
     else if (!Array.isArray(s.tags)) s.tags = [];
-    ["pointsLog", "redemptions", "notes"].forEach(k => {
+    ["pointsLog", "redemptions", "notes", "messages"].forEach(k => {
       if (typeof s[k] === "string") { try { s[k] = JSON.parse(s[k] || "[]"); } catch (e) { s[k] = []; } }
       else if (!Array.isArray(s[k])) s[k] = [];
     });
@@ -830,6 +968,8 @@
     s.approved = toBool(s.approved, true);
     s.paid = toBool(s.paid, true);
     s.subscribed = toBool(s.subscribed, true);
+    s.pendingDeletion = toBool(s.pendingDeletion, false);
+    s.deletionConfirmed = toBool(s.deletionConfirmed, false);
     if (!s.currency) s.currency = "KWD";
     // Google Sheets hands back any cell that looks purely numeric as a JS
     // Number rather than a string -- phone ("201155167475") and loginCode
@@ -880,17 +1020,38 @@
       };
       const localTime = local.updatedAt ? Date.parse(local.updatedAt) : 0;
       const remoteTime = r.updatedAt ? Date.parse(r.updatedAt) : 0;
+      // Messages are written by the teacher's device and marked read on
+      // the student's -- two devices editing the same record. Plain
+      // newest-updatedAt-wins would drop whichever side lost: a new
+      // message from the teacher, or a read-mark from the student. So
+      // regardless of which copy wins below, the inbox is the union of
+      // both, by message id, with "read" sticky once either side set it.
+      const unionMessages = (a, b) => {
+        const byMsgId = {};
+        (Array.isArray(a) ? a : []).concat(Array.isArray(b) ? b : []).forEach(m => {
+          if (!m || !m.id) return;
+          const prev = byMsgId[m.id];
+          byMsgId[m.id] = prev ? Object.assign({}, prev, m, { read: !!(prev.read || m.read) }) : m;
+        });
+        return Object.values(byMsgId).sort((x, y) => Date.parse(x.date || 0) - Date.parse(y.date || 0));
+      };
+      const mergedMessages = unionMessages(local.messages, r.messages);
+      let chosen;
       if (localTime > remoteTime) {
         // this device's edit is newer than what's on the Sheet — keep it,
         // and it'll get pushed up right after this merge step runs.
-        byId[r.id] = local;
+        chosen = local;
       } else if (local.pin && local.pinHash && local.pinHash === r.pinHash) {
         // remote is newer or tied, but this device still knows the
         // matching plaintext PIN — keep that for local reveal/print.
-        byId[r.id] = keepIdentity(Object.assign({}, r, { pin: local.pin }));
+        chosen = keepIdentity(Object.assign({}, r, { pin: local.pin }));
       } else {
-        byId[r.id] = keepIdentity(Object.assign({}, r));
+        chosen = keepIdentity(Object.assign({}, r));
       }
+      // mergeById also merges teacher records, which have no inbox --
+      // only attach when at least one side actually carries messages.
+      if (Array.isArray(local.messages) || Array.isArray(r.messages)) chosen.messages = mergedMessages;
+      byId[r.id] = chosen;
     });
     return Object.values(byId);
   }
@@ -1047,6 +1208,8 @@
     addRewardPoints, redeemReward, pointsThisMonthForStudent,
     listRewardCatalog, addRewardCatalogItem, removeRewardCatalogItem, redeemCatalogItem,
     addNote, listNotes,
+    addMessage, addMessageOnce, listMessages, unreadMessageCount, markMessagesRead,
+    isStudentActive, requestAccountDeletion, confirmAccountDeletion, declineAccountDeletion,
     verifyStudentLogin, randomPin,
     listTeachers, getTeacher, findTeacherByName,
     addTeacher, updateTeacher, removeTeacher, verifyTeacherLogin,

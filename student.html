@@ -400,6 +400,29 @@
   }
   .pg-skip:hover{opacity:1;text-decoration:underline}
 
+  /* ---------- Messages (student inbox) ---------- */
+  .msg-badge{
+    position:absolute;top:-6px;right:-6px;min-width:20px;height:20px;padding:0 6px;border-radius:99px;
+    background:#ef4444;color:#fff;font-size:.68rem;font-weight:900;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 2px 6px rgba(0,0,0,.25);
+  }
+  .msg-list{display:flex;flex-direction:column;gap:10px;max-height:60vh;overflow-y:auto}
+  .msg-item{
+    background:var(--sd-cream);border-radius:14px;padding:12px 14px;border-left:4px solid var(--sd-orange);
+    font-size:.85rem;color:var(--sd-cocoa);line-height:1.45;
+  }
+  .msg-item.unread{background:#FFF3D6;border-left-color:#ef4444}
+  .msg-item .when{display:block;font-size:.68rem;color:var(--sd-cocoa-soft);font-weight:700;margin-top:6px}
+  .msg-item .ic{font-size:1rem;margin-right:4px}
+  .msg-item.delete_request{border-left-color:#ef4444;background:#fee2e2}
+  .msg-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .msg-actions button{
+    border:none;border-radius:10px;padding:8px 14px;font-weight:800;font-size:.8rem;cursor:pointer;font-family:inherit;
+  }
+  .msg-actions .keep{background:#fff;color:var(--sd-cocoa);border:1px solid rgba(0,0,0,.12)}
+  .msg-actions .confirm-del{background:#ef4444;color:#fff}
+  .msg-empty{text-align:center;color:var(--sd-cocoa-soft);font-weight:700;font-size:.85rem;padding:20px 8px}
+
   /* ---------- My Profile (student/parent read-only view) ---------- */
   .mp-overlay{
     position:fixed;inset:0;background:rgba(38,26,18,.5);z-index:8500;display:none;
@@ -810,6 +833,7 @@
   <div class="sd-spacer"></div>
   <span id="helloChip" style="display:none"></span>
   <button class="pg-launch-btn" id="myProfileBtn" style="display:none">👤 My Profile</button>
+  <button class="pg-launch-btn" id="messagesBtn" style="display:none;position:relative">📬 Messages<span class="msg-badge" id="msgBadge" style="display:none">0</span></button>
   <button class="pg-launch-btn" id="parentGuideBtn" style="display:none">🧭 دليل ولي الأمر</button>
   <div class="sd-streak" id="streakChip"><span class="flame">🔥</span> <span id="streakVal">0</span><span class="sd-streak-label"> day streak</span></div>
   <button class="sd-avatar-btn" id="avatarBtn">🦊</button>
@@ -856,6 +880,22 @@
 </div>
 
 <div id="printMyReport"></div>
+
+<!-- ===== Messages (student inbox) ===== -->
+<div class="mp-overlay" id="messagesOverlay">
+  <div class="mp-card">
+    <button class="mp-close" id="msgCloseBtn">✕</button>
+    <div class="mp-banner">
+      <div class="mp-avatar">📬</div>
+      <h3>Messages</h3>
+      <div class="mp-level" id="msgSubtitle">Your notifications</div>
+    </div>
+    <div class="mp-body">
+      <div class="msg-list" id="msgList"></div>
+      <div class="msg-empty" id="msgEmpty" style="display:none">No messages yet. You'll see class reminders, new lessons, and notes from your teacher here. 🙂</div>
+    </div>
+  </div>
+</div>
 
 <main class="sd-wrap">
 
@@ -1957,6 +1997,112 @@
       setTimeout(openGuide, 600); // let the dashboard render first
     }
   })(); } catch (e) { console.error("Lumio parent guide error:", e); }
+
+  // ---------- Messages (student inbox) ----------
+  try { (function setupMessages() {
+    if (!rosterProfile || !window.LumioProfiles) return;
+    const btn = document.getElementById("messagesBtn");
+    const badge = document.getElementById("msgBadge");
+    const overlay = document.getElementById("messagesOverlay");
+    const list = document.getElementById("msgList");
+    const empty = document.getElementById("msgEmpty");
+    btn.style.display = "inline-flex";
+
+    const ICONS = {
+      pin_changed: "🔑", phone_changed: "📱", level_changed: "📈", class_booked: "📅",
+      class_reminder: "⏰", content_available: "✨", delete_request: "⚠️", delete_declined: "✅", info: "💬",
+    };
+    const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const fmtWhen = iso => {
+      try {
+        const d = new Date(iso);
+        return d.toLocaleDateString(undefined, { month: "short", day: "numeric" }) + " · " + d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+      } catch (e) { return ""; }
+    };
+
+    function refreshBadge() {
+      const n = LumioProfiles.unreadMessageCount(rosterProfile.id);
+      badge.textContent = String(n);
+      badge.style.display = n > 0 ? "flex" : "none";
+    }
+
+    function renderInbox() {
+      const p = LumioProfiles.getStudent(rosterProfile.id);
+      const msgs = LumioProfiles.listMessages(rosterProfile.id);
+      list.innerHTML = "";
+      empty.style.display = msgs.length ? "none" : "block";
+      msgs.forEach(m => {
+        const el = document.createElement("div");
+        el.className = "msg-item " + (m.type || "info") + (m.read ? "" : " unread");
+        let actions = "";
+        // A deletion request stays actionable until the student answers.
+        if (m.type === "delete_request" && p && p.pendingDeletion && !p.deletionConfirmed) {
+          actions = `<div class="msg-actions">
+            <button type="button" class="keep" data-act="keep">Keep my account</button>
+            <button type="button" class="confirm-del" data-act="confirm">Yes, delete my account</button>
+          </div>`;
+        } else if (m.type === "delete_request" && p && p.deletionConfirmed) {
+          actions = `<div class="when">You confirmed. Your teacher will complete the deletion.</div>`;
+        }
+        el.innerHTML = `<span class="ic">${ICONS[m.type] || ICONS.info}</span>${esc(m.text)}${actions}<span class="when">${fmtWhen(m.date)}</span>`;
+        const keepBtn = el.querySelector('[data-act="keep"]');
+        const confirmBtn = el.querySelector('[data-act="confirm"]');
+        if (keepBtn) keepBtn.onclick = async () => {
+          LumioProfiles.declineAccountDeletion(rosterProfile.id);
+          renderInbox(); refreshBadge();
+          showToast("Okay — your account stays. Your teacher has been told.", "✅");
+          LumioProfiles.syncNow().catch(() => {});
+        };
+        if (confirmBtn) confirmBtn.onclick = async () => {
+          if (!confirm("Are you sure? Once your teacher completes this, your account and progress are deleted permanently.")) return;
+          LumioProfiles.confirmAccountDeletion(rosterProfile.id);
+          renderInbox(); refreshBadge();
+          showToast("Confirmed. Your teacher will complete the deletion.", "✅");
+          LumioProfiles.syncNow().catch(() => {});
+        };
+        list.appendChild(el);
+      });
+    }
+
+    btn.onclick = () => {
+      renderInbox();
+      overlay.classList.add("show");
+      // Opening the inbox counts as reading it.
+      LumioProfiles.markMessagesRead(rosterProfile.id);
+      refreshBadge();
+      LumioProfiles.syncNow().catch(() => {});
+    };
+    document.getElementById("msgCloseBtn").onclick = () => overlay.classList.remove("show");
+    overlay.onclick = e => { if (e.target === overlay) overlay.classList.remove("show"); };
+
+    // ---- class reminders: "your class starts in about an hour" ----
+    // Generated on the student's own device (no server-side scheduler
+    // exists), re-checked on load and every minute while the dashboard
+    // is open. addMessageOnce keys on the class id so a reminder is only
+    // ever written once per class no matter how often this runs.
+    function checkClassReminders() {
+      if (!window.LumioSchedule) return;
+      const upcoming = LumioSchedule.upcomingForStudent(rosterProfile.name, 10) || [];
+      const now = Date.now();
+      upcoming.forEach(c => {
+        const start = new Date(c.date + "T" + (c.startTime || "00:00") + ":00").getTime();
+        if (isNaN(start)) return;
+        const minsUntil = (start - now) / 60000;
+        if (minsUntil > 0 && minsUntil <= 60) {
+          const lesson = c.lessonNumber ? `Lesson ${c.lessonNumber}` : "Your class";
+          const added = LumioProfiles.addMessageOnce(rosterProfile.id, `reminder_${c.id}`, {
+            type: "class_reminder",
+            text: `⏰ ${lesson} starts in about ${Math.max(1, Math.round(minsUntil))} minute${Math.round(minsUntil) === 1 ? "" : "s"} (${c.startTime}). Get your notebook ready!${c.meetingLink ? " Your join link is on the dashboard." : ""}`,
+            meta: { classId: c.id },
+          });
+          if (added) { refreshBadge(); showToast(`⏰ ${lesson} starts soon!`, "⏰"); }
+        }
+      });
+    }
+    checkClassReminders();
+    setInterval(checkClassReminders, 60 * 1000);
+    refreshBadge();
+  })(); } catch (e) { console.error("Lumio messages setup error:", e); }
 
   // ---------- My Profile (student/parent read-only view + report) ----------
   try { (function setupMyProfile() {

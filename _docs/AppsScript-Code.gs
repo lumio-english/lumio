@@ -58,7 +58,12 @@ var ROSTER_COLUMNS = [
   "paid", "approved",
   "subscribed", "amountPaid", "currency", "levelsPurchased",
   "rewardPoints", "bonusHours", "sessionsRemaining",
-  "pointsLog", "redemptions", "notes"
+  "pointsLog", "redemptions", "notes",
+  // Student inbox (JSON array) + the "teacher asked to delete this
+  // account, student hasn't answered / has confirmed" flags -- both
+  // travel with the student record so the two devices involved can
+  // see each other's side of the exchange through the normal sync.
+  "messages", "pendingDeletion", "deletionConfirmed"
 ];
 
 // Reward catalog is shared across all students (teacher-managed list of

@@ -2912,7 +2912,11 @@
           <button type="button" data-act="pin">🔑 New PIN</button>
           <button type="button" data-act="recordings" title="Recordings">🎙️ Audio</button>
           <a data-act="report" style="text-decoration:none" title="Report">📋 Report</a>
-          <button type="button" class="danger" data-act="remove" style="grid-column:1 / -1">Remove student</button>
+          <button type="button" class="danger" data-act="remove" style="grid-column:1 / -1">${
+            p.deletionConfirmed ? "✅ Student confirmed — Delete Account now"
+            : p.pendingDeletion ? "⏳ Deletion requested — awaiting student"
+            : "🗑 Delete Account"
+          }</button>
         </div>`;
       const pinVal = card.querySelector(".pinrow .pinval");
       const pinToggle = card.querySelector(".pintoggle");
@@ -2939,22 +2943,97 @@
           }
         });
       };
+      // "Delete Account" (replaces the old "Remove student"). Uses the
+      // browser's own confirm() rather than the custom overlay dialog,
+      // so this destructive action is never blocked by any overlay
+      // rendering issue -- a native prompt always shows.
       card.querySelector('[data-act="remove"]').onclick = async () => {
-        const ok = await confirmDialog(`Remove ${p.name} from the roster? They won't be able to log in until re-added.`, "Remove");
-        if (ok) {
-          LumioProfiles.removeStudent(p.id);
-          renderRosterCards(); renderTable(); renderInactivity();
-          showToast(`${p.name} removed from the roster.`);
-          // The removal itself is local-only until this succeeds -- surfacing
-          // a failure here (rather than swallowing it) matters because
-          // otherwise a teacher sees "removed" and has no idea it never
-          // actually reached the shared Sheet, and the student quietly
-          // reappears on every other device's next sync.
-          const res = await LumioProfiles.syncNow();
-          if (!res.ok) showToast(`${p.name} was removed here, but the sync to your Sheet failed (${res.reason || "unknown error"}) — click "Sync now" once you're back online.`, "error");
+        if (p.deletionConfirmed) {
+          // Student already confirmed from their side -- finalize now.
+          if (!confirm(`${p.name} confirmed the deletion. Delete their account permanently now?`)) return;
+          await finalizeStudentDeletion(p);
+          return;
         }
+        if (LumioProfiles.isStudentActive(p)) {
+          const left = Number(p.sessionsRemaining) || 0;
+          const paid = Number(p.amountPaid) || 0;
+          const why = [left ? `${left} session${left === 1 ? "" : "s"} left` : "", paid ? `${paid} ${p.currency || ""} paid`.trim() : ""].filter(Boolean).join(" and ");
+          if (p.pendingDeletion) {
+            showToast(`A deletion request is already waiting for ${p.name} to confirm from their dashboard.`, "info");
+            return;
+          }
+          const ok = confirm(`Are you sure you want to delete ${p.name}'s account?\n\nThis account is still active (${why}), so it won't be deleted right away. ${p.name} will get a message on their dashboard asking them to confirm, and the account is only deleted once they agree.\n\nSend the deletion request?`);
+          if (!ok) return;
+          const me = LumioProfiles.getCurrentTeacher();
+          LumioProfiles.requestAccountDeletion(p.id, me ? me.name : "Your teacher");
+          renderRosterCards(); renderTable();
+          const res = await LumioProfiles.syncNow();
+          if (!res.ok) showToast(`Request saved here, but syncing failed (${res.reason || "unknown error"}) — ${p.name} won't see it until you click "Sync now".`, "error");
+          else showToast(`Deletion request sent — ${p.name} will see it in their Messages and can confirm from there.`, "success");
+          return;
+        }
+        // Not active (no sessions left, nothing paid) -- delete outright.
+        const ok = confirm(`Are you sure you want to delete ${p.name}'s account?\n\nThis is permanent. They won't be able to log in, and their record is removed from every device.`);
+        if (!ok) return;
+        await finalizeStudentDeletion(p);
       };
       rosterGrid.appendChild(card);
+    });
+  }
+
+  // Shared by "Delete Account" (inactive account, or one the student has
+  // confirmed) and the auto-finalize sweep in renderRosterCards.
+  async function finalizeStudentDeletion(p) {
+    LumioProfiles.removeStudent(p.id);
+    renderRosterCards(); renderTable(); renderInactivity();
+    showToast(`${p.name}'s account was deleted.`);
+    // The removal itself is local-only until this succeeds -- surfacing
+    // a failure here (rather than swallowing it) matters because
+    // otherwise a teacher sees "deleted" and has no idea it never
+    // actually reached the shared Sheet, and the student quietly
+    // reappears on every other device's next sync.
+    const res = await LumioProfiles.syncNow();
+    if (!res.ok) showToast(`${p.name} was deleted here, but the sync to your Sheet failed (${res.reason || "unknown error"}) — click "Sync now" once you're back online.`, "error");
+  }
+
+  // ---------- student inbox notifications (teacher-side triggers) ----------
+  function fmtClassWhen(c) {
+    try {
+      const d = new Date(c.date + "T00:00:00");
+      const day = d.toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
+      return `${day} at ${c.startTime}`;
+    } catch (e) { return `${c.date} ${c.startTime}`; }
+  }
+  // A class was just booked -> each student in it gets: the booking
+  // itself, and that this lesson's preparation is now open to them.
+  function notifyStudentsClassBooked(c) {
+    if (!c || !window.LumioProfiles || !Array.isArray(c.students)) return;
+    c.students.forEach(ref => {
+      const s = ref.studentId ? LumioProfiles.getStudent(ref.studentId) : LumioProfiles.findByName(ref.studentName);
+      if (!s) return;
+      const lesson = c.lessonNumber ? `Lesson ${c.lessonNumber}` : "your next lesson";
+      LumioProfiles.addMessageOnce(s.id, `booked_${c.id}`, {
+        type: "class_booked",
+        text: `📅 A class was booked for you: ${lesson} on ${fmtClassWhen(c)}.`,
+        meta: { classId: c.id, lessonNumber: c.lessonNumber || null },
+      });
+      LumioProfiles.addMessageOnce(s.id, `prep_${c.id}`, {
+        type: "content_available",
+        text: `📖 ${lesson}'s preparation is ready — open it from your dashboard before class!`,
+        meta: { classId: c.id, lessonNumber: c.lessonNumber || null, content: "prep" },
+      });
+    });
+  }
+  // Marked present -> the after-class content for that lesson opens up.
+  function notifyStudentAttended(c, ref) {
+    if (!c || !window.LumioProfiles) return;
+    const s = ref.studentId ? LumioProfiles.getStudent(ref.studentId) : LumioProfiles.findByName(ref.studentName);
+    if (!s) return;
+    const lesson = c.lessonNumber ? `Lesson ${c.lessonNumber}` : "today's lesson";
+    LumioProfiles.addMessageOnce(s.id, `after_${c.id}`, {
+      type: "content_available",
+      text: `🎉 Great work in ${lesson}! Your homework, the post-lesson game, and the next story part are now available on your dashboard.`,
+      meta: { classId: c.id, lessonNumber: c.lessonNumber || null, content: "homework,game,story" },
     });
   }
 
@@ -3443,6 +3522,7 @@
           if (!btn) return;
           btn.onclick = () => {
             LumioSchedule.markAttendance(c.id, ref, val);
+            if (val === "present") notifyStudentAttended(c, ref);
             renderSchedule();
             const labels = { present: "present ✓", absent: "absent", "no-show": "a no-show" };
             showToast(`Marked ${sname} ${labels[val]}.`, val === "present" ? "success" : "error");
@@ -3730,6 +3810,7 @@
         if (!btn) return;
         btn.onclick = () => {
           LumioSchedule.markAttendance(c.id, ref, val);
+          if (val === "present") notifyStudentAttended(c, ref);
           const fresh = LumioSchedule.getClass(c.id);
           if (fresh) openCourseDetails(fresh); // re-render this popup with the updated badge
           renderSchedule();
@@ -4100,7 +4181,7 @@
       let created = 0;
       slots.forEach((slot, i) => {
         try {
-          LumioSchedule.addClass({
+          const createdCls = LumioSchedule.addClass({
             students: picked.map(s => ({ studentId: s.id, studentName: s.name })),
             teacherId: (first && first.teacherId) || (activeTeacher ? activeTeacher.id : null),
             teacherName: activeTeacher ? activeTeacher.name : "",
@@ -4111,6 +4192,7 @@
             meetingLink: document.getElementById("clsMeetingLink").value.trim(),
             notes: clsNotesInput.value.trim(),
           });
+          notifyStudentsClassBooked(createdCls);
           created++;
         } catch (e) { /* skip a slot that fails validation, keep going */ }
       });
@@ -4142,7 +4224,8 @@
       if (editingClassId) {
         LumioSchedule.updateClass(editingClassId, payload);
       } else {
-        LumioSchedule.addClass(payload);
+        const created = LumioSchedule.addClass(payload);
+        notifyStudentsClassBooked(created);
       }
       closeClassModal();
       renderScheduleActive();
