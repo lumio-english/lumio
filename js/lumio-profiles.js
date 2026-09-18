@@ -236,12 +236,18 @@
     return load().students.find(s => s.id === id) || null;
   }
   function findByName(name) {
-    const n = (name || "").trim().toLowerCase();
+    const n = String(name || "").trim().toLowerCase();
     if (!n) return null;
     return load().students.find(s => s.name && String(s.name).trim().toLowerCase() === n) || null;
   }
   function findByPhone(phone) {
-    const raw = (phone || "").trim();
+    // Defensive on the INPUT too, not just the stored records searched
+    // below -- this exact "a Sheets round-trip handed back a Number
+    // instead of a string" bug has now shown up from more than one
+    // caller (a student's own phone field, and separately a lead's),
+    // so guard the argument itself rather than relying on every future
+    // caller to remember to coerce it first.
+    const raw = String(phone || "").trim();
     if (!raw) return null;
     const students = load().students;
     // Stored/synced phone values are supposed to be strings, but a Google
@@ -281,7 +287,7 @@
 
 
   function findByLoginCode(code) {
-    const c = (code || "").trim();
+    const c = String(code || "").trim();
     if (!c) return null;
     // Same root cause as findByPhone: loginCode is a purely-numeric string
     // ("482913"), and a Google Sheets round-trip hands numeric-looking

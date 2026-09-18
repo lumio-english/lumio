@@ -154,6 +154,21 @@
       const res = await fetchWithTimeout(cfg.url + "?action=pullLeads");
       const remote = await res.json();
       if (remote && Array.isArray(remote.leads)) {
+        // Same bug class already fixed in js/lumio-profiles.js's
+        // parseSyncedStudent: Google Sheets hands back any purely-
+        // numeric cell as a JS Number, not a string. A lead's phone
+        // number ("201155167475") looks numeric to Sheets, so it can
+        // come back as a Number here -- and every string method called
+        // on a lead's phone elsewhere (LumioProfiles.findByPhone's
+        // .trim(), used to show a linked account next to a lead in the
+        // teacher dashboard) throws the instant it hits one. This was
+        // never normalized here the way the roster module already is,
+        // so it crashed on every single sync and on every page load
+        // that renders the Leads list, for every teacher whose Sheet
+        // had ever round-tripped a lead's phone number as a number.
+        remote.leads.forEach(lead => {
+          if (lead.phone !== undefined && lead.phone !== null && lead.phone !== "") lead.phone = String(lead.phone);
+        });
         data.leads = mergeById(data.leads, remote.leads);
         save(data);
       }
