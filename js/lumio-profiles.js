@@ -937,6 +937,30 @@
       // local roster over whatever's already shared.
       const res = await fetchWithTimeout(cfg.url + "?action=pullRoster");
       const remote = await res.json();
+      // Fold the SHARED tombstone list into this device's own local one
+      // before anything else. This is what makes a deletion actually
+      // reach every device, not just prevent it from bouncing back on
+      // the one that deleted it: a device that already had "eslam" or
+      // "abdallah" cached locally from before a deletion happened
+      // elsewhere would otherwise keep them forever, since the roster/
+      // teacher merge below is deliberately additive and never infers
+      // a deletion just because a record is missing from a pull.
+      if (remote && Array.isArray(remote.deletedIds)) {
+        remote.deletedIds.forEach(entry => {
+          if (!entry || !entry.id) return;
+          if (entry.type === "teacher") {
+            if (!data.deletedTeacherIds.includes(entry.id)) data.deletedTeacherIds.push(entry.id);
+          } else {
+            if (!data.deletedStudentIds.includes(entry.id)) data.deletedStudentIds.push(entry.id);
+          }
+        });
+        // Now that this device knows about every tombstone the Sheet
+        // carries (not just the ones it created itself), actually prune
+        // any local record that matches one -- this is the step that
+        // makes a stale local copy on another device finally disappear.
+        data.students = data.students.filter(s => !data.deletedStudentIds.includes(s.id));
+        data.teachers = data.teachers.filter(t => !data.deletedTeacherIds.includes(t.id));
+      }
       if (remote && Array.isArray(remote.students)) {
         remote.students.forEach(parseSyncedStudent);
         // Drop anything removed on this device before it ever reaches the
@@ -978,6 +1002,15 @@
           students: data.students.map(stripPin),
           teachers: data.teachers.map(stripPin),
           rewardCatalog: data.rewardCatalog,
+          // Always the union of what this device knew plus whatever the
+          // Sheet already had (folded in during the pull above) -- never
+          // just this device's own deletions -- so the shared list can
+          // only grow over time and a deletion made anywhere eventually
+          // reaches everywhere.
+          deletedIds: [
+            ...data.deletedStudentIds.map(id => ({ id, type: "student", deletedAt: new Date().toISOString() })),
+            ...data.deletedTeacherIds.map(id => ({ id, type: "teacher", deletedAt: new Date().toISOString() })),
+          ],
         }),
       });
       return { ok: true, at: new Date().toISOString() };

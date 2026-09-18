@@ -56,6 +56,22 @@ var ROSTER_COLUMNS = [
 var REWARD_CATALOG_SHEET = "RewardCatalog";
 var REWARD_CATALOG_COLUMNS = ["id", "label", "cost"];
 
+// Tombstones for deleted students/teachers. Without this, a deletion
+// only ever lived in the deleting device's OWN localStorage -- it kept
+// that specific device from re-adding the record on its next sync, but
+// never told any OTHER device the record was gone. A second device that
+// already had the record cached locally from before the deletion would
+// keep it forever: the roster/teacher pull-merge is deliberately
+// additive (a missing-from-remote record is never inferred as deleted,
+// since a device with a not-yet-pushed new record must not have it
+// wiped out by an unrelated pull), so nothing short of an explicit,
+// shared tombstone list can make a deletion actually reach every
+// device. This sheet is that list: whichever device deletes something
+// pushes the id here, and every other device's own pull now also learns
+// about it and can prune its local copy in turn.
+var DELETED_IDS_SHEET = "DeletedIds";
+var DELETED_IDS_COLUMNS = ["id", "type", "deletedAt"];
+
 // V2 schedule schema — one row per group class session. `studentsJson` is
 // the class's `students` array (see js/lumio-schedule.js) serialized as a
 // JSON string, since a Sheet row can't hold a nested array directly. This
@@ -162,6 +178,7 @@ function pullRoster_() {
     students: readRows_(ROSTER_SHEET, ROSTER_COLUMNS),
     teachers: readRows_(TEACHERS_SHEET, TEACHERS_COLUMNS),
     rewardCatalog: readRows_(REWARD_CATALOG_SHEET, REWARD_CATALOG_COLUMNS),
+    deletedIds: readRows_(DELETED_IDS_SHEET, DELETED_IDS_COLUMNS),
   };
 }
 
@@ -169,6 +186,11 @@ function pushRoster_(body) {
   if (Array.isArray(body.students)) writeRows_(ROSTER_SHEET, ROSTER_COLUMNS, body.students);
   if (Array.isArray(body.teachers)) writeRows_(TEACHERS_SHEET, TEACHERS_COLUMNS, body.teachers);
   if (Array.isArray(body.rewardCatalog)) writeRows_(REWARD_CATALOG_SHEET, REWARD_CATALOG_COLUMNS, body.rewardCatalog);
+  // The client always pulls this same list, unions it with whatever it
+  // knows locally, and only then pushes -- so a full-replace write here
+  // (matching writeRows_'s usual semantics) is safe and can only ever
+  // grow this list, never accidentally shrink it back down.
+  if (Array.isArray(body.deletedIds)) writeRows_(DELETED_IDS_SHEET, DELETED_IDS_COLUMNS, body.deletedIds);
   return { ok: true };
 }
 
