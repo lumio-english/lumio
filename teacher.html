@@ -1889,7 +1889,24 @@
       };
       confirmOkBtn.onclick = () => cleanup(true);
       confirmCancelBtn.onclick = () => cleanup(false);
-      confirmOverlay.onclick = e => { if (e.target === confirmOverlay) cleanup(false); };
+      // Deliberately NOT attached synchronously here, unlike the two
+      // buttons above. This dialog opens in direct response to a real,
+      // physical mouse click (e.g. "Remove student"), and opening it
+      // also scrolls the page to the top (see lockBodyScroll). If the
+      // page content shifts out from under an actual cursor at the
+      // exact moment this overlay becomes the topmost element covering
+      // the full viewport, a real click's own event can end up
+      // resolving against the overlay itself rather than the button
+      // that was actually clicked -- closing the dialog via "clicked
+      // outside" before the person ever saw it, and silently cancelling
+      // the action (removeStudent() never runs, since that only happens
+      // if this promise resolves true) instead of anything visibly
+      // going wrong. A short delay before this listener goes live
+      // means it can only ever respond to a genuinely separate,
+      // deliberate click made after the dialog is already on screen.
+      setTimeout(() => {
+        confirmOverlay.onclick = e => { if (e.target === confirmOverlay) cleanup(false); };
+      }, 250);
     });
   }
 
