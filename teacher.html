@@ -48,24 +48,24 @@
   @keyframes tdToastOut{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(6px) scale(.96)}}
 
   /* ---------- Custom confirm dialog (replaces native confirm()) ---------- */
+  /* Now just a .td-overlay (see that class's own rule) with two
+     overrides: a higher z-index, since it needs to stack on top of
+     another already-open .td-overlay (e.g. Course Details) rather than
+     tie with it, and flex-centering for its box instead of the plain
+     top-aligned block layout other .td-overlay modals use. Everything
+     else -- position:fixed, the opacity/pointer-events show/hide
+     mechanism, the generic body-scroll-lock observer, overflow-y:auto
+     -- is now the exact same proven mechanism Edit Student and every
+     other modal already uses reliably, instead of a separate,
+     display:none-based implementation that kept behaving differently
+     in ways that were hard to pin down. */
   #td-confirm-overlay{
-    position:fixed;inset:0;background:rgba(20,25,45,.4);z-index:410;display:none;
-    align-items:center;justify-content:center;padding:20px;
-    /* A centered flex item that's taller than the viewport (a long
-       student-name list, or the viewport shrunk by an on-screen mobile
-       keyboard) used to just get clipped top/bottom with no way to reach
-       it -- flex centering alone doesn't make an overflowing child
-       scrollable. overflow-y:auto here, plus min-height:min-content and
-       margin:auto on the box below, let the whole overlay scroll instead
-       so Confirm/Cancel are always reachable. */
-    overflow-y:auto;
+    z-index:410;display:flex!important;align-items:center;justify-content:center;
   }
-  #td-confirm-overlay.show{display:flex}
-  .td-confirm-box{
-    background:var(--td-surface);border-radius:18px;padding:22px;max-width:360px;width:100%;
-    box-shadow:0 24px 60px rgba(20,25,45,.28);
-    margin:auto;flex-shrink:0;
-  }
+  /* .td-confirm-box's own sizing/background/shadow rule was removed --
+     it's also .td-modal-box now (see markup), which already provides
+     all of that identically to every other modal. Only text styling
+     specific to this dialog's content stays here. */
   .td-confirm-box p{font-size:.9rem;font-weight:600;color:var(--td-ink);line-height:1.5;margin:0 0 18px}
   .td-confirm-actions{display:flex;gap:10px}
   .td-confirm-actions button{flex:1}
@@ -1792,8 +1792,8 @@
 
 <!-- ===== Toasts + confirm dialog ===== -->
 <div id="td-toast-stack" aria-live="polite"></div>
-<div id="td-confirm-overlay">
-  <div class="td-confirm-box">
+<div class="td-overlay" id="td-confirm-overlay">
+  <div class="td-confirm-box td-modal-box">
     <p id="td-confirm-message">Are you sure?</p>
     <div class="td-confirm-actions">
       <button class="td-btn" id="td-confirm-cancel">Cancel</button>
@@ -1847,24 +1847,15 @@
     return new Promise(resolve => {
       confirmMessage.textContent = message;
       confirmOkBtn.textContent = okLabel || "Confirm";
-      // Locking and resetting scroll HERE, directly and synchronously,
-      // rather than through the separate MutationObserver further down
-      // this file (which has been removed) -- that observer fires as a
-      // microtask, which should in principle still land before paint,
-      // but this dialog specifically has been the site of two rounds of
-      // "confirm box invisible/off-screen" reports despite fixes that
-      // looked correct on paper. Doing it inline, in the same
-      // synchronous call that shows the dialog, removes every
-      // asynchronous or CSS-animation-timing variable at once rather
-      // than trying to reason about exactly which one was responsible.
-      lockBodyScroll();
+      // #td-confirm-overlay is now a real .td-overlay (see its CSS and
+      // markup) -- the generic .td-overlay MutationObserver further
+      // down this file handles showing/locking/scroll-reset for it
+      // automatically now, the exact same proven mechanism Edit
+      // Student and every other modal already use, rather than a
+      // separate implementation.
       confirmOverlay.classList.add("show");
-      confirmOverlay.scrollTop = 0;
-      const box = confirmOverlay.querySelector(".td-confirm-box");
-      if (box) box.scrollTop = 0;
       const cleanup = (result) => {
         confirmOverlay.classList.remove("show");
-        unlockBodyScroll();
         confirmOkBtn.onclick = null;
         confirmCancelBtn.onclick = null;
         resolve(result);
