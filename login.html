@@ -222,17 +222,34 @@
     showTab("current");
 
 
-    // A student may well have registered on a different device (e.g. a
-    // parent's phone, during the placement test) than the one they're
-    // logging in on now (a classroom tablet). verifyStudentLogin only
-    // sees this device's local roster, so without a sync a genuinely
-    // real account could fail to log in simply because this device
-    // hasn't heard about it yet. No roster to re-render any more, but
-    // still worth keeping fresh in the background before someone tries.
-    // Never blocks or shows an error on failure -- a student on a flaky
-    // connection should still be able to log in with whatever's cached.
+    // ---- Await sync before accepting login ---------------------------------
+    // Root cause of "works only when teacher panel was open first":
+    // verifyStudentLogin reads from localStorage which is empty on a fresh
+    // device. The teacher dashboard calls syncNow() on load and populates it;
+    // that's why students could only log in after a teacher had been active.
+    //
+    // Fix: await the sync here, with the PIN pad locked during the wait and a
+    // "Checking your account..." status so the student knows to hold on.
+    // A 6-second timeout ensures a bad connection never freezes the page —
+    // after timeout we fall through to whatever is already cached locally.
     if (window.LumioProfiles) {
-      LumioProfiles.syncNow().catch(() => {});
+      const syncStatus = pinError;
+      syncStatus.style.color = "#8A7160";
+      syncStatus.textContent = "Checking your account\u2026";
+      pinPad.querySelectorAll("button").forEach(b => b.disabled = true);
+      idInput.disabled = true;
+
+      const timeoutPromise = new Promise(resolve =>
+        setTimeout(() => resolve({ ok: false, reason: "timeout" }), 6000)
+      );
+
+      Promise.race([LumioProfiles.syncNow(), timeoutPromise]).finally(() => {
+        syncStatus.style.color = "";
+        syncStatus.textContent = "";
+        pinPad.querySelectorAll("button").forEach(b => b.disabled = false);
+        idInput.disabled = false;
+        idInput.focus();
+      });
     }
   } catch (e) {
     console.error("Lumio login error:", e);
