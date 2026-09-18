@@ -135,6 +135,13 @@
   body.theme-teen .sd-level-card h2, body.theme-teen .sd-level-card p,
   body.theme-teen .sd-schedule-card, body.theme-teen .sd-schedule-card *{ color:#EDE9FB !important; }
   body.theme-teen .sd-level-count{ color:#22D3EE !important; }
+  /* The rule above paints EVERY descendant of .sd-schedule-card light --
+     including the rewards card's two cream stat boxes, whose numbers and
+     labels then vanished. Those boxes stay cream on purpose, so their
+     text must stay dark on every theme. More specific + !important to
+     beat the blanket rule. */
+  body.theme-teen .sd-rw-stat b, body.theme-teen .sd-rw-stat{ color:#2A2118 !important; }
+  body.theme-teen .sd-rw-stat span{ color:#6B5040 !important; }
   body.theme-teen .sd-progressbar{ background:rgba(139,92,246,.18) !important; }
   body.theme-teen .sd-progressbar > div{ background:linear-gradient(90deg,#8B5CF6,#22D3EE) !important; box-shadow:0 0 10px rgba(34,211,238,.5); }
 
@@ -337,17 +344,29 @@
      highlighted element itself (see .pg-spotlight below), which is what
      lets that one real element stay lit while genuinely everything else
      on the page dims, instead of a fake screenshot of it. */
-  .pg-tour-overlay{position:fixed;inset:0;z-index:9000;display:none}
+  /* z-index must be ABOVE .pg-spotlight's (9001) -- the card lives
+     inside this overlay, so it can only ever be as high as the overlay's
+     own stacking context. At 9000 the spotlight's giant dimming
+     box-shadow (painted in the page's root context at 9001) landed on
+     top of the whole overlay, card included, which is why the card
+     looked washed out / greyed exactly like the dimmed page behind it. */
+  .pg-tour-overlay{position:fixed;inset:0;z-index:9010;display:none}
   .pg-tour-overlay.show{display:block}
+  /* Steps with no spotlighted element (e.g. the welcome step) get a
+     plain full-page dim from the overlay itself, so the card still
+     stands out against a dimmed page rather than a bright one. Only
+     added on those steps -- on spotlight steps the dim comes from the
+     highlighted element's shadow so that element itself stays lit. */
+  .pg-tour-overlay.dim{background:rgba(28,18,10,.72)}
   .pg-spotlight{
     position:relative !important;z-index:9001;border-radius:16px;
-    box-shadow:0 0 0 6px #fff, 0 0 0 9999px rgba(28,18,10,.6);
+    box-shadow:0 0 0 6px #fff, 0 0 0 9999px rgba(28,18,10,.72);
     transition:box-shadow .35s ease;
   }
   .pg-tour-card{
     direction:rtl;font-family:'Tajawal','Cairo','Segoe UI',Nunito,sans-serif;background:#fff;border-radius:22px;
-    max-width:360px;width:calc(100% - 32px);box-shadow:0 24px 60px rgba(0,0,0,.35);
-    position:fixed;z-index:9002;animation:pgPop .22s cubic-bezier(.22,1,.36,1);
+    max-width:360px;width:calc(100% - 32px);box-shadow:0 24px 60px rgba(0,0,0,.45), 0 0 0 3px rgba(255,255,255,.35);
+    position:fixed;z-index:9012;animation:pgPop .22s cubic-bezier(.22,1,.36,1);
     /* Positioned dynamically by JS (top/left) for every step, since it
        has to track whichever real element it's pointing at. */
   }
@@ -526,9 +545,15 @@
   .sd-games-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
   .sd-buddies-grid{display:flex;gap:14px;flex-wrap:wrap;margin-top:44px}
   .sd-buddy-card{background:#fff;border-radius:16px;padding:14px 10px 12px;text-align:center;width:120px;cursor:pointer;
-    box-shadow:0 3px 10px rgba(0,0,0,.06);border:none;font-family:inherit;transition:transform .15s ease, box-shadow .15s ease;position:relative}
+    box-shadow:0 3px 10px rgba(0,0,0,.06);border:none;font-family:inherit;transition:transform .15s ease, box-shadow .15s ease;position:relative;
+    display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
   .sd-buddy-card:hover{transform:translateY(-4px);box-shadow:0 10px 20px rgba(0,0,0,.1)}
-  .sd-buddy-card img{width:100%;max-width:88px;display:block;margin:0 auto 6px;pointer-events:none}
+  /* Every character gets the SAME fixed box, and is scaled to fit inside
+     it (object-fit:contain), so a source PNG with more/less transparent
+     padding or a taller pose can't render bigger or smaller than the
+     others -- previously only width was constrained, so height varied
+     with each image's own proportions. Bottom-aligned so feet line up. */
+  .sd-buddy-card img{width:100%;height:140px;object-fit:contain;object-position:center bottom;display:block;margin:0 auto 6px;pointer-events:none}
   .sd-buddy-card .name{font-weight:800;font-size:.85rem;color:var(--sd-cocoa)}
   .sd-buddy-bubble{position:absolute;top:-38px;left:50%;transform:translateX(-50%) scale(.8);background:var(--sd-cocoa);color:#fff;
     padding:6px 12px;border-radius:10px;font-size:.72rem;font-weight:700;white-space:nowrap;opacity:0;pointer-events:none;transition:all .2s ease}
@@ -971,17 +996,21 @@
   <div class="sd-section-title"><h3>🏆 My rewards</h3></div>
   <div class="sd-schedule-card" id="rewardsCard" style="display:none">
     <div class="row" style="gap:12px;margin-bottom:12px">
-      <div style="flex:1;background:var(--sd-bg,#F7F3EA);border-radius:14px;padding:12px;text-align:center">
-        <b style="display:block;font-size:1.3rem;font-weight:800" id="rwPointsVal">0</b>
-        <span style="font-size:.7rem;font-weight:700;color:var(--sd-cocoa-soft);text-transform:uppercase">Points</span>
+      <!-- Explicit dark text on these cream boxes: the teen theme swaps
+           the shared text variables to light purples for its dark page,
+           which made these numbers/labels vanish against the still-cream
+           box backgrounds. -->
+      <div class="sd-rw-stat" style="flex:1;background:#F7F3EA;border-radius:14px;padding:12px;text-align:center">
+        <b style="display:block;font-size:1.3rem;font-weight:800;color:#2A2118" id="rwPointsVal">0</b>
+        <span style="font-size:.7rem;font-weight:800;color:#6B5040;text-transform:uppercase">Points</span>
       </div>
-      <div style="flex:1;background:var(--sd-bg,#F7F3EA);border-radius:14px;padding:12px;text-align:center">
-        <b style="display:block;font-size:1.3rem;font-weight:800" id="rwHoursVal">0</b>
-        <span style="font-size:.7rem;font-weight:700;color:var(--sd-cocoa-soft);text-transform:uppercase">Bonus hours</span>
+      <div class="sd-rw-stat" style="flex:1;background:#F7F3EA;border-radius:14px;padding:12px;text-align:center">
+        <b style="display:block;font-size:1.3rem;font-weight:800;color:#2A2118" id="rwHoursVal">0</b>
+        <span style="font-size:.7rem;font-weight:800;color:#6B5040;text-transform:uppercase">Bonus hours</span>
       </div>
     </div>
     <button class="sd-game-wide-play" id="rwRedeemBtn" style="width:100%">🎁 Redeem 50 points → +1 hour</button>
-    <p class="sd-hint" style="margin:8px 0 0;font-weight:700;color:var(--sd-cocoa-soft);font-size:.8rem">Every 50 points you collect can be redeemed for 1 bonus class hour, added straight to your sessions left!</p>
+    <p class="sd-hint" style="margin:8px 0 0;font-weight:700;color:var(--sd-cocoa);font-size:.8rem">Every 50 points you collect can be redeemed for 1 bonus class hour, added straight to your sessions left!</p>
   </div>
 
 
@@ -1966,6 +1995,7 @@
       // card is hidden until a roster profile syncs in) -- fall back to a
       // centered card with no spotlight rather than getting stuck.
       const visible = targetEl && targetEl.offsetParent !== null;
+      overlay.classList.toggle("dim", !visible);
       if (visible) {
         targetEl.classList.add("pg-spotlight");
         currentTargetEl = targetEl;
@@ -2626,6 +2656,13 @@
   // hub-present.html handles every other level automatically, just by
   // spelling-hub/ only having a pre-a.json file and nothing else.
   document.getElementById("hubSpelling").onclick = () => { location.href = `hub-present.html?type=spelling&level=${level}`; };
+  // Spelling is a foundations tile: only shown for Level 0 (pre-a) and
+  // Level 1. Higher levels don't see the card at all rather than seeing
+  // one that leads to a "not ready for your level" page.
+  if (!["pre-a", "level1"].includes(level)) {
+    const spellingCard = document.getElementById("hubSpelling");
+    if (spellingCard) spellingCard.style.display = "none";
+  }
   document.getElementById("spellingClose").onclick = () => document.getElementById("spellingOverlay").classList.remove("show");
   document.getElementById("spellingOverlay").addEventListener("click", e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove("show"); });
 
