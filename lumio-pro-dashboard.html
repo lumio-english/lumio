@@ -328,7 +328,7 @@ try {
 // accounts (added/removed here) sync across every device, not just
 // the one they were added on. Test results stay local-only by design
 // (see loadR() below); this URL is only used for admin account sync.
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxlKY07coAR_Uj6UQf2bvy6yi6I3cG9WsnTROvKI5v_l9MhhXlbP3Ke8jxbYx5btZzAGA/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxlKY07coAR_Uj6UQf2bvy6yi6I3cG9WsnTROvKI5v_l9MhhXIbP3Ke8jxbYx5btZzAGA/exec';
 
 // AI writing feedback uses a SEPARATE, standalone Apps Script project
 // (see _docs/AI-Feedback-Standalone.gs) — kept isolated from the main
@@ -581,13 +581,26 @@ const DASH_LS_KEY  = 'lumio_test_results'; // MUST match TEST_LS_KEY in lumio-pr
 pullAndMergeProAdmins();
 pullLumioTeachersForLogin();
 
-function loadR() {
-  // Fully standalone — always reads from this browser's local storage,
-  // the same place lumio-pro-test.html saves results to. (Originally
-  // also tried fetching from a 51Talk-specific Google Sheet first;
-  // removed since that endpoint belongs to 51Talk's real
-  // infrastructure, not this tool.)
+async function loadR() {
+  // Local results always show immediately, then merge in whatever the
+  // shared Sheet has (a previous, un-lost run's syncing worked from
+  // there, or another device's submissions). Never blocks on the
+  // network -- if the fetch fails, local data still renders exactly as
+  // before.
   loadFromLocal();
+  try {
+    const res = await fetch(SCRIPT_URL + '?action=pullProTestResults');
+    const data = await res.json();
+    if (data && Array.isArray(data.results) && data.results.length) {
+      const localIds = new Set(allR.map(r => (r.student_id || '') + '_' + (r.timestamp || '')));
+      const fresh = data.results.filter(r => !localIds.has((r.student_id || '') + '_' + (r.timestamp || '')));
+      if (fresh.length) {
+        const merged = [...allR, ...fresh];
+        try { localStorage.setItem(DASH_LS_KEY, JSON.stringify(merged)); } catch (e) {}
+        loadFromLocal();
+      }
+    }
+  } catch (e) { /* offline or not deployed yet -- local results already shown */ }
   showT('✅ Loaded ' + allR.length + ' result' + (allR.length === 1 ? '' : 's'));
 }
 
@@ -883,6 +896,11 @@ function clearAll(){
   if(!confirm('Delete ALL test results? Cannot be undone.'))return;
   localStorage.removeItem(DASH_LS_KEY);
   allR=[];filtR=[];aiN=0;updStats();renderT();showT('All results cleared.');
+  // Also wipe the shared copy -- otherwise the very next sync (or the
+  // 30-second auto-refresh) would pull everything right back from the
+  // Sheet, making a confirmed, deliberate "Clear All" look like it
+  // silently undid itself.
+  fetch(SCRIPT_URL + '?action=clearProTestResults', { method: 'POST' }).catch(() => {});
 }
 
 // ══════════════════════════════════════════

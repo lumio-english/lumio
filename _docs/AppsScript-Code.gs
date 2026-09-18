@@ -126,6 +126,20 @@ var LEADS_COLUMNS = [
 var PRO_ADMINS_SHEET = "ProDashboardAdmins";
 var PRO_ADMINS_COLUMNS = ["username", "password", "updatedAt"];
 
+// Professional placement test results (lumio-pro-test.html ->
+// lumio-pro-dashboard.html). Previously these lived ONLY in the
+// browser's localStorage on whichever device the test was taken on,
+// with the dashboard reading that same local copy and nothing else --
+// no server backup at all. A cleared browser (cache/cookies wiped, a
+// different device, "Clear All" on the dashboard) meant the result was
+// simply gone, no way back. dataJson holds the full result record
+// (scores, every answer, writing text) as one serialized blob, the
+// same pattern already used for Schedule/SchedulePatterns' nested
+// `students` arrays -- a submission's shape is too deeply nested for a
+// flat column schema to be worth maintaining.
+var PRO_TEST_RESULTS_SHEET = "ProTestResults";
+var PRO_TEST_RESULTS_COLUMNS = ["id", "name", "student_id", "timestamp", "dataJson"];
+
 // ---------- sheet helpers ----------
 
 function getOrCreateSheet_(name, columns) {
@@ -309,6 +323,51 @@ function pullProAdmins_() {
 
 function pushProAdmins_(body) {
   if (Array.isArray(body.admins)) writeRows_(PRO_ADMINS_SHEET, PRO_ADMINS_COLUMNS, body.admins);
+  return { ok: true };
+}
+
+// ---------- pro test results ----------
+
+function pullProTestResults_() {
+  var rows = readRows_(PRO_TEST_RESULTS_SHEET, PRO_TEST_RESULTS_COLUMNS);
+  return {
+    results: rows.map(function (row) {
+      try { return JSON.parse(row.dataJson || "{}"); } catch (e) { return null; }
+    }).filter(function (r) { return r; }),
+  };
+}
+
+// Additive, not a full replace like writeRows_'s usual callers -- each
+// test submission happens independently on whatever device the student
+// used, so pushing must never overwrite results some OTHER device has
+// already saved to the Sheet. Reads what's there, skips it if this
+// exact result (by id) already exists (a retry after a flaky network
+// response shouldn't duplicate it), appends, writes the full list back.
+function pushProTestResult_(body) {
+  var result = body.result;
+  if (!result) return { ok: false, error: "No result provided." };
+  var id = result.student_id + "_" + result.timestamp;
+  var existing = readRows_(PRO_TEST_RESULTS_SHEET, PRO_TEST_RESULTS_COLUMNS);
+  var alreadyThere = existing.some(function (row) { return row.id === id; });
+  if (!alreadyThere) {
+    existing.push({
+      id: id,
+      name: result.name || "",
+      student_id: result.student_id || "",
+      timestamp: result.timestamp || "",
+      dataJson: JSON.stringify(result),
+    });
+    writeRows_(PRO_TEST_RESULTS_SHEET, PRO_TEST_RESULTS_COLUMNS, existing);
+  }
+  return { ok: true };
+}
+
+// The dashboard's "Clear All" button -- an explicit, confirmed, full
+// wipe, unlike the additive push above. Clears the shared copy too, so
+// a deliberate clear doesn't leave stale results reappearing from the
+// Sheet on the next sync.
+function clearProTestResults_() {
+  writeRows_(PRO_TEST_RESULTS_SHEET, PRO_TEST_RESULTS_COLUMNS, []);
   return { ok: true };
 }
 
@@ -578,6 +637,7 @@ function doGet(e) {
     if (action === "pullProgress") return jsonResponse_(pullProgress_());
     if (action === "pullLeads") return jsonResponse_(pullLeads_());
     if (action === "pullProAdmins") return jsonResponse_(pullProAdmins_());
+    if (action === "pullProTestResults") return jsonResponse_(pullProTestResults_());
     return jsonResponse_({ ok: true, message: "Lumio sync backend is running. Pass ?action=pullRoster / pullScheduleV2 / pullProgress / pullLeads / pullProAdmins." });
   } catch (err) {
     return jsonResponse_({ ok: false, error: String(err) });
@@ -596,6 +656,8 @@ function doPost(e) {
     if (action === "pushProgress") return jsonResponse_(pushProgress_(body));
     if (action === "pushLeads") return jsonResponse_(pushLeads_(body));
     if (action === "pushProAdmins") return jsonResponse_(pushProAdmins_(body));
+    if (action === "pushProTestResult") return jsonResponse_(pushProTestResult_(body));
+    if (action === "clearProTestResults") return jsonResponse_(clearProTestResults_());
     if (action === "writingFeedback") return jsonResponse_(writingFeedback_(body));
     return jsonResponse_({ ok: false, error: "Unknown action: " + action });
   } catch (err) {

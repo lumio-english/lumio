@@ -1603,6 +1603,16 @@ function saveResultLocally(data){
     // live, without needing to poll or refresh.
     try { const bc=new BroadcastChannel('lumio_test_sync'); bc.postMessage({type:'new_result',data:fullData}); bc.close(); } catch(e){}
   } catch(e){}
+  // This used to live ONLY in this browser's localStorage, with no
+  // backup anywhere -- a cleared browser, a different device, or the
+  // dashboard's own "Clear All" button meant it was simply gone for
+  // good. Best-effort, never blocks showing the student their result:
+  // if this fails, the local copy above still works exactly as before.
+  fetch(LUMIO_SYNC_URL + '?action=pushProTestResult', {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({ result: fullData }),
+  }).catch(() => {});
   pushResultAsLumioLead(fullData, data.levelNum).catch(()=>{});
   // The account was created before the test started (paid:false,
   // level:null) -- now that a real score exists, fill in the level the
