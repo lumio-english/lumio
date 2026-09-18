@@ -1379,6 +1379,7 @@
         <button type="button" class="td-drawer-tab" data-tab="rewards"><span class="ic">🏆</span>Rewards<span class="dot"></span></button>
         <button type="button" class="td-drawer-tab" data-tab="notes"><span class="ic">📝</span>Notes<span class="dot"></span></button>
         <button type="button" class="td-drawer-tab" data-tab="referrals"><span class="ic">🤝</span>Referrals<span class="dot"></span></button>
+        <button type="button" class="td-drawer-tab" data-tab="messages"><span class="ic">📬</span>Messages<span class="dot"></span></button>
       </div>
     </div>
 
@@ -1405,6 +1406,10 @@
 
       <div class="td-drawer-panel" data-panel="referrals" style="display:none">
         <div id="drawerReferrals"></div>
+      </div>
+
+      <div class="td-drawer-panel" data-panel="messages" style="display:none">
+        <div id="drawerMessages"></div>
       </div>
     </div>
 
@@ -2566,6 +2571,7 @@
     renderDrawerRewards(p);
     renderDrawerNotes(p);
     renderDrawerReferrals(p);
+    renderDrawerMessages(p);
   }
 
   function renderDrawerRewards(p) {
@@ -2660,6 +2666,46 @@
         renderDrawerNotes(p);
         showToast("Note added.");
       } catch (err) { showToast(err.message || "Couldn't add note.", "error"); }
+    };
+  }
+
+  // The student's inbox, as the teacher sees it: a composer to send them a
+  // message directly (shows up in the Messages panel on their dashboard),
+  // plus everything they've received so far -- automatic notifications
+  // included -- with a read/unread marker for each.
+  function renderDrawerMessages(p) {
+    const wrap = document.getElementById("drawerMessages");
+    if (!wrap || !window.LumioProfiles) return;
+    const msgs = LumioProfiles.listMessages(p.id);
+    const ICONS = { teacher: "👩‍🏫", pin_changed: "🔑", phone_changed: "📱", level_changed: "📈", class_booked: "📅", class_reminder: "⏰", content_available: "✨", delete_request: "⚠️", delete_declined: "✅", referral: "🤝", referral_reward: "🎁", info: "💬" };
+    const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+    const list = msgs.length ? msgs.map(m => `
+      <div class="td-note-row" style="${m.read ? "" : "border-left:3px solid var(--td-indigo);padding-left:9px"}">
+        <div class="txt">${ICONS[m.type] || ICONS.info} ${esc(m.text)}</div>
+        <div class="meta">${new Date(m.date).toLocaleString()} · ${m.read ? "read ✓" : "<b>unread</b>"}${m.type === "teacher" && m.meta && m.meta.from ? " · sent by " + esc(m.meta.from) : ""}</div>
+      </div>`).join("") : `<div class="td-empty" style="padding:8px 0">Nothing sent to ${p.name} yet.</div>`;
+    wrap.innerHTML = `
+      <div style="margin-bottom:12px">
+        <textarea id="msgComposer" rows="3" placeholder="Write a message to ${p.name}… (they'll see it under 📬 Messages on their dashboard)" style="width:100%;box-sizing:border-box;padding:9px 11px;border-radius:10px;border:1px solid var(--td-border);font-family:inherit;font-size:.86rem;resize:vertical"></textarea>
+        <div style="display:flex;justify-content:flex-end;margin-top:6px">
+          <button type="button" class="td-btn td-btn-primary" id="msgSendBtn">📨 Send message</button>
+        </div>
+      </div>
+      <div class="sub" style="font-size:.72rem;margin:0 0 8px">${msgs.length} message${msgs.length === 1 ? "" : "s"} · ${msgs.filter(m => !m.read).length} unread</div>
+      ${list}`;
+    document.getElementById("msgSendBtn").onclick = async () => {
+      const ta = document.getElementById("msgComposer");
+      const text = ta.value.trim();
+      if (!text) return;
+      const me = LumioProfiles.getCurrentTeacher();
+      try {
+        LumioProfiles.addMessage(p.id, { type: "teacher", text, meta: { from: me ? me.name : "Your teacher" } });
+        ta.value = "";
+        renderDrawerMessages(p);
+        const res = await LumioProfiles.syncNow();
+        if (!res.ok) showToast(`Message saved here, but syncing failed (${res.reason || "unknown error"}) — ${p.name} won't see it until you click "Sync now".`, "error");
+        else showToast(`Message sent to ${p.name}.`, "success");
+      } catch (err) { showToast(err.message || "Couldn't send the message.", "error"); }
     };
   }
 

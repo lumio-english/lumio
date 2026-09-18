@@ -2058,8 +2058,9 @@
     btn.style.display = "inline-flex";
 
     const ICONS = {
-      pin_changed: "🔑", phone_changed: "📱", level_changed: "📈", class_booked: "📅",
-      class_reminder: "⏰", content_available: "✨", delete_request: "⚠️", delete_declined: "✅", info: "💬",
+      teacher: "👩‍🏫", pin_changed: "🔑", phone_changed: "📱", level_changed: "📈", class_booked: "📅",
+      class_reminder: "⏰", content_available: "✨", delete_request: "⚠️", delete_declined: "✅",
+      referral: "🤝", referral_reward: "🎁", info: "💬",
     };
     const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
     const fmtWhen = iso => {
@@ -2093,7 +2094,8 @@
         } else if (m.type === "delete_request" && p && p.deletionConfirmed) {
           actions = `<div class="when">You confirmed. Your teacher will complete the deletion.</div>`;
         }
-        el.innerHTML = `<span class="ic">${ICONS[m.type] || ICONS.info}</span>${esc(m.text)}${actions}<span class="when">${fmtWhen(m.date)}</span>`;
+        const from = m.type === "teacher" && m.meta && m.meta.from ? `<b>${esc(m.meta.from)}:</b> ` : "";
+        el.innerHTML = `<span class="ic">${ICONS[m.type] || ICONS.info}</span>${from}${esc(m.text)}${actions}<span class="when">${fmtWhen(m.date)}</span>`;
         const keepBtn = el.querySelector('[data-act="keep"]');
         const confirmBtn = el.querySelector('[data-act="confirm"]');
         if (keepBtn) keepBtn.onclick = async () => {
