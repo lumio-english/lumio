@@ -2474,8 +2474,18 @@
       document.getElementById("drawerApproveBtn").onclick = async () => {
         try {
           await LumioProfiles.updateStudent(p.id, { approved: true });
-          LumioProfiles.syncNow().catch(() => {}); // so the student's own device unlocks right away
-          showToast(`${p.name} is approved and can now log in.`, "success");
+          // Approval is exactly the kind of change that MUST reach the
+          // student's own device -- it's the one thing standing between
+          // them and being able to log in at all. Silently swallowing a
+          // failed sync here meant a teacher could tell a student
+          // "you're approved, try logging in now" while the approval
+          // never actually left this device.
+          const syncRes = await LumioProfiles.syncNow();
+          if (!syncRes.ok) {
+            showToast(`${p.name} is approved here, but syncing to their device failed (${syncRes.reason || "unknown error"}) — they won't be able to log in until you click "Sync now" successfully.`, "error");
+          } else {
+            showToast(`${p.name} is approved and can now log in.`, "success");
+          }
           renderDrawerProfile(r);
           renderRosterCards();
         } catch (err) { showToast(err.message || "Couldn't approve this student.", "error"); }
@@ -2545,7 +2555,8 @@
           const updated = LumioProfiles.redeemCatalogItem(p.id, btn.dataset.item);
           showToast(`Redeemed for ${updated.name}.`, "success");
           renderDrawerRewards(updated);
-          LumioProfiles.syncNow().catch(() => {});
+          const syncRes = await LumioProfiles.syncNow();
+          if (!syncRes.ok) showToast(`Redeemed here, but syncing to the student's device failed (${syncRes.reason || "unknown error"}) — try "Sync now".`, "error");
         } catch (err) { showToast(err.message || "Couldn't redeem.", "error"); }
       };
     });
@@ -2871,9 +2882,13 @@
         await withLoading(e.currentTarget, async () => {
           const newPin = LumioProfiles.randomPin();
           await LumioProfiles.updateStudent(p.id, { pin: newPin });
-          LumioProfiles.syncNow().catch(() => {}); // a stale PIN elsewhere would otherwise lock the student out
+          const syncRes = await LumioProfiles.syncNow();
           renderRosterCards(); renderTable();
-          showToast(`New PIN set for ${p.name}.`, "success");
+          if (!syncRes.ok) {
+            showToast(`New PIN set here, but syncing failed (${syncRes.reason || "unknown error"}) — other devices still have the old PIN until you click "Sync now".`, "error");
+          } else {
+            showToast(`New PIN set for ${p.name}.`, "success");
+          }
         });
       };
       card.querySelector('[data-act="remove"]').onclick = async () => {
@@ -3016,9 +3031,19 @@
         // next periodic auto-sync (up to 5 minutes) or a manual "Sync
         // now" click -- a teacher editing a student expects it to show
         // up on the student's own device (or another teacher's) right
-        // away, not eventually. Best-effort: the edit is already saved
-        // locally regardless of whether this succeeds.
-        LumioProfiles.syncNow().catch(() => {});
+        // away, not eventually. The edit is already saved locally
+        // regardless of whether this succeeds, but silently swallowing
+        // a failure here meant a teacher would hand a brand-new
+        // student their ID and PIN believing it was already live
+        // everywhere, when in fact it never left this device -- the
+        // student's own login attempt would then fail with no
+        // indication anywhere of why. Now surfaced the same way
+        // removing a student already warns about a failed sync.
+        LumioProfiles.syncNow().then(res => {
+          if (!res.ok) showToast(`${name} was saved here, but the sync to your Sheet failed (${res.reason || "unknown error"}) — they won't be able to log in from another device until you click "Sync now" once you're back online.`, "error");
+        }).catch(() => {
+          showToast(`${name} was saved here, but syncing failed — click "Sync now" once you're back online so they can log in from their own device.`, "error");
+        });
         closeStudentModal();
         renderRosterCards();
         renderTable();

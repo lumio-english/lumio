@@ -1684,7 +1684,17 @@
         const { student, hoursRedeemed } = LumioProfiles.redeemReward(p.id);
         showToast(`Redeemed ${hoursRedeemed} bonus hour${hoursRedeemed === 1 ? "" : "s"}! 🎉`, "🏆");
         renderRewardsCard();
-        if (window.LumioProfiles) LumioProfiles.syncNow().catch(() => {});
+        if (window.LumioProfiles) {
+          // Without this reaching the shared Sheet, the teacher's own
+          // device would keep showing the old points/sessions total
+          // until some other sync happened to run -- confusing on both
+          // ends, since from here it looks like redeeming worked fine.
+          LumioProfiles.syncNow().then(res => {
+            if (!res.ok) showToast("Redeemed here, but your teacher's device may not see it yet — it'll catch up next time you're online.", "⚠️");
+          }).catch(() => {
+            showToast("Redeemed here, but your teacher's device may not see it yet — it'll catch up next time you're online.", "⚠️");
+          });
+        }
       } catch (err) {
         showToast(err.message || "Couldn't redeem right now.", "⚠️");
       }
