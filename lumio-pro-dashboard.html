@@ -801,7 +801,7 @@ async function runAI(si,wi,btn){
   const el=document.getElementById('ar-'+si+'-'+wi); if(!el)return;
   el.style.display='block';
   if(!AI_FEEDBACK_URL){
-    el.innerHTML='<div style="background:#FFF3D6;border:1px solid #F97316;border-radius:8px;padding:10px 12px;font-size:.8rem;color:#43301F">ℹ️ AI feedback isn\'t set up yet — deploy the standalone backend (_docs/AI-Feedback-Standalone.gs) and paste its URL into AI_FEEDBACK_URL near the top of this file.</div>';
+    el.innerHTML='<div style="background:#FFF3D6;border:1px solid #F97316;border-radius:8px;padding:10px 12px;font-size:.8rem;color:#43301F">ℹ️ AI feedback isn\'t set up yet — deploy the backend (_docs/AppsScript-Code.gs) and paste its URL into AI_FEEDBACK_URL near the top of this file. Same URL as your main roster Sync settings.</div>';
     return;
   }
   btn.disabled=true; btn.textContent='⏳ AI reviewing…';

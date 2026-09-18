@@ -1,5 +1,12 @@
 /**
- * Lumio English -- standalone AI writing feedback backend
+ * SUPERSEDED -- this file's content now lives inside _docs/AppsScript-Code.gs
+ * (the "AI WRITING FEEDBACK" section near the bottom), merged into the same
+ * single Apps Script project/deployment as the roster/schedule/leads sync,
+ * since that project's own UrlFetchApp authorization works fine and there
+ * was no real need to keep a second project and a second URL just for this
+ * one feature. Kept here only for history -- use AppsScript-Code.gs instead.
+ */
+
  *
  * A separate, minimal Apps Script project used ONLY for the
  * professional dashboard's "Get Feedback" button. Kept isolated from
