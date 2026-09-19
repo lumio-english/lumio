@@ -266,9 +266,13 @@ function finishPart(part) {
 
 // ---- Part 1, Page 3: tap the rainbow colors in order ----
 function setupColorGame() {
+  // Sequence: start with WHITE, then the rainbow colors in order, finish
+  // with BLACK -- covers all ten Pre-A colors (Lessons 8-9), not just six.
   const colors = [
+    { name: "white", hex: "#FFFFFF" },
     { name: "red", hex: "#EF4444" }, { name: "orange", hex: "#F97316" }, { name: "yellow", hex: "#FACC15" },
     { name: "green", hex: "#22C55E" }, { name: "blue", hex: "#3B82F6" }, { name: "purple", hex: "#A855F7" },
+    { name: "black", hex: "#1F2937" },
   ];
   const shuffled = [...colors].sort(() => Math.random() - 0.5);
   let nextIndex = 0;
@@ -276,7 +280,7 @@ function setupColorGame() {
   gameEl.style.top = "480px";
   gameEl.style.zIndex = "20";
   gameEl.innerHTML = shuffled.map((c, i) =>
-    `<div class="swatch" data-name="${c.name}" style="background:${c.hex}"></div>`).join("");
+    `<div class="swatch" data-name="${c.name}" style="background:${c.hex}${c.name === "white" ? ";border-color:#D6CFC4;box-shadow:inset 0 0 0 3px #F3EEE6, 0 10px 20px rgba(67,48,31,.25)" : ""}" title="${c.name}"></div>`).join("");
   const swatches = gameEl.querySelectorAll(".swatch");
   swatches.forEach(sw => {
     sw.onclick = () => {
@@ -288,8 +292,8 @@ function setupColorGame() {
         if (typeof Lumio !== "undefined" && Lumio.speak) Lumio.speak(sw.dataset.name);
         if (nextIndex === colors.length) {
           if (typeof Lumio !== "undefined" && Lumio.confetti) Lumio.confetti(60);
-          document.getElementById("p3text").innerHTML = '<b>"You did it!"</b> The compass glowed with every color at once — red, orange, yellow, green, blue, and purple!';
-          document.getElementById("p3textAr").textContent = "لقد نجحتم! توهجت البوصلة بكل الألوان معًا — أحمر، وبرتقالي، وأصفر، وأخضر، وأزرق، وبنفسجي!";
+          document.getElementById("p3text").innerHTML = '<b>"You did it!"</b> The compass glowed with every color at once — white, red, orange, yellow, green, blue, purple, and black!';
+          document.getElementById("p3textAr").textContent = "لقد نجحتم! توهجت البوصلة بكل الألوان معًا — أبيض، وأحمر، وبرتقالي، وأصفر، وأخضر، وأزرق، وبنفسجي، وأسود!";
         }
       } else {
         sw.classList.add("shake");
