@@ -1727,7 +1727,14 @@
 
   const AVATARS = (window.LumioProfiles ? LumioProfiles.AVATARS : ["🦊","🐼","🦁","🐸","🐵","🐨","🦄","🐯","🐰","🐶"]);
   const avatarKey = "lumio_avatar_" + u.name;
-  const rosterProfile = window.LumioProfiles ? LumioProfiles.findByName(u.name) : null;
+  // Resolve this student's OWN roster record by the id stored at login
+  // (see login.html), falling back to the name match only for legacy
+  // sessions. Name matching is what let one student's inbox/referrals
+  // show up for another with a similar or duplicate name.
+  const _ownId = (() => { try { return localStorage.getItem("lumio_student_id"); } catch (e) { return null; } })();
+  const rosterProfile = window.LumioProfiles
+    ? ((_ownId && LumioProfiles.getStudent(_ownId)) || LumioProfiles.findByName(u.name))
+    : null;
 
   // ---------- one-time fresh sync on entering the dashboard ----------
   // Nothing on this page ever pulled from the shared backend before --

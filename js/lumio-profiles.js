@@ -1064,7 +1064,10 @@
   }
   function stripPin(record) {
     const copy = Object.assign({}, record);
-    delete copy.pin; // never leaves the device
+    // `pin` now DOES sync (Eslam's call): teachers need to see and share a
+    // student's current PIN from any device, not just the one that set it.
+    // The Sheet is the teacher's own private spreadsheet; pinHash is still
+    // what login verification uses.
     // Sheets/Apps Script rows are flat key/value, so array/object fields
     // would otherwise get mangled on the way through -- serialize each to
     // a wire-safe string, same idea as everywhere else here that keeps
@@ -1115,6 +1118,8 @@
     // guess the type.
     if (s.phone !== undefined && s.phone !== null && s.phone !== "") s.phone = String(s.phone);
     if (s.loginCode !== undefined && s.loginCode !== null && s.loginCode !== "") s.loginCode = String(s.loginCode);
+    // pin is a 4-digit string; Sheets turns "0427" into the number 427.
+    if (s.pin !== undefined && s.pin !== null && s.pin !== "") s.pin = String(s.pin).padStart(4, "0");
     return s;
   }
   // Additive merge: keeps local-only records, adds remote-only records, and
@@ -1185,6 +1190,12 @@
       // mergeById also merges teacher records, which have no inbox --
       // only attach when at least one side actually carries messages.
       if (Array.isArray(local.messages) || Array.isArray(r.messages)) chosen.messages = mergedMessages;
+      // Keep a plaintext pin from either side as long as it matches the
+      // hash that actually wins -- lets a second teacher device show it.
+      if (!chosen.pin) {
+        if (r.pin && r.pinHash === chosen.pinHash) chosen.pin = String(r.pin);
+        else if (local.pin && local.pinHash === chosen.pinHash) chosen.pin = String(local.pin);
+      }
       // Referrals are only ever edited on the teacher's side, so instead
       // of an additive union (which would resurrect a removed referral
       // from the other device's stale copy, exactly the old

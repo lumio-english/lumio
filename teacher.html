@@ -2502,10 +2502,21 @@
     const el = document.getElementById("drawerProfile");
     const rwEl = document.getElementById("drawerRewards");
     if (!window.LumioProfiles) { el.innerHTML = ""; rwEl.innerHTML = ""; return; }
-    const p = LumioProfiles.findByName(r.name);
+    // Resolve by roster ID whenever the progress row carries one; the
+    // name lookup is only a legacy fallback. And if there's NO roster
+    // profile, clear every per-student panel -- otherwise the Messages /
+    // Referrals / Notes panels silently keep showing (and sending to) the
+    // previously opened student.
+    const p = (r.profileId && LumioProfiles.getStudent(r.profileId))
+           || (r.studentId && LumioProfiles.getStudent(r.studentId))
+           || LumioProfiles.findByName(r.name);
     if (!p) {
       el.innerHTML = "";
       rwEl.innerHTML = `<div class="td-empty" style="padding:12px 6px">Not on the roster yet.</div>`;
+      ["drawerNotes", "drawerReferrals", "drawerMessages"].forEach(id => {
+        const panel = document.getElementById(id);
+        if (panel) panel.innerHTML = `<div class="td-empty" style="padding:12px 6px">${r.name} isn't on the roster yet — add them as a student first.</div>`;
+      });
       return;
     }
     const tagsHtml = (p.tags || []).map(t => `<span class="td-dp-tag">${t}</span>`).join("");
@@ -3079,6 +3090,17 @@
             showToast(`New PIN set for ${p.name}.`, "success");
           }
         });
+        // Offer to hand the new PIN straight to this one student's inbox.
+        const fresh = LumioProfiles.getStudent(p.id);
+        if (fresh && fresh.pin) {
+          const send = await confirmDialog(`Send the new PIN (${fresh.pin}) to ${p.name}? They'll see it under 📬 Messages on their dashboard — nobody else will.`, "Send PIN");
+          if (send) {
+            const me = LumioProfiles.getCurrentTeacher();
+            LumioProfiles.addMessage(p.id, { type: "teacher", text: `🔑 Your new Lumio PIN is ${fresh.pin}. Use it with your ID ${fresh.loginCode || ""} to log in.`, meta: { from: me ? me.name : "Your teacher" } });
+            const r2 = await LumioProfiles.syncNow();
+            showToast(r2.ok ? `PIN sent to ${p.name}.` : `PIN saved to ${p.name}'s inbox here, but syncing failed (${r2.reason || "unknown"}) — click "Sync now".`, r2.ok ? "success" : "error");
+          }
+        }
       };
       // "Delete Account" (replaces the old "Remove student"). Uses the
       // browser's own confirm() rather than the custom overlay dialog,

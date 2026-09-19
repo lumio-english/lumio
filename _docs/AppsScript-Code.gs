@@ -66,7 +66,11 @@ var ROSTER_COLUMNS = [
   "messages", "pendingDeletion", "deletionConfirmed",
   // People this student referred (JSON array) -- see referrals in
   // js/lumio-profiles.js.
-  "referrals", "referralsUpdatedAt"
+  "referrals", "referralsUpdatedAt",
+  // Plaintext 4-digit PIN (appended LAST so an existing Roster sheet's
+  // header stays aligned -- getOrCreateSheet_ adds missing trailing
+  // columns automatically). Lets any teacher device show/share a PIN.
+  "pin"
 ];
 
 // Reward catalog is shared across all students (teacher-managed list of

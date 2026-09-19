@@ -230,6 +230,7 @@
       const nameField = document.getElementById("sname");
       const levelField = document.getElementById("slevel");
       const goBtn = document.getElementById("goStudent");
+      try { localStorage.setItem("lumio_student_id", ok.id); } catch (e) {}
       if (nameField) nameField.value = ok.name;
       // A "New Learner" who registered mid-test but hasn't finished it yet
       // has no level assigned (see js/lumio-profiles.js). Rather than block
