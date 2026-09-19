@@ -16,9 +16,10 @@ from deck_template_teen import (
     CARD_BG, CARD_TEXT, INK, INK_DIM, MEET_THE_SQUAD_CAST,
 )
 import deck_template_teen2
+import trial_enrich as TE
 from deck_template_teen2 import bg_theme
 
-TOTAL = 33
+TOTAL = 42
 
 
 def load_word(level, lesson_num, en):
@@ -183,6 +184,7 @@ def build():
 
     slides.append(slide_trial_welcome(1, TOTAL))
     slides.append(slide_team_assign(len(slides) + 1, TOTAL))
+    slides.append(TE.hook_slide("level4", len(slides) + 1, TOTAL))
 
     deck_template_teen2.CURRENT_LESSON_BG = "assets/lesson-bg/level4/05.jpg"
     text_words = [load_word("level4", 5, w) for w in ["message", "reply", "call", "invite", "emoji"]]
@@ -193,6 +195,10 @@ def build():
     slides.append(slide_buzzer_challenge(text_words[4], len(slides) + 1, TOTAL))
     slides.append(slide_team_relay(text_words[2], "What's this called?", len(slides) + 1, TOTAL))
     slides.append(slide_mini_celebrate("You're all Chat Champions!", len(slides) + 1, TOTAL))
+    _d = TE.dialogue_slide("level4", 1, len(slides) + 1, TOTAL)
+    if _d: slides.append(_d)
+    _s = TE.sentence_slide(text_words[0], len(slides) + 1, TOTAL, TE.LEVEL_META["level4"]["ch"])
+    if _s: slides.append(_s)
 
     slides.append(slide_trial_transition("Got any snacks?", "&#127831;", len(slides) + 1, TOTAL))
     deck_template_teen2.CURRENT_LESSON_BG = "assets/lesson-bg/level4/07.jpg"
@@ -201,6 +207,8 @@ def build():
         slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "hamad-teen-wave"))
     slides.append(slide_buzzer_challenge(snack_words[1], len(slides) + 1, TOTAL))
     slides.append(slide_scoreboard("Halfway there! Here's the score so far...", len(slides) + 1, TOTAL))
+    for _sl in TE.grammar_slides(text_words + snack_words, len(slides) + 1, TOTAL, 2): slides.append(_sl)
+    for _sl in TE.vocab_quiz_slides(text_words + snack_words, len(slides) + 1, TOTAL, 2): slides.append(_sl)
 
     slides.append(slide_trial_transition("What makes someone the best?", "&#127775;", len(slides) + 1, TOTAL))
     deck_template_teen2.CURRENT_LESSON_BG = "assets/lesson-bg/level4/10.jpg"
@@ -221,6 +229,9 @@ def build():
     deck_template_teen2.CURRENT_LESSON_BG = None
 
     slides.append(slide_scoreboard("And the final score is...", len(slides) + 1, TOTAL))
+    slides.append(TE.discussion_slide("level4", len(slides) + 1, TOTAL))
+    _lvl, _words = TE.trial_words(os.path.abspath(__file__))
+    slides.append(TE.recap_slide("level4", _words, len(slides) + 1, TOTAL))
     slides.append(slide_finale(len(slides) + 1, TOTAL))
     slides.append(slide_trial_finish(len(slides) + 1, TOTAL))
 

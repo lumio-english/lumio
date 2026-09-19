@@ -17,9 +17,10 @@ from deck_template_teen import (
     CARD_BG, CARD_TEXT, INK, INK_DIM, MEET_THE_SQUAD_CAST,
 )
 import deck_template_teen2
+import trial_enrich as TE
 from deck_template_teen2 import bg_theme
 
-TOTAL = 31
+TOTAL = 40
 
 
 def load_word(level, lesson_num, en):
@@ -184,6 +185,7 @@ def build():
 
     slides.append(slide_trial_welcome(1, TOTAL))
     slides.append(slide_team_assign(len(slides) + 1, TOTAL))
+    slides.append(TE.hook_slide("level5", len(slides) + 1, TOTAL))
 
     deck_template_teen2.CURRENT_LESSON_BG = "assets/lesson-bg/level5/01.jpg"
     weekend_words = [load_word("level5", 1, w) for w in ["played", "watched", "walked", "helped", "cleaned", "cooked"]]
@@ -194,6 +196,10 @@ def build():
     slides.append(slide_copycat_challenge("Who can act out \u201ccleaned\u201d the best? Show me!", len(slides) + 1, TOTAL))
     slides.append(slide_team_relay(weekend_words[1], "What did they do this weekend?", len(slides) + 1, TOTAL))
     slides.append(slide_mini_celebrate("You're all Weekend Story Experts!", len(slides) + 1, TOTAL))
+    _d = TE.dialogue_slide("level5", 1, len(slides) + 1, TOTAL)
+    if _d: slides.append(_d)
+    _s = TE.sentence_slide(weekend_words[0], len(slides) + 1, TOTAL, TE.LEVEL_META["level5"]["ch"])
+    if _s: slides.append(_s)
 
     slides.append(slide_trial_transition("Let's talk about a big trip!", "&#9992;&#65039;", len(slides) + 1, TOTAL))
     deck_template_teen2.CURRENT_LESSON_BG = "assets/lesson-bg/level5/12.jpg"
@@ -202,6 +208,8 @@ def build():
         slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "hamad-teen-wave"))
     slides.append(slide_buzzer_challenge(trip_words[2], len(slides) + 1, TOTAL))
     slides.append(slide_scoreboard("Halfway there! Here's the score so far...", len(slides) + 1, TOTAL))
+    for _sl in TE.grammar_slides(weekend_words + trip_words, len(slides) + 1, TOTAL, 2): slides.append(_sl)
+    for _sl in TE.vocab_quiz_slides(weekend_words + trip_words, len(slides) + 1, TOTAL, 2): slides.append(_sl)
 
     slides.append(slide_trial_transition("Let's throw a party!", "&#127881;", len(slides) + 1, TOTAL))
     deck_template_teen2.CURRENT_LESSON_BG = "assets/lesson-bg/level5/14.jpg"
@@ -217,6 +225,9 @@ def build():
     deck_template_teen2.CURRENT_LESSON_BG = None
 
     slides.append(slide_scoreboard("And the final score is...", len(slides) + 1, TOTAL))
+    slides.append(TE.discussion_slide("level5", len(slides) + 1, TOTAL))
+    _lvl, _words = TE.trial_words(os.path.abspath(__file__))
+    slides.append(TE.recap_slide("level5", _words, len(slides) + 1, TOTAL))
     slides.append(slide_finale(len(slides) + 1, TOTAL))
     slides.append(slide_trial_finish(len(slides) + 1, TOTAL))
 

@@ -18,9 +18,10 @@ from deck_template_teen import (
     CARD_BG, CARD_TEXT, INK, INK_DIM, MEET_THE_SQUAD_CAST,
 )
 import deck_template_teen2
+import trial_enrich as TE
 from deck_template_teen2 import bg_theme
 
-TOTAL = 31
+TOTAL = 40
 
 
 def load_word(level, lesson_num, en):
@@ -185,6 +186,7 @@ def build():
 
     slides.append(slide_trial_welcome(1, TOTAL))
     slides.append(slide_team_assign(len(slides) + 1, TOTAL))
+    slides.append(TE.hook_slide("level6", len(slides) + 1, TOTAL))
 
     deck_template_teen2.CURRENT_LESSON_BG = "assets/lesson-bg/level6/01.jpg"
     plan_words = [load_word("level6", 1, w) for w in ["plan", "visit", "join", "apply", "team"]]
@@ -195,6 +197,10 @@ def build():
     slides.append(slide_buzzer_challenge(plan_words[4], len(slides) + 1, TOTAL))
     slides.append(slide_team_relay(plan_words[1], "What's this word?", len(slides) + 1, TOTAL))
     slides.append(slide_mini_celebrate("You're all Future Planners!", len(slides) + 1, TOTAL))
+    _d = TE.dialogue_slide("level6", 1, len(slides) + 1, TOTAL)
+    if _d: slides.append(_d)
+    _s = TE.sentence_slide(plan_words[0], len(slides) + 1, TOTAL, TE.LEVEL_META["level6"]["ch"])
+    if _s: slides.append(_s)
 
     slides.append(slide_trial_transition("Let's get ready!", "&#9989;", len(slides) + 1, TOTAL))
     deck_template_teen2.CURRENT_LESSON_BG = "assets/lesson-bg/level6/16.jpg"
@@ -204,6 +210,8 @@ def build():
     slides.append(slide_copycat_challenge("Who can act out \u201cpractice\u201d the best? Show me!", len(slides) + 1, TOTAL))
     slides.append(slide_copycat_challenge("Who can act out \u201corganize\u201d the best? Show me!", len(slides) + 1, TOTAL))
     slides.append(slide_scoreboard("Halfway there! Here's the score so far...", len(slides) + 1, TOTAL))
+    for _sl in TE.grammar_slides(plan_words + ready_words, len(slides) + 1, TOTAL, 2): slides.append(_sl)
+    for _sl in TE.vocab_quiz_slides(plan_words + ready_words, len(slides) + 1, TOTAL, 2): slides.append(_sl)
 
     slides.append(slide_trial_transition("What's even better?", "&#11088;", len(slides) + 1, TOTAL))
     deck_template_teen2.CURRENT_LESSON_BG = "assets/lesson-bg/level6/07.jpg"
@@ -219,6 +227,9 @@ def build():
     deck_template_teen2.CURRENT_LESSON_BG = None
 
     slides.append(slide_scoreboard("And the final score is...", len(slides) + 1, TOTAL))
+    slides.append(TE.discussion_slide("level6", len(slides) + 1, TOTAL))
+    _lvl, _words = TE.trial_words(os.path.abspath(__file__))
+    slides.append(TE.recap_slide("level6", _words, len(slides) + 1, TOTAL))
     slides.append(slide_finale(len(slides) + 1, TOTAL))
     slides.append(slide_trial_finish(len(slides) + 1, TOTAL))
 
