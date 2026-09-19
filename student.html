@@ -3373,7 +3373,11 @@
       const el = document.createElement(unlocked ? "a" : "div");
       el.className = `node ${unlocked ? "done" : "locked"}`;
       if (unlocked) {
-        el.href = `games/${gameInfo.file}?level=${level}&n=${n}`;
+        // from=lesson tells the game the student launched it themselves, so
+        // its Exit/Back buttons return to this dashboard rather than to the
+        // teacher's class-materials view (present.html), which is the
+        // default when a game is opened from a live class.
+        el.href = `games/${gameInfo.file}?level=${level}&n=${n}&from=lesson`;
       } else {
         el.title = "Finish this lesson's homework to unlock its part of the game";
       }
