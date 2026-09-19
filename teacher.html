@@ -4199,7 +4199,21 @@
       opt.textContent = `${label} — ${levelName(combo.level)} (${combo.students.length} student${combo.students.length === 1 ? "" : "s"})`;
       clsGroupPicker.appendChild(opt);
     });
-    clsGroupPicker.value = presetKey && combos[presetKey] ? presetKey : keys[0];
+    // Students at the same level often carry different (or blank)
+    // cohort/group tags, which splits one real class across several
+    // picker entries -- booking any one of them then quietly books only
+    // part of the class. Offer a whole-level entry whenever that split
+    // exists so the full class can be booked in one go.
+    const byLevel = {};
+    students.forEach(s => { (byLevel[s.level] = byLevel[s.level] || []).push(s); });
+    Object.keys(byLevel).sort().forEach(level => {
+      if (keys.filter(k => combos[k].level === level).length < 2) return;
+      const opt = document.createElement("option");
+      opt.value = `*|||*|||${level}`;
+      opt.textContent = `Everyone at ${levelName(level)} — all groups (${byLevel[level].length} students)`;
+      clsGroupPicker.appendChild(opt);
+    });
+    clsGroupPicker.value = presetKey && (combos[presetKey] || presetKey.startsWith("*|||*|||")) ? presetKey : keys[0];
     renderClsStudentChecks(new Set());
   }
   function currentComboStudents() {
@@ -4211,6 +4225,9 @@
     const key = clsGroupPicker.value;
     if (!key) return [];
     const [cohort, group, level] = key.split("|||");
+    // "*|||*|||level" = everyone at that level, regardless of the
+    // cohort/group tags on their profiles (see renderClsGroupPicker).
+    if (cohort === "*" && group === "*") return students.filter(s => s.level === level);
     return students.filter(s => (s.cohort || "") === cohort && (s.group || "") === group && s.level === level);
   }
   // preselected: a Set of studentIds to check by default -- all of the
