@@ -1,31 +1,54 @@
-<div class="wall"></div><div class="teal-band"></div><div class="window"><div class="cross-v"></div><div class="cross-h"></div></div><div class="spark" style="left:375px;top:135px;font-size:1.6rem">&#10022;</div><div class="spark" style="left:415px;top:105px;font-size:1.1rem">&#10022;</div><div class="spark" style="left:392px;top:178px;font-size:1.3rem">&#10022;</div><div class="header">
-      <div class="brand"><img src="assets/logo/lumio-logo.png"><div class="name">Lumio<small>ENGLISH</small></div></div>
-      <div class="pagetitle">Warm-Up &bull; Unscramble!</div>
-      <div class="counter">3 / 42</div>
-    </div><div class="colorstrip"><div class="c1"></div><div class="c2"></div><div class="c3"></div><div class="c4"></div><div class="c5"></div></div>
-    <div style="position:absolute;left:0;right:0;top:190px;text-align:center">
-      <div style="display:inline-block;background:#fff;padding:8px 20px;border-radius:14px;box-shadow:0 6px 14px rgba(67,48,31,.1);font-family:'Baloo 2',sans-serif;font-weight:700;
-                font-size:1.1rem;color:#43301F">Can you guess the word before it's revealed?</div>
-    </div>
-    <div style="position:absolute;left:0;right:0;top:250px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding:0 60px">
-      <div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
-                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#F97316;
-                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">A</div><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
-                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#0D9488;
-                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">E</div><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
-                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#F59E0B;
-                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">S</div><div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
-                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:#2DD4BF;
-                  box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">V</div>
-    </div>
-    <div id="unscrambleAnswer" style="position:absolute;left:0;right:0;top:360px;text-align:center;display:none">
-      <div class="card" style="display:inline-block;padding:16px 32px">
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.8rem;color:#43301F">save</div>
-        <div style="color:#0D9488;font-weight:800;font-size:1.1rem;margin-top:4px">يدخر</div>
+<div style="position:absolute;inset:0;background:url('assets/lesson-bg/level4/09.jpg') center/cover no-repeat"></div>
+        <div style="position:absolute;inset:0;background:linear-gradient(160deg,#2B1B52CC 0%,#1C1038E6 100%)"></div>
+        <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:.35" xmlns="http://www.w3.org/2000/svg">
+  <defs><pattern id="dotgrid" width="28" height="28" patternUnits="userSpaceOnUse">
+    <circle cx="2" cy="2" r="1.4" fill="rgba(237,233,251,.16)"/>
+  </pattern></defs>
+  <rect width="100%" height="100%" fill="url(#dotgrid)"/></svg>
+        <svg style="position:absolute;opacity:.10;pointer-events:none" fill="none" stroke="#4ADE80" stroke-width="3" width="220" height="220" style="position:absolute;right:50px;top:60px;opacity:.12">
+          <circle cx="80" cy="80" r="60"/><circle cx="150" cy="150" r="40"/></svg><div style="position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:22px 40px 0">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:30px;height:30px;border-radius:8px;background:#fff;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:3px">
+          <img src="assets/logo/lumio-logo.png" style="width:100%;height:100%;object-fit:contain"></div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#EDE9FB;font-size:.85rem;letter-spacing:.5px">LUMIO ENGLISH</div>
       </div>
+      <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#EDE9FB;font-size:.95rem;background:#4ADE8024;
+                  padding:6px 16px;border-radius:8px">First Listen</div>
+      <div style="font-family:'Nunito',sans-serif;font-weight:800;color:#A79BD1;font-size:.8rem">3 / 47</div>
     </div>
-    <button onclick="document.getElementById('unscrambleAnswer').style.display='block'; typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('save')"
-            style="position:absolute;left:46px;bottom:32px;z-index:20;cursor:pointer;border:none;font-family:inherit;
-            background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;padding:13px 26px;border-radius:999px;
-            font-size:1.02rem;box-shadow:0 8px 18px rgba(249,115,22,.35)">&#128064; Reveal the word</button>
-    <div class="floorshadow" style="right:95px;bottom:25px;width:230px;height:36px"></div><img class="char" src="assets/story/characters/lumi-wave-book.png" style="right:95px;bottom:32px;height:270px" onerror="this.style.display='none'; this.previousElementSibling.style.display='none'">
+    <div style="position:relative;z-index:5;margin:14px 40px 0;height:3px;background:#4A3B7A;border-radius:2px">
+      <div style="height:100%;width:6%;background:linear-gradient(90deg,#4ADE80,#16A34A);border-radius:2px"></div>
+    </div>
+    <div style="position:relative;z-index:5;text-align:center;margin-top:34px;font-family:'Nunito',sans-serif;font-weight:700;color:#A79BD1;font-size:.9rem">
+      Listen first. Don't worry about understanding every word -- just get the gist.</div>
+    
+        <div style="position:absolute;left:60px;top:110px;max-width:480px;background:#FFFFFF;border-radius:12px;
+                    padding:11px 18px;box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
+          <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:.92rem;color:#2B2640">How do you actually manage to save money? I spend mine the second I earn it.</div>
+          <div style="direction:rtl;text-align:right;font-size:.76rem;color:#8A8398;font-weight:700;margin-top:3px">كيف تدير فعلاً توفير المال؟ أنا أنفق مالي لحظة كسبه.</div>
+        </div>
+        <div style="position:absolute;right:60px;top:225px;max-width:480px;background:#FFFFFF;border-radius:12px;
+                    padding:11px 18px;box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
+          <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:.92rem;color:#2B2640">Honestly, I just don't let myself touch it. Out of sight, out of mind.</div>
+          <div style="direction:rtl;text-align:right;font-size:.76rem;color:#8A8398;font-weight:700;margin-top:3px">بصراحة، لا أسمح لنفسي بلمسه فقط. بعيداً عن العين بعيداً عن القلب.</div>
+        </div>
+        <div style="position:absolute;left:60px;top:340px;max-width:480px;background:#FFFFFF;border-radius:12px;
+                    padding:11px 18px;box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
+          <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:.92rem;color:#2B2640">That's smart. I always end up needing to borrow a little by the end of the month.</div>
+          <div style="direction:rtl;text-align:right;font-size:.76rem;color:#8A8398;font-weight:700;margin-top:3px">هذا ذكي. أنا دائماً أحتاج لاقتراض القليل بنهاية الشهر.</div>
+        </div>
+        <div style="position:absolute;right:60px;top:455px;max-width:480px;background:#FFFFFF;border-radius:12px;
+                    padding:11px 18px;box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
+          <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:.92rem;color:#2B2640">I'd lend you some, but I'm saving every coin for something specific right now.</div>
+          <div style="direction:rtl;text-align:right;font-size:.76rem;color:#8A8398;font-weight:700;margin-top:3px">كنت لأقرضك بعضاً، لكنني أوفر كل قرش لشيء محدد الآن.</div>
+        </div>
+        <div style="position:absolute;left:60px;top:570px;max-width:480px;background:#FFFFFF;border-radius:12px;
+                    padding:11px 18px;box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
+          <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:.92rem;color:#2B2640">Fair enough, I respect the discipline. What are you even saving for?</div>
+          <div style="direction:rtl;text-align:right;font-size:.76rem;color:#8A8398;font-weight:700;margin-top:3px">معقول، أحترم هذا الانضباط. لماذا توفر أصلاً؟</div>
+        </div>
+        <div style="position:absolute;right:60px;top:685px;max-width:480px;background:#FFFFFF;border-radius:12px;
+                    padding:11px 18px;box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
+          <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:.92rem;color:#2B2640">That's a secret for now. You'll find out once I actually earn enough.</div>
+          <div style="direction:rtl;text-align:right;font-size:.76rem;color:#8A8398;font-weight:700;margin-top:3px">هذا سر حالياً. ستعرف بمجرد أن أكسب ما يكفي فعلاً.</div>
+        </div>
