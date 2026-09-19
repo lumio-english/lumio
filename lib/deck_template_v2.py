@@ -83,14 +83,24 @@ def pick_character(role, seed):
     return pool[seed % len(pool)]
 LETTER_COLORS = ["#F97316", "#0D9488", "#F59E0B", "#2DD4BF", "#DC5C33"]
 def letter_tiles(word):
-    if " " in word or len(word) > 10: return ""
+    # Multi-word entries ("ice cream") used to fall back to plain text,
+    # breaking the tile pattern next to the other options. They now get
+    # tiles too -- slightly smaller so both words fit -- with a visible
+    # gap between the words.
+    if len(word.replace(" ", "")) > 12: return ""
+    multi = " " in word
+    size, font, gap = (52, "1.35rem", 8) if not multi else (42, "1.1rem", 6)
     tiles = ""
-    for i, ch in enumerate(word):
-        color = LETTER_COLORS[i % len(LETTER_COLORS)]
-        tiles += f'''<div style="width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
-                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;background:{color};
+    i = 0
+    for ch in word:
+        if ch == " ":
+            tiles += f'<div style="width:{gap*2}px"></div>'
+            continue
+        color = LETTER_COLORS[i % len(LETTER_COLORS)]; i += 1
+        tiles += f'''<div style="width:{size}px;height:{size}px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:{font};color:#fff;background:{color};
                   box-shadow:0 3px 0 rgba(0,0,0,.14), 0 6px 12px rgba(67,48,31,.16)">{ch.upper()}</div>'''
-    return f'<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">{tiles}</div>'
+    return f'<div style="display:flex;gap:{gap}px;justify-content:center;flex-wrap:wrap;align-items:center">{tiles}</div>'
 
 VOCAB_CHARS = ["omar-wave", "noor-happy", "sara-clap", "omar-point", "noor-wave", "ziad-happy", "hamad-wave"]
 
@@ -382,7 +392,7 @@ def highlight_words(sentence, bold_words):
         result = pattern.sub(lambda m: f'<span class="vs-key">{esc(m.group(0))}</span>', result, count=1)
     return result
 
-def slide_vocab_scene(image_path, sentence, bold_words, n, total, seed):
+def slide_vocab_scene(image_path, sentence, bold_words, n, total, seed, translation=None):
     """A full-bleed scene slide: real illustration of our characters
     acting out 1-3 of the lesson's most important words, the sentence
     that uses them displayed over it with those words highlighted, and a
@@ -395,15 +405,18 @@ def slide_vocab_scene(image_path, sentence, bold_words, n, total, seed):
     return f'''<div style="position:absolute;inset:0;background:url('{image_path}') center/cover no-repeat"></div>
     <div style="position:absolute;left:0;right:0;top:0;height:120px;background:linear-gradient(180deg,rgba(43,33,24,.55),transparent)"></div>
     {header("", n, total)}
-    <div style="position:absolute;left:0;right:0;bottom:0;padding:28px 46px 34px;background:linear-gradient(0deg,rgba(43,33,24,.82) 10%,rgba(43,33,24,.55) 60%,transparent 100%)">
-      <div style="display:flex;align-items:center;justify-content:center;gap:18px;max-width:1100px;margin:0 auto">
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.5rem;color:#fff;line-height:1.4;text-align:center">{highlighted}</div>
+    <div style="position:absolute;left:0;right:0;bottom:0;padding:22px 46px 30px;background:linear-gradient(0deg,rgba(43,33,24,.7) 10%,rgba(43,33,24,.35) 70%,transparent 100%)">
+      <div style="display:flex;align-items:center;justify-content:center;gap:16px;max-width:1100px;margin:0 auto">
+        <div style="background:#fff;border-radius:20px;padding:16px 28px;box-shadow:0 10px 26px rgba(0,0,0,.28);text-align:center;max-width:820px">
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.55rem;color:#43301F;line-height:1.35">{highlighted}</div>
+          {f'<div dir="rtl" style="margin-top:8px;display:inline-block;padding:6px 18px;border-radius:999px;background:linear-gradient(135deg,#DDF6F0,#C8F0E7);color:#0D9488;font-weight:800;font-size:1.05rem">{esc(translation)}</div>' if translation else ''}
+        </div>
         <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{speak_text}')"
                 style="flex-shrink:0;border:none;cursor:pointer;font-family:inherit;background:linear-gradient(135deg,#F97316,#EA580C);
                        color:#fff;font-weight:800;width:56px;height:56px;border-radius:50%;font-size:1.3rem;box-shadow:0 6px 16px rgba(0,0,0,.3)">&#9654;</button>
       </div>
     </div>
-    <style>.vs-key{{color:#FFC53D;font-weight:800}}</style>'''
+    <style>.vs-key{{color:#F97316;font-weight:800}}</style>'''
 
 def slide_phonics_story(unit, n, total, ch):
     """A short, connected-text reading passage using this unit's sounds --
@@ -998,21 +1011,34 @@ def slide_teacher_game(vocab, n, total, ch, tier="preA", mode="teacher"):
     ''' + char_img(ch, right=40, bottom=30, height=150))
 
 
-def slide_today_i_learned(lesson, n, total):
+def slide_today_i_learned(lesson, n, total, extra_sentences=None):
     chips = "".join(f'''
       <div style="background:#fff;border-radius:14px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;
                   box-shadow:0 6px 14px rgba(67,48,31,.1);width:110px">
         <div style="width:70px;height:70px;border-radius:10px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/{slug(w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
         <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.8rem;color:#43301F;text-align:center">{esc(w["en"])}</div>
       </div>''' for w in lesson["vocab"][:6])
+    # Every sentence pattern the lesson used, wherever it appeared: each
+    # word's own example sentence plus the scene / sentence-building
+    # sentences (extra_sentences), de-duplicated in order. Previously only
+    # word 0's example was shown.
+    seen, patterns = set(), []
+    for w in lesson["vocab"]:
+        ex = (w.get("example") or "").strip()
+        if ex and ex.lower() not in seen: seen.add(ex.lower()); patterns.append(ex)
+    for ex in (extra_sentences or []):
+        ex = (ex or "").strip()
+        if ex and ex.lower() not in seen: seen.add(ex.lower()); patterns.append(ex)
+    font = "1rem" if len(patterns) <= 8 else ".88rem"
+    pattern_rows = "".join(f'<div style="font-family:\'Baloo 2\',sans-serif;font-style:italic;font-weight:700;font-size:{font};color:#F97316;line-height:1.3">&ldquo;{esc(p)}&rdquo;</div>' for p in patterns)
     return (bg_clean() + header("Today I Learned! &#127775;", n, total) + COLORSTRIP + f'''
     <div style="position:absolute;left:46px;top:150px;width:820px">
       <div style="font-size:.78rem;font-weight:800;color:#F97316;letter-spacing:1.5px;margin-bottom:10px">KEY WORDS</div>
       <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px">{chips}</div>
-      <div style="font-size:.78rem;font-weight:800;color:#0D9488;letter-spacing:1.5px;margin-bottom:8px">SENTENCE PATTERN</div>
-      <div class="card" style="padding:16px 20px">
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.05rem;color:#43301F">{esc(lesson.get("grammarFocus",""))}</div>
-        <div style="font-family:'Baloo 2',sans-serif;font-style:italic;font-weight:700;font-size:1.1rem;color:#F97316;margin-top:6px">&ldquo;{esc(lesson["vocab"][0].get("example", ""))}&rdquo;</div>
+      <div style="font-size:.78rem;font-weight:800;color:#0D9488;letter-spacing:1.5px;margin-bottom:8px">SENTENCE PATTERNS</div>
+      <div class="card" style="padding:14px 20px">
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1rem;color:#43301F;margin-bottom:6px">{esc(lesson.get("grammarFocus",""))}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 18px">{pattern_rows}</div>
       </div>
     </div>
     ''' + char_img("noor-happy", bottom=42, height=310))
@@ -1104,8 +1130,18 @@ def slide_unscramble(word, n, total, ch):
     ''' + char_img(ch, bottom=32, height=270))
 
 
-def slide_reward_homework(lesson_num, n, total):
-    items = [f"Play this lesson again on Lumio English", "Finish your homework sheet", "Say each word to your family"]
+def slide_reward_homework(lesson_num, n, total, has_story=False):
+    # The agreed order of work between classes -- interactive homework
+    # first, then the printables, then memorise, then the game. Lessons
+    # that unlock a story part (5, 10, 15, 20) add a pointer to it.
+    items = [
+        "Do the interactive homework on your dashboard first",
+        "Print your worksheet, writing-practice sheet and flashcards",
+        "Memorise today's words with your flashcards",
+        "Play this lesson's bonus game",
+    ]
+    if has_story and lesson_num in (5, 10, 15, 20):
+        items.append(f"A new story part is waiting for you in the Story section!")
     rows = "".join(f'''
       <div style="display:flex;align-items:center;gap:12px;padding:8px 0">
         <span style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#DDF6F0,#C8F0E7);color:#0D9488;
@@ -1364,8 +1400,9 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
         elif kind == "phonics_practice": slides.append(slide_phonics_practice(data, n, total, pick_character("explain", lesson_num + 1)))
         elif kind == "phonics_story": slides.append(slide_phonics_story(data, n, total, pick_character("point", lesson_num)))
         elif kind == "vocab_scene":
-            img_path, sentence, bold_words = data
-            slides.append(slide_vocab_scene(img_path, sentence, bold_words, n, total, lesson_num))
+            img_path, sentence, bold_words = data[0], data[1], data[2]
+            translation = data[3] if len(data) > 3 else None
+            slides.append(slide_vocab_scene(img_path, sentence, bold_words, n, total, lesson_num, translation))
         elif kind == "sound_match":
             i = data
             words = phonics_unit.get("words", []) if phonics_unit else []
@@ -1418,7 +1455,8 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
             w, idx = data
             slides.append(slide_your_turn_listen_first(w, idx, your_turn_n, n, total, "omar-wave"))
         elif kind == "today_i_learned":
-            slides.append(slide_today_i_learned(lesson, n, total))
+            scene_sentences = [sc[1] for sc in (scene_map.get(lesson_num, []) if scene_map else [])]
+            slides.append(slide_today_i_learned(lesson, n, total, scene_sentences))
         elif kind == "quiz":
             idx = data
             target = lesson["vocab"][1 if idx == 1 else min(3, V - 1)]
@@ -1433,7 +1471,7 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
             slides.append(slide_quiz(target, distractors, quiz_review_idx[0], quiz_total_q, n, total, lesson_num * 19 + i))
         elif kind == "skills_check": slides.append(slide_skills_check(data, n, total))
         elif kind == "spelling_rule": slides.append(slide_spelling_rule(data, n, total, "sara-explain"))
-        elif kind == "reward_homework": slides.append(slide_reward_homework(lesson_num, n, total))
+        elif kind == "reward_homework": slides.append(slide_reward_homework(lesson_num, n, total, has_story=level in ("pre-a", "level1", "level2", "level3")))
     return slides
 
 

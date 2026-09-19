@@ -138,9 +138,9 @@ THEME_MAP = {
 # words, shown right before the sentence-building slides. See
 # assets/vocab-scenes/pre-a/<NN>.jpg for the actual images.
 SCENE_DATA = [
-    (1, 1, ["Hello", "Hi"], "Hello! Hi, friend!"),
-    (1, 2, ["Good morning", "Good night"], "Good morning! Good night!"),
-    (1, 3, ["Thank you", "Goodbye"], "Thank you! Goodbye!"),
+    (1, 1, ["Hello", "Hi"], "Hello! Hi, friend!", "مرحباً! أهلاً يا صديقي!"),
+    (1, 2, ["Good morning", "Good night"], "Good morning! Good night!", "صباح الخير! تصبح على خير!"),
+    (1, 3, ["Thank you", "Goodbye"], "Thank you! Goodbye!", "شكراً لك! مع السلامة!"),
     (2, 4, ["boy", "girl"], "This is a boy. This is a girl."),
     (2, 5, ["friend", "name"], "My friend's name is Sara."),
     (3, 6, ["apple", "ball", "cat"], "I see an apple, a ball, and a cat."),
@@ -150,7 +150,7 @@ SCENE_DATA = [
     (4, 10, ["moon", "nose"], "Noor points to her nose under the moon."),
     (4, 11, ["pen", "rabbit"], "The queen holds a pen. The rabbit hops by."),
     (5, 12, ["sun", "tree"], "The sun is up. Omar sits under the tree."),
-    (5, 13, ["umbrella", "water"], "Noor holds her umbrella in the water."),
+    (5, 13, ["umbrella", "water"], "Noor holds her umbrella under the rain."),
     (5, 14, ["yellow", "zebra"], "Ziad wears yellow. The zebra is next to him."),
     (6, 15, ["One", "two", "three"], "One, two, three balloons!"),
     (6, 16, ["Four", "five"], "Four stars! Five fingers!"),
@@ -192,9 +192,11 @@ SCENE_DATA = [
     (19, 52, ["hungry", "scared"], "Hamad is hungry. The cat is scared."),
 ]
 SCENE_MAP = {}
-for lesson_num, img_num, bold_words, sentence in SCENE_DATA:
+for entry in SCENE_DATA:
+    lesson_num, img_num, bold_words, sentence = entry[:4]
+    translation = entry[4] if len(entry) > 4 else None   # optional Arabic line shown in the caption box
     SCENE_MAP.setdefault(lesson_num, []).append(
-        (f"assets/vocab-scenes/pre-a/{img_num:02d}.jpg", sentence, bold_words)
+        (f"assets/vocab-scenes/pre-a/{img_num:02d}.jpg", sentence, bold_words, translation)
     )
 
 run("pre-a", DIALOGUES, None, None, has_phonics=False, skills_data=SKILLS_CHECKPOINTS, spelling_rules=SPELLING_RULES, theme_map=THEME_MAP, scene_map=SCENE_MAP)

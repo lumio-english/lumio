@@ -223,7 +223,7 @@ def build():
     deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/classroom.jpg"
     for w_en in ["hello", "hi", "good morning", "good night", "goodbye", "thank you"]:
         slides.append(slide_vocab(load_word("pre-a", 1, w_en), 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
-    slides.append(slide_vocab_scene("assets/vocab-scenes/pre-a/01.jpg", "Hello! Hi, friend!", ["Hello", "Hi"], len(slides) + 1, TOTAL, 1))
+    slides.append(slide_vocab_scene("assets/vocab-scenes/pre-a/01.jpg", "Hello! Hi, friend!", ["Hello", "Hi"], len(slides) + 1, TOTAL, 1, "مرحباً! أهلاً يا صديقي! — Hello and Hi both mean a friendly greeting"))
 
     slides.append(slide_trial_transition("Let's meet some animal friends!", "&#128062;", len(slides) + 1, TOTAL))
 
@@ -232,7 +232,7 @@ def build():
     animal_words = [load_word("pre-a", 12, w) for w in ["cat", "dog", "bird", "fish", "rabbit", "duck"]]
     for w in animal_words:
         slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
-    slides.append(slide_vocab_scene("assets/vocab-scenes/pre-a/29.jpg", "The cat and the dog play together.", ["cat", "dog"], len(slides) + 1, TOTAL, 1))
+    slides.append(slide_vocab_scene("assets/vocab-scenes/pre-a/29.jpg", "The cat and the dog play together.", ["cat", "dog"], len(slides) + 1, TOTAL, 1, "القطة والكلب يلعبان معاً"))
 
     slides.append(slide_buzzer_challenge(animal_words[0], len(slides) + 1, TOTAL))
     slides.append(slide_buzzer_challenge(animal_words[3], len(slides) + 1, TOTAL))
@@ -246,7 +246,7 @@ def build():
     color_words = [load_word("pre-a", 8, w) for w in ["red", "blue", "yellow", "green"]]
     for w in color_words:
         slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
-    slides.append(slide_vocab_scene("assets/vocab-scenes/pre-a/19.jpg", "A red balloon and a blue balloon!", ["red", "blue"], len(slides) + 1, TOTAL, 1))
+    slides.append(slide_vocab_scene("assets/vocab-scenes/pre-a/19.jpg", "A red balloon and a blue balloon!", ["red", "blue"], len(slides) + 1, TOTAL, 1, "بالون أحمر وبالون أزرق!"))
     slides.append(slide_buzzer_challenge(color_words[1], len(slides) + 1, TOTAL))
     slides.append(slide_scoreboard("Halfway there! Here's the score so far...", len(slides) + 1, TOTAL))
 
@@ -257,7 +257,7 @@ def build():
     family_words = [load_word("pre-a", 10, w) for w in ["mom", "dad", "brother", "sister"]]
     for w in family_words:
         slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
-    slides.append(slide_vocab_scene("assets/vocab-scenes/pre-a/23.jpg", "I love my mom and dad.", ["mom", "dad"], len(slides) + 1, TOTAL, 1))
+    slides.append(slide_vocab_scene("assets/vocab-scenes/pre-a/23.jpg", "I love my mom and dad.", ["mom", "dad"], len(slides) + 1, TOTAL, 1, "أحب أمي وأبي"))
     slides.append(slide_team_relay(family_words[0], "Who is this?", len(slides) + 1, TOTAL))
     slides.append(slide_mini_celebrate("You're a Family Friend!", len(slides) + 1, TOTAL))
 
