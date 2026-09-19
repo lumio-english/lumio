@@ -91,7 +91,7 @@ def slide_trial_transition(headline, emoji, n, total):
     return (bg_study() + header("Trial Class", n, total) + COLORSTRIP + f'''
     <div style="position:absolute;inset:0;top:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
       <div style="font-size:4rem;margin-bottom:20px">{emoji}</div>
-      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2.4rem;color:#43301F;max-width:900px">{headline}</div>
+      <div style="background:#fff;border-radius:22px;padding:18px 40px;box-shadow:0 12px 28px rgba(67,48,31,.16);font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2.4rem;color:#43301F;max-width:900px">{headline}</div>
     </div>
     ''' + char_img("lumi-celebrate", bottom=40, height=290))
 
@@ -187,7 +187,7 @@ def slide_mini_celebrate(headline, n, total):
     return (bg_clean() + header("Trial Class", n, total) + COLORSTRIP + SPARKS + f'''
     <div style="position:absolute;inset:0;top:40px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
       <div style="font-size:3.4rem;margin-bottom:10px">&#127775;</div>
-      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2.2rem;color:#43301F">{headline}</div>
+      <div style="background:#fff;border-radius:22px;padding:16px 38px;box-shadow:0 12px 28px rgba(67,48,31,.16);font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2.2rem;color:#43301F">{headline}</div>
     </div>
     ''' + char_img("lumi-thumbs", bottom=40, height=280))
 
@@ -200,9 +200,14 @@ def slide_trial_finish(n, total):
         You're all naturals! &#11088;
       </h1>
       {name_chips_html()}
-      <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.15rem;color:#8A7160;margin:20px 0 24px;max-width:820px">
-        Hello, animals, colors, family, and moving in English &mdash; all in one class! This is just a taste
-        of the 140 lessons and 7 levels waiting on the full Lumio adventure.
+      <div style="background:#fff;border-radius:20px;padding:16px 26px;box-shadow:0 12px 26px rgba(67,48,31,.14);margin:16px 0 14px;max-width:860px">
+        <div style="font-size:.78rem;font-weight:800;color:#F97316;letter-spacing:1.5px;margin-bottom:8px">TODAY YOU LEARNED &nbsp;&middot;&nbsp; <span dir="rtl">تعلمت اليوم</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center">
+          {"".join(f'<span style="background:#FFF3D6;color:#7B3F1B;padding:6px 14px;border-radius:999px;font-weight:800;font-size:.95rem">{w}</span>' for w in ["hello","hi","cat","dog","duck","red","blue","mom","dad","sit","stand","sing"])}
+        </div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1rem;color:#8A7160;margin-top:10px">
+          Thank you! Goodbye! &nbsp;<span dir="rtl" style="color:#0D9488">شكراً لك! مع السلامة!</span> &mdash; this was one class out of 140 lessons across 7 levels.
+        </div>
       </div>
       <div style="background:#fff;border-radius:18px;padding:15px 28px;box-shadow:0 12px 26px rgba(67,48,31,.18);
                   font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1rem;color:#43301F">

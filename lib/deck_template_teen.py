@@ -453,9 +453,10 @@ def slide_today_i_learned(lesson, n, total):
     <div style="position:relative;z-index:5;padding:40px 40px 0">
       <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:{ORANGE_DEEP};font-size:.75rem;letter-spacing:1.5px;margin-bottom:10px">KEY WORDS</div>
       <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px">{chips}</div>
-      <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:{TEAL_DEEP};font-size:.75rem;letter-spacing:1.5px;margin-bottom:8px">GRAMMAR</div>
-      {card_open(700, "padding:16px 20px")}
-        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1rem;color:{CARD_TEXT}">{esc(lesson.get("grammarFocus",""))}</div>
+      <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:{TEAL_DEEP};font-size:.75rem;letter-spacing:1.5px;margin-bottom:8px">GRAMMAR &amp; SENTENCE PATTERNS</div>
+      {card_open(700, "padding:14px 20px")}
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1rem;color:{CARD_TEXT};margin-bottom:6px">{esc(lesson.get("grammarFocus",""))}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px 16px">{"".join(f'<div style="font-family:\'Fredoka\',sans-serif;font-style:italic;font-weight:500;font-size:{".92rem" if len(lesson["vocab"])<=8 else ".82rem"};color:{ORANGE_DEEP}">&ldquo;{esc(w.get("example",""))}&rdquo;</div>' for w in lesson["vocab"] if w.get("example"))}</div>
       </div>
     </div>
     ''')
@@ -662,7 +663,12 @@ def build_reading_adventure_deck(lesson_num, lesson, grammar_topic, story):
 
 
 def slide_reward_homework(lesson_num, n, total, xp):
-    items = ["Replay this lesson", "Finish your homework", "Practice with a friend or family member"]
+    items = [
+        "Do the interactive homework on your dashboard first",
+        "Print your worksheet, writing-practice sheet and flashcards",
+        "Memorise this lesson's words with your flashcards",
+        "Play this lesson's bonus game",
+    ]
     rows = "".join(f'''
       <div style="display:flex;align-items:center;gap:12px;padding:8px 0">
         <span style="width:22px;height:22px;border-radius:6px;background:#E6FBF8;color:{TEAL_DEEP};font-weight:800;

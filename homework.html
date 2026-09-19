@@ -360,13 +360,23 @@ function finishDrawing() {
 let mediaRecorder = null, audioChunks = [], activeRecIdx = null, activeStream = null;
 function renderSayIt() {
   const micSupported = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
-  const rows = lesson.vocab.map((w, i) => `
+  // Letter lessons (Pre-A 3-5): each word's example is "A is for apple."
+  // -- the student should say and record THAT, with the letter shown big,
+  // not just the bare word.
+  const letterOf = w => { const m = /^([A-Za-z]) is (?:for|in) /.exec(w.example || ""); return m ? m[1].toUpperCase() : null; };
+  const rows = lesson.vocab.map((w, i) => {
+    const L = letterOf(w);
+    const sayText = L ? (w.example || w.en) : w.en;
+    const label = L
+      ? `<span style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:900;font-size:1.1rem;margin-right:8px;vertical-align:middle">${L}</span><b>${esc(w.example)}</b> <span style="color:var(--teal-deep);font-weight:800">${w.ar}</span>`
+      : `${esc(w.en)} <span style="color:var(--teal-deep);font-weight:800">${w.ar}</span>`;
+    return `
     <div class="hw-say-row" id="sayRow-${i}">
-      <label><input type="checkbox" onchange="results.saidWords[${i}] = this.checked" ${results.saidWords[i] ? "checked" : ""}> ${esc(w.en)} <span style="color:var(--teal-deep);font-weight:800">${w.ar}</span></label>
-      <button class="hw-listen-btn" title="Hear it" onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('${esc(w.en).replace(/'/g, "\\'")}')">🔊</button>
+      <label><input type="checkbox" onchange="results.saidWords[${i}] = this.checked" ${results.saidWords[i] ? "checked" : ""}> ${label}</label>
+      <button class="hw-listen-btn" title="Hear it" onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('${esc(sayText).replace(/'/g, "\\'")}')">🔊</button>
       ${micSupported ? `<button class="hw-rec-btn ${results.recorded[i] ? "done" : ""}" id="recBtn-${i}" onclick="toggleRecording(${i})">
         ${results.recorded[i] ? "✓ Recorded — tap to redo" : "🎙️ Record"}</button>` : ""}
-    </div>`).join("");
+    </div>`; }).join("");
   document.getElementById("hwSections").innerHTML = `
     <div class="hw-card">
       <h2>🗣️ Say It</h2>

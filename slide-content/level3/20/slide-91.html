@@ -1,36 +1,279 @@
-<div style="position:absolute;inset:0;background:url('assets/lesson-bg/level3/20.jpg') center/cover no-repeat"></div>
-        <div style="position:absolute;inset:0;background:linear-gradient(160deg,#2B1B52CC 0%,#1C1038E6 100%)"></div>
-        <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:.35" xmlns="http://www.w3.org/2000/svg">
-  <defs><pattern id="dotgrid" width="28" height="28" patternUnits="userSpaceOnUse">
-    <circle cx="2" cy="2" r="1.4" fill="rgba(237,233,251,.16)"/>
-  </pattern></defs>
-  <rect width="100%" height="100%" fill="url(#dotgrid)"/></svg>
-        <div style="position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:22px 40px 0">
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="width:30px;height:30px;border-radius:8px;background:#fff;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:3px">
-          <img src="assets/logo/lumio-logo.png" style="width:100%;height:100%;object-fit:contain"></div>
-        <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#EDE9FB;font-size:.85rem;letter-spacing:.5px">LUMIO ENGLISH</div>
-      </div>
-      <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#EDE9FB;font-size:.95rem;background:#8B5CF624;
-                  padding:6px 16px;border-radius:8px">Grammar Check &middot; 9/16</div>
-      <div style="font-family:'Nunito',sans-serif;font-weight:800;color:#A79BD1;font-size:.8rem">91 / 105</div>
+<div class="wall"></div><div class="teal-band"></div><div class="shelf"></div><div class="book" style="left:56px;width:32px;height:78px;background:#F97316"></div><div class="book" style="left:93px;width:28px;height:85px;background:#0D9488"></div><div class="book" style="left:126px;width:36px;height:92px;background:#F59E0B"></div><div class="book" style="left:167px;width:26px;height:99px;background:#2DD4BF"></div><div class="book" style="left:198px;width:32px;height:81px;background:#DC5C33"></div><div class="window"><div class="cross-v"></div><div class="cross-h"></div></div><div class="spark" style="left:375px;top:135px;font-size:1.6rem">&#10022;</div><div class="spark" style="left:415px;top:105px;font-size:1.1rem">&#10022;</div><div class="spark" style="left:392px;top:178px;font-size:1.3rem">&#10022;</div><div class="header">
+      <div class="brand"><img src="assets/logo/lumio-logo.png"><div class="name">Lumio<small>ENGLISH</small></div></div>
+      <div class="pagetitle">Sound &amp; Spot</div>
+      <div class="counter">91 / 145</div>
+    </div><div class="colorstrip"><div class="c1"></div><div class="c2"></div><div class="c3"></div><div class="c4"></div><div class="c5"></div></div>
+    <div style="position:absolute;left:0;right:0;top:158px;text-align:center">
+      <div style="display:inline-block;background:#fff;padding:8px 20px;border-radius:14px;box-shadow:0 6px 14px rgba(67,48,31,.1);font-family:'Baloo 2',sans-serif;font-weight:700;
+                font-size:1.05rem;color:#8A7160">Tap any word to hear it &mdash; can you say it before it plays?</div>
     </div>
-    <div style="position:relative;z-index:5;margin:14px 40px 0;height:3px;background:#4A3B7A;border-radius:2px">
-      <div style="height:100%;width:87%;background:linear-gradient(90deg,#8B5CF6,#7C3AED);border-radius:2px"></div>
+    <div style="position:absolute;left:0;right:400px;top:210px;display:flex;flex-wrap:wrap;gap:16px;justify-content:center;padding:0 30px">
+      
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('hang out')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/hang-out.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">hang out</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">يقضي وقتا مع الأصدقاء</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('crew')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/crew.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">crew</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">الشلة</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('studies')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/studies.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">studies</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">يدرس (هو)</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('trains')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/trains.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">trains</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">يتدرب (هو)</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('awesome')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/awesome.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">awesome</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">رائع</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('lame')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/lame.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">lame</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">تافه</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('poster')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/poster.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">poster</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">ملصق</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('beanbag')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/beanbag.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">beanbag</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">كرسي إسفنجي</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('sneakers')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/sneakers.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">sneakers</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">حذاء رياضي</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('hoodie')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/hoodie.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">hoodie</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">سترة بقلنسوة</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('teammates')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/teammates.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">teammates</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">زملاء الفريق</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('followers')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/followers.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">followers</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">المتابعون</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('charger')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/charger.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">charger</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">شاحن</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('password')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/password.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">password</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">كلمة السر</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('hallway')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/hallway.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">hallway</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">الممر</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('cafeteria')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/cafeteria.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">cafeteria</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">الكافيتيريا</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('skateboard')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/skateboard.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">skateboard</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">يتزلج بلوح</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('bake')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/bake.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">bake</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">يخبز</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('clue')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/clue.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">clue</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">دليل</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('mystery')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/mystery.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">mystery</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">لغز</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('race')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/race.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">race</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">سباق</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('opponent')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/opponent.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">opponent</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">منافس</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('newcomer')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/newcomer.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">newcomer</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">الوافد الجديد</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('welcome')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/welcome.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">welcome</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">يرحب</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('raise your hand')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/raise-your-hand.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">raise your hand</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">ارفع يدك</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('participate')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/participate.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">participate</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">يشارك</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('scrolling')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/scrolling.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">scrolling</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">يتصفح الآن</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('chilling')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/chilling.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">chilling</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">يسترخي الآن</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('memorize')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/memorize.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">memorize</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">يحفظ</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('presentation')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/presentation.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">presentation</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">عرض تقديمي</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('champion')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/champion.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">champion</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">بطل</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('strategy')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/strategy.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">strategy</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">استراتيجية</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('subtitle')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/subtitle.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">subtitle</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">ترجمة</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('trailer')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/trailer.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">trailer</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">إعلان الفيلم</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('opinion')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/opinion.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">opinion</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">رأي</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('decide')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/decide.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">decide</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">يقرر</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('cheer')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/cheer.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">cheer</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">يشجع</div>
+      </button>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('teamwork')"
+              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
+                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
+        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/teamwork.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">teamwork</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">العمل الجماعي</div>
+      </button>
     </div>
-    <div style="position:relative;z-index:5;display:flex;justify-content:center;margin-top:70px">
-      <div style="background:#FFFFFF;border-radius:12px;border:1px solid rgba(0,0,0,.06);box-shadow:0 12px 26px rgba(0,0,0,.28);width:700px;padding:38px 42px">
-        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.78rem;color:#6B6580;letter-spacing:1px;margin-bottom:14px">COMPLETE THE SENTENCE</div>
-        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.4rem;color:#2B2640;margin-bottom:22px">These sneakers ___ new.</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'with', 'are')"
-        data-quiz-option="with" style="border:2px solid #EEF0F4;background:#fff;border-radius:10px;padding:14px;
-        font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.05rem;color:#2B2640;cursor:pointer">with</button><button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'your', 'are')"
-        data-quiz-option="your" style="border:2px solid #EEF0F4;background:#fff;border-radius:10px;padding:14px;
-        font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.05rem;color:#2B2640;cursor:pointer">your</button><button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'are', 'are')"
-        data-quiz-option="are" style="border:2px solid #EEF0F4;background:#fff;border-radius:10px;padding:14px;
-        font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.05rem;color:#2B2640;cursor:pointer">are</button><button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'him', 'are')"
-        data-quiz-option="him" style="border:2px solid #EEF0F4;background:#fff;border-radius:10px;padding:14px;
-        font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.05rem;color:#2B2640;cursor:pointer">him</button></div>
-      </div>
-    </div>
-    
+    <div class="floorshadow" style="right:90px;bottom:33px;width:230px;height:36px"></div><img class="char" src="assets/story/characters/ziad-explain.png" style="right:90px;bottom:40px;height:320px" onerror="this.style.display='none'; this.previousElementSibling.style.display='none'">
