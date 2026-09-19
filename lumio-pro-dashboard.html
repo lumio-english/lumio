@@ -1048,7 +1048,22 @@ function loadSettingsView(){
   if(!el)return;
   if(CU.role==='super_admin'){
     const saved=getSavedAdmins(),ap=localStorage.getItem(DASH_LS_KEY+'_agent_pass')||'1234',gp=localStorage.getItem(DASH_LS_KEY+'_grp_default')||'team1234',allAdmins={...ADMINS,...saved};
-    el.innerHTML=`<div class="tc" style="margin-bottom:16px"><div class="tto"><div class="tt">📂 Upload Leads (CRM Update)</div></div><div style="padding:18px 20px">
+    // Teacher accounts (name + 4-digit PIN). These are the same records the
+    // main Lumio Team tab uses, so a teacher created here can log into this
+    // dashboard AND the teacher portal straight away, on any device once synced.
+    const teachers=(window.LumioProfiles?LumioProfiles.listTeachers():[]);
+    const teacherRows=teachers.length?teachers.map(t=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:8px 12px;background:var(--g);border-radius:7px"><div style="font-weight:800;font-size:.86rem;color:var(--b);flex:1">${h(t.name)}${t.isOwner?' <span style="font-size:.7rem;color:#6b7280">(owner)</span>':''}</div><div style="font-size:.8rem;color:#374151;font-family:monospace">PIN ${h(t.pin||'••••')}</div><button class="btn bd btn-sm" title="Remove" onclick="removeTeacherAccount('${h(t.id)}','${h(t.name)}')">🗑</button></div>`).join(''):'<div style="font-size:.82rem;color:#6b7280;margin-bottom:8px">No teachers yet.</div>';
+    el.innerHTML=`<div class="tc" style="margin-bottom:16px"><div class="tto"><div class="tt">👩‍🏫 Teacher accounts</div></div><div style="padding:18px 20px">
+      <div style="font-size:.82rem;color:#374151;margin-bottom:12px">Create a teacher login here. They sign in to this dashboard and the teacher portal with their <strong>name + 4-digit PIN</strong>.</div>
+      ${teacherRows}
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px">
+        <input class="si2" id="new-teacher-name" placeholder="Teacher name" style="flex:1;min-width:160px"/>
+        <input class="si2" id="new-teacher-pin" placeholder="PIN (4 digits, blank = random)" maxlength="4" style="width:210px"/>
+        <button class="btn bp" onclick="createTeacherAccount()">➕ Create teacher</button>
+      </div>
+      <div id="teacher-create-status" style="margin-top:10px;font-size:.82rem;font-weight:700;color:#16a34a"></div>
+    </div></div>
+    <div class="tc" style="margin-bottom:16px"><div class="tto"><div class="tt">📂 Upload Leads (CRM Update)</div></div><div style="padding:18px 20px">
       <div style="font-size:.82rem;color:#374151;margin-bottom:12px">Upload the monthly <strong>All Leads Excel file</strong> to update the Students CRM data instantly.</div>
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
         <input type="file" id="leads-upload" accept=".xlsx" style="font-size:.82rem;color:#374151;cursor:pointer"/>
@@ -1141,6 +1156,23 @@ function saveMyOwnPwd() {
 }
 
 function renderGroupPwdList(){const el=document.getElementById('group-pwd-list');if(!el)return;const e=Object.entries(getSavedGroupPwds());if(!e.length){el.innerHTML='<div style="color:var(--mu);font-size:.82rem">No custom group passwords yet.</div>';return;}el.innerHTML=e.map(([k,p])=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;padding:8px 11px;background:var(--g);border-radius:7px"><div style="font-size:.81rem;font-weight:700;color:var(--b);flex:1">${h(k)}</div><input class="si2" id="grppwd-${h(k)}" value="${h(p)}" style="width:130px;font-family:monospace"/><button class="btn bg btn-sm" onclick="copyPwd('${h(p)}',this)" title="Copy">📋</button><button class="btn bp btn-sm" onclick="updateGroupPwd('${h(k)}')">💾</button><button class="btn bd btn-sm" onclick="removeGroupPwd('${h(k)}')">✕</button></div>`).join('');}
+async function createTeacherAccount(){
+  const name=(document.getElementById('new-teacher-name')?.value||'').trim(), pin=(document.getElementById('new-teacher-pin')?.value||'').trim();
+  const st=document.getElementById('teacher-create-status');
+  if(!window.LumioProfiles){showT('⚠️ Profiles module not loaded');return;}
+  if(!name){showT('⚠️ Enter the teacher\'s name');return;}
+  if(pin&&!/^\d{4}$/.test(pin)){showT('⚠️ PIN must be exactly 4 digits');return;}
+  try{
+    const t=await LumioProfiles.addTeacher({name,pin:pin||undefined});
+    let msg=`✅ ${t.name} created — PIN ${t.pin}`;
+    try{const r=await LumioProfiles.syncNow(); if(!r.ok) msg+=` (saved here, but sync failed: ${r.reason||'unknown'} — click Sync now later)`;}catch(e){}
+    if(st)st.textContent=msg; showT(msg); loadSettingsView();
+  }catch(e){showT('⚠️ '+(e.message||'Could not create teacher'));}
+}
+async function removeTeacherAccount(id,name){
+  if(!confirm(`Remove teacher "${name}"? They will no longer be able to log in.`))return;
+  try{LumioProfiles.removeTeacher(id); try{await LumioProfiles.syncNow();}catch(e){} showT('🗑 Removed '+name); loadSettingsView();}catch(e){showT('⚠️ '+(e.message||'Could not remove'));}
+}
 function saveGroupDefaultPass(){const v=(document.getElementById('grp-default-pass')?.value||'').trim();if(!v)return;localStorage.setItem(DASH_LS_KEY+'_grp_default',v);showT('✅ Group default: '+v);loadSettingsView();}
 function setGroupPwd(){const k=(document.getElementById('custom-grp-name')?.value||'').trim().toLowerCase(),p=(document.getElementById('custom-grp-pass')?.value||'').trim();if(!k||!p){showT('⚠️ Enter group key and password');return;}const s=getSavedGroupPwds();s[k]=p;localStorage.setItem(DASH_LS_KEY+'_group_pwds',JSON.stringify(s));showT('✅ Set for: '+k);loadSettingsView();}
 function updateGroupPwd(k){const i=document.getElementById('grppwd-'+k);if(!i||!i.value.trim())return;const s=getSavedGroupPwds();s[k]=i.value.trim();localStorage.setItem(DASH_LS_KEY+'_group_pwds',JSON.stringify(s));showT('✅ Updated: '+k);renderGroupPwdList();}

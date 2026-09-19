@@ -486,9 +486,13 @@ def slide_dialogue(lines, n, total, lesson_num=0):
     left_name, right_name = char_display_name(left_char), char_display_name(right_char)
     bubbles = ""
     for i, line in enumerate(lines):
-        # Level 3/4 dialogue data has no Arabic line -- (speaker, en) only.
-        speaker, en = line[0], line[1]
-        ar = line[2] if len(line) > 2 else ""
+        # Two data shapes exist: (speaker, en, ar) for Pre-A/L1/L2, and
+        # (en, ar) with NO speaker for L3/L4 -- there the two characters
+        # simply alternate, starting on the left.
+        if len(line) >= 3:
+            speaker, en, ar = line[0], line[1], line[2]
+        else:
+            speaker, en, ar = ("L" if i % 2 == 0 else "R"), line[0], (line[1] if len(line) > 1 else "")
         left = speaker == "L"
         side = "left" if left else "right"
         tri = "left" if left else "right"
