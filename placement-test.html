@@ -112,7 +112,8 @@
       <p class="pt-result-sub">is the level we'd suggest starting at</p>
       <div class="pt-result-score" id="resultScore"></div>
       <div class="pt-note">✅ Thanks! Your teacher has received your details and will contact you soon to get started.</div>
-      <a class="btn btn-primary btn-big" href="index.html" style="width:100%;display:block;text-align:center;box-sizing:border-box">Back to homepage</a>
+      <a class="btn btn-primary btn-big" id="resultTrialBtn" href="present-trial.html" style="width:100%;display:block;text-align:center;box-sizing:border-box;margin-bottom:10px">🎓 Join a free trial class at this level →</a>
+      <a class="btn btn-outline btn-big" href="index.html" style="width:100%;display:block;text-align:center;box-sizing:border-box">Back to homepage</a>
     </div>
   </div>
 
@@ -265,6 +266,12 @@
 
     document.getElementById("resultLevel").textContent = levelName;
     document.getElementById("resultScore").textContent = `Score: ${correctCount}/${total} correct`;
+    // Personalized: send them straight into a trial class AT the level
+    // this test just placed them in, carrying their name along too.
+    const trialBtn = document.getElementById("resultTrialBtn");
+    if (trialBtn) {
+      trialBtn.href = `present-trial.html?level=${encodeURIComponent(suggestedLevel)}&names=${encodeURIComponent(studentInfo.name || "")}`;
+    }
 
     let leadSaved = false;
     try {

@@ -135,10 +135,17 @@ html{scroll-behavior:smooth}
   text-decoration:none;padding:6px 14px;border-radius:999px;transition:background .15s ease,color .15s ease}
 .lp-subnav a:hover{background:var(--sun-soft);color:var(--cocoa)}
 .lp-subnav a.active{background:var(--orange);color:#fff}
+.lp-subnav-cta{background:var(--orange) !important;color:#fff !important;margin-left:4px}
+.lp-subnav-cta:hover{background:var(--orange-2) !important;color:#fff !important}
 @media (max-width:640px){.lp-subnav{gap:4px;padding:8px 10px}.lp-subnav a{padding:5px 10px;font-size:.76rem}}
 </style>
 </head>
 <body>
+
+<div class="lp-announce" id="lpAnnounce">
+  <span>🎉 New here? <a href="#startfree">Free placement test</a> and a <a href="#startfree">free trial class</a> — no card, no commitment.</span>
+  <button class="lp-announce-close" id="lpAnnounceClose" aria-label="Dismiss">✕</button>
+</div>
 
 <header class="topbar">
   <img class="logo-mini" src="assets/logo/lumio-logo.png" alt="Lumio English logo">
@@ -158,6 +165,7 @@ html{scroll-behavior:smooth}
   <a href="#pricing">Pricing</a>
   <a href="#demo">See it in action</a>
   <a href="#faq">FAQ</a>
+  <a href="#startfree" class="lp-subnav-cta">Start Free</a>
 </nav>
 
 <!-- ============ Explore side tab + drawer ============ -->
@@ -239,6 +247,7 @@ html{scroll-behavior:smooth}
       <div class="row lp-reveal" style="animation-delay:.3s">
         <a class="btn btn-primary btn-big" href="login.html">I'm a student</a>
       </div>
+      <a class="lp-hero-free-link lp-reveal" style="animation-delay:.36s" href="#startfree">New here? Take the free placement test or trial class →</a>
       <div class="lp-hear-demo lp-reveal" style="animation-delay:.42s">
         <p class="lp-hear-label">👆 Tap a word — hear it for yourself</p>
         <div class="lp-hear-cards">
@@ -280,6 +289,39 @@ html{scroll-behavior:smooth}
       <div class="lp-trust-item reveal-io"><div class="lp-trust-num">140+</div><div class="lp-trust-label">Lessons already built</div></div>
       <div class="lp-trust-item reveal-io"><div class="lp-trust-num">4–15</div><div class="lp-trust-label">Ages, one clear path</div></div>
       <div class="lp-trust-item reveal-io"><div class="lp-trust-num">100%</div><div class="lp-trust-label">Arabic support, every word</div></div>
+    </section>
+
+    <section class="lp-startfree" id="startfree">
+      <div class="lp-startfree-inner">
+        <h2 class="center mb reveal-io">Start with zero risk — both are free</h2>
+        <p class="center lp-startfree-intro reveal-io">No card, no commitment. Find the right level, then see a real class, before you decide anything.</p>
+        <div class="lp-startfree-grid">
+          <div class="lp-startfree-card reveal-io">
+            <div class="lp-startfree-badge">100% Free</div>
+            <div class="lp-startfree-icon">🎯</div>
+            <h3>Free Placement Test</h3>
+            <p>A quick, guided test that places your child at the right level automatically — no guessing, no signup required to see the result.</p>
+            <a class="btn btn-primary btn-big lp-startfree-cta" href="placement-test.html">Take the free test →</a>
+            <div class="lp-startfree-note">Takes about 5 minutes</div>
+          </div>
+          <div class="lp-startfree-card lp-startfree-featured reveal-io">
+            <div class="lp-startfree-badge">100% Free</div>
+            <div class="lp-startfree-icon">🎓</div>
+            <h3>Free Trial Class</h3>
+            <p>Pick the level that fits your child's age and jump straight into a real, live-style trial class — the same format as an actual Lumio lesson.</p>
+            <div class="lp-trial-picker">
+              <button class="lp-trial-level" data-level="pre-a">Pre-A <span>4–6</span></button>
+              <button class="lp-trial-level" data-level="level1">L1 <span>6–8</span></button>
+              <button class="lp-trial-level" data-level="level2">L2 <span>8–10</span></button>
+              <button class="lp-trial-level" data-level="level3">L3 <span>10–12</span></button>
+              <button class="lp-trial-level" data-level="level4">L4 <span>11–13</span></button>
+              <button class="lp-trial-level" data-level="level5">L5 <span>12–14</span></button>
+              <button class="lp-trial-level" data-level="level6">L6 <span>13–15</span></button>
+            </div>
+            <div class="lp-startfree-note">Tap your child's age group to start</div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section class="mt lp-how" id="howworks">
@@ -464,6 +506,7 @@ html{scroll-behavior:smooth}
   <section class="mt lp-pricing" id="pricing">
     <h2 class="center mb reveal-io">Simple pricing, real value</h2>
     <p class="center lp-pricing-intro reveal-io">One level = 2 months &middot; 20 live sessions &middot; full access to that level's English Hub. Save more the longer you commit.</p>
+    <p class="center lp-pricing-freehint reveal-io">Not sure which level fits? <a href="placement-test.html">Take the free placement test</a> or <a href="#startfree">try a free trial class</a> first.</p>
 
     <div class="lp-currency-switch reveal-io" role="tablist" aria-label="Choose currency">
       <button class="lp-cur-btn active" data-cur="SAR">SAR</button>
@@ -591,7 +634,7 @@ html{scroll-behavior:smooth}
           </video>
         </div>
         <h3>A real bonus game</h3>
-        <p>Every level unlocks its own game — this is the Twelve Months Calendar, played round by round.</p>
+        <p>Every level unlocks its own game — this is Crew Chat, Level 3's game, played round by round.</p>
       </div>
     </div>
   </section>
@@ -632,7 +675,11 @@ html{scroll-behavior:smooth}
       </details>
       <details class="lp-faq-item reveal-io">
         <summary>My child has never studied English. Where do they start?</summary>
-        <p>Take the free placement test — it's quick, and it places your child at the right level automatically based on their real score, whether that's their very first English words or something further along.</p>
+        <p><a href="placement-test.html">Take the free placement test</a> — it's quick, and it places your child at the right level automatically based on their real score, whether that's their very first English words or something further along.</p>
+      </details>
+      <details class="lp-faq-item reveal-io">
+        <summary>Can we try a class before paying anything?</summary>
+        <p>Yes — <a href="#startfree">pick your child's age group</a> and join a free trial class right now, in the same format as a real Lumio lesson. No card, no signup required to try it.</p>
       </details>
       <details class="lp-faq-item reveal-io">
         <summary>Is the Arabic support just a translation button?</summary>
@@ -833,7 +880,9 @@ html{scroll-behavior:smooth}
     .lp-faq-item p{color:var(--cocoa-soft,#8A7160);font-size:.92rem;line-height:1.6;margin:12px 0 0}
   
   /* ===== Pricing ===== */
-  .lp-pricing-intro{color:var(--muted);font-weight:700;max-width:640px;margin:0 auto 28px}
+  .lp-pricing-intro{color:var(--muted);font-weight:700;max-width:640px;margin:0 auto 10px}
+  .lp-pricing-freehint{color:#7B3F1B;font-weight:700;font-size:.9rem;max-width:560px;margin:0 auto 28px}
+  .lp-pricing-freehint a{color:var(--orange);text-decoration:underline;font-weight:800}
   .lp-currency-switch{display:flex;justify-content:center;gap:6px;margin-bottom:32px}
   .lp-cur-btn{border:2px solid var(--line);background:#fff;color:var(--muted);font-family:var(--font-display);
     font-weight:800;font-size:.85rem;padding:8px 18px;border-radius:999px;cursor:pointer;transition:all .15s ease}
@@ -875,6 +924,43 @@ html{scroll-behavior:smooth}
   .lp-community-list li:nth-child(2)::before{content:"🧑‍🏫"}
   .lp-community-list li:nth-child(3)::before{content:"🛟"}
   @media (max-width:760px){.lp-price-featured{transform:none}.lp-included-grid{grid-template-columns:1fr}}
+
+  /* ===== Start Free (placement test + trial class) ===== */
+  .lp-startfree{background:linear-gradient(135deg,#FFF3D6,#FFE8D1);padding:56px 24px;margin:56px 0}
+  .lp-startfree-inner{max-width:1000px;margin:0 auto}
+  .lp-startfree-intro{color:#7B3F1B;font-weight:700;max-width:560px;margin:0 auto 36px}
+  .lp-startfree-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+  .lp-startfree-card{background:#fff;border-radius:24px;padding:34px 30px;text-align:center;box-shadow:var(--sh-md);position:relative}
+  .lp-startfree-featured{border:2px solid var(--orange);box-shadow:var(--sh-lg)}
+  .lp-startfree-badge{position:absolute;top:18px;right:18px;background:var(--teal);color:#fff;font-family:var(--font-display);
+    font-weight:800;font-size:.7rem;padding:5px 12px;border-radius:999px;letter-spacing:.3px}
+  .lp-startfree-icon{font-size:2.6rem;margin-bottom:6px}
+  .lp-startfree-card h3{font-family:var(--font-display);font-size:1.35rem;color:var(--cocoa);margin:4px 0 12px}
+  .lp-startfree-card p{color:var(--cocoa-soft,#8A7160);font-size:.94rem;line-height:1.6;margin:0 0 22px;min-height:70px}
+  .lp-startfree-cta{width:100%;justify-content:center}
+  .lp-startfree-note{color:var(--muted);font-weight:700;font-size:.8rem;margin-top:14px}
+  .lp-trial-picker{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .lp-trial-level{border:2px solid var(--line);background:#FFFBF5;border-radius:14px;padding:10px 6px;cursor:pointer;
+    font-family:var(--font-display);font-weight:800;font-size:.9rem;color:var(--cocoa);transition:all .15s ease}
+  .lp-trial-level span{display:block;font-family:var(--font-body,inherit);font-weight:700;font-size:.68rem;color:var(--muted);margin-top:2px}
+  .lp-trial-level:hover{border-color:var(--orange);background:var(--sun-soft);transform:translateY(-2px)}
+  @media (max-width:760px){
+    .lp-startfree-grid{grid-template-columns:1fr}
+    .lp-trial-picker{grid-template-columns:repeat(4,1fr)}
+  }
+
+  .lp-hero-free-link{display:inline-block;margin-top:14px;font-family:var(--font-display);font-weight:800;
+    font-size:.92rem;color:var(--orange);text-decoration:none;border-bottom:2px solid transparent;transition:border-color .15s ease}
+  .lp-hero-free-link:hover{border-color:var(--orange)}
+
+  /* ===== Top announcement bar ===== */
+  .lp-announce{background:#43301F;color:#fff;text-align:center;padding:10px 16px;font-size:.85rem;font-weight:700;
+    display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;position:relative}
+  .lp-announce a{color:#FFC53D;text-decoration:underline;font-weight:800}
+  .lp-announce-close{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;
+    color:rgba(255,255,255,.7);font-size:1rem;cursor:pointer;line-height:1;padding:4px}
+  .lp-announce-close:hover{color:#fff}
+  @media (max-width:640px){.lp-announce{font-size:.78rem;padding:9px 40px}}
 </style>
 
   <script>
@@ -888,6 +974,27 @@ html{scroll-behavior:smooth}
         document.querySelectorAll(".lp-hear-card").forEach(function (c) { c.classList.remove("playing"); });
         card.classList.add("playing");
         setTimeout(function () { card.classList.remove("playing"); }, 900);
+      });
+    });
+
+    // Dismissible top announcement bar -- remembered across visits.
+    (function () {
+      var bar = document.getElementById("lpAnnounce");
+      var closeBtn = document.getElementById("lpAnnounceClose");
+      if (!bar || !closeBtn) return;
+      try {
+        if (localStorage.getItem("lumio_announce_dismissed") === "1") { bar.style.display = "none"; return; }
+      } catch (e) {}
+      closeBtn.addEventListener("click", function () {
+        bar.style.display = "none";
+        try { localStorage.setItem("lumio_announce_dismissed", "1"); } catch (e) {}
+      });
+    })();
+
+    // Trial level-picker: jump straight into a real trial class at the level tapped.
+    document.querySelectorAll(".lp-trial-level").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        window.location.href = "present-trial.html?level=" + btn.dataset.level;
       });
     });
 
