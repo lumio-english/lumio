@@ -234,12 +234,15 @@ const Lumio = (() => {
     currentAudio = audio;
     let fellBack = false;
     const fallback = () => { if (fellBack) return; fellBack = true; speakSynth(text, rate); };
-    const onError = () => { audio.removeEventListener("error", onError); fallback(); };   // 404: no recording -> browser voice
-    audio.addEventListener("error", onError);
+    // Single assignment (not addEventListener): the shared element lives
+    // across calls, so stacked listeners from earlier words would all fire
+    // on a later 404 and replay old words through the browser voice.
+    audio.onerror = () => { audio.onerror = null; fallback(); };   // 404: no recording -> browser voice
     const playResult = audio.play();
     if (playResult && typeof playResult.catch === "function") {
       playResult.catch(err => {
-        audio.removeEventListener("error", onError);
+        if (err && err.name === "AbortError") return;             // src changed mid-play: a newer word took over
+        audio.onerror = null;
         if (err && err.name === "NotAllowedError") { pendingSpeak = { text, rate }; return; }  // blocked: replay on next tap
         fallback();
       });
