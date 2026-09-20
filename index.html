@@ -4,6 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lumio English — Learn · Speak · Grow</title>
+<meta name="description" content="A complete English course for Arabic-speaking children and teens, ages 4-15. 7 levels, 140+ lessons, real teachers, printable worksheets, and full Arabic support in every word.">
+<link rel="canonical" href="https://lumio-english.github.io/lumio/">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Lumio English">
+<meta property="og:title" content="Lumio English — Let's learn English the fun way!">
+<meta property="og:description" content="A complete English course for Arabic-speaking children and teens, ages 4-15. 7 levels, 140+ lessons, real teachers, and full Arabic support.">
+<meta property="og:image" content="https://lumio-english.github.io/lumio/assets/marketing/og-share-card.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://lumio-english.github.io/lumio/">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ar_AR">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Lumio English — Let's learn English the fun way!">
+<meta name="twitter:description" content="A complete English course for Arabic-speaking children and teens, ages 4-15. 7 levels, 140+ lessons, full Arabic support.">
+<meta name="twitter:image" content="https://lumio-english.github.io/lumio/assets/marketing/og-share-card.jpg">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/logo/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="assets/logo/favicon-16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/logo/favicon-180.png">
@@ -43,6 +61,9 @@
   .lp-reveal{opacity:0;transform:translateY(14px);animation:lpReveal .55s cubic-bezier(.22,1,.36,1) forwards}
   @keyframes lpReveal{to{opacity:1;transform:translateY(0)}}
   @media (prefers-reduced-motion: reduce){.lp-reveal{opacity:1;transform:none;animation:none}}
+  .reveal-io{opacity:0;transform:translateY(16px);transition:opacity .55s cubic-bezier(.22,1,.36,1),transform .55s cubic-bezier(.22,1,.36,1)}
+  .reveal-io.in-view{opacity:1;transform:none}
+  @media (prefers-reduced-motion: reduce){.reveal-io{opacity:1;transform:none;transition:none}}
   .btn{transition:transform .16s cubic-bezier(.22,1,.36,1),box-shadow .16s ease,filter .16s ease}
   .btn:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(0,0,0,.12)}
   .btn:active{transform:translateY(0) scale(.96);box-shadow:0 3px 8px rgba(0,0,0,.1)}
@@ -104,6 +125,17 @@
 .explore-cta{flex-shrink:0;margin:14px 20px 20px;text-align:center;padding:13px;border-radius:999px;
   background:var(--cocoa);color:#fff;font-weight:800;text-decoration:none;font-family:var(--font-display)}
 @media (max-width:640px){.explore-tab{padding:12px 8px}.explore-tab-label{font-size:.74rem}}
+
+/* ===== Sticky in-page sub-nav ===== */
+html{scroll-behavior:smooth}
+.lp-subnav{position:sticky;top:79px;z-index:49;display:flex;justify-content:center;gap:6px;
+  padding:9px 16px;background:rgba(255,251,245,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);flex-wrap:wrap}
+.lp-subnav a{font-family:var(--font-display);font-weight:800;font-size:.82rem;color:var(--muted);
+  text-decoration:none;padding:6px 14px;border-radius:999px;transition:background .15s ease,color .15s ease}
+.lp-subnav a:hover{background:var(--sun-soft);color:var(--cocoa)}
+.lp-subnav a.active{background:var(--orange);color:#fff}
+@media (max-width:640px){.lp-subnav{gap:4px;padding:8px 10px}.lp-subnav a{padding:5px 10px;font-size:.76rem}}
 </style>
 </head>
 <body>
@@ -118,6 +150,13 @@
   </a>
   <a class="btn btn-sun" href="login.html">Start learning</a>
 </header>
+
+<nav class="lp-subnav" aria-label="Page sections">
+  <a href="#curriculum">Levels</a>
+  <a href="#howworks">How it works</a>
+  <a href="#friendsSection">Friends</a>
+  <a href="#faq">FAQ</a>
+</nav>
 
 <!-- ============ Explore side tab + drawer ============ -->
 <button id="exploreTab" class="explore-tab" aria-label="Explore Lumio English" aria-expanded="false">
@@ -216,10 +255,10 @@
   </section>
 
   <section class="feature-grid">
-    <div class="card"><span class="emoji-badge"><img src="assets/logo/lumio-logo.png" alt="" style="width:26px;height:26px;object-fit:contain"></span><h3>Learn by playing</h3><p>Matching, listening and spelling games in every lesson.</p></div>
-    <div class="card"><span class="emoji-badge"><img src="assets/logo/lumio-logo.png" alt="" style="width:26px;height:26px;object-fit:contain"></span><h3>Listen &amp; speak</h3><p>Every word is spoken aloud so you learn real pronunciation.</p></div>
-    <div class="card"><span class="emoji-badge"><img src="assets/logo/lumio-logo.png" alt="" style="width:26px;height:26px;object-fit:contain"></span><h3>Earn stars</h3><p>Collect 3 stars in every lesson and climb the level map.</p></div>
-    <div class="card"><span class="emoji-badge"><img src="assets/logo/lumio-logo.png" alt="" style="width:26px;height:26px;object-fit:contain"></span><h3>عربي + English</h3><p class="ar">كل كلمة معها الترجمة العربية لتفهم بسهولة.</p></div>
+    <div class="card reveal-io"><span class="emoji-badge"><img src="assets/logo/lumio-logo.png" alt="" style="width:26px;height:26px;object-fit:contain"></span><h3>Learn by playing</h3><p>Matching, listening and spelling games in every lesson.</p></div>
+    <div class="card reveal-io"><span class="emoji-badge"><img src="assets/logo/lumio-logo.png" alt="" style="width:26px;height:26px;object-fit:contain"></span><h3>Listen &amp; speak</h3><p>Every word is spoken aloud so you learn real pronunciation.</p></div>
+    <div class="card reveal-io"><span class="emoji-badge"><img src="assets/logo/lumio-logo.png" alt="" style="width:26px;height:26px;object-fit:contain"></span><h3>Earn stars</h3><p>Collect 3 stars in every lesson and climb the level map.</p></div>
+    <div class="card reveal-io"><span class="emoji-badge"><img src="assets/logo/lumio-logo.png" alt="" style="width:26px;height:26px;object-fit:contain"></span><h3>عربي + English</h3><p class="ar">كل كلمة معها الترجمة العربية لتفهم بسهولة.</p></div>
   </section>
 
   <div class="lp-wave-top" aria-hidden="true">
@@ -227,35 +266,35 @@
   </div>
   <div class="lp-band">
     <section class="lp-trust">
-      <div class="lp-trust-item"><div class="lp-trust-num">7</div><div class="lp-trust-label">Levels, start to finish</div></div>
-      <div class="lp-trust-item"><div class="lp-trust-num">140+</div><div class="lp-trust-label">Lessons already built</div></div>
-      <div class="lp-trust-item"><div class="lp-trust-num">4–15</div><div class="lp-trust-label">Ages, one clear path</div></div>
-      <div class="lp-trust-item"><div class="lp-trust-num">100%</div><div class="lp-trust-label">Arabic support, every word</div></div>
+      <div class="lp-trust-item reveal-io"><div class="lp-trust-num">7</div><div class="lp-trust-label">Levels, start to finish</div></div>
+      <div class="lp-trust-item reveal-io"><div class="lp-trust-num">140+</div><div class="lp-trust-label">Lessons already built</div></div>
+      <div class="lp-trust-item reveal-io"><div class="lp-trust-num">4–15</div><div class="lp-trust-label">Ages, one clear path</div></div>
+      <div class="lp-trust-item reveal-io"><div class="lp-trust-num">100%</div><div class="lp-trust-label">Arabic support, every word</div></div>
     </section>
 
     <section class="mt lp-how" id="howworks">
       <h2 class="center mb">How a Lumio lesson works</h2>
       <p class="center cf-sub">The same four steps, every single lesson.</p>
       <div class="lp-steps">
-        <div class="lp-step">
+        <div class="lp-step reveal-io">
           <div class="lp-step-num">1</div>
           <h3>Prepare</h3>
           <p>Meet the new words and sounds in the app before class, so your child walks in ready, not cold.</p>
         </div>
         <div class="lp-step-connector" aria-hidden="true"></div>
-        <div class="lp-step">
+        <div class="lp-step reveal-io">
           <div class="lp-step-num">2</div>
           <h3>Live class on Zoom</h3>
           <p>A real teacher, live, guiding the lesson your child already previewed.</p>
         </div>
         <div class="lp-step-connector" aria-hidden="true"></div>
-        <div class="lp-step">
+        <div class="lp-step reveal-io">
           <div class="lp-step-num">3</div>
           <h3>Practice at home</h3>
           <p>Homework that uses real sentences, not just word lists — spelling, speaking, and short quizzes.</p>
         </div>
         <div class="lp-step-connector" aria-hidden="true"></div>
-        <div class="lp-step">
+        <div class="lp-step reveal-io">
           <div class="lp-step-num">4</div>
           <h3>Grow on the map</h3>
           <p>Each finished lesson lights up the Adventure Map, unlocking games, stories, and the next step.</p>
@@ -333,7 +372,7 @@
       <div class="lp-trail-line" aria-hidden="true"></div>
       <div class="lp-trail-stop">
         <div class="lp-trail-dot" style="background:#F97316">Pre-A</div>
-        <div class="lp-trail-card">
+        <div class="lp-trail-card reveal-io">
           <h3>First Words</h3>
           <p class="lp-level-meta">Ages 4–6 · CEFR Pre-A1</p>
           <p>The alphabet, first sounds, and the very first spoken words — built for a child who's never studied English before.</p>
@@ -341,7 +380,7 @@
       </div>
       <div class="lp-trail-stop">
         <div class="lp-trail-dot" style="background:#0D9488">1</div>
-        <div class="lp-trail-card">
+        <div class="lp-trail-card reveal-io">
           <h3>About Me</h3>
           <p class="lp-level-meta">Ages 6–8 · CEFR Pre-A1</p>
           <p>Simple sentences about family, feelings, and daily routines — the first real conversations.</p>
@@ -349,7 +388,7 @@
       </div>
       <div class="lp-trail-stop">
         <div class="lp-trail-dot" style="background:#DC2626">2</div>
-        <div class="lp-trail-card">
+        <div class="lp-trail-card reveal-io">
           <h3>My World</h3>
           <p class="lp-level-meta">Ages 8–10 · CEFR Pre-A1</p>
           <p>School, home, and everyday objects — describing the world right around them.</p>
@@ -357,7 +396,7 @@
       </div>
       <div class="lp-trail-stop">
         <div class="lp-trail-dot" style="background:#6D28D9">3</div>
-        <div class="lp-trail-card">
+        <div class="lp-trail-card reveal-io">
           <h3>Everyday Life</h3>
           <p class="lp-level-meta">Ages 10–12 · CEFR A1</p>
           <p>Real-life situations — shopping, plans, opinions — with grammar that starts doing real work.</p>
@@ -365,7 +404,7 @@
       </div>
       <div class="lp-trail-stop">
         <div class="lp-trail-dot" style="background:#1D4ED8">4</div>
-        <div class="lp-trail-card">
+        <div class="lp-trail-card reveal-io">
           <h3>Smart Choices</h3>
           <p class="lp-level-meta">Ages 11–13 · CEFR A1</p>
           <p>Making plans, giving reasons, and talking through decisions in longer, more confident sentences.</p>
@@ -373,7 +412,7 @@
       </div>
       <div class="lp-trail-stop">
         <div class="lp-trail-dot" style="background:#15803D">5</div>
-        <div class="lp-trail-card">
+        <div class="lp-trail-card reveal-io">
           <h3>Telling My Story</h3>
           <p class="lp-level-meta">Ages 12–14 · CEFR A2</p>
           <p>Narrating experiences and opinions — the shift from answering questions to telling a story.</p>
@@ -381,7 +420,7 @@
       </div>
       <div class="lp-trail-stop">
         <div class="lp-trail-dot" style="background:#BE185D">6</div>
-        <div class="lp-trail-card">
+        <div class="lp-trail-card reveal-io">
           <h3>Looking Ahead</h3>
           <p class="lp-level-meta">Ages 13–15 · CEFR A2</p>
           <p>The final stretch — future plans, bigger ideas, and real confidence speaking English.</p>
@@ -393,19 +432,19 @@
   <section class="mt lp-different">
     <h2 class="center mb">What makes Lumio different</h2>
     <div class="lp-diff-grid">
-      <div class="lp-diff-card">
+      <div class="lp-diff-card reveal-io">
         <h3>🕌 Arabic-first, not translated in</h3>
         <p>Every word, every instruction, every rule — built bilingual from day one, not bolted on afterward.</p>
       </div>
-      <div class="lp-diff-card">
+      <div class="lp-diff-card reveal-io">
         <h3>🔡 Spelling has real rules</h3>
         <p>Not just memorizing letters — the actual rules behind how English words are built, taught step by step.</p>
       </div>
-      <div class="lp-diff-card">
+      <div class="lp-diff-card reveal-io">
         <h3>🗣️ Homework uses real sentences</h3>
         <p>Every practice sentence is grounded in what a word actually means — not a random word list to memorize.</p>
       </div>
-      <div class="lp-diff-card">
+      <div class="lp-diff-card reveal-io">
         <h3>📄 Worksheets and flashcards you can print</h3>
         <p>A real printable homework page and flashcard set for every lesson, for the moments a screen isn't the right tool.</p>
       </div>
@@ -413,11 +452,11 @@
   </section>
 
   <section class="mt lp-preview">
-    <div class="lp-preview-text">
+    <div class="lp-preview-text reveal-io">
       <h2>This is what a real lesson looks like</h2>
       <p>Not a mockup, not a design sketch — a real screenshot from an actual Lumio lesson, exactly as a student sees it.</p>
     </div>
-    <div class="lp-preview-frame">
+    <div class="lp-preview-frame reveal-io">
       <div class="lp-preview-bar"><span></span><span></span><span></span></div>
       <img src="assets/marketing/real-lesson-screenshot.png" alt="A real Lumio lesson slide, showing the word apple with its Arabic translation and letter tiles">
     </div>
@@ -427,7 +466,7 @@
     <h2 class="center mb">Real writing practice. Real flashcards. Off the screen.</h2>
     <p class="center lp-offline-intro">Every single lesson, at every level, comes with two things you can print and hold: a homework sheet and a set of flashcards. Neither is an afterthought — both are written specifically for the age and stage your child is actually at.</p>
     <div class="lp-offline-grid">
-      <div class="lp-offline-card">
+      <div class="lp-offline-card reveal-io">
         <div class="lp-preview-frame lp-offline-frame">
           <img src="assets/marketing/worksheet-sample.png" alt="A real Lumio homework sheet for Pre-A Lesson 1, with word tracing lines and a drawing box">
         </div>
@@ -435,7 +474,7 @@
         <p><b>Who they're for:</b> every level, but the task grows with your child. Pre-A and the early levels trace and copy each word by hand, building letter formation and muscle memory before reading is even required. From Level 3 onward, the task becomes writing full original sentences in that day's grammar pattern — putting the rule to use, not just recognizing it.</p>
         <p><b>Why it matters:</b> screen recognition and handwriting are different skills, and only one of them is practiced by tapping an answer. A short, guided writing task each lesson builds the one that a multiple-choice quiz can't.</p>
       </div>
-      <div class="lp-offline-card">
+      <div class="lp-offline-card reveal-io">
         <div class="lp-preview-frame lp-offline-frame">
           <img src="assets/marketing/flashcard-sample.png" alt="A real Lumio flashcard sheet for Pre-A Lesson 1, with a picture and word on the front">
         </div>
@@ -449,23 +488,23 @@
   <section class="mt lp-faq" id="faq">
     <h2 class="center mb">Questions parents ask</h2>
     <div class="lp-faq-list">
-      <details class="lp-faq-item">
+      <details class="lp-faq-item reveal-io">
         <summary>What age is Lumio actually for?</summary>
         <p>From 4 all the way to 15 — the curriculum spans 7 levels, each built for a specific age range, from a child's very first English words through confident, independent conversation.</p>
       </details>
-      <details class="lp-faq-item">
+      <details class="lp-faq-item reveal-io">
         <summary>Is there a real teacher, or is this just an app?</summary>
         <p>Both. Your child prepares in the app, then joins a real, live class with their teacher over Zoom — the app isn't a replacement for the teacher, it's what makes that class time count.</p>
       </details>
-      <details class="lp-faq-item">
+      <details class="lp-faq-item reveal-io">
         <summary>My child has never studied English. Where do they start?</summary>
         <p>Take the free placement test — it's quick, and it places your child at the right level automatically based on their real score, whether that's their very first English words or something further along.</p>
       </details>
-      <details class="lp-faq-item">
+      <details class="lp-faq-item reveal-io">
         <summary>Is the Arabic support just a translation button?</summary>
         <p>No — Arabic is built into every lesson from the start: every word, every instruction, every spelling rule has its Arabic alongside it, not a toggle bolted on afterward.</p>
       </details>
-      <details class="lp-faq-item">
+      <details class="lp-faq-item reveal-io">
         <summary>What happens after class ends?</summary>
         <p>Homework, right away — real sentences to practice, words to spell, and a quick quiz, all tied to exactly what was covered in that day's class.</p>
       </details>
@@ -664,6 +703,46 @@
         setTimeout(function () { card.classList.remove("playing"); }, 900);
       });
     });
+
+    // Highlight the matching sub-nav link as each section scrolls into view.
+    var subnavLinks = document.querySelectorAll(".lp-subnav a");
+    var navTargets = Array.prototype.map.call(subnavLinks, function (a) {
+      return document.getElementById(a.getAttribute("href").slice(1));
+    }).filter(Boolean);
+    if (navTargets.length && "IntersectionObserver" in window) {
+      var navIo = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          var link = document.querySelector('.lp-subnav a[href="#' + entry.target.id + '"]');
+          if (!link) return;
+          if (entry.isIntersecting) {
+            subnavLinks.forEach(function (a) { a.classList.remove("active"); });
+            link.classList.add("active");
+          }
+        });
+      }, { rootMargin: "-45% 0px -50% 0px" });
+      navTargets.forEach(function (t) { navIo.observe(t); });
+    }
+
+    // Scroll-in entrance for every card-like element below the hero, with a
+    // small per-item stagger so a row reveals left-to-right rather than
+    // popping in all at once. Falls back to instantly visible if
+    // IntersectionObserver isn't available.
+    var revealEls = document.querySelectorAll(".reveal-io");
+    if ("IntersectionObserver" in window) {
+      var revealIo = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("in-view");
+          revealIo.unobserve(entry.target);
+        });
+      }, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
+      revealEls.forEach(function (el, i) {
+        el.style.transitionDelay = (Math.min(i % 4, 4) * 0.08) + "s";
+        revealIo.observe(el);
+      });
+    } else {
+      revealEls.forEach(function (el) { el.classList.add("in-view"); });
+    }
 
     // Scroll-in entrance for the character strip (progressive enhancement).
     var section = document.getElementById("friendsSection");
