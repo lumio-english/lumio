@@ -193,7 +193,7 @@ def build():
 
     slides.append(slide_buzzer_challenge(text_words[0], len(slides) + 1, TOTAL))
     slides.append(slide_buzzer_challenge(text_words[4], len(slides) + 1, TOTAL))
-    slides.append(slide_team_relay(text_words[2], "What's this called?", len(slides) + 1, TOTAL))
+    slides.append(slide_team_relay(text_words[2], "Can you name this?", len(slides) + 1, TOTAL))
     slides.append(slide_mini_celebrate("You're all Chat Champions!", len(slides) + 1, TOTAL))
     _d = TE.dialogue_slide("level4", 1, len(slides) + 1, TOTAL)
     if _d: slides.append(_d)

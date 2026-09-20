@@ -195,7 +195,7 @@ def build():
 
     slides.append(slide_buzzer_challenge(plan_words[0], len(slides) + 1, TOTAL))
     slides.append(slide_buzzer_challenge(plan_words[4], len(slides) + 1, TOTAL))
-    slides.append(slide_team_relay(plan_words[1], "What's this word?", len(slides) + 1, TOTAL))
+    slides.append(slide_team_relay(plan_words[1], "What do we call this?", len(slides) + 1, TOTAL))
     slides.append(slide_mini_celebrate("You're all Future Planners!", len(slides) + 1, TOTAL))
     _d = TE.dialogue_slide("level6", 1, len(slides) + 1, TOTAL)
     if _d: slides.append(_d)
