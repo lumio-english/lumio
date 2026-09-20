@@ -639,6 +639,15 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
     for i in range(3):
         w = lesson["vocab"][i % V]
         plan.append(("practice", (w, i)))
+    # Scene slide right after the vocabulary: one illustrated moment for
+    # the lesson's language (lib/teen_scenes.py). Skipped if no image.
+    try:
+        import teen_scenes, os as _os
+        _sc = teen_scenes.SCENES.get(level or "", {}).get(lesson_num)
+        if _sc and _os.path.exists(f"assets/vocab-scenes/{level}/{lesson_num:02d}.jpg"):
+            plan.append(("scene", _sc))
+    except Exception as _e:
+        print("scene skipped:", _e)
     plan.append(("pair_check", f"Quiz your partner on today's words -- point and ask 'What's this?'"))
     # Vocabulary Check: live, in-class MCQ practice, split into two 5-question
     # rounds with a checkpoint -- breaks up 10 slides in a row and gives a
@@ -718,6 +727,8 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
             w, i = data
             verb_count = sum(1 for x in lesson["vocab"] if x.get("pos") == "verb")
             slides.append(slide_vocab(w, i, n, total, V, VOCAB_CHARS[i % len(VOCAB_CHARS)], verb_count))
+        elif kind == "scene":
+            slides.append(v1.slide_vocab_scene(f"assets/vocab-scenes/{level}/{lesson_num:02d}.jpg", data["en"], data["bold"], n, total, data.get("ar")))
         elif kind == "review_break":
             slides.append(slide_review_break(data, n, total, theme_key))
         elif kind == "grammar_rule":

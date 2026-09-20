@@ -594,6 +594,15 @@ def build_reading_adventure_deck(lesson_num, lesson, grammar_topic, story):
     for i, w in enumerate(lesson["vocab"]):
         plan.append(("vocab", (w, i)))
         plan.append(("practice", (w, i)))
+    # Scene slide: only when a scene image exists for this lesson (see
+    # lib/teen_scenes.py); skipped silently otherwise.
+    try:
+        import teen_scenes, os as _os
+        _sc = teen_scenes.SCENES.get(CURRENT_LEVEL, {}).get(lesson_num)
+        if _sc and _os.path.exists(f"assets/vocab-scenes/{CURRENT_LEVEL}/{lesson_num:02d}.jpg"):
+            plan.append(("scene", _sc))
+    except Exception:
+        pass
     if grammar_topic:
         plan.append(("grammar_rule", grammar_topic))
         plan.append(("grammar_practice", grammar_topic))
@@ -634,6 +643,8 @@ def build_reading_adventure_deck(lesson_num, lesson, grammar_topic, story):
         elif kind == "vocab":
             w, i = data
             slides.append(slide_vocab(w, i, n, total, V, VOCAB_CHARS[i % len(VOCAB_CHARS)]))
+        elif kind == "scene":
+            slides.append(slide_vocab_scene(f"assets/vocab-scenes/{CURRENT_LEVEL}/{lesson_num:02d}.jpg", data["en"], data["bold"], n, total, data.get("ar")))
         elif kind == "practice":
             w, i = data
             slides.append(slide_practice(w, n, total, VOCAB_CHARS[i % len(VOCAB_CHARS)], seed=i))
@@ -689,6 +700,30 @@ def slide_reward_homework(lesson_num, n, total, xp):
     ''')
 
 
+def slide_vocab_scene(image_path, sentence, bold_words, n, total, translation=None):
+    """One real illustrated moment for the lesson's language: the scene
+    full-bleed, the sentence in a caption box with key words highlighted,
+    an Arabic line, and a play button. Mirrors the young-track version."""
+    import re as _re
+    highlighted = esc(sentence)
+    for w in sorted(bold_words, key=len, reverse=True):
+        highlighted = _re.sub(r"\b(" + _re.escape(esc(w)) + r")\b", r'<span class="vs-key">\1</span>', highlighted, count=1, flags=_re.I)
+    speak = sentence.replace("'", "\\'")
+    return (f'''
+    <div style="position:absolute;inset:0;background:#1a1530 url('{image_path}') center/cover no-repeat"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(15,10,30,.78) 0%,rgba(15,10,30,.35) 30%,transparent 55%)"></div>
+    ''' + header("Scene &middot; " + " &amp; ".join(esc(w) for w in bold_words[:2]), n, total) + f'''
+    <div style="position:absolute;left:0;right:0;bottom:44px;display:flex;align-items:center;justify-content:center;gap:16px;padding:0 60px">
+      <div style="background:#fff;border-radius:20px;padding:16px 28px;box-shadow:0 12px 30px rgba(0,0,0,.35);text-align:center;max-width:900px">
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.5rem;color:{CARD_TEXT};line-height:1.35">{highlighted}</div>
+        {f'<div dir="rtl" style="margin-top:8px;display:inline-block;padding:6px 18px;border-radius:999px;background:#E6F7F3;color:{TEAL_DEEP};font-weight:700;font-size:1.05rem">{esc(translation)}</div>' if translation else ''}
+      </div>
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{speak}')"
+              style="flex-shrink:0;border:none;cursor:pointer;font-family:inherit;background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;width:56px;height:56px;border-radius:50%;font-size:1.3rem;box-shadow:0 6px 16px rgba(0,0,0,.35)">&#9654;</button>
+    </div>
+    <style>.vs-key{{color:{ORANGE_DEEP};font-weight:700}}</style>''')
+
+
 def build_deck(lesson_num, lesson, prev_lesson, grammar_topic=None):
     V = len(lesson["vocab"])
     plan = [("title", None), ("goal", None), ("unscramble", lesson["vocab"][0])]
@@ -697,6 +732,15 @@ def build_deck(lesson_num, lesson, prev_lesson, grammar_topic=None):
     for i, w in enumerate(lesson["vocab"]):
         plan.append(("vocab", (w, i)))
         plan.append(("practice", (w, i)))
+    # Scene slide: only when a scene image exists for this lesson (see
+    # lib/teen_scenes.py); skipped silently otherwise.
+    try:
+        import teen_scenes, os as _os
+        _sc = teen_scenes.SCENES.get(CURRENT_LEVEL, {}).get(lesson_num)
+        if _sc and _os.path.exists(f"assets/vocab-scenes/{CURRENT_LEVEL}/{lesson_num:02d}.jpg"):
+            plan.append(("scene", _sc))
+    except Exception:
+        pass
     if grammar_topic:
         plan.append(("grammar_rule", grammar_topic))
         plan.append(("grammar_practice", grammar_topic))
@@ -726,6 +770,8 @@ def build_deck(lesson_num, lesson, prev_lesson, grammar_topic=None):
         elif kind == "vocab":
             w, i = data
             slides.append(slide_vocab(w, i, n, total, V, VOCAB_CHARS[i % len(VOCAB_CHARS)]))
+        elif kind == "scene":
+            slides.append(slide_vocab_scene(f"assets/vocab-scenes/{CURRENT_LEVEL}/{lesson_num:02d}.jpg", data["en"], data["bold"], n, total, data.get("ar")))
         elif kind == "practice":
             w, i = data
             slides.append(slide_practice(w, n, total, VOCAB_CHARS[i % len(VOCAB_CHARS)], seed=i))
@@ -750,9 +796,12 @@ def build_deck(lesson_num, lesson, prev_lesson, grammar_topic=None):
     return slides
 
 
+CURRENT_LEVEL = None
+
 def run(level, dialogues, grammar_units=None, out_root="slide-content", manifest_root="assets/slides"):
-    global DIALOGUES
+    global DIALOGUES, CURRENT_LEVEL
     DIALOGUES = dialogues
+    CURRENT_LEVEL = level
     grammar_units = grammar_units or {}
     lesson_files = sorted(glob.glob(f"lessons/{level}/lesson*.json"))
     lessons = {}
