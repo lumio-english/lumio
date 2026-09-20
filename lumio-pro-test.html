@@ -1254,7 +1254,8 @@ function renderReading(q,i){
 
 function renderWriting(q,i){
   const secStart=SECTION_MAP[2].start;
-  const hintsHtml=q.hints.map(h=>`<span class="hint-chip">${h}</span>`).join('');
+  // Hint chips (sentence starters) intentionally removed -- the writing
+  // section should assess what the student can produce unprompted.
   return `<div class="q-card">
     <div class="q-card-top">
       <div class="q-num">Writing Q${i-secStart+1} &bull; ${q.level}</div>
@@ -1265,7 +1266,6 @@ function renderWriting(q,i){
         <div class="writing-prompt-label">Your Task</div>
         <div class="writing-prompt-text">${q.prompt}</div>
       </div>
-      <div class="hints-row">${hintsHtml}</div>
       <textarea class="writing-area" id="write-${i}" placeholder="Start writing here..." oninput="saveWriting(${i})" rows="6"></textarea>
       <div class="word-count" id="wc-${i}">0 words (aim for at least ${q.minWords})</div>
     </div>
@@ -1385,7 +1385,7 @@ function playAudio(qIdx){
 
   try{
     speechUtterance = new SpeechSynthesisUtterance(q.audio);
-    speechUtterance.rate = 0.92;
+    speechUtterance.rate = 0.75; // slowed down from 0.92 -- was too fast for a listening test
     speechUtterance.pitch = 1.0;
     speechUtterance.lang = 'en-US';
     if (bestVoice) speechUtterance.voice = bestVoice;
@@ -1407,7 +1407,10 @@ function playAudio(qIdx){
 
     // Safety timeout in case onend never fires (known iOS Safari bug)
     const wordCount = q.audio.split(/\s+/).length;
-    const estMs = Math.max(5000, (wordCount / 130 * 60 * 1000) + 4000);
+    // 106 wpm matches the 0.75 rate above (130wpm was tuned for the old 0.92
+    // rate) -- keeps this safety timeout from firing before slower speech
+    // actually finishes.
+    const estMs = Math.max(5000, (wordCount / 106 * 60 * 1000) + 4000);
     setTimeout(resetBtn, estMs);
 
     // iOS Safari silently pauses speechSynthesis after ~15s of queue silence —
