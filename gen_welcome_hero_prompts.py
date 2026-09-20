@@ -53,7 +53,7 @@ WELCOME_POSE = ("Full body 'welcome hero' pose: one hand/arm raised high in a "
 CHARACTERS = [
     ("omar", "Omar, a young boy character -- short black hair, warm brown skin, wearing a white thobe (long robe) with orange trim at the collar and cuffs, orange sandals. Calm, friendly, curious personality.",
      YOUNG_STYLE, "assets/story/characters/omar-wave.png"),
-    ("sara", "Sara, a young girl character -- glasses, brown wavy shoulder-length hair, wearing an orange cardigan over a white collared top and an orange skirt. Warm, teacher-like, encouraging personality.",
+    ("sara", "Sara, a young girl character -- glasses, brown wavy shoulder-length hair, wearing an orange cardigan over a white collared top and an orange skirt. Warm, curious, encouraging personality -- a good friend, not a teacher.",
      YOUNG_STYLE, "assets/story/characters/sara-wave.png"),
     ("noor", "Noor, a young girl character -- wearing an orange and teal patterned hijab (headscarf), a teal and orange dress with patterned trim, warm brown skin, sometimes wears a small backpack. Cheerful, warm, energetic personality.",
      YOUNG_STYLE, "assets/story/characters/noor-wave.png"),

@@ -40,7 +40,7 @@ CHARACTERS = {
         },
     },
     "sara": {
-        "identity": "Sara, a young girl character -- glasses, brown wavy shoulder-length hair, wearing an orange cardigan over a white collared top and an orange skirt. Warm, teacher-like, encouraging personality.",
+        "identity": "Sara, a young girl character -- glasses, brown wavy shoulder-length hair, wearing an orange cardigan over a white collared top and an orange skirt. Warm, curious, encouraging personality -- a good friend, not a teacher.",
         "style": YOUNG_STYLE,
         "poses": {
             "look-left":  "body and head turned to face the left side of the frame, curious/alert expression, one hand maybe shading eyes slightly",

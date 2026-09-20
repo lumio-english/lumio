@@ -1635,7 +1635,7 @@
     <h3 id="teacherModalTitle">Add teacher</h3>
     <div class="td-field">
       <label for="tchName">Name</label>
-      <input type="text" id="tchName" placeholder="e.g. Ms. Sara" maxlength="30">
+      <input type="text" id="tchName" placeholder="e.g. Ms. Layla" maxlength="30">
       <div class="td-field-error" id="tchNameError"></div>
     </div>
     <div class="td-field">
@@ -4578,13 +4578,13 @@
   document.getElementById("seedDemoBtn").onclick = async (e) => {
     if (!window.LumioProfiles) return;
     await withLoading(e.currentTarget, async () => {
-      let sara;
-      try { sara = await LumioProfiles.addTeacher({ name: "Teacher Sara", avatar: "👩‍🏫", pin: "1111" }); }
-      catch (err) { sara = LumioProfiles.findTeacherByName("Teacher Sara"); }
+      let demoTeacher;
+      try { demoTeacher = await LumioProfiles.addTeacher({ name: "Miss Layla", avatar: "👩‍🏫", pin: "1111" }); }
+      catch (err) { demoTeacher = LumioProfiles.findTeacherByName("Miss Layla"); }
       const demoLevel = (LEVEL_NAMES[0] || {}).id || "pre-a";
       for (const s of [{ name: "Noor", avatar: "🧕" }, { name: "Omar", avatar: "👦" }]) {
         try {
-          await LumioProfiles.addStudent({ name: s.name, avatar: s.avatar, level: demoLevel, teacherId: sara ? sara.id : null });
+          await LumioProfiles.addStudent({ name: s.name, avatar: s.avatar, level: demoLevel, teacherId: demoTeacher ? demoTeacher.id : null });
         } catch (err) { /* already exists — skip */ }
       }
       renderTeamGrid();

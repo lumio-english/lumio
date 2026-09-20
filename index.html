@@ -122,6 +122,14 @@
 .explore-step{padding:10px 0;border-bottom:1px solid var(--line);font-size:.86rem;color:var(--cocoa);line-height:1.55}
 .explore-step b{font-family:var(--font-display)}
 .explore-jump{display:inline-block;margin-top:14px;font-weight:800;font-size:.85rem;color:var(--orange);text-decoration:none}
+.explore-cefr{display:inline-block;background:var(--sun-soft);color:#7B3F1B;font-size:.65rem;font-weight:800;
+  padding:2px 8px;border-radius:999px;vertical-align:middle;margin-left:4px}
+.explore-microcopy{color:var(--muted);font-weight:700;font-size:.82rem;line-height:1.5;margin-top:10px}
+.explore-substep{display:inline-block;margin-top:2px;color:var(--muted);font-weight:600;font-size:.78rem;line-height:1.4}
+.explore-hub-table{width:100%;border-collapse:collapse;font-size:.82rem;margin:14px 0 4px}
+.explore-hub-table th{text-align:left;background:var(--sun-soft);color:var(--cocoa);padding:7px 10px;font-family:var(--font-display);font-size:.7rem}
+.explore-hub-table td{padding:7px 10px;border-bottom:1px solid var(--line);color:var(--cocoa)}
+.explore-hub-all{color:var(--teal);font-weight:800;font-size:.72rem}
 .explore-cta{flex-shrink:0;margin:14px 20px 20px;text-align:center;padding:13px;border-radius:999px;
   background:var(--cocoa);color:#fff;font-weight:800;text-decoration:none;font-family:var(--font-display)}
 @media (max-width:640px){.explore-tab{padding:12px 8px}.explore-tab-label{font-size:.74rem}}
@@ -182,19 +190,22 @@ html{scroll-behavior:smooth}
   <div class="explore-tabs" role="tablist">
     <button class="explore-tabbtn active" data-panel="levels" role="tab" aria-selected="true">📚 Levels</button>
     <button class="explore-tabbtn" data-panel="how" role="tab" aria-selected="false">🧩 How it works</button>
+    <button class="explore-tabbtn" data-panel="why" role="tab" aria-selected="false">⭐ Why Lumio</button>
+    <button class="explore-tabbtn" data-panel="hub" role="tab" aria-selected="false">📖 The Hub</button>
     <button class="explore-tabbtn" data-panel="games" role="tab" aria-selected="false">🎮 Bonus games</button>
     <button class="explore-tabbtn" data-panel="pricing" role="tab" aria-selected="false">💳 Pricing</button>
     <button class="explore-tabbtn" data-panel="faq" role="tab" aria-selected="false">❓ FAQ</button>
   </div>
   <div class="explore-panels">
     <div class="explore-panel active" data-panel="levels">
-      <div class="explore-level-row"><span class="explore-level-badge" style="background:#FFE8D1;color:#C2410C">Pre-A</span><div><b>First Words</b><br>Ages 4–6 · Hello, colors, family, animals</div></div>
-      <div class="explore-level-row"><span class="explore-level-badge" style="background:#DBEAFE;color:#1D4ED8">L1</span><div><b>About Me</b><br>Ages 6–8 · My house, my things, likes &amp; dislikes</div></div>
-      <div class="explore-level-row"><span class="explore-level-badge" style="background:#F0FDFA;color:#0F766E">L2</span><div><b>My World</b><br>Ages 8–10 · Family, classroom, daily routines</div></div>
-      <div class="explore-level-row"><span class="explore-level-badge" style="background:#F5F3FF;color:#6D28D9">L3</span><div><b>Everyday Life</b><br>Ages 10–12 · Friends, school, real conversations</div></div>
-      <div class="explore-level-row"><span class="explore-level-badge" style="background:#EEF2FF;color:#4338CA">L4</span><div><b>Smart Choices</b><br>Ages 11–13 · Routines, money, advice, decisions</div></div>
-      <div class="explore-level-row"><span class="explore-level-badge" style="background:#FDF2F8;color:#BE185D">L5</span><div><b>Telling My Story</b><br>Ages 12–14 · Past tense, storytelling, trips</div></div>
-      <div class="explore-level-row"><span class="explore-level-badge" style="background:#F5F3FF;color:#6D28D9">L6</span><div><b>Looking Ahead</b><br>Ages 13–15 · Future plans, debates, culture</div></div>
+      <div class="explore-level-row"><span class="explore-level-badge" style="background:#FFE8D1;color:#C2410C">Pre-A</span><div><b>First Words</b> <span class="explore-cefr">CEFR Pre-A1</span><br>Ages 4–6 · 20 lessons · Hello, colors, family, animals</div></div>
+      <div class="explore-level-row"><span class="explore-level-badge" style="background:#DBEAFE;color:#1D4ED8">L1</span><div><b>About Me</b> <span class="explore-cefr">CEFR Pre-A1</span><br>Ages 6–8 · 20 lessons · My house, my things, likes &amp; dislikes</div></div>
+      <div class="explore-level-row"><span class="explore-level-badge" style="background:#F0FDFA;color:#0F766E">L2</span><div><b>My World</b> <span class="explore-cefr">CEFR Pre-A1</span><br>Ages 8–10 · 20 lessons · Family, classroom, daily routines</div></div>
+      <div class="explore-level-row"><span class="explore-level-badge" style="background:#F5F3FF;color:#6D28D9">L3</span><div><b>Everyday Life</b> <span class="explore-cefr">CEFR A1</span><br>Ages 10–12 · 20 lessons · Friends, school, real conversations, real grammar begins</div></div>
+      <div class="explore-level-row"><span class="explore-level-badge" style="background:#EEF2FF;color:#4338CA">L4</span><div><b>Smart Choices</b> <span class="explore-cefr">CEFR A1</span><br>Ages 11–13 · 20 lessons · Routines, money, advice, decisions</div></div>
+      <div class="explore-level-row"><span class="explore-level-badge" style="background:#FDF2F8;color:#BE185D">L5</span><div><b>Telling My Story</b> <span class="explore-cefr">CEFR A2</span><br>Ages 12–14 · 20 lessons · Past tense, storytelling, trips</div></div>
+      <div class="explore-level-row"><span class="explore-level-badge" style="background:#F5F3FF;color:#6D28D9">L6</span><div><b>Looking Ahead</b> <span class="explore-cefr">CEFR A2</span><br>Ages 13–15 · 20 lessons · Future plans, debates, culture</div></div>
+      <p class="explore-microcopy">140 lessons total, one continuous path — every level builds on real, internationally-recognized CEFR standards, not an in-house scale.</p>
       <a class="explore-jump" href="#curriculum">See the full curriculum ↓</a>
     </div>
     <div class="explore-panel" data-panel="how">
@@ -205,27 +216,52 @@ html{scroll-behavior:smooth}
       <div class="explore-step"><b>5. Homework</b> — a printable worksheet, flashcards and writing practice for every lesson.</div>
       <a class="explore-jump" href="#howworks">See it in action ↓</a>
     </div>
+
+    <div class="explore-panel" data-panel="why">
+      <div class="explore-step"><b>🕌 Arabic-first, not translated in</b><br>Every word, every instruction, every rule — built bilingual from day one, not bolted on afterward.</div>
+      <div class="explore-step"><b>🔡 Spelling has real rules</b><br>Not just memorizing letters — the actual rules behind how English words are built, taught step by step.</div>
+      <div class="explore-step"><b>🗣️ Homework uses real sentences</b><br>Every practice sentence is grounded in what a word actually means — not a random word list to memorize.</div>
+      <div class="explore-step"><b>📄 Real worksheets and flashcards</b><br>A printable homework page and flashcard set for every single lesson, for the moments a screen isn't the right tool.</div>
+      <div class="explore-step"><b>👥 A real, live-taught community</b><br>Grouped with peers at the same level, guided by a dedicated teacher, with a supervisor on hand for anything else — never a solo app.</div>
+      <a class="explore-jump" href="#pricing">See what's included in every plan ↓</a>
+    </div>
+
+    <div class="explore-panel" data-panel="hub">
+      <p class="explore-microcopy" style="margin-top:0">Beyond the 20 structured lessons, every level unlocks its own free-browsing Hub — searchable, and open anytime, not just during lesson time.</p>
+      <table class="explore-hub-table">
+        <tr><th>Hub section</th><th>Available at</th></tr>
+        <tr><td>📔 Vocabulary</td><td>Pre-A → L6 <span class="explore-hub-all">all levels</span></td></tr>
+        <tr><td>💡 Idioms</td><td>Pre-A → L6 <span class="explore-hub-all">all levels</span></td></tr>
+        <tr><td>✍️ Writing &amp; Speaking</td><td>Pre-A → L6 <span class="explore-hub-all">all levels</span></td></tr>
+        <tr><td>🔡 Spelling</td><td>Pre-A</td></tr>
+        <tr><td>🔤 Phonics</td><td>Levels 1–2</td></tr>
+        <tr><td>📐 Grammar</td><td>Levels 3–6</td></tr>
+      </table>
+      <a class="explore-jump" href="#demo">Watch the Hub in action ↓</a>
+    </div>
+
     <div class="explore-panel" data-panel="games">
-      <div class="explore-step"><b>Pre-A</b> — Lumi's Pocket</div>
-      <div class="explore-step"><b>Level 1</b> — Treehouse Builder</div>
-      <div class="explore-step"><b>Level 2</b> — Twelve Months Calendar</div>
-      <div class="explore-step"><b>Level 3</b> — Crew Chat</div>
-      <div class="explore-step"><b>Level 4</b> — Squad Budget</div>
-      <div class="explore-step"><b>Level 5</b> — Story Detective</div>
-      <div class="explore-step"><b>Level 6</b> — Crystal Ball</div>
-      <p style="color:var(--muted);font-weight:700;font-size:.85rem;margin-top:8px">A new bonus game unlocks after every lesson your child finishes.</p>
+      <div class="explore-step"><b>Pre-A</b> — Lumi's Pocket <br><span class="explore-substep">A gentle picture-and-sound matching game — no reading required yet.</span></div>
+      <div class="explore-step"><b>Level 1</b> — Treehouse Builder <br><span class="explore-substep">Answer correctly to build up a treehouse, piece by piece.</span></div>
+      <div class="explore-step"><b>Level 2</b> — Twelve Months Calendar <br><span class="explore-substep">A full-year picture calendar that fills in as vocabulary grows.</span></div>
+      <div class="explore-step"><b>Level 3</b> — Crew Chat <br><span class="explore-substep">A group-chat-style game — reply to friends and type words letter by letter.</span></div>
+      <div class="explore-step"><b>Level 4</b> — Squad Budget <br><span class="explore-substep">Make spending decisions in English as a team.</span></div>
+      <div class="explore-step"><b>Level 5</b> — Story Detective <br><span class="explore-substep">Piece together what happened, using real past-tense clues.</span></div>
+      <div class="explore-step"><b>Level 6</b> — Crystal Ball <br><span class="explore-substep">Make predictions and read your own English "fortune."</span></div>
+      <p class="explore-microcopy">A new bonus game unlocks after every lesson your child finishes — see one played for real in "See it in action."</p>
     </div>
     <div class="explore-panel" data-panel="pricing">
-      <div class="explore-step"><b>Single level</b> — 730 SAR ($195) &middot; 2 months &middot; 20 sessions</div>
-      <div class="explore-step"><b>3-level bundle</b> — 1,949.99 SAR ($520) &middot; 6 months &middot; save 11%</div>
-      <div class="explore-step"><b>6-level bundle</b> — 3,499.99 SAR ($933) &middot; full year &middot; save 20%</div>
-      <p style="color:var(--muted);font-weight:700;font-size:.85rem;margin-top:8px">Every plan includes full English Hub access, peer grouping by level, a teacher, and a supervisor.</p>
+      <div class="explore-step"><b>Single level</b> — 730 SAR (~$195) &middot; 2 months &middot; 20 sessions</div>
+      <div class="explore-step"><b>3-level bundle</b> — 1,949.99 SAR (~$520) &middot; 6 months &middot; save 11%</div>
+      <div class="explore-step"><b>6-level bundle</b> — 3,499.99 SAR (~$933) &middot; full year &middot; save 20%</div>
+      <p class="explore-microcopy">Every plan includes full English Hub access, peer grouping by level, a teacher, and a supervisor. Prices also shown in USD, AED, KWD, OMR and QAR.</p>
       <a class="explore-jump" href="#pricing">See full pricing &amp; currencies ↓</a>
     </div>
     <div class="explore-panel" data-panel="faq">
       <div class="explore-step"><b>Is it really in Arabic and English?</b><br>Yes — every word and every instruction has Arabic support.</div>
-      <div class="explore-step"><b>Does my child need a teacher?</b><br>Every lesson pairs self-study with a real live class.</div>
+      <div class="explore-step"><b>Does my child need a teacher?</b><br>Every lesson pairs self-study with a real live class, plus a supervisor for anything else.</div>
       <div class="explore-step"><b>Can we learn offline too?</b><br>Yes — every lesson has printable worksheets and flashcards.</div>
+      <div class="explore-step"><b>Can we try before paying anything?</b><br>Yes — a free placement test and a free trial class, both with zero commitment.</div>
       <a class="explore-jump" href="#faq">See all questions ↓</a>
     </div>
   </div>
@@ -392,10 +428,10 @@ html{scroll-behavior:smooth}
       <figure class="cf-card" data-en="Ready for today's lesson?" data-ar="هل أنت مستعد لدرس اليوم؟">
         <div class="cf-bubble" aria-hidden="true"></div>
         <div class="cf-imgwrap">
-          <img src="assets/story/characters/sara-welcome-hero.png" alt="Teacher Sara waving hello">
+          <img src="assets/story/characters/sara-welcome-hero.png" alt="Sara waving hello">
           <span class="cf-sparkle a">✨</span><span class="cf-sparkle b">⭐</span><span class="cf-sparkle c">✨</span>
         </div>
-        <figcaption>Teacher Sara</figcaption>
+        <figcaption>Sara</figcaption>
       </figure>
       <figure class="cf-card" data-en="I love learning new words!" data-ar="أحب تعلم كلمات جديدة!">
         <div class="cf-bubble" aria-hidden="true"></div>
@@ -532,13 +568,15 @@ html{scroll-behavior:smooth}
       <button class="lp-cur-btn" data-cur="USD">USD</button>
       <button class="lp-cur-btn" data-cur="AED">AED</button>
       <button class="lp-cur-btn" data-cur="KWD">KWD</button>
+      <button class="lp-cur-btn" data-cur="OMR">OMR</button>
+      <button class="lp-cur-btn" data-cur="QAR">QAR</button>
     </div>
 
     <div class="lp-pricing-grid">
       <div class="lp-price-card reveal-io">
         <div class="lp-price-name">Single Level</div>
         <div class="lp-price-sub">2 months &middot; 20 sessions</div>
-        <div class="lp-price-amount" data-sar="730.00" data-usd="194.67" data-aed="714.91" data-kwd="59.96">
+        <div class="lp-price-amount" data-sar="730.00" data-usd="194.67" data-aed="714.91" data-kwd="59.96" data-omr="74.85" data-qar="708.59">
           <span class="lp-price-symbol">SAR</span><span class="lp-price-num">730.00</span>
         </div>
         <div class="lp-price-per">per level</div>
@@ -555,10 +593,10 @@ html{scroll-behavior:smooth}
         <div class="lp-price-badge">Most popular</div>
         <div class="lp-price-name">3-Level Bundle</div>
         <div class="lp-price-sub">6 months &middot; 60 sessions</div>
-        <div class="lp-price-amount" data-sar="1949.99" data-usd="520.00" data-aed="1909.69" data-kwd="160.16">
+        <div class="lp-price-amount" data-sar="1949.99" data-usd="520.00" data-aed="1909.69" data-kwd="160.16" data-omr="199.94" data-qar="1892.79">
           <span class="lp-price-symbol">SAR</span><span class="lp-price-num">1,949.99</span>
         </div>
-        <div class="lp-price-per">~650 SAR per level &middot; <b>save 11%</b></div>
+        <div class="lp-price-per">~<span class="lp-perlevel" data-sar="650.00" data-usd="173.33" data-aed="636.56" data-kwd="53.39" data-omr="66.65" data-qar="630.93"><span class="lp-price-symbol">SAR</span> <span class="lp-price-num">650.00</span></span> per level &middot; <b>save 11%</b></div>
         <ul class="lp-price-list">
           <li>3 full levels, back to back</li>
           <li>Full English Hub access, every level included</li>
@@ -572,10 +610,10 @@ html{scroll-behavior:smooth}
         <div class="lp-price-badge lp-price-badge-alt">Best value</div>
         <div class="lp-price-name">6-Level Bundle</div>
         <div class="lp-price-sub">Full year &middot; 120 sessions</div>
-        <div class="lp-price-amount" data-sar="3499.99" data-usd="933.33" data-aed="3427.66" data-kwd="287.47">
+        <div class="lp-price-amount" data-sar="3499.99" data-usd="933.33" data-aed="3427.66" data-kwd="287.47" data-omr="358.87" data-qar="3397.32">
           <span class="lp-price-symbol">SAR</span><span class="lp-price-num">3,499.99</span>
         </div>
-        <div class="lp-price-per">~583 SAR per level &middot; <b>save 20%</b></div>
+        <div class="lp-price-per">~<span class="lp-perlevel" data-sar="583.33" data-usd="155.56" data-aed="571.28" data-kwd="47.91" data-omr="59.81" data-qar="566.22"><span class="lp-price-symbol">SAR</span> <span class="lp-price-num">583.33</span></span> per level &middot; <b>save 20%</b></div>
         <ul class="lp-price-list">
           <li>6 full levels — nearly the whole path</li>
           <li>Full English Hub access, every level included</li>
@@ -585,7 +623,7 @@ html{scroll-behavior:smooth}
         <a class="btn btn-outline lp-price-cta" href="login.html">Get started</a>
       </div>
     </div>
-    <p class="center lp-pricing-note reveal-io">Prices shown for reference. SAR and AED are pegged to the US dollar and stay stable; KWD is a floating rate and may shift slightly over time.</p>
+    <p class="center lp-pricing-note reveal-io">Prices shown for reference. SAR, AED, OMR and QAR are all pegged to the US dollar and stay stable; KWD is a floating rate and may shift slightly over time.</p>
 
     <div class="lp-included reveal-io">
       <h3 class="center">What's inside every plan</h3>
@@ -1068,8 +1106,11 @@ html{scroll-behavior:smooth}
     // Pricing currency switcher: swap every .lp-price-amount's displayed
     // number + symbol together when a currency pill is tapped.
     var curBtns = document.querySelectorAll(".lp-cur-btn");
-    var priceAmounts = document.querySelectorAll(".lp-price-amount");
-    var curSymbols = { SAR: "SAR", USD: "$", AED: "AED", KWD: "KD" };
+    // .lp-perlevel (the "~X per level" figure inside bundle cards) uses the
+    // exact same .lp-price-symbol/.lp-price-num children, so one shared
+    // loop updates both the headline price and the per-level figure.
+    var priceAmounts = document.querySelectorAll(".lp-price-amount, .lp-perlevel");
+    var curSymbols = { SAR: "SAR", USD: "$", AED: "AED", KWD: "KD", OMR: "OMR", QAR: "QAR" };
     curBtns.forEach(function (btn) {
       btn.addEventListener("click", function () {
         var cur = btn.dataset.cur;
