@@ -155,6 +155,7 @@ html{scroll-behavior:smooth}
   <a href="#curriculum">Levels</a>
   <a href="#howworks">How it works</a>
   <a href="#friendsSection">Friends</a>
+  <a href="#pricing">Pricing</a>
   <a href="#faq">FAQ</a>
 </nav>
 
@@ -173,6 +174,7 @@ html{scroll-behavior:smooth}
     <button class="explore-tabbtn active" data-panel="levels" role="tab" aria-selected="true">📚 Levels</button>
     <button class="explore-tabbtn" data-panel="how" role="tab" aria-selected="false">🧩 How it works</button>
     <button class="explore-tabbtn" data-panel="games" role="tab" aria-selected="false">🎮 Bonus games</button>
+    <button class="explore-tabbtn" data-panel="pricing" role="tab" aria-selected="false">💳 Pricing</button>
     <button class="explore-tabbtn" data-panel="faq" role="tab" aria-selected="false">❓ FAQ</button>
   </div>
   <div class="explore-panels">
@@ -203,6 +205,13 @@ html{scroll-behavior:smooth}
       <div class="explore-step"><b>Level 5</b> — Story Detective</div>
       <div class="explore-step"><b>Level 6</b> — Crystal Ball</div>
       <p style="color:var(--muted);font-weight:700;font-size:.85rem;margin-top:8px">A new bonus game unlocks after every lesson your child finishes.</p>
+    </div>
+    <div class="explore-panel" data-panel="pricing">
+      <div class="explore-step"><b>Single level</b> — 730 SAR ($195) &middot; 2 months &middot; 20 sessions</div>
+      <div class="explore-step"><b>3-level bundle</b> — 1,949.99 SAR ($520) &middot; 6 months &middot; save 11%</div>
+      <div class="explore-step"><b>6-level bundle</b> — 3,499.99 SAR ($933) &middot; full year &middot; save 20%</div>
+      <p style="color:var(--muted);font-weight:700;font-size:.85rem;margin-top:8px">Every plan includes full English Hub access, peer grouping by level, a teacher, and a supervisor.</p>
+      <a class="explore-jump" href="#pricing">See full pricing &amp; currencies ↓</a>
     </div>
     <div class="explore-panel" data-panel="faq">
       <div class="explore-step"><b>Is it really in Arabic and English?</b><br>Yes — every word and every instruction has Arabic support.</div>
@@ -451,6 +460,101 @@ html{scroll-behavior:smooth}
     </div>
   </section>
 
+  <section class="mt lp-pricing" id="pricing">
+    <h2 class="center mb reveal-io">Simple pricing, real value</h2>
+    <p class="center lp-pricing-intro reveal-io">One level = 2 months &middot; 20 live sessions &middot; full access to that level's English Hub. Save more the longer you commit.</p>
+
+    <div class="lp-currency-switch reveal-io" role="tablist" aria-label="Choose currency">
+      <button class="lp-cur-btn active" data-cur="SAR">SAR</button>
+      <button class="lp-cur-btn" data-cur="USD">USD</button>
+      <button class="lp-cur-btn" data-cur="AED">AED</button>
+      <button class="lp-cur-btn" data-cur="KWD">KWD</button>
+    </div>
+
+    <div class="lp-pricing-grid">
+      <div class="lp-price-card reveal-io">
+        <div class="lp-price-name">Single Level</div>
+        <div class="lp-price-sub">2 months &middot; 20 sessions</div>
+        <div class="lp-price-amount" data-sar="730.00" data-usd="194.67" data-aed="714.91" data-kwd="59.96">
+          <span class="lp-price-symbol">SAR</span><span class="lp-price-num">730.00</span>
+        </div>
+        <div class="lp-price-per">per level</div>
+        <ul class="lp-price-list">
+          <li>1 full level, start to finish</li>
+          <li>Full English Hub access for that level</li>
+          <li>Grouped with peers at your level</li>
+          <li>Teacher + supervisor support</li>
+        </ul>
+        <a class="btn btn-outline lp-price-cta" href="login.html">Get started</a>
+      </div>
+
+      <div class="lp-price-card lp-price-featured reveal-io">
+        <div class="lp-price-badge">Most popular</div>
+        <div class="lp-price-name">3-Level Bundle</div>
+        <div class="lp-price-sub">6 months &middot; 60 sessions</div>
+        <div class="lp-price-amount" data-sar="1949.99" data-usd="520.00" data-aed="1909.69" data-kwd="160.16">
+          <span class="lp-price-symbol">SAR</span><span class="lp-price-num">1,949.99</span>
+        </div>
+        <div class="lp-price-per">~650 SAR per level &middot; <b>save 11%</b></div>
+        <ul class="lp-price-list">
+          <li>3 full levels, back to back</li>
+          <li>Full English Hub access, every level included</li>
+          <li>Grouped with peers at your level</li>
+          <li>Teacher + supervisor support</li>
+        </ul>
+        <a class="btn btn-primary lp-price-cta" href="login.html">Get started</a>
+      </div>
+
+      <div class="lp-price-card reveal-io">
+        <div class="lp-price-badge lp-price-badge-alt">Best value</div>
+        <div class="lp-price-name">6-Level Bundle</div>
+        <div class="lp-price-sub">Full year &middot; 120 sessions</div>
+        <div class="lp-price-amount" data-sar="3499.99" data-usd="933.33" data-aed="3427.66" data-kwd="287.47">
+          <span class="lp-price-symbol">SAR</span><span class="lp-price-num">3,499.99</span>
+        </div>
+        <div class="lp-price-per">~583 SAR per level &middot; <b>save 20%</b></div>
+        <ul class="lp-price-list">
+          <li>6 full levels — nearly the whole path</li>
+          <li>Full English Hub access, every level included</li>
+          <li>Grouped with peers at your level</li>
+          <li>Teacher + supervisor support</li>
+        </ul>
+        <a class="btn btn-outline lp-price-cta" href="login.html">Get started</a>
+      </div>
+    </div>
+    <p class="center lp-pricing-note reveal-io">Prices shown for reference. SAR and AED are pegged to the US dollar and stay stable; KWD is a floating rate and may shift slightly over time.</p>
+
+    <div class="lp-included reveal-io">
+      <h3 class="center">What's inside every plan</h3>
+
+      <div class="lp-included-grid">
+        <div class="lp-included-col">
+          <h4>📚 The English Hub, by level</h4>
+          <p class="lp-included-sub">Every level unlocks its own free-browsing Hub — organized, searchable, and available anytime, not just during lessons.</p>
+          <table class="lp-hub-table">
+            <tr><th>Hub section</th><th>Available at</th></tr>
+            <tr><td>Vocabulary</td><td>Pre-A → Level 6 <span class="lp-hub-all">(every level)</span></td></tr>
+            <tr><td>Idioms</td><td>Pre-A → Level 6 <span class="lp-hub-all">(every level)</span></td></tr>
+            <tr><td>Writing &amp; Speaking</td><td>Pre-A → Level 6 <span class="lp-hub-all">(every level)</span></td></tr>
+            <tr><td>Spelling</td><td>Pre-A</td></tr>
+            <tr><td>Phonics</td><td>Levels 1–2</td></tr>
+            <tr><td>Grammar</td><td>Levels 3–6</td></tr>
+          </table>
+        </div>
+
+        <div class="lp-included-col">
+          <h4>🤝 A real community, not a solo app</h4>
+          <p class="lp-included-sub">Learning a language works better with people. Every student gets:</p>
+          <ul class="lp-community-list">
+            <li><b>Grouped with peers at the same level</b> — your child learns alongside classmates who are genuinely at the same stage, not a mismatched group.</li>
+            <li><b>A dedicated teacher</b> — leads every live class and tracks real progress lesson by lesson.</li>
+            <li><b>A supervisor on hand</b> — answers questions, helps with anything technical, and keeps the group running smoothly between classes.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="mt lp-preview">
     <div class="lp-preview-text reveal-io">
       <h2>This is what a real lesson looks like</h2>
@@ -688,7 +792,51 @@ html{scroll-behavior:smooth}
     .lp-faq-item summary::after{content:"+";font-size:1.3rem;color:var(--orange);font-weight:400;flex-shrink:0;margin-left:12px}
     .lp-faq-item[open] summary::after{content:"–"}
     .lp-faq-item p{color:var(--cocoa-soft,#8A7160);font-size:.92rem;line-height:1.6;margin:12px 0 0}
-  </style>
+  
+  /* ===== Pricing ===== */
+  .lp-pricing-intro{color:var(--muted);font-weight:700;max-width:640px;margin:0 auto 28px}
+  .lp-currency-switch{display:flex;justify-content:center;gap:6px;margin-bottom:32px}
+  .lp-cur-btn{border:2px solid var(--line);background:#fff;color:var(--muted);font-family:var(--font-display);
+    font-weight:800;font-size:.85rem;padding:8px 18px;border-radius:999px;cursor:pointer;transition:all .15s ease}
+  .lp-cur-btn:hover{border-color:var(--orange)}
+  .lp-cur-btn.active{background:var(--orange);border-color:var(--orange);color:#fff}
+  .lp-pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;max-width:1080px;margin:0 auto}
+  .lp-price-card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:30px 26px;text-align:center;
+    box-shadow:var(--sh-md);position:relative;display:flex;flex-direction:column}
+  .lp-price-featured{border:2px solid var(--orange);transform:scale(1.03);box-shadow:var(--sh-lg)}
+  .lp-price-badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--orange);color:#fff;
+    font-family:var(--font-display);font-weight:800;font-size:.72rem;padding:5px 16px;border-radius:999px;letter-spacing:.3px}
+  .lp-price-badge-alt{background:var(--teal)}
+  .lp-price-name{font-family:var(--font-display);font-weight:800;font-size:1.2rem;color:var(--cocoa);margin-top:6px}
+  .lp-price-sub{color:var(--muted);font-weight:700;font-size:.82rem;margin:4px 0 18px}
+  .lp-price-amount{font-family:var(--font-display);font-weight:800;color:var(--orange);line-height:1}
+  .lp-price-symbol{font-size:1rem;margin-right:4px;vertical-align:middle}
+  .lp-price-num{font-size:2.1rem;vertical-align:middle}
+  .lp-price-per{color:var(--muted);font-weight:700;font-size:.85rem;margin:8px 0 20px}
+  .lp-price-per b{color:var(--teal)}
+  .lp-price-list{list-style:none;padding:0;margin:0 0 22px;text-align:left;flex:1}
+  .lp-price-list li{padding:7px 0 7px 26px;position:relative;font-size:.88rem;color:var(--cocoa);border-bottom:1px solid var(--line)}
+  .lp-price-list li:last-child{border-bottom:none}
+  .lp-price-list li::before{content:"✓";position:absolute;left:0;color:var(--teal);font-weight:800}
+  .lp-price-cta{width:100%;justify-content:center}
+  .lp-pricing-note{color:var(--muted);font-size:.8rem;font-weight:600;max-width:620px;margin:24px auto 0}
+  .lp-included{max-width:1080px;margin:52px auto 0}
+  .lp-included h3{font-family:var(--font-display);font-size:1.3rem;margin-bottom:8px}
+  .lp-included-grid{display:grid;grid-template-columns:1fr 1fr;gap:36px;margin-top:24px}
+  .lp-included-sub{color:var(--muted);font-size:.88rem;line-height:1.6;margin-bottom:16px}
+  .lp-hub-table{width:100%;border-collapse:collapse;font-size:.86rem}
+  .lp-hub-table th{text-align:left;background:var(--sun-soft);color:var(--cocoa);padding:9px 12px;font-family:var(--font-display);font-size:.78rem}
+  .lp-hub-table td{padding:9px 12px;border-bottom:1px solid var(--line);color:var(--cocoa)}
+  .lp-hub-table tr:first-child td{font-weight:800}
+  .lp-hub-all{color:var(--teal);font-weight:700;font-size:.8rem}
+  .lp-community-list{list-style:none;padding:0;margin:0}
+  .lp-community-list li{padding:12px 0 12px 30px;position:relative;font-size:.9rem;color:var(--cocoa);line-height:1.55;border-bottom:1px solid var(--line)}
+  .lp-community-list li:last-child{border-bottom:none}
+  .lp-community-list li::before{content:"👥";position:absolute;left:0;top:11px;font-size:1rem}
+  .lp-community-list li:nth-child(2)::before{content:"🧑‍🏫"}
+  .lp-community-list li:nth-child(3)::before{content:"🛟"}
+  @media (max-width:760px){.lp-price-featured{transform:none}.lp-included-grid{grid-template-columns:1fr}}
+</style>
 
   <script>
   (function () {
@@ -701,6 +849,26 @@ html{scroll-behavior:smooth}
         document.querySelectorAll(".lp-hear-card").forEach(function (c) { c.classList.remove("playing"); });
         card.classList.add("playing");
         setTimeout(function () { card.classList.remove("playing"); }, 900);
+      });
+    });
+
+    // Pricing currency switcher: swap every .lp-price-amount's displayed
+    // number + symbol together when a currency pill is tapped.
+    var curBtns = document.querySelectorAll(".lp-cur-btn");
+    var priceAmounts = document.querySelectorAll(".lp-price-amount");
+    var curSymbols = { SAR: "SAR", USD: "$", AED: "AED", KWD: "KD" };
+    curBtns.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var cur = btn.dataset.cur;
+        curBtns.forEach(function (b) { b.classList.remove("active"); });
+        btn.classList.add("active");
+        priceAmounts.forEach(function (el) {
+          var val = el.dataset[cur.toLowerCase()];
+          if (!val) return;
+          var num = parseFloat(val).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          el.querySelector(".lp-price-num").textContent = num;
+          el.querySelector(".lp-price-symbol").textContent = curSymbols[cur];
+        });
       });
     });
 
