@@ -590,24 +590,10 @@ html{scroll-behavior:smooth}
       </div>
 
       <div class="lp-price-card lp-price-featured reveal-io">
-        <div class="lp-price-badge">Most popular</div>
-        <div class="lp-price-name">3-Level Bundle</div>
-        <div class="lp-price-sub">6 months &middot; 60 sessions</div>
-        <div class="lp-price-amount" data-sar="1949.99" data-usd="520.00" data-aed="1909.69" data-kwd="160.16" data-omr="199.94" data-qar="1892.79">
-          <span class="lp-price-symbol">SAR</span><span class="lp-price-num">1,949.99</span>
+        <div class="lp-price-badges">
+          <div class="lp-price-badge">Most popular</div>
+          <div class="lp-price-badge lp-price-badge-alt">Best value</div>
         </div>
-        <div class="lp-price-per">~<span class="lp-perlevel" data-sar="650.00" data-usd="173.33" data-aed="636.56" data-kwd="53.39" data-omr="66.65" data-qar="630.93"><span class="lp-price-symbol">SAR</span> <span class="lp-price-num">650.00</span></span> per level &middot; <b>save 11%</b></div>
-        <ul class="lp-price-list">
-          <li>3 full levels, back to back</li>
-          <li>Full English Hub access, every level included</li>
-          <li>Grouped with peers at your level</li>
-          <li>Teacher + supervisor support</li>
-        </ul>
-        <a class="btn btn-primary lp-price-cta" href="login.html">Get started</a>
-      </div>
-
-      <div class="lp-price-card reveal-io">
-        <div class="lp-price-badge lp-price-badge-alt">Best value</div>
         <div class="lp-price-name">6-Level Bundle</div>
         <div class="lp-price-sub">Full year &middot; 120 sessions</div>
         <div class="lp-price-amount" data-sar="3499.99" data-usd="933.33" data-aed="3427.66" data-kwd="287.47" data-omr="358.87" data-qar="3397.32">
@@ -616,6 +602,22 @@ html{scroll-behavior:smooth}
         <div class="lp-price-per">~<span class="lp-perlevel" data-sar="583.33" data-usd="155.56" data-aed="571.28" data-kwd="47.91" data-omr="59.81" data-qar="566.22"><span class="lp-price-symbol">SAR</span> <span class="lp-price-num">583.33</span></span> per level &middot; <b>save 20%</b></div>
         <ul class="lp-price-list">
           <li>6 full levels — nearly the whole path</li>
+          <li>Full English Hub access, every level included</li>
+          <li>Grouped with peers at your level</li>
+          <li>Teacher + supervisor support</li>
+        </ul>
+        <a class="btn btn-primary lp-price-cta" href="login.html">Get started</a>
+      </div>
+
+      <div class="lp-price-card reveal-io">
+        <div class="lp-price-name">3-Level Bundle</div>
+        <div class="lp-price-sub">6 months &middot; 60 sessions</div>
+        <div class="lp-price-amount" data-sar="1949.99" data-usd="520.00" data-aed="1909.69" data-kwd="160.16" data-omr="199.94" data-qar="1892.79">
+          <span class="lp-price-symbol">SAR</span><span class="lp-price-num">1,949.99</span>
+        </div>
+        <div class="lp-price-per">~<span class="lp-perlevel" data-sar="650.00" data-usd="173.33" data-aed="636.56" data-kwd="53.39" data-omr="66.65" data-qar="630.93"><span class="lp-price-symbol">SAR</span> <span class="lp-price-num">650.00</span></span> per level &middot; <b>save 11%</b></div>
+        <ul class="lp-price-list">
+          <li>3 full levels, back to back</li>
           <li>Full English Hub access, every level included</li>
           <li>Grouped with peers at your level</li>
           <li>Teacher + supervisor support</li>
@@ -949,9 +951,11 @@ html{scroll-behavior:smooth}
   .lp-price-card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:30px 26px;text-align:center;
     box-shadow:var(--sh-md);position:relative;display:flex;flex-direction:column}
   .lp-price-featured{border:2px solid var(--orange);transform:scale(1.03);box-shadow:var(--sh-lg)}
-  .lp-price-badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--orange);color:#fff;
+  .lp-price-badges{position:absolute;top:-13px;left:50%;transform:translateX(-50%);display:flex;gap:8px;white-space:nowrap}
+  .lp-price-badge{background:var(--orange);color:#fff;
     font-family:var(--font-display);font-weight:800;font-size:.72rem;padding:5px 16px;border-radius:999px;letter-spacing:.3px}
   .lp-price-badge-alt{background:var(--teal)}
+  @media (max-width:400px){.lp-price-badges{flex-direction:column;align-items:center;gap:5px;top:-24px}}
   .lp-price-name{font-family:var(--font-display);font-weight:800;font-size:1.2rem;color:var(--cocoa);margin-top:6px}
   .lp-price-sub{color:var(--muted);font-weight:700;font-size:.82rem;margin:4px 0 18px}
   .lp-price-amount{font-family:var(--font-display);font-weight:800;color:var(--orange);line-height:1}
