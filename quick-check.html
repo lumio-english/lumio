@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quick English Check — Lumio English</title>
+<meta name="description" content="A short, no-signup English check with personalized feedback on your answers — see how you did, then take the full placement test when you're ready.">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/logo/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/logo/favicon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  body{opacity:0;animation:ptFadeIn .4s ease forwards;background:var(--paper,#FFFBF5)}
+  @keyframes ptFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  .btn{transition:transform .16s cubic-bezier(.22,1,.36,1),box-shadow .16s ease}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(0,0,0,.12)}
+  .btn:active{transform:translateY(0) scale(.96)}
+
+  .pt-wrap{max-width:560px;margin:0 auto;padding:28px 20px 60px}
+  .pt-topbar{display:flex;align-items:center;gap:10px;margin-bottom:18px;text-decoration:none}
+  .pt-topbar img{width:34px;height:34px}
+  .pt-topbar b{font-family:var(--font-display);color:var(--cocoa)}
+  .pt-card{background:#fff;border-radius:24px;padding:28px 26px;box-shadow:0 6px 20px rgba(0,0,0,.08)}
+  .pt-card h1{font-size:1.4rem;margin:0 0 6px;text-align:center}
+  .pt-card p.lead{color:var(--cocoa-soft,#8A7160);font-weight:700;font-size:.88rem;text-align:center;margin:0 0 22px}
+  .pt-badge-free{display:block;width:fit-content;margin:0 auto 14px;background:#E6F7F3;color:#0D9488;font-family:var(--font-display);
+    font-weight:800;font-size:.74rem;padding:5px 14px;border-radius:999px}
+
+  .pt-progress-row{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+  .pt-progressbar{flex:1;height:10px;background:#F3EEE4;border-radius:999px;overflow:hidden}
+  .pt-progressbar>div{height:100%;background:linear-gradient(90deg,#FF8A3D,#F97316);border-radius:999px;transition:width .3s ease}
+  .pt-progress-label{font-weight:800;font-size:.8rem;color:var(--cocoa-soft,#8A7160);white-space:nowrap}
+
+  .pt-question{text-align:center;margin-bottom:20px}
+  .pt-question h2{font-size:1.15rem;line-height:1.4}
+  .pt-options{display:flex;flex-direction:column;gap:10px}
+  .pt-opt{
+    padding:14px 16px;border-radius:14px;border:2px solid #eee;background:#fff;font-weight:700;font-size:.95rem;
+    cursor:pointer;text-align:left;font-family:inherit;transition:transform .12s ease,border-color .15s ease,background .15s ease;
+  }
+  .pt-opt:hover{border-color:var(--orange,#FF8A3D);transform:translateY(-1px)}
+  .pt-opt:active{transform:translateY(0) scale(.98)}
+  .pt-opt.correct{background:var(--green-soft,#EAFBEF);border-color:var(--green,#22C55E)}
+  .pt-opt.wrong{background:#FCEBEA;border-color:var(--coral,#F43F5E)}
+
+  .pt-result-icon{font-size:3rem;text-align:center;margin-bottom:8px}
+  .pt-result-score{background:var(--paper,#FFFBF5);border-radius:14px;padding:14px;text-align:center;font-weight:800;margin-bottom:18px}
+
+  .qc-section{margin-bottom:16px}
+  .qc-section h3{font-size:.82rem;font-weight:800;letter-spacing:.3px;margin:0 0 8px;display:flex;align-items:center;gap:6px}
+  .qc-chip-row{display:flex;flex-wrap:wrap;gap:6px}
+  .qc-chip{font-size:.8rem;font-weight:700;padding:5px 12px;border-radius:999px}
+  .qc-chip.good{background:var(--green-soft,#EAFBEF);color:#15803D}
+  .qc-chip.grow{background:#FFF3D6;color:#92400E}
+  .qc-tips{background:var(--paper,#FFFBF5);border:1px solid #F0E9DD;border-radius:14px;padding:14px 16px;margin-top:6px}
+  .qc-tips li{font-size:.86rem;color:var(--cocoa);line-height:1.5;margin-bottom:6px}
+  .qc-tips li:last-child{margin-bottom:0}
+  .qc-note{color:var(--cocoa-soft,#8A7160);font-weight:600;font-size:.8rem;text-align:center;margin:14px 0 4px}
+
+  .pt-next-card{background:#FFF3D6;border-radius:16px;padding:18px 18px 16px;margin-top:22px;text-align:center}
+  .pt-next-card h4{margin:0 0 8px;font-size:1rem;color:#7B3F1B}
+  .pt-next-card p{margin:0 0 14px;font-size:.86rem;color:#7B3F1B;font-weight:600;line-height:1.5}
+
+  .pt-step{display:none}
+  .pt-step.show{display:block}
+</style>
+</head>
+<body>
+
+<main class="pt-wrap">
+  <a class="pt-topbar" href="index.html">
+    <img src="assets/logo/lumio-logo.png" alt="">
+    <b>Lumio English</b>
+  </a>
+
+  <!-- Step 1: intro (no registration -- straight into the questions) -->
+  <div class="pt-step show" id="stepIntro">
+    <div class="pt-card">
+      <span class="pt-badge-free">100% Free &middot; No signup</span>
+      <h1>Quick English Check</h1>
+      <p class="lead">10 quick questions. No name, no phone number — just a fast, honest look at what you already know, with tips at the end.</p>
+      <button class="btn btn-primary btn-big" id="startCheckBtn" style="width:100%">Start the check →</button>
+    </div>
+  </div>
+
+  <!-- Step 2: questions -->
+  <div class="pt-step" id="stepTest">
+    <div class="pt-card">
+      <div class="pt-progress-row">
+        <div class="pt-progressbar"><div id="ptBar" style="width:0%"></div></div>
+        <div class="pt-progress-label" id="ptProgressLabel">Question 1/10</div>
+      </div>
+      <div class="pt-question">
+        <h2 id="ptQuestionText"></h2>
+      </div>
+      <div class="pt-options" id="ptOptions"></div>
+    </div>
+  </div>
+
+  <!-- Step 3: feedback (NOT a level placement -- per-answer analysis + tips) -->
+  <div class="pt-step" id="stepResults">
+    <div class="pt-card">
+      <div class="pt-result-icon">🎉</div>
+      <h1 style="margin-bottom:4px">Nice work!</h1>
+      <p class="lead" style="margin-bottom:14px">Here's what we noticed from your answers</p>
+      <div class="pt-result-score" id="resultScore"></div>
+
+      <div class="qc-section">
+        <h3 style="color:#15803D">✅ You're doing well with</h3>
+        <div class="qc-chip-row" id="qcGood"></div>
+      </div>
+      <div class="qc-section" id="qcGrowSection">
+        <h3 style="color:#92400E">🌱 A good next step</h3>
+        <div class="qc-chip-row" id="qcGrow"></div>
+        <div class="qc-tips"><ul id="qcTipsList"></ul></div>
+      </div>
+      <p class="qc-note">This is a quick check, not your official level — the full placement test gives you that.</p>
+
+      <div class="pt-next-card">
+        <h4>🚀 Ready to move up?</h4>
+        <p>Register your details, take the full placement test, and book your trial session.</p>
+        <a class="btn btn-primary btn-big" href="placement-test.html" style="width:100%;display:block;text-align:center;box-sizing:border-box">Take the full placement test →</a>
+      </div>
+      <a class="btn btn-outline btn-big" href="index.html" style="width:100%;display:block;text-align:center;box-sizing:border-box;margin-top:10px">Back to homepage</a>
+    </div>
+  </div>
+</main>
+
+<script>
+(function () {
+  // Same question bank as the full placement test (placement-test.html) --
+  // reused as-is, per the request to keep the same multiple-choice content.
+  // Each question is also tagged with a plain-language "skill" label and a
+  // short practice tip, used only for the feedback screen below -- never to
+  // assign a level.
+  const TEST_QUESTIONS = [
+    { level: "pre-a",  skill: "Basic vocabulary", tip: "Keep naming everyday objects and animals out loud — pictures and flashcards work great for this.",
+      q: "Which word means 🐱?", options: ["Cat", "Dog", "Sun"], answer: "Cat" },
+    { level: "level1", skill: "Simple sentences", tip: "Practice short 'I am / You are' sentences about yourself and people you know.",
+      q: "Choose the correct sentence.", options: ["I am happy", "I happy am", "Happy I am"], answer: "I am happy" },
+    { level: "level2", skill: "Introducing yourself", tip: "Practice a simple self-introduction: your name, your age, your family.",
+      q: "Complete: My name ___ Ahmed.", options: ["is", "am", "are"], answer: "is" },
+    { level: "level3", skill: "Describing things", tip: "Learn opposite pairs like big/small and hot/cold through quick matching games.",
+      q: 'Choose the opposite of "big".', options: ["small", "tall", "fast"], answer: "small" },
+    { level: "level4", skill: "Daily routines", tip: "Talk through your daily routine out loud, one step at a time, with the times attached.",
+      q: "Choose the correct sentence.", options: ["I wake up at 7 o'clock.", "I wake up 7 o'clock in.", "At I wake up 7."], answer: "I wake up at 7 o'clock." },
+    { level: "level5", skill: "Talking about the past", tip: "Practice short 'Yesterday, I...' stories using simple past-tense verbs.",
+      q: "Choose the correct word: Yesterday, I ___ to the park.", options: ["go", "went", "going"], answer: "went" },
+    { level: "level6", skill: "Comparing things", tip: "Practice comparing two things out loud: taller than, bigger than, faster than.",
+      q: "Choose the correct word: She is taller ___ her brother.", options: ["than", "then", "that"], answer: "than" },
+    { level: "level7", skill: "Talking about the future", tip: "Practice making simple plans using 'will': 'Tomorrow, I will...'.",
+      q: "Choose the correct word: Tomorrow, I ___ visit my grandmother.", options: ["will", "would", "was"], answer: "will" },
+    { level: "level8", skill: "Imagining possibilities", tip: "Practice 'If I had...' sentences about things you'd like to do.",
+      q: "Choose the best word: If I ___ more time, I would travel the world.", options: ["have", "had", "has"], answer: "had" },
+    { level: "level9", skill: "Reporting what someone said", tip: "Practice retelling what someone told you using 'said that...'.",
+      q: "Choose the correct word: She said that she ___ finished her homework.", options: ["has", "had", "have"], answer: "had" },
+  ];
+
+  const stepIntro = document.getElementById("stepIntro");
+  const stepTest = document.getElementById("stepTest");
+  const stepResults = document.getElementById("stepResults");
+  let qIndex = 0;
+  const answered = []; // { correct: bool, skill, tip }
+
+  document.getElementById("startCheckBtn").onclick = () => {
+    stepIntro.classList.remove("show");
+    stepTest.classList.add("show");
+    renderQuestion();
+  };
+
+  function renderQuestion() {
+    document.getElementById("ptBar").style.width = (qIndex / TEST_QUESTIONS.length * 100) + "%";
+    document.getElementById("ptProgressLabel").textContent = `Question ${qIndex + 1}/${TEST_QUESTIONS.length}`;
+    const item = TEST_QUESTIONS[qIndex];
+    document.getElementById("ptQuestionText").textContent = item.q;
+    const optsEl = document.getElementById("ptOptions");
+    optsEl.innerHTML = "";
+    [...item.options].sort(() => Math.random() - 0.5).forEach(opt => {
+      const btn = document.createElement("button");
+      btn.className = "pt-opt";
+      btn.type = "button";
+      btn.textContent = opt;
+      btn.onclick = () => handleAnswer(btn, opt, item);
+      optsEl.appendChild(btn);
+    });
+  }
+
+  function handleAnswer(btn, chosen, item) {
+    const allBtns = document.querySelectorAll("#ptOptions .pt-opt");
+    allBtns.forEach(b => { b.disabled = true; b.onclick = null; });
+    const correct = chosen === item.answer;
+    if (correct) {
+      btn.classList.add("correct");
+    } else {
+      btn.classList.add("wrong");
+      allBtns.forEach(b => { if (b.textContent === item.answer) b.classList.add("correct"); });
+    }
+    answered.push({ correct, skill: item.skill, tip: item.tip });
+    setTimeout(() => {
+      qIndex++;
+      if (qIndex < TEST_QUESTIONS.length) renderQuestion();
+      else showFeedback();
+    }, 700);
+  }
+
+  function showFeedback() {
+    document.getElementById("ptBar").style.width = "100%";
+    const correctCount = answered.filter(a => a.correct).length;
+    document.getElementById("resultScore").textContent = `You answered ${correctCount}/${answered.length} correctly`;
+
+    const good = answered.filter(a => a.correct);
+    const grow = answered.filter(a => !a.correct);
+
+    const goodWrap = document.getElementById("qcGood");
+    if (good.length) {
+      goodWrap.innerHTML = good.map(a => `<span class="qc-chip good">${a.skill}</span>`).join("");
+    } else {
+      goodWrap.innerHTML = `<span class="qc-chip good">Just getting started — that's OK!</span>`;
+    }
+
+    const growSection = document.getElementById("qcGrowSection");
+    if (grow.length) {
+      document.getElementById("qcGrow").innerHTML = grow.map(a => `<span class="qc-chip grow">${a.skill}</span>`).join("");
+      document.getElementById("qcTipsList").innerHTML = grow.map(a => `<li>${a.tip}</li>`).join("");
+    } else {
+      growSection.style.display = "none";
+    }
+
+    stepTest.classList.remove("show");
+    stepResults.classList.add("show");
+  }
+})();
+</script>
+
+</body>
+</html>
