@@ -48,6 +48,62 @@
   .btn:active{transform:translateY(0) scale(.96);box-shadow:0 3px 8px rgba(0,0,0,.1)}
   .btn:focus-visible{outline:3px solid rgba(255,138,61,.45);outline-offset:2px}
   .cf-card:focus-visible{outline:3px solid rgba(255,138,61,.45);outline-offset:3px}
+
+/* ===== Contact Us (top pill) ===== */
+.btn-contact-top{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:999px;
+  background:#25D366;color:#fff;font-weight:800;font-size:.88rem;text-decoration:none;margin-right:10px;
+  box-shadow:0 4px 12px rgba(37,211,102,.35);transition:transform .15s ease,box-shadow .15s ease}
+.btn-contact-top:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(37,211,102,.45)}
+
+/* ===== Floating WhatsApp button (bottom) ===== */
+.whatsapp-fab{position:fixed;right:20px;bottom:20px;z-index:220;display:flex;align-items:center;gap:9px;
+  background:#25D366;color:#fff;padding:14px;border-radius:999px;text-decoration:none;
+  box-shadow:0 8px 22px rgba(37,211,102,.45);animation:waPulse 2.6s ease-in-out infinite}
+.whatsapp-fab-label{font-weight:800;font-size:.92rem;max-width:0;overflow:hidden;white-space:nowrap;transition:max-width .25s ease}
+.whatsapp-fab:hover .whatsapp-fab-label{max-width:140px;padding-right:2px}
+.whatsapp-fab:hover{animation-play-state:paused}
+@keyframes waPulse{0%,100%{box-shadow:0 8px 22px rgba(37,211,102,.45)}50%{box-shadow:0 8px 22px rgba(37,211,102,.75),0 0 0 8px rgba(37,211,102,.12)}}
+@media (max-width:640px){.btn-contact-top span{display:none}.btn-contact-top{padding:9px 11px}}
+
+/* ===== Explore side tab ===== */
+.explore-tab{position:fixed;right:0;top:50%;transform:translateY(-50%) rotate(0deg);z-index:200;
+  display:flex;flex-direction:column;align-items:center;gap:2px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--orange),var(--orange-2));color:#fff;
+  padding:16px 10px;border-radius:16px 0 0 16px;box-shadow:-4px 6px 18px rgba(67,48,31,.25);
+  font-family:var(--font-display);transition:padding-right .18s ease}
+.explore-tab:hover{padding-right:16px}
+.explore-tab-icon{font-size:1.3rem;line-height:1}
+.explore-tab-label{writing-mode:vertical-rl;font-weight:800;font-size:.82rem;letter-spacing:1px;margin-top:2px}
+
+/* ===== Explore drawer ===== */
+.explore-overlay{position:fixed;inset:0;background:rgba(43,33,24,.42);z-index:210;backdrop-filter:blur(1px)}
+.explore-drawer{position:fixed;top:0;right:0;height:100%;width:380px;max-width:88vw;background:var(--paper);
+  z-index:211;box-shadow:-12px 0 36px rgba(67,48,31,.28);transform:translateX(100%);transition:transform .32s cubic-bezier(.2,.9,.3,1);
+  display:flex;flex-direction:column}
+.explore-drawer.open{transform:translateX(0)}
+.explore-drawer-head{display:flex;align-items:center;justify-content:space-between;padding:20px 20px 14px;
+  background:linear-gradient(120deg,var(--orange),var(--orange-2));color:#fff;flex-shrink:0}
+.explore-drawer-title{font-family:var(--font-display);font-weight:800;font-size:1.15rem}
+.explore-close{background:rgba(255,255,255,.22);border:none;color:#fff;width:32px;height:32px;border-radius:50%;
+  font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.explore-tabs{display:flex;flex-wrap:wrap;gap:6px;padding:14px 16px;border-bottom:1px solid var(--line);flex-shrink:0}
+.explore-tabbtn{border:none;background:var(--sun-soft);color:var(--cocoa);font-weight:800;font-size:.78rem;
+  padding:8px 12px;border-radius:999px;cursor:pointer;font-family:inherit}
+.explore-tabbtn.active{background:var(--orange);color:#fff}
+.explore-panels{flex:1;overflow-y:auto;padding:18px 20px 8px}
+.explore-panel{display:none}
+.explore-panel.active{display:block;animation:explFade .25s ease}
+@keyframes explFade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.explore-level-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:.86rem;color:var(--cocoa)}
+.explore-level-row b{font-family:var(--font-display)}
+.explore-level-badge{flex-shrink:0;font-family:var(--font-display);font-weight:800;font-size:.76rem;
+  padding:5px 10px;border-radius:999px}
+.explore-step{padding:10px 0;border-bottom:1px solid var(--line);font-size:.86rem;color:var(--cocoa);line-height:1.55}
+.explore-step b{font-family:var(--font-display)}
+.explore-jump{display:inline-block;margin-top:14px;font-weight:800;font-size:.85rem;color:var(--orange);text-decoration:none}
+.explore-cta{flex-shrink:0;margin:14px 20px 20px;text-align:center;padding:13px;border-radius:999px;
+  background:var(--cocoa);color:#fff;font-weight:800;text-decoration:none;font-family:var(--font-display)}
+@media (max-width:640px){.explore-tab{padding:12px 8px}.explore-tab-label{font-size:.74rem}}
 </style>
 </head>
 <body>
@@ -56,8 +112,74 @@
   <img class="logo-mini" src="assets/logo/lumio-logo.png" alt="Lumio English logo">
   <div class="brand">Lumio <span>English</span></div>
   <div class="spacer"></div>
+  <a class="btn-contact-top" href="https://wa.me/201124882493" target="_blank" rel="noopener" aria-label="Contact us on WhatsApp">
+    <svg viewBox="0 0 32 32" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M16.004 3C9.383 3 4 8.373 4 14.99c0 2.2.6 4.28 1.65 6.06L4 29l8.15-1.6a12.9 12.9 0 0 0 3.85.6h.004C22.62 28 28 22.63 28 16.01 28 9.39 22.62 3 16.004 3zm0 23.16c-1.28 0-2.53-.24-3.7-.72l-.27-.11-4.84.95.95-4.72-.13-.29a10.06 10.06 0 0 1-1.55-5.31c0-5.58 4.55-10.12 10.15-10.12 5.6 0 10.15 4.54 10.15 10.12 0 5.58-4.55 10.1-10.16 10.1zm5.56-7.56c-.3-.15-1.78-.88-2.06-.98-.28-.1-.48-.15-.68.15-.2.3-.78.98-.96 1.18-.18.2-.35.22-.65.07-.3-.15-1.28-.47-2.44-1.5-.9-.8-1.51-1.79-1.69-2.09-.18-.3-.02-.46.13-.61.14-.14.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.68-1.64-.93-2.24-.24-.58-.49-.5-.68-.51h-.58c-.2 0-.53.08-.8.38-.28.3-1.05 1.03-1.05 2.5s1.08 2.9 1.23 3.1c.15.2 2.12 3.23 5.13 4.53.72.31 1.28.5 1.72.64.72.23 1.38.2 1.9.12.58-.09 1.78-.73 2.03-1.43.25-.7.25-1.3.18-1.43-.07-.13-.27-.2-.57-.35z"/></svg>
+    <span>Contact Us</span>
+  </a>
   <a class="btn btn-sun" href="login.html">Start learning</a>
 </header>
+
+<!-- ============ Explore side tab + drawer ============ -->
+<button id="exploreTab" class="explore-tab" aria-label="Explore Lumio English" aria-expanded="false">
+  <span class="explore-tab-icon">🧭</span>
+  <span class="explore-tab-label">Explore</span>
+</button>
+<div id="exploreOverlay" class="explore-overlay" hidden></div>
+<aside id="exploreDrawer" class="explore-drawer" aria-hidden="true">
+  <div class="explore-drawer-head">
+    <div class="explore-drawer-title">Explore Lumio English</div>
+    <button id="exploreClose" class="explore-close" aria-label="Close">✕</button>
+  </div>
+  <div class="explore-tabs" role="tablist">
+    <button class="explore-tabbtn active" data-panel="levels" role="tab" aria-selected="true">📚 Levels</button>
+    <button class="explore-tabbtn" data-panel="how" role="tab" aria-selected="false">🧩 How it works</button>
+    <button class="explore-tabbtn" data-panel="games" role="tab" aria-selected="false">🎮 Bonus games</button>
+    <button class="explore-tabbtn" data-panel="faq" role="tab" aria-selected="false">❓ FAQ</button>
+  </div>
+  <div class="explore-panels">
+    <div class="explore-panel active" data-panel="levels">
+      <div class="explore-level-row"><span class="explore-level-badge" style="background:#FFE8D1;color:#C2410C">Pre-A</span><div><b>First Words</b><br>Ages 4–6 · Hello, colors, family, animals</div></div>
+      <div class="explore-level-row"><span class="explore-level-badge" style="background:#DBEAFE;color:#1D4ED8">L1</span><div><b>About Me</b><br>Ages 6–8 · My house, my things, likes &amp; dislikes</div></div>
+      <div class="explore-level-row"><span class="explore-level-badge" style="background:#F0FDFA;color:#0F766E">L2</span><div><b>My World</b><br>Ages 8–10 · Family, classroom, daily routines</div></div>
+      <div class="explore-level-row"><span class="explore-level-badge" style="background:#F5F3FF;color:#6D28D9">L3</span><div><b>Everyday Life</b><br>Ages 10–12 · Friends, school, real conversations</div></div>
+      <div class="explore-level-row"><span class="explore-level-badge" style="background:#EEF2FF;color:#4338CA">L4</span><div><b>Smart Choices</b><br>Ages 11–13 · Routines, money, advice, decisions</div></div>
+      <div class="explore-level-row"><span class="explore-level-badge" style="background:#FDF2F8;color:#BE185D">L5</span><div><b>Telling My Story</b><br>Ages 12–14 · Past tense, storytelling, trips</div></div>
+      <div class="explore-level-row"><span class="explore-level-badge" style="background:#F5F3FF;color:#6D28D9">L6</span><div><b>Looking Ahead</b><br>Ages 13–15 · Future plans, debates, culture</div></div>
+      <a class="explore-jump" href="#curriculum">See the full curriculum ↓</a>
+    </div>
+    <div class="explore-panel" data-panel="how">
+      <div class="explore-step"><b>1. New Words</b> — every word shown with a picture, Arabic translation, and real audio.</div>
+      <div class="explore-step"><b>2. Listen &amp; Practice</b> — matching and listening games for every word.</div>
+      <div class="explore-step"><b>3. Grammar Focus</b> — one clear grammar point per lesson, from Level 3 onward.</div>
+      <div class="explore-step"><b>4. Quiz &amp; Spelling</b> — a short quiz confirms it stuck, with instant feedback.</div>
+      <div class="explore-step"><b>5. Homework</b> — a printable worksheet, flashcards and writing practice for every lesson.</div>
+      <a class="explore-jump" href="#howworks">See it in action ↓</a>
+    </div>
+    <div class="explore-panel" data-panel="games">
+      <div class="explore-step"><b>Pre-A</b> — Lumi's Pocket</div>
+      <div class="explore-step"><b>Level 1</b> — Treehouse Builder</div>
+      <div class="explore-step"><b>Level 2</b> — Twelve Months Calendar</div>
+      <div class="explore-step"><b>Level 3</b> — Crew Chat</div>
+      <div class="explore-step"><b>Level 4</b> — Squad Budget</div>
+      <div class="explore-step"><b>Level 5</b> — Story Detective</div>
+      <div class="explore-step"><b>Level 6</b> — Crystal Ball</div>
+      <p style="color:var(--muted);font-weight:700;font-size:.85rem;margin-top:8px">A new bonus game unlocks after every lesson your child finishes.</p>
+    </div>
+    <div class="explore-panel" data-panel="faq">
+      <div class="explore-step"><b>Is it really in Arabic and English?</b><br>Yes — every word and every instruction has Arabic support.</div>
+      <div class="explore-step"><b>Does my child need a teacher?</b><br>Every lesson pairs self-study with a real live class.</div>
+      <div class="explore-step"><b>Can we learn offline too?</b><br>Yes — every lesson has printable worksheets and flashcards.</div>
+      <a class="explore-jump" href="#faq">See all questions ↓</a>
+    </div>
+  </div>
+  <a class="explore-cta" href="login.html">Start learning now →</a>
+</aside>
+
+<!-- ============ Floating WhatsApp button (bottom) ============ -->
+<a class="whatsapp-fab" href="https://wa.me/201124882493" target="_blank" rel="noopener" aria-label="Contact us on WhatsApp">
+  <svg viewBox="0 0 32 32" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M16.004 3C9.383 3 4 8.373 4 14.99c0 2.2.6 4.28 1.65 6.06L4 29l8.15-1.6a12.9 12.9 0 0 0 3.85.6h.004C22.62 28 28 22.63 28 16.01 28 9.39 22.62 3 16.004 3zm0 23.16c-1.28 0-2.53-.24-3.7-.72l-.27-.11-4.84.95.95-4.72-.13-.29a10.06 10.06 0 0 1-1.55-5.31c0-5.58 4.55-10.12 10.15-10.12 5.6 0 10.15 4.54 10.15 10.12 0 5.58-4.55 10.1-10.16 10.1zm5.56-7.56c-.3-.15-1.78-.88-2.06-.98-.28-.1-.48-.15-.68.15-.2.3-.78.98-.96 1.18-.18.2-.35.22-.65.07-.3-.15-1.28-.47-2.44-1.5-.9-.8-1.51-1.79-1.69-2.09-.18-.3-.02-.46.13-.61.14-.14.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.68-1.64-.93-2.24-.24-.58-.49-.5-.68-.51h-.58c-.2 0-.53.08-.8.38-.28.3-1.05 1.03-1.05 2.5s1.08 2.9 1.23 3.1c.15.2 2.12 3.23 5.13 4.53.72.31 1.28.5 1.72.64.72.23 1.38.2 1.9.12.58-.09 1.78-.73 2.03-1.43.25-.7.25-1.3.18-1.43-.07-.13-.27-.2-.57-.35z"/></svg>
+  <span class="whatsapp-fab-label">Chat with us</span>
+</a>
 
 <main class="wrap">
 
@@ -89,15 +211,15 @@
     <div class="hero-visual lp-reveal" style="animation-delay:.15s">
       <span class="float-chip a">★ 3-star lessons</span>
       <span class="float-chip b">Listen &amp; speak</span>
-      <img class="hero-art" src="assets/story/characters/lumi-welcome-hero.png" alt="Lumi the mascot waving with a book">
+      <img class="hero-art" src="assets/story/characters/lumi-teen-welcome-hero.png" alt="Lumi waving with a book">
     </div>
   </section>
 
   <section class="feature-grid">
-    <div class="card"><span class="emoji-badge">P</span><h3>Learn by playing</h3><p>Matching, listening and spelling games in every lesson.</p></div>
-    <div class="card"><span class="emoji-badge">L</span><h3>Listen &amp; speak</h3><p>Every word is spoken aloud so you learn real pronunciation.</p></div>
-    <div class="card"><span class="emoji-badge">S</span><h3>Earn stars</h3><p>Collect 3 stars in every lesson and climb the level map.</p></div>
-    <div class="card"><span class="emoji-badge">ع</span><h3>عربي + English</h3><p class="ar">كل كلمة معها الترجمة العربية لتفهم بسهولة.</p></div>
+    <div class="card"><span class="emoji-badge"><img src="assets/logo/lumio-logo.png" alt="" style="width:26px;height:26px;object-fit:contain"></span><h3>Learn by playing</h3><p>Matching, listening and spelling games in every lesson.</p></div>
+    <div class="card"><span class="emoji-badge"><img src="assets/logo/lumio-logo.png" alt="" style="width:26px;height:26px;object-fit:contain"></span><h3>Listen &amp; speak</h3><p>Every word is spoken aloud so you learn real pronunciation.</p></div>
+    <div class="card"><span class="emoji-badge"><img src="assets/logo/lumio-logo.png" alt="" style="width:26px;height:26px;object-fit:contain"></span><h3>Earn stars</h3><p>Collect 3 stars in every lesson and climb the level map.</p></div>
+    <div class="card"><span class="emoji-badge"><img src="assets/logo/lumio-logo.png" alt="" style="width:26px;height:26px;object-fit:contain"></span><h3>عربي + English</h3><p class="ar">كل كلمة معها الترجمة العربية لتفهم بسهولة.</p></div>
   </section>
 
   <div class="lp-wave-top" aria-hidden="true">
@@ -111,7 +233,7 @@
       <div class="lp-trust-item"><div class="lp-trust-num">100%</div><div class="lp-trust-label">Arabic support, every word</div></div>
     </section>
 
-    <section class="mt lp-how">
+    <section class="mt lp-how" id="howworks">
       <h2 class="center mb">How a Lumio lesson works</h2>
       <p class="center cf-sub">The same four steps, every single lesson.</p>
       <div class="lp-steps">
@@ -200,7 +322,7 @@
     </div>
   </section>
 
-  <section class="mt lp-curriculum">
+  <section class="mt lp-curriculum" id="curriculum">
     <h2 class="center mb">The path, level by level</h2>
     <p class="center cf-sub">Every level already has real lessons behind it — nothing here is a placeholder.</p>
     <div class="lp-trail">
@@ -324,7 +446,7 @@
     </div>
   </section>
 
-  <section class="mt lp-faq">
+  <section class="mt lp-faq" id="faq">
     <h2 class="center mb">Questions parents ask</h2>
     <div class="lp-faq-list">
       <details class="lp-faq-item">
@@ -372,7 +494,7 @@
     .cf-card:nth-child(2) .cf-imgwrap{animation-delay:.3s}
     .cf-card:nth-child(3) .cf-imgwrap{animation-delay:.6s}
     .cf-card:nth-child(4) .cf-imgwrap{animation-delay:.9s}
-    .cf-imgwrap img{width:100%;max-width:120px;display:block;margin:0 auto;pointer-events:none;user-select:none}
+    .cf-imgwrap{width:130px;height:190px;display:flex;align-items:flex-end;justify-content:center;margin:0 auto}.cf-imgwrap img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block;pointer-events:none;user-select:none}
     @keyframes cfFloat{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-9px) rotate(-1.5deg)}}
 
     .cf-imgwrap.cf-pop img{animation:cfPop .55s ease}
@@ -596,6 +718,53 @@
     <p class="mt mb" style="font-weight:700">Pre-A level is open now — 20 fun lessons from "Hello!" to your first big review.</p>
     <a class="btn btn-primary btn-big" href="login.html">Let's go!</a>
   </section>
+
+<script>
+(function () {
+  var tab = document.getElementById("exploreTab");
+  var drawer = document.getElementById("exploreDrawer");
+  var overlay = document.getElementById("exploreOverlay");
+  var closeBtn = document.getElementById("exploreClose");
+  if (!tab || !drawer) return;
+
+  function openDrawer() {
+    drawer.classList.add("open");
+    drawer.setAttribute("aria-hidden", "false");
+    overlay.hidden = false;
+    tab.setAttribute("aria-expanded", "true");
+    document.body.style.overflow = "hidden";
+  }
+  function closeDrawer() {
+    drawer.classList.remove("open");
+    drawer.setAttribute("aria-hidden", "true");
+    overlay.hidden = true;
+    tab.setAttribute("aria-expanded", "false");
+    document.body.style.overflow = "";
+  }
+  tab.addEventListener("click", openDrawer);
+  closeBtn.addEventListener("click", closeDrawer);
+  overlay.addEventListener("click", closeDrawer);
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeDrawer(); });
+
+  // Tabs inside the drawer
+  var tabbtns = drawer.querySelectorAll(".explore-tabbtn");
+  var panels = drawer.querySelectorAll(".explore-panel");
+  tabbtns.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      tabbtns.forEach(function (b) { b.classList.remove("active"); b.setAttribute("aria-selected", "false"); });
+      panels.forEach(function (p) { p.classList.remove("active"); });
+      btn.classList.add("active"); btn.setAttribute("aria-selected", "true");
+      var target = drawer.querySelector('.explore-panel[data-panel="' + btn.dataset.panel + '"]');
+      if (target) target.classList.add("active");
+    });
+  });
+
+  // A jump link inside the drawer should close it before the browser scrolls
+  drawer.querySelectorAll(".explore-jump, .explore-cta").forEach(function (a) {
+    a.addEventListener("click", closeDrawer);
+  });
+})();
+</script>
 
 </main>
 </body>
