@@ -9,6 +9,28 @@ still to be generated).
 def _s(en, bold, ar): return {"en": en, "bold": bold, "ar": ar}
 
 SCENES = {
+ "level3": {
+  1: _s("We hang out after school.", ["hang out", "after school"], "نتسكع معاً بعد المدرسة."),
+  2: _s("She studies every evening.", ["studies", "every evening"], "تدرس كل مساء."),
+  3: _s("I don't like scary movies.", ["don't like", "scary"], "لا أحب الأفلام المخيفة."),
+  4: _s("There is a poster on the wall.", ["There is", "poster"], "هناك ملصق على الحائط."),
+  5: _s("These sneakers are cool.", ["These", "sneakers"], "هذه الأحذية الرياضية رائعة."),
+  6: _s("My teammates are the best.", ["teammates", "best"], "زملائي في الفريق هم الأفضل."),
+  7: _s("That is her charger.", ["That", "her charger"], "ذلك شاحنها."),
+  8: _s("The gym is next to the cafeteria.", ["next to", "cafeteria"], "الصالة الرياضية بجانب الكافتيريا."),
+  9: _s("I can skate, but I can't dance.", ["can", "can't"], "أستطيع التزلج، لكن لا أستطيع الرقص."),
+  10: _s("Is it an animal?", ["Is it"], "هل هو حيوان؟"),
+  11: _s("Hamad is faster than Ziad.", ["faster than"], "حمد أسرع من زياد."),
+  12: _s("This is Ziad. He is new here.", ["This is", "new"], "هذا زياد. إنه جديد هنا."),
+  13: _s("Raise your hand, please.", ["Raise your hand"], "ارفع يدك من فضلك."),
+  14: _s("I am texting my friend.", ["am texting"], "أنا أراسل صديقي."),
+  15: _s("We are memorizing new words.", ["are memorizing"], "نحن نحفظ كلمات جديدة."),
+  16: _s("Ziad is the champion tonight.", ["champion", "tonight"], "زياد هو البطل الليلة."),
+  17: _s("This movie is better than that one.", ["better than"], "هذا الفيلم أفضل من ذاك."),
+  18: _s("Do you agree or disagree?", ["agree", "disagree"], "هل توافق أم تعارض؟"),
+  19: _s("We were nervous, then proud.", ["nervous", "proud"], "كنا متوترين، ثم فخورين."),
+  20: _s("We put our memories in a box.", ["memories", "box"], "وضعنا ذكرياتنا في صندوق."),
+ },
  "level4": {
   1: _s("Does she practice every day?", ["practice", "every day"], "هل تتدرب كل يوم؟"),
   2: _s("I finish my homework after dinner.", ["finish", "after dinner"], "أنهي واجبي بعد العشاء."),
