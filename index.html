@@ -172,6 +172,7 @@ html{scroll-behavior:smooth}
   <a href="#friendsSection">Friends</a>
   <a href="#pricing">Pricing</a>
   <a href="#demo">See it in action</a>
+  <a href="#parentbook">Parent Handbook</a>
   <a href="#faq">FAQ</a>
   <a href="#startfree" class="lp-subnav-cta">Start Free</a>
 </nav>
@@ -721,6 +722,30 @@ html{scroll-behavior:smooth}
     </div>
   </section>
 
+  <section class="mt lp-parentbook" id="parentbook">
+    <div class="lp-parentbook-inner">
+      <div class="lp-parentbook-cover reveal-io">
+        <img src="assets/marketing/parent-handbook-cover.jpg" alt="Cover of the Lumio English Parent Handbook, in Arabic">
+      </div>
+      <div class="lp-parentbook-text reveal-io">
+        <div class="lp-parentbook-eyebrow">Free download &middot; written fully in Arabic</div>
+        <h2>The Parent Handbook</h2>
+        <p>An 11-page guide written directly for you, not your child — everything you'd want to know before and after saying yes, in one place instead of scattered across a chat.</p>
+        <ul class="lp-parentbook-list">
+          <li><b>Chapter 1-2 &middot;</b> How the story begins, and how the journey actually starts</li>
+          <li><b>Chapter 3 &middot;</b> The learning cycle — what a real lesson looks like, step by step</li>
+          <li><b>Chapter 4 &middot;</b> How to track your child's real progress</li>
+          <li><b>Chapter 5 &middot;</b> Homework and practice — what to expect at home</li>
+          <li><b>Chapter 6-7 &middot;</b> The full 7-level journey, and how certificates work</li>
+        </ul>
+        <div class="lp-parentbook-ctas">
+          <a class="btn btn-primary btn-big" href="downloads/Lumio_Parent_Handbook_AR.pdf" download>⬇ Download the Handbook</a>
+          <a class="btn btn-outline btn-big" href="https://wa.me/201124882493?text=Hi%21%20Could%20you%20send%20me%20the%20Parent%20Handbook%20PDF%2C%20please%3F" target="_blank" rel="noopener">Send it to me on WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="mt lp-faq" id="faq">
     <h2 class="center mb">Questions parents ask</h2>
     <div class="lp-faq-list">
@@ -1041,6 +1066,26 @@ html{scroll-behavior:smooth}
   .trial-popup-cta-text{color:var(--muted);font-weight:700;font-size:.85rem;margin:0 0 14px}
   .trial-popup-cta{width:100%;justify-content:center;background:#25D366 !important;border-color:#25D366 !important}
   @media (max-width:480px){.trial-popup{padding:30px 20px 24px}}
+
+  /* ===== Parent Handbook ===== */
+  .lp-parentbook{background:linear-gradient(135deg,#FCE7F3,#FBCFE8);padding:52px 24px;margin:56px 0;border-radius:0}
+  .lp-parentbook-inner{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:260px 1fr;gap:44px;align-items:center}
+  .lp-parentbook-cover img{width:100%;border-radius:16px;box-shadow:0 20px 44px rgba(190,24,93,.28);display:block}
+  .lp-parentbook-eyebrow{display:inline-block;background:#fff;color:#BE185D;font-family:var(--font-display);font-weight:800;
+    font-size:.75rem;padding:5px 14px;border-radius:999px;margin-bottom:12px}
+  .lp-parentbook-text h2{font-size:1.7rem;margin:0 0 10px;color:var(--cocoa)}
+  .lp-parentbook-text > p{color:#8A4560;font-weight:700;font-size:.94rem;line-height:1.6;margin:0 0 18px;max-width:520px}
+  .lp-parentbook-list{list-style:none;padding:0;margin:0 0 24px}
+  .lp-parentbook-list li{padding:7px 0;font-size:.88rem;color:var(--cocoa);border-bottom:1px solid rgba(190,24,93,.15)}
+  .lp-parentbook-list li:last-child{border-bottom:none}
+  .lp-parentbook-ctas{display:flex;gap:12px;flex-wrap:wrap}
+  @media (max-width:760px){
+    .lp-parentbook-inner{grid-template-columns:1fr;text-align:center}
+    .lp-parentbook-cover{max-width:200px;margin:0 auto}
+    .lp-parentbook-text > p{margin-left:auto;margin-right:auto}
+    .lp-parentbook-list{text-align:left}
+    .lp-parentbook-ctas{justify-content:center}
+  }
 </style>
 
   <script>
