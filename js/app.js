@@ -191,19 +191,59 @@ const Lumio = (() => {
     const el = document.querySelector('script[src*="js/app.js"]');
     return el ? el.getAttribute("src").replace(/js\/app\.js.*$/, "") : "";
   })();
+  // ---- Mobile autoplay unlock ------------------------------------------
+  // iOS Safari / Android Chrome (and most in-app browsers) refuse
+  // audio.play() -- and speechSynthesis -- until the page has received a
+  // real user gesture. Game prompts that auto-play at round start, and
+  // the first "Listen" tap on some devices, were therefore silent. Fix:
+  //   1. on the FIRST tap/keypress anywhere, play a tiny silent clip on
+  //      one shared <audio> element, which marks it as user-activated;
+  //   2. reuse that same element for every word (swapping src is allowed
+  //      on an already-activated element);
+  //   3. if a play() is refused before that first gesture, remember it
+  //      and play it automatically on the next tap instead of losing it.
+  const SILENT_MP3 = "data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwLjE2LjEwMAAAAAAAAAAAAAAA//NwwAAAAAAAAAAAAEluZm8AAAAPAAAACAAAA/oAR0dHR0dHR0dHR0dHYmJiYmJiYmJiYmJifHx8fHx8fHx8fHx8fJaWlpaWlpaWlpaWlrGxsbGxsbGxsbGxsbHLy8vLy8vLy8vLy8vl5eXl5eXl5eXl5eXl////////////////AAAAAExhdmM2MC4zMQAAAAAAAAAAAAAAACQC1AAAAAAAAAP6yysejgAAAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NCxKMAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NAxKQAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy4xMDBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/80LEowAAA0gAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy4xMDBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/80DEpAAAA0gAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsSjAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVQ==";
+  let sharedAudio = null, audioUnlocked = false, pendingSpeak = null;
+  const unlockAudio = () => {
+    if (audioUnlocked) return;
+    audioUnlocked = true;
+    try {
+      sharedAudio = sharedAudio || new Audio();
+      sharedAudio.src = SILENT_MP3;
+      const pr = sharedAudio.play();
+      if (pr && pr.catch) pr.catch(() => {});
+    } catch (e) {}
+    if ("speechSynthesis" in window) {
+      try { const u = new SpeechSynthesisUtterance(" "); u.volume = 0; speechSynthesis.speak(u); speechSynthesis.cancel(); } catch (e) {}
+    }
+    if (pendingSpeak) { const t = pendingSpeak; pendingSpeak = null; setTimeout(() => speak(t.text, t.rate), 60); }
+  };
+  ["pointerdown", "touchstart", "keydown"].forEach(ev => document.addEventListener(ev, unlockAudio, { passive: true, capture: true }));
+
   let currentAudio = null;
   const speak = (text, rate = 0.92) => {
+    if (text === undefined || text === null || String(text).trim() === "") return;   // e.g. a game calling speak() before its data is ready
     if (currentAudio) { try { currentAudio.pause(); } catch (e) {} currentAudio = null; }
     if ("speechSynthesis" in window) speechSynthesis.cancel();
     const slug = slugify(text);
     if (!slug) { speakSynth(text, rate); return; }
-    const audio = new Audio(`${ASSET_ROOT}assets/audio/${slug}.mp3`);
+    const audio = sharedAudio || new Audio();
+    sharedAudio = audio;
+    audio.src = `${ASSET_ROOT}assets/audio/${slug}.mp3`;
+    audio.playbackRate = 1;
     currentAudio = audio;
     let fellBack = false;
     const fallback = () => { if (fellBack) return; fellBack = true; speakSynth(text, rate); };
-    audio.addEventListener("error", fallback);
+    const onError = () => { audio.removeEventListener("error", onError); fallback(); };   // 404: no recording -> browser voice
+    audio.addEventListener("error", onError);
     const playResult = audio.play();
-    if (playResult && typeof playResult.catch === "function") playResult.catch(fallback);
+    if (playResult && typeof playResult.catch === "function") {
+      playResult.catch(err => {
+        audio.removeEventListener("error", onError);
+        if (err && err.name === "NotAllowedError") { pendingSpeak = { text, rate }; return; }  // blocked: replay on next tap
+        fallback();
+      });
+    }
   };
 
   const speakPhonicsSound = (token, rate = 0.92) => {
