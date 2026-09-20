@@ -7,13 +7,21 @@
 const Lumio = (() => {
 
   /* ---------- Levels ---------- */
+  // Names match the branded curriculum used everywhere else on the site
+  // (manuals, Curriculum Guide, landing page, Hub) -- these previously
+  // used an older, pre-rebrand naming ("Level 4 · On My Own" instead of
+  // "Level 4 · Smart Choices", etc.) that six of seven live levels had
+  // drifted from, surfaced when the placement-test results screen and
+  // its new trial popup showed two different names for the same level
+  // side by side. This is the single shared source every page listed
+  // above reads from, so fixing it here fixes all of them at once.
   const LEVELS = [
-    { id: "pre-a",  name: "Level 0 · First Words",       lessons: 20 },
-    { id: "level1", name: "Level 1 · First Sentences",   lessons: 20 },
-    { id: "level2", name: "Level 2 · About Me",          lessons: 20 },
-    { id: "level3", name: "Level 3 · Real Life",         lessons: 20 },
-    { id: "level4", name: "Level 4 · On My Own",         lessons: 20 },
-    { id: "level5", name: "Level 5 · My Story",          lessons: 20 },
+    { id: "pre-a",  name: "Pre-A · First Words",         lessons: 20 },
+    { id: "level1", name: "Level 1 · About Me",          lessons: 20 },
+    { id: "level2", name: "Level 2 · My World",          lessons: 20 },
+    { id: "level3", name: "Level 3 · Everyday Life",     lessons: 20 },
+    { id: "level4", name: "Level 4 · Smart Choices",     lessons: 20 },
+    { id: "level5", name: "Level 5 · Telling My Story",  lessons: 20 },
     { id: "level6", name: "Level 6 · Looking Ahead",     lessons: 20 },
     { id: "level7", name: "Level 7 · Wide World",        lessons: 20 },
     { id: "level8", name: "Level 8 · Think & Talk",      lessons: 20 },

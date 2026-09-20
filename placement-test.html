@@ -53,6 +53,27 @@
 
   .pt-step{display:none}
   .pt-step.show{display:block}
+
+/* ===== Trial-class interest popup (same visual pattern as index.html) ===== */
+.trial-overlay{position:fixed;inset:0;background:rgba(43,33,24,.42);z-index:210;backdrop-filter:blur(1px)}
+.trial-popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.94);width:440px;max-width:90vw;
+  max-height:88vh;overflow-y:auto;background:var(--paper);border-radius:26px;box-shadow:0 30px 70px rgba(43,33,24,.35);
+  z-index:230;padding:38px 30px 30px;text-align:center;opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .22s ease,transform .22s ease,visibility .22s}
+.trial-popup.open{opacity:1;visibility:visible;transform:translate(-50%,-50%) scale(1);pointer-events:auto}
+.trial-popup-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;border:none;
+  background:var(--sun-soft);color:var(--cocoa);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.trial-popup-icon{font-size:2.4rem;margin-bottom:8px}
+.trial-popup-ages{display:inline-block;background:var(--sun-soft);color:#C2410C;font-family:var(--font-display);
+  font-weight:800;font-size:.78rem;padding:5px 14px;border-radius:999px;margin-bottom:10px}
+.trial-popup h3{font-family:var(--font-display);font-size:1.3rem;color:var(--cocoa);margin:0 0 10px}
+.trial-popup-blurb{color:var(--cocoa-soft,#8A7160);font-size:.92rem;line-height:1.55;margin:0 0 20px}
+.trial-popup-highlights{background:#FFF3D6;border-radius:16px;padding:16px 18px;text-align:left;margin-bottom:18px}
+.trial-popup-highlights div{font-size:.86rem;color:#43301F;line-height:1.5}
+.trial-popup-highlights div:first-child{margin-bottom:10px}
+.trial-popup-cta-text{color:var(--muted);font-weight:700;font-size:.85rem;margin:0 0 14px}
+.trial-popup-cta{width:100%;justify-content:center;background:#25D366 !important;border-color:#25D366 !important}
+@media (max-width:480px){.trial-popup{padding:30px 20px 24px}}
 </style>
 </head>
 <body>
@@ -112,12 +133,31 @@
       <p class="pt-result-sub">is the level we'd suggest starting at</p>
       <div class="pt-result-score" id="resultScore"></div>
       <div class="pt-note">✅ Thanks! Your teacher has received your details and will contact you soon to get started.</div>
-      <a class="btn btn-primary btn-big" id="resultTrialBtn" href="present-trial.html" style="width:100%;display:block;text-align:center;box-sizing:border-box;margin-bottom:10px">🎓 Join a free trial class at this level →</a>
+      <button class="btn btn-primary btn-big" id="resultTrialBtn" style="width:100%;box-sizing:border-box;margin-bottom:10px">🎓 Join a free trial class at this level →</button>
       <a class="btn btn-outline btn-big" href="index.html" style="width:100%;display:block;text-align:center;box-sizing:border-box">Back to homepage</a>
     </div>
   </div>
 
 </main>
+
+<!-- ============ Trial-class interest popup (same pattern as index.html) ============ -->
+<div id="trialOverlay" class="trial-overlay" hidden></div>
+<div id="trialPopup" class="trial-popup" role="dialog" aria-modal="true" aria-hidden="true">
+  <button id="trialPopupClose" class="trial-popup-close" aria-label="Close">✕</button>
+  <div class="trial-popup-icon">🎓</div>
+  <div class="trial-popup-ages" id="tpAges"></div>
+  <h3 id="tpName"></h3>
+  <p class="trial-popup-blurb" id="tpBlurb"></p>
+  <div class="trial-popup-highlights">
+    <div><b>👥 Not alone</b> &mdash; your child joins other students already at this same level.</div>
+    <div><b>🎮 Real fun</b> &mdash; the trial includes games, challenges, and little gifts from the teachers.</div>
+  </div>
+  <p class="trial-popup-cta-text">Message us on WhatsApp and we'll book your free trial class at this level.</p>
+  <a id="tpWhatsapp" class="btn btn-primary btn-big trial-popup-cta" href="#" target="_blank" rel="noopener">
+    <svg viewBox="0 0 32 32" width="18" height="18" fill="currentColor" aria-hidden="true" style="margin-right:8px;vertical-align:-3px"><path d="M16.004 3C9.383 3 4 8.373 4 14.99c0 2.2.6 4.28 1.65 6.06L4 29l8.15-1.6a12.9 12.9 0 0 0 3.85.6h.004C22.62 28 28 22.63 28 16.01 28 9.39 22.62 3 16.004 3zm0 23.16c-1.28 0-2.53-.24-3.7-.72l-.27-.11-4.84.95.95-4.72-.13-.29a10.06 10.06 0 0 1-1.55-5.31c0-5.58 4.55-10.12 10.15-10.12 5.6 0 10.15 4.54 10.15 10.12 0 5.58-4.55 10.1-10.16 10.1zm5.56-7.56c-.3-.15-1.78-.88-2.06-.98-.28-.1-.48-.15-.68.15-.2.3-.78.98-.96 1.18-.18.2-.35.22-.65.07-.3-.15-1.28-.47-2.44-1.5-.9-.8-1.51-1.79-1.69-2.09-.18-.3-.02-.46.13-.61.14-.14.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.68-1.64-.93-2.24-.24-.58-.49-.5-.68-.51h-.58c-.2 0-.53.08-.8.38-.28.3-1.05 1.03-1.05 2.5s1.08 2.9 1.23 3.1c.15.2 2.12 3.23 5.13 4.53.72.31 1.28.5 1.72.64.72.23 1.38.2 1.9.12.58-.09 1.78-.73 2.03-1.43.25-.7.25-1.3.18-1.43-.07-.13-.27-.2-.57-.35z"/></svg>
+    Book my free trial on WhatsApp
+  </a>
+</div>
 
 <script>
 (function() {
@@ -266,12 +306,11 @@
 
     document.getElementById("resultLevel").textContent = levelName;
     document.getElementById("resultScore").textContent = `Score: ${correctCount}/${total} correct`;
-    // Personalized: send them straight into a trial class AT the level
-    // this test just placed them in, carrying their name along too.
-    const trialBtn = document.getElementById("resultTrialBtn");
-    if (trialBtn) {
-      trialBtn.href = `present-trial.html?level=${encodeURIComponent(suggestedLevel)}&names=${encodeURIComponent(studentInfo.name || "")}`;
-    }
+    // Personalized, but no longer a direct link into present-trial.html --
+    // matches the same popup + WhatsApp booking pattern now used on the
+    // homepage's Start Free section, instead of self-serving into a live
+    // trial with no staff involved.
+    window.__lumioResultLevel = suggestedLevel;
 
     let leadSaved = false;
     try {
@@ -304,6 +343,51 @@
       LumioLeads.syncNow().catch(err => console.error("Lumio lead sync error:", err));
     }
   }
+
+  // Trial popup: same level metadata and copy as the homepage's Start
+  // Free section, so a family sees the identical pitch wherever they
+  // encounter it. Personalized further here since we already have the
+  // child's name from the test itself.
+  const LEVEL_INFO = {
+    "pre-a": { name: "Pre-A \u00b7 First Words", ages: "Ages 4\u20136", blurb: "Hello, colors, family, and animals \u2014 a young child's very first English words." },
+    "level1": { name: "Level 1 \u00b7 About Me", ages: "Ages 6\u20138", blurb: "My house, my things, likes and dislikes \u2014 simple sentences about a child's own world." },
+    "level2": { name: "Level 2 \u00b7 My World", ages: "Ages 8\u201310", blurb: "Family, classroom, and daily routines \u2014 the first real conversations." },
+    "level3": { name: "Level 3 \u00b7 Everyday Life", ages: "Ages 10\u201312", blurb: "Friends, school, and real conversations \u2014 grammar starts doing real work." },
+    "level4": { name: "Level 4 \u00b7 Smart Choices", ages: "Ages 11\u201313", blurb: "Routines, money, advice, and decisions \u2014 longer, more confident sentences." },
+    "level5": { name: "Level 5 \u00b7 Telling My Story", ages: "Ages 12\u201314", blurb: "Past tense and storytelling \u2014 trips, memories, and what happened." },
+    "level6": { name: "Level 6 \u00b7 Looking Ahead", ages: "Ages 13\u201315", blurb: "Future plans, debates, and culture \u2014 confident, independent conversation." },
+  };
+  (function () {
+    const overlay = document.getElementById("trialOverlay");
+    const popup = document.getElementById("trialPopup");
+    const closeBtn = document.getElementById("trialPopupClose");
+    const openBtn = document.getElementById("resultTrialBtn");
+    if (!popup || !openBtn) return;
+
+    function openTrialPopup() {
+      const info = LEVEL_INFO[window.__lumioResultLevel] || LEVEL_INFO["pre-a"];
+      document.getElementById("tpAges").textContent = info.ages;
+      document.getElementById("tpName").textContent = info.name;
+      document.getElementById("tpBlurb").textContent = info.blurb;
+      const childName = (studentInfo && studentInfo.name) ? studentInfo.name + " " : "";
+      const msg = `Hi! I'd like to book a free trial class for ${childName}\u2014 ${info.name} (${info.ages}).`;
+      document.getElementById("tpWhatsapp").href = "https://wa.me/201124882493?text=" + encodeURIComponent(msg);
+      overlay.hidden = false;
+      popup.classList.add("open");
+      popup.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+    function closeTrialPopup() {
+      popup.classList.remove("open");
+      popup.setAttribute("aria-hidden", "true");
+      overlay.hidden = true;
+      document.body.style.overflow = "";
+    }
+    openBtn.addEventListener("click", openTrialPopup);
+    closeBtn.addEventListener("click", closeTrialPopup);
+    overlay.addEventListener("click", closeTrialPopup);
+    document.addEventListener("keydown", e => { if (e.key === "Escape") closeTrialPopup(); });
+  })();
 })();
 </script>
 </body>
