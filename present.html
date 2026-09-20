@@ -81,6 +81,15 @@
 })();
 </script>
 <script>
+// This is the teacher's live-class materials view -- full lesson slides
+// with no student-facing pacing, homework gate, or progress tracking.
+// It previously had NO access check at all: present.html with no query
+// string defaulted straight to level=pre-a&n=1 and showed real lesson
+// content to anyone, student or not. Same gate teacher.html itself uses.
+if (typeof localStorage === "undefined" || !localStorage.getItem("lumio_teacher")) {
+  location.replace("teacher-portal.html");
+  throw new Error("Not a teacher session -- redirecting.");
+}
 const qs = k => new URLSearchParams(location.search).get(k);
 const level = qs("level") || "pre-a";
 const num = parseInt(qs("n") || "1", 10);
