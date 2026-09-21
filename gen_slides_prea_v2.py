@@ -24,7 +24,7 @@ DIALOGUES = {
       ("R", "Yes! Let's sit under the tree.", "نعم! لنجلس تحت الشجرة."),
       ("L", "Look, a yellow van! And a zebra!", "انظر، شاحنة صفراء! وحمار وحشي!"),
       ("R", "I need water. It is hot!", "أحتاج ماء. الجو حار!")],
-  6: [("L", "Let's count! One, two, three!", "لنعد! واحد، اثنان، ثلاثة!"),
+  6: [("L", "Let's count! Zero, one, two, three!", "لنعد! صفر، واحد، اثنان، ثلاثة!"),
       ("R", "Four, five! I counted five fingers!", "أربعة، خمسة! لقد عددت خمسة أصابع!"),
       ("L", "Great job! Let's count again.", "أحسنت! لنعد مرة أخرى."),
       ("R", "One, two, three, four, five!", "واحد، اثنان، ثلاثة، أربعة، خمسة!")],
@@ -88,8 +88,8 @@ DIALOGUES = {
 
 SKILLS_CHECKPOINTS = {
   6: {
-    "listening": "recognize greetings, their name words, all 26 letter sounds, and numbers 1-5",
-    "speaking": "say hello and goodbye, tell someone their name, and count from 1 to 5",
+    "listening": "recognize greetings, their name words, all 26 letter sounds, and numbers 0-5",
+    "speaking": "say hello and goodbye, tell someone their name, and count from 0 to 5",
     "reading": "recognize all 26 uppercase and lowercase letters by sight",
     "writing": "trace the uppercase and lowercase letters A-Z",
   },
