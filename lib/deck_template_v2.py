@@ -1032,12 +1032,28 @@ def slide_teacher_game(vocab, n, total, ch, tier="preA", mode="teacher"):
 
 
 def slide_today_i_learned(lesson, n, total, extra_sentences=None):
-    chips = "".join(f'''
+    # Every word taught in THIS lesson, not a capped subset of it and not
+    # cumulative history from earlier lessons -- previously hardcoded to
+    # the first 6, so any lesson with more than 6 words (15 of Level 1's
+    # 20 lessons) silently dropped the rest from its own recap slide.
+    # Big review lessons (e.g. Level 1 Lesson 20 has 44) get smaller,
+    # image-free pills instead of full picture chips, so the slide still
+    # fits the fixed 1280x720 canvas rather than growing without limit.
+    words = lesson["vocab"]
+    compact = len(words) > 10
+    if compact:
+        chips = "".join(f'''
+      <div style="background:#fff;border-radius:999px;padding:7px 14px;font-family:'Baloo 2',sans-serif;font-weight:800;
+                  font-size:.8rem;color:#43301F;box-shadow:0 4px 10px rgba(67,48,31,.08)">{esc(w["en"])}</div>''' for w in words)
+        chips_wrap_style = "display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;max-height:210px;overflow-y:auto"
+    else:
+        chips = "".join(f'''
       <div style="background:#fff;border-radius:14px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;
                   box-shadow:0 6px 14px rgba(67,48,31,.1);width:110px">
         <div style="width:70px;height:70px;border-radius:10px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/{slug(w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
         <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.8rem;color:#43301F;text-align:center">{esc(w["en"])}</div>
-      </div>''' for w in lesson["vocab"][:6])
+      </div>''' for w in words)
+        chips_wrap_style = "display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px"
     # Every sentence pattern the lesson used, wherever it appeared: each
     # word's own example sentence plus the scene / sentence-building
     # sentences (extra_sentences), de-duplicated in order. Previously only
@@ -1054,7 +1070,7 @@ def slide_today_i_learned(lesson, n, total, extra_sentences=None):
     return (bg_clean() + header("Today I Learned! &#127775;", n, total) + COLORSTRIP + f'''
     <div style="position:absolute;left:46px;top:150px;width:820px">
       <div style="font-size:.78rem;font-weight:800;color:#F97316;letter-spacing:1.5px;margin-bottom:10px">KEY WORDS</div>
-      <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px">{chips}</div>
+      <div style="{chips_wrap_style}">{chips}</div>
       <div style="font-size:.78rem;font-weight:800;color:#0D9488;letter-spacing:1.5px;margin-bottom:8px">SENTENCE PATTERNS</div>
       <div class="card" style="padding:14px 20px">
         <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1rem;color:#43301F;margin-bottom:6px">{esc(lesson.get("grammarFocus",""))}</div>
