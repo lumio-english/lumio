@@ -331,6 +331,15 @@ html[dir="rtl"] .lang-toggle{right:auto;left:14px}
   </a>
 </div>
 
+<!-- ============ Character bio popup ============ -->
+<div id="charOverlay" class="explore-overlay" hidden></div>
+<div id="charPopup" class="char-popup" role="dialog" aria-modal="true" aria-hidden="true">
+  <button id="charPopupClose" class="explore-close char-popup-close" aria-label="Close">✕</button>
+  <div class="char-popup-imgwrap"><img id="cpImg" src="" alt=""></div>
+  <h3 id="cpName"></h3>
+  <p class="char-popup-bio" id="cpBio"></p>
+</div>
+
 <a class="whatsapp-fab" href="https://wa.me/201124882493" target="_blank" rel="noopener" aria-label="Contact us on WhatsApp">
   <svg viewBox="0 0 32 32" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M16.004 3C9.383 3 4 8.373 4 14.99c0 2.2.6 4.28 1.65 6.06L4 29l8.15-1.6a12.9 12.9 0 0 0 3.85.6h.004C22.62 28 28 22.63 28 16.01 28 9.39 22.62 3 16.004 3zm0 23.16c-1.28 0-2.53-.24-3.7-.72l-.27-.11-4.84.95.95-4.72-.13-.29a10.06 10.06 0 0 1-1.55-5.31c0-5.58 4.55-10.12 10.15-10.12 5.6 0 10.15 4.54 10.15 10.12 0 5.58-4.55 10.1-10.16 10.1zm5.56-7.56c-.3-.15-1.78-.88-2.06-.98-.28-.1-.48-.15-.68.15-.2.3-.78.98-.96 1.18-.18.2-.35.22-.65.07-.3-.15-1.28-.47-2.44-1.5-.9-.8-1.51-1.79-1.69-2.09-.18-.3-.02-.46.13-.61.14-.14.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.68-1.64-.93-2.24-.24-.58-.49-.5-.68-.51h-.58c-.2 0-.53.08-.8.38-.28.3-1.05 1.03-1.05 2.5s1.08 2.9 1.23 3.1c.15.2 2.12 3.23 5.13 4.53.72.31 1.28.5 1.72.64.72.23 1.38.2 1.9.12.58-.09 1.78-.73 2.03-1.43.25-.7.25-1.3.18-1.43-.07-.13-.27-.2-.57-.35z"/></svg>
   <span class="whatsapp-fab-label" data-i18n="wa_chat">Chat with us</span>
@@ -460,7 +469,7 @@ html[dir="rtl"] .lang-toggle{right:auto;left:14px}
     <h2 class="center mb" data-i18n="friends.h2">Meet your learning friends</h2>
     <p class="center cf-sub" data-i18n="friends.sub">Tap a friend to say hi! 👋</p>
     <div class="char-strip cf-strip">
-      <figure class="cf-card" data-en="Yay! Let's learn together!" data-ar="هيا نتعلم معًا!">
+      <figure class="cf-card" data-en="Yay! Let's learn together!" data-ar="هيا نتعلم معًا!" data-bio="lumi">
         <div class="cf-bubble" aria-hidden="true"></div>
         <div class="cf-imgwrap">
           <img src="assets/story/characters/lumi-welcome-hero.png" alt="Lumi waving hello">
@@ -468,7 +477,7 @@ html[dir="rtl"] .lang-toggle{right:auto;left:14px}
         </div>
         <figcaption data-i18n="name.lumi">Lumi</figcaption>
       </figure>
-      <figure class="cf-card" data-en="Ready for today's lesson?" data-ar="هل أنت مستعد لدرس اليوم؟">
+      <figure class="cf-card" data-en="Ready for today's lesson?" data-ar="هل أنت مستعد لدرس اليوم؟" data-bio="sara">
         <div class="cf-bubble" aria-hidden="true"></div>
         <div class="cf-imgwrap">
           <img src="assets/story/characters/sara-welcome-hero.png" alt="Sara waving hello">
@@ -476,7 +485,7 @@ html[dir="rtl"] .lang-toggle{right:auto;left:14px}
         </div>
         <figcaption data-i18n="name.sara">Sara</figcaption>
       </figure>
-      <figure class="cf-card" data-en="I love learning new words!" data-ar="أحب تعلم كلمات جديدة!">
+      <figure class="cf-card" data-en="I love learning new words!" data-ar="أحب تعلم كلمات جديدة!" data-bio="noor">
         <div class="cf-bubble" aria-hidden="true"></div>
         <div class="cf-imgwrap">
           <img src="assets/story/characters/noor-welcome-hero.png" alt="Noor waving hello">
@@ -484,7 +493,7 @@ html[dir="rtl"] .lang-toggle{right:auto;left:14px}
         </div>
         <figcaption data-i18n="name.noor">Noor</figcaption>
       </figure>
-      <figure class="cf-card" data-en="Let's read a story together!" data-ar="هيا نقرأ قصة معًا!">
+      <figure class="cf-card" data-en="Let's read a story together!" data-ar="هيا نقرأ قصة معًا!" data-bio="omar">
         <div class="cf-bubble" aria-hidden="true"></div>
         <div class="cf-imgwrap">
           <img src="assets/story/characters/omar-welcome-hero.png" alt="Omar waving hello">
@@ -492,7 +501,7 @@ html[dir="rtl"] .lang-toggle{right:auto;left:14px}
         </div>
         <figcaption data-i18n="name.omar">Omar</figcaption>
       </figure>
-      <figure class="cf-card" data-en="Let's play a game and learn!" data-ar="هيا نلعب ونتعلم!">
+      <figure class="cf-card" data-en="Let's play a game and learn!" data-ar="هيا نلعب ونتعلم!" data-bio="ziad">
         <div class="cf-bubble" aria-hidden="true"></div>
         <div class="cf-imgwrap">
           <img src="assets/story/characters/ziad-welcome-hero.png" alt="Ziad waving hello">
@@ -500,7 +509,7 @@ html[dir="rtl"] .lang-toggle{right:auto;left:14px}
         </div>
         <figcaption data-i18n="name.ziad">Ziad</figcaption>
       </figure>
-      <figure class="cf-card" data-en="Welcome, my friend!" data-ar="أهلا وسهلا يا صديقي!">
+      <figure class="cf-card" data-en="Welcome, my friend!" data-ar="أهلا وسهلا يا صديقي!" data-bio="hamad">
         <div class="cf-bubble" aria-hidden="true"></div>
         <div class="cf-imgwrap">
           <img src="assets/story/characters/hamad-welcome-hero.png" alt="Hamad waving hello">
@@ -1133,6 +1142,20 @@ html[dir="rtl"] .lang-toggle{right:auto;left:14px}
     .lp-parentbook-list{text-align:left}
     .lp-parentbook-ctas{justify-content:center}
   }
+
+  /* ===== Character bio popup ===== */
+  .char-popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.94);width:460px;max-width:90vw;
+    max-height:88vh;overflow-y:auto;background:var(--paper);border-radius:26px;box-shadow:0 30px 70px rgba(43,33,24,.35);
+    z-index:230;padding:34px 30px 30px;text-align:center;opacity:0;visibility:hidden;pointer-events:none;
+    transition:opacity .22s ease,transform .22s ease,visibility .22s}
+  .char-popup.open{opacity:1;visibility:visible;transform:translate(-50%,-50%) scale(1);pointer-events:auto}
+  .char-popup-close{position:absolute;top:16px;right:16px;background:var(--sun-soft);color:var(--cocoa)}
+  .char-popup-imgwrap{width:170px;height:230px;margin:0 auto 14px;display:flex;align-items:flex-end;justify-content:center}
+  .char-popup-imgwrap img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block}
+  .char-popup h3{font-family:var(--font-display);font-size:1.35rem;color:var(--cocoa);margin:0 0 12px}
+  .char-popup-bio{color:var(--cocoa-soft,#8A7160);font-size:.95rem;line-height:1.65;margin:0}
+  html[dir="rtl"] .char-popup-close{right:auto;left:16px}
+  @media (max-width:480px){.char-popup{padding:26px 20px 22px}.char-popup-imgwrap{width:140px;height:190px}}
 </style>
 
   <script>
@@ -1374,6 +1397,24 @@ window.LUMIO_I18N = {
   "tp.real_fun": { en: "<b>🎮 Real fun</b> &mdash; the trial includes games, challenges, and little gifts from the teachers.", ar: "<b>🎮 متعة حقيقية</b> &mdash; تتضمن الحصة التجريبية ألعاباً وتحديات وهدايا صغيرة من المعلمين." },
   "tp.cta_text": { en: "Message us on WhatsApp and we'll book your free trial class at this level.", ar: "راسلنا عبر واتساب وسنحجز لك الحصة التجريبية المجانية في هذا المستوى." },
   "tp.book_btn": { en: "Book my free trial on WhatsApp", ar: "احجز حصتي التجريبية عبر واتساب" },
+  "bio.lumi.name": { en: "Lumi \u00b7 The Explorer", ar: "لومي \u00b7 المستكشف" },
+  "bio.lumi.text": { en: "Lumi set out from Egypt to explore the world \u2014 and quickly discovered that English was the key to reaching it. He travelled through the Gulf, the one part of the world he could still explore in his own language, and made it his mission to help every Arabic-speaking child learn English the same way: one curious step at a time.",
+    ar: "انطلق لومي من مصر لاستكشاف العالم \u2014 واكتشف سريعاً أن اللغة الإنجليزية هي مفتاح الوصول إليه. سافر عبر منطقة الخليج، المكان الوحيد الذي استطاع استكشافه بلغته العربية، وجعل مهمته مساعدة كل طفل يتحدث العربية على تعلم الإنجليزية بنفس الطريقة: خطوة فضولية بعد أخرى." },
+  "bio.sara.name": { en: "Sara \u00b7 The Spark of Color", ar: "سارة \u00b7 بريق الألوان" },
+  "bio.sara.text": { en: "Sara is bright, warm, and always dressed in color \u2014 she's the face of everything joyful about learning with Lumio. Her charm and vibrant style are the platform itself: colorful, welcoming, and full of life, so every lesson feels like something to look forward to.",
+    ar: "سارة مشرقة ودافئة، وترتدي الألوان دائماً \u2014 إنها الوجه المبهج لكل ما هو ممتع في التعلم مع Lumio. سحرها وأسلوبها النابض بالحياة يعكسان المنصة نفسها: ملونة، ترحيبية، ومليئة بالحياة، فتجعل كل درس شيئاً يُنتظر بشوق." },
+  "bio.noor.name": { en: "Noor \u00b7 The Steady Hand", ar: "نور \u00b7 اليد الثابتة" },
+  "bio.noor.text": { en: "Noor has worn her hijab since she was four years old, and carries a wisdom and calm beyond her years. She's the one who looks after every detail \u2014 the progress reports, the worksheets, the flashcards, the writing pages \u2014 the same papers a parent holds and signs at home.",
+    ar: "ترتدي نور الحجاب منذ كانت في الرابعة من عمرها، وتحمل حكمة وهدوءاً يفوقان سنها. هي من تهتم بكل تفصيلة \u2014 تقارير التقدم، أوراق العمل، البطاقات التعليمية، صفحات الكتابة \u2014 نفس الأوراق التي يحملها ويوقعها ولي الأمر في المنزل." },
+  "bio.omar.name": { en: "Omar \u00b7 The Platform Itself", ar: "عمر \u00b7 المنصة ذاتها" },
+  "bio.omar.text": { en: "Omar wears his thobe with pride in who he is, dresses with Ziad's easy urban style, carries Noor's calm, and is always as put-together as Sara. He doesn't stand for just one thing \u2014 he stands for Lumio itself, the platform that brings every one of these qualities together in one place.",
+    ar: "يرتدي عمر ثوبه بفخر بهويته، ويرتدي بأسلوب زياد الحضري السهل، ويحمل هدوء نور، وأنيق دائماً مثل سارة. لا يمثل شيئاً واحداً فقط \u2014 بل يمثل Lumio نفسها، المنصة التي تجمع كل هذه الصفات في مكان واحد." },
+  "bio.ziad.name": { en: "Ziad \u00b7 The Player", ar: "زياد \u00b7 اللاعب" },
+  "bio.ziad.text": { en: "Ziad is a gamer through and through \u2014 it shows in how he dresses and how he moves. He represents everything playful about Lumio: the bonus games, the game-based challenges, and the simple idea that learning sticks best when it's fun.",
+    ar: "زياد لاعب ألعاب بكل معنى الكلمة \u2014 يظهر ذلك في طريقة لبسه وحركته. يمثل كل ما هو ممتع في Lumio: الألعاب الإضافية، التحديات القائمة على اللعب، والفكرة البسيطة بأن التعلم يترسخ بشكل أفضل عندما يكون ممتعاً." },
+  "bio.hamad.name": { en: "Hamad \u00b7 The Voice in Arabic", ar: "حمد \u00b7 الصوت بالعربية" },
+  "bio.hamad.text": { en: "Hamad wears his thobe and ghutra with quiet pride. He represents the genuine Arabic support built into every part of Lumio \u2014 real Arabic-speaking teachers, and a curriculum that speaks a child's own language, every step of the way.",
+    ar: "يرتدي حمد ثوبه وغترته بفخر هادئ. يمثل الدعم العربي الحقيقي المدمج في كل جزء من Lumio \u2014 معلمون عرب حقيقيون، ومنهج يتحدث بلغة الطفل نفسها في كل خطوة." },
   "explore_label": { en: "Explore", ar: "استكشف" },
   "wa_chat": { en: "Chat with us", ar: "تواصل معنا" },
 };
@@ -1577,6 +1618,47 @@ window.LUMIO_I18N = {
     // Click-for-greeting speech bubbles + a little bounce pop.
     var cards = document.querySelectorAll(".cf-card");
     var hideTimer = null;
+    // Character bio popup: opens alongside the speech-bubble reaction on
+    // the same click, showing who this character is and what they
+    // represent. Uses the existing welcome-hero art for now; swap
+    // CHAR_POSTERS to a dedicated poster image per character once those
+    // are ready, no other change needed.
+    var CHAR_POSTERS = {
+      lumi: "assets/story/characters/lumi-welcome-hero.png",
+      sara: "assets/story/characters/sara-welcome-hero.png",
+      noor: "assets/story/characters/noor-welcome-hero.png",
+      omar: "assets/story/characters/omar-welcome-hero.png",
+      ziad: "assets/story/characters/ziad-welcome-hero.png",
+      hamad: "assets/story/characters/hamad-welcome-hero.png",
+    };
+    var charOverlay = document.getElementById("charOverlay");
+    var charPopup = document.getElementById("charPopup");
+    var charPopupClose = document.getElementById("charPopupClose");
+    function openCharPopup(key) {
+      var lang = window.__lumioLang || "ar";
+      var nameEntry = window.LUMIO_I18N["bio." + key + ".name"];
+      var bioEntry = window.LUMIO_I18N["bio." + key + ".text"];
+      if (!nameEntry || !charPopup) return;
+      document.getElementById("cpImg").src = CHAR_POSTERS[key] || "";
+      document.getElementById("cpName").textContent = nameEntry[lang];
+      document.getElementById("cpBio").textContent = bioEntry[lang];
+      charOverlay.hidden = false;
+      charPopup.classList.add("open");
+      charPopup.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+    function closeCharPopup() {
+      charPopup.classList.remove("open");
+      charPopup.setAttribute("aria-hidden", "true");
+      charOverlay.hidden = true;
+      document.body.style.overflow = "";
+    }
+    if (charPopupClose) {
+      charPopupClose.addEventListener("click", closeCharPopup);
+      charOverlay.addEventListener("click", closeCharPopup);
+      document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeCharPopup(); });
+    }
+
     cards.forEach(function (card) {
       card.addEventListener("click", function () {
         var wasTalking = card.classList.contains("cf-talking");
@@ -1594,6 +1676,8 @@ window.LUMIO_I18N = {
         imgwrap.classList.add("cf-pop");
 
         hideTimer = setTimeout(function () { card.classList.remove("cf-talking"); }, 3000);
+
+        if (card.dataset.bio) openCharPopup(card.dataset.bio);
       });
     });
     document.addEventListener("click", function (e) {
