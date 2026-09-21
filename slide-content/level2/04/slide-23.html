@@ -14,12 +14,19 @@
         <div style="font-size:.95rem;color:#8A7160;font-weight:700">Play the sound, guess the word, then reveal the picture.</div>
       </div>
     </div>
-    <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('he')"
-            style="position:absolute;left:46px;bottom:32px;z-index:20;cursor:pointer;border:none;font-family:inherit;
+    <!-- Standard bottom-action-row position for this template: bottom:86px
+         (clear of the player's own Back/Next nav bar, which overlaps the
+         lower ~60px of every slide) and a fixed 26px gap sized to each
+         button's own rendered width, rather than a second hardcoded
+         left offset that drifted into the first button as label text
+         length varied. -->
+    <button id="ytPlayBtn1" onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('he')"
+            style="position:absolute;left:46px;bottom:86px;z-index:20;cursor:pointer;border:none;font-family:inherit;
             background:linear-gradient(135deg,#0D9488,#0B7A6F);color:#fff;font-weight:800;padding:13px 26px;border-radius:999px;
             font-size:1.02rem;box-shadow:0 8px 18px rgba(13,148,136,.35)">&#9654; Play sound</button>
-    <button onclick="document.getElementById('ytMystery1').style.display='none'; document.getElementById('ytImg1').style.display='block'; this.textContent='he \u2014 هو'; this.style.background='linear-gradient(135deg,#4ADE80,#16A34A)'"
-            style="position:absolute;left:230px;bottom:32px;z-index:20;cursor:pointer;border:none;font-family:inherit;
+    <button id="ytRevealBtn1" onclick="document.getElementById('ytMystery1').style.display='none'; document.getElementById('ytImg1').style.display='block'; this.textContent='he \u2014 هو'; this.style.background='linear-gradient(135deg,#4ADE80,#16A34A)'"
+            style="position:absolute;left:216px;bottom:86px;z-index:20;cursor:pointer;border:none;font-family:inherit;
             background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;padding:13px 26px;border-radius:999px;
             font-size:1.02rem;box-shadow:0 8px 18px rgba(249,115,22,.35)">&#128064; Reveal picture</button>
+    <script>(function(){var a=document.getElementById('ytPlayBtn1'),b=document.getElementById('ytRevealBtn1');if(a&&b)requestAnimationFrame(function(){b.style.left=(a.offsetLeft+a.offsetWidth+26)+'px';});})();</script>
     <div class="floorshadow" style="right:95px;bottom:25px;width:230px;height:36px"></div><img class="char" src="assets/story/characters/omar-wave.png" style="right:95px;bottom:32px;height:250px" onerror="this.style.display='none'; this.previousElementSibling.style.display='none'">

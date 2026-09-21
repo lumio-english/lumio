@@ -651,14 +651,21 @@ def slide_your_turn_listen_first(w, idx, total_rounds, n, total, ch):
         <div style="font-size:.95rem;color:#8A7160;font-weight:700">Play the sound, guess the word, then reveal the picture.</div>
       </div>
     </div>
-    <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(w["en"])}')"
-            style="position:absolute;left:46px;bottom:32px;z-index:20;cursor:pointer;border:none;font-family:inherit;
+    <!-- Standard bottom-action-row position for this template: bottom:86px
+         (clear of the player's own Back/Next nav bar, which overlaps the
+         lower ~60px of every slide) and a fixed 26px gap sized to each
+         button's own rendered width, rather than a second hardcoded
+         left offset that drifted into the first button as label text
+         length varied. -->
+    <button id="ytPlayBtn{idx}" onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(w["en"])}')"
+            style="position:absolute;left:46px;bottom:86px;z-index:20;cursor:pointer;border:none;font-family:inherit;
             background:linear-gradient(135deg,#0D9488,#0B7A6F);color:#fff;font-weight:800;padding:13px 26px;border-radius:999px;
             font-size:1.02rem;box-shadow:0 8px 18px rgba(13,148,136,.35)">&#9654; Play sound</button>
-    <button onclick="document.getElementById('ytMystery{idx}').style.display='none'; document.getElementById('ytImg{idx}').style.display='block'; this.textContent='{esc(w["en"])} \\u2014 {w["ar"]}'; this.style.background='linear-gradient(135deg,#4ADE80,#16A34A)'"
-            style="position:absolute;left:230px;bottom:32px;z-index:20;cursor:pointer;border:none;font-family:inherit;
+    <button id="ytRevealBtn{idx}" onclick="document.getElementById('ytMystery{idx}').style.display='none'; document.getElementById('ytImg{idx}').style.display='block'; this.textContent='{esc(w["en"])} \\u2014 {w["ar"]}'; this.style.background='linear-gradient(135deg,#4ADE80,#16A34A)'"
+            style="position:absolute;left:216px;bottom:86px;z-index:20;cursor:pointer;border:none;font-family:inherit;
             background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;padding:13px 26px;border-radius:999px;
             font-size:1.02rem;box-shadow:0 8px 18px rgba(249,115,22,.35)">&#128064; Reveal picture</button>
+    <script>(function(){{var a=document.getElementById('ytPlayBtn{idx}'),b=document.getElementById('ytRevealBtn{idx}');if(a&&b)requestAnimationFrame(function(){{b.style.left=(a.offsetLeft+a.offsetWidth+26)+'px';}});}})();</script>
     ''' + char_img(ch, bottom=32, height=250))
 
 def slide_quick_check(target, distractors, idx, total_q, n, total, seed, tier="preA"):
@@ -695,7 +702,7 @@ def slide_quick_check(target, distractors, idx, total_q, n, total, seed, tier="p
           <span style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem">Tap to hear</span>
         </button>'''
     elif tier == "level1":
-        positions = [(560, 230), (790, 230), (1020, 230)]
+        positions = [(560, 290), (790, 290), (1020, 290)]
         buttons = ""
         for o, (l, t) in zip(opts, positions):
             buttons += f'''
@@ -717,8 +724,14 @@ def slide_quick_check(target, distractors, idx, total_q, n, total, seed, tier="p
                       color:#43301F;cursor:pointer" data-quiz-option="{esc(o["en"])}">{esc(o["en"])}</button>'''
         prompt = "What is this?"
 
-    img_block = listen_btn if tier == "preA" else f'''<div class="card" style="position:absolute;left:280px;top:190px;width:280px;height:280px;overflow:hidden;padding:0">
-      <img src="assets/vocab/{slug(target['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>'''
+    # The reference picture shows the Arabic word, not the English one --
+    # the student has to translate Arabic -> English to pick an answer,
+    # which is real recall practice rather than just picture-to-label
+    # matching (the English word would give the answer away for free).
+    img_block = listen_btn if tier == "preA" else f'''<div class="card" style="position:absolute;left:280px;top:170px;width:280px;height:280px;overflow:hidden;padding:0;display:flex;flex-direction:column">
+      <div style="flex:1;overflow:hidden"><img src="assets/vocab/{slug(target['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+      <div dir="rtl" style="text-align:center;padding:8px 6px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.15rem;color:#0D9488;background:#F0FDFA;border-top:2px solid #E6F7F3">{esc(target.get("ar",""))}</div>
+    </div>'''
     prompt_pos = "left:60px;top:180px;width:260px;text-align:center" if tier == "preA" else "left:610px;top:190px;width:540px"
     prompt_font = "1.6rem" if tier == "preA" else "1.9rem"
     return (bg_plain() + header(f"Quick Check &bull; {idx}", n, total) + COLORSTRIP + f'''
