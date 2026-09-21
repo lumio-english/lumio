@@ -167,4 +167,41 @@ for lesson_num, img_num, bold_words, sentence in SCENE_DATA:
         (f"assets/vocab-scenes/level1/{img_num:02d}.jpg", sentence, bold_words)
     )
 
-run("level1", DIALOGUES, PHONICS_UNITS, theme_map=THEME_MAP, scene_map=SCENE_MAP)
+# Grammar explanation + practice slide pairs, inserted after that lesson's
+# vocab and before its dialogue (see build_deck in deck_template_v2.py).
+# Defined here rather than in grammar-hub/level1.json on purpose: that file
+# doubles as the trigger student.html/hub-present.html use to decide
+# whether a level's English Hub shows a Grammar section at all, and the
+# platform is documented everywhere (pricing table, Explore drawer,
+# manuals) as Grammar starting at Level 3 -- adding a level1.json there
+# would silently turn that Grammar tab on for Level 1 too. These two
+# topics only need to appear inside their own lesson decks, so they're
+# passed straight into grammar_units instead.
+GRAMMAR_UNITS = {
+    2: {  # Lesson 2: "I am / You are" -- matches the lesson's own vocab (happy, sad, fine, tired, okay, great)
+        "title": "I am / You are",
+        "titleAr": "أنا... / أنت...",
+        "explanation": "We use \"am\" with I, and \"are\" with you, to say how we feel or what we are like.",
+        "explanationAr": "نستخدم am مع I، ونستخدم are مع you، للتعبير عمّا نشعر به أو عن صفاتنا.",
+        "examples": [
+            {"en": "I am happy.", "ar": "أنا سعيد."},
+            {"en": "You are tired.", "ar": "أنت متعب."},
+            {"en": "I am fine.", "ar": "أنا بخير."},
+            {"en": "You are great.", "ar": "أنت رائع."},
+        ],
+    },
+    3: {  # Lesson 3: "It's a / an + noun" -- matches the lesson's own vocab (cat, dog, bird, fish, car, ball) + "an apple" for the vowel-sound case
+        "title": "It's a / an + noun",
+        "titleAr": "إنه/إنها... + اسم",
+        "explanation": "We use \"a\" before a word that starts with a consonant sound, and \"an\" before a word that starts with a vowel sound, to talk about one thing.",
+        "explanationAr": "نستخدم a قبل الكلمة التي تبدأ بصوت ساكن، ونستخدم an قبل الكلمة التي تبدأ بصوت متحرك، للحديث عن شيء واحد.",
+        "examples": [
+            {"en": "It is a cat.", "ar": "إنها قطة."},
+            {"en": "It is a dog.", "ar": "إنه كلب."},
+            {"en": "It is an apple.", "ar": "إنها تفاحة."},
+            {"en": "It is a ball.", "ar": "إنها كرة."},
+        ],
+    },
+}
+
+run("level1", DIALOGUES, PHONICS_UNITS, grammar_units=GRAMMAR_UNITS, theme_map=THEME_MAP, scene_map=SCENE_MAP)
