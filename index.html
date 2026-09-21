@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,6 +27,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="assets/logo/favicon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@500;600;700&family=Cairo:wght@500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <script>
 (function() {
@@ -146,127 +147,168 @@ html{scroll-behavior:smooth}
 .lp-subnav-cta{background:var(--orange) !important;color:#fff !important;margin-left:4px}
 .lp-subnav-cta:hover{background:var(--orange-2) !important;color:#fff !important}
 @media (max-width:640px){.lp-subnav{gap:4px;padding:8px 10px}.lp-subnav a{padding:5px 10px;font-size:.76rem}}
+
+/* ===== Bilingual (Arabic-first) support ===== */
+html[dir="rtl"] {
+  --font-display: 'El Messiri', 'Cairo', sans-serif;
+  --font-body: 'Cairo', 'Segoe UI', sans-serif;
+}
+html[dir="rtl"] body { font-family: var(--font-body); }
+html[dir="rtl"] .lp-subnav, html[dir="rtl"] .explore-tabbtn, html[dir="rtl"] .lp-cur-btn { font-family: var(--font-display); }
+
+/* Elements whose meaning depends on physical left/right (icons, arrows,
+   floating buttons, RTL-mirrored layouts) get explicit flips rather than
+   relying on logical properties everywhere, since this page predates dir
+   support and uses physical left/right throughout. */
+html[dir="rtl"] .explore-tab { right: auto; left: 0; border-radius: 0 16px 16px 0; box-shadow: 4px 6px 18px rgba(67,48,31,.25) }
+html[dir="rtl"] .explore-drawer { right: auto; left: 0; box-shadow: 12px 0 36px rgba(67,48,31,.28); transform: translateX(-100%); }
+html[dir="rtl"] .explore-drawer.open { transform: translateX(0); }
+html[dir="rtl"] .whatsapp-fab { right: auto; left: 20px; }
+html[dir="rtl"] .trial-popup-close, html[dir="rtl"] .explore-close { right: auto; left: 16px; }
+html[dir="rtl"] .lp-announce-close { right: auto; left: 14px; }
+html[dir="rtl"] .btn-contact-top { margin-right: 0; margin-left: 10px; }
+html[dir="rtl"] .pt-opt { text-align: right; }
+html[dir="rtl"] .lp-price-list li, html[dir="rtl"] .qc-tips li, html[dir="rtl"] .explore-level-row,
+html[dir="rtl"] .lp-community-list li { text-align: right; }
+html[dir="rtl"] .lp-price-list li::before, html[dir="rtl"] .qc-tips li::before { left: auto; right: 0; }
+html[dir="rtl"] .lp-hub-table th, html[dir="rtl"] .lp-hub-table td,
+html[dir="rtl"] .explore-hub-table th, html[dir="rtl"] .explore-hub-table td { text-align: right; }
+html[dir="rtl"] .lp-price-symbol { margin-right: 0; margin-left: 4px; }
+
+/* ===== Language toggle tab (fixed top margin) ===== */
+.lang-toggle{position:fixed;top:14px;right:14px;z-index:260;display:flex;background:#fff;border-radius:999px;
+  padding:3px;box-shadow:0 6px 18px rgba(67,48,31,.22);border:1px solid var(--line)}
+html[dir="rtl"] .lang-toggle{right:auto;left:14px}
+.lang-toggle button{border:none;background:transparent;font-family:'Cairo','Baloo 2',sans-serif;font-weight:800;
+  font-size:.8rem;padding:7px 16px;border-radius:999px;cursor:pointer;color:var(--muted);transition:all .15s ease}
+.lang-toggle button.active{background:var(--orange);color:#fff}
+@media (max-width:480px){.lang-toggle{top:10px}.lang-toggle button{padding:6px 12px;font-size:.75rem}}
 </style>
 </head>
 <body>
 
+<div class="lang-toggle" role="tablist" aria-label="Language">
+  <button id="langArBtn" class="active" data-lang="ar">العربية</button>
+  <button id="langEnBtn" data-lang="en">English</button>
+</div>
+
 <div class="lp-announce" id="lpAnnounce">
-  <span>🎉 New here? <a href="#startfree">Free placement test</a> and a <a href="#startfree">free trial class</a> — no card, no commitment.</span>
+  <span data-i18n-html="announce">🎉 New here? <a href="#startfree">Free placement test</a> and a <a href="#startfree">free trial class</a> — no card, no commitment.</span>
   <button class="lp-announce-close" id="lpAnnounceClose" aria-label="Dismiss">✕</button>
 </div>
 
 <header class="topbar">
   <img class="logo-mini" src="assets/logo/lumio-logo.png" alt="Lumio English logo">
-  <div class="brand">Lumio <span>English</span></div>
+  <div class="brand" data-i18n-html="brand">Lumio <span>English</span></div>
   <div class="spacer"></div>
   <a class="btn-contact-top" href="https://wa.me/201124882493" target="_blank" rel="noopener" aria-label="Contact us on WhatsApp">
     <svg viewBox="0 0 32 32" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M16.004 3C9.383 3 4 8.373 4 14.99c0 2.2.6 4.28 1.65 6.06L4 29l8.15-1.6a12.9 12.9 0 0 0 3.85.6h.004C22.62 28 28 22.63 28 16.01 28 9.39 22.62 3 16.004 3zm0 23.16c-1.28 0-2.53-.24-3.7-.72l-.27-.11-4.84.95.95-4.72-.13-.29a10.06 10.06 0 0 1-1.55-5.31c0-5.58 4.55-10.12 10.15-10.12 5.6 0 10.15 4.54 10.15 10.12 0 5.58-4.55 10.1-10.16 10.1zm5.56-7.56c-.3-.15-1.78-.88-2.06-.98-.28-.1-.48-.15-.68.15-.2.3-.78.98-.96 1.18-.18.2-.35.22-.65.07-.3-.15-1.28-.47-2.44-1.5-.9-.8-1.51-1.79-1.69-2.09-.18-.3-.02-.46.13-.61.14-.14.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.68-1.64-.93-2.24-.24-.58-.49-.5-.68-.51h-.58c-.2 0-.53.08-.8.38-.28.3-1.05 1.03-1.05 2.5s1.08 2.9 1.23 3.1c.15.2 2.12 3.23 5.13 4.53.72.31 1.28.5 1.72.64.72.23 1.38.2 1.9.12.58-.09 1.78-.73 2.03-1.43.25-.7.25-1.3.18-1.43-.07-.13-.27-.2-.57-.35z"/></svg>
-    <span>Contact Us</span>
+    <span data-i18n="contact_us">Contact Us</span>
   </a>
-  <a class="btn btn-sun" href="login.html">Start learning</a>
+  <a class="btn btn-sun" href="login.html" data-i18n="start_learning">Start learning</a>
 </header>
 
 <nav class="lp-subnav" aria-label="Page sections">
-  <a href="#curriculum">Levels</a>
-  <a href="#howworks">How it works</a>
-  <a href="#friendsSection">Friends</a>
-  <a href="#pricing">Pricing</a>
-  <a href="#demo">See it in action</a>
-  <a href="#parentbook">Parent Handbook</a>
-  <a href="#faq">FAQ</a>
-  <a href="#startfree" class="lp-subnav-cta">Start Free</a>
+  <a href="#curriculum" data-i18n="nav.levels">Levels</a>
+  <a href="#howworks" data-i18n="nav.how">How it works</a>
+  <a href="#friendsSection" data-i18n="nav.friends">Friends</a>
+  <a href="#pricing" data-i18n="nav.pricing">Pricing</a>
+  <a href="#demo" data-i18n="nav.demo">See it in action</a>
+  <a href="#parentbook" data-i18n="nav.handbook">Parent Handbook</a>
+  <a href="#faq" data-i18n="nav.faq">FAQ</a>
+  <a href="#startfree" class="lp-subnav-cta" data-i18n="nav.startfree">Start Free</a>
 </nav>
 
 <!-- ============ Explore side tab + drawer ============ -->
 <button id="exploreTab" class="explore-tab" aria-label="Explore Lumio English" aria-expanded="false">
   <span class="explore-tab-icon">🧭</span>
-  <span class="explore-tab-label">Explore</span>
+  <span class="explore-tab-label" data-i18n="explore_label">Explore</span>
 </button>
 <div id="exploreOverlay" class="explore-overlay" hidden></div>
 <aside id="exploreDrawer" class="explore-drawer" aria-hidden="true">
   <div class="explore-drawer-head">
-    <div class="explore-drawer-title">Explore Lumio English</div>
+    <div class="explore-drawer-title" data-i18n="ed.title">Explore Lumio English</div>
     <button id="exploreClose" class="explore-close" aria-label="Close">✕</button>
   </div>
   <div class="explore-tabs" role="tablist">
-    <button class="explore-tabbtn active" data-panel="levels" role="tab" aria-selected="true">📚 Levels</button>
-    <button class="explore-tabbtn" data-panel="how" role="tab" aria-selected="false">🧩 How it works</button>
-    <button class="explore-tabbtn" data-panel="why" role="tab" aria-selected="false">⭐ Why Lumio</button>
-    <button class="explore-tabbtn" data-panel="hub" role="tab" aria-selected="false">📖 The Hub</button>
-    <button class="explore-tabbtn" data-panel="games" role="tab" aria-selected="false">🎮 Bonus games</button>
-    <button class="explore-tabbtn" data-panel="pricing" role="tab" aria-selected="false">💳 Pricing</button>
-    <button class="explore-tabbtn" data-panel="faq" role="tab" aria-selected="false">❓ FAQ</button>
+    <button class="explore-tabbtn active" data-panel="levels" role="tab" aria-selected="true" data-i18n="ed.tab_levels">📚 Levels</button>
+    <button class="explore-tabbtn" data-panel="how" role="tab" aria-selected="false" data-i18n="ed.tab_how">🧩 How it works</button>
+    <button class="explore-tabbtn" data-panel="why" role="tab" aria-selected="false" data-i18n="ed.tab_why">⭐ Why Lumio</button>
+    <button class="explore-tabbtn" data-panel="hub" role="tab" aria-selected="false" data-i18n="ed.tab_hub">📖 The Hub</button>
+    <button class="explore-tabbtn" data-panel="games" role="tab" aria-selected="false" data-i18n="ed.tab_games">🎮 Bonus games</button>
+    <button class="explore-tabbtn" data-panel="pricing" role="tab" aria-selected="false" data-i18n="ed.tab_pricing">💳 Pricing</button>
+    <button class="explore-tabbtn" data-panel="faq" role="tab" aria-selected="false" data-i18n="ed.tab_faq">❓ FAQ</button>
   </div>
   <div class="explore-panels">
     <div class="explore-panel active" data-panel="levels">
-      <div class="explore-level-row"><span class="explore-level-badge" style="background:#FFE8D1;color:#C2410C">Pre-A</span><div><b>First Words</b> <span class="explore-cefr">CEFR Pre-A1</span><br>Ages 4–6 · 20 lessons · Hello, colors, family, animals</div></div>
-      <div class="explore-level-row"><span class="explore-level-badge" style="background:#DBEAFE;color:#1D4ED8">L1</span><div><b>About Me</b> <span class="explore-cefr">CEFR Pre-A1</span><br>Ages 6–8 · 20 lessons · My house, my things, likes &amp; dislikes</div></div>
-      <div class="explore-level-row"><span class="explore-level-badge" style="background:#F0FDFA;color:#0F766E">L2</span><div><b>My World</b> <span class="explore-cefr">CEFR Pre-A1</span><br>Ages 8–10 · 20 lessons · Family, classroom, daily routines</div></div>
-      <div class="explore-level-row"><span class="explore-level-badge" style="background:#F5F3FF;color:#6D28D9">L3</span><div><b>Everyday Life</b> <span class="explore-cefr">CEFR A1</span><br>Ages 10–12 · 20 lessons · Friends, school, real conversations, real grammar begins</div></div>
-      <div class="explore-level-row"><span class="explore-level-badge" style="background:#EEF2FF;color:#4338CA">L4</span><div><b>Smart Choices</b> <span class="explore-cefr">CEFR A1</span><br>Ages 11–13 · 20 lessons · Routines, money, advice, decisions</div></div>
-      <div class="explore-level-row"><span class="explore-level-badge" style="background:#FDF2F8;color:#BE185D">L5</span><div><b>Telling My Story</b> <span class="explore-cefr">CEFR A2</span><br>Ages 12–14 · 20 lessons · Past tense, storytelling, trips</div></div>
-      <div class="explore-level-row"><span class="explore-level-badge" style="background:#F5F3FF;color:#6D28D9">L6</span><div><b>Looking Ahead</b> <span class="explore-cefr">CEFR A2</span><br>Ages 13–15 · 20 lessons · Future plans, debates, culture</div></div>
-      <p class="explore-microcopy">140 lessons total, one continuous path — every level builds on real, internationally-recognized CEFR standards, not an in-house scale.</p>
-      <a class="explore-jump" href="#curriculum">See the full curriculum ↓</a>
+      <div class="explore-level-row"><span class="explore-level-badge" style="background:#FFE8D1;color:#C2410C">Pre-A</span><div data-i18n-html="ed.lvl0"><b>First Words</b> <span class="explore-cefr">CEFR Pre-A1</span><br>Ages 4–6 · 20 lessons · Hello, colors, family, animals</div></div>
+      <div class="explore-level-row"><span class="explore-level-badge" style="background:#DBEAFE;color:#1D4ED8">L1</span><div data-i18n-html="ed.lvl1"><b>About Me</b> <span class="explore-cefr">CEFR Pre-A1</span><br>Ages 6–8 · 20 lessons · My house, my things, likes &amp; dislikes</div></div>
+      <div class="explore-level-row"><span class="explore-level-badge" style="background:#F0FDFA;color:#0F766E">L2</span><div data-i18n-html="ed.lvl2"><b>My World</b> <span class="explore-cefr">CEFR Pre-A1</span><br>Ages 8–10 · 20 lessons · Family, classroom, daily routines</div></div>
+      <div class="explore-level-row"><span class="explore-level-badge" style="background:#F5F3FF;color:#6D28D9">L3</span><div data-i18n-html="ed.lvl3"><b>Everyday Life</b> <span class="explore-cefr">CEFR A1</span><br>Ages 10–12 · 20 lessons · Friends, school, real conversations, real grammar begins</div></div>
+      <div class="explore-level-row"><span class="explore-level-badge" style="background:#EEF2FF;color:#4338CA">L4</span><div data-i18n-html="ed.lvl4"><b>Smart Choices</b> <span class="explore-cefr">CEFR A1</span><br>Ages 11–13 · 20 lessons · Routines, money, advice, decisions</div></div>
+      <div class="explore-level-row"><span class="explore-level-badge" style="background:#FDF2F8;color:#BE185D">L5</span><div data-i18n-html="ed.lvl5"><b>Telling My Story</b> <span class="explore-cefr">CEFR A2</span><br>Ages 12–14 · 20 lessons · Past tense, storytelling, trips</div></div>
+      <div class="explore-level-row"><span class="explore-level-badge" style="background:#F5F3FF;color:#6D28D9">L6</span><div data-i18n-html="ed.lvl6"><b>Looking Ahead</b> <span class="explore-cefr">CEFR A2</span><br>Ages 13–15 · 20 lessons · Future plans, debates, culture</div></div>
+      <p class="explore-microcopy" data-i18n="ed.lvl_note">140 lessons total, one continuous path — every level builds on real, internationally-recognized CEFR standards, not an in-house scale.</p>
+      <a class="explore-jump" href="#curriculum" data-i18n="ed.jump_curriculum">See the full curriculum ↓</a>
     </div>
     <div class="explore-panel" data-panel="how">
-      <div class="explore-step"><b>1. New Words</b> — every word shown with a picture, Arabic translation, and real audio.</div>
-      <div class="explore-step"><b>2. Listen &amp; Practice</b> — matching and listening games for every word.</div>
-      <div class="explore-step"><b>3. Grammar Focus</b> — one clear grammar point per lesson, from Level 3 onward.</div>
-      <div class="explore-step"><b>4. Quiz &amp; Spelling</b> — a short quiz confirms it stuck, with instant feedback.</div>
-      <div class="explore-step"><b>5. Homework</b> — a printable worksheet, flashcards and writing practice for every lesson.</div>
-      <a class="explore-jump" href="#howworks">See it in action ↓</a>
+      <div class="explore-step" data-i18n-html="ed.how1"><b>1. New Words</b> — every word shown with a picture, Arabic translation, and real audio.</div>
+      <div class="explore-step" data-i18n-html="ed.how2"><b>2. Listen &amp; Practice</b> — matching and listening games for every word.</div>
+      <div class="explore-step" data-i18n-html="ed.how3"><b>3. Grammar Focus</b> — one clear grammar point per lesson, from Level 3 onward.</div>
+      <div class="explore-step" data-i18n-html="ed.how4"><b>4. Quiz &amp; Spelling</b> — a short quiz confirms it stuck, with instant feedback.</div>
+      <div class="explore-step" data-i18n-html="ed.how5"><b>5. Homework</b> — a printable worksheet, flashcards and writing practice for every lesson.</div>
+      <a class="explore-jump" href="#howworks" data-i18n="ed.jump_how">See it in action ↓</a>
     </div>
 
     <div class="explore-panel" data-panel="why">
-      <div class="explore-step"><b>🕌 Arabic-first, not translated in</b><br>Every word, every instruction, every rule — built bilingual from day one, not bolted on afterward.</div>
-      <div class="explore-step"><b>🔡 Spelling has real rules</b><br>Not just memorizing letters — the actual rules behind how English words are built, taught step by step.</div>
-      <div class="explore-step"><b>🗣️ Homework uses real sentences</b><br>Every practice sentence is grounded in what a word actually means — not a random word list to memorize.</div>
-      <div class="explore-step"><b>📄 Real worksheets and flashcards</b><br>A printable homework page and flashcard set for every single lesson, for the moments a screen isn't the right tool.</div>
-      <div class="explore-step"><b>👥 A real, live-taught community</b><br>Grouped with peers at the same level, guided by a dedicated teacher, with a supervisor on hand for anything else — never a solo app.</div>
-      <a class="explore-jump" href="#pricing">See what's included in every plan ↓</a>
+      <div class="explore-step" data-i18n-html="ed.why1"><b>🕌 Arabic-first, not translated in</b><br>Every word, every instruction, every rule — built bilingual from day one, not bolted on afterward.</div>
+      <div class="explore-step" data-i18n-html="ed.why2"><b>🔡 Spelling has real rules</b><br>Not just memorizing letters — the actual rules behind how English words are built, taught step by step.</div>
+      <div class="explore-step" data-i18n-html="ed.why3"><b>🗣️ Homework uses real sentences</b><br>Every practice sentence is grounded in what a word actually means — not a random word list to memorize.</div>
+      <div class="explore-step" data-i18n-html="ed.why4"><b>📄 Real worksheets and flashcards</b><br>A printable homework page and flashcard set for every single lesson, for the moments a screen isn't the right tool.</div>
+      <div class="explore-step" data-i18n-html="ed.why5"><b>👥 A real, live-taught community</b><br>Grouped with peers at the same level, guided by a dedicated teacher, with a supervisor on hand for anything else — never a solo app.</div>
+      <a class="explore-jump" href="#pricing" data-i18n="ed.jump_pricing_included">See what's included in every plan ↓</a>
     </div>
 
     <div class="explore-panel" data-panel="hub">
-      <p class="explore-microcopy" style="margin-top:0">Beyond the 20 structured lessons, every level unlocks its own free-browsing Hub — searchable, and open anytime, not just during lesson time.</p>
+      <p class="explore-microcopy" style="margin-top:0" data-i18n="ed.hub_intro">Beyond the 20 structured lessons, every level unlocks its own free-browsing Hub — searchable, and open anytime, not just during lesson time.</p>
       <table class="explore-hub-table">
-        <tr><th>Hub section</th><th>Available at</th></tr>
-        <tr><td>📔 Vocabulary</td><td>Pre-A → L6 <span class="explore-hub-all">all levels</span></td></tr>
-        <tr><td>💡 Idioms</td><td>Pre-A → L6 <span class="explore-hub-all">all levels</span></td></tr>
-        <tr><td>✍️ Writing &amp; Speaking</td><td>Pre-A → L6 <span class="explore-hub-all">all levels</span></td></tr>
-        <tr><td>🔡 Spelling</td><td>Pre-A</td></tr>
-        <tr><td>🔤 Phonics</td><td>Levels 1–2</td></tr>
-        <tr><td>📐 Grammar</td><td>Levels 3–6</td></tr>
+        <tr><th data-i18n="pr.hub_col1">Hub section</th><th data-i18n="pr.hub_col2">Available at</th></tr>
+        <tr><td data-i18n="ed.hub_vocab">📔 Vocabulary</td><td>Pre-A → L6 <span class="explore-hub-all" data-i18n="ed.hub_all">all levels</span></td></tr>
+        <tr><td data-i18n="ed.hub_idioms">💡 Idioms</td><td>Pre-A → L6 <span class="explore-hub-all" data-i18n="ed.hub_all">all levels</span></td></tr>
+        <tr><td data-i18n-html="ed.hub_writing">✍️ Writing &amp; Speaking</td><td>Pre-A → L6 <span class="explore-hub-all" data-i18n="ed.hub_all">all levels</span></td></tr>
+        <tr><td data-i18n="ed.hub_spelling">🔡 Spelling</td><td>Pre-A</td></tr>
+        <tr><td data-i18n="ed.hub_phonics">🔤 Phonics</td><td data-i18n="pr.hub_levels12">Levels 1–2</td></tr>
+        <tr><td data-i18n="ed.hub_grammar">📐 Grammar</td><td data-i18n="pr.hub_levels36">Levels 3–6</td></tr>
       </table>
-      <a class="explore-jump" href="#demo">Watch the Hub in action ↓</a>
+      <a class="explore-jump" href="#demo" data-i18n="ed.jump_hub_demo">Watch the Hub in action ↓</a>
     </div>
 
     <div class="explore-panel" data-panel="games">
-      <div class="explore-step"><b>Pre-A</b> — Lumi's Pocket <br><span class="explore-substep">A gentle picture-and-sound matching game — no reading required yet.</span></div>
-      <div class="explore-step"><b>Level 1</b> — Treehouse Builder <br><span class="explore-substep">Answer correctly to build up a treehouse, piece by piece.</span></div>
-      <div class="explore-step"><b>Level 2</b> — Twelve Months Calendar <br><span class="explore-substep">A full-year picture calendar that fills in as vocabulary grows.</span></div>
-      <div class="explore-step"><b>Level 3</b> — Crew Chat <br><span class="explore-substep">A group-chat-style game — reply to friends and type words letter by letter.</span></div>
-      <div class="explore-step"><b>Level 4</b> — Squad Budget <br><span class="explore-substep">Make spending decisions in English as a team.</span></div>
-      <div class="explore-step"><b>Level 5</b> — Story Detective <br><span class="explore-substep">Piece together what happened, using real past-tense clues.</span></div>
-      <div class="explore-step"><b>Level 6</b> — Crystal Ball <br><span class="explore-substep">Make predictions and read your own English "fortune."</span></div>
-      <p class="explore-microcopy">A new bonus game unlocks after every lesson your child finishes — see one played for real in "See it in action."</p>
+      <div class="explore-step" data-i18n-html="ed.game0"><b>Pre-A</b> — Lumi's Pocket <br><span class="explore-substep">A gentle picture-and-sound matching game — no reading required yet.</span></div>
+      <div class="explore-step" data-i18n-html="ed.game1"><b>Level 1</b> — Treehouse Builder <br><span class="explore-substep">Answer correctly to build up a treehouse, piece by piece.</span></div>
+      <div class="explore-step" data-i18n-html="ed.game2"><b>Level 2</b> — Twelve Months Calendar <br><span class="explore-substep">A full-year picture calendar that fills in as vocabulary grows.</span></div>
+      <div class="explore-step" data-i18n-html="ed.game3"><b>Level 3</b> — Crew Chat <br><span class="explore-substep">A group-chat-style game — reply to friends and type words letter by letter.</span></div>
+      <div class="explore-step" data-i18n-html="ed.game4"><b>Level 4</b> — Squad Budget <br><span class="explore-substep">Make spending decisions in English as a team.</span></div>
+      <div class="explore-step" data-i18n-html="ed.game5"><b>Level 5</b> — Story Detective <br><span class="explore-substep">Piece together what happened, using real past-tense clues.</span></div>
+      <div class="explore-step" data-i18n-html="ed.game6"><b>Level 6</b> — Crystal Ball <br><span class="explore-substep">Make predictions and read your own English "fortune."</span></div>
+      <p class="explore-microcopy" data-i18n="ed.games_note">A new bonus game unlocks after every lesson your child finishes — see one played for real in "See it in action."</p>
     </div>
     <div class="explore-panel" data-panel="pricing">
-      <div class="explore-step"><b>Single level</b> — 730 SAR (~$195) &middot; 2 months &middot; 20 sessions</div>
-      <div class="explore-step"><b>3-level bundle</b> — 1,949.99 SAR (~$520) &middot; 6 months &middot; save 11%</div>
-      <div class="explore-step"><b>6-level bundle</b> — 3,499.99 SAR (~$933) &middot; full year &middot; save 20%</div>
-      <p class="explore-microcopy">Every plan includes full English Hub access, peer grouping by level, a teacher, and a supervisor. Prices also shown in USD, AED, KWD, OMR and QAR.</p>
-      <a class="explore-jump" href="#pricing">See full pricing &amp; currencies ↓</a>
+      <div class="explore-step" data-i18n-html="ed.price1"><b>Single level</b> — 730 SAR (~$195) &middot; 2 months &middot; 20 sessions</div>
+      <div class="explore-step" data-i18n-html="ed.price2"><b>3-level bundle</b> — 1,949.99 SAR (~$520) &middot; 6 months &middot; save 11%</div>
+      <div class="explore-step" data-i18n-html="ed.price3"><b>6-level bundle</b> — 3,499.99 SAR (~$933) &middot; full year &middot; save 20%</div>
+      <p class="explore-microcopy" data-i18n="ed.price_note">Every plan includes full English Hub access, peer grouping by level, a teacher, and a supervisor. Prices also shown in USD, AED, KWD, OMR and QAR.</p>
+      <a class="explore-jump" href="#pricing" data-i18n-html="ed.jump_pricing">See full pricing &amp; currencies ↓</a>
     </div>
     <div class="explore-panel" data-panel="faq">
-      <div class="explore-step"><b>Is it really in Arabic and English?</b><br>Yes — every word and every instruction has Arabic support.</div>
-      <div class="explore-step"><b>Does my child need a teacher?</b><br>Every lesson pairs self-study with a real live class, plus a supervisor for anything else.</div>
-      <div class="explore-step"><b>Can we learn offline too?</b><br>Yes — every lesson has printable worksheets and flashcards.</div>
-      <div class="explore-step"><b>Can we try before paying anything?</b><br>Yes — a free placement test and a free trial class, both with zero commitment.</div>
-      <a class="explore-jump" href="#faq">See all questions ↓</a>
+      <div class="explore-step" data-i18n-html="ed.faq1"><b>Is it really in Arabic and English?</b><br>Yes — every word and every instruction has Arabic support.</div>
+      <div class="explore-step" data-i18n-html="ed.faq2"><b>Does my child need a teacher?</b><br>Every lesson pairs self-study with a real live class, plus a supervisor for anything else.</div>
+      <div class="explore-step" data-i18n-html="ed.faq3"><b>Can we learn offline too?</b><br>Yes — every lesson has printable worksheets and flashcards.</div>
+      <div class="explore-step" data-i18n-html="ed.faq4"><b>Can we try before paying anything?</b><br>Yes — a free placement test and a free trial class, both with zero commitment.</div>
+      <a class="explore-jump" href="#faq" data-i18n="ed.jump_faq">See all questions ↓</a>
     </div>
   </div>
-  <a class="explore-cta" href="login.html">Start learning now →</a>
+  <a class="explore-cta" href="login.html" data-i18n="ed.start_now">Start learning now →</a>
 </aside>
 
 <!-- ============ Floating WhatsApp button (bottom) ============ -->
@@ -279,33 +321,33 @@ html{scroll-behavior:smooth}
   <h3 id="tpName"></h3>
   <p class="trial-popup-blurb" id="tpBlurb"></p>
   <div class="trial-popup-highlights">
-    <div><b>👥 Not alone</b> &mdash; your child joins other students already at this same level.</div>
-    <div><b>🎮 Real fun</b> &mdash; the trial includes games, challenges, and little gifts from the teachers.</div>
+    <div data-i18n-html="tp.not_alone"><b>👥 Not alone</b> &mdash; your child joins other students already at this same level.</div>
+    <div data-i18n-html="tp.real_fun"><b>🎮 Real fun</b> &mdash; the trial includes games, challenges, and little gifts from the teachers.</div>
   </div>
-  <p class="trial-popup-cta-text">Message us on WhatsApp and we'll book your free trial class at this level.</p>
+  <p class="trial-popup-cta-text" data-i18n="tp.cta_text">Message us on WhatsApp and we'll book your free trial class at this level.</p>
   <a id="tpWhatsapp" class="btn btn-primary btn-big trial-popup-cta" href="#" target="_blank" rel="noopener">
     <svg viewBox="0 0 32 32" width="18" height="18" fill="currentColor" aria-hidden="true" style="margin-right:8px;vertical-align:-3px"><path d="M16.004 3C9.383 3 4 8.373 4 14.99c0 2.2.6 4.28 1.65 6.06L4 29l8.15-1.6a12.9 12.9 0 0 0 3.85.6h.004C22.62 28 28 22.63 28 16.01 28 9.39 22.62 3 16.004 3zm0 23.16c-1.28 0-2.53-.24-3.7-.72l-.27-.11-4.84.95.95-4.72-.13-.29a10.06 10.06 0 0 1-1.55-5.31c0-5.58 4.55-10.12 10.15-10.12 5.6 0 10.15 4.54 10.15 10.12 0 5.58-4.55 10.1-10.16 10.1zm5.56-7.56c-.3-.15-1.78-.88-2.06-.98-.28-.1-.48-.15-.68.15-.2.3-.78.98-.96 1.18-.18.2-.35.22-.65.07-.3-.15-1.28-.47-2.44-1.5-.9-.8-1.51-1.79-1.69-2.09-.18-.3-.02-.46.13-.61.14-.14.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.68-1.64-.93-2.24-.24-.58-.49-.5-.68-.51h-.58c-.2 0-.53.08-.8.38-.28.3-1.05 1.03-1.05 2.5s1.08 2.9 1.23 3.1c.15.2 2.12 3.23 5.13 4.53.72.31 1.28.5 1.72.64.72.23 1.38.2 1.9.12.58-.09 1.78-.73 2.03-1.43.25-.7.25-1.3.18-1.43-.07-.13-.27-.2-.57-.35z"/></svg>
-    Book my free trial on WhatsApp
+    <span data-i18n="tp.book_btn">Book my free trial on WhatsApp</span>
   </a>
 </div>
 
 <a class="whatsapp-fab" href="https://wa.me/201124882493" target="_blank" rel="noopener" aria-label="Contact us on WhatsApp">
   <svg viewBox="0 0 32 32" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M16.004 3C9.383 3 4 8.373 4 14.99c0 2.2.6 4.28 1.65 6.06L4 29l8.15-1.6a12.9 12.9 0 0 0 3.85.6h.004C22.62 28 28 22.63 28 16.01 28 9.39 22.62 3 16.004 3zm0 23.16c-1.28 0-2.53-.24-3.7-.72l-.27-.11-4.84.95.95-4.72-.13-.29a10.06 10.06 0 0 1-1.55-5.31c0-5.58 4.55-10.12 10.15-10.12 5.6 0 10.15 4.54 10.15 10.12 0 5.58-4.55 10.1-10.16 10.1zm5.56-7.56c-.3-.15-1.78-.88-2.06-.98-.28-.1-.48-.15-.68.15-.2.3-.78.98-.96 1.18-.18.2-.35.22-.65.07-.3-.15-1.28-.47-2.44-1.5-.9-.8-1.51-1.79-1.69-2.09-.18-.3-.02-.46.13-.61.14-.14.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.68-1.64-.93-2.24-.24-.58-.49-.5-.68-.51h-.58c-.2 0-.53.08-.8.38-.28.3-1.05 1.03-1.05 2.5s1.08 2.9 1.23 3.1c.15.2 2.12 3.23 5.13 4.53.72.31 1.28.5 1.72.64.72.23 1.38.2 1.9.12.58-.09 1.78-.73 2.03-1.43.25-.7.25-1.3.18-1.43-.07-.13-.27-.2-.57-.35z"/></svg>
-  <span class="whatsapp-fab-label">Chat with us</span>
+  <span class="whatsapp-fab-label" data-i18n="wa_chat">Chat with us</span>
 </a>
 
 <main class="wrap">
 
   <section class="hero">
     <div>
-      <h1 class="lp-reveal" style="animation-delay:.05s">Let's learn English <span class="hl">the fun way!</span></h1>
-      <p class="lead lp-reveal" style="animation-delay:.18s">Join Lumi on a journey of games, songs and stories — made for young learners, with Arabic support every step of the way.</p>
+      <h1 class="lp-reveal" style="animation-delay:.05s" data-i18n-html="hero.h1">Let's learn English <span class="hl">the fun way!</span></h1>
+      <p class="lead lp-reveal" style="animation-delay:.18s" data-i18n="hero.lead">Join Lumi on a journey of games, songs and stories — made for young learners, with Arabic support every step of the way.</p>
       <div class="row lp-reveal" style="animation-delay:.3s">
-        <a class="btn btn-primary btn-big" href="login.html">I'm a student</a>
+        <a class="btn btn-primary btn-big" href="login.html" data-i18n="hero.cta">I'm a student</a>
       </div>
-      <a class="lp-hero-free-link lp-reveal" style="animation-delay:.36s" href="#startfree">New here? Take the free placement test or trial class →</a>
+      <a class="lp-hero-free-link lp-reveal" style="animation-delay:.36s" href="#startfree" data-i18n="hero.free_link">New here? Take the free placement test or trial class →</a>
       <div class="lp-hear-demo lp-reveal" style="animation-delay:.42s">
-        <p class="lp-hear-label">👆 Tap a word — hear it for yourself</p>
+        <p class="lp-hear-label" data-i18n="hero.hear_label">👆 Tap a word — hear it for yourself</p>
         <div class="lp-hear-cards">
           <button class="lp-hear-card" data-word="hello" data-ar="مرحبا">
             <span class="lp-hear-emoji">👋</span><span>hello</span><span class="lp-hear-ar">مرحبا</span>
@@ -323,17 +365,17 @@ html{scroll-behavior:smooth}
       </div>
     </div>
     <div class="hero-visual lp-reveal" style="animation-delay:.15s">
-      <span class="float-chip a">★ 3-star lessons</span>
-      <span class="float-chip b">Listen &amp; speak</span>
+      <span class="float-chip a" data-i18n="hero.chip_a">★ 3-star lessons</span>
+      <span class="float-chip b" data-i18n-html="hero.chip_b">Listen &amp; speak</span>
       <img class="hero-art" src="assets/story/characters/lumi-teen-welcome-hero.png" alt="Lumi waving with a book">
     </div>
   </section>
 
   <section class="feature-grid">
-    <div class="card reveal-io"><span class="emoji-badge"><img src="assets/logo/lumio-logo.png" alt="" style="width:26px;height:26px;object-fit:contain"></span><h3>Learn by playing</h3><p>Matching, listening and spelling games in every lesson.</p></div>
-    <div class="card reveal-io"><span class="emoji-badge"><img src="assets/logo/lumio-logo.png" alt="" style="width:26px;height:26px;object-fit:contain"></span><h3>Listen &amp; speak</h3><p>Every word is spoken aloud so you learn real pronunciation.</p></div>
-    <div class="card reveal-io"><span class="emoji-badge"><img src="assets/logo/lumio-logo.png" alt="" style="width:26px;height:26px;object-fit:contain"></span><h3>Earn stars</h3><p>Collect 3 stars in every lesson and climb the level map.</p></div>
-    <div class="card reveal-io"><span class="emoji-badge"><img src="assets/logo/lumio-logo.png" alt="" style="width:26px;height:26px;object-fit:contain"></span><h3>عربي + English</h3><p class="ar">كل كلمة معها الترجمة العربية لتفهم بسهولة.</p></div>
+    <div class="card reveal-io"><span class="emoji-badge"><img src="assets/logo/lumio-logo.png" alt="" style="width:26px;height:26px;object-fit:contain"></span><h3 data-i18n="feat1.h">Learn by playing</h3><p data-i18n="feat1.p">Matching, listening and spelling games in every lesson.</p></div>
+    <div class="card reveal-io"><span class="emoji-badge"><img src="assets/logo/lumio-logo.png" alt="" style="width:26px;height:26px;object-fit:contain"></span><h3 data-i18n-html="feat2.h">Listen &amp; speak</h3><p data-i18n="feat2.p">Every word is spoken aloud so you learn real pronunciation.</p></div>
+    <div class="card reveal-io"><span class="emoji-badge"><img src="assets/logo/lumio-logo.png" alt="" style="width:26px;height:26px;object-fit:contain"></span><h3 data-i18n="feat3.h">Earn stars</h3><p data-i18n="feat3.p">Collect 3 stars in every lesson and climb the level map.</p></div>
+    <div class="card reveal-io"><span class="emoji-badge"><img src="assets/logo/lumio-logo.png" alt="" style="width:26px;height:26px;object-fit:contain"></span><h3 data-i18n="feat4.h">Arabic + English</h3><p class="ar" data-i18n="feat4.p">كل كلمة معها الترجمة العربية لتفهم بسهولة.</p></div>
   </section>
 
   <div class="lp-wave-top" aria-hidden="true">
@@ -341,71 +383,71 @@ html{scroll-behavior:smooth}
   </div>
   <div class="lp-band">
     <section class="lp-trust">
-      <div class="lp-trust-item reveal-io"><div class="lp-trust-num">7</div><div class="lp-trust-label">Levels, start to finish</div></div>
-      <div class="lp-trust-item reveal-io"><div class="lp-trust-num">140+</div><div class="lp-trust-label">Lessons already built</div></div>
-      <div class="lp-trust-item reveal-io"><div class="lp-trust-num">4–15</div><div class="lp-trust-label">Ages, one clear path</div></div>
-      <div class="lp-trust-item reveal-io"><div class="lp-trust-num">100%</div><div class="lp-trust-label">Arabic support, every word</div></div>
+      <div class="lp-trust-item reveal-io"><div class="lp-trust-num">7</div><div class="lp-trust-label" data-i18n="trust1">Levels, start to finish</div></div>
+      <div class="lp-trust-item reveal-io"><div class="lp-trust-num">140+</div><div class="lp-trust-label" data-i18n="trust2">Lessons already built</div></div>
+      <div class="lp-trust-item reveal-io"><div class="lp-trust-num">4–15</div><div class="lp-trust-label" data-i18n="trust3">Ages, one clear path</div></div>
+      <div class="lp-trust-item reveal-io"><div class="lp-trust-num">100%</div><div class="lp-trust-label" data-i18n="trust4">Arabic support, every word</div></div>
     </section>
 
     <section class="lp-startfree" id="startfree">
       <div class="lp-startfree-inner">
-        <h2 class="center mb reveal-io">Start with zero risk — both are free</h2>
-        <p class="center lp-startfree-intro reveal-io">No card, no commitment. Find the right level, then see a real class, before you decide anything.</p>
+        <h2 class="center mb reveal-io" data-i18n="sf.h2">Start with zero risk — both are free</h2>
+        <p class="center lp-startfree-intro reveal-io" data-i18n="sf.intro">No card, no commitment. Find the right level, then see a real class, before you decide anything.</p>
         <div class="lp-startfree-grid">
           <div class="lp-startfree-card reveal-io">
-            <div class="lp-startfree-badge">100% Free</div>
+            <div class="lp-startfree-badge" data-i18n="sf.badge_free">100% Free</div>
             <div class="lp-startfree-icon">🎯</div>
-            <h3>Free Placement Test</h3>
-            <p>10 quick questions with real feedback on the spot — what your child already knows, and a couple of tips on what to practice next. No signup required to see the result.</p>
-            <a class="btn btn-primary btn-big lp-startfree-cta" href="quick-check.html">Take the free test →</a>
-            <div class="lp-startfree-note">Takes about 5 minutes</div>
+            <h3 data-i18n="sf.test_h">Free Placement Test</h3>
+            <p data-i18n="sf.test_p">10 quick questions with real feedback on the spot — what your child already knows, and a couple of tips on what to practice next. No signup required to see the result.</p>
+            <a class="btn btn-primary btn-big lp-startfree-cta" href="quick-check.html" data-i18n="sf.test_cta">Take the free test →</a>
+            <div class="lp-startfree-note" data-i18n="sf.test_note">Takes about 5 minutes</div>
           </div>
           <div class="lp-startfree-card lp-startfree-featured reveal-io">
-            <div class="lp-startfree-badge">100% Free</div>
+            <div class="lp-startfree-badge" data-i18n="sf.badge_free">100% Free</div>
             <div class="lp-startfree-icon">🎓</div>
-            <h3>Free Trial Class</h3>
-            <p>Pick the level that fits your child's age and jump straight into a real, live-style trial class — the same format as an actual Lumio lesson.</p>
+            <h3 data-i18n="sf.trial_h">Free Trial Class</h3>
+            <p data-i18n="sf.trial_p">Pick the level that fits your child's age and jump straight into a real, live-style trial class — the same format as an actual Lumio lesson.</p>
             <div class="lp-trial-picker">
-              <button class="lp-trial-level" data-level="pre-a" data-name="Pre-A &middot; First Words" data-ages="Ages 4&ndash;6" data-blurb="Hello, colors, family, and animals &mdash; a young child's very first English words.">Pre-A <span>4–6</span></button>
-              <button class="lp-trial-level" data-level="level1" data-name="Level 1 &middot; About Me" data-ages="Ages 6&ndash;8" data-blurb="My house, my things, likes and dislikes &mdash; simple sentences about a child's own world.">L1 <span>6–8</span></button>
-              <button class="lp-trial-level" data-level="level2" data-name="Level 2 &middot; My World" data-ages="Ages 8&ndash;10" data-blurb="Family, classroom, and daily routines &mdash; the first real conversations.">L2 <span>8–10</span></button>
-              <button class="lp-trial-level" data-level="level3" data-name="Level 3 &middot; Everyday Life" data-ages="Ages 10&ndash;12" data-blurb="Friends, school, and real conversations &mdash; grammar starts doing real work.">L3 <span>10–12</span></button>
-              <button class="lp-trial-level" data-level="level4" data-name="Level 4 &middot; Smart Choices" data-ages="Ages 11&ndash;13" data-blurb="Routines, money, advice, and decisions &mdash; longer, more confident sentences.">L4 <span>11–13</span></button>
-              <button class="lp-trial-level" data-level="level5" data-name="Level 5 &middot; Telling My Story" data-ages="Ages 12&ndash;14" data-blurb="Past tense and storytelling &mdash; trips, memories, and what happened.">L5 <span>12–14</span></button>
-              <button class="lp-trial-level" data-level="level6" data-name="Level 6 &middot; Looking Ahead" data-ages="Ages 13&ndash;15" data-blurb="Future plans, debates, and culture &mdash; confident, independent conversation.">L6 <span>13–15</span></button>
+              <button class="lp-trial-level" data-level="pre-a" data-name="Pre-A &middot; First Words" data-ages="Ages 4&ndash;6" data-blurb="Hello, colors, family, and animals &mdash; a young child's very first English words." data-name-ar="المستوى التمهيدي &middot; الكلمات الأولى" data-ages-ar="الأعمار 4-6" data-blurb-ar="التحية، الألوان، العائلة، والحيوانات &mdash; أولى كلمات طفلك باللغة الإنجليزية.">Pre-A <span>4–6</span></button>
+              <button class="lp-trial-level" data-level="level1" data-name="Level 1 &middot; About Me" data-ages="Ages 6&ndash;8" data-blurb="My house, my things, likes and dislikes &mdash; simple sentences about a child's own world." data-name-ar="المستوى الأول &middot; عني أنا" data-ages-ar="الأعمار 6-8" data-blurb-ar="منزلي، أغراضي، ما أحبه وما لا أحبه &mdash; جمل بسيطة عن عالم الطفل الخاص.">L1 <span>6–8</span></button>
+              <button class="lp-trial-level" data-level="level2" data-name="Level 2 &middot; My World" data-ages="Ages 8&ndash;10" data-blurb="Family, classroom, and daily routines &mdash; the first real conversations." data-name-ar="المستوى الثاني &middot; عالمي" data-ages-ar="الأعمار 8-10" data-blurb-ar="العائلة، الفصل الدراسي، والروتين اليومي &mdash; أولى المحادثات الحقيقية.">L2 <span>8–10</span></button>
+              <button class="lp-trial-level" data-level="level3" data-name="Level 3 &middot; Everyday Life" data-ages="Ages 10&ndash;12" data-blurb="Friends, school, and real conversations &mdash; grammar starts doing real work." data-name-ar="المستوى الثالث &middot; الحياة اليومية" data-ages-ar="الأعمار 10-12" data-blurb-ar="الأصدقاء، المدرسة، والمحادثات الحقيقية &mdash; القواعد تبدأ بالعمل بشكل حقيقي.">L3 <span>10–12</span></button>
+              <button class="lp-trial-level" data-level="level4" data-name="Level 4 &middot; Smart Choices" data-ages="Ages 11&ndash;13" data-blurb="Routines, money, advice, and decisions &mdash; longer, more confident sentences." data-name-ar="المستوى الرابع &middot; قرارات ذكية" data-ages-ar="الأعمار 11-13" data-blurb-ar="الروتين، المال، النصائح، والقرارات &mdash; جمل أطول وأكثر ثقة.">L4 <span>11–13</span></button>
+              <button class="lp-trial-level" data-level="level5" data-name="Level 5 &middot; Telling My Story" data-ages="Ages 12&ndash;14" data-blurb="Past tense and storytelling &mdash; trips, memories, and what happened." data-name-ar="المستوى الخامس &middot; أروي قصتي" data-ages-ar="الأعمار 12-14" data-blurb-ar="الماضي وسرد القصص &mdash; الرحلات، الذكريات، وما حدث.">L5 <span>12–14</span></button>
+              <button class="lp-trial-level" data-level="level6" data-name="Level 6 &middot; Looking Ahead" data-ages="Ages 13&ndash;15" data-blurb="Future plans, debates, and culture &mdash; confident, independent conversation." data-name-ar="المستوى السادس &middot; نحو المستقبل" data-ages-ar="الأعمار 13-15" data-blurb-ar="خطط المستقبل، النقاشات، والثقافة &mdash; محادثة واثقة ومستقلة.">L6 <span>13–15</span></button>
             </div>
-            <div class="lp-startfree-note">Tap your child's age group to start</div>
+            <div class="lp-startfree-note" data-i18n="sf.trial_note">Tap your child's age group to start</div>
           </div>
         </div>
       </div>
     </section>
 
     <section class="mt lp-how" id="howworks">
-      <h2 class="center mb">How a Lumio lesson works</h2>
-      <p class="center cf-sub">The same four steps, every single lesson.</p>
+      <h2 class="center mb" data-i18n="how.h2">How a Lumio lesson works</h2>
+      <p class="center cf-sub" data-i18n="how.sub">The same four steps, every single lesson.</p>
       <div class="lp-steps">
         <div class="lp-step reveal-io">
           <div class="lp-step-num">1</div>
-          <h3>Prepare</h3>
-          <p>Meet the new words and sounds in the app before class, so your child walks in ready, not cold.</p>
+          <h3 data-i18n="how1.h">Prepare</h3>
+          <p data-i18n="how1.p">Meet the new words and sounds in the app before class, so your child walks in ready, not cold.</p>
         </div>
         <div class="lp-step-connector" aria-hidden="true"></div>
         <div class="lp-step reveal-io">
           <div class="lp-step-num">2</div>
-          <h3>Live class on Zoom</h3>
-          <p>A real teacher, live, guiding the lesson your child already previewed.</p>
+          <h3 data-i18n="how2.h">Live class on Zoom</h3>
+          <p data-i18n="how2.p">A real teacher, live, guiding the lesson your child already previewed.</p>
         </div>
         <div class="lp-step-connector" aria-hidden="true"></div>
         <div class="lp-step reveal-io">
           <div class="lp-step-num">3</div>
-          <h3>Practice at home</h3>
-          <p>Homework that uses real sentences, not just word lists — spelling, speaking, and short quizzes.</p>
+          <h3 data-i18n="how3.h">Practice at home</h3>
+          <p data-i18n="how3.p">Homework that uses real sentences, not just word lists — spelling, speaking, and short quizzes.</p>
         </div>
         <div class="lp-step-connector" aria-hidden="true"></div>
         <div class="lp-step reveal-io">
           <div class="lp-step-num">4</div>
-          <h3>Grow on the map</h3>
-          <p>Each finished lesson lights up the Adventure Map, unlocking games, stories, and the next step.</p>
+          <h3 data-i18n="how4.h">Grow on the map</h3>
+          <p data-i18n="how4.p">Each finished lesson lights up the Adventure Map, unlocking games, stories, and the next step.</p>
         </div>
       </div>
   </section>
@@ -415,8 +457,8 @@ html{scroll-behavior:smooth}
   </div>
 
   <section class="mt cf-section" id="friendsSection">
-    <h2 class="center mb">Meet your learning friends</h2>
-    <p class="center cf-sub">Tap a friend to say hi! 👋</p>
+    <h2 class="center mb" data-i18n="friends.h2">Meet your learning friends</h2>
+    <p class="center cf-sub" data-i18n="friends.sub">Tap a friend to say hi! 👋</p>
     <div class="char-strip cf-strip">
       <figure class="cf-card" data-en="Yay! Let's learn together!" data-ar="هيا نتعلم معًا!">
         <div class="cf-bubble" aria-hidden="true"></div>
@@ -424,7 +466,7 @@ html{scroll-behavior:smooth}
           <img src="assets/story/characters/lumi-welcome-hero.png" alt="Lumi waving hello">
           <span class="cf-sparkle a">✨</span><span class="cf-sparkle b">⭐</span><span class="cf-sparkle c">✨</span>
         </div>
-        <figcaption>Lumi</figcaption>
+        <figcaption data-i18n="name.lumi">Lumi</figcaption>
       </figure>
       <figure class="cf-card" data-en="Ready for today's lesson?" data-ar="هل أنت مستعد لدرس اليوم؟">
         <div class="cf-bubble" aria-hidden="true"></div>
@@ -432,7 +474,7 @@ html{scroll-behavior:smooth}
           <img src="assets/story/characters/sara-welcome-hero.png" alt="Sara waving hello">
           <span class="cf-sparkle a">✨</span><span class="cf-sparkle b">⭐</span><span class="cf-sparkle c">✨</span>
         </div>
-        <figcaption>Sara</figcaption>
+        <figcaption data-i18n="name.sara">Sara</figcaption>
       </figure>
       <figure class="cf-card" data-en="I love learning new words!" data-ar="أحب تعلم كلمات جديدة!">
         <div class="cf-bubble" aria-hidden="true"></div>
@@ -440,7 +482,7 @@ html{scroll-behavior:smooth}
           <img src="assets/story/characters/noor-welcome-hero.png" alt="Noor waving hello">
           <span class="cf-sparkle a">✨</span><span class="cf-sparkle b">⭐</span><span class="cf-sparkle c">✨</span>
         </div>
-        <figcaption>Noor</figcaption>
+        <figcaption data-i18n="name.noor">Noor</figcaption>
       </figure>
       <figure class="cf-card" data-en="Let's read a story together!" data-ar="هيا نقرأ قصة معًا!">
         <div class="cf-bubble" aria-hidden="true"></div>
@@ -448,7 +490,7 @@ html{scroll-behavior:smooth}
           <img src="assets/story/characters/omar-welcome-hero.png" alt="Omar waving hello">
           <span class="cf-sparkle a">✨</span><span class="cf-sparkle b">⭐</span><span class="cf-sparkle c">✨</span>
         </div>
-        <figcaption>Omar</figcaption>
+        <figcaption data-i18n="name.omar">Omar</figcaption>
       </figure>
       <figure class="cf-card" data-en="Let's play a game and learn!" data-ar="هيا نلعب ونتعلم!">
         <div class="cf-bubble" aria-hidden="true"></div>
@@ -456,7 +498,7 @@ html{scroll-behavior:smooth}
           <img src="assets/story/characters/ziad-welcome-hero.png" alt="Ziad waving hello">
           <span class="cf-sparkle a">✨</span><span class="cf-sparkle b">⭐</span><span class="cf-sparkle c">✨</span>
         </div>
-        <figcaption>Ziad</figcaption>
+        <figcaption data-i18n="name.ziad">Ziad</figcaption>
       </figure>
       <figure class="cf-card" data-en="Welcome, my friend!" data-ar="أهلا وسهلا يا صديقي!">
         <div class="cf-bubble" aria-hidden="true"></div>
@@ -464,105 +506,105 @@ html{scroll-behavior:smooth}
           <img src="assets/story/characters/hamad-welcome-hero.png" alt="Hamad waving hello">
           <span class="cf-sparkle a">✨</span><span class="cf-sparkle b">⭐</span><span class="cf-sparkle c">✨</span>
         </div>
-        <figcaption>Hamad</figcaption>
+        <figcaption data-i18n="name.hamad">Hamad</figcaption>
       </figure>
     </div>
   </section>
 
   <section class="mt lp-curriculum" id="curriculum">
-    <h2 class="center mb">The path, level by level</h2>
-    <p class="center cf-sub">Every level already has real lessons behind it — nothing here is a placeholder.</p>
+    <h2 class="center mb" data-i18n="curr.h2">The path, level by level</h2>
+    <p class="center cf-sub" data-i18n="curr.sub">Every level already has real lessons behind it — nothing here is a placeholder.</p>
     <div class="lp-trail">
       <div class="lp-trail-guide">
         <img src="assets/story/characters/lumi-trail-guide.png" alt="Lumi leading the way">
-        <span class="lp-trail-guide-bubble">Follow me! 🐣</span>
+        <span class="lp-trail-guide-bubble" data-i18n="curr.guide">Follow me! 🐣</span>
       </div>
       <div class="lp-trail-line" aria-hidden="true"></div>
       <div class="lp-trail-stop">
         <div class="lp-trail-dot" style="background:#F97316">Pre-A</div>
         <div class="lp-trail-card reveal-io">
-          <h3>First Words</h3>
-          <p class="lp-level-meta">Ages 4–6 · CEFR Pre-A1</p>
-          <p>The alphabet, first sounds, and the very first spoken words — built for a child who's never studied English before.</p>
+          <h3 data-i18n="lvl0.h">First Words</h3>
+          <p class="lp-level-meta" data-i18n="lvl0.meta">Ages 4–6 · CEFR Pre-A1</p>
+          <p data-i18n="lvl0.p">The alphabet, first sounds, and the very first spoken words — built for a child who's never studied English before.</p>
         </div>
       </div>
       <div class="lp-trail-stop">
         <div class="lp-trail-dot" style="background:#0D9488">1</div>
         <div class="lp-trail-card reveal-io">
-          <h3>About Me</h3>
-          <p class="lp-level-meta">Ages 6–8 · CEFR Pre-A1</p>
-          <p>Simple sentences about family, feelings, and daily routines — the first real conversations.</p>
+          <h3 data-i18n="lvl1.h">About Me</h3>
+          <p class="lp-level-meta" data-i18n="lvl1.meta">Ages 6–8 · CEFR Pre-A1</p>
+          <p data-i18n="lvl1.p">Simple sentences about family, feelings, and daily routines — the first real conversations.</p>
         </div>
       </div>
       <div class="lp-trail-stop">
         <div class="lp-trail-dot" style="background:#DC2626">2</div>
         <div class="lp-trail-card reveal-io">
-          <h3>My World</h3>
-          <p class="lp-level-meta">Ages 8–10 · CEFR Pre-A1</p>
-          <p>School, home, and everyday objects — describing the world right around them.</p>
+          <h3 data-i18n="lvl2.h">My World</h3>
+          <p class="lp-level-meta" data-i18n="lvl2.meta">Ages 8–10 · CEFR Pre-A1</p>
+          <p data-i18n="lvl2.p">School, home, and everyday objects — describing the world right around them.</p>
         </div>
       </div>
       <div class="lp-trail-stop">
         <div class="lp-trail-dot" style="background:#6D28D9">3</div>
         <div class="lp-trail-card reveal-io">
-          <h3>Everyday Life</h3>
-          <p class="lp-level-meta">Ages 10–12 · CEFR A1</p>
-          <p>Real-life situations — shopping, plans, opinions — with grammar that starts doing real work.</p>
+          <h3 data-i18n="lvl3.h">Everyday Life</h3>
+          <p class="lp-level-meta" data-i18n="lvl3.meta">Ages 10–12 · CEFR A1</p>
+          <p data-i18n="lvl3.p">Real-life situations — shopping, plans, opinions — with grammar that starts doing real work.</p>
         </div>
       </div>
       <div class="lp-trail-stop">
         <div class="lp-trail-dot" style="background:#1D4ED8">4</div>
         <div class="lp-trail-card reveal-io">
-          <h3>Smart Choices</h3>
-          <p class="lp-level-meta">Ages 11–13 · CEFR A1</p>
-          <p>Making plans, giving reasons, and talking through decisions in longer, more confident sentences.</p>
+          <h3 data-i18n="lvl4.h">Smart Choices</h3>
+          <p class="lp-level-meta" data-i18n="lvl4.meta">Ages 11–13 · CEFR A1</p>
+          <p data-i18n="lvl4.p">Making plans, giving reasons, and talking through decisions in longer, more confident sentences.</p>
         </div>
       </div>
       <div class="lp-trail-stop">
         <div class="lp-trail-dot" style="background:#15803D">5</div>
         <div class="lp-trail-card reveal-io">
-          <h3>Telling My Story</h3>
-          <p class="lp-level-meta">Ages 12–14 · CEFR A2</p>
-          <p>Narrating experiences and opinions — the shift from answering questions to telling a story.</p>
+          <h3 data-i18n="lvl5.h">Telling My Story</h3>
+          <p class="lp-level-meta" data-i18n="lvl5.meta">Ages 12–14 · CEFR A2</p>
+          <p data-i18n="lvl5.p">Narrating experiences and opinions — the shift from answering questions to telling a story.</p>
         </div>
       </div>
       <div class="lp-trail-stop">
         <div class="lp-trail-dot" style="background:#BE185D">6</div>
         <div class="lp-trail-card reveal-io">
-          <h3>Looking Ahead</h3>
-          <p class="lp-level-meta">Ages 13–15 · CEFR A2</p>
-          <p>The final stretch — future plans, bigger ideas, and real confidence speaking English.</p>
+          <h3 data-i18n="lvl6.h">Looking Ahead</h3>
+          <p class="lp-level-meta" data-i18n="lvl6.meta">Ages 13–15 · CEFR A2</p>
+          <p data-i18n="lvl6.p">The final stretch — future plans, bigger ideas, and real confidence speaking English.</p>
         </div>
       </div>
     </div>
   </section>
 
   <section class="mt lp-different">
-    <h2 class="center mb">What makes Lumio different</h2>
+    <h2 class="center mb" data-i18n="diff.h2">What makes Lumio different</h2>
     <div class="lp-diff-grid">
       <div class="lp-diff-card reveal-io">
-        <h3>🕌 Arabic-first, not translated in</h3>
-        <p>Every word, every instruction, every rule — built bilingual from day one, not bolted on afterward.</p>
+        <h3 data-i18n="diff1.h">🕌 Arabic-first, not translated in</h3>
+        <p data-i18n="diff1.p">Every word, every instruction, every rule — built bilingual from day one, not bolted on afterward.</p>
       </div>
       <div class="lp-diff-card reveal-io">
-        <h3>🔡 Spelling has real rules</h3>
-        <p>Not just memorizing letters — the actual rules behind how English words are built, taught step by step.</p>
+        <h3 data-i18n="diff2.h">🔡 Spelling has real rules</h3>
+        <p data-i18n="diff2.p">Not just memorizing letters — the actual rules behind how English words are built, taught step by step.</p>
       </div>
       <div class="lp-diff-card reveal-io">
-        <h3>🗣️ Homework uses real sentences</h3>
-        <p>Every practice sentence is grounded in what a word actually means — not a random word list to memorize.</p>
+        <h3 data-i18n="diff3.h">🗣️ Homework uses real sentences</h3>
+        <p data-i18n="diff3.p">Every practice sentence is grounded in what a word actually means — not a random word list to memorize.</p>
       </div>
       <div class="lp-diff-card reveal-io">
-        <h3>📄 Worksheets and flashcards you can print</h3>
-        <p>A real printable homework page and flashcard set for every lesson, for the moments a screen isn't the right tool.</p>
+        <h3 data-i18n="diff4.h">📄 Worksheets and flashcards you can print</h3>
+        <p data-i18n="diff4.p">A real printable homework page and flashcard set for every lesson, for the moments a screen isn't the right tool.</p>
       </div>
     </div>
   </section>
 
   <section class="mt lp-preview">
     <div class="lp-preview-text reveal-io">
-      <h2>This is what a real lesson looks like</h2>
-      <p>Not a mockup, not a design sketch — a real screenshot from an actual Lumio lesson, exactly as a student sees it.</p>
+      <h2 data-i18n="prev.h2">This is what a real lesson looks like</h2>
+      <p data-i18n="prev.p">Not a mockup, not a design sketch — a real screenshot from an actual Lumio lesson, exactly as a student sees it.</p>
     </div>
     <div class="lp-preview-frame reveal-io">
       <div class="lp-preview-bar"><span></span><span></span><span></span></div>
@@ -571,8 +613,8 @@ html{scroll-behavior:smooth}
   </section>
 
   <section class="mt lp-demo" id="demo">
-    <h2 class="center mb reveal-io">See the Hub and bonus games in action</h2>
-    <p class="center lp-demo-intro reveal-io">Two real screen recordings, not mockups — this is exactly what your child taps, hears, and plays.</p>
+    <h2 class="center mb reveal-io" data-i18n="demo.h2">See the Hub and bonus games in action</h2>
+    <p class="center lp-demo-intro reveal-io" data-i18n="demo.intro">Two real screen recordings, not mockups — this is exactly what your child taps, hears, and plays.</p>
     <div class="lp-demo-grid">
       <div class="lp-demo-card reveal-io">
         <div class="lp-preview-frame lp-demo-frame">
@@ -582,8 +624,8 @@ html{scroll-behavior:smooth}
             <source src="assets/marketing/demo-hub.mp4" type="video/mp4">
           </video>
         </div>
-        <h3>Inside the English Hub</h3>
-        <p>Browsing real vocabulary and idiom cards — pictures, audio, and Arabic side by side.</p>
+        <h3 data-i18n="demo1.h">Inside the English Hub</h3>
+        <p data-i18n="demo1.p">Browsing real vocabulary and idiom cards — pictures, audio, and Arabic side by side.</p>
       </div>
       <div class="lp-demo-card reveal-io">
         <div class="lp-preview-frame lp-demo-frame">
@@ -593,31 +635,31 @@ html{scroll-behavior:smooth}
             <source src="assets/marketing/demo-game.mp4" type="video/mp4">
           </video>
         </div>
-        <h3>A real bonus game</h3>
-        <p>Every level unlocks its own game — this is Crew Chat, Level 3's game, played round by round.</p>
+        <h3 data-i18n="demo2.h">A real bonus game</h3>
+        <p data-i18n="demo2.p">Every level unlocks its own game — this is Crew Chat, Level 3's game, played round by round.</p>
       </div>
     </div>
   </section>
 
   <section class="mt lp-offline">
-    <h2 class="center mb">Real writing practice. Real flashcards. Off the screen.</h2>
-    <p class="center lp-offline-intro">Every single lesson, at every level, comes with two things you can print and hold: a homework sheet and a set of flashcards. Neither is an afterthought — both are written specifically for the age and stage your child is actually at.</p>
+    <h2 class="center mb" data-i18n="off.h2">Real writing practice. Real flashcards. Off the screen.</h2>
+    <p class="center lp-offline-intro" data-i18n="off.intro">Every single lesson, at every level, comes with two things you can print and hold: a homework sheet and a set of flashcards. Neither is an afterthought — both are written specifically for the age and stage your child is actually at.</p>
     <div class="lp-offline-grid">
       <div class="lp-offline-card reveal-io">
         <div class="lp-preview-frame lp-offline-frame">
           <img src="assets/marketing/worksheet-sample.png" alt="A real Lumio homework sheet for Pre-A Lesson 1, with word tracing lines and a drawing box">
         </div>
-        <h3>Writing exercises</h3>
-        <p><b>Who they're for:</b> every level, but the task grows with your child. Pre-A and the early levels trace and copy each word by hand, building letter formation and muscle memory before reading is even required. From Level 3 onward, the task becomes writing full original sentences in that day's grammar pattern — putting the rule to use, not just recognizing it.</p>
-        <p><b>Why it matters:</b> screen recognition and handwriting are different skills, and only one of them is practiced by tapping an answer. A short, guided writing task each lesson builds the one that a multiple-choice quiz can't.</p>
+        <h3 data-i18n="off1.h">Writing exercises</h3>
+        <p data-i18n-html="off1.p1"><b>Who they're for:</b> every level, but the task grows with your child. Pre-A and the early levels trace and copy each word by hand, building letter formation and muscle memory before reading is even required. From Level 3 onward, the task becomes writing full original sentences in that day's grammar pattern — putting the rule to use, not just recognizing it.</p>
+        <p data-i18n-html="off1.p2"><b>Why it matters:</b> screen recognition and handwriting are different skills, and only one of them is practiced by tapping an answer. A short, guided writing task each lesson builds the one that a multiple-choice quiz can't.</p>
       </div>
       <div class="lp-offline-card reveal-io">
         <div class="lp-preview-frame lp-offline-frame">
           <img src="assets/marketing/flashcard-sample.png" alt="A real Lumio flashcard sheet for Pre-A Lesson 1, with a picture and word on the front">
         </div>
-        <h3>Flashcards</h3>
-        <p><b>Who they're for:</b> every level, and every parent — including parents who don't speak English themselves. Each card shows the picture and English word on one side and the Arabic translation on the other, so quizzing at home never requires knowing the answer in advance.</p>
-        <p><b>Why it matters:</b> spaced, repeated recall away from a screen is one of the most reliable ways vocabulary actually sticks. A five-minute flip-through before bed does real work that a single lesson session can't do alone.</p>
+        <h3 data-i18n="off2.h">Flashcards</h3>
+        <p data-i18n-html="off2.p1"><b>Who they're for:</b> every level, and every parent — including parents who don't speak English themselves. Each card shows the picture and English word on one side and the Arabic translation on the other, so quizzing at home never requires knowing the answer in advance.</p>
+        <p data-i18n-html="off2.p2"><b>Why it matters:</b> spaced, repeated recall away from a screen is one of the most reliable ways vocabulary actually sticks. A five-minute flip-through before bed does real work that a single lesson session can't do alone.</p>
       </div>
     </div>
   </section>
@@ -628,28 +670,28 @@ html{scroll-behavior:smooth}
         <img src="assets/marketing/parent-handbook-cover.jpg" alt="Cover of the Lumio English Parent Handbook, in Arabic">
       </div>
       <div class="lp-parentbook-text reveal-io">
-        <div class="lp-parentbook-eyebrow">Free download &middot; written fully in Arabic</div>
-        <h2>The Parent Handbook</h2>
-        <p>An 11-page guide written directly for you, not your child — everything you'd want to know before and after saying yes, in one place instead of scattered across a chat.</p>
+        <div class="lp-parentbook-eyebrow" data-i18n-html="pb.eyebrow">Free download &middot; written fully in Arabic</div>
+        <h2 data-i18n="pb.h2">The Parent Handbook</h2>
+        <p data-i18n="pb.p">An 11-page guide written directly for you, not your child — everything you'd want to know before and after saying yes, in one place instead of scattered across a chat.</p>
         <ul class="lp-parentbook-list">
-          <li><b>Chapter 1-2 &middot;</b> How the story begins, and how the journey actually starts</li>
-          <li><b>Chapter 3 &middot;</b> The learning cycle — what a real lesson looks like, step by step</li>
-          <li><b>Chapter 4 &middot;</b> How to track your child's real progress</li>
-          <li><b>Chapter 5 &middot;</b> Homework and practice — what to expect at home</li>
-          <li><b>Chapter 6-7 &middot;</b> The full 7-level journey, and how certificates work</li>
+          <li data-i18n-html="pb.li1"><b>Chapter 1-2 &middot;</b> How the story begins, and how the journey actually starts</li>
+          <li data-i18n-html="pb.li2"><b>Chapter 3 &middot;</b> The learning cycle — what a real lesson looks like, step by step</li>
+          <li data-i18n-html="pb.li3"><b>Chapter 4 &middot;</b> How to track your child's real progress</li>
+          <li data-i18n-html="pb.li4"><b>Chapter 5 &middot;</b> Homework and practice — what to expect at home</li>
+          <li data-i18n-html="pb.li5"><b>Chapter 6-7 &middot;</b> The full 7-level journey, and how certificates work</li>
         </ul>
         <div class="lp-parentbook-ctas">
-          <a class="btn btn-primary btn-big" href="downloads/Lumio_Parent_Handbook_AR.pdf" download>⬇ Download the Handbook</a>
-          <a class="btn btn-outline btn-big" href="https://wa.me/201124882493?text=Hi%21%20Could%20you%20send%20me%20the%20Parent%20Handbook%20PDF%2C%20please%3F" target="_blank" rel="noopener">Send it to me on WhatsApp</a>
+          <a class="btn btn-primary btn-big" href="downloads/Lumio_Parent_Handbook_AR.pdf" download data-i18n="pb.download">⬇ Download the Handbook</a>
+          <a class="btn btn-outline btn-big" id="pbWaLink" href="https://wa.me/201124882493?text=Hi%21%20Could%20you%20send%20me%20the%20Parent%20Handbook%20PDF%2C%20please%3F" target="_blank" rel="noopener" data-i18n="pb.whatsapp">Send it to me on WhatsApp</a>
         </div>
       </div>
     </div>
   </section>
 
   <section class="mt lp-pricing" id="pricing">
-    <h2 class="center mb reveal-io">Simple pricing, real value</h2>
-    <p class="center lp-pricing-intro reveal-io">One level = 2 months &middot; 20 live sessions &middot; full access to that level's English Hub. Save more the longer you commit.</p>
-    <p class="center lp-pricing-freehint reveal-io">Not sure which level fits? <a href="quick-check.html">Take the free English check</a> or <a href="#startfree">try a free trial class</a> first.</p>
+    <h2 class="center mb reveal-io" data-i18n="pr.h2">Simple pricing, real value</h2>
+    <p class="center lp-pricing-intro reveal-io" data-i18n-html="pr.intro">One level = 2 months &middot; 20 live sessions &middot; full access to that level's English Hub. Save more the longer you commit.</p>
+    <p class="center lp-pricing-freehint reveal-io" data-i18n-html="pr.freehint">Not sure which level fits? <a href="quick-check.html">Take the free English check</a> or <a href="#startfree">try a free trial class</a> first.</p>
 
     <div class="lp-currency-switch reveal-io" role="tablist" aria-label="Choose currency">
       <button class="lp-cur-btn active" data-cur="SAR">SAR</button>
@@ -662,84 +704,84 @@ html{scroll-behavior:smooth}
 
     <div class="lp-pricing-grid">
       <div class="lp-price-card reveal-io">
-        <div class="lp-price-name">Single Level</div>
-        <div class="lp-price-sub">2 months &middot; 20 sessions</div>
+        <div class="lp-price-name" data-i18n="pr.single_name">Single Level</div>
+        <div class="lp-price-sub" data-i18n-html="pr.single_sub">2 months &middot; 20 sessions</div>
         <div class="lp-price-amount" data-sar="730.00" data-usd="194.67" data-aed="714.91" data-kwd="59.96" data-omr="74.85" data-qar="708.59">
           <span class="lp-price-symbol">SAR</span><span class="lp-price-num">730.00</span>
         </div>
-        <div class="lp-price-per">per level</div>
+        <div class="lp-price-per" data-i18n="pr.per_level">per level</div>
         <ul class="lp-price-list">
-          <li>1 full level, start to finish</li>
-          <li>Full English Hub access for that level</li>
-          <li>Grouped with peers at your level</li>
-          <li>Teacher + supervisor support</li>
+          <li data-i18n="pr.li_single1">1 full level, start to finish</li>
+          <li data-i18n="pr.li_single2">Full English Hub access for that level</li>
+          <li data-i18n="pr.li_peers">Grouped with peers at your level</li>
+          <li data-i18n="pr.li_support">Teacher + supervisor support</li>
         </ul>
-        <a class="btn btn-outline lp-price-cta" href="login.html">Get started</a>
+        <a class="btn btn-outline lp-price-cta" href="login.html" data-i18n="pr.get_started">Get started</a>
       </div>
 
       <div class="lp-price-card lp-price-featured reveal-io">
         <div class="lp-price-badges">
-          <div class="lp-price-badge">Most popular</div>
-          <div class="lp-price-badge lp-price-badge-alt">Best value</div>
+          <div class="lp-price-badge" data-i18n="pr.badge_popular">Most popular</div>
+          <div class="lp-price-badge lp-price-badge-alt" data-i18n="pr.badge_best">Best value</div>
         </div>
-        <div class="lp-price-name">6-Level Bundle</div>
-        <div class="lp-price-sub">Full year &middot; 120 sessions</div>
+        <div class="lp-price-name" data-i18n="pr.b6_name">6-Level Bundle</div>
+        <div class="lp-price-sub" data-i18n-html="pr.b6_sub">Full year &middot; 120 sessions</div>
         <div class="lp-price-amount" data-sar="3499.99" data-usd="933.33" data-aed="3427.66" data-kwd="287.47" data-omr="358.87" data-qar="3397.32">
           <span class="lp-price-symbol">SAR</span><span class="lp-price-num">3,499.99</span>
         </div>
-        <div class="lp-price-per">~<span class="lp-perlevel" data-sar="583.33" data-usd="155.56" data-aed="571.28" data-kwd="47.91" data-omr="59.81" data-qar="566.22"><span class="lp-price-symbol">SAR</span> <span class="lp-price-num">583.33</span></span> per level &middot; <b>save 20%</b></div>
+        <div class="lp-price-per" data-i18n-html="pr.b6_per">~<span class="lp-perlevel" data-sar="583.33" data-usd="155.56" data-aed="571.28" data-kwd="47.91" data-omr="59.81" data-qar="566.22"><span class="lp-price-symbol">SAR</span> <span class="lp-price-num">583.33</span></span> per level &middot; <b>save 20%</b></div>
         <ul class="lp-price-list">
-          <li>6 full levels — nearly the whole path</li>
-          <li>Full English Hub access, every level included</li>
-          <li>Grouped with peers at your level</li>
-          <li>Teacher + supervisor support</li>
+          <li data-i18n="pr.li_b6_1">6 full levels — nearly the whole path</li>
+          <li data-i18n="pr.li_full_hub">Full English Hub access, every level included</li>
+          <li data-i18n="pr.li_peers">Grouped with peers at your level</li>
+          <li data-i18n="pr.li_support">Teacher + supervisor support</li>
         </ul>
-        <a class="btn btn-primary lp-price-cta" href="login.html">Get started</a>
+        <a class="btn btn-primary lp-price-cta" href="login.html" data-i18n="pr.get_started">Get started</a>
       </div>
 
       <div class="lp-price-card reveal-io">
-        <div class="lp-price-name">3-Level Bundle</div>
-        <div class="lp-price-sub">6 months &middot; 60 sessions</div>
+        <div class="lp-price-name" data-i18n="pr.b3_name">3-Level Bundle</div>
+        <div class="lp-price-sub" data-i18n-html="pr.b3_sub">6 months &middot; 60 sessions</div>
         <div class="lp-price-amount" data-sar="1949.99" data-usd="520.00" data-aed="1909.69" data-kwd="160.16" data-omr="199.94" data-qar="1892.79">
           <span class="lp-price-symbol">SAR</span><span class="lp-price-num">1,949.99</span>
         </div>
-        <div class="lp-price-per">~<span class="lp-perlevel" data-sar="650.00" data-usd="173.33" data-aed="636.56" data-kwd="53.39" data-omr="66.65" data-qar="630.93"><span class="lp-price-symbol">SAR</span> <span class="lp-price-num">650.00</span></span> per level &middot; <b>save 11%</b></div>
+        <div class="lp-price-per" data-i18n-html="pr.b3_per">~<span class="lp-perlevel" data-sar="650.00" data-usd="173.33" data-aed="636.56" data-kwd="53.39" data-omr="66.65" data-qar="630.93"><span class="lp-price-symbol">SAR</span> <span class="lp-price-num">650.00</span></span> per level &middot; <b>save 11%</b></div>
         <ul class="lp-price-list">
-          <li>3 full levels, back to back</li>
-          <li>Full English Hub access, every level included</li>
-          <li>Grouped with peers at your level</li>
-          <li>Teacher + supervisor support</li>
+          <li data-i18n="pr.li_b3_1">3 full levels, back to back</li>
+          <li data-i18n="pr.li_full_hub">Full English Hub access, every level included</li>
+          <li data-i18n="pr.li_peers">Grouped with peers at your level</li>
+          <li data-i18n="pr.li_support">Teacher + supervisor support</li>
         </ul>
-        <a class="btn btn-outline lp-price-cta" href="login.html">Get started</a>
+        <a class="btn btn-outline lp-price-cta" href="login.html" data-i18n="pr.get_started">Get started</a>
       </div>
     </div>
-    <p class="center lp-pricing-note reveal-io">Prices shown for reference. SAR, AED, OMR and QAR are all pegged to the US dollar and stay stable; KWD is a floating rate and may shift slightly over time.</p>
+    <p class="center lp-pricing-note reveal-io" data-i18n="pr.note">Prices shown for reference. SAR, AED, OMR and QAR are all pegged to the US dollar and stay stable; KWD is a floating rate and may shift slightly over time.</p>
 
     <div class="lp-included reveal-io">
-      <h3 class="center">What's inside every plan</h3>
+      <h3 class="center" data-i18n="pr.included_h3">What's inside every plan</h3>
 
       <div class="lp-included-grid">
         <div class="lp-included-col">
-          <h4>📚 The English Hub, by level</h4>
-          <p class="lp-included-sub">Every level unlocks its own free-browsing Hub — organized, searchable, and available anytime, not just during lessons.</p>
+          <h4 data-i18n="pr.hub_h4">📚 The English Hub, by level</h4>
+          <p class="lp-included-sub" data-i18n="pr.hub_sub">Every level unlocks its own free-browsing Hub — organized, searchable, and available anytime, not just during lessons.</p>
           <table class="lp-hub-table">
-            <tr><th>Hub section</th><th>Available at</th></tr>
-            <tr><td>Vocabulary</td><td>Pre-A → Level 6 <span class="lp-hub-all">(every level)</span></td></tr>
-            <tr><td>Idioms</td><td>Pre-A → Level 6 <span class="lp-hub-all">(every level)</span></td></tr>
-            <tr><td>Writing &amp; Speaking</td><td>Pre-A → Level 6 <span class="lp-hub-all">(every level)</span></td></tr>
-            <tr><td>Spelling</td><td>Pre-A</td></tr>
-            <tr><td>Phonics</td><td>Levels 1–2</td></tr>
-            <tr><td>Grammar</td><td>Levels 3–6</td></tr>
+            <tr><th data-i18n="pr.hub_col1">Hub section</th><th data-i18n="pr.hub_col2">Available at</th></tr>
+            <tr><td data-i18n="pr.hub_vocab">Vocabulary</td><td>Pre-A → Level 6 <span class="lp-hub-all" data-i18n="pr.hub_all">(every level)</span></td></tr>
+            <tr><td data-i18n="pr.hub_idioms">Idioms</td><td>Pre-A → Level 6 <span class="lp-hub-all" data-i18n="pr.hub_all">(every level)</span></td></tr>
+            <tr><td data-i18n-html="pr.hub_writing">Writing &amp; Speaking</td><td>Pre-A → Level 6 <span class="lp-hub-all" data-i18n="pr.hub_all">(every level)</span></td></tr>
+            <tr><td data-i18n="pr.hub_spelling">Spelling</td><td>Pre-A</td></tr>
+            <tr><td data-i18n="pr.hub_phonics">Phonics</td><td data-i18n="pr.hub_levels12">Levels 1–2</td></tr>
+            <tr><td data-i18n="pr.hub_grammar">Grammar</td><td data-i18n="pr.hub_levels36">Levels 3–6</td></tr>
           </table>
         </div>
 
         <div class="lp-included-col">
-          <h4>🤝 A real community, not a solo app</h4>
-          <p class="lp-included-sub">Learning a language works better with people. Every student gets:</p>
+          <h4 data-i18n="pr.community_h4">🤝 A real community, not a solo app</h4>
+          <p class="lp-included-sub" data-i18n="pr.community_sub">Learning a language works better with people. Every student gets:</p>
           <ul class="lp-community-list">
-            <li><b>Grouped with peers at the same level</b> — your child learns alongside classmates who are genuinely at the same stage, not a mismatched group.</li>
-            <li><b>A dedicated teacher</b> — leads every live class and tracks real progress lesson by lesson.</li>
-            <li><b>A supervisor on hand</b> — answers questions, helps with anything technical, and keeps the group running smoothly between classes.</li>
+            <li data-i18n-html="pr.comm1"><b>Grouped with peers at the same level</b> — your child learns alongside classmates who are genuinely at the same stage, not a mismatched group.</li>
+            <li data-i18n-html="pr.comm2"><b>A dedicated teacher</b> — leads every live class and tracks real progress lesson by lesson.</li>
+            <li data-i18n-html="pr.comm3"><b>A supervisor on hand</b> — answers questions, helps with anything technical, and keeps the group running smoothly between classes.</li>
           </ul>
         </div>
       </div>
@@ -747,31 +789,31 @@ html{scroll-behavior:smooth}
   </section>
 
   <section class="mt lp-faq" id="faq">
-    <h2 class="center mb">Questions parents ask</h2>
+    <h2 class="center mb" data-i18n="faq.h2">Questions parents ask</h2>
     <div class="lp-faq-list">
       <details class="lp-faq-item reveal-io">
-        <summary>What age is Lumio actually for?</summary>
-        <p>From 4 all the way to 15 — the curriculum spans 7 levels, each built for a specific age range, from a child's very first English words through confident, independent conversation.</p>
+        <summary data-i18n="faq1.q">What age is Lumio actually for?</summary>
+        <p data-i18n="faq1.a">From 4 all the way to 15 — the curriculum spans 7 levels, each built for a specific age range, from a child's very first English words through confident, independent conversation.</p>
       </details>
       <details class="lp-faq-item reveal-io">
-        <summary>Is there a real teacher, or is this just an app?</summary>
-        <p>Both. Your child prepares in the app, then joins a real, live class with their teacher over Zoom — the app isn't a replacement for the teacher, it's what makes that class time count.</p>
+        <summary data-i18n="faq2.q">Is there a real teacher, or is this just an app?</summary>
+        <p data-i18n="faq2.a">Both. Your child prepares in the app, then joins a real, live class with their teacher over Zoom — the app isn't a replacement for the teacher, it's what makes that class time count.</p>
       </details>
       <details class="lp-faq-item reveal-io">
-        <summary>My child has never studied English. Where do they start?</summary>
-        <p><a href="placement-test.html">Take the free placement test</a> — it's quick, and it places your child at the right level automatically based on their real score, whether that's their very first English words or something further along.</p>
+        <summary data-i18n="faq3.q">My child has never studied English. Where do they start?</summary>
+        <p data-i18n-html="faq3.a"><a href="placement-test.html">Take the free placement test</a> — it's quick, and it places your child at the right level automatically based on their real score, whether that's their very first English words or something further along.</p>
       </details>
       <details class="lp-faq-item reveal-io">
-        <summary>Can we try a class before paying anything?</summary>
-        <p>Yes — <a href="#startfree">pick your child's age group</a> and join a free trial class right now, in the same format as a real Lumio lesson. No card, no signup required to try it.</p>
+        <summary data-i18n="faq4.q">Can we try a class before paying anything?</summary>
+        <p data-i18n-html="faq4.a">Yes — <a href="#startfree">pick your child's age group</a> and join a free trial class right now, in the same format as a real Lumio lesson. No card, no signup required to try it.</p>
       </details>
       <details class="lp-faq-item reveal-io">
-        <summary>Is the Arabic support just a translation button?</summary>
-        <p>No — Arabic is built into every lesson from the start: every word, every instruction, every spelling rule has its Arabic alongside it, not a toggle bolted on afterward.</p>
+        <summary data-i18n="faq5.q">Is the Arabic support just a translation button?</summary>
+        <p data-i18n="faq5.a">No — Arabic is built into every lesson from the start: every word, every instruction, every spelling rule has its Arabic alongside it, not a toggle bolted on afterward.</p>
       </details>
       <details class="lp-faq-item reveal-io">
-        <summary>What happens after class ends?</summary>
-        <p>Homework, right away — real sentences to practice, words to spell, and a quick quiz, all tied to exactly what was covered in that day's class.</p>
+        <summary data-i18n="faq6.q">What happens after class ends?</summary>
+        <p data-i18n="faq6.a">Homework, right away — real sentences to practice, words to spell, and a quick quiz, all tied to exactly what was covered in that day's class.</p>
       </details>
     </div>
   </section>
@@ -1094,8 +1136,293 @@ html{scroll-behavior:smooth}
 </style>
 
   <script>
-  (function () {
-    // Hero "hear it yourself" word cards -- real audio, the same
+window.LUMIO_I18N = {
+  "announce": { en: "New here? Free placement test and a free trial class — no card, no commitment.", ar: "جديد هنا؟ اختبار تحديد مستوى مجاني وحصة تجريبية مجانية — بدون بطاقة وبدون أي التزام." },
+  "nav.levels": { en: "Levels", ar: "المستويات" },
+  "nav.how": { en: "How it works", ar: "كيف تعمل المنصة" },
+  "nav.friends": { en: "Friends", ar: "الأصدقاء" },
+  "nav.pricing": { en: "Pricing", ar: "الأسعار" },
+  "nav.demo": { en: "See it in action", ar: "شاهدها في العمل" },
+  "nav.handbook": { en: "Parent Handbook", ar: "دليل أولياء الأمور" },
+  "nav.faq": { en: "FAQ", ar: "الأسئلة الشائعة" },
+  "nav.startfree": { en: "Start Free", ar: "ابدأ مجاناً" },
+  "contact_us": { en: "Contact Us", ar: "تواصل معنا" },
+  "start_learning": { en: "Start learning", ar: "ابدأ التعلم" },
+  "brand": { en: "Lumio <span>English</span>", ar: "لوميو <span>إنجلش</span>" },
+  "hero.h1": { en: "Let's learn English <span class=\"hl\">the fun way!</span>", ar: "لنتعلّم الإنجليزية <span class=\"hl\">بطريقة ممتعة!</span>" },
+  "hero.lead": { en: "Join Lumi on a journey of games, songs and stories — made for young learners, with Arabic support every step of the way.", ar: "انضم إلى لومي في رحلة مليئة بالألعاب والأغاني والقصص — مصممة خصيصاً للمتعلمين الصغار، مع دعم كامل باللغة العربية في كل خطوة." },
+  "hero.cta": { en: "I'm a student", ar: "أنا طالب" },
+  "hero.free_link": { en: "New here? Take the free placement test or trial class →", ar: "جديد هنا؟ جرّب اختبار تحديد المستوى أو الحصة التجريبية المجانية ←" },
+  "hero.hear_label": { en: "👆 Tap a word — hear it for yourself", ar: "👆 اضغط على الكلمة لتسمعها بنفسك" },
+  "hero.chip_a": { en: "★ 3-star lessons", ar: "★ دروس بثلاث نجوم" },
+  "hero.chip_b": { en: "Listen &amp; speak", ar: "استمع وتحدث" },
+  "feat1.h": { en: "Learn by playing", ar: "التعلّم عن طريق اللعب" },
+  "feat1.p": { en: "Matching, listening and spelling games in every lesson.", ar: "ألعاب مطابقة واستماع وإملاء في كل درس." },
+  "feat2.h": { en: "Listen &amp; speak", ar: "استمع وتحدّث" },
+  "feat2.p": { en: "Every word is spoken aloud so you learn real pronunciation.", ar: "يُنطق كل كلمة بصوت حقيقي لتتعلّم النطق الصحيح." },
+  "feat3.h": { en: "Earn stars", ar: "اجمع النجوم" },
+  "feat3.p": { en: "Collect 3 stars in every lesson and climb the level map.", ar: "احصل على 3 نجوم في كل درس وتقدّم في خريطة المستوى." },
+  "feat4.h": { en: "Arabic + English", ar: "عربي + English" },
+  "feat4.p": { en: "Every word comes with its Arabic translation, so it's easy to understand.", ar: "كل كلمة معها ترجمتها العربية لتفهمها بسهولة." },
+  "trust1": { en: "Levels, start to finish", ar: "مستويات من البداية للنهاية" },
+  "trust2": { en: "Lessons already built", ar: "درس جاهز بالفعل" },
+  "trust3": { en: "Ages, one clear path", ar: "الأعمار، بمسار واحد واضح" },
+  "trust4": { en: "Arabic support, every word", ar: "دعم عربي في كل كلمة" },
+  "sf.h2": { en: "Start with zero risk — both are free", ar: "ابدأ بدون أي مخاطرة — كلاهما مجاني" },
+  "sf.intro": { en: "No card, no commitment. Find the right level, then see a real class, before you decide anything.", ar: "بدون بطاقة، وبدون أي التزام. اكتشف المستوى المناسب، ثم شاهد حصة حقيقية، قبل أن تقرر أي شيء." },
+  "sf.badge_free": { en: "100% Free", ar: "مجاني 100%" },
+  "sf.test_h": { en: "Free Placement Test", ar: "اختبار تحديد المستوى المجاني" },
+  "sf.test_p": { en: "10 quick questions with real feedback on the spot — what your child already knows, and a couple of tips on what to practice next. No signup required to see the result.", ar: "10 أسئلة سريعة مع نتيجة فورية حقيقية — ما يعرفه طفلك بالفعل، وبعض النصائح لما يجب التدرب عليه بعد ذلك. بدون تسجيل لرؤية النتيجة." },
+  "sf.test_cta": { en: "Take the free test →", ar: "ابدأ الاختبار المجاني ←" },
+  "sf.test_note": { en: "Takes about 5 minutes", ar: "يستغرق حوالي 5 دقائق" },
+  "sf.trial_h": { en: "Free Trial Class", ar: "حصة تجريبية مجانية" },
+  "sf.trial_p": { en: "Pick the level that fits your child's age and jump straight into a real, live-style trial class — the same format as an actual Lumio lesson.", ar: "اختر المستوى المناسب لعمر طفلك وابدأ مباشرة في حصة تجريبية حقيقية بنفس أسلوب الحصة المباشرة — بنفس صيغة درس Lumio الفعلي." },
+  "sf.trial_note": { en: "Tap your child's age group to start", ar: "اضغط على الفئة العمرية لطفلك للبدء" },
+  "how.h2": { en: "How a Lumio lesson works", ar: "كيف يعمل درس Lumio" },
+  "how.sub": { en: "The same four steps, every single lesson.", ar: "نفس الخطوات الأربع، في كل درس." },
+  "how1.h": { en: "Prepare", ar: "التحضير" },
+  "how1.p": { en: "Meet the new words and sounds in the app before class, so your child walks in ready, not cold.", ar: "يتعرّف طفلك على الكلمات والأصوات الجديدة في التطبيق قبل الحصة، ليدخلها وهو مستعد تماماً." },
+  "how2.h": { en: "Live class on Zoom", ar: "حصة مباشرة عبر Zoom" },
+  "how2.p": { en: "A real teacher, live, guiding the lesson your child already previewed.", ar: "معلم حقيقي، مباشرةً، يشرح الدرس الذي اطّلع عليه طفلك مسبقاً." },
+  "how3.h": { en: "Practice at home", ar: "التدريب في المنزل" },
+  "how3.p": { en: "Homework that uses real sentences, not just word lists — spelling, speaking, and short quizzes.", ar: "واجب منزلي بجمل حقيقية، وليس مجرد قوائم كلمات — إملاء، تحدث، واختبارات قصيرة." },
+  "how4.h": { en: "Grow on the map", ar: "التقدّم على الخريطة" },
+  "how4.p": { en: "Each finished lesson lights up the Adventure Map, unlocking games, stories, and the next step.", ar: "كل درس يُكمله طفلك يُضيء خريطة المغامرة، ويفتح الألعاب والقصص والخطوة التالية." },
+  "friends.h2": { en: "Meet your learning friends", ar: "تعرّف على أصدقاء التعلّم" },
+  "friends.sub": { en: "Tap a friend to say hi! 👋", ar: "اضغط على أحد الأصدقاء لتحيته! 👋" },
+  "name.lumi": { en: "Lumi", ar: "لومي" },
+  "name.sara": { en: "Sara", ar: "سارة" },
+  "name.noor": { en: "Noor", ar: "نور" },
+  "name.omar": { en: "Omar", ar: "عمر" },
+  "name.ziad": { en: "Ziad", ar: "زياد" },
+  "name.hamad": { en: "Hamad", ar: "حمد" },
+  "curr.h2": { en: "The path, level by level", ar: "المسار، مستوى بمستوى" },
+  "curr.sub": { en: "Every level already has real lessons behind it — nothing here is a placeholder.", ar: "كل مستوى يحتوي على دروس حقيقية جاهزة بالفعل — لا شيء هنا مجرد نموذج مبدئي." },
+  "curr.guide": { en: "Follow me! 🐣", ar: "اتبعني! 🐣" },
+  "lvl0.h": { en: "First Words", ar: "الكلمات الأولى" },
+  "lvl0.meta": { en: "Ages 4–6 · CEFR Pre-A1", ar: "الأعمار 4-6 · المستوى Pre-A1" },
+  "lvl0.p": { en: "The alphabet, first sounds, and the very first spoken words — built for a child who's never studied English before.", ar: "الحروف الأبجدية، الأصوات الأولى، وأولى الكلمات المنطوقة — مصمم لطفل لم يدرس الإنجليزية من قبل." },
+  "lvl1.h": { en: "About Me", ar: "عني أنا" },
+  "lvl1.meta": { en: "Ages 6–8 · CEFR Pre-A1", ar: "الأعمار 6-8 · المستوى Pre-A1" },
+  "lvl1.p": { en: "Simple sentences about family, feelings, and daily routines — the first real conversations.", ar: "جمل بسيطة عن العائلة، المشاعر، والروتين اليومي — أولى المحادثات الحقيقية." },
+  "lvl2.h": { en: "My World", ar: "عالمي" },
+  "lvl2.meta": { en: "Ages 8–10 · CEFR Pre-A1", ar: "الأعمار 8-10 · المستوى Pre-A1" },
+  "lvl2.p": { en: "School, home, and everyday objects — describing the world right around them.", ar: "المدرسة، المنزل، والأشياء اليومية — وصف العالم من حولهم." },
+  "lvl3.h": { en: "Everyday Life", ar: "الحياة اليومية" },
+  "lvl3.meta": { en: "Ages 10–12 · CEFR A1", ar: "الأعمار 10-12 · المستوى A1" },
+  "lvl3.p": { en: "Real-life situations — shopping, plans, opinions — with grammar that starts doing real work.", ar: "مواقف من الحياة الواقعية — التسوق، الخطط، الآراء — مع قواعد تبدأ بالعمل بشكل حقيقي." },
+  "lvl4.h": { en: "Smart Choices", ar: "قرارات ذكية" },
+  "lvl4.meta": { en: "Ages 11–13 · CEFR A1", ar: "الأعمار 11-13 · المستوى A1" },
+  "lvl4.p": { en: "Making plans, giving reasons, and talking through decisions in longer, more confident sentences.", ar: "وضع الخطط، إعطاء الأسباب، ومناقشة القرارات بجمل أطول وأكثر ثقة." },
+  "lvl5.h": { en: "Telling My Story", ar: "أروي قصتي" },
+  "lvl5.meta": { en: "Ages 12–14 · CEFR A2", ar: "الأعمار 12-14 · المستوى A2" },
+  "lvl5.p": { en: "Narrating experiences and opinions — the shift from answering questions to telling a story.", ar: "سرد التجارب والآراء — الانتقال من الإجابة على الأسئلة إلى رواية قصة." },
+  "lvl6.h": { en: "Looking Ahead", ar: "نحو المستقبل" },
+  "lvl6.meta": { en: "Ages 13–15 · CEFR A2", ar: "الأعمار 13-15 · المستوى A2" },
+  "lvl6.p": { en: "The final stretch — future plans, bigger ideas, and real confidence speaking English.", ar: "المرحلة الأخيرة — خطط المستقبل، أفكار أكبر، وثقة حقيقية في التحدث بالإنجليزية." },
+  "diff.h2": { en: "What makes Lumio different", ar: "ما الذي يميّز Lumio" },
+  "diff1.h": { en: "🕌 Arabic-first, not translated in", ar: "🕌 عربي بالأساس، وليس مترجماً لاحقاً" },
+  "diff1.p": { en: "Every word, every instruction, every rule — built bilingual from day one, not bolted on afterward.", ar: "كل كلمة، كل تعليمة، كل قاعدة — مبنية بلغتين منذ اليوم الأول، وليست مُضافة لاحقاً." },
+  "diff2.h": { en: "🔡 Spelling has real rules", ar: "🔡 الإملاء له قواعد حقيقية" },
+  "diff2.p": { en: "Not just memorizing letters — the actual rules behind how English words are built, taught step by step.", ar: "ليس مجرد حفظ للحروف — بل القواعد الحقيقية وراء بناء الكلمات الإنجليزية، تُدرَّس خطوة بخطوة." },
+  "diff3.h": { en: "🗣️ Homework uses real sentences", ar: "🗣️ الواجبات تستخدم جملاً حقيقية" },
+  "diff3.p": { en: "Every practice sentence is grounded in what a word actually means — not a random word list to memorize.", ar: "كل جملة تدريب مبنية على المعنى الحقيقي للكلمة — وليست قائمة كلمات عشوائية للحفظ." },
+  "diff4.h": { en: "📄 Worksheets and flashcards you can print", ar: "📄 أوراق عمل وبطاقات تعليمية قابلة للطباعة" },
+  "diff4.p": { en: "A real printable homework page and flashcard set for every lesson, for the moments a screen isn't the right tool.", ar: "ورقة واجب حقيقية قابلة للطباعة وبطاقات تعليمية لكل درس، للحظات التي لا تكون فيها الشاشة الخيار الأنسب." },
+  "prev.h2": { en: "This is what a real lesson looks like", ar: "هكذا يبدو الدرس الحقيقي" },
+  "prev.p": { en: "Not a mockup, not a design sketch — a real screenshot from an actual Lumio lesson, exactly as a student sees it.", ar: "ليست صورة تخيلية أو تصميماً أولياً — بل لقطة شاشة حقيقية من درس Lumio فعلي، تماماً كما يراها الطالب." },
+  "demo.h2": { en: "See the Hub and bonus games in action", ar: "شاهد المكتبة التعليمية والألعاب الإضافية أثناء الاستخدام" },
+  "demo.intro": { en: "Two real screen recordings, not mockups — this is exactly what your child taps, hears, and plays.", ar: "تسجيلا شاشة حقيقيان، وليسا نماذج تخيلية — هذا بالضبط ما يضغط عليه طفلك ويسمعه ويلعبه." },
+  "demo1.h": { en: "Inside the English Hub", ar: "داخل المكتبة التعليمية" },
+  "demo1.p": { en: "Browsing real vocabulary and idiom cards — pictures, audio, and Arabic side by side.", ar: "تصفّح بطاقات مفردات وتعبيرات حقيقية — صور، صوت، وترجمة عربية جنباً إلى جنب." },
+  "demo2.h": { en: "A real bonus game", ar: "لعبة إضافية حقيقية" },
+  "demo2.p": { en: "Every level unlocks its own game — this is Crew Chat, Level 3's game, played round by round.", ar: "كل مستوى يفتح لعبته الخاصة — هذه لعبة Crew Chat، لعبة المستوى الثالث، تُلعب جولة بجولة." },
+  "off.h2": { en: "Real writing practice. Real flashcards. Off the screen.", ar: "تدريب كتابة حقيقي. بطاقات تعليمية حقيقية. بعيداً عن الشاشة." },
+  "off.intro": { en: "Every single lesson, at every level, comes with two things you can print and hold: a homework sheet and a set of flashcards. Neither is an afterthought — both are written specifically for the age and stage your child is actually at.", ar: "كل درس، في كل مستوى، يأتي مع شيئين يمكنك طباعتهما وحملهما: ورقة واجب وبطاقات تعليمية. لا شيء منهما مجرد إضافة عابرة — كلاهما مكتوب خصيصاً لعمر طفلك ومرحلته الفعلية." },
+  "off1.h": { en: "Writing exercises", ar: "تدريبات الكتابة" },
+  "off1.p1": { en: "<b>Who they're for:</b> every level, but the task grows with your child. Pre-A and the early levels trace and copy each word by hand, building letter formation and muscle memory before reading is even required. From Level 3 onward, the task becomes writing full original sentences in that day's grammar pattern — putting the rule to use, not just recognizing it.", ar: "<b>لمن هي:</b> لكل المستويات، لكن المهمة تتطور مع طفلك. المستوى التمهيدي والمستويات الأولى تتضمن تتبع ونسخ كل كلمة باليد، لبناء شكل الحروف والذاكرة العضلية قبل أن تصبح القراءة مطلوبة أصلاً. من المستوى الثالث فصاعداً، تتحول المهمة إلى كتابة جمل كاملة وأصلية باستخدام قاعدة اليوم — لتطبيق القاعدة، لا مجرد التعرف عليها." },
+  "off1.p2": { en: "<b>Why it matters:</b> screen recognition and handwriting are different skills, and only one of them is practiced by tapping an answer. A short, guided writing task each lesson builds the one that a multiple-choice quiz can't.", ar: "<b>لماذا يهم هذا:</b> التعرف عبر الشاشة والكتابة اليدوية مهارتان مختلفتان، والضغط على إجابة يُدرّب واحدة منهما فقط. مهمة كتابة قصيرة وموجّهة في كل درس تبني المهارة التي لا يستطيع اختبار الاختيار من متعدد بناءها." },
+  "off2.h": { en: "Flashcards", ar: "البطاقات التعليمية" },
+  "off2.p1": { en: "<b>Who they're for:</b> every level, and every parent — including parents who don't speak English themselves. Each card shows the picture and English word on one side and the Arabic translation on the other, so quizzing at home never requires knowing the answer in advance.", ar: "<b>لمن هي:</b> لكل المستويات، ولكل الأهالي — بمن فيهم الأهالي الذين لا يتحدثون الإنجليزية بأنفسهم. كل بطاقة تعرض الصورة والكلمة الإنجليزية على وجه، والترجمة العربية على الوجه الآخر، بحيث لا تحتاج لمعرفة الإجابة مسبقاً لتسميع طفلك في المنزل." },
+  "off2.p2": { en: "<b>Why it matters:</b> spaced, repeated recall away from a screen is one of the most reliable ways vocabulary actually sticks. A five-minute flip-through before bed does real work that a single lesson session can't do alone.", ar: "<b>لماذا يهم هذا:</b> التكرار المتباعد بعيداً عن الشاشة هو من أكثر الطرق فعالية لترسيخ المفردات فعلياً. خمس دقائق من التصفح قبل النوم تقوم بعمل حقيقي لا يستطيع درس واحد وحده تحقيقه." },
+  "pb.eyebrow": { en: "Free download &middot; written fully in Arabic", ar: "تحميل مجاني &middot; مكتوب بالكامل باللغة العربية" },
+  "pb.h2": { en: "The Parent Handbook", ar: "دليل أولياء الأمور" },
+  "pb.p": { en: "An 11-page guide written directly for you, not your child — everything you'd want to know before and after saying yes, in one place instead of scattered across a chat.", ar: "دليل من 11 صفحة، مكتوب مباشرة لك أنت، وليس لطفلك — كل ما تريد معرفته قبل الموافقة وبعدها، في مكان واحد بدلاً من متفرقاً عبر المحادثات." },
+  "pb.li1": { en: "<b>Chapter 1-2 &middot;</b> How the story begins, and how the journey actually starts", ar: "<b>الفصل 1-2 &middot;</b> كيف تبدأ القصة، وكيف تنطلق الرحلة فعلياً" },
+  "pb.li2": { en: "<b>Chapter 3 &middot;</b> The learning cycle — what a real lesson looks like, step by step", ar: "<b>الفصل 3 &middot;</b> دورة التعلّم — كيف يبدو الدرس الحقيقي، خطوة بخطوة" },
+  "pb.li3": { en: "<b>Chapter 4 &middot;</b> How to track your child's real progress", ar: "<b>الفصل 4 &middot;</b> كيف تتابع تقدّم طفلك الحقيقي" },
+  "pb.li4": { en: "<b>Chapter 5 &middot;</b> Homework and practice — what to expect at home", ar: "<b>الفصل 5 &middot;</b> الواجبات والتدريب — ما الذي تتوقعه في المنزل" },
+  "pb.li5": { en: "<b>Chapter 6-7 &middot;</b> The full 7-level journey, and how certificates work", ar: "<b>الفصل 6-7 &middot;</b> رحلة المستويات السبعة كاملة، وكيف تعمل الشهادات" },
+  "pb.download": { en: "⬇ Download the Handbook", ar: "⬇ تحميل الدليل" },
+  "pb.whatsapp": { en: "Send it to me on WhatsApp", ar: "أرسله لي عبر واتساب" },
+  "pr.h2": { en: "Simple pricing, real value", ar: "أسعار بسيطة، وقيمة حقيقية" },
+  "pr.intro": { en: "One level = 2 months &middot; 20 live sessions &middot; full access to that level's English Hub. Save more the longer you commit.", ar: "المستوى الواحد = شهران &middot; 20 حصة مباشرة &middot; وصول كامل لمكتبة ذلك المستوى. وفّر أكثر كلما التزمت لفترة أطول." },
+  "pr.freehint": { en: "Not sure which level fits? <a href=\"quick-check.html\">Take the free English check</a> or <a href=\"#startfree\">try a free trial class</a> first.", ar: "لست متأكداً من المستوى المناسب؟ <a href=\"quick-check.html\">جرّب الاختبار السريع المجاني</a> أو <a href=\"#startfree\">جرّب حصة تجريبية مجانية</a> أولاً." },
+  "pr.single_name": { en: "Single Level", ar: "مستوى واحد" },
+  "pr.single_sub": { en: "2 months &middot; 20 sessions", ar: "شهران &middot; 20 حصة" },
+  "pr.per_level": { en: "per level", ar: "لكل مستوى" },
+  "pr.li_single1": { en: "1 full level, start to finish", ar: "مستوى كامل، من البداية للنهاية" },
+  "pr.li_single2": { en: "Full English Hub access for that level", ar: "وصول كامل لمكتبة ذلك المستوى" },
+  "pr.li_peers": { en: "Grouped with peers at your level", ar: "ضمن مجموعة من زملاء بنفس مستواك" },
+  "pr.li_support": { en: "Teacher + supervisor support", ar: "دعم من معلم ومشرف" },
+  "pr.get_started": { en: "Get started", ar: "ابدأ الآن" },
+  "pr.badge_popular": { en: "Most popular", ar: "الأكثر طلباً" },
+  "pr.badge_best": { en: "Best value", ar: "الأفضل قيمة" },
+  "pr.b6_name": { en: "6-Level Bundle", ar: "باقة 6 مستويات" },
+  "pr.b6_sub": { en: "Full year &middot; 120 sessions", ar: "سنة كاملة &middot; 120 حصة" },
+  "pr.b6_per": { en: "~<span class=\"lp-perlevel\" data-sar=\"583.33\" data-usd=\"155.56\" data-aed=\"571.28\" data-kwd=\"47.91\" data-omr=\"59.81\" data-qar=\"566.22\"><span class=\"lp-price-symbol\">SAR</span> <span class=\"lp-price-num\">583.33</span></span> per level &middot; <b>save 20%</b>", ar: "~<span class=\"lp-perlevel\" data-sar=\"583.33\" data-usd=\"155.56\" data-aed=\"571.28\" data-kwd=\"47.91\" data-omr=\"59.81\" data-qar=\"566.22\"><span class=\"lp-price-symbol\">SAR</span> <span class=\"lp-price-num\">583.33</span></span> لكل مستوى &middot; <b>وفّر 20%</b>" },
+  "pr.li_b6_1": { en: "6 full levels — nearly the whole path", ar: "6 مستويات كاملة — تقريباً المسار بأكمله" },
+  "pr.li_full_hub": { en: "Full English Hub access, every level included", ar: "وصول كامل للمكتبة، بكل المستويات" },
+  "pr.b3_name": { en: "3-Level Bundle", ar: "باقة 3 مستويات" },
+  "pr.b3_sub": { en: "6 months &middot; 60 sessions", ar: "6 أشهر &middot; 60 حصة" },
+  "pr.b3_per": { en: "~<span class=\"lp-perlevel\" data-sar=\"650.00\" data-usd=\"173.33\" data-aed=\"636.56\" data-kwd=\"53.39\" data-omr=\"66.65\" data-qar=\"630.93\"><span class=\"lp-price-symbol\">SAR</span> <span class=\"lp-price-num\">650.00</span></span> per level &middot; <b>save 11%</b>", ar: "~<span class=\"lp-perlevel\" data-sar=\"650.00\" data-usd=\"173.33\" data-aed=\"636.56\" data-kwd=\"53.39\" data-omr=\"66.65\" data-qar=\"630.93\"><span class=\"lp-price-symbol\">SAR</span> <span class=\"lp-price-num\">650.00</span></span> لكل مستوى &middot; <b>وفّر 11%</b>" },
+  "pr.li_b3_1": { en: "3 full levels, back to back", ar: "3 مستويات كاملة، متتالية" },
+  "pr.note": { en: "Prices shown for reference. SAR, AED, OMR and QAR are all pegged to the US dollar and stay stable; KWD is a floating rate and may shift slightly over time.", ar: "الأسعار للاطلاع فقط. الريال السعودي والدرهم الإماراتي والريال العماني والريال القطري كلها مربوطة بالدولار الأمريكي وتبقى ثابتة؛ أما الدينار الكويتي فسعره متغيّر وقد يتبدّل قليلاً بمرور الوقت." },
+  "pr.included_h3": { en: "What's inside every plan", ar: "ماذا يتضمن كل اشتراك" },
+  "pr.hub_h4": { en: "📚 The English Hub, by level", ar: "📚 المكتبة التعليمية، حسب المستوى" },
+  "pr.hub_sub": { en: "Every level unlocks its own free-browsing Hub — organized, searchable, and available anytime, not just during lessons.", ar: "كل مستوى يفتح مكتبته الخاصة للتصفح الحر — منظمة، قابلة للبحث، ومتاحة في أي وقت، وليس فقط أثناء الدروس." },
+  "pr.hub_col1": { en: "Hub section", ar: "قسم المكتبة" },
+  "pr.hub_col2": { en: "Available at", ar: "متاح في" },
+  "pr.hub_vocab": { en: "Vocabulary", ar: "المفردات" },
+  "pr.hub_idioms": { en: "Idioms", ar: "التعبيرات" },
+  "pr.hub_writing": { en: "Writing &amp; Speaking", ar: "الكتابة والتحدث" },
+  "pr.hub_spelling": { en: "Spelling", ar: "الإملاء" },
+  "pr.hub_phonics": { en: "Phonics", ar: "الصوتيات" },
+  "pr.hub_grammar": { en: "Grammar", ar: "القواعد" },
+  "pr.hub_all": { en: "(every level)", ar: "(كل المستويات)" },
+  "pr.hub_levels12": { en: "Levels 1–2", ar: "المستويان 1-2" },
+  "pr.hub_levels36": { en: "Levels 3–6", ar: "المستويات 3-6" },
+  "pr.community_h4": { en: "🤝 A real community, not a solo app", ar: "🤝 مجتمع حقيقي، وليس تطبيقاً فردياً" },
+  "pr.community_sub": { en: "Learning a language works better with people. Every student gets:", ar: "تعلّم اللغة ينجح أكثر مع الآخرين. كل طالب يحصل على:" },
+  "pr.comm1": { en: "<b>Grouped with peers at the same level</b> — your child learns alongside classmates who are genuinely at the same stage, not a mismatched group.", ar: "<b>مجموعة من زملاء بنفس المستوى</b> — يتعلّم طفلك جنباً إلى جنب مع زملاء في نفس مرحلته فعلياً، وليس مجموعة غير متجانسة." },
+  "pr.comm2": { en: "<b>A dedicated teacher</b> — leads every live class and tracks real progress lesson by lesson.", ar: "<b>معلم مخصص</b> — يقود كل حصة مباشرة ويتابع التقدّم الحقيقي درساً بدرس." },
+  "pr.comm3": { en: "<b>A supervisor on hand</b> — answers questions, helps with anything technical, and keeps the group running smoothly between classes.", ar: "<b>مشرف متواجد دائماً</b> — يجيب على الأسئلة، يساعد في أي أمر تقني، ويحافظ على انسيابية المجموعة بين الحصص." },
+  "faq.h2": { en: "Questions parents ask", ar: "أسئلة يطرحها الأهالي" },
+  "faq1.q": { en: "What age is Lumio actually for?", ar: "لأي عمر مناسب Lumio فعلياً؟" },
+  "faq1.a": { en: "From 4 all the way to 15 — the curriculum spans 7 levels, each built for a specific age range, from a child's very first English words through confident, independent conversation.", ar: "من عمر 4 حتى 15 عاماً — يمتد المنهج عبر 7 مستويات، كل منها مصمم لفئة عمرية محددة، بدءاً من أولى كلمات الطفل بالإنجليزية وصولاً إلى محادثة واثقة ومستقلة." },
+  "faq2.q": { en: "Is there a real teacher, or is this just an app?", ar: "هل يوجد معلم حقيقي، أم أنه مجرد تطبيق؟" },
+  "faq2.a": { en: "Both. Your child prepares in the app, then joins a real, live class with their teacher over Zoom — the app isn't a replacement for the teacher, it's what makes that class time count.", ar: "كلاهما. يحضّر طفلك في التطبيق، ثم ينضم إلى حصة حقيقية مباشرة مع معلمه عبر Zoom — التطبيق ليس بديلاً عن المعلم، بل هو ما يجعل وقت تلك الحصة ذا قيمة حقيقية." },
+  "faq3.q": { en: "My child has never studied English. Where do they start?", ar: "طفلي لم يدرس الإنجليزية من قبل. من أين يبدأ؟" },
+  "faq3.a": { en: "<a href=\"placement-test.html\">Take the free placement test</a> — it's quick, and it places your child at the right level automatically based on their real score, whether that's their very first English words or something further along.", ar: "<a href=\"placement-test.html\">جرّب اختبار تحديد المستوى المجاني</a> — إنه سريع، ويضع طفلك في المستوى المناسب تلقائياً بناءً على نتيجته الحقيقية، سواء كانت أولى كلماته بالإنجليزية أو مستوى أكثر تقدماً." },
+  "faq4.q": { en: "Can we try a class before paying anything?", ar: "هل يمكننا تجربة حصة قبل دفع أي شيء؟" },
+  "faq4.a": { en: "Yes — <a href=\"#startfree\">pick your child's age group</a> and join a free trial class right now, in the same format as a real Lumio lesson. No card, no signup required to try it.", ar: "نعم — <a href=\"#startfree\">اختر الفئة العمرية لطفلك</a> وانضم إلى حصة تجريبية مجانية الآن، بنفس صيغة درس Lumio الحقيقي. بدون بطاقة، وبدون تسجيل لتجربتها." },
+  "faq5.q": { en: "Is the Arabic support just a translation button?", ar: "هل الدعم العربي مجرد زر ترجمة؟" },
+  "faq5.a": { en: "No — Arabic is built into every lesson from the start: every word, every instruction, every spelling rule has its Arabic alongside it, not a toggle bolted on afterward.", ar: "لا — اللغة العربية جزء أساسي من كل درس منذ البداية: كل كلمة، كل تعليمة، كل قاعدة إملائية لها ترجمتها العربية بجانبها، وليست خياراً مُضافاً لاحقاً." },
+  "faq6.q": { en: "What happens after class ends?", ar: "ماذا يحدث بعد انتهاء الحصة؟" },
+  "faq6.a": { en: "Homework, right away — real sentences to practice, words to spell, and a quick quiz, all tied to exactly what was covered in that day's class.", ar: "واجب منزلي، فوراً — جمل حقيقية للتدرب عليها، كلمات لتهجئتها، واختبار سريع، كلها مرتبطة تماماً بما تم تغطيته في حصة ذلك اليوم." },
+  "cta.h2": { en: "Ready to start your adventure?", ar: "هل أنت مستعد لبدء مغامرتك؟" },
+  "cta.p": { en: "Pre-A level is open now — 20 fun lessons from \"Hello!\" to your first big review.", ar: "المستوى التمهيدي متاح الآن — 20 درساً ممتعاً من \"Hello!\" إلى أول مراجعة كبرى." },
+  "cta.btn": { en: "Let's go!", ar: "هيا بنا!" },
+  "ed.title": { en: "Explore Lumio English", ar: "استكشف Lumio English" },
+  "ed.tab_levels": { en: "📚 Levels", ar: "📚 المستويات" },
+  "ed.tab_how": { en: "🧩 How it works", ar: "🧩 كيف تعمل" },
+  "ed.tab_why": { en: "⭐ Why Lumio", ar: "⭐ لماذا Lumio" },
+  "ed.tab_hub": { en: "📖 The Hub", ar: "📖 المكتبة" },
+  "ed.tab_games": { en: "🎮 Bonus games", ar: "🎮 الألعاب الإضافية" },
+  "ed.tab_pricing": { en: "💳 Pricing", ar: "💳 الأسعار" },
+  "ed.tab_faq": { en: "❓ FAQ", ar: "❓ الأسئلة الشائعة" },
+  "ed.lvl0": { en: "<b>First Words</b> <span class=\"explore-cefr\">CEFR Pre-A1</span><br>Ages 4–6 · 20 lessons · Hello, colors, family, animals", ar: "<b>الكلمات الأولى</b> <span class=\"explore-cefr\">Pre-A1</span><br>الأعمار 4-6 · 20 درساً · التحية، الألوان، العائلة، الحيوانات" },
+  "ed.lvl1": { en: "<b>About Me</b> <span class=\"explore-cefr\">CEFR Pre-A1</span><br>Ages 6–8 · 20 lessons · My house, my things, likes &amp; dislikes", ar: "<b>عني أنا</b> <span class=\"explore-cefr\">Pre-A1</span><br>الأعمار 6-8 · 20 درساً · منزلي، أغراضي، ما أحبه وما لا أحبه" },
+  "ed.lvl2": { en: "<b>My World</b> <span class=\"explore-cefr\">CEFR Pre-A1</span><br>Ages 8–10 · 20 lessons · Family, classroom, daily routines", ar: "<b>عالمي</b> <span class=\"explore-cefr\">Pre-A1</span><br>الأعمار 8-10 · 20 درساً · العائلة، الفصل الدراسي، الروتين اليومي" },
+  "ed.lvl3": { en: "<b>Everyday Life</b> <span class=\"explore-cefr\">CEFR A1</span><br>Ages 10–12 · 20 lessons · Friends, school, real conversations, real grammar begins", ar: "<b>الحياة اليومية</b> <span class=\"explore-cefr\">A1</span><br>الأعمار 10-12 · 20 درساً · الأصدقاء، المدرسة، محادثات حقيقية، وبداية القواعد الفعلية" },
+  "ed.lvl4": { en: "<b>Smart Choices</b> <span class=\"explore-cefr\">CEFR A1</span><br>Ages 11–13 · 20 lessons · Routines, money, advice, decisions", ar: "<b>قرارات ذكية</b> <span class=\"explore-cefr\">A1</span><br>الأعمار 11-13 · 20 درساً · الروتين، المال، النصائح، القرارات" },
+  "ed.lvl5": { en: "<b>Telling My Story</b> <span class=\"explore-cefr\">CEFR A2</span><br>Ages 12–14 · 20 lessons · Past tense, storytelling, trips", ar: "<b>أروي قصتي</b> <span class=\"explore-cefr\">A2</span><br>الأعمار 12-14 · 20 درساً · الماضي، سرد القصص، الرحلات" },
+  "ed.lvl6": { en: "<b>Looking Ahead</b> <span class=\"explore-cefr\">CEFR A2</span><br>Ages 13–15 · 20 lessons · Future plans, debates, culture", ar: "<b>نحو المستقبل</b> <span class=\"explore-cefr\">A2</span><br>الأعمار 13-15 · 20 درساً · خطط المستقبل، النقاشات، الثقافة" },
+  "ed.lvl_note": { en: "140 lessons total, one continuous path — every level builds on real, internationally-recognized CEFR standards, not an in-house scale.", ar: "140 درساً في مسار واحد متصل — كل مستوى مبني على معايير CEFR الدولية المعتمدة، وليس مقياساً داخلياً خاصاً." },
+  "ed.jump_curriculum": { en: "See the full curriculum ↓", ar: "شاهد المنهج كاملاً ↓" },
+  "ed.how1": { en: "<b>1. New Words</b> — every word shown with a picture, Arabic translation, and real audio.", ar: "<b>1. كلمات جديدة</b> — كل كلمة تُعرض بصورة، وترجمة عربية، وصوت حقيقي." },
+  "ed.how2": { en: "<b>2. Listen &amp; Practice</b> — matching and listening games for every word.", ar: "<b>2. استماع وتدريب</b> — ألعاب مطابقة واستماع لكل كلمة." },
+  "ed.how3": { en: "<b>3. Grammar Focus</b> — one clear grammar point per lesson, from Level 3 onward.", ar: "<b>3. التركيز على القواعد</b> — قاعدة واحدة واضحة في كل درس، من المستوى الثالث فصاعداً." },
+  "ed.how4": { en: "<b>4. Quiz &amp; Spelling</b> — a short quiz confirms it stuck, with instant feedback.", ar: "<b>4. اختبار وإملاء</b> — اختبار قصير يؤكد ترسيخ المعلومة، مع نتيجة فورية." },
+  "ed.how5": { en: "<b>5. Homework</b> — a printable worksheet, flashcards and writing practice for every lesson.", ar: "<b>5. الواجب المنزلي</b> — ورقة عمل قابلة للطباعة، بطاقات تعليمية، وتدريب كتابة لكل درس." },
+  "ed.jump_how": { en: "See it in action ↓", ar: "شاهدها في العمل ↓" },
+  "ed.why1": { en: "<b>🕌 Arabic-first, not translated in</b><br>Every word, every instruction, every rule — built bilingual from day one, not bolted on afterward.", ar: "<b>🕌 عربي بالأساس، وليس مترجماً لاحقاً</b><br>كل كلمة، كل تعليمة، كل قاعدة — مبنية بلغتين منذ اليوم الأول." },
+  "ed.why2": { en: "<b>🔡 Spelling has real rules</b><br>Not just memorizing letters — the actual rules behind how English words are built, taught step by step.", ar: "<b>🔡 الإملاء له قواعد حقيقية</b><br>ليس مجرد حفظ للحروف — بل القواعد الحقيقية وراء بناء الكلمات، تُدرَّس خطوة بخطوة." },
+  "ed.why3": { en: "<b>🗣️ Homework uses real sentences</b><br>Every practice sentence is grounded in what a word actually means — not a random word list to memorize.", ar: "<b>🗣️ الواجبات تستخدم جملاً حقيقية</b><br>كل جملة تدريب مبنية على المعنى الحقيقي للكلمة، وليست قائمة عشوائية للحفظ." },
+  "ed.why4": { en: "<b>📄 Real worksheets and flashcards</b><br>A printable homework page and flashcard set for every single lesson, for the moments a screen isn't the right tool.", ar: "<b>📄 أوراق عمل وبطاقات حقيقية</b><br>ورقة واجب قابلة للطباعة وبطاقات تعليمية لكل درس، للحظات التي لا تناسبها الشاشة." },
+  "ed.why5": { en: "<b>👥 A real, live-taught community</b><br>Grouped with peers at the same level, guided by a dedicated teacher, with a supervisor on hand for anything else — never a solo app.", ar: "<b>👥 مجتمع حقيقي بتدريس مباشر</b><br>مجموعة من زملاء بنفس المستوى، بإشراف معلم مخصص، ومشرف متواجد لأي أمر آخر — وليس تطبيقاً فردياً أبداً." },
+  "ed.jump_pricing_included": { en: "See what's included in every plan ↓", ar: "شاهد ما يتضمنه كل اشتراك ↓" },
+  "ed.hub_intro": { en: "Beyond the 20 structured lessons, every level unlocks its own free-browsing Hub — searchable, and open anytime, not just during lesson time.", ar: "بالإضافة إلى الدروس العشرين المنظمة، كل مستوى يفتح مكتبته الخاصة للتصفح الحر — قابلة للبحث، ومتاحة في أي وقت." },
+  "ed.hub_vocab": { en: "📔 Vocabulary", ar: "📔 المفردات" },
+  "ed.hub_idioms": { en: "💡 Idioms", ar: "💡 التعبيرات" },
+  "ed.hub_writing": { en: "✍️ Writing &amp; Speaking", ar: "✍️ الكتابة والتحدث" },
+  "ed.hub_spelling": { en: "🔡 Spelling", ar: "🔡 الإملاء" },
+  "ed.hub_phonics": { en: "🔤 Phonics", ar: "🔤 الصوتيات" },
+  "ed.hub_grammar": { en: "📐 Grammar", ar: "📐 القواعد" },
+  "ed.hub_all": { en: "all levels", ar: "كل المستويات" },
+  "ed.jump_hub_demo": { en: "Watch the Hub in action ↓", ar: "شاهد المكتبة في العمل ↓" },
+  "ed.game0": { en: "<b>Pre-A</b> — Lumi's Pocket <br><span class=\"explore-substep\">A gentle picture-and-sound matching game — no reading required yet.</span>", ar: "<b>المستوى التمهيدي</b> — جيب لومي <br><span class=\"explore-substep\">لعبة مطابقة صور وأصوات هادئة — لا تتطلب القراءة بعد.</span>" },
+  "ed.game1": { en: "<b>Level 1</b> — Treehouse Builder <br><span class=\"explore-substep\">Answer correctly to build up a treehouse, piece by piece.</span>", ar: "<b>المستوى 1</b> — بناء بيت الشجرة <br><span class=\"explore-substep\">أجب بشكل صحيح لتبني بيت الشجرة، قطعة بقطعة.</span>" },
+  "ed.game2": { en: "<b>Level 2</b> — Twelve Months Calendar <br><span class=\"explore-substep\">A full-year picture calendar that fills in as vocabulary grows.</span>", ar: "<b>المستوى 2</b> — تقويم الأشهر الاثني عشر <br><span class=\"explore-substep\">تقويم مصور لسنة كاملة يمتلئ كلما نمت المفردات.</span>" },
+  "ed.game3": { en: "<b>Level 3</b> — Crew Chat <br><span class=\"explore-substep\">A group-chat-style game — reply to friends and type words letter by letter.</span>", ar: "<b>المستوى 3</b> — محادثة الأصدقاء <br><span class=\"explore-substep\">لعبة على شكل محادثة جماعية — رد على الأصدقاء واكتب الكلمات حرفاً بحرف.</span>" },
+  "ed.game4": { en: "<b>Level 4</b> — Squad Budget <br><span class=\"explore-substep\">Make spending decisions in English as a team.</span>", ar: "<b>المستوى 4</b> — ميزانية الفريق <br><span class=\"explore-substep\">اتخذ قرارات إنفاق بالإنجليزية كفريق واحد.</span>" },
+  "ed.game5": { en: "<b>Level 5</b> — Story Detective <br><span class=\"explore-substep\">Piece together what happened, using real past-tense clues.</span>", ar: "<b>المستوى 5</b> — محقق القصص <br><span class=\"explore-substep\">اجمع أجزاء ما حدث، باستخدام أدلة حقيقية بصيغة الماضي.</span>" },
+  "ed.game6": { en: "<b>Level 6</b> — Crystal Ball <br><span class=\"explore-substep\">Make predictions and read your own English \"fortune.\"</span>", ar: "<b>المستوى 6</b> — الكرة البلورية <br><span class=\"explore-substep\">توقّع المستقبل واقرأ \"حظك\" الخاص بالإنجليزية.</span>" },
+  "ed.games_note": { en: "A new bonus game unlocks after every lesson your child finishes — see one played for real in \"See it in action.\"", ar: "لعبة إضافية جديدة تُفتح بعد كل درس ينهيه طفلك — شاهد إحداها أثناء اللعب الفعلي في قسم \"شاهدها في العمل\"." },
+  "ed.price1": { en: "<b>Single level</b> — 730 SAR (~$195) &middot; 2 months &middot; 20 sessions", ar: "<b>مستوى واحد</b> — 730 ريال سعودي (~195$) &middot; شهران &middot; 20 حصة" },
+  "ed.price2": { en: "<b>3-level bundle</b> — 1,949.99 SAR (~$520) &middot; 6 months &middot; save 11%", ar: "<b>باقة 3 مستويات</b> — 1,949.99 ريال سعودي (~520$) &middot; 6 أشهر &middot; وفّر 11%" },
+  "ed.price3": { en: "<b>6-level bundle</b> — 3,499.99 SAR (~$933) &middot; full year &middot; save 20%", ar: "<b>باقة 6 مستويات</b> — 3,499.99 ريال سعودي (~933$) &middot; سنة كاملة &middot; وفّر 20%" },
+  "ed.price_note": { en: "Every plan includes full English Hub access, peer grouping by level, a teacher, and a supervisor. Prices also shown in USD, AED, KWD, OMR and QAR.", ar: "كل اشتراك يشمل وصولاً كاملاً للمكتبة، مجموعة زملاء حسب المستوى، معلم، ومشرف. الأسعار متاحة أيضاً بالدولار والدرهم والدينار الكويتي والريال العماني والقطري." },
+  "ed.jump_pricing": { en: "See full pricing &amp; currencies ↓", ar: "شاهد الأسعار كاملة والعملات ↓" },
+  "ed.faq1": { en: "<b>Is it really in Arabic and English?</b><br>Yes — every word and every instruction has Arabic support.", ar: "<b>هل هو فعلاً بالعربية والإنجليزية؟</b><br>نعم — كل كلمة وكل تعليمة لها دعم عربي." },
+  "ed.faq2": { en: "<b>Does my child need a teacher?</b><br>Every lesson pairs self-study with a real live class, plus a supervisor for anything else.", ar: "<b>هل يحتاج طفلي إلى معلم؟</b><br>كل درس يجمع بين الدراسة الذاتية وحصة مباشرة حقيقية، بالإضافة إلى مشرف لأي أمر آخر." },
+  "ed.faq3": { en: "<b>Can we learn offline too?</b><br>Yes — every lesson has printable worksheets and flashcards.", ar: "<b>هل يمكننا التعلّم دون اتصال أيضاً؟</b><br>نعم — كل درس له أوراق عمل وبطاقات تعليمية قابلة للطباعة." },
+  "ed.faq4": { en: "<b>Can we try before paying anything?</b><br>Yes — a free placement test and a free trial class, both with zero commitment.", ar: "<b>هل يمكننا التجربة قبل الدفع؟</b><br>نعم — اختبار تحديد مستوى مجاني وحصة تجريبية مجانية، بدون أي التزام." },
+  "ed.jump_faq": { en: "See all questions ↓", ar: "شاهد كل الأسئلة ↓" },
+  "ed.start_now": { en: "Start learning now →", ar: "ابدأ التعلّم الآن ←" },
+  "tp.not_alone": { en: "<b>👥 Not alone</b> &mdash; your child joins other students already at this same level.", ar: "<b>👥 لست وحدك</b> &mdash; ينضم طفلك إلى طلاب آخرين موجودين بالفعل في نفس هذا المستوى." },
+  "tp.real_fun": { en: "<b>🎮 Real fun</b> &mdash; the trial includes games, challenges, and little gifts from the teachers.", ar: "<b>🎮 متعة حقيقية</b> &mdash; تتضمن الحصة التجريبية ألعاباً وتحديات وهدايا صغيرة من المعلمين." },
+  "tp.cta_text": { en: "Message us on WhatsApp and we'll book your free trial class at this level.", ar: "راسلنا عبر واتساب وسنحجز لك الحصة التجريبية المجانية في هذا المستوى." },
+  "tp.book_btn": { en: "Book my free trial on WhatsApp", ar: "احجز حصتي التجريبية عبر واتساب" },
+  "explore_label": { en: "Explore", ar: "استكشف" },
+  "wa_chat": { en: "Chat with us", ar: "تواصل معنا" },
+};
+
+(function () {
+  // ===== Bilingual (Arabic-first) engine =====
+  // Applies the dictionary above to every [data-i18n]/[data-i18n-html]
+  // element, flips <html dir/lang>, and remembers the choice.
+  function applyLanguage(lang) {
+    var dict = window.LUMIO_I18N;
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+    window.__lumioLang = lang;
+
+    document.querySelectorAll("[data-i18n]").forEach(function (el) {
+      var entry = dict[el.dataset.i18n];
+      if (entry && entry[lang] !== undefined) el.textContent = entry[lang];
+    });
+    document.querySelectorAll("[data-i18n-html]").forEach(function (el) {
+      var entry = dict[el.dataset.i18nHtml];
+      if (entry && entry[lang] !== undefined) el.innerHTML = entry[lang];
+    });
+
+    var arBtn = document.getElementById("langArBtn"), enBtn = document.getElementById("langEnBtn");
+    if (arBtn && enBtn) {
+      arBtn.classList.toggle("active", lang === "ar");
+      enBtn.classList.toggle("active", lang === "en");
+    }
+
+    var pbWa = document.getElementById("pbWaLink");
+    if (pbWa) {
+      var msg = lang === "ar"
+        ? "مرحباً! هل يمكنكم إرسال ملف دليل أولياء الأمور من فضلكم؟"
+        : "Hi! Could you send me the Parent Handbook PDF, please?";
+      pbWa.href = "https://wa.me/201124882493?text=" + encodeURIComponent(msg);
+    }
+
+    try { localStorage.setItem("lumio_lang", lang); } catch (e) {}
+  }
+
+  var savedLang = "ar";
+  try { savedLang = localStorage.getItem("lumio_lang") || "ar"; } catch (e) {}
+  applyLanguage(savedLang);
+
+  var langArBtnEl = document.getElementById("langArBtn"), langEnBtnEl = document.getElementById("langEnBtn");
+  if (langArBtnEl) langArBtnEl.addEventListener("click", function () { applyLanguage("ar"); });
+  if (langEnBtnEl) langEnBtnEl.addEventListener("click", function () { applyLanguage("en"); });
+
+  // Hero "hear it yourself" word cards -- real audio, the same
     // Lumio.speak() every lesson already uses, not a mock.
     document.querySelectorAll(".lp-hear-card").forEach(function (card) {
       card.addEventListener("click", function () {
@@ -1133,10 +1460,19 @@ html{scroll-behavior:smooth}
       if (!popup) return;
 
       function openTrialPopup(btn) {
-        document.getElementById("tpAges").textContent = btn.dataset.ages;
-        document.getElementById("tpName").textContent = btn.dataset.name;
-        document.getElementById("tpBlurb").textContent = btn.dataset.blurb;
-        var msg = "Hi! I'd like to book a free trial class for " + btn.dataset.name + " (" + btn.dataset.ages + ").";
+        var lang = window.__lumioLang || "ar";
+        var name = lang === "ar" ? btn.dataset.nameAr : btn.dataset.name;
+        var ages = lang === "ar" ? btn.dataset.agesAr : btn.dataset.ages;
+        var blurb = lang === "ar" ? btn.dataset.blurbAr : btn.dataset.blurb;
+        document.getElementById("tpAges").textContent = ages;
+        document.getElementById("tpName").textContent = name;
+        document.getElementById("tpBlurb").textContent = blurb;
+        // The WhatsApp message always uses the English name/ages, regardless of
+        // page language, so whoever answers on the business side reads a
+        // consistent level name every time.
+        var msg = lang === "ar"
+          ? "مرحباً! أرغب في حجز حصة تجريبية مجانية لمستوى " + btn.dataset.name + " (" + btn.dataset.ages + ")."
+          : "Hi! I'd like to book a free trial class for " + btn.dataset.name + " (" + btn.dataset.ages + ").";
         document.getElementById("tpWhatsapp").href = "https://wa.me/201124882493?text=" + encodeURIComponent(msg);
         overlay.hidden = false;
         popup.classList.add("open");
@@ -1269,9 +1605,9 @@ html{scroll-behavior:smooth}
   </script>
 
   <section class="card card-sun center mt mb">
-    <h2>Ready to start your adventure?</h2>
-    <p class="mt mb" style="font-weight:700">Pre-A level is open now — 20 fun lessons from "Hello!" to your first big review.</p>
-    <a class="btn btn-primary btn-big" href="login.html">Let's go!</a>
+    <h2 data-i18n="cta.h2">Ready to start your adventure?</h2>
+    <p class="mt mb" style="font-weight:700" data-i18n="cta.p">Pre-A level is open now — 20 fun lessons from "Hello!" to your first big review.</p>
+    <a class="btn btn-primary btn-big" href="login.html" data-i18n="cta.btn">Let's go!</a>
   </section>
 
 <script>
