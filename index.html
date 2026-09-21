@@ -1089,6 +1089,13 @@ html[dir="rtl"] .lang-toggle{right:auto;left:14px}
   @media (max-width:760px){
     .lp-startfree-grid{grid-template-columns:1fr}
     .lp-trial-picker{grid-template-columns:repeat(4,1fr)}
+    /* 6 currency buttons in one flex row don't fit a phone width --
+       the last one (often the active/highlighted one) was getting
+       clipped right at the page edge instead of wrapping. Let it wrap
+       into two centered rows of 3, with slightly tighter padding so
+       it still reads as one compact control rather than a long list. */
+    .lp-currency-switch{flex-wrap:wrap;row-gap:8px;padding:0 12px}
+    .lp-cur-btn{padding:7px 14px;font-size:.8rem}
   }
 
   .lp-hero-free-link{display:inline-block;margin-top:14px;font-family:var(--font-display);font-weight:800;
