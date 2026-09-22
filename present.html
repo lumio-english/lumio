@@ -24,7 +24,8 @@
     font-weight:800; font-size:.9rem; color:#43301F; cursor:pointer; box-shadow:0 10px 20px rgba(0,0,0,.25); }
   .navbtn:disabled { opacity:0; pointer-events:none; }
   .navbtn.next { background:linear-gradient(135deg,#F97316,#EA580C); color:#fff; }
-  #gameLinks { position:absolute; right:26px; bottom:66px; z-index:50; display:flex; gap:8px; pointer-events:auto; }
+  #gameLinks { position:absolute; left:50%; bottom:6px; transform:translateX(-50%); z-index:51; display:flex; gap:8px; pointer-events:auto;
+    max-width:calc(100% - 300px); flex-wrap:wrap; justify-content:center; }
   #gameLinks a { background:#fff; color:#43301F; text-decoration:none; font-weight:800; font-size:.8rem; padding:9px 16px;
     border-radius:999px; box-shadow:0 8px 16px rgba(0,0,0,.2); }
   #loadingMsg { color:#fff; font-family:'Baloo 2',sans-serif; font-weight:700; }

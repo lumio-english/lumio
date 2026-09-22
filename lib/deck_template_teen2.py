@@ -71,16 +71,18 @@ def bg_theme(theme_key="default"):
         # image -- falls back to the flat theme gradient below if no
         # image has been generated for this lesson yet.
         return f'''<div style="position:absolute;inset:0;background:url('{CURRENT_LESSON_BG}') center/cover no-repeat"></div>
-        <div style="position:absolute;inset:0;background:linear-gradient(160deg,{BG_DARK}CC 0%,{BG_DARKER}E6 100%)"></div>
+        <div style="position:absolute;inset:0;background:linear-gradient(160deg,{BG_DARK}99 0%,{BG_DARKER}CC 100%)"></div>
+        <div style="position:absolute;left:50%;top:-220px;transform:translateX(-50%);width:900px;height:520px;border-radius:50%;
+                    background:radial-gradient(circle,{accent}2E,transparent 70%);pointer-events:none"></div>
         {DOT_GRID}
-        {motif_svg(t["motif"], accent)}'''
+        <div style="position:absolute;left:0;right:0;top:124px;bottom:64px;overflow:hidden;pointer-events:none">{motif_svg(t["motif"], accent)}</div>'''
     return f'''<div style="position:absolute;inset:0;background:linear-gradient(160deg,{BG_DARK} 0%,{BG_DARKER} 100%)"></div>
     {DOT_GRID}
     <div style="position:absolute;left:-120px;top:-120px;width:380px;height:380px;border-radius:50%;
                 background:radial-gradient(circle,{accent}33,transparent 70%)"></div>
     <div style="position:absolute;right:-100px;bottom:-100px;width:320px;height:320px;border-radius:50%;
                 background:radial-gradient(circle,rgba(20,184,166,.14),transparent 70%)"></div>
-    {motif_svg(t["motif"], accent)}'''
+    <div style="position:absolute;left:0;right:0;top:124px;bottom:64px;overflow:hidden;pointer-events:none">{motif_svg(t["motif"], accent)}</div>'''
 
 def lesson_bg_path(level, lesson_num):
     """Returns the web-relative path to this lesson's background image
@@ -127,7 +129,7 @@ def char_big(name, side="right", bottom=64):
 # ============================================================
 def slide_hook(hook_question, n, total, ch, theme_key="default"):
     return (bg_theme(theme_key) + header_themed("Hook", n, total, theme_key) + f'''
-    <div style="position:relative;z-index:5;display:flex;align-items:center;height:600px;padding:0 60px">
+    <div style="position:relative;z-index:5;display:flex;align-items:center;height:520px;margin-top:12px;padding:0 60px">
       <div style="max-width:640px">
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:{INK_DIM};font-size:.78rem;letter-spacing:1.5px;margin-bottom:14px">BEFORE WE START</div>
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:2rem;color:#fff;line-height:1.35">{esc(hook_question)}</div>
@@ -143,8 +145,13 @@ def slide_first_listen(dialogue, n, total, theme_key="default"):
     # enough pitch to fit however many lines this lesson's dialogue
     # actually has, capped so short dialogues don't look oddly sparse.
     count = max(1, len(dialogue))
-    top_margin, bottom_budget = 110, 690
-    pitch = min(118, bottom_budget // count)
+    # Bubbles used to start at 110px -- under the header's progress line
+    # and on top of the "Listen first" instruction. Start below the
+    # instruction (~165px) and size the pitch so the last bubble still
+    # clears the presenter's 52px nav row.
+    top_margin = 175
+    bottom_budget = 655 - top_margin
+    pitch = min(96, bottom_budget // count)
     bubble_font = "1rem" if count <= 5 else ".92rem"
     ar_font = ".82rem" if count <= 5 else ".76rem"
     pad = "14px 20px" if count <= 5 else "11px 18px"

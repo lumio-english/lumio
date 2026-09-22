@@ -20,9 +20,9 @@ import grammar_slides
 CHAR = "assets/story/characters"
 
 INK = "#EDE9FB"
-INK_DIM = "#A79BD1"
-BG_DARK = "#2B1B52"
-BG_DARKER = "#1C1038"
+INK_DIM = "#C6BBF2"
+BG_DARK = "#3A2A8A"
+BG_DARKER = "#251A5E"
 CARD_BG = "#FFFFFF"
 CARD_TEXT = "#2B2640"
 PURPLE = "#8B5CF6"
@@ -91,11 +91,11 @@ def card_open(width=None, extra=""):
     return f'<div style="background:{CARD_BG};border-radius:12px;border:1px solid rgba(0,0,0,.06);box-shadow:0 12px 26px rgba(0,0,0,.28);{w}{extra}">'
 
 def char_badge(name, right=40, bottom=26):
-    return f'''<div style="position:absolute;right:{right}px;bottom:{bottom}px;z-index:6;display:flex;align-items:center;gap:8px;
-                background:rgba(255,255,255,.06);border-radius:999px;padding:5px 14px 5px 5px">
-      <img src="{CHAR}/{name}.png" style="height:38px;border-radius:50%;background:#fff">
-      <span style="font-family:'Fredoka',sans-serif;color:{INK_DIM};font-size:.72rem;font-weight:600">guide</span>
-    </div>'''
+    # Removed: the small corner "guide" badge sat in the bottom-right
+    # exactly where the presenter's game buttons and the Next button
+    # live, and collided with both. Returns nothing so every existing
+    # call site (v1 and teen2) is a no-op without touching them.
+    return ""
 
 def xp_pill(xp, extra_style=""):
     return f'''<span style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,{ORANGE},{ORANGE_DEEP});
