@@ -166,4 +166,147 @@ for lesson_num, img_num, bold_words, sentence in SCENE_DATA:
         (f"assets/vocab-scenes/level2/{img_num:02d}.jpg", sentence, bold_words)
     )
 
-run("level2", DIALOGUES, PHONICS_UNITS, theme_map=THEME_MAP, scene_map=SCENE_MAP)
+
+# Grammar explanation + practice slide pairs (plus optional in-class MCQs),
+# inserted after each lesson's vocab and before its dialogue. Defined here,
+# not in grammar-hub/level2.json, for the same reason as Level 1: that file
+# is what switches on the Hub's Grammar tab, and Grammar is documented as
+# starting at Level 3.
+GRAMMAR_UNITS = {
+    4: {
+        "title": "He is / She is",
+        "titleAr": "هو... / هي...",
+        "explanation": "We use \"he\" for a boy or a man, and \"she\" for a girl or a woman. Both use \"is\": He is... / She is...",
+        "explanationAr": "نستخدم he للولد أو الرجل، وshe للبنت أو المرأة. كلاهما يأتي معه is: هو... / هي...",
+        "examples": [
+            {"en": "He is a man.", "ar": "هو رجل."},
+            {"en": "She is a woman.", "ar": "هي امرأة."},
+            {"en": "He is my brother.", "ar": "هو أخي."},
+            {"en": "She is my sister.", "ar": "هي أختي."},
+        ],
+    },
+    5: {
+        "title": "Possessive Adjectives: my, your, his, her, our, their",
+        "titleAr": "صفات الملكية: my, your, his, her, our, their",
+        "explanation": "A possessive adjective tells us who something belongs to. It always comes before a noun: my book, your bag, his hat, her cat, our house, their car.",
+        "explanationAr": "صفة الملكية تخبرنا لمن الشيء. تأتي دائماً قبل الاسم: my كتابي، your كتابك، his كتابه، her كتابها، our كتابنا، their كتابهم. لماذا هذا الدرس مهم؟ لأننا نحتاجه في كل جملة نصف فيها أشياءنا وعائلتنا وأصدقاءنا — بدونه لا نستطيع أن نقول ما هو لنا وما هو للآخرين.",
+        "examples": [
+            {"en": "This is my school bag.", "ar": "هذه حقيبتي المدرسية."},
+            {"en": "Is this your pencil?", "ar": "هل هذا قلمك؟"},
+            {"en": "His shirt is blue. Her dress is pink.", "ar": "قميصه أزرق. فستانها وردي."},
+            {"en": "Our house is big. Their car is red.", "ar": "بيتنا كبير. سيارتهم حمراء."},
+        ],
+    },
+    6: {
+        "title": "Have got (I have...)",
+        "titleAr": "أملك / عندي (have got)",
+        "explanation": "We use \"have got\" to say what belongs to us: I have got a phone. To ask, we say: Have you got...? Yes, I have. / No, I haven't.",
+        "explanationAr": "نستخدم have got لنقول ماذا نملك: I have got a phone (عندي هاتف). وللسؤال نقول: Have you got...? (هل عندك...؟) والإجابة: Yes, I have. / No, I haven't.",
+        "examples": [
+            {"en": "I have got a watch.", "ar": "عندي ساعة."},
+            {"en": "I have got glasses.", "ar": "عندي نظارة."},
+            {"en": "Have you got a key?", "ar": "هل عندك مفتاح؟"},
+            {"en": "Yes, I have. / No, I haven't.", "ar": "نعم، عندي. / لا، ليس عندي."},
+        ],
+    },
+    13: {
+        "title": "Telling Time",
+        "titleAr": "قراءة الساعة",
+        "explanation": "Ask: What time is it? The short hand shows the hour. When the long hand points to 12, we say o'clock. At 6 we say half past. At 3 we say quarter past. At 9 we say quarter to (the next hour).",
+        "explanationAr": "نسأل: What time is it? (كم الساعة؟). العقرب القصير يشير إلى الساعة. عندما يشير العقرب الطويل إلى 12 نقول o'clock (تمام الساعة). عند 6 نقول half past (والنصف). عند 3 نقول quarter past (والربع). عند 9 نقول quarter to (إلا ربع) مع الساعة التالية.",
+        "examples": [
+            {"en": "It's three o'clock.", "ar": "الساعة الثالثة تماماً."},
+            {"en": "It's half past two.", "ar": "الساعة الثانية والنصف."},
+            {"en": "It's quarter past four.", "ar": "الساعة الرابعة والربع."},
+            {"en": "It's quarter to five.", "ar": "الساعة الخامسة إلا ربع."},
+        ],
+        "mcq": [
+            {"q": "Short hand on 3, long hand on 12. What time is it?", "qAr": "العقرب القصير على 3 والطويل على 12. كم الساعة؟", "options": ["It's three o'clock.", "It's half past three.", "It's quarter past three.", "It's twelve o'clock."], "answer": "It's three o'clock."},
+            {"q": "The long hand points to 6. Which phrase do we use?", "qAr": "العقرب الطويل على 6. أي عبارة نستخدم؟", "options": ["half past", "o'clock", "quarter past", "quarter to"], "answer": "half past"},
+            {"q": "The long hand points to 3. Which phrase do we use?", "qAr": "العقرب الطويل على 3. أي عبارة نستخدم؟", "options": ["quarter past", "quarter to", "half past", "o'clock"], "answer": "quarter past"},
+            {"q": "The long hand points to 9. Which phrase do we use?", "qAr": "العقرب الطويل على 9. أي عبارة نستخدم؟", "options": ["quarter to", "quarter past", "half past", "o'clock"], "answer": "quarter to"},
+            {"q": "Short hand on 7, long hand on 6. What time is it?", "qAr": "القصير على 7 والطويل على 6. كم الساعة؟", "options": ["It's half past seven.", "It's seven o'clock.", "It's half past six.", "It's quarter to seven."], "answer": "It's half past seven."},
+            {"q": "How many minutes are in one hour?", "qAr": "كم دقيقة في الساعة الواحدة؟", "options": ["sixty", "thirty", "fifteen", "one hundred"], "answer": "sixty"},
+            {"q": "How many minutes is 'quarter past'?", "qAr": "كم دقيقة تعني quarter past؟", "options": ["fifteen", "thirty", "forty-five", "sixty"], "answer": "fifteen"},
+            {"q": "What do we call twelve o'clock in the day?", "qAr": "ماذا نسمي الساعة 12 في النهار؟", "options": ["noon", "midnight", "evening", "morning"], "answer": "noon"},
+            {"q": "What do we call twelve o'clock at night?", "qAr": "ماذا نسمي الساعة 12 في الليل؟", "options": ["midnight", "noon", "afternoon", "morning"], "answer": "midnight"},
+            {"q": "Which question asks for the time?", "qAr": "أي سؤال يسأل عن الوقت؟", "options": ["What time is it?", "How old are you?", "Where is the clock?", "What day is it?"], "answer": "What time is it?"},
+        ],
+    },
+    17: {
+        "title": "Verb + -ing = a noun (an activity)",
+        "titleAr": "الفعل + ing = اسم (نشاط)",
+        "explanation": "Add -ing to a verb and it becomes the NAME of an activity, so we can use it like a noun: draw -> drawing, sing -> singing. That's why we say \"I like drawing\" (not \"I like draw\"). Spelling: run -> running (double the last letter), dance -> dancing (drop the e).",
+        "explanationAr": "عندما نضيف ing إلى الفعل يصبح اسماً للنشاط، فنستخدمه مثل الاسم: draw (يرسم) → drawing (الرسم)، sing (يغني) → singing (الغناء). لذلك نقول I like drawing وليس I like draw. الإملاء: run → running (نضاعف الحرف الأخير)، dance → dancing (نحذف e).",
+        "examples": [
+            {"en": "I like drawing.", "ar": "أحب الرسم."},
+            {"en": "Do you like singing?", "ar": "هل تحب الغناء؟"},
+            {"en": "Reading is fun.", "ar": "القراءة ممتعة."},
+            {"en": "Cooking is my favorite.", "ar": "الطبخ هو المفضل لدي."},
+        ],
+        "mcq": [
+            {"q": "draw -> ?", "qAr": "draw → ؟", "options": ["drawing", "drawe", "drawin", "drawwing"], "answer": "drawing"},
+            {"q": "sing -> ?", "qAr": "sing → ؟", "options": ["singing", "singe", "sining", "singng"], "answer": "singing"},
+            {"q": "dance -> ?", "qAr": "dance → ؟ (نحذف e)", "options": ["dancing", "danceing", "dancng", "danceng"], "answer": "dancing"},
+            {"q": "run -> ?", "qAr": "run → ؟ (نضاعف الحرف الأخير)", "options": ["running", "runing", "runng", "runnig"], "answer": "running"},
+            {"q": "swim -> ?", "qAr": "swim → ؟", "options": ["swimming", "swiming", "swimng", "swimeing"], "answer": "swimming"},
+            {"q": "I like ___ .", "qAr": "أحب ___ .", "options": ["reading", "read", "reads", "readed"], "answer": "reading"},
+            {"q": "___ is fun!", "qAr": "___ ممتع!", "options": ["Painting", "Paint", "Paints", "Painted"], "answer": "Painting"},
+            {"q": "Do you like ___ ?", "qAr": "هل تحب ___ ؟", "options": ["cooking", "cook", "cooks", "cooked"], "answer": "cooking"},
+            {"q": "Which word is an activity (a noun)?", "qAr": "أي كلمة اسم نشاط؟", "options": ["swimming", "swim", "swims", "swam"], "answer": "swimming"},
+            {"q": "write -> ?", "qAr": "write → ؟ (نحذف e)", "options": ["writing", "writeing", "writng", "writting"], "answer": "writing"},
+        ],
+    },
+    18: {
+        "title": "This / That / These / Those",
+        "titleAr": "هذا / ذلك / هؤلاء / أولئك",
+        "explanation": "This = one thing near me. That = one thing far from me. These = many things near me. Those = many things far from me. Near: this / these. Far: that / those. One: this / that. Many: these / those.",
+        "explanationAr": "This = شيء واحد قريب مني. That = شيء واحد بعيد عني. These = أشياء كثيرة قريبة. Those = أشياء كثيرة بعيدة. القريب: this / these. البعيد: that / those. المفرد: this / that. الجمع: these / those.",
+        "examples": [
+            {"en": "This is my book. (near, one)", "ar": "هذا كتابي. (قريب، واحد)"},
+            {"en": "That is your book. (far, one)", "ar": "ذلك كتابك. (بعيد، واحد)"},
+            {"en": "These are my pens. (near, many)", "ar": "هذه أقلامي. (قريب، كثير)"},
+            {"en": "Those are your pens. (far, many)", "ar": "تلك أقلامك. (بعيد، كثير)"},
+        ],
+        "mcq": [
+            {"q": "One apple in my hand: ___ is an apple.", "qAr": "تفاحة واحدة في يدي:", "options": ["This", "That", "These", "Those"], "answer": "This"},
+            {"q": "One bird far in the sky: ___ is a bird.", "qAr": "طائر واحد بعيد في السماء:", "options": ["That", "This", "These", "Those"], "answer": "That"},
+            {"q": "Two books on my desk: ___ are my books.", "qAr": "كتابان على مكتبي:", "options": ["These", "Those", "This", "That"], "answer": "These"},
+            {"q": "Many stars far away: ___ are stars.", "qAr": "نجوم كثيرة بعيدة:", "options": ["Those", "These", "This", "That"], "answer": "Those"},
+            {"q": "Near + many = ?", "qAr": "قريب + جمع = ؟", "options": ["these", "those", "this", "that"], "answer": "these"},
+            {"q": "Far + one = ?", "qAr": "بعيد + مفرد = ؟", "options": ["that", "this", "these", "those"], "answer": "that"},
+        ],
+    },
+    19: {
+        "title": "Plurals: one -> many",
+        "titleAr": "الجمع: من المفرد إلى الجمع",
+        "explanation": "To talk about more than one, we change the noun. Most nouns add -s. Some add -es. Some change -y to -ies. And a few irregular nouns change completely.",
+        "explanationAr": "للحديث عن أكثر من واحد نغير الاسم. معظم الأسماء تأخذ s. بعضها يأخذ es. بعضها تتحول فيه y إلى ies. وقليل منها شاذ يتغير كلياً.",
+        "rules": [
+            {"en": "Most nouns: add -s", "ar": "معظم الأسماء: نضيف s", "examples": ["cat -> cats", "book -> books", "car -> cars"]},
+            {"en": "Ends in -s, -x, -ch, -sh: add -es", "ar": "ينتهي بـ s أو x أو ch أو sh: نضيف es", "examples": ["box -> boxes", "watch -> watches", "bus -> buses", "dish -> dishes"]},
+            {"en": "Consonant + y: change y -> ies", "ar": "حرف ساكن + y: نحول y إلى ies", "examples": ["baby -> babies", "city -> cities", "fly -> flies"]},
+            {"en": "Vowel + y: just add -s", "ar": "حرف علة + y: نضيف s فقط", "examples": ["boy -> boys", "day -> days", "key -> keys"]},
+            {"en": "Irregular: the word changes", "ar": "شاذ: الكلمة تتغير", "examples": ["child -> children", "man -> men", "foot -> feet", "tooth -> teeth", "mouse -> mice"]},
+            {"en": "Same word for one and many", "ar": "نفس الكلمة للمفرد والجمع", "examples": ["sheep -> sheep", "fish -> fish"]},
+        ],
+        "examples": [
+            {"en": "I have two cats and three boxes.", "ar": "عندي قطتان وثلاثة صناديق."},
+            {"en": "The babies are sleeping.", "ar": "الأطفال الرضع نائمون."},
+            {"en": "The children have two feet.", "ar": "الأطفال لديهم قدمان."},
+            {"en": "Three men and two women are here.", "ar": "ثلاثة رجال وامرأتان هنا."},
+        ],
+        "mcq": [
+            {"q": "box -> ?", "options": ["boxes", "boxs", "boxies", "box"], "answer": "boxes"},
+            {"q": "baby -> ?", "options": ["babies", "babys", "babyes", "baby"], "answer": "babies"},
+            {"q": "boy -> ?", "options": ["boys", "boies", "boyes", "boy"], "answer": "boys"},
+            {"q": "child -> ?", "options": ["children", "childs", "childes", "childies"], "answer": "children"},
+            {"q": "foot -> ?", "options": ["feet", "foots", "footes", "feets"], "answer": "feet"},
+            {"q": "watch -> ?", "options": ["watches", "watchs", "watchies", "watch"], "answer": "watches"},
+            {"q": "man -> ?", "options": ["men", "mans", "manes", "mens"], "answer": "men"},
+            {"q": "sheep -> ?", "options": ["sheep", "sheeps", "sheepes", "shep"], "answer": "sheep"},
+        ],
+    },
+}
+
+run("level2", DIALOGUES, PHONICS_UNITS, grammar_units=GRAMMAR_UNITS, theme_map=THEME_MAP, scene_map=SCENE_MAP)

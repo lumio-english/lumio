@@ -2,19 +2,29 @@
   "id": "level2-13",
   "level": "level2",
   "number": 13,
-  "title": "Telling Time (o'clock)",
-  "titleAr": "معرفة الوقت (تماما)",
-  "goal": "I can tell the time.",
+  "title": "Telling Time",
+  "titleAr": "قراءة الساعة",
+  "goal": "Ask and tell the time: o'clock, half past, quarter past, quarter to",
   "grammarFocus": "What time is it? It's ... o'clock.",
   "vocab": [
     {
       "en": "clock",
-      "ar": "ساعة الحائط",
+      "ar": "ساعة حائط",
       "example": "Look at the clock."
     },
     {
+      "en": "hour",
+      "ar": "ساعة (٦٠ دقيقة)",
+      "example": "One hour has sixty minutes."
+    },
+    {
+      "en": "minute",
+      "ar": "دقيقة",
+      "example": "Wait one minute, please."
+    },
+    {
       "en": "o'clock",
-      "ar": "تماما (بالساعة)",
+      "ar": "تمام الساعة",
       "example": "It is three o'clock."
     },
     {
@@ -23,9 +33,24 @@
       "example": "It is half past four."
     },
     {
+      "en": "quarter past",
+      "ar": "والربع",
+      "example": "It is quarter past four."
+    },
+    {
+      "en": "quarter to",
+      "ar": "إلا ربع",
+      "example": "It is quarter to five."
+    },
+    {
       "en": "morning",
       "ar": "الصباح",
       "example": "I wake up in the morning."
+    },
+    {
+      "en": "noon",
+      "ar": "الظهر",
+      "example": "We eat lunch at noon."
     },
     {
       "en": "afternoon",
@@ -33,9 +58,19 @@
       "example": "I play in the afternoon."
     },
     {
+      "en": "evening",
+      "ar": "المساء",
+      "example": "We have dinner in the evening."
+    },
+    {
       "en": "night",
       "ar": "الليل",
       "example": "I sleep at night."
+    },
+    {
+      "en": "midnight",
+      "ar": "منتصف الليل",
+      "example": "Midnight is twelve o'clock at night."
     }
   ],
   "activities": [
@@ -55,7 +90,109 @@
     },
     {
       "type": "quiz",
-      "rounds": 4
+      "rounds": 10,
+      "questions": [
+        {
+          "q": "The short hand points to 3 and the long hand to 12. What time is it?",
+          "options": [
+            "It's three o'clock.",
+            "It's half past three.",
+            "It's quarter past three.",
+            "It's twelve o'clock."
+          ],
+          "answer": "It's three o'clock."
+        },
+        {
+          "q": "The long hand points to 6. Which phrase do we use?",
+          "options": [
+            "half past",
+            "o'clock",
+            "quarter past",
+            "quarter to"
+          ],
+          "answer": "half past"
+        },
+        {
+          "q": "The long hand points to 3. Which phrase do we use?",
+          "options": [
+            "quarter past",
+            "quarter to",
+            "half past",
+            "o'clock"
+          ],
+          "answer": "quarter past"
+        },
+        {
+          "q": "The long hand points to 9. Which phrase do we use?",
+          "options": [
+            "quarter to",
+            "quarter past",
+            "half past",
+            "o'clock"
+          ],
+          "answer": "quarter to"
+        },
+        {
+          "q": "How many minutes are in one hour?",
+          "options": [
+            "sixty",
+            "thirty",
+            "fifteen",
+            "one hundred"
+          ],
+          "answer": "sixty"
+        },
+        {
+          "q": "How many minutes is 'half past'?",
+          "options": [
+            "thirty",
+            "fifteen",
+            "forty-five",
+            "sixty"
+          ],
+          "answer": "thirty"
+        },
+        {
+          "q": "How many minutes is 'quarter past'?",
+          "options": [
+            "fifteen",
+            "thirty",
+            "forty-five",
+            "sixty"
+          ],
+          "answer": "fifteen"
+        },
+        {
+          "q": "What is another name for twelve o'clock in the day?",
+          "options": [
+            "noon",
+            "midnight",
+            "evening",
+            "morning"
+          ],
+          "answer": "noon"
+        },
+        {
+          "q": "What is twelve o'clock at night called?",
+          "options": [
+            "midnight",
+            "noon",
+            "afternoon",
+            "morning"
+          ],
+          "answer": "midnight"
+        },
+        {
+          "q": "Which question asks for the time?",
+          "options": [
+            "What time is it?",
+            "How old are you?",
+            "Where is the clock?",
+            "What day is it?"
+          ],
+          "answer": "What time is it?"
+        }
+      ]
     },
     {
       "type": "sentence_fill",

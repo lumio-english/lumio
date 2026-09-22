@@ -1,32 +1,25 @@
 <div style="position:absolute;inset:0;background:url('assets/lesson-bg-kid/classroom.jpg') center/cover no-repeat"></div><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,251,245,.2) 0%,rgba(255,243,214,.28) 62%,rgba(232,197,143,.4) 100%)"></div><div class="spark" style="left:375px;top:135px;font-size:1.6rem">&#10022;</div><div class="spark" style="left:415px;top:105px;font-size:1.1rem">&#10022;</div><div class="spark" style="left:392px;top:178px;font-size:1.3rem">&#10022;</div><div class="header">
       <div class="brand"><img src="assets/logo/lumio-logo.png"><div class="name">Lumio<small>ENGLISH</small></div></div>
-      <div class="pagetitle">Your Turn &bull; Round 3 of 3</div>
-      <div class="counter">26 / 39</div>
+      <div class="pagetitle">Plurals: one -> many &bull; Question 8/8</div>
+      <div class="counter">26 / 49</div>
     </div><div class="colorstrip"><div class="c1"></div><div class="c2"></div><div class="c3"></div><div class="c4"></div><div class="c5"></div></div>
-    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:40px;padding-bottom:60px">
-      <div class="card" id="ytCard3" style="width:320px;height:320px;display:flex;align-items:center;justify-content:center;
-                  background:linear-gradient(135deg,#FFF3D6,#FFE0B8);position:relative;overflow:hidden">
-        <div id="ytMystery3" style="font-size:4rem">&#128266;</div>
-        <img id="ytImg3" src="assets/vocab/feet.png" style="display:none;width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
-      </div>
-      <div class="card" style="width:400px;padding:40px 36px;text-align:center">
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.7rem;color:#43301F;margin-bottom:10px">Listen first!</div>
-        <div style="font-size:.95rem;color:#8A7160;font-weight:700">Play the sound, guess the word, then reveal the picture.</div>
-      </div>
+    <div class="card" style="position:absolute;left:100px;top:150px;width:730px;padding:20px 26px">
+      <div style="font-size:.78rem;font-weight:800;color:#0D9488;letter-spacing:1.5px;margin-bottom:6px">APPLY IT</div>
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.25rem;color:#43301F">sheep -> ?</div>
+      
     </div>
-    <!-- Standard bottom-action-row position for this template: bottom:86px
-         (clear of the player's own Back/Next nav bar, which overlaps the
-         lower ~60px of every slide) and a fixed 26px gap sized to each
-         button's own rendered width, rather than a second hardcoded
-         left offset that drifted into the first button as label text
-         length varied. -->
-    <button id="ytPlayBtn3" onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('feet')"
-            style="position:absolute;left:46px;bottom:86px;z-index:20;cursor:pointer;border:none;font-family:inherit;
-            background:linear-gradient(135deg,#0D9488,#0B7A6F);color:#fff;font-weight:800;padding:13px 26px;border-radius:999px;
-            font-size:1.02rem;box-shadow:0 8px 18px rgba(13,148,136,.35)">&#9654; Play sound</button>
-    <button id="ytRevealBtn3" onclick="document.getElementById('ytMystery3').style.display='none'; document.getElementById('ytImg3').style.display='block'; this.textContent='feet \u2014 أقدام'; this.style.background='linear-gradient(135deg,#4ADE80,#16A34A)'"
-            style="position:absolute;left:216px;bottom:86px;z-index:20;cursor:pointer;border:none;font-family:inherit;
-            background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;padding:13px 26px;border-radius:999px;
-            font-size:1.02rem;box-shadow:0 8px 18px rgba(249,115,22,.35)">&#128064; Reveal picture</button>
-    <script>(function(){var a=document.getElementById('ytPlayBtn3'),b=document.getElementById('ytRevealBtn3');if(a&&b)requestAnimationFrame(function(){b.style.left=(a.offsetLeft+a.offsetWidth+26)+'px';});})();</script>
-    <div class="floorshadow" style="right:95px;bottom:25px;width:230px;height:36px"></div><img class="char" src="assets/story/characters/omar-wave.png" style="right:95px;bottom:32px;height:250px" onerror="this.style.display='none'; this.previousElementSibling.style.display='none'">
+    
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'sheep', 'sheep')"
+              style="position:absolute;left:120px;top:300px;width:330px;height:80px;background:#fff;border:3px solid #F0E9DD;border-radius:16px;
+                     padding:8px 14px;cursor:pointer;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.05rem;color:#43301F;text-align:center" data-quiz-option="sheep">sheep</button>
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'sheeps', 'sheep')"
+              style="position:absolute;left:470px;top:300px;width:330px;height:80px;background:#fff;border:3px solid #F0E9DD;border-radius:16px;
+                     padding:8px 14px;cursor:pointer;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.05rem;color:#43301F;text-align:center" data-quiz-option="sheeps">sheeps</button>
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'sheepes', 'sheep')"
+              style="position:absolute;left:120px;top:400px;width:330px;height:80px;background:#fff;border:3px solid #F0E9DD;border-radius:16px;
+                     padding:8px 14px;cursor:pointer;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.05rem;color:#43301F;text-align:center" data-quiz-option="sheepes">sheepes</button>
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'shep', 'sheep')"
+              style="position:absolute;left:470px;top:400px;width:330px;height:80px;background:#fff;border:3px solid #F0E9DD;border-radius:16px;
+                     padding:8px 14px;cursor:pointer;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.05rem;color:#43301F;text-align:center" data-quiz-option="shep">shep</button>
+    <div id="quizFeedback" style="position:absolute;left:0;right:0;top:500px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.1rem;color:#0D9488"></div>
+    <div class="floorshadow" style="right:40px;bottom:33px;width:230px;height:36px"></div><img class="char" src="assets/story/characters/noor-teach-board.png" style="right:40px;bottom:40px;height:260px" onerror="this.style.display='none'; this.previousElementSibling.style.display='none'">

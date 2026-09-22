@@ -936,7 +936,20 @@ def slide_phonics_rule(unit, n, total, ch):
           </button>'''
         tiles_block = f'<div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:18px">{tiles}</div>'
     else:
-        tiles_block = ""
+        # Sight-word units have no sounds to break down -- the whole point
+        # is recognising the word as a shape. Previously this branch left
+        # the slide with only a title and a tip and none of the actual
+        # words on it. Show the words themselves as tap-to-hear tiles.
+        tiles = ""
+        for w in unit.get("words", []):
+            tiles += f'''
+          <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(w["en"])}')"
+                  style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:14px;padding:12px 18px;min-width:96px;
+                        text-align:center;box-shadow:0 8px 16px rgba(67,48,31,.14)">
+            <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;color:#F97316">{esc(w["en"])}</div>
+            <div style="font-size:.8rem;color:#0D9488;font-weight:800;margin-top:2px">{w["ar"]}</div>
+          </button>'''
+        tiles_block = f'<div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:18px">{tiles}</div>' if tiles else ""
     tip = unit.get("tip", "")
     return (bg_study() + header("Phonics Time! &#128218;", n, total) + COLORSTRIP + f'''
     <div class="card" style="position:absolute;left:46px;top:150px;width:820px;padding:30px 36px">
@@ -1366,6 +1379,8 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
     if grammar_topic:
         plan.append(("grammar_rule", grammar_topic))
         plan.append(("grammar_practice", grammar_topic))
+        for qi, q in enumerate(grammar_topic.get("mcq", []), 1):
+            plan.append(("grammar_mcq", (grammar_topic, q, qi, len(grammar_topic["mcq"]))))
     plan.append(("dialogue", None))
     # Real scene images of our characters acting out this lesson's most
     # important words, the sentence displayed with those words
@@ -1463,6 +1478,9 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
             slides.append(grammar_slides.slide_grammar_rule(data, n, total, pick_character("explain", lesson_num), header, COLORSTRIP, bg_study, char_img))
         elif kind == "grammar_practice":
             slides.append(grammar_slides.slide_grammar_practice(data, n, total, pick_character("explain", lesson_num + 1), header, COLORSTRIP, bg_plain, char_img))
+        elif kind == "grammar_mcq":
+            topic, q, qi, tq = data
+            slides.append(grammar_slides.slide_grammar_mcq(topic, q, qi, tq, n, total, pick_character("explain", lesson_num + qi), header, COLORSTRIP, bg_plain, char_img))
         elif kind == "vocab":
             w, i = data
             verb_count = sum(1 for x in lesson["vocab"] if x.get("pos") == "verb")

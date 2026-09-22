@@ -61,6 +61,18 @@ def compute_grammar_lesson_map(level, num_lessons=20):
 def slide_grammar_rule(topic, n, total, ch, header_fn, colorstrip, bg_study_fn, char_img_fn):
     examples = topic.get("examples", [])
     first_two = examples[:2]
+    # Optional "rules": a list of sub-rules, each {en, ar, examples:[str]} --
+    # used for lessons with several cases to cover on one slide (Plurals:
+    # -s, -es, -y -> -ies, irregular). Scrolls inside the card if long.
+    rule_blocks = ""
+    if topic.get("rules"):
+        blocks = "".join(f'''
+        <div style="background:#fff;border-radius:12px;padding:10px 14px;margin-bottom:8px">
+          <div style="font-size:.9rem;color:#43301F;font-weight:800">{esc(r["en"])}</div>
+          <div style="direction:rtl;text-align:right;font-size:.8rem;color:#8A7160;font-weight:700;margin:2px 0 4px">{r["ar"]}</div>
+          <div style="font-size:.85rem;color:#0D9488;font-weight:700">{" &bull; ".join(esc(x).replace("->", "&rarr;") for x in r.get("examples", []))}</div>
+        </div>''' for r in topic["rules"])
+        rule_blocks = f'<div style="max-height:300px;overflow-y:auto;padding-right:6px">{blocks}</div>'
     ex_cards = "".join(f'''
       <div style="background:#fff;border-radius:12px;padding:10px 16px;margin-bottom:8px">
         <div style="font-size:.92rem;color:#43301F;font-weight:700">{esc(ex["en"])}</div>
@@ -73,7 +85,7 @@ def slide_grammar_rule(topic, n, total, ch, header_fn, colorstrip, bg_study_fn, 
       <div style="direction:rtl;text-align:right;font-size:.9rem;color:#8A7160;font-weight:700;margin-bottom:14px">{topic["titleAr"]}</div>
       <div style="font-size:.9rem;color:#43301F;line-height:1.6;margin-bottom:6px">{esc(topic["explanation"])}</div>
       <div style="direction:rtl;text-align:right;font-size:.85rem;color:#8A7160;line-height:1.6;margin-bottom:16px">{topic["explanationAr"]}</div>
-      {ex_cards}
+      {rule_blocks or ex_cards}
     </div>
     ''' + char_img_fn(ch, bottom=42, height=310))
 
@@ -93,3 +105,26 @@ def slide_grammar_practice(topic, n, total, ch, header_fn, colorstrip, bg_plain_
       {cards}
     </div>
     ''' + char_img_fn(ch, bottom=42, height=300))
+
+
+def slide_grammar_mcq(topic, q, idx, total_q, n, total, ch, header_fn, colorstrip, bg_plain_fn, char_img_fn):
+    """One multiple-choice question per slide, for in-class application
+    after the rule + practice slides (e.g. 10 telling-time questions).
+    q = {"q": str, "qAr": str (optional), "options": [4 str], "answer": str}."""
+    correct = q["answer"]
+    positions = [(120, 300), (470, 300), (120, 400), (470, 400)]
+    buttons = "".join(f'''
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{esc(o)}', '{esc(correct)}')"
+              style="position:absolute;left:{l}px;top:{t}px;width:330px;height:80px;background:#fff;border:3px solid #F0E9DD;border-radius:16px;
+                     padding:8px 14px;cursor:pointer;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.05rem;color:#43301F;text-align:center" data-quiz-option="{esc(o)}">{esc(o)}</button>'''
+        for o, (l, t) in zip(q["options"], positions))
+    q_ar = f'<div style="direction:rtl;text-align:right;font-size:.9rem;color:#8A7160;font-weight:700;margin-top:6px">{q["qAr"]}</div>' if q.get("qAr") else ""
+    return (bg_plain_fn() + header_fn(f"{esc(topic['title'])} &bull; Question {idx}/{total_q}", n, total) + colorstrip + f'''
+    <div class="card" style="position:absolute;left:100px;top:150px;width:730px;padding:20px 26px">
+      <div style="font-size:.78rem;font-weight:800;color:#0D9488;letter-spacing:1.5px;margin-bottom:6px">APPLY IT</div>
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.25rem;color:#43301F">{esc(q["q"])}</div>
+      {q_ar}
+    </div>
+    {buttons}
+    <div id="quizFeedback" style="position:absolute;left:0;right:0;top:500px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.1rem;color:#0D9488"></div>
+    ''' + char_img_fn(ch, right=40, bottom=40, height=260))
