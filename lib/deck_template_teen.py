@@ -86,9 +86,15 @@ def header(pagetitle, n, total):
       <div style="height:100%;width:{pct}%;background:linear-gradient(90deg,{PURPLE},{ORANGE});border-radius:2px"></div>
     </div>'''
 
+# Set per slide by deck_template_teen2.bg_theme() so every card -- including
+# the v1-built vocab/quiz/TIL slides teen2 wraps -- carries the lesson's
+# accent as a slim top edge. None = plain white card (v1 used standalone).
+CARD_ACCENT = None
+
 def card_open(width=None, extra=""):
     w = f"width:{width}px;" if width else ""
-    return f'<div style="background:{CARD_BG};border-radius:12px;border:1px solid rgba(0,0,0,.06);box-shadow:0 12px 26px rgba(0,0,0,.28);{w}{extra}">'
+    edge = f"border-top:4px solid {CARD_ACCENT};" if CARD_ACCENT else ""
+    return f'<div style="background:{CARD_BG};border-radius:12px;border:1px solid rgba(0,0,0,.06);{edge}box-shadow:0 12px 26px rgba(0,0,0,.28);{w}{extra}">'
 
 def char_badge(name, right=40, bottom=26):
     # Removed: the small corner "guide" badge sat in the bottom-right

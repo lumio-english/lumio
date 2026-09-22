@@ -65,6 +65,7 @@ CURRENT_LESSON_BG = None  # set per-lesson in build_deck_v2, read by bg_theme()
 def bg_theme(theme_key="default"):
     t = THEMES.get(theme_key, THEMES["default"])
     accent = t["accent"]
+    v1.CARD_ACCENT = accent   # every card on this slide gets the lesson's accent edge
     if CURRENT_LESSON_BG:
         # Real per-lesson artwork, full-bleed, with a dark scrim so
         # foreground text/cards stay legible over whatever's in the
@@ -106,8 +107,8 @@ def header_themed(pagetitle, n, total, theme_key="default"):
           <img src="assets/logo/lumio-logo.png" style="width:100%;height:100%;object-fit:contain"></div>
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:{INK};font-size:.85rem;letter-spacing:.5px">LUMIO ENGLISH</div>
       </div>
-      <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:{INK};font-size:.95rem;background:{t['accent']}24;
-                  padding:6px 16px;border-radius:8px">{pagetitle}</div>
+      <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#fff;font-size:.95rem;background:{t['accent']}3A;
+                  border:1px solid {t['accent']}80;padding:6px 16px;border-radius:8px">{pagetitle}</div>
       <div style="font-family:'Nunito',sans-serif;font-weight:800;color:{INK_DIM};font-size:.8rem">{n} / {total}</div>
     </div>
     <div style="position:relative;z-index:5;margin:14px 40px 0;height:3px;background:{BORDER};border-radius:2px">
@@ -128,16 +129,19 @@ def char_big(name, side="right", bottom=64):
 # New slide types for the restructured order
 # ============================================================
 def slide_hook(hook_question, n, total, ch, theme_key="default"):
+    t = THEMES.get(theme_key, THEMES["default"])
     return (bg_theme(theme_key) + header_themed("Hook", n, total, theme_key) + f'''
     <div style="position:relative;z-index:5;display:flex;align-items:center;height:520px;margin-top:12px;padding:0 60px">
       <div style="max-width:640px">
-        <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:{INK_DIM};font-size:.78rem;letter-spacing:1.5px;margin-bottom:14px">BEFORE WE START</div>
-        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:2rem;color:#fff;line-height:1.35">{esc(hook_question)}</div>
+        <div style="width:46px;height:5px;border-radius:3px;background:{t['accent']};margin-bottom:14px"></div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:{t['accent']};font-size:.78rem;letter-spacing:1.5px;margin-bottom:14px">BEFORE WE START</div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:2.35rem;color:#fff;line-height:1.3">{esc(hook_question)}</div>
       </div>
     </div>
     ''' + char_big(ch))
 
 def slide_first_listen(dialogue, n, total, theme_key="default"):
+    t = THEMES.get(theme_key, THEMES["default"])
     # Dynamic spacing rather than a fixed 4-slot layout -- richer, more
     # advanced dialogues run longer than the original 4-line/2-exchange
     # format, and a hard-coded slot array would silently stack extra
@@ -161,7 +165,7 @@ def slide_first_listen(dialogue, n, total, theme_key="default"):
         side = "left" if left else "right"
         bubbles += f'''
         <div style="position:absolute;{side}:60px;top:{top_margin + i * pitch}px;max-width:480px;background:{CARD_BG};border-radius:12px;
-                    padding:{pad};box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
+                    border-{side}:5px solid {t['accent']};padding:{pad};box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
           <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:{bubble_font};color:{CARD_TEXT}">{esc(en)}</div>
           <div style="direction:rtl;text-align:right;font-size:{ar_font};color:#8A8398;font-weight:700;margin-top:3px">{ar}</div>
         </div>'''
