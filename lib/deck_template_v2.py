@@ -707,12 +707,11 @@ def slide_quick_check(target, distractors, idx, total_q, n, total, seed, tier="p
         for o, (l, t) in zip(opts, positions):
             buttons += f'''
           <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{esc(o["en"])}', '{esc(target["en"])}')"
-                  style="position:absolute;left:{l}px;top:{t}px;width:180px;height:210px;background:#fff;border:3px solid #F0E9DD;border-radius:16px;
-                      padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px" data-quiz-option="{esc(o["en"])}">
-            <div style="width:100%;height:140px"><img src="assets/vocab/{slug(o['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-            <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1rem;color:#43301F">{esc(o["en"])}</div>
+                  style="position:absolute;left:{l}px;top:{t}px;width:180px;height:100px;background:#fff;border:3px solid #F0E9DD;border-radius:16px;
+                      padding:8px;cursor:pointer;display:flex;align-items:center;justify-content:center" data-quiz-option="{esc(o["en"])}">
+            <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.15rem;color:#43301F;text-align:center">{esc(o["en"])}</div>
           </button>'''
-        prompt = "Which word matches the picture?"
+        prompt = "Which word matches?"
     else:
         positions = [(610, 260), (890, 260), (610, 364), (890, 364)]
         buttons = ""
@@ -724,13 +723,16 @@ def slide_quick_check(target, distractors, idx, total_q, n, total, seed, tier="p
                       color:#43301F;cursor:pointer" data-quiz-option="{esc(o["en"])}">{esc(o["en"])}</button>'''
         prompt = "What is this?"
 
-    # The reference picture shows the Arabic word, not the English one --
-    # the student has to translate Arabic -> English to pick an answer,
-    # which is real recall practice rather than just picture-to-label
-    # matching (the English word would give the answer away for free).
-    img_block = listen_btn if tier == "preA" else f'''<div class="card" style="position:absolute;left:280px;top:170px;width:280px;height:280px;overflow:hidden;padding:0;display:flex;flex-direction:column">
-      <div style="flex:1;overflow:hidden"><img src="assets/vocab/{slug(target['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-      <div dir="rtl" style="text-align:center;padding:8px 6px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.15rem;color:#0D9488;background:#F0FDFA;border-top:2px solid #E6F7F3">{esc(target.get("ar",""))}</div>
+    # The reference shows the Arabic word only now (previously paired
+    # with the word's own picture) -- with options in level1 also
+    # showing pictures, a picture-plus-Arabic prompt still let a student
+    # match by image alone without ever reading the Arabic. Pre-A keeps
+    # its existing audio-only prompt: that tier is pre-literacy by
+    # design (see docstring), and pre-readers can't get anything out of
+    # an Arabic-text-only prompt either -- this change doesn't apply
+    # there without changing that underlying design decision too.
+    img_block = listen_btn if tier == "preA" else f'''<div class="card" style="position:absolute;left:280px;top:170px;width:280px;height:280px;overflow:hidden;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+      <div dir="rtl" style="text-align:center;padding:8px 16px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2.4rem;color:#0D9488">{esc(target.get("ar",""))}</div>
     </div>'''
     prompt_pos = "left:60px;top:180px;width:260px;text-align:center" if tier == "preA" else "left:610px;top:190px;width:540px"
     prompt_font = "1.6rem" if tier == "preA" else "1.9rem"

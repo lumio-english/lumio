@@ -133,7 +133,7 @@ SCENE_DATA = [
     (10, 28, ["plate", "cup"], "Here is a plate. Here is a cup."),
     (10, 29, ["spoon", "fork", "knife"], "A spoon, a fork, and a knife."),
     (10, 30, ["fridge", "table", "chair"], "The fridge is next to the table and chair."),
-    (11, 31, ["shirt", "pants"], "Ziad wears a shirt and pants."),
+    (11, 31, ["shirt", "pants"], "Ziad wears a T-shirt and pants."),
     (11, 32, ["dress", "shoes"], "Sara wears a dress and shoes."),
     (11, 33, ["hat", "jacket"], "Omar wears a hat and a jacket."),
     (12, 34, ["sunny", "hot"], "It is sunny. It is hot."),
