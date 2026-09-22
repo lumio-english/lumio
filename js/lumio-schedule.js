@@ -142,7 +142,6 @@
       out = out.filter(c => c.students.some(s => normName(s.studentName) === n));
     }
     if (filter.cohort) out = out.filter(c => c.cohort === filter.cohort);
-    if (filter.group) out = out.filter(c => c.group === filter.group);
     if (filter.level) out = out.filter(c => c.level === filter.level);
     if (filter.from) out = out.filter(c => c.date >= filter.from);
     if (filter.to) out = out.filter(c => c.date <= filter.to);
@@ -199,7 +198,7 @@
     const data = load();
     const c = data.classes.find(x => x.id === id);
     if (!c) throw new Error("Class not found.");
-    ["teacherId", "teacherName", "date", "startTime", "notes", "sessionNotes", "level", "cohort", "group", "status", "meetingLink"].forEach(k => {
+    ["teacherId", "teacherName", "date", "startTime", "notes", "sessionNotes", "level", "cohort", "status", "meetingLink"].forEach(k => {
       if (patch[k] !== undefined) c[k] = patch[k];
     });
     if (patch.durationMinutes !== undefined) c.durationMinutes = Number(patch.durationMinutes) || c.durationMinutes;
@@ -619,7 +618,7 @@
     const data = load();
     const p = data.patterns.find(x => x.id === id);
     if (!p) throw new Error("Fixed schedule not found.");
-    ["teacherId", "teacherName", "startTime", "level", "cohort", "group", "notes", "meetingLink", "active"].forEach(k => {
+    ["teacherId", "teacherName", "startTime", "level", "cohort", "notes", "meetingLink", "active"].forEach(k => {
       if (patch[k] !== undefined) p[k] = patch[k];
     });
     if (patch.dayOfWeek !== undefined) p.dayOfWeek = Number(patch.dayOfWeek);
@@ -740,7 +739,7 @@
               id: genId(),
               teacherId: p.teacherId, teacherName: p.teacherName,
               date: d, startTime: p.startTime, durationMinutes: p.durationMinutes,
-              level: p.level, cohort: p.cohort, group: p.group,
+              level: p.level, cohort: p.cohort,
               lessonNumber: p.lessonStart ? p.lessonStart + weekIndex : null,
               meetingLink: p.meetingLink || "", notes: p.notes || "", sessionNotes: "",
               status: "scheduled", patternId: p.id,

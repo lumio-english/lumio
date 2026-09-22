@@ -1286,9 +1286,9 @@
     </div>
     <div class="td-panel">
       <div class="td-panel-head"><h2>📊 Cohort comparison</h2></div>
-      <p class="sub">Average lesson progress and attendance rate per cohort/group — helps spot which class formats are actually working.</p>
+      <p class="sub">Average lesson progress and attendance rate per cohort (batch) — helps spot which class formats are actually working.</p>
       <div id="cohortCompareList" class="mt"></div>
-      <div class="td-empty" id="cohortCompareEmpty" style="display:none">Set a cohort and group on your students to compare them here.</div>
+      <div class="td-empty" id="cohortCompareEmpty" style="display:none">Set a cohort (batch) on your students to compare them here.</div>
     </div>
   </div>
 
@@ -1482,10 +1482,6 @@
             <label for="stuCohort">Cohort <span style="color:var(--td-muted);font-weight:600">(optional)</span></label>
             <input type="text" id="stuCohort" placeholder="e.g. Sept 2026 Intake" maxlength="40">
           </div>
-          <div class="td-field">
-            <label for="stuGroup">Group <span style="color:var(--td-muted);font-weight:600">(optional)</span></label>
-            <input type="text" id="stuGroup" placeholder="e.g. Group A" maxlength="40">
-          </div>
         </div>
         <div class="td-field">
           <label for="stuPhone">Parent/guardian phone <span style="color:var(--td-muted);font-weight:600">(optional)</span></label>
@@ -1674,10 +1670,10 @@
     <div class="td-sm-content">
       <div class="td-sm-panel" data-clspanel="class">
         <div class="td-field">
-          <label for="clsGroupPicker">Cohort &amp; group</label>
+          <label for="clsGroupPicker">Cohort (batch)</label>
           <select id="clsGroupPicker"></select>
           <div class="td-field-hint" style="font-weight:600;color:var(--td-muted);font-size:.78rem;margin-top:4px">
-            Pick a level first if needed — only students sharing the same cohort, group, and level can be booked into one session together.
+            Pick a level first if needed — only students sharing the same cohort (batch) and level can be booked into one session together.
           </div>
         </div>
         <div class="td-field">
@@ -1736,7 +1732,7 @@
     <h3>Fixed weekly schedule</h3>
     <p class="sub" style="margin-top:-4px">Books this group at the same day and time every week — subscribed students only. Cancelling one session doesn't touch the rest of the series; use "cancel this and all future" from a session's Course Details to stop it early.</p>
     <div class="td-field">
-      <label for="fsGroupPicker">Cohort &amp; group</label>
+      <label for="fsGroupPicker">Cohort (batch)</label>
       <select id="fsGroupPicker"></select>
     </div>
     <div class="td-field">
@@ -3045,7 +3041,7 @@
             <div class="nm">${p.name}</div>
             <div><span class="lv">${levelName(p.level)}</span>${p.approved === false ? ' <span class="td-pending-badge">⏳ Pending approval</span>' : ""}</div>
             <div class="teacher-line">👩‍🏫 ${teacherLabel}</div>
-            ${(p.cohort || p.group) ? `<div class="group-line">${[p.cohort, p.group].filter(Boolean).join(" · ")}</div>` : ""}
+            ${p.cohort ? `<div class="group-line">${p.cohort}</div>` : ""}
           </div>
         </div>
         ${hw ? `<div class="hw-summary">📝 ${hw.count} homework${hw.count === 1 ? "" : "s"} done · avg ${(hw.starsSum / hw.count).toFixed(1)}★</div>` : ""}
@@ -3213,7 +3209,6 @@
     stuNameInput.value = profile ? profile.name : (prefill && prefill.name) || "";
     stuLevelSelect.value = profile ? profile.level : (prefill && prefill.level) || "";
     document.getElementById("stuCohort").value = profile ? (profile.cohort || "") : "";
-    document.getElementById("stuGroup").value = profile ? (profile.group || "") : "";
     stuPinInput.value = profile ? profile.pin : (window.LumioProfiles ? LumioProfiles.randomPin() : "1234");
     document.getElementById("stuAge").value = profile && profile.age != null ? profile.age : "";
     document.getElementById("stuGender").value = profile ? (profile.gender || "") : "";
@@ -3292,7 +3287,6 @@
     const teacherIdVal = document.getElementById("stuTeacher").value || null;
     const phoneVal = combinePhone(stuPhoneCountry.value, stuPhoneInput.value);
     const cohortVal = document.getElementById("stuCohort").value;
-    const groupVal = document.getElementById("stuGroup").value;
     const ageVal = document.getElementById("stuAge").value;
     const genderVal = document.getElementById("stuGender").value;
     const gradeVal = document.getElementById("stuGrade").value;
@@ -3310,7 +3304,7 @@
       try {
         const payload = {
           name, level: stuLevelSelect.value, avatar: selectedAvatar, pin: pinVal, teacherId: teacherIdVal,
-          phone: phoneVal, cohort: cohortVal, group: groupVal,
+          phone: phoneVal, cohort: cohortVal,
           age: ageVal, gender: genderVal, grade: gradeVal, country: countryVal, tags: tagsVal,
           subscribed: subscribedVal, amountPaid: amountPaidVal, currency: currencyVal, levelsPurchased: levelsPurchasedVal,
           sessionsRemaining: sessionsRemainingVal, approved: approvedVal,
@@ -3663,7 +3657,7 @@
             ${c.status === "cancelled" ? '<span class="td-badge grey">cancelled</span>' : ""}
           </div>
           <div class="td-class-students-list">${studentsHtml}</div>
-          <div class="meta">${teacher ? teacher.name : (c.teacherName || "Unassigned")}${c.lessonNumber ? " · Lesson " + c.lessonNumber : ""}${c.cohort ? " · " + c.cohort : ""}${c.group ? " · " + c.group : ""}${c.notes ? " · " + c.notes : ""}</div>
+          <div class="meta">${teacher ? teacher.name : (c.teacherName || "Unassigned")}${c.lessonNumber ? " · Lesson " + c.lessonNumber : ""}${c.cohort ? " · " + c.cohort : ""}${c.notes ? " · " + c.notes : ""}</div>
           ${c.meetingLink ? `<div class="meta"><a href="${c.meetingLink}" target="_blank" rel="noopener">🔗 Join meeting link</a></div>` : ""}
           ${c.status === "completed" ? `<textarea class="td-session-notes" placeholder="What did you cover this session? Any homework given?">${c.sessionNotes || ""}</textarea>` : ""}
         </div>
@@ -4032,8 +4026,8 @@
     if (scope === "mine" && activeTeacherId) students = students.filter(s => s.teacherId === activeTeacherId);
     const key = document.getElementById("fsGroupPicker").value;
     if (!key) return [];
-    const [cohort, group, level] = key.split("|||");
-    return students.filter(s => (s.cohort || "") === cohort && (s.group || "") === group && s.level === level);
+    const [cohort, level] = key.split("|||");
+    return students.filter(s => (s.cohort || "") === cohort && s.level === level);
   }
   function fsRenderStudentChecks() {
     const wrap = document.getElementById("fsStudentChecks");
@@ -4057,8 +4051,8 @@
     if (scope === "mine" && activeTeacherId) students = students.filter(s => s.teacherId === activeTeacherId);
     const combos = {};
     students.forEach(s => {
-      const key = `${s.cohort || ""}|||${s.group || ""}|||${s.level}`;
-      if (!combos[key]) combos[key] = { cohort: s.cohort || "", group: s.group || "", level: s.level, students: [] };
+      const key = `${s.cohort || ""}|||${s.level}`;
+      if (!combos[key]) combos[key] = { cohort: s.cohort || "", level: s.level, students: [] };
       combos[key].students.push(s);
     });
     const keys = Object.keys(combos);
@@ -4067,7 +4061,7 @@
       const combo = combos[key];
       const opt = document.createElement("option");
       opt.value = key;
-      const label = [combo.cohort, combo.group].filter(Boolean).join(" · ") || "No cohort/group set";
+      const label = combo.cohort || "No cohort set";
       opt.textContent = `${label} — ${levelName(combo.level)} (${combo.students.length} student${combo.students.length === 1 ? "" : "s"})`;
       picker.appendChild(opt);
     });
@@ -4109,7 +4103,6 @@
         durationMinutes: document.getElementById("fsDuration").value,
         level: first ? first.level : "",
         cohort: first ? first.cohort : "",
-        group: first ? first.group : "",
         startDate: document.getElementById("fsStartDate").value,
         lessonStart: document.getElementById("fsLessonStart").value || null,
         meetingLink: document.getElementById("fsMeetingLink").value.trim(),
@@ -4175,13 +4168,13 @@
     const activeTeacherId = LumioProfiles.getCurrentTeacherId();
     let students = window.LumioProfiles ? LumioProfiles.listStudents() : [];
     if (scope === "mine" && activeTeacherId) students = students.filter(s => s.teacherId === activeTeacherId);
-    // Group students into cohort+group+level combos -- a class can only
+    // Group students into cohort+level combos -- a class can only
     // ever be booked within one combo, so that's the real unit being
     // picked here, not an individual student.
     const combos = {};
     students.forEach(s => {
-      const key = `${s.cohort || ""}|||${s.group || ""}|||${s.level}`;
-      if (!combos[key]) combos[key] = { cohort: s.cohort || "", group: s.group || "", level: s.level, students: [] };
+      const key = `${s.cohort || ""}|||${s.level}`;
+      if (!combos[key]) combos[key] = { cohort: s.cohort || "", level: s.level, students: [] };
       combos[key].students.push(s);
     });
     const keys = Object.keys(combos);
@@ -4195,7 +4188,7 @@
       const combo = combos[key];
       const opt = document.createElement("option");
       opt.value = key;
-      const label = [combo.cohort, combo.group].filter(Boolean).join(" · ") || "No cohort/group set";
+      const label = combo.cohort || "No cohort set";
       opt.textContent = `${label} — ${levelName(combo.level)} (${combo.students.length} student${combo.students.length === 1 ? "" : "s"})`;
       clsGroupPicker.appendChild(opt);
     });
@@ -4210,7 +4203,7 @@
       if (keys.filter(k => combos[k].level === level).length < 2) return;
       const opt = document.createElement("option");
       opt.value = `*|||*|||${level}`;
-      opt.textContent = `Everyone at ${levelName(level)} — all groups (${byLevel[level].length} students)`;
+      opt.textContent = `Everyone at ${levelName(level)} — all cohorts (${byLevel[level].length} students)`;
       clsGroupPicker.appendChild(opt);
     });
     clsGroupPicker.value = presetKey && (combos[presetKey] || presetKey.startsWith("*|||*|||")) ? presetKey : keys[0];
@@ -4224,11 +4217,11 @@
     if (scope === "mine" && activeTeacherId) students = students.filter(s => s.teacherId === activeTeacherId);
     const key = clsGroupPicker.value;
     if (!key) return [];
-    const [cohort, group, level] = key.split("|||");
+    const [cohort, level] = key.split("|||");
     // "*|||*|||level" = everyone at that level, regardless of the
     // cohort/group tags on their profiles (see renderClsGroupPicker).
-    if (cohort === "*" && group === "*") return students.filter(s => s.level === level);
-    return students.filter(s => (s.cohort || "") === cohort && (s.group || "") === group && s.level === level);
+    if (cohort === "*") return students.filter(s => s.level === level);
+    return students.filter(s => (s.cohort || "") === cohort && s.level === level);
   }
   // preselected: a Set of studentIds to check by default -- all of the
   // combo's students when booking fresh, or exactly whoever was already
@@ -4300,7 +4293,7 @@
     document.getElementById("classModalTitle").textContent = c ? "Edit class" : (bulkBookingActive ? `Book ${bulkSelections.size} selected slots` : "Book a group class");
     if (c) {
       const first = c.students[0];
-      const presetKey = `${c.cohort || ""}|||${c.group || ""}|||${c.level}`;
+      const presetKey = `${c.cohort || ""}|||${c.level}`;
       renderClsGroupPicker(presetKey);
       const preselect = new Set(c.students.map(s => s.studentId).filter(Boolean));
       renderClsStudentChecks(preselect);
@@ -4370,7 +4363,7 @@
             teacherName: activeTeacher ? activeTeacher.name : "",
             date: slot.date, startTime: slot.time,
             durationMinutes: clsDurationSelect.value,
-            level: first ? first.level : "", cohort: first ? first.cohort : "", group: first ? first.group : "",
+            level: first ? first.level : "", cohort: first ? first.cohort : "",
             lessonNumber: baseLesson ? baseLesson + i : null,
             meetingLink: document.getElementById("clsMeetingLink").value.trim(),
             notes: clsNotesInput.value.trim(),
@@ -4398,7 +4391,6 @@
       durationMinutes: clsDurationSelect.value,
       level: first ? first.level : "",
       cohort: first ? first.cohort : "",
-      group: first ? first.group : "",
       lessonNumber: clsLessonSelect.value ? Number(clsLessonSelect.value) : null,
       meetingLink: document.getElementById("clsMeetingLink").value.trim(),
       notes: clsNotesInput.value.trim(),
@@ -5209,10 +5201,10 @@
     const list = document.getElementById("cohortCompareList");
     const empty = document.getElementById("cohortCompareEmpty");
     if (!window.LumioProfiles) { list.innerHTML = ""; return; }
-    const students = LumioProfiles.listStudents().filter(s => s.cohort || s.group);
+    const students = LumioProfiles.listStudents().filter(s => s.cohort);
     const groups = {};
     students.forEach(s => {
-      const key = `${s.cohort || "—"} · ${s.group || "—"}`;
+      const key = `${s.cohort || "—"}`;
       if (!groups[key]) groups[key] = [];
       groups[key].push(s);
     });

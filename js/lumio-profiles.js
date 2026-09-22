@@ -267,17 +267,18 @@
   function listStudents() {
     return load().students.slice();
   }
-  // Groupmates: same cohort + group + level, case/whitespace-insensitive,
-  // excluding the student themself -- used both by the roster UI (showing
-  // a groupmate count) and, later, by the cohort-comparison report chart.
-  // A student with no cohort/group set has no groupmates by definition,
-  // since there's nothing to match against.
+  // Groupmates: same cohort (batch) + level, case/whitespace-insensitive,
+  // excluding the student themself -- used both by the roster UI and by
+  // the cohort-comparison report chart. The separate "group" field was
+  // removed: level communities are handled outside the app, so batch +
+  // level is the whole match now. A student with no cohort has no
+  // groupmates by definition.
   function groupmatesOf(studentId) {
     const s = getStudent(studentId);
-    if (!s || !s.cohort || !s.group) return [];
+    if (!s || !s.cohort) return [];
     const norm = v => (v || "").trim().toLowerCase();
     return load().students.filter(x =>
-      x.id !== s.id && norm(x.cohort) === norm(s.cohort) && norm(x.group) === norm(s.group) && x.level === s.level
+      x.id !== s.id && norm(x.cohort) === norm(s.cohort) && x.level === s.level
     );
   }
   function getStudent(id) {
@@ -527,7 +528,6 @@
     if (patch.teacherId !== undefined) s.teacherId = patch.teacherId;
     if (patch.phone !== undefined) s.phone = (patch.phone || "").trim();
     if (patch.cohort !== undefined) s.cohort = (patch.cohort || "").trim();
-    if (patch.group !== undefined) s.group = (patch.group || "").trim();
     if (patch.paid !== undefined) s.paid = !!patch.paid;
     if (patch.approved !== undefined) s.approved = !!patch.approved;
     if (patch.age !== undefined) s.age = patch.age === null || patch.age === "" ? null : Number(patch.age);

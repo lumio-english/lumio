@@ -103,7 +103,7 @@ var DELETED_IDS_COLUMNS = ["id", "type", "deletedAt"];
 var SCHEDULE_SHEET = "Schedule";
 var SCHEDULE_COLUMNS = [
   "id", "teacherId", "teacherName", "date", "startTime", "durationMinutes",
-  "level", "cohort", "group", "lessonNumber", "meetingLink", "notes",
+  "level", "cohort", "lessonNumber", "meetingLink", "notes",
   "sessionNotes", "status", "patternId", "studentsJson", "createdAt", "updatedAt"
 ];
 
@@ -114,7 +114,7 @@ var SCHEDULE_COLUMNS = [
 var PATTERNS_SHEET = "SchedulePatterns";
 var PATTERNS_COLUMNS = [
   "id", "teacherId", "teacherName", "dayOfWeek", "startTime", "durationMinutes",
-  "level", "cohort", "group", "notes", "meetingLink", "studentsJson",
+  "level", "cohort", "notes", "meetingLink", "studentsJson",
   "startDate", "endDate", "lessonStart", "active", "createdAt", "updatedAt"
 ];
 

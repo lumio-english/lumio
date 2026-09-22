@@ -357,7 +357,7 @@
     main.innerHTML = `
       <div class="top-card">
         <h1>${student.name}</h1>
-        <div class="meta"><span>${levelName}</span>${student.cohort ? `<span>${student.cohort}${student.group ? " · " + student.group : ""}</span>` : ""}</div>
+        <div class="meta"><span>${levelName}</span>${student.cohort ? `<span>${student.cohort}</span>` : ""}</div>
       </div>
       <div class="empty-state">${student.name} hasn't completed any lessons or homework yet — a report becomes available once they have.</div>`;
     return;
@@ -434,12 +434,12 @@
 
   const cohortNote = mates.length
     ? `<p style="color:var(--cocoa-soft);font-weight:700;font-size:.85rem">Compared against ${mates.length} student${mates.length > 1 ? "s" : ""} in the same cohort, group, and level.</p>`
-    : `<p class="no-cohort">No cohort comparison available — assign ${student.name} a cohort and group to compare against groupmates.</p>`;
+    : `<p class="no-cohort">No cohort comparison available — assign ${student.name} a cohort (batch) to compare against classmates in the same batch.</p>`;
 
   main.innerHTML = `
     <div class="top-card">
       <h1>${student.name}</h1>
-      <div class="meta"><span>${levelName}</span>${student.cohort ? `<span>${student.cohort}${student.group ? " · " + student.group : ""}</span>` : ""}</div>
+      <div class="meta"><span>${levelName}</span>${student.cohort ? `<span>${student.cohort}</span>` : ""}</div>
       <div class="tags">
         <span class="tag">${prepLessons.length} lesson${prepLessons.length === 1 ? "" : "s"} prepped</span>
         <span class="tag teal">${hwLessons.length} homework${hwLessons.length === 1 ? "" : "s"} done</span>
