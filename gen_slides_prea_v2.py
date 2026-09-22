@@ -141,7 +141,7 @@ SCENE_DATA = [
     (1, 1, ["Hello", "Hi"], "Hello! Hi, friend!", "مرحباً! أهلاً يا صديقي!"),
     (1, 2, ["Good morning", "Good night"], "Good morning! Good night!", "صباح الخير! تصبح على خير!"),
     (1, 3, ["Thank you", "Goodbye"], "Thank you! Goodbye!", "شكراً لك! مع السلامة!"),
-    (2, 4, ["boy", "girl"], "This is a boy. This is a girl."),
+    (2, 4, ["boy", "girl"], "The boy says hi. The girl says hi."),
     (2, 5, ["friend", "name"], "My friend's name is Sara."),
     (3, 6, ["apple", "ball", "cat"], "I see an apple, a ball, and a cat."),
     (3, 7, ["dog", "egg", "fish"], "The dog looks at the egg and the fish."),
