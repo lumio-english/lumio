@@ -633,7 +633,13 @@ def slide_sound_spot(vocab, n, total, ch):
       <div style="display:inline-block;background:#fff;padding:8px 20px;border-radius:14px;box-shadow:0 6px 14px rgba(67,48,31,.1);font-family:'Baloo 2',sans-serif;font-weight:700;
                 font-size:1.05rem;color:#8A7160">Tap any word to hear it &mdash; can you say it before it plays?</div>
     </div>
-    <div style="position:absolute;left:0;right:400px;top:210px;display:flex;flex-wrap:wrap;gap:16px;justify-content:center;padding:0 30px">
+    <!-- Review lessons can carry 40+ words -- a plain flex-wrap with no
+         height limit let extra rows run past the bottom nav bar,
+         invisible and unreachable rather than just off-screen. Capping
+         the box height and adding its own scroll keeps every word
+         reachable regardless of how many there are, without changing
+         card size lesson to lesson. -->
+    <div style="position:absolute;left:0;right:400px;top:210px;bottom:96px;overflow-y:auto;display:flex;flex-wrap:wrap;align-content:flex-start;gap:16px;justify-content:center;padding:4px 30px 12px">
       {cards}
     </div>
     ''' + char_img(ch, right=90, bottom=40, height=320))
@@ -1001,18 +1007,14 @@ def slide_teacher_game(vocab, n, total, ch, tier="preA", mode="teacher"):
     call out words for students to race to; 'student' flips it --
     a student calls out words for classmates, building turn-taking
     and peer confidence instead of just repeating the same format."""
-    cols = 3 if len(vocab) <= 6 else 4
     tile_w = 220 if tier == "preA" else 190
     tile_h = 190 if tier == "preA" else 160
     tiles = ""
-    for i, w in enumerate(vocab):
-        row, col = divmod(i, cols)
-        left = 130 + col * (tile_w + 24)
-        top = 210 + row * (tile_h + 20)
+    for w in vocab:
         show_word = tier != "preA"
         tiles += f'''
       <button onclick="this.style.transform='scale(0.92)'; this.style.borderColor='#0D9488'; setTimeout(() => {{ this.style.transform='scale(1)'; }}, 180); typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(w["en"])}')"
-              style="position:absolute;left:{left}px;top:{top}px;width:{tile_w}px;height:{tile_h}px;background:#fff;border:3px solid #F0E9DD;border-radius:18px;
+              style="flex:0 0 auto;width:{tile_w}px;height:{tile_h}px;background:#fff;border:3px solid #F0E9DD;border-radius:18px;
                   padding:8px;cursor:pointer;transition:transform .15s ease, border-color .15s ease;display:flex;flex-direction:column;align-items:center;gap:4px">
         <div style="width:100%;flex:1;overflow:hidden"><img src="assets/vocab/{slug(w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
         {f'<div style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:.85rem;color:#43301F">{esc(w["en"])}</div>' if show_word else ""}
@@ -1029,7 +1031,14 @@ def slide_teacher_game(vocab, n, total, ch, tier="preA", mode="teacher"):
       <div style="display:inline-block;background:#fff;padding:8px 20px;border-radius:14px;box-shadow:0 6px 14px rgba(67,48,31,.1);font-family:'Baloo 2',sans-serif;font-weight:700;
                 font-size:1.05rem;color:#8A7160">{instruction}</div>
     </div>
-    {tiles}
+    <!-- Same fix as Sound & Spot: review lessons can carry 40+ words,
+         and these tiles used to be individually absolute-positioned
+         with no bound on total height, so extra rows ran past the
+         bottom nav bar, invisible and unreachable. A single scrollable
+         flex container keeps every tile reachable regardless of count. -->
+    <div style="position:absolute;left:0;right:0;top:210px;bottom:40px;overflow-y:auto;display:flex;flex-wrap:wrap;align-content:flex-start;gap:20px;justify-content:center;padding:4px 130px 16px">
+      {tiles}
+    </div>
     ''' + char_img(ch, right=40, bottom=30, height=150))
 
 
