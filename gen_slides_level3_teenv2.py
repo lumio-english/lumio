@@ -2,6 +2,7 @@
 import sys, json, glob, os
 sys.path.insert(0, "lib")
 from deck_template_teen2 import build_deck_v2, chunk_grammar_topics
+from crew_talk_level3 import CREW_TALK
 from grammar_slides import match_grammar_by_lesson_focus
 
 LEVEL = "level3"
@@ -371,7 +372,7 @@ for num in sorted(_lessons.keys()):
                             notice_note, challenge, real_life, theme_key=theme_key, level=LEVEL,
                             discussion=discussion, n_vocab_mcq=n_vocab_mcq, n_grammar_mcq=n_grammar_mcq,
                             grammar_recap_topics=grammar_recap_topics,
-                            describing_time_image=describing_time_image)
+                            describing_time_image=describing_time_image, crew_talk=CREW_TALK.get(num))
     nn = f"{num:02d}"
     lesson_dir = f"slide-content/{LEVEL}/{nn}"
     os.makedirs(lesson_dir, exist_ok=True)

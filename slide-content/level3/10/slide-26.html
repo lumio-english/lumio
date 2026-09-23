@@ -16,26 +16,27 @@
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#EDE9FB;font-size:.85rem;letter-spacing:.5px">LUMIO ENGLISH</div>
       </div>
       <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#fff;font-size:.95rem;background:#C084FC3A;
-                  border:1px solid #C084FC80;padding:6px 16px;border-radius:8px">Grammar Time! &#128221;</div>
-      <div style="font-family:'Nunito',sans-serif;font-weight:800;color:#C6BBF2;font-size:.8rem">26 / 49</div>
+                  border:1px solid #C084FC80;padding:6px 16px;border-radius:8px">Vocabulary Check &middot; 6/10</div>
+      <div style="font-family:'Nunito',sans-serif;font-weight:800;color:#C6BBF2;font-size:.8rem">26 / 54</div>
     </div>
     <div style="position:relative;z-index:5;margin:14px 40px 0;height:3px;background:#4A3B7A;border-radius:2px">
-      <div style="height:100%;width:53%;background:linear-gradient(90deg,#C084FC,#A855F7);border-radius:2px"></div>
-    </div>
-    <div class="card" style="position:absolute;left:46px;top:150px;width:820px;padding:30px 36px">
-      <div style="font-size:.78rem;font-weight:800;color:#0D9488;letter-spacing:1.5px;margin-bottom:8px">TEACHER: EXPLAIN THIS RULE</div>
-      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;color:#43301F;margin-bottom:2px">Wh- Questions</div>
-      <div style="direction:rtl;text-align:right;font-size:.9rem;color:#8A7160;font-weight:700;margin-bottom:14px">أسئلة Wh</div>
-      <div style="font-size:.9rem;color:#43301F;line-height:1.6;margin-bottom:6px">Who, what, where, when, why, and how start questions that ask for specific information, not just yes/no.</div>
-      <div style="direction:rtl;text-align:right;font-size:.85rem;color:#8A7160;line-height:1.6;margin-bottom:16px">who وwhat وwhere وwhen وwhy وhow تبدأ أسئلة تطلب معلومة محددة، وليس فقط نعم/لا.</div>
-      
-      <div style="background:#fff;border-radius:12px;padding:10px 16px;margin-bottom:8px">
-        <div style="font-size:.92rem;color:#43301F;font-weight:700">Who is that?</div>
-        <div style="direction:rtl;text-align:right;font-size:.82rem;color:#8A7160;font-weight:700;margin-top:2px">من ذلك؟</div>
-      </div>
-      <div style="background:#fff;border-radius:12px;padding:10px 16px;margin-bottom:8px">
-        <div style="font-size:.92rem;color:#43301F;font-weight:700">Where do you live?</div>
-        <div style="direction:rtl;text-align:right;font-size:.82rem;color:#8A7160;font-weight:700;margin-top:2px">أين تعيش؟</div>
-      </div>
-    </div>
-    
+      <div style="height:100%;width:48%;background:linear-gradient(90deg,#C084FC,#A855F7);border-radius:2px"></div>
+    </div><div style="background:#FFFFFF;border-radius:12px;border:1px solid rgba(0,0,0,.06);border-top:4px solid #C084FC;box-shadow:0 12px 26px rgba(0,0,0,.28);width:460px;position:absolute;left:60px;top:220px;padding:30px;text-align:center">
+          <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.78rem;color:#6B6580;letter-spacing:1px;margin-bottom:10px">WHAT'S THE ENGLISH WORD?</div>
+          <div style="direction:rtl;font-family:'Nunito',sans-serif;font-weight:800;font-size:2rem;color:#2B2640">سر</div></div>
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'clue', 'secret')"
+              style="position:absolute;left:600px;top:210px;width:250px;height:76px;background:#FFFFFF;border:1px solid #EEF0F4;border-radius:10px;
+                  display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.05rem;
+                  color:#2B2640;cursor:pointer" data-quiz-option="clue">clue</button>
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'riddle', 'secret')"
+              style="position:absolute;left:880px;top:210px;width:250px;height:76px;background:#FFFFFF;border:1px solid #EEF0F4;border-radius:10px;
+                  display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.05rem;
+                  color:#2B2640;cursor:pointer" data-quiz-option="riddle">riddle</button>
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'secret', 'secret')"
+              style="position:absolute;left:600px;top:300px;width:250px;height:76px;background:#FFFFFF;border:1px solid #EEF0F4;border-radius:10px;
+                  display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.05rem;
+                  color:#2B2640;cursor:pointer" data-quiz-option="secret">secret</button>
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'answer', 'secret')"
+              style="position:absolute;left:880px;top:300px;width:250px;height:76px;background:#FFFFFF;border:1px solid #EEF0F4;border-radius:10px;
+                  display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.05rem;
+                  color:#2B2640;cursor:pointer" data-quiz-option="answer">answer</button>

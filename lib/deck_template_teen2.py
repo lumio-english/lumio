@@ -115,7 +115,25 @@ def header_themed(pagetitle, n, total, theme_key="default"):
       <div style="height:100%;width:{pct}%;background:linear-gradient(90deg,{t['accent']},{t['accent_deep']});border-radius:2px"></div>
     </div>'''
 
-def char_big(name, side="right", bottom=64):
+# Pose variety: the character library has ~20 poses per teen character
+# (think, phone, laugh, point, celebrate, shrug, walk...). Slides used a
+# single fixed pose per kind, which read as static. dyn_pose picks a pose
+# that fits the slide's job and rotates by slide number so consecutive
+# slides differ.
+POSES = {
+    "hook":     ["think", "shrug", "phone", "look-left", "surprised"],
+    "listen":   ["phone", "laugh", "surprised", "look-right", "happy"],
+    "practice": ["point", "explain", "thumbs", "read", "sit"],
+    "check":    ["celebrate", "high-five", "thumbs", "happy", "laugh"],
+    "reallife": ["walk", "backpack", "sit", "read", "wave"],
+}
+def dyn_pose(kind, n):
+    lst = POSES.get(kind, POSES["practice"])
+    return lst[n % len(lst)]
+
+def char_big(name, side="right", bottom=64, pose=None):
+    if pose and "-teen-" in name:
+        name = name.split("-teen-")[0] + "-teen-" + pose
     """Larger character presence than v1's small corner badge -- a
     real supporting figure, not a mascot dominating the slide.
     bottom=64 clears present.html's persistent nav bar (52px) plus
@@ -138,7 +156,7 @@ def slide_hook(hook_question, n, total, ch, theme_key="default"):
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:2.35rem;color:#fff;line-height:1.3">{esc(hook_question)}</div>
       </div>
     </div>
-    ''' + char_big(ch))
+    ''' + char_big(ch, pose=dyn_pose('hook', n)))
 
 def slide_first_listen(dialogue, n, total, theme_key="default"):
     t = THEMES.get(theme_key, THEMES["default"])
@@ -200,7 +218,7 @@ def slide_challenge(prompt, hint, n, total, ch, theme_key="default"):
         <div style="font-size:.85rem;color:#6B6580;font-weight:700">{esc(hint)}</div>
       </div>
     </div>
-    ''' + char_big(ch, side="left"))
+    ''' + char_big(ch, pose=dyn_pose('practice', n), side="left"))
 
 def slide_real_life(prompt, n, total, ch, theme_key="default"):
     return (bg_theme(theme_key) + header_themed("Real Life Connection", n, total, theme_key) + f'''
@@ -210,7 +228,7 @@ def slide_real_life(prompt, n, total, ch, theme_key="default"):
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.15rem;color:{CARD_TEXT}">{esc(prompt)}</div>
       </div>
     </div>
-    ''' + char_big(ch))
+    ''' + char_big(ch, pose=dyn_pose('reallife', n)))
 
 import random
 
@@ -513,7 +531,7 @@ def slide_discussion(points, n, total, ch, theme_key="default"):
         <div style="margin-top:14px">{rows}</div>
       </div>
     </div>
-    ''' + char_big(ch, side="left", bottom=54))
+    ''' + char_big(ch, pose=dyn_pose('practice', n), side="left", bottom=54))
 
 
 def slide_describing_time(image_rel_path, n, total, theme_key="default"):
@@ -585,7 +603,7 @@ def slide_grammar_recap(topics, n, total, ch, theme_key="default"):
         <div style="margin-top:14px">{rows}</div>
       </div>
     </div>
-    ''' + char_big(ch, side="left", bottom=54))
+    ''' + char_big(ch, pose=dyn_pose('practice', n), side="left", bottom=54))
 
 
 def chunk_grammar_topics(topics, per_slide=5):
@@ -600,7 +618,7 @@ def chunk_grammar_topics(topics, per_slide=5):
 def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, notice_sentences,
                    notice_note, challenge, real_life, theme_key="default",
                    n_vocab_mcq=10, n_grammar_mcq=10, level=None, discussion=None,
-                   grammar_recap_topics=None, describing_time_image=None):
+                   grammar_recap_topics=None, describing_time_image=None, crew_talk=None):
     global CURRENT_LESSON_BG
     CURRENT_LESSON_BG = lesson_bg_path(level, lesson_num) if level else None
     V = len(lesson["vocab"])
@@ -635,6 +653,8 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
     if describing_time_image:
         plan.append(("describing_time", describing_time_image))
     plan.append(("first_listen", None))
+    if crew_talk:
+        plan.append(("crew_talk", crew_talk))
     for i, w in enumerate(lesson["vocab"]):
         plan.append(("vocab", (w, i)))
         # Review lessons (currently just lesson 20) pack a 38-word vocab
@@ -734,6 +754,8 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
             slides.append(slide_describing_time(data, n, total, theme_key))
         elif kind == "first_listen":
             slides.append(slide_first_listen(dialogue, n, total, theme_key))
+        elif kind == "crew_talk":
+            slides.append(slide_crew_talk(data, n, total, theme_key))
         elif kind == "vocab":
             w, i = data
             verb_count = sum(1 for x in lesson["vocab"] if x.get("pos") == "verb")
@@ -808,3 +830,35 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
         elif kind == "reward_homework":
             slides.append(slide_reward_homework(lesson_num, n, total, V * 10))
     return slides
+
+
+def slide_crew_talk(lines, n, total, theme_key="default"):
+    """Second dialogue per lesson: a short, natural exchange between named
+    core characters built around the lesson's key words. Each line shows
+    the speaker's teen character (varied pose) beside their bubble, so
+    the cast is visibly present rather than anonymous L/R bubbles."""
+    t = THEMES.get(theme_key, THEMES["default"])
+    count = max(1, len(lines))
+    top_margin = 170
+    pitch = min(100, (655 - top_margin) // count)
+    poses = ["phone", "laugh", "explain", "surprised", "point", "shrug"]
+    out = ""
+    for i, (who, en, ar) in enumerate(lines):
+        side = "left" if i % 2 == 0 else "right"
+        img = f"{CHAR}/{who.lower()}-teen-{poses[i % len(poses)]}.png"
+        top = top_margin + i * pitch
+        img_html = f'''<img src="{img}" style="position:absolute;{side}:44px;top:{top - 8}px;height:{pitch + 4}px;z-index:7;
+                          filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))" onerror="this.style.display='none'">'''
+        out += f'''
+        {img_html}
+        <div style="position:absolute;{side}:130px;top:{top}px;max-width:520px;background:{CARD_BG};border-radius:12px;
+                    border-{side}:5px solid {t['accent']};padding:12px 18px;box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
+          <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.72rem;letter-spacing:1px;color:{t['accent_deep']};margin-bottom:2px">{esc(who.upper())}</div>
+          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:.98rem;color:{CARD_TEXT};line-height:1.35">{esc(en)}</div>
+          <div dir="rtl" style="font-size:.8rem;color:#6B6580;font-weight:700;margin-top:4px;text-align:right">{ar}</div>
+        </div>'''
+    return (bg_theme(theme_key) + header_themed("Crew Talk", n, total, theme_key) + f'''
+    <div style="position:relative;z-index:5;text-align:center;margin-top:34px;font-family:'Nunito',sans-serif;font-weight:700;color:{INK_DIM};font-size:.95rem">
+      Read it in pairs. Then swap roles.</div>
+    {out}
+    ''')

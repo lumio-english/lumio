@@ -216,7 +216,7 @@ def slide_unscramble(word, n, total, ch):
       </div>
     </div>
     <button onclick="document.getElementById('unscrambleAnswer').style.display='block'; typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(word["en"]).replace(chr(39), chr(92)+chr(39))}')"
-            style="position:absolute;left:40px;bottom:30px;z-index:20;cursor:pointer;border:none;font-family:'Fredoka',sans-serif;
+            style="position:absolute;left:50%;transform:translateX(-170px);bottom:110px;z-index:20;cursor:pointer;border:none;font-family:'Fredoka',sans-serif;
             background:linear-gradient(135deg,{ORANGE},{ORANGE_DEEP});color:#fff;font-weight:600;padding:12px 24px;border-radius:10px;font-size:.9rem">Reveal</button>
     ''' + char_badge(ch))
 
@@ -336,7 +336,7 @@ def slide_sentence_builder(sentence, n, total, ch, seed):
     </div>
     <div id="sbFeedback" style="position:relative;z-index:5;text-align:center;margin-top:20px;font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.2rem;color:{INK};min-height:32px"></div>
     <button onclick="window.checkSentenceBuilder && checkSentenceBuilder()"
-            style="position:absolute;left:40px;bottom:30px;z-index:20;cursor:pointer;border:none;font-family:'Fredoka',sans-serif;
+            style="position:absolute;left:50%;transform:translateX(-170px);bottom:110px;z-index:20;cursor:pointer;border:none;font-family:'Fredoka',sans-serif;
             background:linear-gradient(135deg,{ORANGE},{ORANGE_DEEP});color:#fff;font-weight:600;padding:12px 24px;border-radius:10px;font-size:.9rem">Check</button>
     ''' + char_badge(ch) + f'''
     <style>
@@ -425,10 +425,10 @@ def slide_your_turn(w, idx, total_rounds, n, total, ch):
       </div>
     </div>
     <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(w["en"])}')"
-            style="position:absolute;left:40px;bottom:30px;z-index:20;cursor:pointer;border:none;font-family:'Fredoka',sans-serif;
+            style="position:absolute;left:50%;transform:translateX(-170px);bottom:110px;z-index:20;cursor:pointer;border:none;font-family:'Fredoka',sans-serif;
             background:linear-gradient(135deg,{TEAL},{TEAL_DEEP});color:#fff;font-weight:600;padding:12px 22px;border-radius:10px;font-size:.88rem">&#9654; Play</button>
     <button onclick="document.getElementById('ytMystery{idx}').style.display='none'; document.getElementById('ytImg{idx}').style.display='block'; this.textContent='{esc(w["en"])} \\u2014 {w["ar"]}'; this.style.background='linear-gradient(135deg,#4ADE80,#16A34A)'"
-            style="position:absolute;left:190px;bottom:30px;z-index:20;cursor:pointer;border:none;font-family:'Fredoka',sans-serif;
+            style="position:absolute;left:50%;transform:translateX(10px);bottom:110px;z-index:20;cursor:pointer;border:none;font-family:'Fredoka',sans-serif;
             background:linear-gradient(135deg,{ORANGE},{ORANGE_DEEP});color:#fff;font-weight:600;padding:12px 22px;border-radius:10px;font-size:.88rem">Reveal</button>
     ''')
 
