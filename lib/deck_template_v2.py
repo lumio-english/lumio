@@ -674,6 +674,20 @@ def slide_your_turn_listen_first(w, idx, total_rounds, n, total, ch):
     <script>(function(){{var a=document.getElementById('ytPlayBtn{idx}'),b=document.getElementById('ytRevealBtn{idx}');if(a&&b)requestAnimationFrame(function(){{b.style.left=(a.offsetLeft+a.offsetWidth+26)+'px';}});}})();</script>
     ''' + char_img(ch, bottom=32, height=250))
 
+def _prea_ar_card(target):
+    # Pre-A Quick Check reference: the Arabic word only (no picture),
+    # per the decision to test by translation on this tier as well.
+    return ('<div class="card" style="position:absolute;left:335px;top:170px;width:235px;height:280px;overflow:hidden;padding:0;'
+            'display:flex;align-items:center;justify-content:center">'
+            '<div dir="rtl" style="text-align:center;padding:8px 16px;font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:2.6rem;color:#0D9488">'
+            + esc(target.get("ar", "")) + '</div></div>')
+
+def _prea_text_option(o, target, l, t):
+    return ('<button onclick="window.checkQuizAnswer && checkQuizAnswer(this, \'' + esc(o["en"]) + '\', \'' + esc(target["en"]) + '\')" '
+            'style="position:absolute;left:' + str(l) + 'px;top:' + str(t) + 'px;width:220px;height:120px;background:#fff;border:4px solid #F0E9DD;'
+            'border-radius:20px;padding:10px;cursor:pointer;display:flex;align-items:center;justify-content:center" data-quiz-option="' + esc(o["en"]) + '">'
+            '<div style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:1.5rem;color:#43301F;text-align:center">' + esc(o["en"]) + '</div></button>')
+
 def slide_quick_check(target, distractors, idx, total_q, n, total, seed, tier="preA"):
     """Age-calibrated live practice, one tier per Junior level:
     - preA (4-5yo, pre-literacy): 2 big picture choices, no text at all,
@@ -687,19 +701,8 @@ def slide_quick_check(target, distractors, idx, total_q, n, total, seed, tier="p
     random.Random(seed).shuffle(opts)
 
     if tier == "preA":
-        # two large picture-only cards, side by side, no reading required --
-        # plus a tap-to-hear button so the target word is actually
-        # announced (previously nothing on this slide indicated which
-        # word was being asked about beyond the teacher saying it aloud)
         positions = [(560, 300), (900, 300)]
-        buttons = ""
-        for o, (l, t) in zip(opts, positions):
-            buttons += f'''
-          <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{esc(o["en"])}', '{esc(target["en"])}')"
-                  style="position:absolute;left:{l}px;top:{t}px;width:220px;height:220px;background:#fff;border:3px solid #F0E9DD;border-radius:20px;
-                      padding:10px;cursor:pointer" data-quiz-option="{esc(o["en"])}">
-            <img src="assets/vocab/{slug(o['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
-          </button>'''
+        buttons = "".join(_prea_text_option(o, target, l, t) for o, (l, t) in zip(opts, positions))
         prompt = "Which one is it?"
         listen_btn = f'''<button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(target["en"])}')"
                 style="position:absolute;left:90px;top:330px;width:160px;height:160px;border:none;cursor:pointer;background:linear-gradient(135deg,#0D9488,#0B7A6F);
@@ -737,7 +740,7 @@ def slide_quick_check(target, distractors, idx, total_q, n, total, seed, tier="p
     # design (see docstring), and pre-readers can't get anything out of
     # an Arabic-text-only prompt either -- this change doesn't apply
     # there without changing that underlying design decision too.
-    img_block = listen_btn if tier == "preA" else f'''<div class="card" style="position:absolute;left:280px;top:170px;width:280px;height:280px;overflow:hidden;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+    img_block = (_prea_ar_card(target) + listen_btn) if tier == "preA" else f'''<div class="card" style="position:absolute;left:280px;top:170px;width:280px;height:280px;overflow:hidden;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
       <div dir="rtl" style="text-align:center;padding:8px 16px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2.4rem;color:#0D9488">{esc(target.get("ar",""))}</div>
     </div>'''
     prompt_pos = "left:60px;top:180px;width:260px;text-align:center" if tier == "preA" else "left:610px;top:190px;width:540px"

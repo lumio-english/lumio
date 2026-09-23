@@ -3,7 +3,7 @@
       <div class="pagetitle">Quick Check &bull; 7/9</div>
       <div class="counter">64 / 73</div>
     </div><div class="colorstrip"><div class="c1"></div><div class="c2"></div><div class="c3"></div><div class="c4"></div><div class="c5"></div></div>
-    <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('goat')"
+    <div class="card" style="position:absolute;left:335px;top:170px;width:235px;height:280px;overflow:hidden;padding:0;display:flex;align-items:center;justify-content:center"><div dir="rtl" style="text-align:center;padding:8px 16px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2.6rem;color:#0D9488">ماعز</div></div><button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('goat')"
                 style="position:absolute;left:90px;top:330px;width:160px;height:160px;border:none;cursor:pointer;background:linear-gradient(135deg,#0D9488,#0B7A6F);
                        border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#fff">
           <span style="font-size:2.2rem">&#128266;</span>
@@ -12,15 +12,5 @@
     <div style="position:absolute;left:60px;top:180px;width:260px;text-align:center">
       <div style="display:inline-block;background:#fff;padding:10px 24px;border-radius:18px;box-shadow:0 8px 18px rgba(67,48,31,.12);font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.6rem;color:#43301F">Which one is it?</div>
     </div>
-    
-          <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'ice cream', 'goat')"
-                  style="position:absolute;left:560px;top:300px;width:220px;height:220px;background:#fff;border:3px solid #F0E9DD;border-radius:20px;
-                      padding:10px;cursor:pointer" data-quiz-option="ice cream">
-            <img src="assets/vocab/ice-cream.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
-          </button>
-          <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'goat', 'goat')"
-                  style="position:absolute;left:900px;top:300px;width:220px;height:220px;background:#fff;border:3px solid #F0E9DD;border-radius:20px;
-                      padding:10px;cursor:pointer" data-quiz-option="goat">
-            <img src="assets/vocab/goat.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
-          </button>
+    <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'ice cream', 'goat')" style="position:absolute;left:560px;top:300px;width:220px;height:120px;background:#fff;border:4px solid #F0E9DD;border-radius:20px;padding:10px;cursor:pointer;display:flex;align-items:center;justify-content:center" data-quiz-option="ice cream"><div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;color:#43301F;text-align:center">ice cream</div></button><button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'goat', 'goat')" style="position:absolute;left:900px;top:300px;width:220px;height:120px;background:#fff;border:4px solid #F0E9DD;border-radius:20px;padding:10px;cursor:pointer;display:flex;align-items:center;justify-content:center" data-quiz-option="goat"><div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;color:#43301F;text-align:center">goat</div></button>
     

@@ -178,6 +178,7 @@ const Lumio = (() => {
       const u = new SpeechSynthesisUtterance(text);
       if (voice) u.voice = voice;
       u.lang = "en-US"; u.rate = rate; u.pitch = 1.0; u.volume = 1.0;
+      try { speechSynthesis.resume(); } catch (e) {}  // Windows Chrome/Edge: a paused synth swallows speak() silently
       speechSynthesis.speak(u);
     };
     if (voicesReady || !speechSynthesis.getVoices().length) doSpeak();
@@ -246,6 +247,16 @@ const Lumio = (() => {
     // across calls, so stacked listeners from earlier words would all fire
     // on a later 404 and replay old words through the browser voice.
     audio.onerror = () => { audio.onerror = null; fallback(); };   // 404: no recording -> browser voice
+    // Watchdog: some desktop setups accept play() but never actually start
+    // (blocked output device / codec). If 'playing' hasn't fired within
+    // 900ms, fall back to the browser voice so the word is never silent.
+    // Only treat it as failed if the file genuinely didn't load (no data
+    // buffered, or a media error) -- not merely because output hasn't
+    // started, which would cut a working recording on slow machines.
+    const watchdog = setTimeout(() => {
+      if (audio.error || audio.readyState < 2) { try { audio.pause(); } catch (e) {} audio.onerror = null; fallback(); }
+    }, 1500);
+    audio.addEventListener("playing", () => clearTimeout(watchdog), { once: true });
     const playResult = audio.play();
     if (playResult && typeof playResult.catch === "function") {
       playResult.catch(err => {
