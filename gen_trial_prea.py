@@ -47,11 +47,11 @@ sys.path.insert(0, "lib")
 import deck_template_v2
 from deck_template_v2 import (
     bg_plain, bg_study, bg_clean, header, COLORSTRIP, SPARKS, char_img,
-    slide_vocab, slide_quick_check, slide_tpr_activity, slide_teacher_game, esc, slug,
+    slide_vocab, slide_quick_check, slide_tpr_activity, slide_teacher_game, slide_sound_spot, esc, slug,
     slide_vocab_scene,
 )
 
-TOTAL = 48
+TOTAL = 52
 
 
 def load_word(level, lesson_num, en):
@@ -241,6 +241,10 @@ def build():
 
     slides.append(slide_buzzer_challenge(animal_words[0], len(slides) + 1, TOTAL))
     slides.append(slide_buzzer_challenge(animal_words[3], len(slides) + 1, TOTAL))
+    # Quick Check (translation-based, same mechanic as the main deck): the
+    # trial now mirrors the level's primary materials, not only games.
+    slides.append(slide_quick_check(animal_words[1], [animal_words[4]], 1, 2, len(slides) + 1, TOTAL, 11, "preA"))
+    slides.append(slide_quick_check(animal_words[2], [animal_words[0]], 2, 2, len(slides) + 1, TOTAL, 12, "preA"))
     slides.append(slide_team_relay(animal_words[5], "Which animal is this?", len(slides) + 1, TOTAL))
     slides.append(slide_mini_celebrate("You're all Animal Experts!", len(slides) + 1, TOTAL))
 
@@ -253,6 +257,7 @@ def build():
         slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
     slides.append(slide_vocab_scene("assets/vocab-scenes/pre-a/19.jpg", "A red balloon and a blue balloon!", ["red", "blue"], len(slides) + 1, TOTAL, 1, "بالون أحمر وبالون أزرق!"))
     slides.append(slide_buzzer_challenge(color_words[1], len(slides) + 1, TOTAL))
+    slides.append(slide_quick_check(color_words[0], [color_words[2]], 1, 1, len(slides) + 1, TOTAL, 13, "preA"))
     slides.append(slide_scoreboard("Halfway there! Here's the score so far...", len(slides) + 1, TOTAL))
 
     slides.append(slide_trial_transition("Let's meet my family!", "&#128106;", len(slides) + 1, TOTAL))
@@ -285,6 +290,8 @@ def build():
     for w_en in ["song", "playground"]:
         slides.append(slide_vocab(load_word("pre-a", 18, w_en), 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
 
+    # Sound & Spot recap of every word met in the trial (tap to hear).
+    slides.append(slide_sound_spot(animal_words + color_words + family_words, len(slides) + 1, TOTAL, "lumi-hero"))
     slides.append(slide_scoreboard("And the final score is...", len(slides) + 1, TOTAL))
     slides.append(slide_finale(len(slides) + 1, TOTAL))
     slides.append(slide_trial_finish(len(slides) + 1, TOTAL))
