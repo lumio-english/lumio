@@ -701,7 +701,7 @@ def slide_quick_check(target, distractors, idx, total_q, n, total, seed, tier="p
     random.Random(seed).shuffle(opts)
 
     if tier == "preA":
-        positions = [(560, 300), (900, 300)]
+        positions = [(640, 300), (900, 300)]
         buttons = "".join(_prea_text_option(o, target, l, t) for o, (l, t) in zip(opts, positions))
         prompt = "Which one is it?"
         listen_btn = f'''<button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(target["en"])}')"
