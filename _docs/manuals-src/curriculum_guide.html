@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap');
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Nunito', sans-serif; color: #43301F; background: #FFFBF5; }
+.page { width: 662px; min-height: 941px; page-break-after: always; position: relative; background: #FFFBF5; overflow: hidden; }
+.page:last-child { page-break-after: avoid; }
+
+.headbar { background: linear-gradient(120deg, #9B5DE5, #7B3FE4); color: #fff; padding: 26px 40px; display: flex; align-items: center; justify-content: space-between; }
+.headbar h1 { font-family: 'Baloo 2'; font-size: 20px; font-weight: 800; }
+.headbar .sub-ar { font-size: 12px; opacity: .85; margin-top: 2px; }
+.headbar .brand { display: flex; align-items: center; gap: 10px; font-family: 'Baloo 2'; font-weight: 800; font-size: 14px; }
+.headbar .brand img { width: 34px; height: 34px; border-radius: 50%; background: #fff; }
+
+.cover { background: linear-gradient(160deg, #F97316, #EA580C); height: 941px; color: #fff; position: relative; text-align: center; }
+.cover .toprow { display: flex; align-items: center; justify-content: space-between; padding: 30px 40px; }
+.cover .brand { display: flex; align-items: center; gap: 10px; font-family: 'Baloo 2'; font-weight: 800; font-size: 15px; }
+.cover .brand img { width: 36px; height: 36px; border-radius: 50%; background: #fff; }
+.cover .badge { display: inline-block; background: rgba(255,255,255,.22); padding: 8px 22px; border-radius: 999px; font-weight: 800; font-size: 15px; margin-top: 50px; }
+.cover h1 { font-family: 'Baloo 2'; font-size: 36px; font-weight: 800; margin: 20px auto 10px; max-width: 480px; }
+.cover .sub { font-weight: 700; font-size: 15px; opacity: .95; }
+.cover .stats { display: flex; gap: 10px; justify-content: center; margin-top: 22px; flex-wrap: wrap; padding: 0 30px }
+.cover .stats span { background: rgba(255,255,255,.22); padding: 7px 16px; border-radius: 999px; font-weight: 800; font-size: 13px; }
+.cover img.hero { width: 240px; margin-top: 40px; }
+
+.content { padding: 26px 40px 20px; }
+.card { background: #fff; border-radius: 18px; padding: 20px 24px; margin-bottom: 14px; box-shadow: 0 6px 18px rgba(67,48,31,.06); border: 1px solid rgba(67,48,31,.06); }
+.card h2 { font-family: 'Baloo 2'; font-size: 17px; color: #7B3FE4; margin-bottom: 8px; }
+.card p, .card li { font-size: 13px; line-height: 1.7; color: #5B4636; }
+.pill-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.pill { display: inline-block; padding: 4px 11px; border-radius: 999px; font-size: 11.5px; font-weight: 800; }
+.card ul { padding-left: 20px; }
+.card li { margin-bottom: 5px; }
+.footer { position: absolute; bottom: 0; left: 0; right: 0; padding: 10px 40px; border-top: 1px solid rgba(67,48,31,.08); display: flex; justify-content: space-between; font-size: 11px; color: #8A7160; font-weight: 700; }
+.step-card { background: #fff; border-radius: 16px; padding: 16px 20px; margin-bottom: 12px; box-shadow: 0 6px 14px rgba(67,48,31,.07); display: flex; gap: 14px; align-items: flex-start; }
+.step-num { flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-family: 'Baloo 2'; font-weight: 800; }
+.step-card h3 { font-family: 'Baloo 2'; font-size: 14.5px; margin-bottom: 3px; }
+.step-card p { font-size: 12.5px; color: #5B4636; line-height: 1.6; }
+.tag { background: #F1EBFC; color: #7B3FE4; padding: 2px 10px; border-radius: 999px; font-size: 10.5px; font-weight: 800; margin-left: 8px; }
+.game-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.game-box { background: #fff; border-radius: 14px; padding: 12px; text-align: center; box-shadow: 0 4px 10px rgba(67,48,31,.06); }
+.game-box .lvl { font-size: 9px; font-weight: 800; color: #7B3FE4; }
+.game-box .name { font-family: 'Baloo 2'; font-weight: 800; font-size: 12px; margin: 4px 0; }
+.game-box .desc { font-size: 9.5px; color: #8A7160; line-height: 1.4; }
+.game-box.soon { opacity: .55; }
+.lvl-head { padding: 26px 40px; color: #fff; }
+.lvl-head h1 { font-family: 'Baloo 2'; font-size: 20px; font-weight: 800; }
+.lvl-badge { display: inline-block; background: #fff; padding: 5px 16px; border-radius: 999px; font-family: 'Baloo 2'; font-weight: 800; font-size: 13px; margin-bottom: 10px; }
+.lvl-title { font-family: 'Baloo 2'; font-size: 26px; font-weight: 800; margin-bottom: 8px; }
+.lvl-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+.lvl-meta span { background: #fff; padding: 5px 13px; border-radius: 999px; font-size: 11.5px; font-weight: 800; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.vocab-pill { background: #FFF3D6; color: #7B3F1B; padding: 5px 11px; border-radius: 999px; font-size: 11px; font-weight: 700; display: inline-block; margin: 3px; }
+.lesson-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 20px; }
+.lesson-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(67,48,31,.06); }
+.lesson-item .num { width: 24px; height: 24px; border-radius: 50%; background: #F1EBFC; color: #7B3FE4; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; flex-shrink: 0; }
+.lesson-item.checkpoint .num { background: #FFC53D; color: #43301F; }
+.lesson-item span.t { font-size: 12px; font-weight: 700; color: #5B4636; }
+table.hub-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+table.hub-table th { background: #43301F; color: #fff; padding: 10px 12px; text-align: left; }
+table.hub-table td { padding: 10px 12px; border-bottom: 1px solid rgba(67,48,31,.08); }
+table.hub-table tr:nth-child(even) { background: #FFFBF5; }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="page cover">
+  <div class="toprow"><div class="brand"><img src="assets/lumio-logo.png">LUMIO ENGLISH</div></div>
+  <div class="badge">Complete Curriculum Guide</div>
+  <h1>7 Levels. One Journey. Real English.</h1>
+  <div class="sub">From First Words to Looking Ahead &middot; Ages 4-15</div>
+  <div class="stats"><span>7 Levels</span><span>140 Lessons</span><span>+950 Words</span><span>Full Arabic Support</span></div>
+  <img class="hero" src="assets/lumi-hero.png">
+</div>
+
+<!-- WELCOME -->
+<div class="page">
+  <div class="headbar"><div><h1>Welcome to Lumio</h1><div class="sub-ar">أهلاً بكم في لوميو</div></div><div class="brand"><img src="assets/lumio-logo.png">LUMIO ENGLISH</div></div>
+  <div class="content">
+    <div class="card">
+      <h2>A warm welcome to Lumio families</h2>
+      <p>This guide walks you through exactly what your child will learn, in what order, and why -- across the whole 7-level journey. Lumio English is a complete, structured English course built for Arabic-speaking children and teens, ages 4 to 15.</p>
+      <p style="margin-top:10px">This manual covers the full curriculum: how the levels are structured, what your child will be able to say and understand at each stage, and how everything connects into one continuous, story-driven journey.</p>
+    </div>
+    <div class="card">
+      <h2>Built on the CEFR framework</h2>
+      <p>Lumio English follows the CEFR (Common European Framework of Reference for Languages) -- the same internationally recognized standard used by real schools and language certifications worldwide. Every level maps to a real, well-defined proficiency stage, so progress here means something outside of Lumio too.</p>
+    </div>
+    <div style="text-align:center;margin-top:24px">
+      <img src="assets/lumi-welcome-hero.png" style="width:220px">
+      <div style="font-family:'Baloo 2';font-weight:800;color:#7B3FE4;font-size:14px;margin-top:6px">Lumi will be right there with your child, every step of the way</div>
+    </div>
+  </div>
+  <div class="footer"><span>Lumio English &middot; Curriculum Guide</span><span>2</span></div>
+</div>
+
+<!-- THREE GOALS -->
+<div class="page">
+  <div class="headbar"><h1>Every Level, Three Goals</h1><div class="brand"><img src="assets/lumio-logo.png">LUMIO ENGLISH</div></div>
+  <div class="content">
+    <div class="card">
+      <h2>The same three goals, every time</h2>
+      <p>Every Lumio level is designed around the same three goals -- built through age-appropriate topics, real vocabulary, and (from Level 3 onward) real grammar:</p>
+      <ul style="margin-top:10px">
+        <li><b>Speak with real confidence</b> -- not just memorized phrases, but language your child can actually use in the moment.</li>
+        <li><b>Understand real, connected English</b> -- through stories, dialogues, and audio, not isolated word lists.</li>
+        <li><b>Build steadily on what came before</b> -- every level assumes and reinforces everything already learned.</li>
+      </ul>
+    </div>
+    <div style="text-align:center;margin-top:24px">
+      <img src="assets/lumi-megaphone.png" style="width:200px">
+      <div style="font-family:'Baloo 2';font-weight:800;color:#7B3FE4;font-size:14px;margin-top:6px">Confidence to actually speak up -- that's the whole point</div>
+    </div>
+  </div>
+  <div class="footer"><span>Lumio English &middot; Curriculum Guide</span><span>3</span></div>
+</div>
+
+<!-- SPIRAL CURRICULUM -->
+<div class="page">
+  <div class="headbar"><h1>A Spiral, Not a Straight Line</h1><div class="brand"><img src="assets/lumio-logo.png">LUMIO ENGLISH</div></div>
+  <div class="content">
+    <div class="card">
+      <h2>Topics come back, deeper each time</h2>
+      <p>Lumio doesn't teach a topic once and move on. Every big idea -- food, family, daily routines, feelings -- returns across multiple levels, each time with richer vocabulary and more complex grammar. Your child isn't just adding new topics; they're building real depth on the ones that matter most.</p>
+      <p style="margin-top:10px">This is also why review lessons (the last lesson of every level) don't just repeat old words -- they layer in genuinely new, slightly harder vocabulary on the same familiar themes, so review time is still real learning time.</p>
+    </div>
+    <div style="text-align:center;margin-top:24px">
+      <img src="assets/lumi-books.png" style="width:200px">
+      <div style="font-family:'Baloo 2';font-weight:800;color:#7B3FE4;font-size:14px;margin-top:6px">Same big ideas, revisited with richer words each time</div>
+    </div>
+  </div>
+  <div class="footer"><span>Lumio English &middot; Curriculum Guide</span><span>4</span></div>
+</div>
+
+<!-- LESSON STRUCTURE INTRO -->
+<div class="page">
+  <div class="headbar"><h1>One Reliable Structure</h1><div class="brand"><img src="assets/lumio-logo.png">LUMIO ENGLISH</div></div>
+  <div class="content">
+    <div class="card">
+      <h2>140 lessons, one dependable rhythm</h2>
+      <p>Every one of the 140 lessons follows the same reliable structure, whether it's Pre-A or Level 6 -- only the content and complexity change. This consistency means your child always knows what to expect, freeing their attention for the actual learning rather than figuring out a new format every time.</p>
+    </div>
+    <div style="text-align:center;margin-top:24px">
+      <img src="assets/lumi-teach-board.png" style="width:200px">
+      <div style="font-family:'Baloo 2';font-weight:800;color:#7B3FE4;font-size:14px;margin-top:6px">Same dependable rhythm, from the very first lesson to the last</div>
+    </div>
+  </div>
+  <div class="footer"><span>Lumio English &middot; Curriculum Guide</span><span>5</span></div>
+</div>
+
+<!-- WHAT'S IN EVERY LESSON -->
+<div class="page">
+  <div class="headbar"><h1>What's in Every Lesson</h1><div class="brand"><img src="assets/lumio-logo.png">LUMIO ENGLISH</div></div>
+  <div class="content">
+    <p style="font-size:12.5px;color:#5B4636;margin-bottom:14px">Every one of the 140 lessons follows the same reliable structure, whether it's Pre-A or Level 6 -- only the content and complexity change. Here's exactly what your child does in a typical lesson:</p>
+    <div class="step-card"><div class="step-num" style="background:#F97316">1</div><div><h3>New Words <span class="tag">4-10 per lesson</span></h3><p>Each new word or phrase is shown with a real illustration, its Arabic translation, and a spoken example sentence with audio.</p></div></div>
+    <div class="step-card"><div class="step-num" style="background:#0D9488">2</div><div><h3>Listen & Practice</h3><p>Interactive listening, matching, and pronunciation activities that scale with the vocabulary -- every word gets real practice, not just a glance.</p></div></div>
+    <div class="step-card"><div class="step-num" style="background:#7B3FE4">3</div><div><h3>Grammar Focus <span class="tag">Level 3 and up</span></h3><p>From Level 3 onward, each lesson introduces one grammar structure with clear rules, examples, and guided practice sentences.</p></div></div>
+    <div class="step-card"><div class="step-num" style="background:#EA580C">4</div><div><h3>Quiz & Spelling Check</h3><p>A short, gamified quiz confirms understanding before moving on -- instant feedback, no pressure, unlimited retries.</p></div></div>
+    <div class="step-card"><div class="step-num" style="background:#5B67E0">5</div><div><h3>Homework & Practice Sheets</h3><p>Every lesson has a matching printable worksheet, flashcard set, and writing-practice sheet parents can use at home.</p></div></div>
+    <div class="card" style="background:#FFF3D6;border-color:#FFE0B8;margin-top:10px">
+      <p style="color:#43301F"><b>Checkpoint lessons (6, 11, 16 &amp; 20):</b> instead of new vocabulary, your child sees one big, richly detailed picture built entirely from words they've already learned, and describes everything they see out loud -- the best way to see real spoken progress.</p>
+    </div>
+  </div>
+  <div class="footer"><span>Lumio English &middot; Curriculum Guide</span><span>6</span></div>
+</div>
+
+<!-- LESSON UNLOCK & GAMES -->
+<div class="page">
+  <div class="headbar"><h1>How Lessons Unlock &amp; Level Games</h1><div class="brand"><img src="assets/lumio-logo.png">LUMIO ENGLISH</div></div>
+  <div class="content">
+    <div class="card">
+      <h2>A deliberate two-step rhythm for every lesson</h2>
+      <p>Lumio is built around real teacher-led classes, not just self-study -- so every lesson has a "prep" step your child does alone, and a live step they do with their teacher. Finishing prep alone earns stars and unlocks that lesson's bonus game right away -- but the next lesson only opens once the live class with the teacher is also complete.</p>
+    </div>
+    <h2 style="font-family:'Baloo 2';font-size:15px;color:#43301F;margin:16px 0 10px">A bonus game for every level</h2>
+    <div class="game-grid">
+      <div class="game-box"><div class="lvl">PRE-A</div><div class="name">Lumi's Pocket</div><div class="desc">Unlocks per-lesson, right after finishing that lesson's prep</div></div>
+      <div class="game-box"><div class="lvl">LEVEL 1</div><div class="name">Treehouse Builder</div><div class="desc">Unlocks per-lesson, right after finishing that lesson's prep</div></div>
+      <div class="game-box"><div class="lvl">LEVEL 2</div><div class="name">Twelve Months Calendar</div><div class="desc">Unlocks per-lesson, right after finishing that lesson's prep</div></div>
+      <div class="game-box"><div class="lvl">LEVEL 3</div><div class="name">Crew Chat</div><div class="desc">Unlocks per-lesson, right after finishing that lesson's prep</div></div>
+      <div class="game-box"><div class="lvl">LEVEL 4</div><div class="name">Squad Budget</div><div class="desc">Unlocks per-lesson, right after finishing that lesson's prep</div></div>
+      <div class="game-box"><div class="lvl">LEVEL 5</div><div class="name">Story Detective</div><div class="desc">Unlocks per-lesson, right after finishing that lesson's prep</div></div>
+      <div class="game-box"><div class="lvl">LEVEL 6</div><div class="name">Crystal Ball</div><div class="desc">Unlocks per-lesson, right after finishing that lesson's prep</div></div>
+      <div class="game-box soon"><div class="lvl">LEVELS 7-9</div><div class="name">Coming soon</div><div class="desc">A new game is planned for each future level</div></div>
+    </div>
+    <div style="margin-top:4px;max-width:170px;margin-left:auto;margin-right:auto">
+      <div style="border-radius:14px;overflow:hidden;box-shadow:0 6px 14px rgba(67,48,31,.08)"><img src="assets/prea_lumipocket_shot.png" style="width:100%;display:block"></div>
+      <div style="text-align:center;font-size:10.5px;color:#8A7160;font-weight:700;margin-top:4px">Lumi's Pocket -- Pre-A's bonus game in action</div>
+    </div>
+  </div>
+  <div class="footer"><span>Lumio English &middot; Curriculum Guide</span><span>7</span></div>
+</div>
+
+<!-- PRE-A LEVEL SUMMARY -->
+<div class="page">
+  <div class="lvl-head" style="background:linear-gradient(120deg,#FDBA74,#F97316)"><h1>Pre-A &middot; First Words</h1></div>
+  <div class="content">
+    <div style="margin-bottom:14px"><span class="pill" style="background:#FFE8D1;color:#C2410C">Pre-A</span></div>
+    <div class="lvl-title" style="color:#43301F">First Words</div>
+    <div class="lvl-meta" style="margin-bottom:16px"><span style="background:#FFF3D6;color:#7B3F1B">Ages 4-6</span><span style="background:#FFF3D6;color:#7B3F1B">CEFR Pre-A1</span><span style="background:#FFF3D6;color:#7B3F1B">20 lessons</span><span style="background:#FFF3D6;color:#7B3F1B">163 words</span></div>
+    <div class="two-col">
+      <div class="card">
+        <h2>By the end of this level, your child can:</h2>
+        <ul>
+          <li>Greet people and say their own name</li>
+          <li>Recognize and name all 26 letters</li>
+          <li>Count from 1 to 10</li>
+          <li>Name colors, family members, and body parts</li>
+          <li>Name common animals, foods, and school items</li>
+          <li>Name favorite toys and simple actions</li>
+          <li>Talk about feelings using simple words</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>Sample vocabulary</h2>
+        <div><span class="vocab-pill">hello مرحباً</span><span class="vocab-pill">name اسم</span><span class="vocab-pill">apple تفاحة</span><span class="vocab-pill">goat ماعز</span><span class="vocab-pill">moon قمر</span><span class="vocab-pill">sun شمس</span><span class="vocab-pill">yellow أصفر</span><span class="vocab-pill">five خمسة</span><span class="vocab-pill">red أحمر</span><span class="vocab-pill">black أسود</span></div>
+        <h2 style="margin-top:12px">Grammar</h2>
+        <p>Vocabulary &amp; functional language only -- formal grammar begins in Level 3.</p>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:20px">
+      <img src="assets/lumi-hero.png" style="width:190px">
+    </div>
+  </div>
+  <div class="footer"><span>Lumio English &middot; Curriculum Guide</span><span>8</span></div>
+</div>
+
+<!-- PRE-A LESSONS -->
+<div class="page">
+  <div class="headbar"><h1>Pre-A Lessons</h1><div class="brand"><img src="assets/lumio-logo.png">LUMIO ENGLISH</div></div>
+  <div class="content">
+    <p style="font-size:12px;color:#8A7160;margin-bottom:14px">All 20 lessons in First Words, in order. Lessons 6, 11, 16 &amp; 20 (highlighted) are checkpoint lessons.</p>
+    <div class="lesson-grid">
+      <div class="lesson-item"><div class="num">1</div><span class="t">Hello!</span></div>
+      <div class="lesson-item"><div class="num">11</div><span class="t">My Body</span></div>
+      <div class="lesson-item"><div class="num">2</div><span class="t">My Name</span></div>
+      <div class="lesson-item"><div class="num">12</div><span class="t">Animals Part 1</span></div>
+      <div class="lesson-item"><div class="num">3</div><span class="t">ABC Part 1 (A-I)</span></div>
+      <div class="lesson-item"><div class="num">13</div><span class="t">Animals Part 2</span></div>
+      <div class="lesson-item"><div class="num">4</div><span class="t">ABC Part 2 (J-R)</span></div>
+      <div class="lesson-item"><div class="num">14</div><span class="t">Food Part 1</span></div>
+      <div class="lesson-item"><div class="num">5</div><span class="t">ABC Part 3 (S-Z)</span></div>
+      <div class="lesson-item"><div class="num">15</div><span class="t">Food Part 2</span></div>
+      <div class="lesson-item checkpoint"><div class="num">6</div><span class="t">Numbers 0-5</span></div>
+      <div class="lesson-item"><div class="num">16</div><span class="t">My School</span></div>
+      <div class="lesson-item"><div class="num">7</div><span class="t">Numbers 6-10</span></div>
+      <div class="lesson-item"><div class="num">17</div><span class="t">My Toys</span></div>
+      <div class="lesson-item"><div class="num">8</div><span class="t">Colors Part 1</span></div>
+      <div class="lesson-item"><div class="num">18</div><span class="t">Actions</span></div>
+      <div class="lesson-item"><div class="num">9</div><span class="t">Colors Part 2</span></div>
+      <div class="lesson-item"><div class="num">19</div><span class="t">Feelings</span></div>
+      <div class="lesson-item checkpoint"><div class="num">10</div><span class="t">My Family</span></div>
+      <div class="lesson-item checkpoint"><div class="num">20</div><span class="t">Big Review!</span></div>
+    </div>
+  </div>
+  <div class="footer"><span>Lumio English &middot; Curriculum Guide</span><span>9</span></div>
+</div>
+
+<!-- LEVEL 1 SUMMARY -->
+<div class="page">
+  <div class="lvl-head" style="background:linear-gradient(120deg,#93C5FD,#3B82F6)"><h1>Level 1 &middot; About Me</h1></div>
+  <div class="content">
+    <div style="margin-bottom:14px"><span class="pill" style="background:#DBEAFE;color:#1D4ED8">L1</span></div>
+    <div class="lvl-title" style="color:#43301F">About Me</div>
+    <div class="lvl-meta" style="margin-bottom:16px"><span style="background:#EFF6FF;color:#1D4ED8">Ages 6-8</span><span style="background:#EFF6FF;color:#1D4ED8">CEFR Pre-A1</span><span style="background:#EFF6FF;color:#1D4ED8">20 lessons</span><span style="background:#EFF6FF;color:#1D4ED8">188 words</span></div>
+    <div class="two-col">
+      <div class="card">
+        <h2>By the end of this level, your child can:</h2>
+        <ul>
+          <li>Form simple sentences with "this is..." / "I am..."</li>
+          <li>Describe size and count to 20</li>
+          <li>Say what they like and don't like</li>
+          <li>Name rooms, furniture, and clothes</li>
+          <li>Talk about the weather and days of the week</li>
+          <li>Use prepositions like "in", "on", "under"</li>
+          <li>Describe shapes and simple opposites</li>
+          <li>Say what they can and can't do</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>Sample vocabulary</h2>
+        <div><span class="vocab-pill">boy ولد</span><span class="vocab-pill">cat قطة</span><span class="vocab-pill">twelve ١٢</span><span class="vocab-pill">yellow أصفر</span><span class="vocab-pill">bread خبز</span><span class="vocab-pill">window نافذة</span><span class="vocab-pill">shoes حذاء</span><span class="vocab-pill">stormy عاصف جداً</span><span class="vocab-pill">sing يغني</span><span class="vocab-pill">hamster هامستر</span></div>
+        <h2 style="margin-top:12px">Grammar</h2>
+        <p>19 distinct structures across the level.</p>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:20px">
+      <img src="assets/cast-kid.png" style="width:100%;max-width:400px">
+      <div style="font-family:'Baloo 2';font-weight:800;color:#1D4ED8;font-size:13px;margin-top:6px">Meet Lumi and the friends your child will grow up with</div>
+    </div>
+  </div>
+  <div class="footer"><span>Lumio English &middot; Curriculum Guide</span><span>10</span></div>
+</div>
+
+<!-- LEVEL 1 LESSONS -->
+<div class="page">
+  <div class="headbar"><h1>Level 1 Lessons</h1><div class="brand"><img src="assets/lumio-logo.png">LUMIO ENGLISH</div></div>
+  <div class="content">
+    <p style="font-size:12px;color:#8A7160;margin-bottom:14px">All 20 lessons in About Me, in order. Lessons 6, 11, 16 &amp; 20 (highlighted) are checkpoint lessons.</p>
+    <div class="lesson-grid">
+      <div class="lesson-item"><div class="num">1</div><span class="t">This is...</span></div>
+      <div class="lesson-item"><div class="num">11</div><span class="t">Clothes</span></div>
+      <div class="lesson-item"><div class="num">2</div><span class="t">I am / You are</span></div>
+      <div class="lesson-item"><div class="num">12</div><span class="t">Weather</span></div>
+      <div class="lesson-item"><div class="num">3</div><span class="t">It is a...</span></div>
+      <div class="lesson-item"><div class="num">13</div><span class="t">Days of the Week</span></div>
+      <div class="lesson-item"><div class="num">4</div><span class="t">Big &amp; Small</span></div>
+      <div class="lesson-item"><div class="num">14</div><span class="t">I can...</span></div>
+      <div class="lesson-item"><div class="num">5</div><span class="t">Numbers 11-20</span></div>
+      <div class="lesson-item"><div class="num">15</div><span class="t">Where is it?</span></div>
+      <div class="lesson-item checkpoint"><div class="num">6</div><span class="t">What color is it?</span></div>
+      <div class="lesson-item"><div class="num">16</div><span class="t">My Pets</span></div>
+      <div class="lesson-item"><div class="num">7</div><span class="t">I like...</span></div>
+      <div class="lesson-item"><div class="num">17</div><span class="t">At the Park</span></div>
+      <div class="lesson-item"><div class="num">8</div><span class="t">I don't like...</span></div>
+      <div class="lesson-item"><div class="num">18</div><span class="t">Shapes</span></div>
+      <div class="lesson-item"><div class="num">9</div><span class="t">My House</span></div>
+      <div class="lesson-item"><div class="num">19</div><span class="t">Opposites</span></div>
+      <div class="lesson-item checkpoint"><div class="num">10</div><span class="t">In the Kitchen</span></div>
+      <div class="lesson-item checkpoint"><div class="num">20</div><span class="t">Big Review + Show &amp; Tell</span></div>
+    </div>
+  </div>
+  <div class="footer"><span>Lumio English &middot; Curriculum Guide</span><span>11</span></div>
+</div>
+
+<!-- LEVEL 2 SUMMARY -->
+<div class="page">
+  <div class="lvl-head" style="background:linear-gradient(120deg,#5EEAD4,#0D9488)"><h1>Level 2 &middot; My World</h1></div>
+  <div class="content">
+    <div style="margin-bottom:14px"><span class="pill" style="background:#CCFBF1;color:#0F766E">L2</span></div>
+    <div class="lvl-title" style="color:#43301F">My World</div>
+    <div class="lvl-meta" style="margin-bottom:16px"><span style="background:#F0FDFA;color:#0F766E">Ages 8-10</span><span style="background:#F0FDFA;color:#0F766E">CEFR Pre-A1</span><span style="background:#F0FDFA;color:#0F766E">20 lessons</span><span style="background:#F0FDFA;color:#0F766E">165 words</span></div>
+    <div class="two-col">
+      <div class="card">
+        <h2>By the end of this level, your child can:</h2>
+        <ul>
+          <li>Greet people and introduce themselves properly</li>
+          <li>Name extended family (aunt, uncle, cousin, twins)</li>
+          <li>Use he/she and possessives</li>
+          <li>Follow classroom commands and count to 100</li>
+          <li>Name the months and tell the time</li>
+          <li>Describe daily morning and evening routines</li>
+          <li>Point things out with this/that/these/those</li>
+          <li>Make plurals correctly (s/es)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>Sample vocabulary</h2>
+        <div><span class="vocab-pill">aunt عمة</span><span class="vocab-pill">cousin ابن العم</span><span class="vocab-pill">classroom الصف</span><span class="vocab-pill">birthday عيد ميلاد</span><span class="vocab-pill">breakfast فطور</span><span class="vocab-pill">homework واجب</span><span class="vocab-pill">guests ضيوف</span><span class="vocab-pill">curfew حظر تجول</span></div>
+        <h2 style="margin-top:12px">Grammar</h2>
+        <p>19 distinct structures across the level.</p>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:20px">
+      <img src="assets/cast-kid.png" style="width:100%;max-width:400px">
+      <div style="font-family:'Baloo 2';font-weight:800;color:#0F766E;font-size:13px;margin-top:6px">The whole crew, growing their world together</div>
+    </div>
+  </div>
+  <div class="footer"><span>Lumio English &middot; Curriculum Guide</span><span>12</span></div>
+</div>
+
+<!-- LEVEL 2 LESSONS -->
+<div class="page">
+  <div class="headbar"><h1>Level 2 Lessons</h1><div class="brand"><img src="assets/lumio-logo.png">LUMIO ENGLISH</div></div>
+  <div class="content">
+    <p style="font-size:12px;color:#8A7160;margin-bottom:14px">All 20 lessons in My World, in order. Lessons 6, 11, 16 &amp; 20 (highlighted) are checkpoint lessons.</p>
+    <div class="lesson-grid">
+      <div class="lesson-item"><div class="num">1</div><span class="t">Greetings &amp; Introductions</span></div>
+      <div class="lesson-item"><div class="num">11</div><span class="t">Months of the Year</span></div>
+      <div class="lesson-item"><div class="num">2</div><span class="t">How Old Are You?</span></div>
+      <div class="lesson-item"><div class="num">12</div><span class="t">My Birthday</span></div>
+      <div class="lesson-item"><div class="num">3</div><span class="t">My Family Tree</span></div>
+      <div class="lesson-item"><div class="num">13</div><span class="t">Telling Time (o'clock)</span></div>
+      <div class="lesson-item"><div class="num">4</div><span class="t">He is / She is</span></div>
+      <div class="lesson-item"><div class="num">14</div><span class="t">My Daily Morning</span></div>
+      <div class="lesson-item"><div class="num">5</div><span class="t">My &amp; Your</span></div>
+      <div class="lesson-item"><div class="num">15</div><span class="t">My Daily Evening</span></div>
+      <div class="lesson-item checkpoint"><div class="num">6</div><span class="t">Have Got (I have...)</span></div>
+      <div class="lesson-item"><div class="num">16</div><span class="t">Food I Eat Every Day</span></div>
+      <div class="lesson-item"><div class="num">7</div><span class="t">Body &amp; Face Review+</span></div>
+      <div class="lesson-item"><div class="num">17</div><span class="t">Do You Like...?</span></div>
+      <div class="lesson-item"><div class="num">8</div><span class="t">My Classroom</span></div>
+      <div class="lesson-item"><div class="num">18</div><span class="t">This/That/These/Those</span></div>
+      <div class="lesson-item"><div class="num">9</div><span class="t">Classroom Commands</span></div>
+      <div class="lesson-item"><div class="num">19</div><span class="t">Plurals (s/es)</span></div>
+      <div class="lesson-item checkpoint"><div class="num">10</div><span class="t">Numbers 20-100</span></div>
+      <div class="lesson-item checkpoint"><div class="num">20</div><span class="t">Review + My Poster Project</span></div>
+    </div>
+  </div>
+  <div class="footer"><span>Lumio English &middot; Curriculum Guide</span><span>13</span></div>
+</div>
+
+<!-- LEVEL 3 SUMMARY -->
+<div class="page">
+  <div class="lvl-head" style="background:linear-gradient(120deg,#C4B5FD,#7B3FE4)"><h1>Level 3 &middot; Everyday Life</h1></div>
+  <div class="content">
+    <div style="margin-bottom:14px"><span class="pill" style="background:#EDE9FE;color:#6D28D9">L3</span></div>
+    <div class="lvl-title" style="color:#43301F">Everyday Life</div>
+    <div class="lvl-meta" style="margin-bottom:16px"><span style="background:#F5F3FF;color:#6D28D9">Ages 10-12</span><span style="background:#F5F3FF;color:#6D28D9">CEFR A1</span><span style="background:#F5F3FF;color:#6D28D9">20 lessons</span><span style="background:#F5F3FF;color:#6D28D9">162 words</span></div>
+    <div class="two-col">
+      <div class="card">
+        <h2>By the end of this level, your child can:</h2>
+        <ul>
+          <li>Talk about what friends do together (Present Simple)</li>
+          <li>Describe their room with "there is/are"</li>
+          <li>Say what they can and can't do</li>
+          <li>Ask and answer questions about routines and skills</li>
+          <li>Talk about ongoing actions ("right now")</li>
+          <li>Follow classroom rules and school conversations</li>
+          <li>Read and understand a short story</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>Sample vocabulary</h2>
+        <div><span class="vocab-pill">hang out</span><span class="vocab-pill">poster</span><span class="vocab-pill">skateboard</span><span class="vocab-pill">nervous</span><span class="vocab-pill">teamwork</span><span class="vocab-pill">beanbag</span></div>
+        <h2 style="margin-top:12px">Grammar</h2>
+        <p>19 distinct structures across the level.</p>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:20px">
+      <img src="assets/cast-teen.png" style="width:100%;max-width:440px">
+      <div style="font-family:'Baloo 2';font-weight:800;color:#6D28D9;font-size:13px;margin-top:6px">The full crew grows up -- meet the Teen Track cast</div>
+    </div>
+  </div>
+  <div class="footer"><span>Lumio English &middot; Curriculum Guide</span><span>14</span></div>
+</div>
+
+<!-- LEVEL 3 LESSONS -->
+<div class="page">
+  <div class="headbar"><h1>Level 3 Lessons</h1><div class="brand"><img src="assets/lumio-logo.png">LUMIO ENGLISH</div></div>
+  <div class="content">
+    <p style="font-size:12px;color:#8A7160;margin-bottom:14px">All 20 lessons in Everyday Life, in order. Lessons 6, 11, 16 &amp; 20 (highlighted) are checkpoint lessons.</p>
+    <div class="lesson-grid">
+      <div class="lesson-item"><div class="num">1</div><span class="t">Meet the Crew</span></div>
+      <div class="lesson-item"><div class="num">11</div><span class="t">Who's Faster?</span></div>
+      <div class="lesson-item"><div class="num">2</div><span class="t">What Do They Do?</span></div>
+      <div class="lesson-item"><div class="num">12</div><span class="t">The New Kid</span></div>
+      <div class="lesson-item"><div class="num">3</div><span class="t">Not My Thing</span></div>
+      <div class="lesson-item"><div class="num">13</div><span class="t">Classroom Rules</span></div>
+      <div class="lesson-item"><div class="num">4</div><span class="t">My Room</span></div>
+      <div class="lesson-item"><div class="num">14</div><span class="t">Right Now</span></div>
+      <div class="lesson-item"><div class="num">5</div><span class="t">This or That?</span></div>
+      <div class="lesson-item"><div class="num">15</div><span class="t">Study Buddies</span></div>
+      <div class="lesson-item checkpoint"><div class="num">6</div><span class="t">Squad Goals</span></div>
+      <div class="lesson-item"><div class="num">16</div><span class="t">Game Night</span></div>
+      <div class="lesson-item"><div class="num">7</div><span class="t">Whose Phone Is This?</span></div>
+      <div class="lesson-item"><div class="num">17</div><span class="t">Movie Marathon</span></div>
+      <div class="lesson-item"><div class="num">8</div><span class="t">Around School</span></div>
+      <div class="lesson-item"><div class="num">18</div><span class="t">Big Questions</span></div>
+      <div class="lesson-item"><div class="num">9</div><span class="t">Can You Skate?</span></div>
+      <div class="lesson-item"><div class="num">19</div><span class="t">Reading Adventure: The Big Match</span></div>
+      <div class="lesson-item checkpoint"><div class="num">10</div><span class="t">20 Questions</span></div>
+      <div class="lesson-item checkpoint"><div class="num">20</div><span class="t">Review + Time Capsule Project</span></div>
+    </div>
+  </div>
+  <div class="footer"><span>Lumio English &middot; Curriculum Guide</span><span>15</span></div>
+</div>
+
+<!-- LEVEL 4 SUMMARY -->
+<div class="page">
+  <div class="lvl-head" style="background:linear-gradient(120deg,#A5B4FC,#5B67E0)"><h1>Level 4 &middot; Smart Choices</h1></div>
+  <div class="content">
+    <div style="margin-bottom:14px"><span class="pill" style="background:#E0E7FF;color:#4338CA">L4</span></div>
+    <div class="lvl-title" style="color:#43301F">Smart Choices</div>
+    <div class="lvl-meta" style="margin-bottom:16px"><span style="background:#EEF2FF;color:#4338CA">Ages 11-13</span><span style="background:#EEF2FF;color:#4338CA">CEFR A1</span><span style="background:#EEF2FF;color:#4338CA">20 lessons</span><span style="background:#EEF2FF;color:#4338CA">164 words</span></div>
+    <div class="two-col">
+      <div class="card">
+        <h2>By the end of this level, your child can:</h2>
+        <ul>
+          <li>Describe routines with frequency words</li>
+          <li>Talk about sequence (before and after)</li>
+          <li>Ask politely and talk about possessions</li>
+          <li>Ask about prices and talk about saving money</li>
+          <li>Make polite requests ("I'd like...")</li>
+          <li>Give and receive advice ("you should")</li>
+          <li>Talk about future plans and the wider world</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>Sample vocabulary</h2>
+        <div><span class="vocab-pill">routine</span><span class="vocab-pill">text</span><span class="vocab-pill">snack</span><span class="vocab-pill">save up</span><span class="vocab-pill">advice</span><span class="vocab-pill">pressure</span></div>
+        <h2 style="margin-top:12px">Grammar</h2>
+        <p>19 distinct structures across the level.</p>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:20px">
+      <img src="assets/cast-teen.png" style="width:100%;max-width:440px">
+      <div style="font-family:'Baloo 2';font-weight:800;color:#4338CA;font-size:13px;margin-top:6px">Real conversations, real choices -- with the whole crew</div>
+    </div>
+  </div>
+  <div class="footer"><span>Lumio English &middot; Curriculum Guide</span><span>16</span></div>
+</div>
+
+<!-- LEVEL 4 LESSONS -->
+<div class="page">
+  <div class="headbar"><h1>Level 4 Lessons</h1><div class="brand"><img src="assets/lumio-logo.png">LUMIO ENGLISH</div></div>
+  <div class="content">
+    <p style="font-size:12px;color:#8A7160;margin-bottom:14px">All 20 lessons in Smart Choices, in order. Lessons 6, 11, 16 &amp; 20 (highlighted) are checkpoint lessons.</p>
+    <div class="lesson-grid">
+      <div class="lesson-item"><div class="num">1</div><span class="t">Does She Even Sleep?</span></div>
+      <div class="lesson-item"><div class="num">11</div><span class="t">I'd Like...</span></div>
+      <div class="lesson-item"><div class="num">2</div><span class="t">My Routine, My Rules</span></div>
+      <div class="lesson-item"><div class="num">12</div><span class="t">You Should Try This</span></div>
+      <div class="lesson-item"><div class="num">3</div><span class="t">How Often Do You...?</span></div>
+      <div class="lesson-item"><div class="num">13</div><span class="t">Group Chat</span></div>
+      <div class="lesson-item"><div class="num">4</div><span class="t">Before and After</span></div>
+      <div class="lesson-item"><div class="num">14</div><span class="t">Team Player</span></div>
+      <div class="lesson-item"><div class="num">5</div><span class="t">Text Me</span></div>
+      <div class="lesson-item"><div class="num">15</div><span class="t">Big Decisions</span></div>
+      <div class="lesson-item checkpoint"><div class="num">6</div><span class="t">That's Mine</span></div>
+      <div class="lesson-item"><div class="num">16</div><span class="t">Under Pressure</span></div>
+      <div class="lesson-item"><div class="num">7</div><span class="t">Got Any Snacks?</span></div>
+      <div class="lesson-item"><div class="num">17</div><span class="t">My Future Self</span></div>
+      <div class="lesson-item"><div class="num">8</div><span class="t">How Much Is That?</span></div>
+      <div class="lesson-item"><div class="num">18</div><span class="t">Around the World</span></div>
+      <div class="lesson-item"><div class="num">9</div><span class="t">Saving Up</span></div>
+      <div class="lesson-item"><div class="num">19</div><span class="t">Reading Adventure: The Group Project</span></div>
+      <div class="lesson-item checkpoint"><div class="num">10</div><span class="t">Best in Show</span></div>
+      <div class="lesson-item checkpoint"><div class="num">20</div><span class="t">Review + Future Plans Project</span></div>
+    </div>
+  </div>
+  <div class="footer"><span>Lumio English &middot; Curriculum Guide</span><span>17</span></div>
+</div>
+
+<!-- LEVEL 5 SUMMARY -->
+<div class="page">
+  <div class="lvl-head" style="background:linear-gradient(120deg,#F9A8D4,#EC4899)"><h1>Level 5 &middot; Telling My Story</h1></div>
+  <div class="content">
+    <div style="margin-bottom:14px"><span class="pill" style="background:#FCE7F3;color:#BE185D">L5</span></div>
+    <div class="lvl-title" style="color:#43301F">Telling My Story</div>
+    <div class="lvl-meta" style="margin-bottom:16px"><span style="background:#FDF2F8;color:#BE185D">Ages 12-14</span><span style="background:#FDF2F8;color:#BE185D">CEFR A2</span><span style="background:#FDF2F8;color:#BE185D">20 lessons</span><span style="background:#FDF2F8;color:#BE185D">172 words</span></div>
+    <div class="two-col">
+      <div class="card">
+        <h2>By the end of this level, your child can:</h2>
+        <ul>
+          <li>Talk about what happened yesterday or last weekend</li>
+          <li>Ask and answer questions in the past</li>
+          <li>Describe how something was and why it happened</li>
+          <li>Tell a story with sequence</li>
+          <li>Describe what was happening at a specific moment</li>
+          <li>Talk about a trip, a party, or a memorable day</li>
+          <li>Interview someone and recap a story</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>Sample vocabulary</h2>
+        <div><span class="vocab-pill">packed</span><span class="vocab-pill">flew</span><span class="vocab-pill">suitcase</span><span class="vocab-pill">guests</span><span class="vocab-pill">proud</span><span class="vocab-pill">nervous</span></div>
+        <h2 style="margin-top:12px">Grammar</h2>
+        <p>19 distinct structures across the level.</p>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:20px">
+      <img src="assets/cast-teen.png" style="width:100%;max-width:440px">
+      <div style="font-family:'Baloo 2';font-weight:800;color:#BE185D;font-size:13px;margin-top:6px">Every story is better with the whole crew to tell it</div>
+    </div>
+  </div>
+  <div class="footer"><span>Lumio English &middot; Curriculum Guide</span><span>18</span></div>
+</div>
+
+<!-- LEVEL 5 LESSONS -->
+<div class="page">
+  <div class="headbar"><h1>Level 5 Lessons</h1><div class="brand"><img src="assets/lumio-logo.png">LUMIO ENGLISH</div></div>
+  <div class="content">
+    <p style="font-size:12px;color:#8A7160;margin-bottom:14px">All 20 lessons in Telling My Story, in order. Lessons 6, 11, 16 &amp; 20 (highlighted) are checkpoint lessons.</p>
+    <div class="lesson-grid">
+      <div class="lesson-item"><div class="num">1</div><span class="t">What I Did This Weekend</span></div>
+      <div class="lesson-item"><div class="num">11</div><span class="t">Study Story</span></div>
+      <div class="lesson-item"><div class="num">2</div><span class="t">Yesterday's Adventure</span></div>
+      <div class="lesson-item"><div class="num">12</div><span class="t">The Big Trip</span></div>
+      <div class="lesson-item"><div class="num">3</div><span class="t">Did You...?</span></div>
+      <div class="lesson-item"><div class="num">13</div><span class="t">What Went Wrong</span></div>
+      <div class="lesson-item"><div class="num">4</div><span class="t">How It Was</span></div>
+      <div class="lesson-item"><div class="num">14</div><span class="t">The Party</span></div>
+      <div class="lesson-item"><div class="num">5</div><span class="t">Back Then</span></div>
+      <div class="lesson-item"><div class="num">15</div><span class="t">A Day to Remember</span></div>
+      <div class="lesson-item checkpoint"><div class="num">6</div><span class="t">Time Travel</span></div>
+      <div class="lesson-item"><div class="num">16</div><span class="t">While It Happened</span></div>
+      <div class="lesson-item"><div class="num">7</div><span class="t">And Then...</span></div>
+      <div class="lesson-item"><div class="num">17</div><span class="t">Interview a Classmate</span></div>
+      <div class="lesson-item"><div class="num">8</div><span class="t">Why It Happened</span></div>
+      <div class="lesson-item"><div class="num">18</div><span class="t">Movie Night Recap</span></div>
+      <div class="lesson-item"><div class="num">9</div><span class="t">How I Felt</span></div>
+      <div class="lesson-item"><div class="num">19</div><span class="t">Reading Adventure: The Lost Backpack</span></div>
+      <div class="lesson-item checkpoint"><div class="num">10</div><span class="t">What Was Happening</span></div>
+      <div class="lesson-item checkpoint"><div class="num">20</div><span class="t">Review + My Story Project</span></div>
+    </div>
+  </div>
+  <div class="footer"><span>Lumio English &middot; Curriculum Guide</span><span>19</span></div>
+</div>
+
+<!-- LEVEL 6 SUMMARY -->
+<div class="page">
+  <div class="lvl-head" style="background:linear-gradient(120deg,#C4B5FD,#8B5CF6)"><h1>Level 6 &middot; Looking Ahead</h1></div>
+  <div class="content">
+    <div style="margin-bottom:14px"><span class="pill" style="background:#EDE9FE;color:#6D28D9">L6</span></div>
+    <div class="lvl-title" style="color:#43301F">Looking Ahead</div>
+    <div class="lvl-meta" style="margin-bottom:16px"><span style="background:#F5F3FF;color:#6D28D9">Ages 13-15</span><span style="background:#F5F3FF;color:#6D28D9">CEFR A2</span><span style="background:#F5F3FF;color:#6D28D9">20 lessons</span><span style="background:#F5F3FF;color:#6D28D9">168 words</span></div>
+    <div class="two-col">
+      <div class="card">
+        <h2>By the end of this level, your child can:</h2>
+        <ul>
+          <li>Talk about future plans and predictions</li>
+          <li>Describe what was happening while something else occurred</li>
+          <li>Talk about rules, duties, and obligations</li>
+          <li>Make comparisons</li>
+          <li>Discuss multitasking and daily habits</li>
+          <li>Join a class debate and defend an opinion</li>
+          <li>Compare cultures and traditions</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>Sample vocabulary</h2>
+        <div><span class="vocab-pill">predict</span><span class="vocab-pill">duty</span><span class="vocab-pill">multitask</span><span class="vocab-pill">debate</span><span class="vocab-pill">culture</span><span class="vocab-pill">prepare</span></div>
+        <h2 style="margin-top:12px">Grammar</h2>
+        <p>19 distinct structures across the level, capping off the full 7-level grammar progression.</p>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:20px">
+      <img src="assets/cast-teen.png" style="width:100%;max-width:440px">
+      <div style="font-family:'Baloo 2';font-weight:800;color:#6D28D9;font-size:13px;margin-top:6px">The final level -- looking ahead, together</div>
+    </div>
+  </div>
+  <div class="footer"><span>Lumio English &middot; Curriculum Guide</span><span>20</span></div>
+</div>
+
+<!-- LEVEL 6 LESSONS -->
+<div class="page">
+  <div class="headbar"><h1>Level 6 Lessons</h1><div class="brand"><img src="assets/lumio-logo.png">LUMIO ENGLISH</div></div>
+  <div class="content">
+    <p style="font-size:12px;color:#8A7160;margin-bottom:14px">All 20 lessons in Looking Ahead, in order. Lessons 6, 11, 16 &amp; 20 (highlighted) are checkpoint lessons.</p>
+    <div class="lesson-grid">
+      <div class="lesson-item"><div class="num">1</div><span class="t">My Plans</span></div>
+      <div class="lesson-item"><div class="num">11</div><span class="t">The Way We Talk</span></div>
+      <div class="lesson-item"><div class="num">2</div><span class="t">I Think It Will...</span></div>
+      <div class="lesson-item"><div class="num">12</div><span class="t">Which Is Better?</span></div>
+      <div class="lesson-item"><div class="num">3</div><span class="t">This Weekend I'm...</span></div>
+      <div class="lesson-item"><div class="num">13</div><span class="t">Multitasking</span></div>
+      <div class="lesson-item"><div class="num">4</div><span class="t">While I Was...</span></div>
+      <div class="lesson-item"><div class="num">14</div><span class="t">Next Year</span></div>
+      <div class="lesson-item"><div class="num">5</div><span class="t">Rules &amp; Duties</span></div>
+      <div class="lesson-item"><div class="num">15</div><span class="t">Class Debate</span></div>
+      <div class="lesson-item checkpoint"><div class="num">6</div><span class="t">How You Do It</span></div>
+      <div class="lesson-item"><div class="num">16</div><span class="t">Getting Ready</span></div>
+      <div class="lesson-item"><div class="num">7</div><span class="t">Even Better</span></div>
+      <div class="lesson-item"><div class="num">17</div><span class="t">Doing It Right</span></div>
+      <div class="lesson-item"><div class="num">8</div><span class="t">Weekend Plans</span></div>
+      <div class="lesson-item"><div class="num">18</div><span class="t">Comparing Cultures</span></div>
+      <div class="lesson-item"><div class="num">9</div><span class="t">Predictions About Us</span></div>
+      <div class="lesson-item"><div class="num">19</div><span class="t">Reading Adventure: The School Trip</span></div>
+      <div class="lesson-item checkpoint"><div class="num">10</div><span class="t">Rules at Home</span></div>
+      <div class="lesson-item checkpoint"><div class="num">20</div><span class="t">Review + My Future Plans Project</span></div>
+    </div>
+  </div>
+  <div class="footer"><span>Lumio English &middot; Curriculum Guide</span><span>21</span></div>
+</div>
+
+<!-- HUB CONTENT BY LEVEL -->
+<div class="page">
+  <div class="headbar"><h1>The English Hub</h1><div class="brand"><img src="assets/lumio-logo.png">LUMIO ENGLISH</div></div>
+  <div class="content">
+    <div class="card">
+      <h2>A living reference your child can explore anytime</h2>
+      <p>Beyond the 20 structured lessons, every level unlocks its own English Hub -- a free-browsing space where everything already learned is organized, searchable, and ready to revisit whenever curiosity strikes, not just during lesson time.</p>
+    </div>
+    <h2 style="font-family:'Baloo 2';font-size:15px;color:#43301F;margin:14px 0 8px">Hub content by level</h2>
+    <table class="hub-table">
+      <tr><th>Level</th><th>Vocabulary Themes</th><th>Vocabulary Words</th><th>Idioms</th><th>Grammar Topics</th></tr>
+      <tr><td><b>Pre-A &middot; First Words</b></td><td>10 themes</td><td>97 words</td><td>20</td><td>&mdash;</td></tr>
+      <tr><td><b>Level 1 &middot; About Me</b></td><td>10 themes</td><td>89 words</td><td>20</td><td>&mdash;</td></tr>
+      <tr><td><b>Level 2 &middot; My World</b></td><td>10 themes</td><td>82 words</td><td>20</td><td>&mdash;</td></tr>
+      <tr><td><b>Level 3 &middot; Everyday Life</b></td><td>6 themes</td><td>121 words</td><td>20</td><td>19</td></tr>
+      <tr><td><b>Level 4 &middot; Smart Choices</b></td><td>6 themes</td><td>119 words</td><td>20</td><td>19</td></tr>
+      <tr><td><b>Level 5 &middot; Telling My Story</b></td><td>9 themes</td><td>71 words</td><td>20</td><td>19</td></tr>
+      <tr><td><b>Level 6 &middot; Looking Ahead</b></td><td>8 themes</td><td>60 words</td><td>20</td><td>19</td></tr>
+    </table>
+    <div style="margin-top:14px;max-width:430px;margin-left:auto;margin-right:auto;border-radius:14px;overflow:hidden;box-shadow:0 6px 14px rgba(67,48,31,.08)">
+      <img src="assets/hub_screenshot.png" style="width:100%;display:block">
+    </div>
+    <div style="text-align:center;font-size:10.5px;color:#8A7160;font-weight:700;margin-top:4px">A real Hub page -- browsing the "My Family" vocabulary theme</div>
+  </div>
+  <div class="footer"><span>Lumio English &middot; Curriculum Guide</span><span>22</span></div>
+</div>
+
+<!-- STORY -->
+<div class="page">
+  <div class="headbar"><h1>Story Time &amp; Learning Partners</h1><div class="brand"><img src="assets/lumio-logo.png">LUMIO ENGLISH</div></div>
+  <div class="content">
+    <div class="card">
+      <h2>Learning wrapped inside a real adventure</h2>
+      <p>Every level has its own illustrated 4-part story, told entirely in the vocabulary and grammar your child has just learned -- turning "review" into an adventure they actually want to follow to the end.</p>
+    </div>
+    <h2 style="font-family:'Baloo 2';font-size:15px;color:#43301F;margin:14px 0 10px">Meet the Learning Partners</h2>
+    <div style="text-align:center;margin-bottom:16px">
+      <img src="assets/cast-kid.png" style="width:100%;max-width:420px">
+    </div>
+    <div class="card">
+      <h2>Story titles by level</h2>
+      <p><b>Pre-A -- "Lumi's Magic Map":</b> 1. The Mysterious Map &middot; 2. The Whispering Forest &middot; 3. The Family Picnic Village &middot; 4. The Treasure Celebration</p>
+      <p style="margin-top:8px"><b>Level 1 -- "The Treehouse Club":</b> 1. New Friends, New Family &middot; 2. School Days &middot; 3. A Year of Birthdays &middot; 4. The Backyard Party</p>
+      <p style="margin-top:8px"><b>Level 2 -- "The Twelve Months Club":</b> 1. The Big Idea &middot; 2. Building Day &middot; 3. Grand Opening Prep &middot; 4. The Big Poster Party</p>
+      <p style="margin-top:8px"><b>Level 3 -- "The Crew":</b> 1. Meet the Crew &middot; 2. Around School &middot; 3. Game Night &middot; 4. The Big Match</p>
+    </div>
+    <div class="card" style="background:#FFF3D6;border-color:#FFE0B8">
+      <p style="color:#43301F">Each story's 4 parts unlock as your child progresses -- Part 1 after Lesson 5, Part 2 after Lesson 10, Part 3 after Lesson 15, and Part 4 after Lesson 20 (once both the prep and live class for those lessons are complete).</p>
+    </div>
+  </div>
+  <div class="footer"><span>Lumio English &middot; Curriculum Guide</span><span>23</span></div>
+</div>
+
+<!-- CLOSING -->
+<div class="page" style="background:linear-gradient(160deg,#9B5DE5,#7B3FE4);color:#fff;text-align:center">
+  <div style="padding:60px 40px">
+    <div style="font-family:'Baloo 2';font-weight:800;font-size:14px;margin-bottom:60px">LUMIO ENGLISH</div>
+    <div style="font-family:'Baloo 2';font-weight:800;font-size:26px;margin-bottom:14px">We're here with you every step</div>
+    <p style="font-size:14px;opacity:.95;max-width:420px;margin:0 auto 30px">Thank you for trusting Lumio English with your child's learning journey. We can't wait to see how far they'll go.</p>
+    <img src="assets/lumi-thumbs.png" style="width:200px;margin-top:20px">
+  </div>
+</div>
+
+</body>
+</html>
