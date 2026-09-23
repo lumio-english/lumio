@@ -405,7 +405,7 @@ def slide_vocab_scene(image_path, sentence, bold_words, n, total, seed, translat
     return f'''<div style="position:absolute;inset:0;background:url('{image_path}') center/cover no-repeat"></div>
     <div style="position:absolute;left:0;right:0;top:0;height:120px;background:linear-gradient(180deg,rgba(43,33,24,.55),transparent)"></div>
     {header("", n, total)}
-    <div style="position:absolute;left:0;right:0;bottom:0;padding:22px 46px 30px;background:linear-gradient(0deg,rgba(43,33,24,.7) 10%,rgba(43,33,24,.35) 70%,transparent 100%)">
+    <div style="position:absolute;left:0;right:0;bottom:0;padding:22px 46px 64px;background:linear-gradient(0deg,rgba(43,33,24,.7) 10%,rgba(43,33,24,.35) 70%,transparent 100%)">
       <div style="display:flex;align-items:center;justify-content:center;gap:16px;max-width:1100px;margin:0 auto">
         <div style="background:#fff;border-radius:20px;padding:16px 28px;box-shadow:0 10px 26px rgba(0,0,0,.28);text-align:center;max-width:820px">
           <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.55rem;color:#43301F;line-height:1.35">{highlighted}</div>
