@@ -36,8 +36,8 @@ os.makedirs(f"writing/{LEVEL}", exist_ok=True)
 def slug(w):
     return w.lower().replace("'", "").replace(" ", "-")
 
-def vocab_image_path(en):
-    p = f"assets/vocab/{slug(en)}.png"
+def vocab_image_path(en, image_override=None):
+    p = f"assets/vocab/{slug(image_override or en)}.png"
     return p if os.path.exists(p) else None
 
 # ================= WORKSHEETS =================
@@ -147,7 +147,7 @@ def draw_card_front(c, x, y, w, h, word):
     c.setStrokeColorRGB(*MUTED)
     c.roundRect(x, y, w, h, 8, stroke=1, fill=0)
     c.setDash()
-    img_path = vocab_image_path(word["en"])
+    img_path = vocab_image_path(word["en"], word.get("image"))
     img_size = min(w - 20, h - 46)
     img_x = x + (w - img_size) / 2
     img_y = y + h - img_size - 14

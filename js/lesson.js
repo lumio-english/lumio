@@ -74,11 +74,18 @@
   // exactly match the box) show white/cream, never the tile's random
   // color peeking through at the edges.
   let vocabImgSeq = 0;
-  const vocabImg = (word, boxStyle) => {
+  // imgKey: most words' picture file is just their own name, but a few
+  // words appear in more than one lesson with a different picture each
+  // time (e.g. "fish" as a live pet vs. "fish" as a food) -- a lesson's
+  // vocab entry can set an "image" field to point at a distinct file
+  // instead of the word's own slug, without affecting any other lesson
+  // that uses the same word.
+  const vocabImg = (word, boxStyle, imgKey) => {
     const id = `vi${vocabImgSeq++}`;
+    const file = (imgKey || word).toLowerCase().replace(/'/g,"").replace(/ /g,"-");
     return `<div style="${boxStyle};position:relative;overflow:hidden">
        <div id="${id}" style="position:absolute;inset:0">${Lumio.letterTile(word)}</div>
-       <img src="assets/vocab/${word.toLowerCase().replace(/'/g,"").replace(/ /g,"-")}.png" alt="${word}"
+       <img src="assets/vocab/${file}.png" alt="${word}"
             style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:6px;box-sizing:border-box;background:#fff"
             onload="var t=document.getElementById('${id}');if(t)t.style.display='none';"
             onerror="this.remove()">
@@ -109,7 +116,7 @@
       stage.innerHTML = `
         <div class="card center">
           <span class="chip chip-orange">${chipLabel} · ${chipIndex}/${chipTotal}</span>
-          ${vocabImg(w.en, "width:min(320px,70vw);height:220px;margin:18px auto;border-radius:20px")}
+          ${vocabImg(w.en, "width:min(320px,70vw);height:220px;margin:18px auto;border-radius:20px", w.image)}
           <h1 style="font-size:2.6rem">${w.en}</h1>
           <p class="ar" style="font-size:1.5rem;font-weight:800;color:var(--cocoa-soft)">${w.ar}</p>
           ${w.example ? `<p class="mt" style="font-weight:700">"${w.example}"</p>` : ""}
@@ -139,7 +146,7 @@
           <div class="mt">${speakBtn(target.en, true)}</div>
           <div class="feature-grid mt" id="opts">
             ${opts.map(o => `<button class="card btn-opt" data-en="${o.en}" style="cursor:pointer;border-width:3px;padding:0;overflow:hidden">
-              ${vocabImg(o.en, "height:90px")}
+              ${vocabImg(o.en, "height:90px", o.image)}
               <div style="font-size:1rem;font-weight:800;padding:8px">${o.en}</div></button>`).join("")}
           </div>
         </div>`;
@@ -252,7 +259,7 @@
 
   function actQuiz(a) {
     const auto = Lumio.shuffle([...lesson.vocab]).slice(0, a.rounds || 4).map(v => ({
-      prompt: `${vocabImg(v.en, "height:130px;border-radius:18px;max-width:220px;margin:0 auto")}<h2 class="mt">What is this?</h2>`,
+      prompt: `${vocabImg(v.en, "height:130px;border-radius:18px;max-width:220px;margin:0 auto", v.image)}<h2 class="mt">What is this?</h2>`,
       answer: v.en,
       options: Lumio.shuffle([v.en, ...Lumio.shuffle(lesson.vocab.filter(x => x.en !== v.en)).slice(0, 3).map(x => x.en)]),
     }));
@@ -317,7 +324,7 @@
         stage.innerHTML = `
           <div class="card center">
             <span class="chip chip-orange">Spell Blend · ${r + 1}/${words.length}</span>
-            ${vocabImg(w.en, "height:110px;border-radius:16px;max-width:200px;margin:12px auto")}
+            ${vocabImg(w.en, "height:110px;border-radius:16px;max-width:200px;margin:12px auto", w.image)}
             <button class="btn btn-teal mt" id="hearSounds">🔊 Hear the sounds, one by one</button>
             <div class="mt" style="font-family:var(--font-display);font-size:2.2rem;letter-spacing:10px;min-height:52px;border-bottom:4px dashed var(--cocoa);display:inline-block;padding:0 20px">
               ${target.map((l, i) => i < nextIdx ? l : "_").join(" ")}
@@ -364,7 +371,7 @@
         stage.innerHTML = `
           <div class="card center">
             <span class="chip chip-orange">Spell it · ${r + 1}/${words.length}</span>
-            ${vocabImg(w.en, "height:110px;border-radius:16px;max-width:200px;margin:12px auto")}
+            ${vocabImg(w.en, "height:110px;border-radius:16px;max-width:200px;margin:12px auto", w.image)}
             ${speakBtn(w.en)}
             <div class="mt" style="font-family:var(--font-display);font-size:2.2rem;letter-spacing:6px;min-height:52px;border-bottom:4px dashed var(--cocoa);display:inline-block;padding:0 20px">${built || "&nbsp;"}</div>
             <div class="row mt" style="justify-content:center" id="letters">
@@ -433,7 +440,7 @@
       stage.innerHTML = `
         <div class="card center">
           <span class="chip chip-teal">Speak it · ${r + 1}/${words.length}</span>
-          ${vocabImg(w.en, "height:110px;border-radius:16px;max-width:200px;margin:12px auto")}
+          ${vocabImg(w.en, "height:110px;border-radius:16px;max-width:200px;margin:12px auto", w.image)}
           <h1 style="font-size:2.2rem">${w.en}</h1>
           <p class="ar" style="font-size:1.3rem;font-weight:800;color:var(--cocoa-soft)">${w.ar}</p>
           <div class="row mt" style="justify-content:center">${speakBtn(w.en, true)}</div>

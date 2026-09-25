@@ -224,7 +224,7 @@ def slide_vocab(w, idx, n, total, num_words, ch, verb_count=0):
     <div class="card" style="position:absolute;left:46px;top:180px;width:450px;padding:24px;background:#fff">
       <div style="width:100%;aspect-ratio:1/1;border-radius:22px;overflow:hidden;margin-bottom:20px;
                      box-shadow:0 12px 26px rgba(67,48,31,.22);border:7px solid #fff;outline:4px solid #FFDCA8;background:#fff">
-                     <img src="assets/vocab/{slug(w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.parentElement.style.background='#FFF3D6'; this.remove()"></div>
+                     <img src="assets/vocab/{slug(w.get('image') or w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.parentElement.style.background='#FFF3D6'; this.remove()"></div>
       {letter_tiles(w["en"])}
     </div>
     <div class="card" style="position:absolute;left:518px;top:180px;width:620px;padding:36px 42px;">
@@ -299,7 +299,7 @@ def slide_letter_word(w, letter, n, total, ch):
     <div class="card" style="position:absolute;left:46px;top:180px;width:450px;padding:24px;background:#fff">
       <div style="width:100%;aspect-ratio:1/1;border-radius:22px;overflow:hidden;margin-bottom:20px;
                      box-shadow:0 12px 26px rgba(67,48,31,.22);border:7px solid #fff;outline:4px solid #FFDCA8;background:#fff">
-                     <img src="assets/vocab/{slug(w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.parentElement.style.background='#FFF3D6'; this.remove()"></div>
+                     <img src="assets/vocab/{slug(w.get('image') or w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.parentElement.style.background='#FFF3D6'; this.remove()"></div>
       {letter_tiles(w["en"])}
     </div>
     <div class="card" style="position:absolute;left:518px;top:180px;width:620px;padding:36px 42px;">
