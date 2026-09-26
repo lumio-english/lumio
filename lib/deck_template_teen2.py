@@ -498,6 +498,33 @@ def slide_error_analysis(wrong_sentence, right_sentence, why, n, total, theme_ke
     ''')
 
 
+def slide_phrase_focus(phrases, n, total, theme_key="default"):
+    """Pause slide (per Eslam's A2 richness campaign): 2-3 real,
+    commonly-used phrases or sentences tied to the lesson's topic --
+    NOT grammar-pattern practice (that's "Notice the Pattern") -- each
+    with a plain-English gloss and an Arabic line, for the teacher to
+    stop on and actually explain. `phrases` is a list of
+    (phrase_en, gloss_en, phrase_ar).
+    """
+    t = THEMES.get(theme_key, THEMES["default"])
+    cards = "".join(f'''
+      <div style="background:{CARD_BG};border-radius:12px;border:1px solid rgba(0,0,0,.06);border-top:4px solid {t["accent"]};
+                  box-shadow:0 12px 26px rgba(0,0,0,.16);padding:20px 24px;margin-bottom:14px">
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.2rem;color:{CARD_TEXT};margin-bottom:6px">&ldquo;{esc(en)}&rdquo;</div>
+        <div style="font-size:.92rem;color:#6B6580;font-weight:700;margin-bottom:8px">{esc(gloss)}</div>
+        <div dir="rtl" style="font-family:'Tajawal',sans-serif;font-weight:700;font-size:1rem;color:{t["accent_deep"]}">{esc(ar)}</div>
+      </div>''' for en, gloss, ar in phrases)
+    return (bg_theme(theme_key) + header_themed("Phrase Focus", n, total, theme_key) + f'''
+    <div style="position:relative;z-index:5;display:flex;justify-content:center;margin-top:44px">
+      <div style="width:740px">
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.85rem;color:#6B6580;text-align:center;margin-bottom:16px">
+          Real phrases people actually use for this topic -- let's break them down.</div>
+        {cards}
+      </div>
+    </div>
+    ''')
+
+
 def slide_discussion(points, n, total, ch, theme_key="default"):
     """A single slide meant to be sat on for real time (~10 minutes),
     not clicked through -- the teacher leads an open class discussion
@@ -618,7 +645,8 @@ def chunk_grammar_topics(topics, per_slide=5):
 def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, notice_sentences,
                    notice_note, challenge, real_life, theme_key="default",
                    n_vocab_mcq=10, n_grammar_mcq=10, level=None, discussion=None,
-                   grammar_recap_topics=None, describing_time_image=None, crew_talk=None):
+                   grammar_recap_topics=None, describing_time_image=None, crew_talk=None,
+                   crew_talk2=None, phrase_focus=None):
     global CURRENT_LESSON_BG
     CURRENT_LESSON_BG = lesson_bg_path(level, lesson_num) if level else None
     V = len(lesson["vocab"])
@@ -679,6 +707,8 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
             plan.append(("scene", _sc))
     except Exception as _e:
         print("scene skipped:", _e)
+    if phrase_focus:
+        plan.append(("phrase_focus", phrase_focus))
     plan.append(("pair_check", f"Quiz your partner on today's words -- point and ask 'What's this?'"))
     # Vocabulary Check: live, in-class MCQ practice, split into two 5-question
     # rounds with a checkpoint -- breaks up 10 slides in a row and gives a
@@ -702,6 +732,8 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
     plan.append(("sentence_trio", sentence_indices[3:6]))
     if grammar_topic:
         plan.append(("grammar_practice", grammar_topic))
+    if crew_talk2:
+        plan.append(("crew_talk", crew_talk2))
     if grammar_recap_topics:
         # Review-lesson-only: grammar_topic is deliberately never set for
         # lessons whose grammarFocus says "review" (see
@@ -737,8 +769,13 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
     _scene_sentence = None
     for _k, _d in plan:
         if _k == "scene": _scene_sentence = _d.get("en")
-    _recap = v1.today_i_learned_pages(lesson, grammar_topic, dialogue, crew_talk, _scene_sentence,
-                                      grammar_recap_topics=grammar_recap_topics)
+    _all_crew = (crew_talk or []) + (crew_talk2 or [])
+    _extra_blocks = None
+    if phrase_focus:
+        _extra_blocks = [{"kind": "sentences", "label": "PHRASES YOU LEARNED",
+                          "items": [f"{en} ({gloss})" for en, gloss, ar in phrase_focus]}]
+    _recap = v1.today_i_learned_pages(lesson, grammar_topic, dialogue, _all_crew, _scene_sentence,
+                                      grammar_recap_topics=grammar_recap_topics, extra_blocks=_extra_blocks)
     for _pi, _page in enumerate(_recap, 1):
         plan.append(("today_i_learned", (_page, _pi, len(_recap))))
     plan.append(("reward_homework", None))
@@ -762,6 +799,8 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
             slides.append(slide_first_listen(dialogue, n, total, theme_key))
         elif kind == "crew_talk":
             slides.append(slide_crew_talk(data, n, total, theme_key))
+        elif kind == "phrase_focus":
+            slides.append(slide_phrase_focus(data, n, total, theme_key))
         elif kind == "vocab":
             w, i = data
             verb_count = sum(1 for x in lesson["vocab"] if x.get("pos") == "verb")
