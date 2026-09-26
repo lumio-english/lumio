@@ -315,11 +315,33 @@ def make_notice_sentences(lesson_num, grammar_topic):
     if grammar_topic:
         for ex in grammar_topic.get("examples", [])[:4]:
             sentences.append(ex["en"])
-    other_lesson_num = 1 if lesson_num != 1 else 2
-    other = _lessons.get(other_lesson_num)
-    if other and other["vocab"]:
-        sentences.append(other["vocab"][0]["example"])
-    return sentences
+        other_lesson_num = 1 if lesson_num != 1 else 2
+        other = _lessons.get(other_lesson_num)
+        if other and other["vocab"]:
+            sentences.append(other["vocab"][0]["example"])
+    else:
+        # Review lessons (grammarFocus says "review", so
+        # match_grammar_by_lesson_focus deliberately returns no topic for
+        # them -- see that function's own docstring) previously fell
+        # through to a single borrowed sentence from a DIFFERENT lesson
+        # and a blank pattern name ("Tap every sentence that uses ."),
+        # leaving the slide almost empty. This lesson's own vocabulary
+        # already has real example sentences that use the very pattern
+        # being reviewed -- use those instead, plus one genuinely
+        # unrelated sentence (borrowed, as above) for real contrast.
+        lesson = _lessons[lesson_num]
+        for w in lesson["vocab"][:5]:
+            ex = (w.get("example") or "").strip()
+            if ex: sentences.append(ex)
+        other_lesson_num = 1 if lesson_num != 1 else 2
+        other = _lessons.get(other_lesson_num)
+        if other and other["vocab"]:
+            sentences.append(other["vocab"][0]["example"])
+    seen, out = set(), []
+    for s in sentences:
+        if s.lower() not in seen:
+            seen.add(s.lower()); out.append(s)
+    return out
 
 os.makedirs(f"slide-content/{LEVEL}", exist_ok=True)
 manifest = {}
@@ -333,7 +355,7 @@ for num in sorted(_lessons.keys()):
     real_life = REAL_LIFE.get(num)
     discussion = DISCUSSIONS.get(num)
     notice_sentences = make_notice_sentences(num, grammar_topic)
-    notice_note = grammar_topic["title"] if grammar_topic else ""
+    notice_note = grammar_topic["title"] if grammar_topic else (lesson.get("grammarFocus") or lesson["title"])
 
     is_review = num == 20
     n_vocab_mcq = 24 if is_review else 10
