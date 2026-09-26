@@ -19,6 +19,12 @@ from deck_template_v2 import (
     slide_vocab, slide_quick_check, slide_tpr_activity, slide_teacher_game, esc, slug,
     slide_vocab_scene,
 )
+import trial_recap as TR
+
+_scene_slide = slide_vocab_scene
+def slide_vocab_scene(img, sentence, bold, *a, **k):
+    TR.remember_sentence(sentence)
+    return _scene_slide(img, sentence, bold, *a, **k)
 
 TOTAL = 43
 
@@ -28,7 +34,7 @@ def load_word(level, lesson_num, en):
         d = json.load(f)
     for v in d["vocab"]:
         if v["en"] == en:
-            return v
+            return TR.remember_word(v)
     raise ValueError(f"{en} not found in {level} lesson {lesson_num}")
 
 
@@ -181,7 +187,7 @@ def slide_trial_finish(n, total):
     ''' + char_img("lumi-celebrate", right=30, bottom=25, height=170))
 
 
-def build():
+def _build():
     slides = []
 
     slides.append(slide_trial_welcome(1, TOTAL))
@@ -229,6 +235,7 @@ def build():
     }
     for w_en, line in unison_tpr.items():
         slides.append(slide_tpr_activity(line, len(slides) + 1, TOTAL, "lumi-hero"))
+    TR.remember_actions(*unison_tpr, "run", "dance")
     slides.append(slide_vocab_scene("assets/vocab-scenes/level1/42.jpg", "I can sing. I can dance.", ["sing", "dance"], len(slides) + 1, TOTAL, 1))
 
     slides.append(slide_copycat_challenge("Who can run in place the fastest? Ready, go!", len(slides) + 1, TOTAL))
@@ -239,10 +246,18 @@ def build():
         slides.append(slide_vocab(load_word("level1", 14, w_en), 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
 
     slides.append(slide_scoreboard("And the final score is...", len(slides) + 1, TOTAL))
+    slides.extend(TR.kid_slides(len(slides) + 1, TOTAL))
     slides.append(slide_finale(len(slides) + 1, TOTAL))
     slides.append(slide_trial_finish(len(slides) + 1, TOTAL))
 
-    assert len(slides) == TOTAL, f"expected {TOTAL} slides, built {len(slides)}"
+    return slides
+
+
+def build():
+    def _set(t):
+        global TOTAL
+        TOTAL = t
+    slides = TR.two_pass_build(_build, _set, TOTAL)
 
     out_dir = "slide-content/trial/level1"
     os.makedirs(out_dir, exist_ok=True)

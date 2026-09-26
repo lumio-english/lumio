@@ -11,8 +11,8 @@ deck's own section structure:
   grammar_mcq     - graded fill-the-blank on the level's grammar
   vocab_mcq       - graded quick check on the words just taught
   discussion      - an open moment the teacher sits on for real time
-  today_recap     - "Today you learned" with every word + Arabic, and the
-                    level's grammar line, before the finish slide
+  today_recap     - now built by lib/trial_recap.py (every word + Arabic,
+                    the grammar line, and every sentence, paginated)
 """
 import ast, json, os, re, sys
 
@@ -105,42 +105,6 @@ def discussion_slide(level, n, total):
     return slide_discussion(m["discussion"], n, total, m["ch"])
 
 
-def trial_words(trial_file):
-    """Every word the trial itself teaches, read from its own load_word(...)
-    calls so the recap can never drift from the deck."""
-    src = open(trial_file, encoding="utf-8").read()
-    level = re.search(r'load_word\("(level\d)"', src).group(1)
-    words, seen = [], set()
-    for lesson, lst in re.findall(r'load_word\("level\d",\s*(\d+),\s*w(?:_en)?\)\s*for w(?:_en)? in \[([^\]]*)\]', src):
-        for en in re.findall(r'"([^"]+)"', lst):
-            if en not in seen:
-                seen.add(en); words.append((int(lesson), en))
-    return level, words
-
-
-def recap_slide(level, words, n, total):
-    """'Today you learned' -- every word with Arabic, plus the grammar line."""
-    m = LEVEL_META[level]
-    chips = ""
-    for lesson, en in words:
-        p = os.path.join(ROOT, "lessons", level, f"lesson{lesson:02d}.json")
-        ar = ""
-        try:
-            for w in json.load(open(p, encoding="utf-8"))["vocab"]:
-                if w["en"] == en: ar = w.get("ar", ""); break
-        except Exception:
-            pass
-        chips += (f'<div style="background:#fff;border-radius:14px;padding:10px 16px;box-shadow:0 6px 14px rgba(0,0,0,.08);text-align:center">'
-                  f'<div style="font-family:\'Fredoka\',sans-serif;font-weight:600;font-size:1.05rem;color:{CARD_TEXT}">{esc(en)}</div>'
-                  f'<div dir="rtl" style="font-weight:700;font-size:.95rem;color:{TEAL_DEEP};margin-top:2px">{esc(ar)}</div></div>')
-    return (bg_base() + header("Today you learned &#127775;", n, total) + f'''
-    <div style="position:absolute;left:60px;right:60px;top:130px">
-      <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.8rem;letter-spacing:1.5px;color:{ORANGE_DEEP};margin-bottom:10px">
-        WORDS &nbsp;&middot;&nbsp; <span dir="rtl">الكلمات</span></div>
-      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px">{chips}</div>
-      <div style="margin-top:22px;background:#fff;border-radius:16px;padding:16px 22px;box-shadow:0 8px 18px rgba(0,0,0,.08)">
-        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.8rem;letter-spacing:1.5px;color:{TEAL_DEEP};margin-bottom:6px">GRAMMAR YOU USED TODAY</div>
-        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.15rem;color:{CARD_TEXT}">{esc(m["grammar"])}</div>
-        <div style="font-size:.95rem;color:{INK_DIM};margin-top:6px">This was one class. The full level has 20 lessons, a bonus game, printable worksheets and flashcards, and a story.</div>
-      </div>
-    </div>''')
+# trial_words()/recap_slide() were replaced by lib/trial_recap.py: words are
+# now recorded at build time (the old source regex missed the last vocab
+# group of every teen trial) and the recap lists every sentence too.

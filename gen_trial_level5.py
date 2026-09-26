@@ -18,6 +18,7 @@ from deck_template_teen import (
 )
 import deck_template_teen2
 import trial_enrich as TE
+import trial_recap as TR
 from deck_template_teen2 import bg_theme
 
 TOTAL = 40
@@ -28,7 +29,7 @@ def load_word(level, lesson_num, en):
         d = json.load(f)
     for v in d["vocab"]:
         if v["en"] == en:
-            return v
+            return TR.remember_word(v)
     raise ValueError(f"{en} not found in {level} lesson {lesson_num}")
 
 
@@ -180,7 +181,7 @@ def slide_trial_finish(n, total):
     ''')
 
 
-def build():
+def _build():
     slides = []
 
     slides.append(slide_trial_welcome(1, TOTAL))
@@ -226,12 +227,19 @@ def build():
 
     slides.append(slide_scoreboard("And the final score is...", len(slides) + 1, TOTAL))
     slides.append(TE.discussion_slide("level5", len(slides) + 1, TOTAL))
-    _lvl, _words = TE.trial_words(os.path.abspath(__file__))
-    slides.append(TE.recap_slide("level5", _words, len(slides) + 1, TOTAL))
+    _dlg = [l[0] for l in TE._dialogues("level5").get(1, [])[:4]]
+    slides.extend(TR.teen_slides("level5", TE.LEVEL_META["level5"]["grammar"], _dlg, len(slides) + 1, TOTAL))
     slides.append(slide_finale(len(slides) + 1, TOTAL))
     slides.append(slide_trial_finish(len(slides) + 1, TOTAL))
 
-    assert len(slides) == TOTAL, f"expected {TOTAL} slides, built {len(slides)}"
+    return slides
+
+
+def build():
+    def _set(t):
+        global TOTAL
+        TOTAL = t
+    slides = TR.two_pass_build(_build, _set, TOTAL)
 
     out_dir = "slide-content/trial/level5"
     os.makedirs(out_dir, exist_ok=True)

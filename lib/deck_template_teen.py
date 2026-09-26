@@ -450,7 +450,8 @@ def slide_quiz(target, distractors, idx, total_q, n, total, seed):
     ''')
 
 def today_i_learned_pages(lesson, grammar_topic=None, dialogue=None, crew_talk=None,
-                          scene_sentence=None, extra_sentences=None, grammar_recap_topics=None):
+                          scene_sentence=None, extra_sentences=None, grammar_recap_topics=None,
+                          extra_blocks=None):
     """Everything the class covered, grouped into blocks and paginated
     by recap_pages (see that module). Previously the teen recap showed
     only the first 6 vocab words (lesson["vocab"][:6]) and only their
@@ -461,6 +462,8 @@ def today_i_learned_pages(lesson, grammar_topic=None, dialogue=None, crew_talk=N
     max_chips = 2 * recap_pages.TEEN.chips_per_row()
     blocks = [{"kind": "chips" if len(lesson["vocab"]) <= max_chips else "pills",
                "label": "KEY WORDS", "items": [w["en"] for w in lesson["vocab"]]}]
+    for blk in (extra_blocks or []):
+        if blk.get("items"): blocks.append(blk)
     vocab_sentences = recap_pages.dedupe([w.get("example") for w in lesson["vocab"]]
                                          + ([scene_sentence] if scene_sentence else [])
                                          + list(extra_sentences or []))

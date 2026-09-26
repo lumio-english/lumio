@@ -1060,7 +1060,7 @@ def slide_teacher_game(vocab, n, total, ch, tier="preA", mode="teacher"):
 
 
 def today_i_learned_pages(lesson, phonics_unit=None, grammar_topic=None, dialogue=None,
-                          scene_sentences=None, letters=None, spelling_rule=None):
+                          scene_sentences=None, letters=None, spelling_rule=None, extra_blocks=None):
     """Everything the class actually covered, grouped and paginated.
 
     Previously the recap showed the lesson's vocab words and only their
@@ -1079,6 +1079,8 @@ def today_i_learned_pages(lesson, phonics_unit=None, grammar_topic=None, dialogu
     blocks.append({"kind": "chips" if len(lesson["vocab"]) <= max_chips else "pills",
                    "label": "KEY WORDS",
                    "items": [w["en"] for w in lesson["vocab"]]})
+    for blk in (extra_blocks or []):   # e.g. a trial's TPR action words
+        if blk.get("items"): blocks.append(blk)
     if letters:
         blocks.append({"kind": "pills", "label": "LETTERS",
                        "items": [f"{L}{L.lower()}" for L in letters]})

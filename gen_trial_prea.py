@@ -50,6 +50,12 @@ from deck_template_v2 import (
     slide_vocab, slide_quick_check, slide_tpr_activity, slide_teacher_game, slide_sound_spot, esc, slug,
     slide_vocab_scene,
 )
+import trial_recap as TR
+
+_scene_slide = slide_vocab_scene
+def slide_vocab_scene(img, sentence, bold, *a, **k):
+    TR.remember_sentence(sentence)
+    return _scene_slide(img, sentence, bold, *a, **k)
 
 TOTAL = 52
 
@@ -59,7 +65,7 @@ def load_word(level, lesson_num, en):
         d = json.load(f)
     for v in d["vocab"]:
         if v["en"] == en:
-            return v
+            return TR.remember_word(v)
     raise ValueError(f"{en} not found in {level} lesson {lesson_num}")
 
 
@@ -203,7 +209,7 @@ def slide_trial_finish(n, total):
       <div style="background:#fff;border-radius:20px;padding:16px 26px;box-shadow:0 12px 26px rgba(67,48,31,.14);margin:16px 0 14px;max-width:860px">
         <div style="font-size:.78rem;font-weight:800;color:#F97316;letter-spacing:1.5px;margin-bottom:8px">TODAY YOU LEARNED &nbsp;&middot;&nbsp; <span dir="rtl">تعلمت اليوم</span></div>
         <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center">
-          {"".join(f'<span style="background:#FFF3D6;color:#7B3F1B;padding:6px 14px;border-radius:999px;font-weight:800;font-size:.95rem">{w}</span>' for w in ["hello","hi","cat","dog","duck","red","blue","mom","dad","sit","stand","sing"])}
+          {"".join(f'<span style="background:#FFF3D6;color:#7B3F1B;padding:6px 14px;border-radius:999px;font-weight:800;font-size:.95rem">{w}</span>' for w in [x["en"] for x in TR.WORDS] + TR.ACTIONS)}
         </div>
         <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1rem;color:#8A7160;margin-top:10px">
           Thank you! Goodbye! &nbsp;<span dir="rtl" style="color:#0D9488">شكراً لك! مع السلامة!</span> &mdash; this was one class out of 140 lessons across 7 levels.
@@ -217,7 +223,7 @@ def slide_trial_finish(n, total):
     ''' + char_img("lumi-celebrate", right=30, bottom=25, height=170))
 
 
-def build():
+def _build():
     slides = []
 
     slides.append(slide_trial_welcome(1, TOTAL))
@@ -283,6 +289,7 @@ def build():
     }
     for w_en, line in unison_tpr.items():
         slides.append(slide_tpr_activity(line, len(slides) + 1, TOTAL, "lumi-hero"))
+    TR.remember_actions(*unison_tpr, "run", "jump")
 
     slides.append(slide_copycat_challenge("Who can run in place the best? Ready, go!", len(slides) + 1, TOTAL))
     slides.append(slide_copycat_challenge("Who can jump like a bunny the highest?", len(slides) + 1, TOTAL))
@@ -293,10 +300,18 @@ def build():
     # Sound & Spot recap of every word met in the trial (tap to hear).
     slides.append(slide_sound_spot(animal_words + color_words + family_words, len(slides) + 1, TOTAL, "lumi-hero"))
     slides.append(slide_scoreboard("And the final score is...", len(slides) + 1, TOTAL))
+    slides.extend(TR.kid_slides(len(slides) + 1, TOTAL))
     slides.append(slide_finale(len(slides) + 1, TOTAL))
     slides.append(slide_trial_finish(len(slides) + 1, TOTAL))
 
-    assert len(slides) == TOTAL, f"expected {TOTAL} slides, built {len(slides)}"
+    return slides
+
+
+def build():
+    def _set(t):
+        global TOTAL
+        TOTAL = t
+    slides = TR.two_pass_build(_build, _set, TOTAL)
 
     out_dir = "slide-content/trial/pre-a"
     os.makedirs(out_dir, exist_ok=True)
