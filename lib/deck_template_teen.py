@@ -449,22 +449,80 @@ def slide_quiz(target, distractors, idx, total_q, n, total, seed):
     {buttons}
     ''')
 
-def slide_today_i_learned(lesson, n, total):
-    chips = "".join(f'''
+def today_i_learned_pages(lesson, grammar_topic=None, dialogue=None, crew_talk=None,
+                          scene_sentence=None, extra_sentences=None, grammar_recap_topics=None):
+    """Everything the class covered, grouped into blocks and paginated
+    by recap_pages (see that module). Previously the teen recap showed
+    only the first 6 vocab words (lesson["vocab"][:6]) and only their
+    own example sentences -- the grammar examples, the dialogue and the
+    crew-talk lines never appeared on it, and any lesson with more than
+    6 words silently lost the rest from its own recap."""
+    import recap_pages
+    max_chips = 2 * recap_pages.TEEN.chips_per_row()
+    blocks = [{"kind": "chips" if len(lesson["vocab"]) <= max_chips else "pills",
+               "label": "KEY WORDS", "items": [w["en"] for w in lesson["vocab"]]}]
+    vocab_sentences = recap_pages.dedupe([w.get("example") for w in lesson["vocab"]]
+                                         + ([scene_sentence] if scene_sentence else [])
+                                         + list(extra_sentences or []))
+    seen = {t.lower() for t in vocab_sentences}
+    blocks.append({"kind": "sentences", "label": "SENTENCE PATTERNS", "items": vocab_sentences,
+                   "title": lesson.get("grammarFocus") or None})
+    if grammar_topic:
+        gex = [ex["en"] for ex in grammar_topic.get("examples", [])]
+        for rule in grammar_topic.get("rules", []) or []:
+            gex += [e if isinstance(e, str) else e.get("en", "") for e in rule.get("examples", [])]
+        gex = [g for g in recap_pages.dedupe(gex) if g.lower() not in seen]
+        if gex:
+            blocks.append({"kind": "sentences", "label": "GRAMMAR", "items": gex,
+                           "title": grammar_topic.get("title")})
+    if grammar_recap_topics:
+        # Review lesson (20): every grammar topic the level covered, by
+        # title -- the full example lists would be ~60 sentences.
+        titles = [t.get("title", "") for chunk in grammar_recap_topics for t in chunk]
+        blocks.append({"kind": "pills", "label": "GRAMMAR REVIEWED", "items": recap_pages.dedupe(titles)})
+    if dialogue:
+        lines = [(l[1] if len(l) == 3 else l[0]) for l in dialogue]
+        blocks.append({"kind": "lines", "label": "DIALOGUE", "items": recap_pages.dedupe(lines)})
+    if crew_talk:
+        lines = [f"{l[0]}: {l[1]}" for l in crew_talk]
+        blocks.append({"kind": "lines", "label": "CREW TALK", "items": recap_pages.dedupe(lines)})
+    return recap_pages.paginate(blocks, recap_pages.TEEN)
+
+
+def _recap_block_html(blk):
+    kind, items = blk["kind"], blk["items"]
+    label = blk["label"] + (" (cont.)" if blk.get("cont") else "")
+    color = ORANGE_DEEP if kind in ("chips", "pills") else TEAL_DEEP
+    out = f'<div style="font-family:\'Fredoka\',sans-serif;font-weight:600;color:{color};font-size:.75rem;letter-spacing:1.5px;margin-bottom:10px">{label}</div>'
+    if kind == "chips":
+        chips = "".join(f'''
       <div style="background:{CARD_BG};border-radius:10px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;width:100px">
-        <div style="width:64px;height:64px;border-radius:8px;overflow:hidden;background:#F8FAFC"><img src="assets/vocab/{slug(w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.75rem;color:{CARD_TEXT};text-align:center">{esc(w["en"])}</div>
-      </div>''' for w in lesson["vocab"][:6])
-    return (bg_base() + header("Recap", n, total) + f'''
-    <div style="position:relative;z-index:5;padding:40px 40px 0">
-      <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:{ORANGE_DEEP};font-size:.75rem;letter-spacing:1.5px;margin-bottom:10px">KEY WORDS</div>
-      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px">{chips}</div>
-      <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:{TEAL_DEEP};font-size:.75rem;letter-spacing:1.5px;margin-bottom:8px">GRAMMAR &amp; SENTENCE PATTERNS</div>
-      {card_open(700, "padding:14px 20px")}
-        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1rem;color:{CARD_TEXT};margin-bottom:6px">{esc(lesson.get("grammarFocus",""))}</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px 16px">{"".join(f'<div style="font-family:\'Fredoka\',sans-serif;font-style:italic;font-weight:500;font-size:{".92rem" if len(lesson["vocab"])<=8 else ".82rem"};color:{ORANGE_DEEP}">&ldquo;{esc(w.get("example",""))}&rdquo;</div>' for w in lesson["vocab"] if w.get("example"))}</div>
-      </div>
-    </div>
+        <div style="width:64px;height:64px;border-radius:8px;overflow:hidden;background:#F8FAFC"><img src="assets/vocab/{slug(w)}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.75rem;color:{CARD_TEXT};text-align:center">{esc(w)}</div>
+      </div>''' for w in items)
+        out += f'<div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px">{chips}</div>'
+    elif kind == "pills":
+        pills = "".join(f'''
+      <div style="background:{CARD_BG};border-radius:999px;padding:7px 14px;font-family:'Fredoka',sans-serif;font-weight:600;
+                  font-size:.8rem;color:{CARD_TEXT};line-height:1.2">{esc(w)}</div>''' for w in items)
+        out += f'<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px">{pills}</div>'
+    else:
+        title = blk.get("title")
+        title_html = (f'<div style="font-family:\'Fredoka\',sans-serif;font-weight:600;font-size:1rem;color:{CARD_TEXT};margin-bottom:6px">{esc(title)}</div>'
+                      if title and not blk.get("cont") else "")
+        cols = "1fr 1fr" if kind == "sentences" else "1fr"
+        rows = "".join(f'<div style="font-family:\'Fredoka\',sans-serif;font-style:italic;font-weight:500;font-size:.88rem;color:{ORANGE_DEEP};line-height:1.35">&ldquo;{esc(p)}&rdquo;</div>' for p in items)
+        out += card_open(None, "padding:14px 20px;margin-bottom:18px") + f'''{title_html}
+        <div style="display:grid;grid-template-columns:{cols};gap:4px 18px">{rows}</div>
+      </div>'''
+    return out
+
+
+def slide_today_i_learned(page, page_idx, page_count, n, total, bg_fn=None, header_fn=None):
+    title = "Recap" if page_count == 1 else f"Recap &middot; {page_idx}/{page_count}"
+    body = "".join(_recap_block_html(b) for b in page)
+    return ((bg_fn or bg_base)() + (header_fn or header)(title, n, total) + f'''
+    <div data-recap-body style="position:relative;z-index:5;padding:40px 40px 0">{body}</div>
     ''')
 
 # ---------- Reading Adventure: procedural/narrative reading-comprehension slides ----------
@@ -627,7 +685,9 @@ def build_reading_adventure_deck(lesson_num, lesson, grammar_topic, story):
     plan.append(("writing_project", None))
     plan.append(("quiz", 1))
     plan.append(("quiz", 2))
-    plan.append(("today_i_learned", None))
+    _recap = today_i_learned_pages(lesson, grammar_topic, DIALOGUES.get(lesson_num) if isinstance(DIALOGUES, dict) else None)
+    for _pi, _page in enumerate(_recap, 1):
+        plan.append(("today_i_learned", (_page, _pi, len(_recap))))
     plan.append(("reward_homework", None))
 
     total = len(plan)
@@ -668,7 +728,8 @@ def build_reading_adventure_deck(lesson_num, lesson, grammar_topic, story):
         elif kind == "writing_project":
             slides.append(slide_writing_project(story["writing_project"]["prompt"], story["writing_project"]["starters"], n, total))
         elif kind == "today_i_learned":
-            slides.append(slide_today_i_learned(lesson, n, total))
+            _page, _pi, _pc = data
+            slides.append(slide_today_i_learned(_page, _pi, _pc, n, total))
         elif kind == "quiz":
             idx = data
             target = lesson["vocab"][1 if idx == 1 else min(3, V - 1)]
@@ -758,7 +819,9 @@ def build_deck(lesson_num, lesson, prev_lesson, grammar_topic=None):
         plan.append(("your_turn", (lesson["vocab"][i], i + 1)))
     plan.append(("quiz", 1))
     plan.append(("quiz", 2))
-    plan.append(("today_i_learned", None))
+    _recap = today_i_learned_pages(lesson, grammar_topic, DIALOGUES.get(lesson_num) if isinstance(DIALOGUES, dict) else None)
+    for _pi, _page in enumerate(_recap, 1):
+        plan.append(("today_i_learned", (_page, _pi, len(_recap))))
     plan.append(("reward_homework", None))
 
     total = len(plan)
@@ -791,7 +854,8 @@ def build_deck(lesson_num, lesson, prev_lesson, grammar_topic=None):
             w, idx = data
             slides.append(slide_your_turn(w, idx, your_turn_n, n, total, "omar-wave"))
         elif kind == "today_i_learned":
-            slides.append(slide_today_i_learned(lesson, n, total))
+            _page, _pi, _pc = data
+            slides.append(slide_today_i_learned(_page, _pi, _pc, n, total))
         elif kind == "quiz":
             idx = data
             target = lesson["vocab"][1 if idx == 1 else min(3, V - 1)]
@@ -802,6 +866,7 @@ def build_deck(lesson_num, lesson, prev_lesson, grammar_topic=None):
     return slides
 
 
+DIALOGUES = {}
 CURRENT_LEVEL = None
 
 def run(level, dialogues, grammar_units=None, out_root="slide-content", manifest_root="assets/slides"):

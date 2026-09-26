@@ -734,7 +734,13 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
         # their belt, so they actually have language to talk WITH, not
         # just a topic to stare at blankly.
         plan.append(("discussion", discussion))
-    plan.append(("today_i_learned", None))
+    _scene_sentence = None
+    for _k, _d in plan:
+        if _k == "scene": _scene_sentence = _d.get("en")
+    _recap = v1.today_i_learned_pages(lesson, grammar_topic, dialogue, crew_talk, _scene_sentence,
+                                      grammar_recap_topics=grammar_recap_topics)
+    for _pi, _page in enumerate(_recap, 1):
+        plan.append(("today_i_learned", (_page, _pi, len(_recap))))
     plan.append(("reward_homework", None))
 
     total = len(plan)
@@ -826,7 +832,9 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
         elif kind == "discussion":
             slides.append(slide_discussion(data, n, total, ch3, theme_key))
         elif kind == "today_i_learned":
-            slides.append(slide_today_i_learned(lesson, n, total))
+            _page, _pi, _pc = data
+            slides.append(slide_today_i_learned(_page, _pi, _pc, n, total,
+                                                bg_fn=bg_theme_wrap(theme_key), header_fn=header_themed_wrap(theme_key)))
         elif kind == "reward_homework":
             slides.append(slide_reward_homework(lesson_num, n, total, V * 10))
     return slides
