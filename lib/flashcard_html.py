@@ -38,7 +38,7 @@ def build_flashcard_html(level, num, vocab, page="front"):
         cards_by_row.append(row_items)
 
     def front_card(w):
-        img_path = f"assets/vocab/{slug(w['en'])}.png"
+        img_path = f"assets/vocab/{slug(w.get('image') or w['en'])}.png"
         img_abs = os.path.abspath(img_path)
         has_img = os.path.exists(img_abs)
         img_html = (f'<img src="file://{img_abs}">' if has_img
