@@ -24,15 +24,15 @@ Checking Level 4's actual lesson data before touching anything: the vocabulary s
 
 Both new slide types are built as reusable, data-driven features (`crew_talk2` / `phrase_focus` parameters on `build_deck_v2`) — the code doesn't need to change again for Levels 5-6, only the content.
 
-## What's next (Levels 5 and 6)
+## Levels 5 and 6 — done
 
-Same four content pieces, same method, per lesson:
-- A second Crew Talk (`CREW_TALK_2`).
-- 3 Phrase Focus entries tied to the lesson's topic.
-- An image-gap audit (the same word-vs-asset check used for Level 4) to catch any vocabulary word still missing art.
-- A pig/inappropriate-imagery audit (same method used here) before any new art is requested.
+Same four content pieces, same method, applied to both levels:
+1. **Second Crew Talk added** to Lessons 1-19 of both levels (`lib/crew_talk_level5.py` / `lib/crew_talk_level6.py`: `CREW_TALK_2`) — tailored to each level's own register (Level 5: past-tense storytelling; Level 6: plans, predictions, rules, comparatives, debate).
+2. **Phrase Focus slides added** to Lessons 1-19 of both levels (`lib/phrase_focus_level5.py` / `lib/phrase_focus_level6.py`) — 3 real everyday phrases per lesson, each with a plain-English gloss and Arabic, tied to that lesson's own topic.
+3. **Pig/inappropriate-imagery audit** — clean for both levels, nothing found.
+4. **Missing vocab images** — 44 words for Level 5, 50 for Level 6 (all genuinely missing, cross-checked against existing assets and every prompt dict already sent so nothing repeats); prompts drafted in `_docs/level5-a2-campaign-new-vocab-prompts.md` and `_docs/level6-a2-campaign-new-vocab-prompts.md`.
 
-I'd suggest doing Level 5 next, in its own pass, rather than all three levels in the same sitting — that keeps each level's new dialogue and phrases genuinely tailored to its own lessons rather than reused generic filler, and keeps each pass reviewable on its own.
+Both levels regenerated and verified (recap pagination checked across all recap slides on both levels — zero overflow) and pushed.
 
 ## Note on "richer vocabulary"
 
