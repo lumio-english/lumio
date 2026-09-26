@@ -46,7 +46,7 @@ LEVEL4 = {
     6: ("That's Mine", "A shared teen bedroom or locker at night with personal items -- a jacket, earbuds, a backpack -- softly lit by warm individual spotlights"),
     7: ("Got Any Snacks?", "A kitchen at night, the warm golden glow of an open fridge or pantry spilling out into a dark room, cozy late-night mood"),
     8: ("How Much Is That?", "A small shop or market stall at dusk with warm string lights, soft glowing price-tag shapes, a gentle bustling mood without visible people"),
-    9: ("Saving Up", "A piggy bank or jar of coins under a single warm spotlight in an otherwise dark room, a sense of quiet patience and care"),
+    9: ("Saving Up", "A round coin-slot moneybox (a plain painted wooden or ceramic box, NOT pig-shaped) beside a jar of coins under a single warm spotlight in an otherwise dark room, a sense of quiet patience and care"),
     10: ("Best in Show", "A dramatic spotlight on an empty stage, a trophy silhouette catching the warm light, deep shadow curtains framing the scene"),
     11: ("I'd Like...", "A cozy cafe or restaurant table at night, warm string lights overhead, a menu and a candle glow, inviting and relaxed"),
     12: ("You Should Try This", "Two silhouettes sitting together at dusk in quiet conversation on a bench, warm streetlight glow, a mentoring, supportive mood"),
