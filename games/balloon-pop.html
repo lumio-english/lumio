@@ -44,7 +44,7 @@
 <body>
 
 <div id="hud">
-  <a class="btn btn-ghost" href="../present.html" style="background:#fff">Exit</a>
+  <a class="btn btn-ghost" href="../present.html" id="exitBtn" style="background:#fff">Exit</a>
   <span class="pill">★ <span id="score">0</span></span>
   <span class="pill">⏱️ <span id="time">45</span>s</span>
 </div>
@@ -58,7 +58,7 @@
     <p style="font-weight:800;font-size:1.4rem;margin:14px 0" id="finalScore"></p>
     <div class="row" style="justify-content:center">
       <button class="btn btn-primary" onclick="location.reload()">↺ Play again</button>
-      <a class="btn btn-teal" href="../present.html">Back to lesson</a>
+      <a class="btn btn-teal" id="backBtn" href="../present.html">Back to lesson</a>
     </div>
   </div>
 </div>
@@ -68,6 +68,13 @@
 <script>
 const level = Lumio.qs("level") || "pre-a";
 const num = parseInt(Lumio.qs("n") || "1", 10);
+// Was hardcoded to "../present.html" with no query string -- see the
+// same fix in match-drag.html for why that silently drops the teacher
+// back to lesson 1 instead of wherever they actually launched this from.
+const source = Lumio.qs("from");
+const backHref = source === "lesson" ? "../student.html" : `../present.html?level=${level}&n=${num}`;
+document.getElementById("exitBtn").href = backHref;
+document.getElementById("backBtn").href = backHref;
 const lesson = window.LUMIO_LESSONS?.[level]?.[num];
 const vocab = lesson ? lesson.vocab : [];
 if (!vocab.length) document.body.innerHTML = "<p style='padding:40px;color:#fff'>No lesson data found.</p>";

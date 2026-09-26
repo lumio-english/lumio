@@ -268,7 +268,7 @@ if (!vocab.length) {
       const distractorPool = Lumio.shuffle(vocab.filter(v => v.en !== target.en));
       const opts = Lumio.shuffle([target, ...distractorPool.slice(0, 2)]);
       currentTargetWord = target.en;
-      currentSpeakText = target.example ? target.example.en : target.en;
+      currentSpeakText = target.example || target.en;
       optGrid.innerHTML = opts.map(o => makeCard(o.en, `../assets/vocab/${slug(o.en)}.png`)).join("");
     }
 
