@@ -122,6 +122,7 @@
       if (parsed && parsed.v) v = parsed.v;
     }
   } catch (e) {}
+  window.LUMIO_V = v;
   document.write('<script src="js/app.js?v=' + v + '"><' + '/script>');
 })();
 </script>
@@ -233,7 +234,9 @@ function toggleText() {
 }
 
 function loadPage(partId, pageNum) {
-  fetch(`story-content/${storyLevel}/part${partId}-page${pageNum}.html`)
+  // Cache-busted with the shared version so an already-open browser never
+  // keeps a stale (or half-deployed) page after a push.
+  fetch(`story-content/${storyLevel}/part${partId}-page${pageNum}.html?v=${window.LUMIO_V || ""}`)
     .then(r => r.text())
     .then(html => {
       document.getElementById("stageContent").innerHTML = html;
