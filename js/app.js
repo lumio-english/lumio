@@ -189,7 +189,13 @@ const Lumio = (() => {
   // Not every word has a real recording yet — only what's been generated so
   // far for the lessons that exist. slugify() must exactly match the naming
   // used when the files were generated (see _docs/generate-audio.py).
-  const slugify = (text) => String(text).toLowerCase().trim().replace(/'/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  // NOTE: apostrophes are NOT stripped here (unlike the image slug used by
+  // the games and homework.html). The audio generators turn every non-
+  // alphanumeric run into "-", so "Don't be angry." is don-t-be-angry.mp3.
+  // A previous "cleanup" stripped the apostrophe first, which made every
+  // don't / let's / can't / o'clock recording 404 and silently fall back to
+  // the browser voice -- the "Treehouse Build / Lumi's Pocket" audio bug.
+  const slugify = (text) => String(text).toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
   // Pages that live in a subfolder (e.g. games/lumis-pocket.html) need
   // "../assets/..." not "assets/...". Rather than hardcode that per-page,
   // work it out from app.js's own <script> tag, which every page already

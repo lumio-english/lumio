@@ -8,7 +8,7 @@ re-run any time -- only generates what's missing.
 import json, os, re, glob, subprocess, sys
 
 PROJECT_ROOT = "/home/claude/lumio"
-VOICE_MODEL = "/home/claude/lumio_voice/en_US-amy-medium.onnx"
+VOICE_MODEL = "/home/claude/lumio_voice/vits-piper-en_US-amy-medium/en_US-amy-medium.onnx"
 OUTPUT_DIR = os.path.join(PROJECT_ROOT, "assets", "audio")
 LENGTH_SCALE = "1.087"  # matches the original script's speed=0.92 (slightly slower, clearer for learners)
 
@@ -61,7 +61,7 @@ def main():
     tmp_wav = "/tmp/_gen_audio.wav"
     for i, (word, slug, out_path) in enumerate(batch, 1):
         result = subprocess.run(
-            ["python3", "-m", "piper", "-m", VOICE_MODEL, "-f", tmp_wav,
+            ["python3.12", "-m", "piper", "-m", VOICE_MODEL, "-f", tmp_wav,
              "--length-scale", LENGTH_SCALE],
             input=word, text=True, capture_output=True,
         )

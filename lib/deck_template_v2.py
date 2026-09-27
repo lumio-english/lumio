@@ -705,12 +705,7 @@ def slide_quick_check(target, distractors, idx, total_q, n, total, seed, tier="p
         positions = [(640, 300), (900, 300)]
         buttons = "".join(_prea_text_option(o, target, l, t) for o, (l, t) in zip(opts, positions))
         prompt = "Which one is it?"
-        listen_btn = f'''<button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(target["en"])}')"
-                style="position:absolute;left:90px;top:330px;width:160px;height:160px;border:none;cursor:pointer;background:linear-gradient(135deg,#0D9488,#0B7A6F);
-                       border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#fff">
-          <span style="font-size:2.2rem">&#128266;</span>
-          <span style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem">Tap to hear</span>
-        </button>'''
+        listen_btn = ""  # Arabic-only: no English audio hint (it gave the answer away); same translation check as L1/L2
     elif tier == "level1":
         positions = [(560, 290), (790, 290), (1020, 290)]
         buttons = ""
@@ -733,14 +728,9 @@ def slide_quick_check(target, distractors, idx, total_q, n, total, seed, tier="p
                       color:#43301F;cursor:pointer" data-quiz-option="{esc(o["en"])}">{esc(o["en"])}</button>'''
         prompt = "What is this?"
 
-    # The reference shows the Arabic word only now (previously paired
-    # with the word's own picture) -- with options in level1 also
-    # showing pictures, a picture-plus-Arabic prompt still let a student
-    # match by image alone without ever reading the Arabic. Pre-A keeps
-    # its existing audio-only prompt: that tier is pre-literacy by
-    # design (see docstring), and pre-readers can't get anything out of
-    # an Arabic-text-only prompt either -- this change doesn't apply
-    # there without changing that underlying design decision too.
+    # The reference shows the Arabic word only (no picture, no English
+    # audio) on every tier, so the check is by translation and can't be
+    # solved by matching an image or by hearing the English word first.
     img_block = (_prea_ar_card(target) + listen_btn) if tier == "preA" else f'''<div class="card" style="position:absolute;left:280px;top:170px;width:280px;height:280px;overflow:hidden;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
       <div dir="rtl" style="text-align:center;padding:8px 16px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2.4rem;color:#0D9488">{esc(target.get("ar",""))}</div>
     </div>'''
