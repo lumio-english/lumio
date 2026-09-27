@@ -704,7 +704,15 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
         import teen_scenes, os as _os
         _sc = teen_scenes.SCENES.get(level or "", {}).get(lesson_num)
         if _sc and _os.path.exists(f"assets/vocab-scenes/{level}/{lesson_num:02d}.jpg"):
-            plan.append(("scene", _sc))
+            plan.append(("scene", dict(_sc, img=f"assets/vocab-scenes/{level}/{lesson_num:02d}.jpg")))
+        # Scene-coverage campaign: up to two more scenes per lesson
+        # (lib/teen_scenes_extra.py -> NN-2.jpg, NN-3.jpg), each skipped
+        # until its image exists so the rollout can be partial.
+        import teen_scenes_extra
+        for _i, (_en, _bold, _ar, _stage) in enumerate(teen_scenes_extra.EXTRA.get(level or "", {}).get(lesson_num, []), start=2):
+            _img = f"assets/vocab-scenes/{level}/{lesson_num:02d}-{_i}.jpg"
+            if _os.path.exists(_img):
+                plan.append(("scene", {"en": _en, "bold": _bold, "ar": _ar, "img": _img}))
     except Exception as _e:
         print("scene skipped:", _e)
     if phrase_focus:
@@ -766,9 +774,7 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
         # their belt, so they actually have language to talk WITH, not
         # just a topic to stare at blankly.
         plan.append(("discussion", discussion))
-    _scene_sentence = None
-    for _k, _d in plan:
-        if _k == "scene": _scene_sentence = _d.get("en")
+    _scene_sentence = [_d.get("en") for _k, _d in plan if _k == "scene"] or None
     _all_crew = (crew_talk or []) + (crew_talk2 or [])
     _extra_blocks = None
     if phrase_focus:
@@ -806,7 +812,7 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
             verb_count = sum(1 for x in lesson["vocab"] if x.get("pos") == "verb")
             slides.append(slide_vocab(w, i, n, total, V, VOCAB_CHARS[i % len(VOCAB_CHARS)], verb_count))
         elif kind == "scene":
-            slides.append(v1.slide_vocab_scene(f"assets/vocab-scenes/{level}/{lesson_num:02d}.jpg", data["en"], data["bold"], n, total, data.get("ar")))
+            slides.append(v1.slide_vocab_scene(data.get("img") or f"assets/vocab-scenes/{level}/{lesson_num:02d}.jpg", data["en"], data["bold"], n, total, data.get("ar")))
         elif kind == "review_break":
             slides.append(slide_review_break(data, n, total, theme_key))
         elif kind == "grammar_rule":

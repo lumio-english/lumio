@@ -465,7 +465,7 @@ def today_i_learned_pages(lesson, grammar_topic=None, dialogue=None, crew_talk=N
     for blk in (extra_blocks or []):
         if blk.get("items"): blocks.append(blk)
     vocab_sentences = recap_pages.dedupe([w.get("example") for w in lesson["vocab"]]
-                                         + ([scene_sentence] if scene_sentence else [])
+                                         + ((list(scene_sentence) if isinstance(scene_sentence, (list, tuple)) else [scene_sentence]) if scene_sentence else [])
                                          + list(extra_sentences or []))
     seen = {t.lower() for t in vocab_sentences}
     blocks.append({"kind": "sentences", "label": "SENTENCE PATTERNS", "items": vocab_sentences,
