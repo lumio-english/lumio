@@ -30,7 +30,9 @@ Awaiting images (prompt docs were delivered; regenerate from these lists if lost
 2. Scene prompts with core characters for ALL scenes: Pre-A (49), L1 (57), L2 (56) — from each generator's SCENE_DATA.
 3. L2 review: NEW sixty, seventy, ninety, february, april, may, july, august, october, november, minute, quarter-past, quarter-to, noon, midnight; REPLACE (optional) thirty, forty, fifty, eighty, hundred, month, year, classroom, grow-up, chin, cheek, open-your-book, toothbrush, homework, delicious.
 4. L1 still pending: slide.png and swing.png (no character on them). Days-of-week images opaque with off-by-one calendar circle — kept as-is on Eslam's instruction.
-Open for Eslam: "Treehouse Build" audio bug not reproducible (need word/device/what happens); Pre-A Quick Check to Arabic-only?; redeploy Apps Script; further Teen liven-up?
+Open for Eslam: redeploy Apps Script; further Teen liven-up?
+DONE 27 Sep: audio bug root-caused (js/app.js slug stripped apostrophes -> 111 recordings 404'd) + 455 missing recordings generated (_docs/generate-audio-piper.py, Piper Amy); Pre-A Quick Check Arabic-only (no English audio hint); L4 manual PDF piggy->moneybox (pymupdf redact+insert, no HTML source exists for level manuals).
+Scene coverage L3-6: lib/teen_scenes_extra.py (2 extra scenes/lesson, NN-2.jpg/NN-3.jpg, auto-appear when image exists); prompts in _docs/teen-scene-coverage-prompts-L3-L6.md (gen_teen_scene_prompts.py). Awaiting 152 images.
 Done last: L2 review build (grammar L4/5/6/13/17/18/19 w/ Arabic + MCQs; numbers 20–100; all 12 months + month/year; time vocab 13 words + 10 MCQs; sight-words slide; blend mouth shapes). Teen: guide badge removed, game buttons moved, header/footer overlaps fixed, palette/scrim brightened, per-lesson accent through pills/cards/bubbles/hook. quick-check CTA -> lumio-pro-test.html. Group removed.
 
 ## 3b. NEW (23 Sep 2026, later): Story rebuild — one generated image per page
