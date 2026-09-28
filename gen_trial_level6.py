@@ -104,7 +104,7 @@ def slide_buzzer_challenge(prompt_word, n, total):
       </div>
       {card_open(280, "padding:18px;text-align:center;margin-bottom:16px")}
         <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#F8FAFC;margin:0 auto 8px">
-          <img src="assets/vocab/{slug(prompt_word["en"])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
+          <img src="assets/vocab/{slug(prompt_word.get("image") or prompt_word["en"])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
         </div>
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.3rem;color:{CARD_TEXT}">{esc(prompt_word["en"])}</div>
         <div style="font-family:'Tajawal',sans-serif;font-weight:700;font-size:.95rem;color:{TEAL_DEEP}">{esc(prompt_word["ar"])}</div>
@@ -120,7 +120,7 @@ def slide_team_relay(prompt_word, question_line, n, total):
       <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.25rem;color:{INK};margin-bottom:10px">{question_line}</div>
       {card_open(240, "padding:14px;margin-bottom:12px")}
         <div style="width:90px;height:90px;border-radius:10px;overflow:hidden;background:#F8FAFC;margin:0 auto 6px">
-          <img src="assets/vocab/{slug(prompt_word["en"])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
+          <img src="assets/vocab/{slug(prompt_word.get("image") or prompt_word["en"])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
         </div>
         <div style="font-family:'Tajawal',sans-serif;font-weight:700;font-size:.9rem;color:{TEAL_DEEP}">{esc(prompt_word["ar"])}</div>
       </div>
