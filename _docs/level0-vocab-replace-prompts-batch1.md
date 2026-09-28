@@ -72,4 +72,4 @@ Save into `assets/vocab/` with the exact file name shown.
 
 ---
 
-**Total:** 40 unique files. `CHAR:` items: 30. Object/scene items: 10.
+**Total:** 40 unique files. `CHAR:` items: 29. Object/scene items: 11.
