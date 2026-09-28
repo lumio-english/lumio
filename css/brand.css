@@ -1,0 +1,82 @@
+/* ============================================================
+   LUMIO ENGLISH — BRAND TOKENS (single source of truth)
+   Loaded FIRST on every page. Page-local palettes (student --sd-*,
+   teacher --td-*, portal --tp-*, placement --yellow/--blue, dashboard
+   --y/--b, css/style.css --orange/--sun/...) all alias these tokens,
+   so a colour change here reaches every touchpoint at once.
+
+   Palette is taken from the Lumi logo: sunny-yellow chick, orange
+   wordmark, deep-blue "English", on warm cream.
+   ============================================================ */
+:root{
+  /* Primary */
+  --lumio-orange:        #F97316;   /* wordmark orange — primary actions, highlights */
+  --lumio-orange-light:  #FB923C;
+  --lumio-orange-dark:   #C2530A;   /* hover / pressed / dark accents */
+  --lumio-orange-soft:   #FFF1E0;   /* tinted chips, hover rows */
+
+  /* Lumi yellow */
+  --lumio-sun:           #FFC93C;   /* chick yellow — stars, XP, celebration */
+  --lumio-sun-light:     #FFD666;
+  --lumio-sun-soft:      #FFF3D6;   /* warm cream tint for panels & notes */
+
+  /* Secondary accents */
+  --lumio-blue:          #1E4FA3;   /* "English" blue — links, info, teen accent */
+  --lumio-blue-soft:     #E8EFFB;
+  --lumio-teal:          #0D9488;   /* success-ish secondary, grammar, calm accents */
+  --lumio-teal-light:    #2DD4BF;
+  --lumio-teal-soft:     #E6FAF7;
+  --lumio-coral:         #F43F5E;   /* errors / wrong answers */
+  --lumio-coral-soft:    #FCEBEA;
+  --lumio-green:         #22C55E;   /* correct answers / success */
+  --lumio-green-soft:    #EAFBEF;
+  --lumio-amber:         #F59E0B;   /* warnings */
+
+  /* Ink */
+  --lumio-cocoa:         #43301F;   /* brand dark brown — headings, dark chrome */
+  --lumio-cocoa-deep:    #2B2118;   /* presentation chrome, result screens */
+  --lumio-ink:           #2A2118;   /* body text */
+  --lumio-ink-soft:      #6B5040;
+  --lumio-muted:         #8A7160;   /* secondary text */
+
+  /* Surfaces */
+  --lumio-paper:         #FFFBF5;   /* page background base */
+  --lumio-cream:         #FFF8EC;   /* softer panels */
+  --lumio-surface:       #FFFFFF;   /* cards */
+  --lumio-border:        #EAE3D8;
+  --lumio-border-soft:   #F1ECE2;
+  --lumio-line:          rgba(67,48,31,.08);
+
+  /* Standard page background: warm cream with a sunny glow top-right and a
+     faint teal glow left. Used by the landing page, student area, placement
+     test, login and portals so every screen opens on the same warmth. */
+  --lumio-page-bg:
+    radial-gradient(1100px 520px at 88% -12%, rgba(255,201,60,.20), transparent 60%),
+    radial-gradient(900px 520px at -10% 24%, rgba(13,148,136,.07), transparent 55%),
+    linear-gradient(180deg, #FFF8EC 0%, #FFFBF5 45%, #FFFBF5 100%);
+
+  /* Gradients */
+  --lumio-grad-brand:  linear-gradient(135deg, #FB923C 0%, #F97316 55%, #F59E0B 100%);
+  --lumio-grad-sun:    linear-gradient(135deg, #FFD666 0%, #FFC93C 100%);
+  --lumio-grad-dark:   linear-gradient(135deg, #43301F 0%, #2B2118 100%);
+
+  /* Shape & depth */
+  --lumio-r-lg: 28px; --lumio-r-md: 18px; --lumio-r-sm: 12px;
+  --lumio-sh-sm: 0 1px 2px rgba(67,48,31,.05), 0 4px 12px rgba(67,48,31,.06);
+  --lumio-sh-md: 0 2px 4px rgba(67,48,31,.05), 0 10px 30px rgba(67,48,31,.10);
+  --lumio-sh-lg: 0 4px 8px rgba(67,48,31,.06), 0 24px 60px rgba(249,115,22,.14);
+
+  /* Teen "night" theme (Levels 3-6 student/lesson pages): the same brand,
+     on deep cocoa instead of cream. */
+  --lumio-night:         #2B2118;
+  --lumio-night-deep:    #1C1610;
+  --lumio-night-card:    #3A2C1F;
+  --lumio-night-ink:     #FFF3D6;   /* light text on night */
+  --lumio-night-muted:   #C9B59B;
+  --lumio-night-grad:    linear-gradient(160deg, #3A2A1C 0%, #1C1610 100%);
+  --lumio-night-chrome:  rgba(28,22,16,.78);
+
+  /* Type */
+  --lumio-font-display: 'Baloo 2', 'Nunito', system-ui, sans-serif;
+  --lumio-font-body:    'Nunito', 'Segoe UI', system-ui, sans-serif;
+}

@@ -2,14 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/logo/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/logo/favicon-180.png">
 <title>Homework — Lumio English</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="icon" type="image/png" sizes="32x32" href="assets/logo/favicon-32.png">
+<link rel="stylesheet" href="css/brand.css">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --sun:#FFC93C; --orange:#FF8A3D; --orange-deep:#F9720C; --coral:#FF6B6B;
-    --teal:#2DD4BF; --teal-deep:#0D9488; --cream:#FFF8EC; --cocoa:#5C4433; --cocoa-soft:#8A7160;
+    --sun:var(--lumio-sun); --orange:var(--lumio-orange-light); --orange-deep:var(--lumio-orange); --coral:var(--lumio-coral);
+    --teal:var(--lumio-teal-light); --teal-deep:var(--lumio-teal); --cream:var(--lumio-cream); --cocoa:var(--lumio-cocoa); --cocoa-soft:var(--lumio-muted);
     --radius:22px;
   }
   * { box-sizing:border-box; }
@@ -25,11 +29,11 @@
      a gradient card with its own white text that works unchanged on
      both themes, so this override moved to .hw-top and .hw-step-label
      instead, which still sit directly on the page background. */
-  body.theme-teen { background: linear-gradient(160deg, #2B1B52 0%, #1C1038 100%); }
+  body.theme-teen { background: linear-gradient(160deg, #3A2A1C 0%, var(--lumio-night-deep) 100%); }
   body.theme-teen .hw-top { background:rgba(255,255,255,.06); backdrop-filter:blur(6px); border-bottom-color:rgba(255,255,255,.1); }
-  body.theme-teen .hw-top .brand { color:#EDE9FB; }
-  body.theme-teen .hw-top a { color:#EDE9FB; }
-  body.theme-teen .hw-step-label { color:#A79BD1; }
+  body.theme-teen .hw-top .brand { color:var(--lumio-night-ink); }
+  body.theme-teen .hw-top a { color:var(--lumio-night-ink); }
+  body.theme-teen .hw-step-label { color:var(--lumio-night-muted); }
   .hw-top {
     position:sticky; top:0; z-index:20; background:rgba(255,255,255,.75); backdrop-filter:blur(6px);
     border-bottom:3px solid rgba(255,255,255,.9); display:flex; align-items:center; gap:12px; padding:12px 22px;
@@ -147,14 +151,14 @@
   .hw-parent-box { background:var(--cream); border-radius:16px; padding:16px 18px; margin-top:6px; }
   .hw-parent-box b { color:var(--orange-deep) }
   .hw-preview-banner {
-    background:linear-gradient(135deg,#7C3AED,#6D28D9); color:#fff; text-align:center;
+    background:linear-gradient(135deg,var(--lumio-orange-dark),#6D28D9); color:#fff; text-align:center;
     font-weight:800; font-size:.85rem; padding:10px 16px;
   }
 </style>
 </head>
 <body>
 <div class="hw-top">
-  <img class="hw-logo" src="assets/logo/lumio-logo.png" alt="Lumio English logo" onerror="this.style.display='none'">
+  <img class="hw-logo" src="assets/logo/lumi-mark.png" alt="Lumio English logo" onerror="this.style.display='none'">
   <div class="brand">Lumio <span>English</span></div>
   <div class="hw-top-spacer"></div>
   <a href="student.html">✕ Exit</a>
@@ -624,7 +628,7 @@ function submitHomework() {
         <h2 style="justify-content:center">Preview complete</h2>
         <div class="stars">${"⭐".repeat(stars)}${"☆".repeat(3 - stars)}</div>
         <div class="hw-sub">Spelling: ${spellingCorrect}/${lesson.vocab.length} · Quiz: ${quizCorrect}/${qWordsCountSafe()}${skillLine} · Said out loud: ${said}/${lesson.vocab.length}${recorded ? ` · Recorded: ${recorded}` : ""}</div>
-        <div class="hw-sub" style="color:#7C3AED;font-weight:800;margin-top:10px">This was a preview only — nothing was saved to any student's record.</div>
+        <div class="hw-sub" style="color:var(--lumio-orange-dark);font-weight:800;margin-top:10px">This was a preview only — nothing was saved to any student's record.</div>
         <a class="hw-btn" style="display:inline-block;margin-top:16px;text-decoration:none" href="teacher.html">Back to teacher dashboard</a>
       </div>`;
     return;

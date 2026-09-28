@@ -48,7 +48,7 @@ def bg_clean(): return _themed_wall() + ('' if CURRENT_LESSON_BG else WINDOW)
 
 def header(pagetitle, n, total):
     return f'''<div class="header">
-      <div class="brand"><img src="assets/logo/lumio-logo.png"><div class="name">Lumio<small>ENGLISH</small></div></div>
+      <div class="brand"><img src="assets/logo/lumi-mark.png"><div class="name">Lumio<small>ENGLISH</small></div></div>
       <div class="pagetitle">{pagetitle}</div>
       <div class="counter">{n} / {total}</div>
     </div>'''
@@ -146,7 +146,7 @@ def slide_title(lesson, num_words):
       <div style="position:relative;display:flex;align-items:center;gap:18px;margin-bottom:10px">
         <div style="position:relative">
           <div style="position:absolute;inset:-10px;border-radius:50%;background:radial-gradient(circle,rgba(249,115,22,.35),transparent 70%)"></div>
-          <img src="assets/logo/lumio-logo.png" style="position:relative;width:104px;height:104px;border-radius:50%;box-shadow:0 12px 28px rgba(67,48,31,.28);border:6px solid #fff">
+          <img src="assets/logo/lumi-mark.png" style="position:relative;width:104px;height:104px;border-radius:50%;box-shadow:0 12px 28px rgba(67,48,31,.28);border:6px solid #fff">
         </div>
         <div style="text-align:left">
           <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:3rem;color:#43301F;line-height:1">Lumio</div>
@@ -1154,7 +1154,7 @@ def slide_describing_time(image_rel_path, n, total):
     <div style="position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:22px 40px 0">
       <div style="display:flex;align-items:center;gap:10px">
         <div style="width:30px;height:30px;border-radius:8px;background:#fff;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:3px">
-          <img src="assets/logo/lumio-logo.png" style="width:100%;height:100%;object-fit:contain"></div>
+          <img src="assets/logo/lumi-mark.png" style="width:100%;height:100%;object-fit:contain"></div>
         <div style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#fff;font-size:1rem">Lumio <span style="font-weight:600;font-size:.7rem;opacity:.85">ENGLISH</span></div>
       </div>
       <div style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#fff;font-size:.95rem;background:rgba(255,255,255,.2);

@@ -2,11 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Certificate — Lumio English</title>
+<link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/logo/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="assets/logo/favicon-16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/logo/favicon-180.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Certificate — Lumio English</title>
+<link rel="stylesheet" href="css/brand.css">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <style>
@@ -27,7 +29,7 @@
      light color and wash out against the white background, the same
      leak already found and fixed on student.html. .cert h1 already has
      its own explicit color (--orange) so it's unaffected either way. */
-  body.theme-teen .cert { color: #2B2640; }
+  body.theme-teen .cert { color: var(--lumio-ink); }
   /* css/style.css's own .theme-teen block sets a blanket
      body.theme-teen h1{color:var(--cocoa)} rule (specificity 0,1,2)
      which beats this page's own un-scoped .cert h1{color:var(--orange)}
@@ -38,7 +40,7 @@
      theme-scoped override with enough specificity to win it back. */
   body.theme-teen .cert h1 { color: var(--orange); }
   .cert-date { color: var(--cocoa-soft); }
-  body.theme-teen .cert-date { color: #6B5F8A; }
+  body.theme-teen .cert-date { color: var(--lumio-muted); }
 </style>
 </head>
 <body>

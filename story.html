@@ -2,9 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/logo/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/logo/favicon-180.png">
 <title>Lumi's Magic Map — Lumio English</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="icon" type="image/png" sizes="32x32" href="assets/logo/favicon-32.png">
+<link rel="stylesheet" href="css/brand.css">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@600;700;800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-font-smoothing:antialiased; }
@@ -72,9 +76,9 @@
      screen is a second, separate case -- built dynamically in JS with
      inline styles rather than these CSS classes, handled at its own
      call site instead of here. */
-  body.theme-teen #lockScreen { background: linear-gradient(160deg, #2B1B52 0%, #1C1038 100%); }
-  body.theme-teen #lockScreen h2 { color: #EDE9FB; }
-  body.theme-teen #lockScreen p { color: #C4B5FD; }
+  body.theme-teen #lockScreen { background: linear-gradient(160deg, #3A2A1C 0%, var(--lumio-night-deep) 100%); }
+  body.theme-teen #lockScreen h2 { color: var(--lumio-night-ink); }
+  body.theme-teen #lockScreen p { color: var(--lumio-night-muted); }
 </style>
 </head>
 <body>
@@ -254,9 +258,9 @@ function finishPart(part) {
     prog[storyLevel][part.id] = true;
     localStorage.setItem(key, JSON.stringify(prog));
   } catch (e) {}
-  const completeBg = storyIsTeen ? "linear-gradient(160deg,#2B1B52,#1C1038)" : "linear-gradient(160deg,#FFF3D6,#FDE8CC)";
-  const completeH2 = storyIsTeen ? "#EDE9FB" : "#43301F";
-  const completeP = storyIsTeen ? "#C4B5FD" : "#8A7160";
+  const completeBg = storyIsTeen ? "linear-gradient(160deg,#3A2A1C,var(--lumio-night-deep))" : "linear-gradient(160deg,#FFF3D6,#FDE8CC)";
+  const completeH2 = storyIsTeen ? "var(--lumio-night-ink)" : "#43301F";
+  const completeP = storyIsTeen ? "var(--lumio-night-muted)" : "#8A7160";
   document.getElementById("stageContent").innerHTML = `
     <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
                 background:${completeBg};text-align:center">

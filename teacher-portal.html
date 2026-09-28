@@ -2,26 +2,28 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Teacher Portal — Lumio English</title>
+<link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/logo/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="assets/logo/favicon-16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/logo/favicon-180.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher Portal — Lumio English</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="css/brand.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Baloo+2:wght@700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <style>
   :root{
-    --tp-bg:#FAF8F4; --tp-surface:#FFFFFF; --tp-border:#EAE3D8;
-    --tp-ink:#2A2118; --tp-ink-soft:#6B5D4E; --tp-muted:#948573;
-    --tp-indigo:#F97316; --tp-indigo-soft:#FFF1E0; --tp-indigo-dark:#C2530A;
-    --tp-coral:#E8635F;
+    --tp-bg:var(--lumio-paper); --tp-surface:var(--lumio-surface); --tp-border:var(--lumio-border);
+    --tp-ink:var(--lumio-ink); --tp-ink-soft:var(--lumio-ink-soft); --tp-muted:var(--lumio-muted);
+    --tp-indigo:var(--lumio-orange); --tp-indigo-soft:var(--lumio-orange-soft); --tp-indigo-dark:var(--lumio-orange-dark);
+    --tp-coral:var(--lumio-coral);
   }
   *{box-sizing:border-box}
   html,body{margin:0;height:100%}
   body{
-    font-family:'Inter',system-ui,sans-serif; background:var(--tp-bg); color:var(--tp-ink);
+    font-family:'Inter',system-ui,sans-serif; background:var(--lumio-page-bg); background-attachment:fixed; color:var(--tp-ink);
     min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
     opacity:0; animation:tpFadeIn .4s ease forwards;
   }
@@ -107,7 +109,7 @@
 
 <div class="tp-shell">
   <div class="tp-brand">
-    <img src="assets/logo/lumio-logo.png" alt="Lumio English logo" onerror="this.style.display='none'">
+    <img src="assets/logo/lumi-mark.png" alt="Lumio English logo" onerror="this.style.display='none'">
     <div>
       <b>Lumio <span>Teach</span></b>
       <small>Teacher Portal</small>

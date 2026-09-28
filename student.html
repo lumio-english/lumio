@@ -2,20 +2,22 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Map — Lumio English</title>
+<link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/logo/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="assets/logo/favicon-16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/logo/favicon-180.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Map — Lumio English</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="css/brand.css">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <style>
   :root{
-    --sd-sun:#FFC93C; --sd-orange:#FF8A3D; --sd-orange-deep:#F9720C;
-    --sd-coral:#FF6B6B; --sd-teal:#2DD4BF; --sd-teal-deep:#0D9488;
-    --sd-purple:#8B7CF6; --sd-sky:#38BDF8; --sd-pink:#F472B6;
-    --sd-cream:#FFF8EC; --sd-cocoa:#5C4433; --sd-cocoa-soft:#8A7160;
+    --sd-sun:var(--lumio-sun); --sd-orange:var(--lumio-orange-light); --sd-orange-deep:var(--lumio-orange);
+    --sd-coral:var(--lumio-coral); --sd-teal:var(--lumio-teal-light); --sd-teal-deep:var(--lumio-teal);
+    --sd-purple:var(--lumio-blue); --sd-sky:var(--lumio-blue); --sd-pink:var(--lumio-coral);
+    --sd-cream:var(--lumio-cream); --sd-cocoa:var(--lumio-cocoa); --sd-cocoa-soft:var(--lumio-muted);
     --sd-radius:24px;
   }
   *{box-sizing:border-box}
@@ -62,15 +64,15 @@
      white-on-color styling independent of the page theme, so none of
      them needed touching either. */
   body.theme-teen{
-    background: linear-gradient(160deg, #2B1B52 0%, #1C1038 100%);
+    background: linear-gradient(160deg, #3A2A1C 0%, var(--lumio-night-deep) 100%);
   }
   body.theme-teen .sd-topbar{
-    background: rgba(28,16,56,.75); backdrop-filter: blur(6px);
-    border-bottom: 3px solid rgba(139,92,246,.25);
+    background: rgba(28,22,16,.75); backdrop-filter: blur(6px);
+    border-bottom: 3px solid rgba(249,115,22,.25);
   }
-  body.theme-teen .sd-brand{ color: #EDE9FB; }
-  body.theme-teen .sd-section-title h3{ color: #EDE9FB; }
-  body.theme-teen .sd-logout{ background: rgba(237,233,251,.12); color: #EDE9FB; }
+  body.theme-teen .sd-brand{ color: var(--lumio-night-ink); }
+  body.theme-teen .sd-section-title h3{ color: var(--lumio-night-ink); }
+  body.theme-teen .sd-logout{ background: rgba(255,243,214,.12); color: var(--lumio-night-ink); }
   /* css/style.css's own .theme-teen block (built for lesson.html, where
      every h1/h2/h3 sits directly on the dark page background) sets a
      blanket "h1,h2,h3 -> light" rule. That rule leaks onto this page
@@ -102,39 +104,39 @@
   body.theme-teen .sd-level-card, body.theme-teen .sd-schedule-card,
   body.theme-teen .sd-hero-card{
     position: relative;
-    border: 1.5px solid rgba(139,92,246,.45) !important;
-    box-shadow: 0 0 0 1px rgba(34,211,238,.12), 0 8px 24px rgba(0,0,0,.35), inset 0 0 18px rgba(139,92,246,.06) !important;
+    border: 1.5px solid rgba(249,115,22,.45) !important;
+    box-shadow: 0 0 0 1px rgba(34,211,238,.12), 0 8px 24px rgba(0,0,0,.35), inset 0 0 18px rgba(249,115,22,.06) !important;
   }
   body.theme-teen .sd-hud-panel::before, body.theme-teen .sd-stat-card::before, body.theme-teen .sd-badge::before,
   body.theme-teen .sd-buddy-card::before, body.theme-teen .sd-hubb::after, body.theme-teen .sd-path-card::before,
   body.theme-teen .sd-level-card::before, body.theme-teen .sd-schedule-card::before,
   body.theme-teen .sd-hero-card::before{
     content:""; position:absolute; top:-1.5px; left:-1.5px; width:16px; height:16px; pointer-events:none; z-index:3;
-    border-top:2.5px solid #22D3EE; border-left:2.5px solid #22D3EE; border-radius: 6px 0 0 0;
+    border-top:2.5px solid var(--lumio-sun); border-left:2.5px solid var(--lumio-sun); border-radius: 6px 0 0 0;
   }
   body.theme-teen .sd-hero-card{
-    background: linear-gradient(150deg, #241650 0%, #150C30 100%) !important;
+    background: linear-gradient(150deg, var(--lumio-night-card) 0%, #1C1610 100%) !important;
   }
   body.theme-teen .sd-hero-card::after{ display:none; }
-  body.theme-teen .sd-hero-eyebrow{ color:#22D3EE; letter-spacing:1.5px; }
+  body.theme-teen .sd-hero-eyebrow{ color:var(--lumio-sun); letter-spacing:1.5px; }
   body.theme-teen .sd-hero-title, body.theme-teen .sd-hero-sub{ color:#fff; }
-  body.theme-teen .sd-stat-card{ background:#241650 !important; }
+  body.theme-teen .sd-stat-card{ background:var(--lumio-night-card) !important; }
   body.theme-teen .sd-stat-card b{ color:#fff; }
-  body.theme-teen .sd-stat-card span{ color:#B8AEDB; letter-spacing:.8px; }
-  body.theme-teen .sd-badge{ background:#241650 !important; }
-  body.theme-teen .sd-badge .t{ color:#EDE9FB !important; }
-  body.theme-teen .sd-badge .d{ color:#9385C4 !important; }
+  body.theme-teen .sd-stat-card span{ color:var(--lumio-night-muted); letter-spacing:.8px; }
+  body.theme-teen .sd-badge{ background:var(--lumio-night-card) !important; }
+  body.theme-teen .sd-badge .t{ color:var(--lumio-night-ink) !important; }
+  body.theme-teen .sd-badge .d{ color:var(--lumio-night-muted) !important; }
   body.theme-teen .sd-badge.earned{
     border-color:#F97316 !important;
     box-shadow: 0 0 16px rgba(249,115,22,.45), 0 8px 24px rgba(0,0,0,.35) !important;
   }
   body.theme-teen .sd-badge.earned::before{ border-color:#F97316; }
-  body.theme-teen .sd-buddy-card{ background:#241650 !important; }
-  body.theme-teen .sd-path-card{ background:#1C1038 !important; }
-  body.theme-teen .sd-level-card, body.theme-teen .sd-schedule-card{ background:#241650 !important; }
+  body.theme-teen .sd-buddy-card{ background:var(--lumio-night-card) !important; }
+  body.theme-teen .sd-path-card{ background:var(--lumio-night-deep) !important; }
+  body.theme-teen .sd-level-card, body.theme-teen .sd-schedule-card{ background:var(--lumio-night-card) !important; }
   body.theme-teen .sd-level-card h2, body.theme-teen .sd-level-card p,
-  body.theme-teen .sd-schedule-card, body.theme-teen .sd-schedule-card *{ color:#EDE9FB !important; }
-  body.theme-teen .sd-level-count{ color:#22D3EE !important; }
+  body.theme-teen .sd-schedule-card, body.theme-teen .sd-schedule-card *{ color:var(--lumio-night-ink) !important; }
+  body.theme-teen .sd-level-count{ color:var(--lumio-sun) !important; }
   /* The rule above paints EVERY descendant of .sd-schedule-card light --
      including the rewards card's two cream stat boxes, whose numbers and
      labels then vanished. Those boxes stay cream on purpose, so their
@@ -142,11 +144,11 @@
      beat the blanket rule. */
   body.theme-teen .sd-rw-stat b, body.theme-teen .sd-rw-stat{ color:#2A2118 !important; }
   body.theme-teen .sd-rw-stat span{ color:#6B5040 !important; }
-  body.theme-teen .sd-progressbar{ background:rgba(139,92,246,.18) !important; }
-  body.theme-teen .sd-progressbar > div{ background:linear-gradient(90deg,#8B5CF6,#22D3EE) !important; box-shadow:0 0 10px rgba(34,211,238,.5); }
+  body.theme-teen .sd-progressbar{ background:rgba(249,115,22,.18) !important; }
+  body.theme-teen .sd-progressbar > div{ background:linear-gradient(90deg,var(--lumio-orange),var(--lumio-sun)) !important; box-shadow:0 0 10px rgba(34,211,238,.5); }
 
   /* XP readout: reuses the same star-count element, relabeled + rescaled for teen levels only */
-  body.theme-teen .sd-xp-icon{ background:rgba(34,211,238,.15) !important; color:#22D3EE !important; }
+  body.theme-teen .sd-xp-icon{ background:rgba(34,211,238,.15) !important; color:var(--lumio-sun) !important; }
 
   @keyframes sdFadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
   @keyframes sdPop{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
@@ -840,9 +842,9 @@
   .sd-game-end{padding:10px 0}
   .sd-game-end .stars{font-size:2.2rem;color:var(--sd-amber,#E8A23D);margin:8px 0}
   .xp-result{margin:10px 0}
-  .xp-result-val{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.6rem;color:#22D3EE;margin-bottom:6px}
-  .xp-result-bar{width:180px;height:10px;border-radius:999px;background:rgba(139,92,246,.18);margin:0 auto;overflow:hidden}
-  .xp-result-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#8B5CF6,#22D3EE);box-shadow:0 0 10px rgba(34,211,238,.6)}
+  .xp-result-val{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.6rem;color:var(--lumio-sun);margin-bottom:6px}
+  .xp-result-bar{width:180px;height:10px;border-radius:999px;background:rgba(249,115,22,.18);margin:0 auto;overflow:hidden}
+  .xp-result-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--lumio-orange),var(--lumio-sun));box-shadow:0 0 10px rgba(34,211,238,.6)}
   .sd-game-again{background:var(--sd-orange);color:#fff;border:none;border-radius:999px;padding:10px 22px;font-weight:800;cursor:pointer;font-family:inherit;margin-top:10px}
 
   /* confetti */
@@ -853,7 +855,7 @@
 <body>
 
 <header class="sd-topbar">
-  <img class="sd-logo" src="assets/logo/lumio-logo.png" alt="Lumio English logo" onerror="this.style.display='none'">
+  <img class="sd-logo" src="assets/logo/lumi-mark.png" alt="Lumio English logo" onerror="this.style.display='none'">
   <div class="sd-brand">Lumio <span>English</span></div>
   <div class="sd-spacer"></div>
   <span id="helloChip" style="display:none"></span>
@@ -950,11 +952,11 @@
       <div class="sd-hero-eyebrow">Today's mission</div>
       <div class="sd-hero-title" id="missionTitle">Let's play!</div>
       <div class="sd-hero-sub" id="missionSub">Pick up right where you left off.</div>
-      <a class="sd-hero-btn" id="missionBtn" href="#"><img class="sd-hero-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Continue</a>
-      <a class="sd-hero-btn" id="homeworkBtn" href="#" style="margin-top:10px"><img class="sd-hero-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Interactive Homework</a>
-      <a class="sd-hero-btn" id="worksheetBtn" href="#" download style="margin-top:10px"><img class="sd-hero-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Homework Sheet</a>
-      <a class="sd-hero-btn" id="writingBtn" href="#" download style="margin-top:10px"><img class="sd-hero-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Writing Practice</a>
-      <a class="sd-hero-btn" id="flashcardsBtn" href="#" download style="margin-top:10px"><img class="sd-hero-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Flashcards</a>
+      <a class="sd-hero-btn" id="missionBtn" href="#"><img class="sd-hero-btn-logo" src="assets/logo/lumi-mark.png" alt="" onerror="this.style.display='none'"> Continue</a>
+      <a class="sd-hero-btn" id="homeworkBtn" href="#" style="margin-top:10px"><img class="sd-hero-btn-logo" src="assets/logo/lumi-mark.png" alt="" onerror="this.style.display='none'"> Interactive Homework</a>
+      <a class="sd-hero-btn" id="worksheetBtn" href="#" download style="margin-top:10px"><img class="sd-hero-btn-logo" src="assets/logo/lumi-mark.png" alt="" onerror="this.style.display='none'"> Homework Sheet</a>
+      <a class="sd-hero-btn" id="writingBtn" href="#" download style="margin-top:10px"><img class="sd-hero-btn-logo" src="assets/logo/lumi-mark.png" alt="" onerror="this.style.display='none'"> Writing Practice</a>
+      <a class="sd-hero-btn" id="flashcardsBtn" href="#" download style="margin-top:10px"><img class="sd-hero-btn-logo" src="assets/logo/lumi-mark.png" alt="" onerror="this.style.display='none'"> Flashcards</a>
     </div>
     <div class="sd-side-stats">
       <div class="sd-stat-card sd-fade-up sd-anim-d1">
@@ -993,7 +995,7 @@
       </div>
     </div>
     <div class="sd-progressbar"><div id="levelBar" style="width:0%"></div></div>
-    <a class="sd-cert-link" href="certificates.html"><img class="sd-cert-link-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> My certificate</a>
+    <a class="sd-cert-link" href="certificates.html"><img class="sd-cert-link-logo" src="assets/logo/lumi-mark.png" alt="" onerror="this.style.display='none'"> My certificate</a>
   </div>
 
   <!-- My Schedule -->
@@ -1076,7 +1078,7 @@
         </div>
       </div>
       <div class="sd-hubb-trail" id="hubVocabTrail"></div>
-      <span class="sd-hubb-btn"><img class="sd-hubb-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Open</span>
+      <span class="sd-hubb-btn"><img class="sd-hubb-btn-logo" src="assets/logo/lumi-mark.png" alt="" onerror="this.style.display='none'"> Open</span>
     </button>
     <button class="sd-hubb" id="hubGrammar">
       <div class="sd-hubb-left">
@@ -1087,7 +1089,7 @@
         </div>
       </div>
       <div class="sd-hubb-trail" id="hubGrammarTrail"></div>
-      <span class="sd-hubb-btn" id="hubGrammarBtn"><img class="sd-hubb-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Open</span>
+      <span class="sd-hubb-btn" id="hubGrammarBtn"><img class="sd-hubb-btn-logo" src="assets/logo/lumi-mark.png" alt="" onerror="this.style.display='none'"> Open</span>
     </button>
     <button class="sd-hubb" id="hubIdioms">
       <div class="sd-hubb-left">
@@ -1098,7 +1100,7 @@
         </div>
       </div>
       <div class="sd-hubb-trail" id="hubIdiomsTrail"></div>
-      <span class="sd-hubb-btn" id="hubIdiomsBtn"><img class="sd-hubb-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Open</span>
+      <span class="sd-hubb-btn" id="hubIdiomsBtn"><img class="sd-hubb-btn-logo" src="assets/logo/lumi-mark.png" alt="" onerror="this.style.display='none'"> Open</span>
     </button>
     <button class="sd-hubb" id="hubPhonics">
       <div class="sd-hubb-left">
@@ -1109,7 +1111,7 @@
         </div>
       </div>
       <div class="sd-hubb-trail" id="hubPhonicsTrail"></div>
-      <span class="sd-hubb-btn" id="hubPhonicsBtn"><img class="sd-hubb-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Open</span>
+      <span class="sd-hubb-btn" id="hubPhonicsBtn"><img class="sd-hubb-btn-logo" src="assets/logo/lumi-mark.png" alt="" onerror="this.style.display='none'"> Open</span>
     </button>
     <button class="sd-hubb" id="hubSpelling">
       <div class="sd-hubb-left">
@@ -1120,7 +1122,7 @@
         </div>
       </div>
       <div class="sd-hubb-trail" id="hubSpellingTrail"></div>
-      <span class="sd-hubb-btn" id="hubSpellingBtn"><img class="sd-hubb-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Open</span>
+      <span class="sd-hubb-btn" id="hubSpellingBtn"><img class="sd-hubb-btn-logo" src="assets/logo/lumi-mark.png" alt="" onerror="this.style.display='none'"> Open</span>
     </button>
     <button class="sd-hubb" id="hubWriting">
       <div class="sd-hubb-left">
@@ -1131,7 +1133,7 @@
         </div>
       </div>
       <div class="sd-hubb-trail" id="hubWritingTrail"></div>
-      <span class="sd-hubb-btn"><img class="sd-hubb-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Open</span>
+      <span class="sd-hubb-btn"><img class="sd-hubb-btn-logo" src="assets/logo/lumi-mark.png" alt="" onerror="this.style.display='none'"> Open</span>
     </button>
   </div>
 
@@ -1147,7 +1149,7 @@
           <div class="sd-hubb-sub" id="manualSub">Every lesson in your level, explained for your family</div>
         </div>
       </div>
-      <span class="sd-hubb-btn"><img class="sd-hubb-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Download</span>
+      <span class="sd-hubb-btn"><img class="sd-hubb-btn-logo" src="assets/logo/lumi-mark.png" alt="" onerror="this.style.display='none'"> Download</span>
     </a>
   </div>
   </div>
@@ -2281,7 +2283,7 @@
       return `
         <div class="pr-page">
           <div class="pr-head">
-            <img src="assets/logo/lumio-logo.png" alt="Lumio English logo" onerror="this.style.display='none'">
+            <img src="assets/logo/lumi-mark.png" alt="Lumio English logo" onerror="this.style.display='none'">
             <div>
               <div class="brand">Lumio <span>English</span></div>
               <div class="sub">Performance Report · generated ${today}</div>
@@ -3346,7 +3348,7 @@
       bg: "linear-gradient(160deg,#C9A876,#43301F)", poster: "assets/games/poster-level5.png" },
     "level6": { file: "crystal-ball.html", title: "Crystal Ball", icon: "🔮",
       sub: "Read the crystal ball and judge each prediction!",
-      bg: "radial-gradient(circle at 30% 20%,#7C3AED,#1B0F3D)", poster: "assets/games/poster-level6.png" },
+      bg: "radial-gradient(circle at 30% 20%,var(--lumio-orange-dark),#1B0F3D)", poster: "assets/games/poster-level6.png" },
   };
   const gameInfo = GAME_INFO[level] || GAME_INFO["pre-a"];
   const gameWideCard = document.getElementById("gameWideCard");
