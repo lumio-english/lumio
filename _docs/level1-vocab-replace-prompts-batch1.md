@@ -8,6 +8,8 @@ Standard production format. Every word below already has an image in `assets/voc
 
 Save into `assets/vocab/` with the exact file name shown.
 
+**Status (28 Sep):** all 12 received and live.
+
 ---
 
 **Lesson 9 — My House**
