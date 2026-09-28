@@ -8,7 +8,7 @@ Standard production format. Every word below already has an image in `assets/voc
 
 Save into `assets/vocab/` with the exact file name shown.
 
-**Status (28 Sep):** 34 of 40 received and live. Still pending: `mom.png`, `dad.png`, `brother.png`, `sister.png`, `grandma.png`, `grandpa.png` (Lesson 10).
+**Status (28 Sep):** all 40 received and live.
 
 ---
 
