@@ -1,4 +1,4 @@
-# 🌟 Lumio English — Learn · Speak · Grow
+# 🌟 Lumio English — Small Steps · Big Futures
 
 A kid-friendly English learning platform with games, audio, stars, a level map and printable certificates. Built for Arabic-speaking young learners (every word has an Arabic translation).
 

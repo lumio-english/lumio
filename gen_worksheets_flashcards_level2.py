@@ -139,7 +139,7 @@ def draw_worksheet(c, lesson, num):
 
     c.setFillColorRGB(*MUTED)
     c.setFont("Helvetica-Oblique", 9)
-    c.drawCentredString(PAGE_W / 2, 34, "Lumio English \u2014 Learn, Speak, Grow")
+    c.drawCentredString(PAGE_W / 2, 34, "Lumio English \u2014 Small Steps, Big Futures")
 
 def make_worksheet(lesson, num):
     nn = f"{num:02d}"

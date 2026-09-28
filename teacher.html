@@ -91,7 +91,7 @@
     display:flex; flex-direction:column; padding:22px 16px; position:sticky; top:0; height:100vh;
   }
   .td-brand{display:flex;align-items:center;gap:10px;padding:0 8px 14px;border-bottom:1px solid var(--td-border-soft);margin-bottom:8px}
-  .td-brand img{width:32px;height:32px;border-radius:9px}
+  .td-brand img{height:40px;width:auto;border-radius:0}
   .td-brand b{font-family:'Baloo 2',sans-serif;font-size:1.05rem;letter-spacing:.2px}
   .td-brand span{color:var(--td-indigo)}
   .td-teacher-tag{font-size:.74rem;font-weight:700;color:var(--td-muted);padding:0 8px 16px}
@@ -864,7 +864,7 @@
 
   .pr-page{padding:28px;font-family:'Inter',system-ui,sans-serif;color:#1B2233;max-width:760px;margin:0 auto}
   .pr-head{display:flex;align-items:center;gap:14px;border-bottom:3px solid #F97316;padding-bottom:16px;margin-bottom:20px}
-  .pr-head img{width:42px;height:42px;border-radius:10px}
+  .pr-head img{height:48px;width:auto;border-radius:0}
   .pr-head .brand{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.2rem}
   .pr-head .brand span{color:#F97316}
   .pr-head .sub{color:#8891A3;font-size:.8rem;font-weight:600}
@@ -908,7 +908,7 @@
 
 <aside class="td-sidebar" id="sidebar">
   <div class="td-brand">
-    <img src="assets/logo/lumi-mark.png" alt="Lumio English logo" onerror="this.style.display='none'">
+    <img src="assets/logo/lumio-logo.png" alt="Lumio English logo" onerror="this.style.display='none'">
     <b>Lumio <span>Teach</span></b>
   </div>
   <div class="td-teacher-tag" id="teacherTag" style="display:flex;align-items:center;gap:8px">
@@ -2884,7 +2884,7 @@
     return `
       <div class="pr-page">
         <div class="pr-head">
-          <img src="assets/logo/lumi-mark.png" alt="Lumio English logo" onerror="this.style.display='none'">
+          <img src="assets/logo/lumio-logo.png" alt="Lumio English logo" onerror="this.style.display='none'">
           <div>
             <div class="brand">Lumio <span>English</span></div>
             <div class="sub">Performance Report · generated ${today} by ${teacherName}</div>
@@ -2914,7 +2914,7 @@
             ? `<table class="pr-table"><thead><tr><th>Lesson</th><th>Stars</th><th>Score</th><th>Date</th></tr></thead><tbody>${rowsHtml}</tbody></table>`
             : `<p style="color:#8891A3;font-size:.85rem">No lessons recorded yet.</p>`}
         </div>
-        <div class="pr-foot">Lumio English · Learn · Speak · Grow</div>
+        <div class="pr-foot">Lumio English · Small Steps · Big Futures</div>
       </div>`;
   }
   document.getElementById("drawerReportBtn").onclick = () => {

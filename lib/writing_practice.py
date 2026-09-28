@@ -184,4 +184,4 @@ def draw_writing_practice(c, level_label, lesson, num, INK, ORANGE, TEAL, MUTED,
 
     c.setFillColorRGB(*MUTED)
     c.setFont("Helvetica-Oblique", 9)
-    c.drawCentredString(PAGE_W / 2, 30, "Lumio English \u2014 Learn, Speak, Grow")
+    c.drawCentredString(PAGE_W / 2, 30, "Lumio English \u2014 Small Steps, Big Futures")

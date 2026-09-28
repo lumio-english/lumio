@@ -104,7 +104,7 @@ def header_themed(pagetitle, n, total, theme_key="default"):
     return f'''<div style="position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:22px 40px 0">
       <div style="display:flex;align-items:center;gap:10px">
         <div style="width:30px;height:30px;border-radius:8px;background:#fff;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:3px">
-          <img src="assets/logo/lumi-mark.png" style="width:100%;height:100%;object-fit:contain"></div>
+          <img src="assets/logo/lumio-logo.png" style="width:100%;height:100%;object-fit:contain"></div>
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:{INK};font-size:.85rem;letter-spacing:.5px">LUMIO ENGLISH</div>
       </div>
       <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#fff;font-size:.95rem;background:{t['accent']}3A;
@@ -580,7 +580,7 @@ def slide_describing_time(image_rel_path, n, total, theme_key="default"):
     <div style="position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:22px 40px 0">
       <div style="display:flex;align-items:center;gap:10px">
         <div style="width:30px;height:30px;border-radius:8px;background:#fff;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:3px">
-          <img src="assets/logo/lumi-mark.png" style="width:100%;height:100%;object-fit:contain"></div>
+          <img src="assets/logo/lumio-logo.png" style="width:100%;height:100%;object-fit:contain"></div>
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#fff;font-size:.85rem;letter-spacing:.5px">LUMIO ENGLISH</div>
       </div>
       <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#fff;font-size:.95rem;background:rgba(255,255,255,.16);

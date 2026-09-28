@@ -9,7 +9,7 @@
 //
 // Run from the REPO ROOT (the lumio/ folder), not from this
 // directory -- every asset path below is relative to repo root, e.g.
-// "assets/logo/lumi-mark.png", "assets/vocab/hobby.png". The two
+// "assets/logo/lumio-logo.png", "assets/vocab/hobby.png". The two
 // background PNGs this file references (bg_dark_gradient.png,
 // bg_dark_content.png) live alongside this file in
 // _docs/pptx-conversion/ -- regenerate them with gen_backgrounds.py
@@ -81,7 +81,7 @@ pres.layout = "LAYOUT_WIDE"; // 13.333in x 7.5in, matches the 1600x900 canvas's 
 // ===== Shared header/background helpers =====
 
 function contentHeader(slide, chip, chipColor, n, total) {
-  slide.addImage({ path: "assets/logo/lumi-mark.png", x: px(40), y: px(22), w: px(30), h: px(30) });
+  slide.addImage({ path: "assets/logo/lumio-logo.png", x: px(40), y: px(22), w: px(30), h: px(30) });
   slide.addText("LUMIO ENGLISH", {
     x: px(80), y: px(22), w: px(220), h: px(30),
     fontFace: FONT_HEAD, fontSize: 0.85 * REM, color: INK, valign: "middle", charSpacing: 0.5,
@@ -132,7 +132,7 @@ function slideCover(lesson, lessonBgPath) {
   // equivalent, so the block's total height and start-y are computed
   // by hand here rather than guessed. cy is the running y cursor.
   let cy = 332;
-  s.addImage({ path: "assets/logo/lumi-mark.png", x: px(800 - 22 - 90), y: px(cy), w: px(44), h: px(44) });
+  s.addImage({ path: "assets/logo/lumio-logo.png", x: px(800 - 22 - 90), y: px(cy), w: px(44), h: px(44) });
   s.addText("LUMIO ENGLISH", {
     x: px(800 - 22 - 90 + 54), y: px(cy + 7), w: px(300), h: px(30),
     fontFace: FONT_HEAD, fontSize: 1.1 * REM, color: "FFFFFF", charSpacing: 1, valign: "middle",

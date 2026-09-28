@@ -75,7 +75,7 @@ def header(pagetitle, n, total):
     return f'''<div style="position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:22px 40px 0">
       <div style="display:flex;align-items:center;gap:10px">
         <div style="width:30px;height:30px;border-radius:8px;background:#fff;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:3px">
-          <img src="assets/logo/lumi-mark.png" style="width:100%;height:100%;object-fit:contain"></div>
+          <img src="assets/logo/lumio-logo.png" style="width:100%;height:100%;object-fit:contain"></div>
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:{INK};font-size:.85rem;letter-spacing:.5px">LUMIO ENGLISH</div>
       </div>
       <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:{CARD_TEXT if False else INK};font-size:.95rem;background:rgba(139,92,246,.14);
@@ -135,7 +135,7 @@ def slide_meet_the_squad(n, total, theme_key="default"):
     <div style="position:relative;z-index:5;padding:22px 40px 0">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
         <div style="width:30px;height:30px;border-radius:8px;background:#fff;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:3px">
-          <img src="assets/logo/lumi-mark.png" style="width:100%;height:100%;object-fit:contain"></div>
+          <img src="assets/logo/lumio-logo.png" style="width:100%;height:100%;object-fit:contain"></div>
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:{INK};font-size:.85rem;letter-spacing:.5px">LUMIO ENGLISH</div>
       </div>
     </div>
@@ -157,7 +157,7 @@ def slide_title(lesson, num_words, lesson_type="VOCABULARY & GRAMMAR", bg_image=
     <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;z-index:5">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
         <div style="width:44px;height:44px;border-radius:10px;background:#fff;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:4px">
-          <img src="assets/logo/lumi-mark.png" style="width:100%;height:100%;object-fit:contain"></div>
+          <img src="assets/logo/lumio-logo.png" style="width:100%;height:100%;object-fit:contain"></div>
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:{INK};font-size:1.1rem;letter-spacing:1px">LUMIO ENGLISH</div>
       </div>
       <div style="background:rgba(139,92,246,.18);border:1px solid rgba(139,92,246,.4);color:{INK};font-family:'Fredoka',sans-serif;
