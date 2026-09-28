@@ -3,22 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap');
+@font-face{font-family:'Baloo 2';font-weight:700;src:url(assets/fonts/baloo-2-latin-700-normal.woff2) format('woff2')}
+@font-face{font-family:'Baloo 2';font-weight:800;src:url(assets/fonts/baloo-2-latin-800-normal.woff2) format('woff2')}
+@font-face{font-family:'Nunito';font-weight:400;src:url(assets/fonts/nunito-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'Nunito';font-weight:600;src:url(assets/fonts/nunito-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:'Nunito';font-weight:700;src:url(assets/fonts/nunito-latin-700-normal.woff2) format('woff2')}
+@font-face{font-family:'Nunito';font-weight:800;src:url(assets/fonts/nunito-latin-800-normal.woff2) format('woff2')}
+@font-face{font-family:'Cairo';font-weight:600;src:url(assets/fonts/cairo-arabic-600-normal.woff2) format('woff2')}
+@font-face{font-family:'Cairo';font-weight:700;src:url(assets/fonts/cairo-arabic-700-normal.woff2) format('woff2')}
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Nunito', sans-serif; color: #43301F; background: #FFFBF5; }
+body { font-family: 'Nunito', 'Cairo', sans-serif; color: #43301F; background: #FFFBF5; }
 .page { width: 662px; min-height: 941px; page-break-after: always; position: relative; background: #FFFBF5; overflow: hidden; }
 .page:last-child { page-break-after: avoid; }
 
-.headbar { background: linear-gradient(120deg, #9B5DE5, #7B3FE4); color: #fff; padding: 26px 40px; display: flex; align-items: center; justify-content: space-between; }
+.headbar { background: linear-gradient(135deg, #FB923C 0%, #F97316 55%, #F59E0B 100%); color: #fff; padding: 26px 40px; display: flex; align-items: center; justify-content: space-between; }
 .headbar h1 { font-family: 'Baloo 2'; font-size: 20px; font-weight: 800; }
 .headbar .sub-ar { font-size: 12px; opacity: .85; margin-top: 2px; }
 .headbar .brand { display: flex; align-items: center; gap: 10px; font-family: 'Baloo 2'; font-weight: 800; font-size: 14px; }
-.headbar .brand img { width: 34px; height: 34px; border-radius: 50%; background: #fff; }
+.headbar .brand img { height: 34px; border-radius: 10px; background: #fff; padding: 3px 6px; }
 
 .cover { background: linear-gradient(160deg, #F97316, #EA580C); height: 941px; color: #fff; position: relative; text-align: center; }
 .cover .toprow { display: flex; align-items: center; justify-content: space-between; padding: 30px 40px; }
 .cover .brand { display: flex; align-items: center; gap: 10px; font-family: 'Baloo 2'; font-weight: 800; font-size: 15px; }
-.cover .brand img { width: 36px; height: 36px; border-radius: 50%; background: #fff; }
+.cover .brand img { height: 40px; border-radius: 10px; background: #fff; padding: 3px 7px; }
 .cover .badge { display: inline-block; background: rgba(255,255,255,.22); padding: 8px 22px; border-radius: 999px; font-weight: 800; font-size: 15px; margin-top: 50px; }
 .cover h1 { font-family: 'Baloo 2'; font-size: 36px; font-weight: 800; margin: 20px auto 10px; max-width: 480px; }
 .cover .sub { font-weight: 700; font-size: 15px; opacity: .95; }
@@ -28,7 +35,7 @@ body { font-family: 'Nunito', sans-serif; color: #43301F; background: #FFFBF5; }
 
 .content { padding: 26px 40px 20px; }
 .card { background: #fff; border-radius: 18px; padding: 20px 24px; margin-bottom: 14px; box-shadow: 0 6px 18px rgba(67,48,31,.06); border: 1px solid rgba(67,48,31,.06); }
-.card h2 { font-family: 'Baloo 2'; font-size: 17px; color: #7B3FE4; margin-bottom: 8px; }
+.card h2 { font-family: 'Baloo 2'; font-size: 17px; color: #C2530A; margin-bottom: 8px; }
 .card p, .card li { font-size: 13px; line-height: 1.7; color: #5B4636; }
 .pill-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
 .pill { display: inline-block; padding: 4px 11px; border-radius: 999px; font-size: 11.5px; font-weight: 800; }
@@ -39,10 +46,10 @@ body { font-family: 'Nunito', sans-serif; color: #43301F; background: #FFFBF5; }
 .step-num { flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-family: 'Baloo 2'; font-weight: 800; }
 .step-card h3 { font-family: 'Baloo 2'; font-size: 14.5px; margin-bottom: 3px; }
 .step-card p { font-size: 12.5px; color: #5B4636; line-height: 1.6; }
-.tag { background: #F1EBFC; color: #7B3FE4; padding: 2px 10px; border-radius: 999px; font-size: 10.5px; font-weight: 800; margin-left: 8px; }
+.tag { background: #FFF1E0; color: #C2530A; padding: 2px 10px; border-radius: 999px; font-size: 10.5px; font-weight: 800; margin-left: 8px; }
 .game-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 .game-box { background: #fff; border-radius: 14px; padding: 12px; text-align: center; box-shadow: 0 4px 10px rgba(67,48,31,.06); }
-.game-box .lvl { font-size: 9px; font-weight: 800; color: #7B3FE4; }
+.game-box .lvl { font-size: 9px; font-weight: 800; color: #C2530A; }
 .game-box .name { font-family: 'Baloo 2'; font-weight: 800; font-size: 12px; margin: 4px 0; }
 .game-box .desc { font-size: 9.5px; color: #8A7160; line-height: 1.4; }
 .game-box.soon { opacity: .55; }
@@ -56,7 +63,7 @@ body { font-family: 'Nunito', sans-serif; color: #43301F; background: #FFFBF5; }
 .vocab-pill { background: #FFF3D6; color: #7B3F1B; padding: 5px 11px; border-radius: 999px; font-size: 11px; font-weight: 700; display: inline-block; margin: 3px; }
 .lesson-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 20px; }
 .lesson-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(67,48,31,.06); }
-.lesson-item .num { width: 24px; height: 24px; border-radius: 50%; background: #F1EBFC; color: #7B3FE4; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; flex-shrink: 0; }
+.lesson-item .num { width: 24px; height: 24px; border-radius: 50%; background: #FFF1E0; color: #C2530A; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; flex-shrink: 0; }
 .lesson-item.checkpoint .num { background: #FFC53D; color: #43301F; }
 .lesson-item span.t { font-size: 12px; font-weight: 700; color: #5B4636; }
 table.hub-table { width: 100%; border-collapse: collapse; font-size: 12px; }
@@ -90,9 +97,9 @@ table.hub-table tr:nth-child(even) { background: #FFFBF5; }
       <h2>Built on the CEFR framework</h2>
       <p>Lumio English follows the CEFR (Common European Framework of Reference for Languages) -- the same internationally recognized standard used by real schools and language certifications worldwide. Every level maps to a real, well-defined proficiency stage, so progress here means something outside of Lumio too.</p>
     </div>
-    <div style="text-align:center;margin-top:24px">
-      <img src="assets/lumi-welcome-hero.png" style="width:220px">
-      <div style="font-family:'Baloo 2';font-weight:800;color:#7B3FE4;font-size:14px;margin-top:6px">Lumi will be right there with your child, every step of the way</div>
+    <div style="text-align:center;margin-top:14px">
+      <img src="assets/lumi-welcome-hero.png" style="width:190px">
+      <div style="font-family:'Baloo 2';font-weight:800;color:#C2530A;font-size:14px;margin-top:6px">Lumi will be right there with your child, every step of the way</div>
     </div>
   </div>
   <div class="footer"><span>Lumio English &middot; Curriculum Guide</span><span>2</span></div>
@@ -113,7 +120,7 @@ table.hub-table tr:nth-child(even) { background: #FFFBF5; }
     </div>
     <div style="text-align:center;margin-top:24px">
       <img src="assets/lumi-megaphone.png" style="width:200px">
-      <div style="font-family:'Baloo 2';font-weight:800;color:#7B3FE4;font-size:14px;margin-top:6px">Confidence to actually speak up -- that's the whole point</div>
+      <div style="font-family:'Baloo 2';font-weight:800;color:#C2530A;font-size:14px;margin-top:6px">Confidence to actually speak up -- that's the whole point</div>
     </div>
   </div>
   <div class="footer"><span>Lumio English &middot; Curriculum Guide</span><span>3</span></div>
@@ -130,7 +137,7 @@ table.hub-table tr:nth-child(even) { background: #FFFBF5; }
     </div>
     <div style="text-align:center;margin-top:24px">
       <img src="assets/lumi-books.png" style="width:200px">
-      <div style="font-family:'Baloo 2';font-weight:800;color:#7B3FE4;font-size:14px;margin-top:6px">Same big ideas, revisited with richer words each time</div>
+      <div style="font-family:'Baloo 2';font-weight:800;color:#C2530A;font-size:14px;margin-top:6px">Same big ideas, revisited with richer words each time</div>
     </div>
   </div>
   <div class="footer"><span>Lumio English &middot; Curriculum Guide</span><span>4</span></div>
@@ -146,7 +153,7 @@ table.hub-table tr:nth-child(even) { background: #FFFBF5; }
     </div>
     <div style="text-align:center;margin-top:24px">
       <img src="assets/lumi-teach-board.png" style="width:200px">
-      <div style="font-family:'Baloo 2';font-weight:800;color:#7B3FE4;font-size:14px;margin-top:6px">Same dependable rhythm, from the very first lesson to the last</div>
+      <div style="font-family:'Baloo 2';font-weight:800;color:#C2530A;font-size:14px;margin-top:6px">Same dependable rhythm, from the very first lesson to the last</div>
     </div>
   </div>
   <div class="footer"><span>Lumio English &middot; Curriculum Guide</span><span>5</span></div>
@@ -159,7 +166,7 @@ table.hub-table tr:nth-child(even) { background: #FFFBF5; }
     <p style="font-size:12.5px;color:#5B4636;margin-bottom:14px">Every one of the 140 lessons follows the same reliable structure, whether it's Pre-A or Level 6 -- only the content and complexity change. Here's exactly what your child does in a typical lesson:</p>
     <div class="step-card"><div class="step-num" style="background:#F97316">1</div><div><h3>New Words <span class="tag">4-10 per lesson</span></h3><p>Each new word or phrase is shown with a real illustration, its Arabic translation, and a spoken example sentence with audio.</p></div></div>
     <div class="step-card"><div class="step-num" style="background:#0D9488">2</div><div><h3>Listen & Practice</h3><p>Interactive listening, matching, and pronunciation activities that scale with the vocabulary -- every word gets real practice, not just a glance.</p></div></div>
-    <div class="step-card"><div class="step-num" style="background:#7B3FE4">3</div><div><h3>Grammar Focus <span class="tag">Level 3 and up</span></h3><p>From Level 3 onward, each lesson introduces one grammar structure with clear rules, examples, and guided practice sentences.</p></div></div>
+    <div class="step-card"><div class="step-num" style="background:#C2530A">3</div><div><h3>Grammar Focus <span class="tag">Level 3 and up</span></h3><p>From Level 3 onward, each lesson introduces one grammar structure with clear rules, examples, and guided practice sentences.</p></div></div>
     <div class="step-card"><div class="step-num" style="background:#EA580C">4</div><div><h3>Quiz & Spelling Check</h3><p>A short, gamified quiz confirms understanding before moving on -- instant feedback, no pressure, unlimited retries.</p></div></div>
     <div class="step-card"><div class="step-num" style="background:#5B67E0">5</div><div><h3>Homework & Practice Sheets</h3><p>Every lesson has a matching printable worksheet, flashcard set, and writing-practice sheet parents can use at home.</p></div></div>
     <div class="card" style="background:#FFF3D6;border-color:#FFE0B8;margin-top:10px">
@@ -186,7 +193,6 @@ table.hub-table tr:nth-child(even) { background: #FFFBF5; }
       <div class="game-box"><div class="lvl">LEVEL 4</div><div class="name">Squad Budget</div><div class="desc">Unlocks per-lesson, right after finishing that lesson's prep</div></div>
       <div class="game-box"><div class="lvl">LEVEL 5</div><div class="name">Story Detective</div><div class="desc">Unlocks per-lesson, right after finishing that lesson's prep</div></div>
       <div class="game-box"><div class="lvl">LEVEL 6</div><div class="name">Crystal Ball</div><div class="desc">Unlocks per-lesson, right after finishing that lesson's prep</div></div>
-      <div class="game-box soon"><div class="lvl">LEVELS 7-9</div><div class="name">Coming soon</div><div class="desc">A new game is planned for each future level</div></div>
     </div>
     <div style="margin-top:4px;max-width:170px;margin-left:auto;margin-right:auto">
       <div style="border-radius:14px;overflow:hidden;box-shadow:0 6px 14px rgba(67,48,31,.08)"><img src="assets/prea_lumipocket_shot.png" style="width:100%;display:block"></div>
@@ -397,7 +403,7 @@ table.hub-table tr:nth-child(even) { background: #FFFBF5; }
 
 <!-- LEVEL 3 SUMMARY -->
 <div class="page">
-  <div class="lvl-head" style="background:linear-gradient(120deg,#C4B5FD,#7B3FE4)"><h1>Level 3 &middot; Everyday Life</h1></div>
+  <div class="lvl-head" style="background:linear-gradient(120deg,#C4B5FD,#C2530A)"><h1>Level 3 &middot; Everyday Life</h1></div>
   <div class="content">
     <div style="margin-bottom:14px"><span class="pill" style="background:#EDE9FE;color:#6D28D9">L3</span></div>
     <div class="lvl-title" style="color:#43301F">Everyday Life</div>
@@ -701,8 +707,8 @@ table.hub-table tr:nth-child(even) { background: #FFFBF5; }
     <div class="card">
       <h2>Story titles by level</h2>
       <p><b>Pre-A -- "Lumi's Magic Map":</b> 1. The Mysterious Map &middot; 2. The Whispering Forest &middot; 3. The Family Picnic Village &middot; 4. The Treasure Celebration</p>
-      <p style="margin-top:8px"><b>Level 1 -- "The Treehouse Club":</b> 1. New Friends, New Family &middot; 2. School Days &middot; 3. A Year of Birthdays &middot; 4. The Backyard Party</p>
-      <p style="margin-top:8px"><b>Level 2 -- "The Twelve Months Club":</b> 1. The Big Idea &middot; 2. Building Day &middot; 3. Grand Opening Prep &middot; 4. The Big Poster Party</p>
+      <p style="margin-top:8px"><b>Level 1 -- "The Treehouse Club":</b> 1. The Big Idea &middot; 2. Building Day &middot; 3. Grand Opening Prep &middot; 4. The Backyard Party</p>
+      <p style="margin-top:8px"><b>Level 2 -- "The Twelve Months Club":</b> 1. New Friends, New Family &middot; 2. School Days &middot; 3. A Year of Birthdays &middot; 4. The Big Poster Party</p>
       <p style="margin-top:8px"><b>Level 3 -- "The Crew":</b> 1. Meet the Crew &middot; 2. Around School &middot; 3. Game Night &middot; 4. The Big Match</p>
     </div>
     <div class="card" style="background:#FFF3D6;border-color:#FFE0B8">
@@ -713,7 +719,7 @@ table.hub-table tr:nth-child(even) { background: #FFFBF5; }
 </div>
 
 <!-- CLOSING -->
-<div class="page" style="background:linear-gradient(160deg,#9B5DE5,#7B3FE4);color:#fff;text-align:center">
+<div class="page" style="background:linear-gradient(160deg,#F97316,#C2530A);color:#fff;text-align:center">
   <div style="padding:60px 40px">
     <div style="font-family:'Baloo 2';font-weight:800;font-size:14px;margin-bottom:60px">LUMIO ENGLISH</div>
     <div style="font-family:'Baloo 2';font-weight:800;font-size:26px;margin-bottom:14px">We're here with you every step</div>

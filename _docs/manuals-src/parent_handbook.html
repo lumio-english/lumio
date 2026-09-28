@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>Lumio English — دليل أولياء الأمور</title>
+<style>
+/* Source of manuals/Lumio_Parent_Handbook_AR.pdf — render with gen_parent_handbook.py.
+   Colours follow css/brand.css (orange wordmark, Lumi yellow, cocoa ink, warm cream). */
+@font-face{font-family:Cairo;font-weight:400;src:url(assets/fonts/cairo-arabic-400-normal.woff2) format("woff2")}
+@font-face{font-family:Cairo;font-weight:600;src:url(assets/fonts/cairo-arabic-600-normal.woff2) format("woff2")}
+@font-face{font-family:Cairo;font-weight:700;src:url(assets/fonts/cairo-arabic-700-normal.woff2) format("woff2")}
+@font-face{font-family:Cairo;font-weight:900;src:url(assets/fonts/cairo-arabic-900-normal.woff2) format("woff2")}
+@font-face{font-family:Baloo;font-weight:700;src:url(assets/fonts/baloo-2-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:Baloo;font-weight:800;src:url(assets/fonts/baloo-2-latin-800-normal.woff2) format("woff2")}
+:root{
+  --orange:#F97316; --orange-dark:#C2530A; --orange-soft:#FFF1E0;
+  --sun:#FFC93C; --sun-soft:#FFF3D6; --blue:#1E4FA3; --blue-soft:#E8EFFB;
+  --teal:#0D9488; --teal-soft:#E6FAF7; --green:#22C55E; --coral:#F43F5E;
+  --cocoa:#43301F; --ink:#2A2118; --ink-soft:#6B5040; --muted:#8A7160;
+  --paper:#FFFBF5; --cream:#FFF8EC; --border:#EAE3D8;
+  --grad:linear-gradient(135deg,#FB923C 0%,#F97316 55%,#F59E0B 100%);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#fff}
+body{font-family:Cairo,Baloo,sans-serif;color:var(--ink);font-size:13.5px;line-height:1.85}
+.page{width:794px;height:1123px;position:relative;overflow:hidden;page-break-after:always;
+  background:radial-gradient(900px 420px at 88% -10%,rgba(255,201,60,.18),transparent 60%),
+             radial-gradient(700px 420px at -10% 24%,rgba(13,148,136,.06),transparent 55%),
+             linear-gradient(180deg,#FFF8EC 0%,#FFFBF5 45%,#FFFBF5 100%)}
+.page:last-child{page-break-after:auto}
+.en{font-family:Baloo,sans-serif;direction:ltr;unicode-bidi:isolate}
+.num{font-family:Baloo,sans-serif;direction:ltr;unicode-bidi:isolate}
+
+/* header bar */
+.bar{background:var(--grad);color:#fff;padding:22px 44px;display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 8px 22px rgba(249,115,22,.22)}
+.bar h1{font-size:22px;font-weight:900;line-height:1.3}
+.bar h1 small{display:block;font-size:12px;font-weight:600;opacity:.9}
+.bar .brand{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.95);border-radius:999px;padding:6px 14px 6px 8px}
+.bar .brand img{height:38px;display:block}
+.bar .brand span{font-family:Baloo;font-weight:800;font-size:13px;color:var(--cocoa);letter-spacing:.3px}
+
+.content{padding:28px 44px 0}
+.card{background:#fff;border-radius:22px;padding:20px 26px;margin-bottom:16px;border:1px solid var(--border);
+  box-shadow:0 2px 4px rgba(67,48,31,.04),0 10px 26px rgba(67,48,31,.07)}
+.card h2{font-size:18px;font-weight:900;color:var(--orange-dark);margin-bottom:6px}
+.card p{color:var(--ink-soft)}
+.card p+p{margin-top:6px}
+.card ul{padding-right:22px;color:var(--ink-soft)}
+.card li{margin-bottom:4px}
+.card b{color:var(--cocoa);font-weight:700}
+
+.shot{border-radius:16px;overflow:hidden;border:1px solid var(--border);box-shadow:0 10px 28px rgba(67,48,31,.12);background:#fff;margin:14px 0 8px}
+.shot img{width:100%;display:block}
+.cap{font-size:11.5px;color:var(--muted);text-align:center;margin-top:8px;font-weight:600}
+.cap::before{content:"◆ ";color:var(--sun)}
+
+.step{display:flex;gap:16px;align-items:flex-start}
+.step .n{flex:0 0 40px;width:40px;height:40px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;
+  font-family:Baloo;font-weight:800;font-size:17px;box-shadow:0 6px 14px rgba(67,48,31,.14)}
+.n.o{background:var(--orange)} .n.t{background:var(--teal)} .n.s{background:var(--sun);color:var(--cocoa)} .n.b{background:var(--blue)}
+
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.pill{background:var(--orange-soft);color:var(--orange-dark);border-radius:999px;padding:5px 14px;font-weight:700;font-size:12px}
+.pill.t{background:var(--teal-soft);color:var(--teal)} .pill.b{background:var(--blue-soft);color:var(--blue)} .pill.s{background:var(--sun-soft);color:#7B4A0E}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.note{background:var(--sun-soft);border-radius:16px;padding:14px 18px;border-right:5px solid var(--sun);color:var(--ink-soft);font-weight:600}
+.tip{background:var(--teal-soft);border-radius:16px;padding:14px 18px;border-right:5px solid var(--teal);color:var(--ink-soft);font-weight:600}
+.mascot{position:absolute;bottom:64px;left:44px;width:170px}
+.mascot.r{left:auto;right:44px}
+
+.foot{position:absolute;bottom:0;left:0;right:0;padding:12px 44px;border-top:1px solid rgba(67,48,31,.08);display:flex;justify-content:space-between;
+  font-size:11px;color:var(--muted);font-weight:600;background:rgba(255,251,245,.9)}
+
+/* cover */
+.cover{background:var(--grad);color:#fff;text-align:center}
+.cover .top{display:flex;justify-content:flex-start;padding:34px 44px 0}
+.cover .lock{background:#fff;border-radius:22px;padding:14px 22px;display:inline-block;box-shadow:0 14px 34px rgba(67,48,31,.18)}
+.cover .lock img{height:96px;display:block}
+.cover .badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);padding:7px 24px;border-radius:999px;font-weight:800;font-size:15px;margin-top:64px}
+.cover h1{font-size:44px;font-weight:900;line-height:1.35;margin:18px auto 6px;max-width:620px;text-shadow:0 4px 14px rgba(67,48,31,.18)}
+.cover .sub{font-size:17px;font-weight:600;opacity:.95}
+.cover .stats{display:flex;gap:10px;justify-content:center;margin-top:26px;flex-wrap:wrap}
+.cover .stats span{background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);padding:8px 18px;border-radius:999px;font-weight:800;font-size:14px}
+.cover .hero{width:330px;margin-top:34px;filter:drop-shadow(0 24px 30px rgba(67,48,31,.28))}
+.cover .bubble{position:absolute;bottom:64px;left:50%;transform:translateX(-50%);background:#fff;color:var(--cocoa);border-radius:22px;padding:14px 24px;
+  font-weight:700;font-size:14px;max-width:520px;box-shadow:0 14px 34px rgba(67,48,31,.2)}
+.cover .bubble b{color:var(--orange)}
+
+/* back cover */
+.back{background:linear-gradient(160deg,#43301F 0%,#2B2118 100%);color:#FFF3D6;text-align:center}
+.back .top{display:flex;justify-content:flex-start;padding:34px 44px 0}
+.back h1{font-size:40px;font-weight:900;margin-top:90px;color:#fff}
+.back .sub{font-size:16px;font-weight:600;color:#F3E3C8;max-width:560px;margin:10px auto 0}
+.back .hero{width:300px;margin-top:26px;filter:drop-shadow(0 24px 30px rgba(0,0,0,.35))}
+.back .contact{position:absolute;bottom:60px;left:44px;right:44px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.back .contact div{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:16px 18px}
+.back .contact .k{font-size:12px;color:#C9B59B;font-weight:700}
+.back .contact .v{font-size:16px;font-weight:800;color:#fff;margin-top:2px}
+.back .slogan{position:absolute;bottom:22px;left:0;right:0;font-family:Baloo;font-weight:800;font-size:14px;color:var(--sun);letter-spacing:.5px}
+</style>
+</head>
+<body>
+
+<!-- ============ COVER ============ -->
+<div class="page cover">
+  <div class="top"><div class="lock"><img src="assets/lumio-logo.png" alt="Lumio English"></div></div>
+  <div class="badge">دليل أولياء الأمور</div>
+  <h1>رحلة طفلكم مع <span class="en">Lumio English</span></h1>
+  <div class="sub">كل ما تحتاجون معرفته لمرافقة طفلكم خطوة بخطوة</div>
+  <div class="stats"><span>٧ مستويات</span><span>١٤٠ درسًا</span><span>من سن ٤ إلى ١٥</span><span>دعم عربي كامل</span></div>
+  <img class="hero" src="assets/lumi-hero.png" alt="">
+  <div class="bubble">مرحبًا! أنا <b>لومي</b> — سأكون رفيق طفلكم في كل درس، وهذا الدليل سيرافقكم أنتم أيضًا!</div>
+</div>
+
+<!-- ============ CH 1 ============ -->
+<div class="page">
+  <div class="bar"><h1>الفصل ١ · تبدأ القصة<small>من هو لومي؟ ولماذا نتعلّم بالقصص؟</small></h1><div class="brand"><img src="assets/lumio-logo.png" alt=""><span>LUMIO ENGLISH</span></div></div>
+  <div class="content">
+    <div class="card">
+      <h2>تعرّفوا على لومي</h2>
+      <p>لومي هو الرفيق الصغير الذي سيقابله طفلكم في كل درس — كتكوت فضولي ومرح يحب القراءة والمغامرة. مع لومي، يرافق طفلكم أصدقاؤه <b>عمر وسارة ونور</b> في المستويات الأولى، ثم ينضم <b>زياد وحمد</b> ليكتمل "الفريق" الذي يمضي معه من أول كلمة حتى المستوى السادس.</p>
+    </div>
+    <div class="card">
+      <h2>رحلة مبنية على القصة، لا على الحفظ</h2>
+      <p>بدلًا من حفظ قوائم كلمات منفصلة، يتعلّم طفلكم من خلال قصص تفاعلية حقيقية — مثل <b>"خريطة لومي السحرية"</b> — تُستخدم فيها الكلمات الجديدة داخل مغامرة لها شخصيات وأحداث. هكذا تصبح اللغة ذات معنى، لا مجرد كلمات تُحفظ ثم تُنسى.</p>
+      <p>كل مستوى له قصته الخاصة، وتُفتح أجزاؤها الأربعة تدريجيًا كلما أنجز طفلكم دروسه — فالقصة مكافأة وأداة تعلّم في الوقت نفسه. ويستطيع الطفل إخفاء النص وإظهاره ليقرأ بنفسه أو يستمع فقط.</p>
+      <div class="shot"><img src="assets/hb-story.png" alt=""></div>
+      <div class="cap">صفحة حقيقية من "خريطة لومي السحرية" — القصة التفاعلية الأولى التي يفتحها طفلكم</div>
+    </div>
+  </div>
+  <div class="foot"><span>Lumio English · دليل أولياء الأمور</span><span class="num">2</span></div>
+</div>
+
+<!-- ============ CH 2 ============ -->
+<div class="page">
+  <div class="bar"><h1>الفصل ٢ · كيف تبدأ الرحلة؟<small>اختبار مجاني، ثم حصة تجريبية مجانية — قبل أي التزام</small></h1><div class="brand"><img src="assets/lumio-logo.png" alt=""><span>LUMIO ENGLISH</span></div></div>
+  <div class="content">
+    <div class="card">
+      <h2>الخطوة الأولى: اختبار تحديد المستوى (مجاني)</h2>
+      <p>قبل أي درس، يأخذ طفلكم اختبارًا قصيرًا وممتعًا يستغرق نحو خمس دقائق ويحدد مستواه الحقيقي بدقة — من الصفر (لم يتعلم الإنجليزية من قبل) إلى المستوى السادس. لا توجد إجابات "خاطئة" تُشعر الطفل بالضغط؛ الهدف الوحيد هو إيجاد نقطة البداية الصحيحة له.</p>
+      <div class="shot"><img src="assets/hb-placement.png" alt=""></div>
+      <div class="cap">شاشة البداية في اختبار تحديد المستوى — بسيطة وودودة منذ اللحظة الأولى</div>
+    </div>
+    <div class="card">
+      <h2>ماذا يحدث بعد الاختبار؟</h2>
+      <p>تظهر النتيجة فورًا مع المستوى المناسب لطفلكم وبعض النصائح عمّا يُستحسن التدرب عليه. ثم يُنشأ حساب طفلكم برقم تعريف خاص ورمز دخول (<span class="en">PIN</span>) من ٤ أرقام يختاره بنفسه — ليتمكن من الدخول لاحقًا بكل سهولة ومتابعة تقدمه وشهاداته في أي وقت.</p>
+    </div>
+    <div class="note">لا نطلب أي بطاقة دفع ولا أي التزام في هذه المرحلة — الاختبار والحصة التجريبية (الصفحة التالية) مجانيان بالكامل.</div>
+  </div>
+  <div class="foot"><span>Lumio English · دليل أولياء الأمور</span><span class="num">3</span></div>
+</div>
+
+<!-- ============ CH 2 (cont) TRIAL CLASS ============ -->
+<div class="page">
+  <div class="bar"><h1>الفصل ٢ · الحصة التجريبية المجانية<small>شاهدوا حصة حقيقية قبل أن تقرروا</small></h1><div class="brand"><img src="assets/lumio-logo.png" alt=""><span>LUMIO ENGLISH</span></div></div>
+  <div class="content">
+    <div class="card">
+      <h2>ما هي الحصة التجريبية؟</h2>
+      <p>بعد تحديد المستوى، ينضم طفلكم إلى <b>حصة تجريبية مباشرة مع معلم حقيقي</b>، بنفس شكل الحصة الفعلية في لوميو: تعارف مع المعلم، كلمات جديدة بالصور والصوت، لعبة قصيرة، وتحدٍّ ممتع في النهاية. الهدف أن يعيش طفلكم — وأنتم — تجربة الحصة كاملة قبل أي قرار.</p>
+      <div class="shot"><img src="assets/hb-trial.png" alt=""></div>
+      <div class="cap">شريحة حقيقية من الحصة التجريبية للمستوى التمهيدي — نفس التصميم ونفس الأدوات المستخدمة في الحصص الفعلية</div>
+    </div>
+    <div class="two">
+      <div class="card" style="margin-bottom:0">
+        <h2>ماذا يميّزها؟</h2>
+        <ul>
+          <li><b>ليس وحده:</b> ينضم طفلكم إلى طلاب في المستوى نفسه.</li>
+          <li><b>متعة حقيقية:</b> ألعاب وتحديات وهدايا رمزية صغيرة من المعلمين.</li>
+          <li><b>معلم + مشرف:</b> المعلم يقود الحصة، والمشرف يساعد في أي أمر آخر.</li>
+        </ul>
+      </div>
+      <div class="card" style="margin-bottom:0">
+        <h2>كيف نحجزها؟</h2>
+        <p>راسلونا على <b>واتساب</b> (الرقم في آخر هذا الدليل) واذكروا اسم طفلكم وعمره ونتيجة اختبار المستوى، ونحدد معكم موعد الحصة. بعد الحصة، القرار لكم بالكامل: الاشتراك يبدأ فقط عندما تختارون ذلك.</p>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>Lumio English · دليل أولياء الأمور</span><span class="num">4</span></div>
+</div>
+
+<!-- ============ CH 3 ============ -->
+<div class="page">
+  <div class="bar"><h1>الفصل ٣ · دورة التعلّم<small>الخطوات الأربع نفسها في كل درس</small></h1><div class="brand"><img src="assets/lumio-logo.png" alt=""><span>LUMIO ENGLISH</span></div></div>
+  <div class="content">
+    <div class="card step"><div class="n o">١</div><div>
+      <h2>التحضير</h2>
+      <p>قبل كل حصة مباشرة، يتعرّف طفلكم على الكلمات والأصوات الجديدة داخل التطبيق — بخلفيات ملونة حقيقية وشخصيات مألوفة، ليصل إلى الحصة جاهزًا لا خائفًا من الجديد.</p>
+    </div></div>
+    <div class="card step"><div class="n t">٢</div><div>
+      <h2>الحصة المباشرة</h2>
+      <p>معلم حقيقي، مباشر عبر <span class="en">Zoom</span>، يشرح الدرس نفسه الذي تحضّر له طفلكم بالفعل. الحصص في <b>مجموعات صغيرة (أربعة طلاب كحد أقصى)</b> من المستوى نفسه، مع معلم مخصص للمجموعة ومشرف يتابع كل ما هو خارج الحصة. مدة الحصة بين ٤٥ و٩٠ دقيقة بحسب محتوى الدرس — أقصر في بداية المستوى، وأطول في درس المراجعة الأخير.</p>
+    </div></div>
+    <div class="shot"><img src="assets/hb-lesson.png" alt=""></div>
+    <div class="cap">شريحة حقيقية من درس داخل التطبيق — كل كلمة بصورتها وترجمتها ونطقها، على خلفية مصممة خصيصًا لكل موضوع</div>
+  </div>
+  <div class="foot"><span>Lumio English · دليل أولياء الأمور</span><span class="num">5</span></div>
+</div>
+
+<!-- ============ CH 3 (cont) ============ -->
+<div class="page">
+  <div class="bar"><h1>الفصل ٣ · دورة التعلّم (تابع)<small>ما بعد الحصة</small></h1><div class="brand"><img src="assets/lumio-logo.png" alt=""><span>LUMIO ENGLISH</span></div></div>
+  <div class="content">
+    <div class="card step"><div class="n s">٣</div><div>
+      <h2>الواجب المنزلي</h2>
+      <p>بعد الحصة مباشرة، يمارس طفلكم ما تعلّمه عبر تمارين إملاء ورسم ونطق واختبار قصير — كلها مرتبطة بالضبط بما دار في تلك الحصة تحديدًا.</p>
+    </div></div>
+    <div class="card step"><div class="n b">٤</div><div>
+      <h2>خريطة المغامرة</h2>
+      <p>كل درس يُنجز يضيء خطوة جديدة على خريطة طفلكم الخاصة، ويفتح له ألعابًا وقصصًا ومكافآت — فالتقدّم هنا شيء يُرى ويُحتفى به، لا مجرد رقم.</p>
+    </div></div>
+    <div class="card">
+      <h2>لماذا هذا الترتيب مهم؟</h2>
+      <p>كل خطوة تُبنى على سابقتها: التحضير يجعل الحصة أكثر فائدة، والحصة تجعل الواجب أسهل فهمًا، والواجب يجعل التقدّم على الخريطة أمرًا مستحقًا — دورة متكاملة تتكرر مع كل درس جديد. ولا يُفتح الدرس التالي إلا بعد اكتمال الخطوات الثلاث: التحضير، وحضور الحصة، والواجب.</p>
+    </div>
+    <div class="tip">نصيحة: خصصوا لطفلكم ١٠ دقائق للتحضير في اليوم السابق للحصة، و١٥ دقيقة للواجب في اليوم التالي — انتظام بسيط يصنع فرقًا كبيرًا.</div>
+  </div>
+  <img class="mascot" src="assets/omar-jump.png" alt="">
+  <div class="foot"><span>Lumio English · دليل أولياء الأمور</span><span class="num">6</span></div>
+</div>
+
+<!-- ============ CH 4 ============ -->
+<div class="page">
+  <div class="bar"><h1>الفصل ٤ · متابعة التقدّم<small>ما يراه طفلكم، وما نشاركه معكم</small></h1><div class="brand"><img src="assets/lumio-logo.png" alt=""><span>LUMIO ENGLISH</span></div></div>
+  <div class="content">
+    <div class="card">
+      <h2>لوحة طفلكم الخاصة</h2>
+      <p>من أول تسجيل دخول، يرى طفلكم لوحته الخاصة: مهمة اليوم، عدد النجوم التي جمعها، الدروس التي أنجزها، وموعد حصته القادمة — بتصميم بسيط ومباشر لا يشتت الانتباه.</p>
+      <div class="shot"><img src="assets/hb-dashboard.png" alt=""></div>
+      <div class="cap">لوحة الطالب الحقيقية — مهمة اليوم، النجوم، الدروس المكتملة، والقصة وخريطة المغامرة في مكان واحد</div>
+    </div>
+    <div class="card">
+      <h2>كيف نشارككم التقدّم</h2>
+      <p>يشارك المعلمون تقدّم طفلكم بانتظام — الدروس المُنجزة، ومستوى الأداء في المهارات الأربع (<b>الاستماع، المحادثة، القراءة، الكتابة</b>) مع ملاحظات المعلم ونصائحه — لتبقوا مطّلعين دون الحاجة لمتابعة كل تفصيل بأنفسكم. ويمكنكم دائمًا سؤال المشرف عن أي شيء عبر واتساب.</p>
+    </div>
+  </div>
+  <div class="foot"><span>Lumio English · دليل أولياء الأمور</span><span class="num">7</span></div>
+</div>
+
+<!-- ============ CH 4 (cont) HUB ============ -->
+<div class="page">
+  <div class="bar"><h1>الفصل ٤ · مكتبة الإنجليزية (<span class="en">The Hub</span>)<small>مرجع مفتوح في أي وقت، لا في وقت الدرس فقط</small></h1><div class="brand"><img src="assets/lumio-logo.png" alt=""><span>LUMIO ENGLISH</span></div></div>
+  <div class="content">
+    <div class="card">
+      <h2>ماذا تحوي المكتبة؟</h2>
+      <p>إلى جانب دروس المستوى العشرين، يفتح كل مستوى مكتبته الخاصة التي يستطيع طفلكم تصفحها في أي وقت: كل الكلمات بالصور والصوت والترجمة، تعبيرات شائعة من الحياة الواقعية، وتدريبات كتابة ومحادثة — بالإضافة إلى أقسام تناسب كل مرحلة:</p>
+      <div class="pills"><span class="pill">المفردات · كل المستويات</span><span class="pill">التعبيرات الشائعة · كل المستويات</span><span class="pill">الكتابة والمحادثة · كل المستويات</span><span class="pill s">التهجئة · التمهيدي</span><span class="pill t">الفونيكس · المستويان ١ و٢</span><span class="pill b">القواعد · المستويات ٣ إلى ٦</span></div>
+      <div class="shot"><img src="assets/hb-hub.png" alt=""></div>
+      <div class="cap">صفحة حقيقية من مكتبة المفردات للمستوى التمهيدي — كلمات العائلة بالصور والترجمة</div>
+    </div>
+    <div class="tip">استخدموا المكتبة للمراجعة السريعة قبل الحصة أو في العطلات — كل كلمة يمكن الضغط عليها لسماع نطقها الصحيح.</div>
+  </div>
+  <div class="foot"><span>Lumio English · دليل أولياء الأمور</span><span class="num">8</span></div>
+</div>
+
+<!-- ============ CH 5 ============ -->
+<div class="page">
+  <div class="bar"><h1>الفصل ٥ · الواجبات والتدريب<small>تدريب حقيقي مرتبط بكل درس</small></h1><div class="brand"><img src="assets/lumio-logo.png" alt=""><span>LUMIO ENGLISH</span></div></div>
+  <div class="content">
+    <div class="card">
+      <h2>واجب تفاعلي بعد كل درس</h2>
+      <p>يشمل واجب كل درس أربعة أقسام متكاملة: <b>الإملاء، الرسم، النطق (<span class="en">Say It</span>)، واختبار قصير</b> — كلها بجمل حقيقية مرتبطة بمعنى الكلمة، لا قوائم عشوائية. ويُحفظ تقدّم طفلكم في كل قسم ليعود إليه في أي وقت.</p>
+      <div class="shot"><img src="assets/hb-homework.png" alt=""></div>
+      <div class="cap">واجب حقيقي من المستوى التمهيدي — أربع خطوات واضحة، وتقدّم مرئي في كل مرحلة</div>
+    </div>
+    <div class="note">الواجب لا يحتاج إلى إشراف لغوي منكم: التعليمات بالعربية، والصوت يقود طفلكم في كل تمرين، والتصحيح فوري.</div>
+  </div>
+  <div class="foot"><span>Lumio English · دليل أولياء الأمور</span><span class="num">9</span></div>
+</div>
+
+<!-- ============ CH 5 (cont) ============ -->
+<div class="page">
+  <div class="bar"><h1>الفصل ٥ · الواجبات والتدريب (تابع)<small>بعيدًا عن الشاشة</small></h1><div class="brand"><img src="assets/lumio-logo.png" alt=""><span>LUMIO ENGLISH</span></div></div>
+  <div class="content">
+    <div class="card">
+      <h2>أوراق عمل وبطاقات تعليمية للطباعة</h2>
+      <p>لكل درس أيضًا ورقة عمل وبطاقات جاهزة للطباعة. ورقة العمل تتدرّج مع عمر طفلكم: في المستويات المبكرة يكرّر طفلكم كتابة الكلمة بخط يده لبناء المهارة الحركية، ومن المستوى الثالث فصاعدًا يكتب جملًا أصلية بقاعدة الدرس — تطبيق القاعدة لا التعرّف عليها فقط. أما البطاقات فثنائية اللغة دائمًا — الكلمة والصورة على وجه، والعربية على الآخر — فيمكن لأي ولي أمر، حتى من لا يتحدث الإنجليزية، مراجعة الكلمات مع طفله في أي وقت.</p>
+      <div class="two" style="margin-top:14px">
+        <div><div class="shot" style="margin:0"><img src="assets/hb-worksheet.png" alt=""></div><div class="cap">ورقة عمل حقيقية — الدرس الأول من المستوى التمهيدي</div></div>
+        <div><div class="shot" style="margin:0"><img src="assets/hb-flashcards.png" alt=""></div><div class="cap">بطاقات الدرس نفسه — تُطبع على الوجهين</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>دوركم كأولياء أمور</h2>
+      <ul>
+        <li>استمعوا معًا للكلمات والأغاني — الاستماع المتكرر يبني الأذن اللغوية.</li>
+        <li>احتفلوا بكل كلمة جديدة، مهما كانت بسيطة.</li>
+        <li>لا داعي للضغط إن لم يشعر طفلكم بالحماس أحيانًا — هذا طبيعي تمامًا، والاستمرار الهادئ أهم من الكمال.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span>Lumio English · دليل أولياء الأمور</span><span class="num">10</span></div>
+</div>
+
+<!-- ============ CH 6 ============ -->
+<div class="page">
+  <div class="bar"><h1>الفصل ٦ · رحلة طويلة<small>سبعة مستويات، مسار واحد متصل</small></h1><div class="brand"><img src="assets/lumio-logo.png" alt=""><span>LUMIO ENGLISH</span></div></div>
+  <div class="content">
+    <div class="card">
+      <h2>من الكلمة الأولى إلى الطلاقة</h2>
+      <p>تمتد رحلة لوميو على سبعة مستويات حقيقية، في كل منها ٢٠ درسًا، وكل مستوى مبني بعناية لعمر ومرحلة محددة ومرتبط بالإطار الأوروبي المرجعي (<span class="en">CEFR</span>):</p>
+      <div class="pills">
+        <span class="pill s">التمهيدي · ٤–٦ سنوات · <span class="en">Pre-A1</span></span>
+        <span class="pill">المستوى ١ · ٦–٨ سنوات · <span class="en">Pre-A1</span></span>
+        <span class="pill">المستوى ٢ · ٨–١٠ سنوات · <span class="en">Pre-A1</span></span>
+        <span class="pill t">المستوى ٣ · ١٠–١٢ سنة · <span class="en">A1</span></span>
+        <span class="pill t">المستوى ٤ · ١١–١٣ سنة · <span class="en">A1</span></span>
+        <span class="pill b">المستوى ٥ · ١٢–١٤ سنة · <span class="en">A2</span></span>
+        <span class="pill b">المستوى ٦ · ١٣–١٥ سنة · <span class="en">A2</span></span>
+      </div>
+    </div>
+    <div class="card">
+      <h2>مرحلتان كبيرتان في الرحلة</h2>
+      <p><b>المرحلة الأولى (التمهيدي – المستوى ٢):</b> الأساسيات — الحروف والأصوات، أول الكلمات، أول الجمل البسيطة، مع لومي وعمر وسارة ونور.</p>
+      <p><b>المرحلة الثانية (المستوى ٣ – ٦):</b> يكبر الفريق مع طفلكم — ينضم زياد وحمد، ويتحول التصميم إلى شكل يناسب المراهقين — ويبدأ محادثات حقيقية وقواعد أعمق، وصولًا إلى الثقة الكاملة في التحدث.</p>
+    </div>
+    <div class="card">
+      <h2>كل مستوى = شهران</h2>
+      <p>عشرون حصة مباشرة على مدى شهرين، مع الوصول الكامل لمكتبة المستوى، ومجموعة من الأقران في المستوى نفسه، ومعلم ومشرف. وعند الاشتراك في عدة مستويات معًا تنخفض تكلفة المستوى الواحد.</p>
+    </div>
+  </div>
+  <img class="mascot" src="assets/lumi-celebrate.png" alt="" style="width:150px;bottom:60px">
+  <div class="foot"><span>Lumio English · دليل أولياء الأمور</span><span class="num">11</span></div>
+</div>
+
+<!-- ============ CH 7 ============ -->
+<div class="page">
+  <div class="bar"><h1>الفصل ٧ · الشهادات والإنجاز<small>إنجاز حقيقي باسم طفلكم</small></h1><div class="brand"><img src="assets/lumio-logo.png" alt=""><span>LUMIO ENGLISH</span></div></div>
+  <div class="content">
+    <div class="card">
+      <h2>شهادة حقيقية لكل مستوى</h2>
+      <p>عند إتمام جميع دروس أي مستوى، يحصل طفلكم على شهادة إنجاز باسمه، توضح عدد النجوم التي جمعها — شهادة يمكن طباعتها أو حفظها بصيغة <span class="en">PDF</span> والاحتفاظ بها، ومصدر فخر حقيقي له.</p>
+      <div class="shot"><img src="assets/hb-certificate.png" alt=""></div>
+      <div class="cap">شهادة إنجاز حقيقية — تظهر في لوحة الطالب بعد إكمال دروس المستوى العشرين</div>
+    </div>
+    <div class="card">
+      <h2>احتفلوا بكل خطوة</h2>
+      <p>لا تنتظروا الشهادة النهائية فقط — كل درس مكتمل، وكل نجمة مجموعة، وكل كلمة جديدة يقولها طفلكم بثقة، لحظة تستحق الاحتفال بها معًا.</p>
+    </div>
+  </div>
+  <div class="foot"><span>Lumio English · دليل أولياء الأمور</span><span class="num">12</span></div>
+</div>
+
+<!-- ============ BACK COVER ============ -->
+<div class="page back">
+  <div class="top"><div class="lock" style="background:#fff;border-radius:22px;padding:12px 20px;display:inline-block"><img src="assets/lumio-logo.png" alt="" style="height:80px;display:block"></div></div>
+  <h1>نحن هنا معكم في كل خطوة</h1>
+  <div class="sub">شكرًا لثقتكم بنا في هذه الرحلة المهمة — رحلة طفلكم مع اللغة الإنجليزية تبدأ اليوم.</div>
+  <img class="hero" src="assets/omar-celebrate.png" alt="">
+  <div class="contact">
+    <div><div class="k">الموقع الإلكتروني</div><div class="v en">lumio-english.github.io/lumio</div></div>
+    <div><div class="k">للتواصل وحجز الحصة التجريبية</div><div class="v">واتساب — أ. هادي (<span class="en">Head Teacher</span>)</div></div>
+  </div>
+  <div class="slogan">Small Steps · Big Futures</div>
+</div>
+
+</body>
+</html>
