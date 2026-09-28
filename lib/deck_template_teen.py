@@ -257,7 +257,7 @@ def slide_vocab(w, idx, n, total, num_words, ch, verb_count=0):
     <div style="position:relative;z-index:5;display:flex;gap:22px;padding:44px 40px 0">
       {card_open(410, "padding:20px;text-align:center")}
         <div style="width:100%;aspect-ratio:1/1;border-radius:10px;overflow:hidden;background:#F8FAFC">
-          <img src="assets/vocab/{slug(w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.parentElement.style.background='#F1F5F9'; this.remove()">
+          <img src="assets/vocab/{slug(w.get('image') or w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.parentElement.style.background='#F1F5F9'; this.remove()">
         </div>
       </div>
       {card_open(560, "padding:32px 36px")}
@@ -286,7 +286,7 @@ def slide_practice(w, n, total, ch, seed=0):
     question = discussion_question(w["en"], seed)
     return (bg_base() + header(f"Practice · {esc(w['en'])}", n, total) + f'''
     <div style="position:relative;z-index:5;display:flex;gap:22px;padding:50px 40px 0">
-      {card_open(260, "padding:0;overflow:hidden;height:260px")}<img src="assets/vocab/{slug(w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+      {card_open(260, "padding:0;overflow:hidden;height:260px")}<img src="assets/vocab/{slug(w.get('image') or w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
       {card_open(560, "padding:30px 34px")}
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.3rem;color:{CARD_TEXT};margin-bottom:10px">Say it out loud.</div>
         <div style="font-family:'Nunito',sans-serif;font-style:italic;font-weight:700;font-size:1.15rem;color:{ORANGE_DEEP};margin-bottom:18px">&ldquo;{esc(quote)}&rdquo;</div>
@@ -402,7 +402,7 @@ def slide_sound_spot(vocab, n, total, ch):
       <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(w["en"])}')"
               style="border:none;cursor:pointer;font-family:inherit;background:{CARD_BG};border-radius:10px;padding:10px;
                     box-shadow:0 8px 16px rgba(0,0,0,.2);display:flex;flex-direction:column;align-items:center;gap:6px;width:140px">
-        <div style="width:100px;height:100px;border-radius:8px;overflow:hidden;background:#F8FAFC"><img src="assets/vocab/{slug(w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="width:100px;height:100px;border-radius:8px;overflow:hidden;background:#F8FAFC"><img src="assets/vocab/{slug(w.get('image') or w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.88rem;color:{CARD_TEXT}">{esc(w["en"])}</div>
         <div style="font-size:.75rem;color:{TEAL_DEEP};font-weight:800">{w["ar"]}</div>
       </button>''' for w in vocab)
@@ -417,7 +417,7 @@ def slide_your_turn(w, idx, total_rounds, n, total, ch):
     <div style="position:relative;z-index:5;display:flex;align-items:center;justify-content:center;gap:36px;margin-top:60px">
       {card_open(280, f"height:280px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;background:#232038")}
         <div id="ytMystery{idx}" style="font-size:3.2rem">&#128266;</div>
-        <img id="ytImg{idx}" src="assets/vocab/{slug(w['en'])}.png" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff" onerror="this.style.display='none'">
+        <img id="ytImg{idx}" src="assets/vocab/{slug(w.get('image') or w['en'])}.png" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff" onerror="this.style.display='none'">
       </div>
       {card_open(360, "padding:32px;text-align:center")}
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.3rem;color:{CARD_TEXT};margin-bottom:8px">Listen first.</div>
@@ -444,7 +444,7 @@ def slide_quiz(target, distractors, idx, total_q, n, total, seed):
                   display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.05rem;
                   color:{CARD_TEXT};cursor:pointer" data-quiz-option="{esc(o["en"])}">{esc(o["en"])}</button>'''
     return (bg_base() + header(f"Quiz · {idx}/{total_q}", n, total) + f'''
-    {card_open(260, "position:absolute;left:60px;top:200px;height:260px;overflow:hidden;padding:0")}<img src="assets/vocab/{slug(target['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+    {card_open(260, "position:absolute;left:60px;top:200px;height:260px;overflow:hidden;padding:0")}<img src="assets/vocab/{slug(target.get('image') or target['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
     <div style="position:absolute;left:600px;top:150px;font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.5rem;color:{INK}">What is this?</div>
     {buttons}
     ''')

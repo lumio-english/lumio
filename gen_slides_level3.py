@@ -111,6 +111,10 @@ LETTER_COLORS = ["#F97316", "#0D9488", "#F59E0B", "#2DD4BF", "#DC5C33"]
 def esc(s):
     return (s or "").replace("&", "&amp;").replace('"', "&quot;")
 
+def vimg(w):
+    """Vocab image file stem: a lesson entry may set "image" to point at a distinct picture (see js/lesson.js)."""
+    return slug(w.get("image") or w["en"])
+
 def slug(w):
     return w.lower().replace("'", "").replace(" ", "-")
 
@@ -249,7 +253,7 @@ def slide_recap(prev_words, n, total):
                        typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(w["en"])}')" style="border:none;cursor:pointer;font-family:inherit;width:230px;height:270px;
                     background:#fff;border-radius:22px;box-shadow:0 14px 28px rgba(67,48,31,.18);padding:18px;
                     display:flex;flex-direction:column;align-items:center;position:relative">
-          <div style="width:100%;height:150px;border-radius:16px;overflow:hidden;background:#FFFCF6;border:4px solid #FFE0B8;margin-bottom:12px"><img src="assets/vocab/{slug(w["en"])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+          <div style="width:100%;height:150px;border-radius:16px;overflow:hidden;background:#FFFCF6;border:4px solid #FFE0B8;margin-bottom:12px"><img src="assets/vocab/{vimg(w)}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
           <div class="recap-question" style="display:flex;flex-direction:column;align-items:center;gap:6px">
             <div style="font-size:.75rem;font-weight:800;color:#F97316;letter-spacing:1px">TAP TO REMEMBER</div>
             <div style="font-size:1.6rem">&#129300;</div>
@@ -301,7 +305,7 @@ def slide_vocab(w, idx, n, total, num_words, ch):
     <div class="card" style="position:absolute;left:46px;top:180px;width:450px;padding:24px;background:#fff">
       <div style="width:100%;aspect-ratio:1/1;border-radius:22px;overflow:hidden;margin-bottom:20px;
                      box-shadow:0 12px 26px rgba(67,48,31,.22);border:7px solid #fff;outline:4px solid #FFDCA8;background:#fff">
-                     <img src="assets/vocab/{slug(w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.parentElement.style.background='#FFF3D6'; this.remove()"></div>
+                     <img src="assets/vocab/{vimg(w)}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.parentElement.style.background='#FFF3D6'; this.remove()"></div>
       {letter_tiles(w["en"])}
     </div>
     <div class="card" style="position:absolute;left:518px;top:180px;width:620px;padding:36px 42px;">
@@ -324,7 +328,7 @@ def slide_practice(w, n, total, ch):
     quote = w.get("example", w["en"])
     return (bg_plain() + header(f"Practice &bull; {esc(w['en'])}", n, total) + COLORSTRIP + f'''
     <div style="position:absolute;left:0;right:0;top:190px;display:flex;justify-content:center;gap:36px">
-      <div class="card" style="width:280px;height:280px;overflow:hidden;padding:0"><img src="assets/vocab/{slug(w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+      <div class="card" style="width:280px;height:280px;overflow:hidden;padding:0"><img src="assets/vocab/{vimg(w)}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
       <div class="card" style="width:500px;padding:36px 42px;display:flex;flex-direction:column;justify-content:center">
         <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.7rem;color:#43301F;margin-bottom:14px">Can you say it?</div>
         <div style="font-family:'Baloo 2',sans-serif;font-style:italic;font-weight:700;font-size:1.6rem;color:#F97316">&ldquo;{esc(quote)}&rdquo;</div>
@@ -434,7 +438,7 @@ def slide_listen_repeat(lesson, n, total, ch):
 def slide_your_turn(w, idx, total_rounds, n, total, ch):
     return (bg_plain() + header(f"Your Turn &bull; Round {idx} of {total_rounds}", n, total) + COLORSTRIP + f'''
     <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:40px;padding-bottom:60px">
-      <div class="card" style="width:300px;height:300px;overflow:hidden;padding:0"><img src="assets/vocab/{slug(w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+      <div class="card" style="width:300px;height:300px;overflow:hidden;padding:0"><img src="assets/vocab/{vimg(w)}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
       <div class="card" style="width:400px;padding:44px 40px;text-align:center">
         <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2.1rem;color:#43301F">What is this?</div>
         <div style="font-size:1rem;color:#8A7160;font-weight:700;margin-top:14px">Ask your student to say it, then tap below to hear it.</div>
@@ -459,7 +463,7 @@ def slide_quiz(target, distractors, idx, total_q, n, total):
                   background:#fff;border:2.5px solid #F0E9DD;border-radius:16px;display:flex;align-items:center;justify-content:center;
                   font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.25rem;color:#43301F;cursor:pointer" data-quiz-option="{esc(o["en"])}">{esc(o["en"])}</button>'''
     return (bg_plain() + header(f"Quiz &bull; {idx}/{total_q}", n, total) + COLORSTRIP + f'''
-    <div class="card" style="position:absolute;left:280px;top:190px;width:280px;height:280px;overflow:hidden;padding:0"><img src="assets/vocab/{slug(target['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+    <div class="card" style="position:absolute;left:280px;top:190px;width:280px;height:280px;overflow:hidden;padding:0"><img src="assets/vocab/{vimg(target)}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
     <div style="position:absolute;left:610px;top:190px;width:540px;font-family:'Baloo 2',sans-serif;font-weight:800;
                 font-size:1.9rem;color:#43301F">What is this?</div>
     {buttons}

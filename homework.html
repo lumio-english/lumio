@@ -279,7 +279,7 @@ function navButtons(backLabel, nextLabel) {
 function renderSpelling() {
   const rows = lesson.vocab.map((w, i) => `
     <div class="hw-word-row">
-      <div class="hw-word-img"><img src="assets/vocab/${slugify(w.en)}.png" onerror="this.style.display='none'"></div>
+      <div class="hw-word-img"><img src="assets/vocab/${slugify(w.image || w.en)}.png" onerror="this.style.display='none'"></div>
       <div class="hw-word-ar">${w.ar}</div>
       <input class="hw-input" id="sp-${i}" placeholder="Type the word…" autocomplete="off" autocapitalize="off" spellcheck="false">
       <button class="hw-check-btn" id="spBtn-${i}" onclick="checkSpelling(${i})">Check</button>
@@ -477,7 +477,7 @@ function renderConversation() {
   });
   const rows = words.map((w, i) => `
     <div class="hw-word-row">
-      <div class="hw-word-img"><img src="assets/vocab/${slugify(w.en)}.png" onerror="this.style.display='none'"></div>
+      <div class="hw-word-img"><img src="assets/vocab/${slugify(w.image || w.en)}.png" onerror="this.style.display='none'"></div>
       <div style="flex:1">
         <div style="font-family:'Baloo 2',sans-serif;font-weight:800;color:var(--cocoa);margin-bottom:2px">${esc(w.en)} <span style="color:var(--teal-deep)">${w.ar}</span></div>
         <div style="font-size:.88rem;color:var(--cocoa-soft);font-weight:700">${esc(prompts[i])}</div>

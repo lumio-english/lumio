@@ -106,7 +106,7 @@ def get_browser():
     if "browser" not in _browser_holder:
         pw = sync_playwright().start()
         _browser_holder["pw"] = pw
-        _browser_holder["browser"] = pw.chromium.launch()
+        _browser_holder["browser"] = pw.chromium.launch(executable_path=os.environ.get("LUMIO_CHROMIUM") or None)
     return _browser_holder["browser"]
 
 def close_browser():

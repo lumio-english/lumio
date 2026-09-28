@@ -169,7 +169,7 @@ function buildVocabSlides(data) {
   return (data.themes || []).map((theme, i) => {
     const cards = (theme.words || []).map(w => `
       <button class="wgrid-card" ${speakBtn(w.en)}>
-        <img src="assets/vocab/${slug(w.en)}.png" onerror="this.style.display='none'">
+        <img src="assets/vocab/${slug(w.image || w.en)}.png" onerror="this.style.display='none'">
         <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">${esc(w.en)}</div>
         <div style="font-size:.78rem;color:#0D9488;font-weight:800">${w.ar}</div>
       </button>`).join("");
