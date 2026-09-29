@@ -112,6 +112,19 @@ def main():
             pg.set_viewport_size({"width": 560, "height": 820})
             shot("games/lumis-pocket.html?level=pre-a&n=1", f"{HB}/prea_lumipocket_shot.png", wait=2500)
             pg.set_viewport_size({"width": 1280, "height": 720})
+            # Per-level manual screenshots: lesson slide, Hub, bonus game, printables
+            GAMES = {"pre-a": "lumis-pocket", "level1": "treehouse-builder", "level2": "twelve-months-calendar", "level3": "crew-chat",
+                     "level4": "squad-budget", "level5": "story-detective", "level6": "crystal-ball"}
+            for lvl, game in GAMES.items():
+                n = find_slide(lvl, 1, "SAY IT") if lvl in ("pre-a", "level1", "level2") else find_slide(lvl, 1, "EXAMPLE")
+                shot(f"present.html?level={lvl}&n=1", f"{HB}/lv-{lvl}-lesson.png", js=f"loadSlide({n})")
+                shot(f"hub-present.html?type=vocab&level={lvl}", f"{HB}/lv-{lvl}-hub.png", wait=1800)
+                if game == "crew-chat":
+                    pg.set_viewport_size({"width": 640, "height": 720})
+                shot(f"games/{game}.html?level={lvl}&n=3", f"{HB}/lv-{lvl}-game.png", wait=3200)
+                pg.set_viewport_size({"width": 1280, "height": 720})
+                pdf_page(f"worksheets/{lvl}/lesson01-homework.pdf", f"{HB}/lv-{lvl}-worksheet.png", dpi=90)
+                pdf_page(f"flashcards/{lvl}/lesson01-flashcards.pdf", f"{HB}/lv-{lvl}-flashcards.png", dpi=90)
             # --- printable samples from the real PDFs
             pdf_page("worksheets/pre-a/lesson01-homework.pdf", f"{MK}/worksheet-sample.png")
             pdf_page("flashcards/pre-a/lesson01-flashcards.pdf", f"{MK}/flashcard-sample.png")
