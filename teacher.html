@@ -4963,6 +4963,19 @@
     }
     matGrid.appendChild(trialRow);
 
+    // Songs: the level's Hello, Theme, Learning, Review and Goodbye songs
+    // with sing-along lyrics (songs.html). Always open for teachers.
+    const songsRow = document.createElement("div");
+    songsRow.className = "td-mat-row";
+    songsRow.style.borderColor = "#0D9488";
+    songsRow.style.gridColumn = "1 / -1";
+    songsRow.innerHTML = `<div class="td-mat-top"><div class="num" style="background:#0D9488;color:#fff">♪</div><b>Songs</b></div>
+      <div style="font-size:.78rem;color:var(--td-muted);margin:-4px 0 8px">Hello and Goodbye songs plus this level's Theme, Learning and Review songs, with lyrics on screen.</div>
+      <div class="td-mat-actions">
+        <a class="act present" href="songs.html?level=${level}&from=teacher" target="_blank" rel="noopener">♪ Open songs</a>
+      </div>`;
+    matGrid.appendChild(songsRow);
+
     titles.forEach((title, i) => {
       const n = i + 1;
       if (q && !title.toLowerCase().includes(q) && !("l" + String(n).padStart(2, "0")).includes(q)) return;

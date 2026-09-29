@@ -1124,6 +1124,17 @@
       <div class="sd-hubb-trail" id="hubSpellingTrail"></div>
       <span class="sd-hubb-btn" id="hubSpellingBtn"><img class="sd-hubb-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Open</span>
     </button>
+    <button class="sd-hubb" id="hubSongs">
+      <div class="sd-hubb-left">
+        <div class="sd-hubb-icon">🎵</div>
+        <div>
+          <div class="sd-hubb-title">Songs</div>
+          <div class="sd-hubb-sub">Sing along with your level's songs</div>
+        </div>
+      </div>
+      <div class="sd-hubb-trail"></div>
+      <span class="sd-hubb-btn"><img class="sd-hubb-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Open</span>
+    </button>
     <button class="sd-hubb" id="hubWriting">
       <div class="sd-hubb-left">
         <div class="sd-hubb-icon">✍️</div>
@@ -2940,6 +2951,7 @@
     renderPromptPicker(data);
   }
   document.getElementById("hubWriting").onclick = () => { location.href = `hub-present.html?type=writing&level=${level}`; };
+  document.getElementById("hubSongs").onclick = () => { location.href = `songs.html?level=${level}`; };
   document.getElementById("writingClose").onclick = () => { writingOverlay.classList.remove("show"); wrCleanupStream(); };
   writingOverlay.addEventListener("click", e => { if (e.target === writingOverlay) { writingOverlay.classList.remove("show"); wrCleanupStream(); } });
 
