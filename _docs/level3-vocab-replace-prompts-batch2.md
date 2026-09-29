@@ -8,6 +8,8 @@ Standard production format. Every word below already has an image in `assets/voc
 
 Save into `assets/vocab/` with the exact file name shown.
 
+**Status (29 Sep):** 74 of 80 received and live. Still pending — all six Lesson 15 words: `highlight`, `memorize`, `quiz`, `flashcard`, `group-project`, `presentation`.
+
 ---
 
 **Lesson 1 — Meet the Crew**
