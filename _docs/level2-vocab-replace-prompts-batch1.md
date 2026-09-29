@@ -10,7 +10,7 @@ Standard production format. All words below already have an image in `assets/voc
 
 Save into `assets/vocab/` with the exact file name shown.
 
-**Status (29 Sep):** 70 of 77 received and live (including the two NEW files). Still pending — all seven Lesson 15 words: `come-home`, `do-homework`, `take-a-shower`, `have-dinner`, `read-a-book`, `go-to-bed`, `pajamas`.
+**Status (29 Sep):** complete — all 77 received and live (including the two NEW files).
 
 ---
 
