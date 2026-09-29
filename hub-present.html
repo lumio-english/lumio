@@ -42,18 +42,20 @@
      re-theme automatically with zero JS changes -- only .card stays
      white on purpose, matching how every other themed page in this
      app keeps card-internal text dark regardless of page theme. */
-  #stage.theme-teen{ background: linear-gradient(160deg, #2B1B52 0%, #1C1038 100%); }
-  #stage.theme-teen .wall{ background: linear-gradient(180deg, #2B1B52 0%, #1C1038 100%); }
-  #stage.theme-teen .teal-band{ background: #7C3AED; opacity: .3; }
-  #stage.theme-teen .window{ background: rgba(139,92,246,.14); border-color: rgba(237,233,251,.25); }
-  #stage.theme-teen .window .cross-v, #stage.theme-teen .window .cross-h{ background: rgba(237,233,251,.2); }
-  #stage.theme-teen .shelf{ background: #4A3B7A; }
-  #stage.theme-teen .spark{ color: #A78BFA; }
-  #stage.theme-teen .brand .name{ color: #EDE9FB; }
-  #stage.theme-teen .pagetitle{ background: rgba(139,92,246,.18); color: #EDE9FB; box-shadow: none; }
-  #stage.theme-teen .counter{ background: rgba(139,92,246,.18); color: #C4B5FD; box-shadow: none; }
-  #stage.theme-teen .dot{ background: rgba(237,233,251,.2); }
-  #stage.theme-teen .dot.on{ background: #F97316; }
+  /* Teen theme (level3-6): the brand "night" palette from css/brand.css --
+     cocoa instead of the old indigo, same as student.html / lesson.html. */
+  #stage.theme-teen{ background: var(--lumio-night-grad); }
+  #stage.theme-teen .wall{ background: linear-gradient(180deg, #3A2A1C 0%, var(--lumio-night-deep) 100%); }
+  #stage.theme-teen .teal-band{ background: var(--lumio-orange); opacity: .22; }
+  #stage.theme-teen .window{ background: rgba(255,243,214,.07); border-color: rgba(255,243,214,.22); }
+  #stage.theme-teen .window .cross-v, #stage.theme-teen .window .cross-h{ background: rgba(255,243,214,.18); }
+  #stage.theme-teen .shelf{ background: #4A3A2A; }
+  #stage.theme-teen .spark{ color: var(--lumio-sun); }
+  #stage.theme-teen .brand .name{ color: var(--lumio-night-ink); }
+  #stage.theme-teen .pagetitle{ background: rgba(255,255,255,.10); color: var(--lumio-night-ink); box-shadow: none; }
+  #stage.theme-teen .counter{ background: rgba(255,255,255,.10); color: var(--lumio-night-muted); box-shadow: none; }
+  #stage.theme-teen .dot{ background: rgba(255,243,214,.2); }
+  #stage.theme-teen .dot.on{ background: var(--lumio-orange); }
   #stage.theme-teen .wgrid-card{ background: #fff; }
   #stage.theme-teen .wtxtinput{ border-color: #E3D6BE; }
 </style>
