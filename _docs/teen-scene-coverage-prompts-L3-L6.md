@@ -21,6 +21,8 @@ Every lesson in Levels 3-6 currently has ONE illustrated scene slide. The young 
 
 ## LEVEL3 -- Everyday Life
 
+**Status (30 Sep):** complete — all 38 received and live.
+
 **`level3/01-2.jpg`** -- Lesson 01 · Meet the Crew -- *I chat with my friends every day.*
 > Omar on a bench at the hangout spot, phone in hand, chatting happily; Ziad and Noor beside him leaning in to see the screen. The moment to show is exactly: "I chat with my friends every day." -- show it through actions, expressions and props, never as written words. Wide 16:9 illustrated scene in the Lumio English Teen Track style: flat vector cartoon with thick clean dark outlines, smooth soft shading, bright warm colors (orange, teal, yellow accents), expressive but not exaggerated faces, characters aged 13-16 with realistic teen proportions. Cinematic framing with a clear focal action in the center-left or center, a real environment with believable depth, and the bottom fifth of the image kept visually calm (soft, low-detail) so a caption box can sit over it. Culturally appropriate, modest, and positive. NO text, letters, numbers, speech bubbles, logos or watermarks anywhere in the image. Very high quality, consistent character designs exactly as described.
 
