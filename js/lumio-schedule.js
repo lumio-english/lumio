@@ -332,21 +332,33 @@
     // when attendance-marking buttons appear) means "today" as the person
     // actually using the app understands it -- their own wall clock, not
     // UTC -- so this now builds the date string from local getters instead.
-    const d = new Date();
-    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+    // Platform time (Asia/Riyadh) since 1 Oct 2026 -- see Lumio.tzNow in
+    // js/app.js. Every class date/time string on Lumio is Saudi time, so
+    // "today" has to be today in Riyadh, not on the device's clock.
+    return nowTz().date;
+  }
+  function nowTz() {
+    if (global.Lumio && typeof Lumio.tzNow === "function") return Lumio.tzNow();
+    const d = new Date(); const pad = n => String(n).padStart(2, "0");
+    return { date: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`, hm: `${pad(d.getHours())}:${pad(d.getMinutes())}`, dow: d.getDay(), minutes: d.getHours() * 60 + d.getMinutes() };
+  }
+  // A class stays "upcoming" until it has ENDED (start + duration), so the
+  // join link does not vanish the second the class starts.
+  function stillRunning(c, now) {
+    if (c.date !== now.date) return c.date > now.date;
+    const [h, m] = String(c.startTime || "00:00").split(":").map(Number);
+    return h * 60 + m + (Number(c.durationMinutes) || 45) > now.minutes;
   }
   function upcomingForStudent(studentName, limit) {
-    const today = todayStr();
-    const nowHM = new Date().toTimeString().slice(0, 5);
+    const now = nowTz();
     return listClasses({ studentName, status: "scheduled" })
-      .filter(c => c.date > today || (c.date === today && c.startTime >= nowHM))
+      .filter(c => stillRunning(c, now))
       .slice(0, limit || 50);
   }
   function upcomingForTeacher(teacherId, limit) {
-    const today = todayStr();
-    const nowHM = new Date().toTimeString().slice(0, 5);
+    const now = nowTz();
     return listClasses({ teacherId, status: "scheduled" })
-      .filter(c => c.date > today || (c.date === today && c.startTime >= nowHM))
+      .filter(c => stillRunning(c, now))
       .slice(0, limit || 50);
   }
 
@@ -543,8 +555,7 @@
     const all = listClasses({ teacherId }).filter(c => c.status !== "cancelled");
     const today = todayStr();
     const past = all.filter(c => c.date <= today);
-    const now = new Date();
-    const ym = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
+    const ym = today.slice(0, 7);
     const classesThisMonth = all.filter(c => (c.date || "").slice(0, 7) === ym && c.status === "completed").length;
     const fullyMarked = past.filter(c => completionState(c).complete).length;
     const punctualityPct = past.length ? Math.round((fullyMarked / past.length) * 100) : null;
@@ -716,16 +727,20 @@
     return listPatterns({ active: true, studentName }).length;
   }
 
-  function addWeeks(dateStr, n) {
-    const d = new Date(dateStr + "T00:00:00");
-    d.setDate(d.getDate() + n * 7);
-    return d.toISOString().slice(0, 10);
+  // Pure calendar arithmetic on "YYYY-MM-DD" strings. The old versions
+  // built a LOCAL midnight Date and then called .toISOString() (UTC), so
+  // in any zone ahead of UTC -- Riyadh, Cairo -- every generated date
+  // landed one day EARLY: a "Tuesday" pattern booked Mondays.
+  function addDaysStr(dateStr, n) {
+    const [y, m, d] = String(dateStr).split("-").map(Number);
+    const r = new Date(Date.UTC(y, m - 1, d + n));
+    return `${r.getUTCFullYear()}-${String(r.getUTCMonth() + 1).padStart(2, "0")}-${String(r.getUTCDate()).padStart(2, "0")}`;
   }
+  function addWeeks(dateStr, n) { return addDaysStr(dateStr, n * 7); }
   function nextDateForDayOfWeek(fromDateStr, dayOfWeek) {
-    const d = new Date(fromDateStr + "T00:00:00");
-    const diff = (dayOfWeek - d.getDay() + 7) % 7;
-    d.setDate(d.getDate() + diff);
-    return d.toISOString().slice(0, 10);
+    const [y, m, d] = String(fromDateStr).split("-").map(Number);
+    const dow = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+    return addDaysStr(fromDateStr, (dayOfWeek - dow + 7) % 7);
   }
 
   // Materializes real class rows for every active pattern, `weeks` weeks

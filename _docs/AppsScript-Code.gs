@@ -185,6 +185,9 @@ function getOrCreateSheet_(name, columns) {
 //   2. readRows_ normalises anything already stored as a Date (old rows)
 //      back to the string the site expects, using the Sheet's own
 //      timezone so the calendar day is the one the teacher typed.
+// Every class date/time on Lumio is Saudi wall time (see Lumio.TZ in
+// js/app.js); the Zoom meeting and any Date-cell repair use the same zone.
+var PLATFORM_TZ = "Asia/Riyadh";
 var DATE_ONLY_COLUMNS = { date: 1, startDate: 1, endDate: 1, deletedAt: 0 };
 var TIME_ONLY_COLUMNS = { startTime: 1 };
 var TEXT_NUMBER_COLUMNS = { loginCode: 1, phone: 1, pin: 1, id: 1, studentId: 1, teacherId: 1 };
@@ -198,7 +201,7 @@ function cellToString_(col, v) {
     if (!isNaN(parsed.getTime())) v = parsed;
   }
   if (v instanceof Date) {
-    var tz = SpreadsheetApp.getActiveSpreadsheet().getSpreadsheetTimeZone();
+    var tz = PLATFORM_TZ;
     if (TIME_ONLY_COLUMNS[col]) return Utilities.formatDate(v, tz, "HH:mm");
     if (DATE_ONLY_COLUMNS[col]) return Utilities.formatDate(v, tz, "yyyy-MM-dd");
     return v.toISOString();
@@ -536,7 +539,7 @@ function autoGenerateZoomLinks() {
     var startTime = row[startCol - 1];
     if (status !== "scheduled" || link || !dateStr || !startTime) continue;
 
-    var startDate = new Date(dateStr + "T" + startTime + ":00");
+    var startDate = new Date(dateStr + "T" + startTime + ":00+03:00"); // Saudi wall time
     if (isNaN(startDate.getTime())) continue;
     if (startDate < now || startDate > twoHoursOut) continue; // not in the "next 2 hours" window
 
@@ -578,7 +581,7 @@ function getZoomAccessToken_(accountId, clientId, clientSecret) {
 // Asia/Riyadh, so the meeting's actual start time matches what teachers
 // booked). Returns the join_url, or null on failure.
 function createZoomMeeting_(accessToken, hostEmail, topic, startDate, durationMinutes) {
-  var tz = Session.getScriptTimeZone();
+  var tz = PLATFORM_TZ; // class times on Lumio are Saudi time
   var startIso = Utilities.formatDate(startDate, tz, "yyyy-MM-dd'T'HH:mm:ss");
   var payload = {
     topic: topic,

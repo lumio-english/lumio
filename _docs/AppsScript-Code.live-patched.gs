@@ -109,6 +109,9 @@ function getOrCreateSheet_(name, columns) {
 //   2. readRows_ normalises anything already stored as a Date (old rows)
 //      back to the string the site expects, using the Sheet's own
 //      timezone so the calendar day is the one the teacher typed.
+// Every class date/time on Lumio is Saudi wall time (see Lumio.TZ in
+// js/app.js); the Zoom meeting and any Date-cell repair use the same zone.
+var PLATFORM_TZ = "Asia/Riyadh";
 var DATE_ONLY_COLUMNS = { date: 1, startDate: 1, endDate: 1, deletedAt: 0 };
 var TIME_ONLY_COLUMNS = { startTime: 1 };
 var TEXT_NUMBER_COLUMNS = { loginCode: 1, phone: 1, pin: 1, id: 1, studentId: 1, teacherId: 1 };
@@ -122,7 +125,7 @@ function cellToString_(col, v) {
     if (!isNaN(parsed.getTime())) v = parsed;
   }
   if (v instanceof Date) {
-    var tz = SpreadsheetApp.getActiveSpreadsheet().getSpreadsheetTimeZone();
+    var tz = PLATFORM_TZ;
     if (TIME_ONLY_COLUMNS[col]) return Utilities.formatDate(v, tz, "HH:mm");
     if (DATE_ONLY_COLUMNS[col]) return Utilities.formatDate(v, tz, "yyyy-MM-dd");
     return v.toISOString();
@@ -378,7 +381,7 @@ function autoGenerateZoomLinks() {
   for (var i = 0; i < values.length; i++) {
     var row = values[i];
     if (row[statusCol - 1] !== "scheduled" || row[linkCol - 1] || !row[dateCol - 1] || !row[startCol - 1]) continue;
-    var startDate = new Date(row[dateCol - 1] + "T" + row[startCol - 1] + ":00");
+    var startDate = new Date(row[dateCol - 1] + "T" + row[startCol - 1] + ":00+03:00"); // Saudi wall time
     if (isNaN(startDate.getTime()) || startDate < now || startDate > twoHoursOut) continue;
     if (!accessToken) accessToken = getZoomAccessToken_(accountId, clientId, clientSecret);
     if (!accessToken) { Logger.log("Zoom auto-link: couldn't get an access token."); return; }
@@ -407,7 +410,7 @@ function getZoomAccessToken_(accountId, clientId, clientSecret) {
 }
 
 function createZoomMeeting_(accessToken, hostEmail, topic, startDate, durationMinutes) {
-  var tz = Session.getScriptTimeZone();
+  var tz = PLATFORM_TZ; // class times on Lumio are Saudi time
   var startIso = Utilities.formatDate(startDate, tz, "yyyy-MM-dd'T'HH:mm:ss");
   var payload = { topic: topic, type: 2, start_time: startIso, duration: durationMinutes, timezone: tz,
     settings: { join_before_host: true, waiting_room: false, approval_type: 2 } };

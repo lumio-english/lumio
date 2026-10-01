@@ -1598,21 +1598,16 @@
 
       function fmtSchedDay(dateStr) {
         const today = LumioSchedule.todayStr();
-        const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
-        // Same UTC-vs-local bug as LumioSchedule.todayStr() (see its
-        // comment) -- built from local getters instead of .toISOString()
-        // so "Tomorrow" lines up with the student's own calendar day.
-        const tomorrowStr = tomorrow.getFullYear() + "-" + String(tomorrow.getMonth() + 1).padStart(2, "0") + "-" + String(tomorrow.getDate()).padStart(2, "0");
+        const tomorrowStr = Lumio.tzAddDays(today, 1); // Riyadh calendar day
         if (dateStr === today) return "Today";
         if (dateStr === tomorrowStr) return "Tomorrow";
         const d = new Date(dateStr + "T00:00:00");
         return d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
       }
-      function fmtSchedTime(hm) {
-        const [h, m] = hm.split(":").map(Number);
-        const ampm = h >= 12 ? "PM" : "AM";
-        const h12 = h % 12 === 0 ? 12 : h % 12;
-        return `${h12}:${String(m).padStart(2, "0")} ${ampm}`;
+      // Class times are Saudi time; when this phone is set to another
+      // zone, add "(x:xx your time)" so nobody shows up an hour off.
+      function fmtSchedTime(hm, dateStr) {
+        return dateStr ? Lumio.fmtClassTime(dateStr, hm) : Lumio.fmt12(hm) + " " + Lumio.TZ_LABEL;
       }
 
       if (!upcoming.length) {
@@ -1623,14 +1618,14 @@
           <div class="sd-next-class">
             <div class="ic">🎥</div>
             <div>
-              <div class="when">${fmtSchedDay(next.date)} at ${fmtSchedTime(next.startTime)}</div>
+              <div class="when">${fmtSchedDay(next.date)} at ${fmtSchedTime(next.startTime, next.date)}</div>
               <div class="sub">Next class with ${next.teacherName || "your teacher"} · ${next.durationMinutes} min${next.students && next.students.length > 1 ? ` · with ${next.students.length - 1} classmate${next.students.length > 2 ? "s" : ""}` : ""}</div>
               ${next.meetingLink ? `<a href="${next.meetingLink}" target="_blank" rel="noopener" class="sd-join-link">🔗 Join class link</a>` : ""}
             </div>
           </div>`;
         listEl.innerHTML = upcoming.slice(1).map(c => `
           <div class="sd-class-row">
-            <div class="dt">${fmtSchedDay(c.date)}<span>${fmtSchedTime(c.startTime)}</span></div>
+            <div class="dt">${fmtSchedDay(c.date)}<span>${fmtSchedTime(c.startTime, c.date)}</span></div>
             <div>
               <div class="who">${c.teacherName || "Your teacher"}</div>
               <div class="meta">${c.durationMinutes} min${c.notes ? " · " + c.notes : ""}</div>
@@ -1695,13 +1690,13 @@
       Object.values(levelProg).forEach(r => { if (r.date) dates.add(r.date); });
     });
     if (!dates.size) return 0;
-    const fmt = d => d.toISOString().slice(0, 10);
+    // Days are counted on the Riyadh calendar (same clock saveResult uses).
     let streak = 0;
-    let cursor = new Date();
-    if (!dates.has(fmt(cursor))) cursor.setDate(cursor.getDate() - 1);
-    while (dates.has(fmt(cursor))) {
+    let cursor = Lumio.tzNow().date;
+    if (!dates.has(cursor)) cursor = Lumio.tzAddDays(cursor, -1);
+    while (dates.has(cursor)) {
       streak++;
-      cursor.setDate(cursor.getDate() - 1);
+      cursor = Lumio.tzAddDays(cursor, -1);
     }
     return streak;
   }
@@ -2156,14 +2151,14 @@
       const upcoming = LumioSchedule.upcomingForStudent(rosterProfile.name, 10) || [];
       const now = Date.now();
       upcoming.forEach(c => {
-        const start = new Date(c.date + "T" + (c.startTime || "00:00") + ":00").getTime();
+        const start = Lumio.tzToDate(c.date, c.startTime || "00:00").getTime(); // Riyadh wall time -> real instant
         if (isNaN(start)) return;
         const minsUntil = (start - now) / 60000;
         if (minsUntil > 0 && minsUntil <= 60) {
           const lesson = c.lessonNumber ? `Lesson ${c.lessonNumber}` : "Your class";
           const added = LumioProfiles.addMessageOnce(rosterProfile.id, `reminder_${c.id}`, {
             type: "class_reminder",
-            text: `⏰ ${lesson} starts in about ${Math.max(1, Math.round(minsUntil))} minute${Math.round(minsUntil) === 1 ? "" : "s"} (${c.startTime}). Get your notebook ready!${c.meetingLink ? " Your join link is on the dashboard." : ""}`,
+            text: `⏰ ${lesson} starts in about ${Math.max(1, Math.round(minsUntil))} minute${Math.round(minsUntil) === 1 ? "" : "s"} (${Lumio.fmtClassTime(c.date, c.startTime)}). Get your notebook ready!${c.meetingLink ? " Your join link is on the dashboard." : ""}`,
             meta: { classId: c.id },
           });
           if (added) { refreshBadge(); showToast(`⏰ ${lesson} starts soon!`, "⏰"); }
@@ -2589,7 +2584,7 @@
     if (stars < existing.stars) return { counted: false, reason: "not-better", lessonNum: gamesLessonNum };
     all[u.name] = all[u.name] || {};
     all[u.name][level] = all[u.name][level] || {};
-    all[u.name][level][gamesLessonNum] = { stars, score, total, date: new Date().toISOString().slice(0, 10) };
+    all[u.name][level][gamesLessonNum] = { stars, score, total, date: Lumio.tzNow().date };
     try { localStorage.setItem("lumio_progress", JSON.stringify(all)); } catch (e) { return { counted: false, reason: "storage-failed" }; }
     return { counted: true, lessonNum: gamesLessonNum };
   }

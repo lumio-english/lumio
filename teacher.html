@@ -3555,9 +3555,7 @@
   function fmtDayLabel(dateStr) {
     const today = LumioSchedule.todayStr();
     const d = new Date(dateStr + "T00:00:00");
-    const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
-    // Same UTC-vs-local fix as LumioSchedule.todayStr() -- see its comment.
-    const tomorrowStr = tomorrow.getFullYear() + "-" + String(tomorrow.getMonth() + 1).padStart(2, "0") + "-" + String(tomorrow.getDate()).padStart(2, "0");
+    const tomorrowStr = Lumio.tzAddDays(today, 1); // platform (Riyadh) calendar, not the device's
     if (dateStr === today) return "Today";
     if (dateStr === tomorrowStr) return "Tomorrow";
     return d.toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
@@ -3568,13 +3566,14 @@
     const h12 = h % 12 === 0 ? 12 : h % 12;
     return `${h12}:${String(m).padStart(2, "0")} ${ampm}`;
   }
+  // "6:00 PM Saudi time (8:00 AM your time)" -- every stored class time is
+  // Riyadh wall time; the hint only appears when this device is elsewhere.
+  function fmtTimeTz(dateStr, hm) { return Lumio.fmtClassTime(dateStr, hm); }
   function rangeToDates(range) {
     const today = LumioSchedule.todayStr();
     if (range === "today") return { from: today, to: today };
     if (range === "week") {
-      const end = new Date(); end.setDate(end.getDate() + 7);
-      // Same UTC-vs-local fix as LumioSchedule.todayStr() -- see its comment.
-      const endStr = end.getFullYear() + "-" + String(end.getMonth() + 1).padStart(2, "0") + "-" + String(end.getDate()).padStart(2, "0");
+      const endStr = Lumio.tzAddDays(today, 7);
       return { from: today, to: endStr };
     }
     if (range === "past") return { from: "0000-01-01", to: today };
@@ -3653,7 +3652,7 @@
             </span>` : ""}
         </div>`).join("");
       row.innerHTML = `
-        <div class="td-class-time">${fmtTime(c.startTime)}<span>${c.durationMinutes} min</span></div>
+        <div class="td-class-time" title="${fmtTimeTz(c.date, c.startTime)}">${fmtTime(c.startTime)}<span>${c.durationMinutes} min</span></div>
         <div class="td-class-info">
           <div class="who">
             ${c.status === "cancelled" ? '<span class="td-badge grey">cancelled</span>' : ""}
@@ -3724,7 +3723,10 @@
   const calRangeLabel = document.getElementById("calRangeLabel");
   const calTzLabel = document.getElementById("calTzLabel");
   const calEmptyHint = document.getElementById("calEmptyHint");
-  let calWeekStart = mondayOf(new Date());
+  // "Today" on the calendar is today in Riyadh (the platform clock), built
+  // as a local-midnight Date so the existing day arithmetic keeps working.
+  function platformToday() { const [y, m, d] = LumioSchedule.todayStr().split("-").map(Number); return new Date(y, m - 1, d); }
+  let calWeekStart = mondayOf(platformToday());
 
   function mondayOf(d) {
     const x = new Date(d); x.setHours(0, 0, 0, 0);
@@ -3766,7 +3768,8 @@
     for (let i = 0; i < 7; i++) { const d = new Date(calWeekStart); d.setDate(d.getDate() + i); days.push(d); }
     const from = toDateStr(days[0]), to = toDateStr(days[6]);
     calRangeLabel.textContent = `${from} - ${to}`;
-    calTzLabel.textContent = "🌐 " + Intl.DateTimeFormat().resolvedOptions().timeZone;
+    calTzLabel.textContent = "🌐 Saudi time (Asia/Riyadh)" + (Lumio.deviceDiffersFromTz() ? " · your device: " + Lumio.deviceTz() : "");
+    calTzLabel.title = "All class times on Lumio are Saudi time. Hover a class to see it in your own time.";
 
     let classes = LumioSchedule.listClasses({ from, to });
     if (scope === "mine" && activeTeacherId) classes = classes.filter(c => c.teacherId === activeTeacherId);
@@ -3819,14 +3822,13 @@
         const capacityWarn = c.status !== "cancelled" && (c.students.length < 2 || c.students.length > 4);
         const capClass = capacityWarn ? "capacity-warn" : "";
         const title = `English Club${c.level ? " · " + c.level : ""}${c.lessonNumber ? " · Lesson " + c.lessonNumber : ""}${capacityWarn ? " — ⚠ group size outside 2–4" : ""}`;
-        col += `<div class="td-cal-block ${statusClass} ${attnClass} ${capClass}" style="top:${top}px;height:${height}px" data-class-id="${c.id}" title="${title} — ${c.students.map(s=>s.studentName).join(', ')}">
+        col += `<div class="td-cal-block ${statusClass} ${attnClass} ${capClass}" style="top:${top}px;height:${height}px" data-class-id="${c.id}" title="${fmtTimeTz(c.date, c.startTime)} · ${title} — ${c.students.map(s=>s.studentName).join(', ')}">
           <div class="cb-title">${c.patternId ? "🔁 " : ""}${capacityWarn ? "⚠ " : ""}${fmtTime(c.startTime)} · ${c.students.length}/${c.students.length} student${c.students.length===1?"":"s"}</div>
           <div class="cb-meta">${c.level || c.notes || "Class"}</div>
         </div>`;
       });
       if (isToday) {
-        const now = new Date();
-        const nowMin = now.getHours() * 60 + now.getMinutes();
+        const nowMin = Lumio.tzNow().minutes; // Riyadh clock
         if (nowMin >= CAL_START_HOUR * 60 && nowMin <= CAL_END_HOUR * 60) {
           const top = ((nowMin - CAL_START_HOUR * 60) / CAL_ROW_MIN) * CAL_ROW_PX;
           col += `<div class="td-cal-nowline" style="top:${top}px"></div>`;
@@ -3885,7 +3887,7 @@
     openClassModal(null, { bulk: true });
   };
 
-  document.getElementById("calTodayBtn").onclick = () => { calWeekStart = mondayOf(new Date()); renderWeekView(); };
+  document.getElementById("calTodayBtn").onclick = () => { calWeekStart = mondayOf(platformToday()); renderWeekView(); };
   document.getElementById("calPrevBtn").onclick = () => { calWeekStart.setDate(calWeekStart.getDate() - 7); renderWeekView(); };
   document.getElementById("calNextBtn").onclick = () => { calWeekStart.setDate(calWeekStart.getDate() + 7); renderWeekView(); };
 
@@ -3942,7 +3944,7 @@
         <div class="ic">🎯</div>
         <div class="val">
           <div class="main">${c.level || "English Club"}${c.lessonNumber ? " · Lesson " + c.lessonNumber : ""}</div>
-          <div class="sub">${fmtDayLabel(c.date)} (${c.date}) ${fmtTime(c.startTime)}${c.durationMinutes ? " – " + fmtTime(minutesToHM(classEndMinutes(c))) : ""}</div>
+          <div class="sub">${fmtDayLabel(c.date)} (${c.date}) ${fmtTime(c.startTime)}${c.durationMinutes ? " – " + fmtTime(minutesToHM(classEndMinutes(c))) : ""} · Saudi time${Lumio.deviceDiffersFromTz() ? ` <span style="opacity:.75">(${fmtTimeTz(c.date, c.startTime).replace(/^.*\(/, "(")}</span>` : ""}</div>
         </div>
       </div>
       <div class="td-cd-row">

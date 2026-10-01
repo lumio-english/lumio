@@ -647,7 +647,7 @@ function submitHomework() {
     // pure addition, not a change to what's already there.
     spellingCorrect, spellingTotal: lesson.vocab.length,
     quizCorrect, quizTotal: qWordsCountSafe(),
-    date: new Date().toISOString().slice(0, 10),
+    date: (window.Lumio && Lumio.tzNow) ? Lumio.tzNow().date : new Date().toISOString().slice(0, 10),
   };
   if (typeof Lumio !== "undefined" && Lumio.saveHomework) {
     Lumio.saveHomework(studentName, level, num, record);

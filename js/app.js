@@ -58,7 +58,7 @@ const Lumio = (() => {
     all[name][levelId] = all[name][levelId] || {};
     const prev = all[name][levelId][lessonNum];
     if (!prev || stars >= prev.stars) {
-      all[name][levelId][lessonNum] = { stars, score, total, date: new Date().toISOString().slice(0, 10) };
+      all[name][levelId][lessonNum] = { stars, score, total, date: tzNow().date }; // Riyadh calendar day
     }
     set("lumio_progress", all);
   };
@@ -85,7 +85,7 @@ const Lumio = (() => {
   const lastReportDateFor = (name) => reportLogAll()[name] || null;
   const logReportSent = (name) => {
     const all = reportLogAll();
-    all[name] = new Date().toISOString().slice(0, 10);
+    all[name] = tzNow().date;
     set("lumio_report_log", all);
   };
 
@@ -389,10 +389,76 @@ const Lumio = (() => {
     return { countryCode: "20", local: digits };
   };
 
+  /* ---------- Platform time zone ----------
+     Every class time on Lumio is Saudi time (Asia/Riyadh, UTC+3, no
+     daylight saving). Classes are stored as a plain "YYYY-MM-DD" date
+     plus "HH:MM" clock time and those strings MEAN Riyadh wall time,
+     whatever device is looking at them. Before this, "18:00" was read on
+     each device's own clock, so a teacher in Cairo and a parent in
+     Riyadh disagreed by an hour and a laptop set to another zone showed
+     the class hours off. Everything that compares "now" with a class
+     (today's date, upcoming classes, class started, streak days) goes
+     through these helpers. */
+  const TZ = "Asia/Riyadh";
+  const TZ_LABEL = "Saudi time";
+  const TZ_LABEL_AR = "بتوقيت السعودية";
+  const TZ_OFFSET_MIN = 180; // Riyadh never changes clocks
+  const pad2 = n => String(n).padStart(2, "0");
+  // The date/time it is right now on the Riyadh clock.
+  const tzNow = (at) => {
+    const d = at ? new Date(at) : new Date();
+    const r = new Date(d.getTime() + (TZ_OFFSET_MIN + d.getTimezoneOffset()) * 60000);
+    return {
+      date: `${r.getFullYear()}-${pad2(r.getMonth() + 1)}-${pad2(r.getDate())}`,
+      hm: `${pad2(r.getHours())}:${pad2(r.getMinutes())}`,
+      dow: r.getDay(),
+      minutes: r.getHours() * 60 + r.getMinutes(),
+    };
+  };
+  // The real instant (a Date) for a Riyadh wall-clock date + "HH:MM".
+  const tzToDate = (dateStr, hm) => {
+    const [y, m, d] = String(dateStr || "").split("-").map(Number);
+    const [h, mi] = String(hm || "00:00").split(":").map(Number);
+    return new Date(Date.UTC(y, (m || 1) - 1, d || 1, (h || 0) - TZ_OFFSET_MIN / 60, mi || 0));
+  };
+  // Date arithmetic on "YYYY-MM-DD" strings that never touches UTC.
+  const tzAddDays = (dateStr, n) => {
+    const [y, m, d] = String(dateStr).split("-").map(Number);
+    const r = new Date(Date.UTC(y, m - 1, d + n));
+    return `${r.getUTCFullYear()}-${pad2(r.getUTCMonth() + 1)}-${pad2(r.getUTCDate())}`;
+  };
+  const tzDayOfWeek = (dateStr) => {
+    const [y, m, d] = String(dateStr).split("-").map(Number);
+    return new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+  };
+  const deviceTz = () => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch (e) { return ""; } };
+  // Is this device's clock different from Riyadh right now?
+  const deviceDiffersFromTz = () => Math.round(-new Date().getTimezoneOffset()) !== TZ_OFFSET_MIN;
+  const fmt12 = (hm) => {
+    const [h, m] = String(hm || "00:00").split(":").map(Number);
+    const ap = h >= 12 ? "PM" : "AM";
+    return `${((h + 11) % 12) + 1}:${pad2(m)} ${ap}`;
+  };
+  // "6:00 PM Saudi time" plus, when the device is elsewhere, "(5:00 PM your time)".
+  const fmtClassTime = (dateStr, hm, opts) => {
+    const o = opts || {};
+    let out = fmt12(hm) + " " + (o.ar ? TZ_LABEL_AR : TZ_LABEL);
+    if (deviceDiffersFromTz()) {
+      const local = tzToDate(dateStr, hm);
+      const lh = `${pad2(local.getHours())}:${pad2(local.getMinutes())}`;
+      const sameDay = local.getFullYear() === Number(dateStr.slice(0, 4)) && local.getMonth() + 1 === Number(dateStr.slice(5, 7)) && local.getDate() === Number(dateStr.slice(8, 10));
+      const dayNote = sameDay ? "" : ` on ${local.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}`;
+      out += o.ar ? ` (${fmt12(lh)} بتوقيتك${dayNote})` : ` (${fmt12(lh)} your time${dayNote})`;
+    }
+    return out;
+  };
+
   return { LEVELS, AVAILABLE_LEVELS, login, user, logout, requireUser,
            progressAll, progressFor, saveResult, homeworkAll, homeworkFor, saveHomework,
            saveRecording, listRecordingsFor, listAllRecordings,
            lastReportDateFor, logReportSent,
            speak, speakPhonicsSound, beep, confetti, toast, shuffle, qs, letterTile,
-           COUNTRY_CODES, combinePhone, splitPhone };
+           COUNTRY_CODES, combinePhone, splitPhone,
+           TZ, TZ_LABEL, TZ_LABEL_AR, TZ_OFFSET_MIN, tzNow, tzToDate, tzAddDays, tzDayOfWeek,
+           deviceTz, deviceDiffersFromTz, fmt12, fmtClassTime };
 })();
