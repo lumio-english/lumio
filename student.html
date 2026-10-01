@@ -916,6 +916,7 @@
       <div class="mp-fields" id="mpFields"></div>
       <div class="mp-subbanner" id="mpSubBanner"></div>
       <div class="mp-tiles" id="mpTiles"></div>
+      <div class="mp-grades" id="mpLevelTest" style="display:none"></div>
       <div class="mp-grades" id="mpGrades"></div>
       <button class="mp-report-btn" id="mpReportBtn">📄 Download my performance report</button>
     </div>
@@ -1519,10 +1520,14 @@
   const hasWritingPractice = ["pre-a", "level1", "level2", "level3"].includes(level);
   if (!hasWritingPractice) document.getElementById("writingBtn").style.display = "none";
   if (done >= total) {
-    document.getElementById("missionTitle").textContent = "Level complete! 🎉";
-    document.getElementById("missionSub").textContent = "You finished every lesson — go check your certificate!";
-    document.getElementById("missionBtn").textContent = "🏆 See certificate";
-    document.getElementById("missionBtn").href = "certificates.html";
+    const lt = Lumio.levelTestFor ? Lumio.levelTestFor(u.name, level) : null;
+    const ltPassed = !!(lt && lt.pct >= Lumio.TEST_PASS_PCT);
+    document.getElementById("missionTitle").textContent = ltPassed ? "Level complete! 🎉" : "All lessons done! 🎉";
+    document.getElementById("missionSub").textContent = ltPassed ? `You passed the level test with ${lt.pct}% — your certificate is ready!`
+      : lt ? `Your best level-test score is ${lt.pct}% — you need ${Lumio.TEST_PASS_PCT}% for the certificate. Try again!`
+           : "One last step: take the level test to earn your certificate.";
+    document.getElementById("missionBtn").textContent = ltPassed ? "🏆 See certificate" : lt ? "🔁 Retake the level test" : "📝 Take the level test";
+    document.getElementById("missionBtn").href = ltPassed ? "certificates.html" : "level-test.html";
     document.getElementById("homeworkBtn").style.display = "none";
     document.getElementById("worksheetBtn").style.display = "none";
     document.getElementById("writingBtn").style.display = "none";
@@ -2334,6 +2339,13 @@
       `;
       const tg = teacherGrades(p);
       const gradesEl = document.getElementById("mpGrades");
+      const lt = Lumio.levelTestFor ? Lumio.levelTestFor(p.name, p.level || "pre-a") : null;
+      const ltEl = document.getElementById("mpLevelTest");
+      if (ltEl) {
+        ltEl.innerHTML = lt ? `<div class="mp-grades-head"><div class="mp-grade-avg ${lt.pct >= Lumio.TEST_PASS_PCT ? "teal" : "coral"}"><b>${lt.pct}%</b><span>${lt.band}</span></div>
+          <div class="mp-grades-sub">Level test · اختبار المستوى — ${lt.score}/${lt.total} on ${lt.date}${lt.attempts > 1 ? ` · ${lt.attempts} attempts` : ""}</div></div>` : "";
+        ltEl.style.display = lt ? "" : "none";
+      }
       if (gradesEl) {
         gradesEl.innerHTML = tg.list.length ? `
           <div class="mp-grades-head">
@@ -2406,6 +2418,10 @@
               <div class="pr-stat"><b>${p.rewardPoints || 0}</b><span>Reward points</span></div>
               <div class="pr-stat"><b>${p.sessionsRemaining || 0}</b><span>Sessions left</span></div>
             </div>
+          </div>
+          <div class="pr-section">
+            <h2>📝 Level test · اختبار المستوى</h2>
+            ${(() => { const lt = Lumio.levelTestFor ? Lumio.levelTestFor(p.name, level) : null; return lt ? `<div class="pr-stats"><div class="pr-stat"><b>${lt.pct}%</b><span>Best score (${lt.score}/${lt.total})</span></div><div class="pr-stat"><b>${lt.band}</b><span>Result</span></div><div class="pr-stat"><b>${lt.date}</b><span>Taken${lt.attempts > 1 ? ` · ${lt.attempts} attempts` : ""}</span></div></div>` : `<p style="color:#8891A3;font-size:.85rem">Not taken yet — opens after all ${total} lessons.</p>`; })()}
           </div>
           <div class="pr-section">
             <h2>🎓 Teacher grades · تقييم المعلم</h2>

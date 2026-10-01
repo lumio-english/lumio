@@ -2605,6 +2605,10 @@
         <div class="td-dp-field"><span class="ic">🎂</span><div><div class="lbl">Age</div><div class="val">${p.age != null ? p.age : "<i>Not set</i>"}</div></div></div>
         <div class="td-dp-field"><span class="ic">${p.gender === "F" ? "♀️" : "♂️"}</span><div><div class="lbl">Gender</div><div class="val">${p.gender === "M" ? "Male" : p.gender === "F" ? "Female" : "<i>Not set</i>"}</div></div></div>
         <div class="td-dp-field"><span class="ic">🎓</span><div><div class="lbl">Grade</div><div class="val">${p.grade || "<i>Not set</i>"}</div></div></div>
+        ${(() => { try { const GP={"A+":4.3,"A":4,"A-":3.7,"B+":3.3,"B":3,"B-":2.7,"C+":2.3,"C":2,"C-":1.7,"D":1,"F":0}; const gl=LumioSchedule.gradesForStudent(p.name,p.level||"pre-a"); const lt=Lumio.levelTestFor?Lumio.levelTestFor(p.name,p.level||"pre-a"):null;
+          let avg="—"; if(gl.length){const pc=gl.reduce((s,g)=>s+(GP[g.grade]||0),0)/gl.length/4.3*100; avg=Object.keys(GP).reduce((b,L)=>Math.abs(GP[L]/4.3*100-pc)<Math.abs(GP[b]/4.3*100-pc)?L:b,"A+")+` (${gl.length})`;}
+          return `<div class="td-dp-field"><span class="ic">📊</span><div><div class="lbl">Teacher grade avg</div><div class="val">${avg}</div></div></div>
+        <div class="td-dp-field"><span class="ic">📝</span><div><div class="lbl">Level test</div><div class="val">${lt?`${lt.pct}% · ${lt.band} · ${lt.date}`:"<i>Not taken</i>"}</div></div></div>`; } catch(e){ return ""; } })()}
         <div class="td-dp-field"><span class="ic">🌍</span><div><div class="lbl">Country</div><div class="val">${p.country || "<i>Not set</i>"}</div></div></div>
       </div>
       ${tagsHtml ? `<div class="td-dp-tags">${tagsHtml}</div>` : ""}
@@ -5114,6 +5118,20 @@
         <a class="act present" href="songs.html?level=${level}&from=teacher" target="_blank" rel="noopener">♪ Open songs</a>
       </div>`;
     matGrid.appendChild(songsRow);
+
+    // Level test + certificate: what the student sees after the 20th
+    // lesson. Teacher preview is always open and never saves a score.
+    const testRow = document.createElement("div");
+    testRow.className = "td-mat-row";
+    testRow.style.borderColor = "#1E4FA3";
+    testRow.style.gridColumn = "1 / -1";
+    testRow.innerHTML = `<div class="td-mat-top"><div class="num" style="background:#1E4FA3;color:#fff">✓</div><b>Level test &amp; certificate</b></div>
+      <div style="font-size:.78rem;color:var(--td-muted);margin:-4px 0 8px">After all 20 lessons the student takes a 30-question level test (pass mark 70%, best score kept); the certificate shows the test score, result band, teacher-grade average, attendance and what the student can now do.</div>
+      <div class="td-mat-actions">
+        <a class="act present" href="level-test.html?level=${level}&preview=1" target="_blank" rel="noopener">📝 Preview level test</a>
+        <a class="act pptx" href="certificates.html?level=${level}&preview=1" target="_blank" rel="noopener">🏆 Preview certificate</a>
+      </div>`;
+    matGrid.appendChild(testRow);
 
     titles.forEach((title, i) => {
       const n = i + 1;

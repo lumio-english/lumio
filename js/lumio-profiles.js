@@ -387,7 +387,7 @@
   // classes no longer matching). Move every name-keyed record over.
   function migrateStudentName_(oldName, newName, id) {
     try {
-      ["lumio_progress", "lumio_homework", "lumio_report_log"].forEach(k => {
+      ["lumio_progress", "lumio_homework", "lumio_level_tests", "lumio_report_log"].forEach(k => {
         const all = JSON.parse(safeGet(k) || "{}") || {};
         if (all[oldName] === undefined) return;
         if (k === "lumio_report_log") { all[newName] = all[oldName]; }

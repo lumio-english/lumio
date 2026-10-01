@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/logo/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/logo/favicon-180.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Level Test — Lumio English</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="css/brand.css">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  body{background:var(--lumio-page-bg);min-height:100vh;margin:0;font-family:'Nunito',sans-serif;color:var(--lumio-ink)}
+  body.theme-teen{background:var(--lumio-night-grad);color:var(--lumio-night-ink)}
+  .lt-wrap{max-width:600px;margin:0 auto;padding:26px 18px 70px}
+  .lt-top{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+  .lt-top img{height:40px}
+  .lt-top b{font-family:'Baloo 2',sans-serif;font-size:1.05rem;color:var(--lumio-cocoa)}
+  .lt-top .sp{flex:1}
+  .lt-top a{color:var(--lumio-ink-soft);text-decoration:none;background:#fff;padding:8px 16px;border-radius:999px;font-weight:800;font-size:.85rem;box-shadow:var(--lumio-sh-sm)}
+  body.theme-teen .lt-top b{color:var(--lumio-night-ink)} body.theme-teen .lt-top a{background:rgba(255,255,255,.1);color:var(--lumio-night-ink);box-shadow:none}
+  .lt-card{background:#fff;border-radius:24px;padding:26px 24px;box-shadow:var(--lumio-sh-md);color:var(--lumio-ink)}
+  .lt-card h1{font-family:'Baloo 2',sans-serif;font-size:1.5rem;margin:0 0 4px;text-align:center;color:var(--lumio-cocoa)}
+  .lt-card .lead{text-align:center;color:var(--lumio-muted);font-weight:700;margin:0 0 18px;font-size:.9rem}
+  .lt-badge{display:block;width:fit-content;margin:0 auto 12px;background:var(--lumio-orange-soft);color:var(--lumio-orange-dark);font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.76rem;padding:5px 14px;border-radius:999px}
+  .lt-list{background:var(--lumio-cream);border-radius:16px;padding:14px 18px;margin:0 0 16px}
+  .lt-list h3{font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:.3px;color:var(--lumio-muted);margin:0 0 8px}
+  .lt-list ul{margin:0;padding-left:20px}.lt-list li{margin-bottom:4px;font-weight:700;font-size:.9rem}
+  .lt-list li span{display:block;direction:rtl;text-align:right;font-weight:600;color:var(--lumio-muted);font-size:.84rem}
+  .lt-prog{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+  .lt-bar{flex:1;height:10px;background:#F3EEE4;border-radius:999px;overflow:hidden}.lt-bar>div{height:100%;background:var(--lumio-grad-brand);border-radius:999px;transition:width .3s}
+  .lt-lbl{font-weight:800;font-size:.8rem;color:var(--lumio-muted);white-space:nowrap}
+  .lt-kind{display:inline-block;background:var(--lumio-teal-soft);color:var(--lumio-teal);font-weight:800;font-size:.72rem;padding:3px 10px;border-radius:999px;margin-bottom:10px}
+  .lt-q{text-align:center;margin-bottom:16px}.lt-q h2{font-family:'Baloo 2',sans-serif;font-size:1.25rem;margin:0;line-height:1.4;color:var(--lumio-cocoa)}
+  .lt-q .ar{direction:rtl;font-size:1.3rem;font-weight:800;color:var(--lumio-cocoa)}
+  .lt-q img{width:170px;height:170px;object-fit:contain;display:block;margin:0 auto 10px;background:var(--lumio-cream);border-radius:18px;padding:8px}
+  .lt-q .gap{background:var(--lumio-sun-soft);border-bottom:3px solid var(--lumio-sun);padding:0 10px;border-radius:6px}
+  .lt-listen{display:inline-flex;align-items:center;gap:8px;background:var(--lumio-grad-brand);color:#fff;border:none;border-radius:999px;padding:12px 22px;font-weight:800;font-family:inherit;font-size:1rem;cursor:pointer;margin-bottom:6px;box-shadow:0 8px 18px rgba(249,115,22,.3)}
+  .lt-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .lt-opt{padding:14px 12px;border-radius:14px;border:2px solid #EEE7DA;background:#fff;font-weight:800;font-size:1rem;cursor:pointer;font-family:inherit;color:var(--lumio-ink);transition:transform .12s,border-color .15s,background .15s}
+  .lt-opt:hover{border-color:var(--lumio-orange);transform:translateY(-1px)}
+  .lt-opt.correct{background:var(--lumio-green-soft);border-color:var(--lumio-green)}.lt-opt.wrong{background:var(--lumio-coral-soft);border-color:var(--lumio-coral)}
+  .lt-opt:disabled{cursor:default;transform:none}
+  .lt-res-score{text-align:center;margin:6px 0 18px}
+  .lt-res-score b{font-family:'Baloo 2',sans-serif;font-size:3.2rem;line-height:1;color:var(--lumio-orange);display:block}
+  .lt-res-score span{font-weight:800;color:var(--lumio-muted)}
+  .lt-band{display:inline-block;padding:6px 18px;border-radius:999px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1rem;margin-top:8px}
+  .lt-band.pass{background:var(--lumio-green-soft);color:#15803D}.lt-band.fail{background:var(--lumio-coral-soft);color:var(--lumio-coral)}
+  .lt-skills{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+  .lt-skill{background:var(--lumio-cream);border-radius:12px;padding:10px 12px;font-weight:800;font-size:.82rem;display:flex;justify-content:space-between}
+  .lt-actions{display:flex;flex-direction:column;gap:10px}
+  .btn-big{width:100%}
+  .lt-lock{text-align:center;padding:30px 10px}.lt-lock .ic{font-size:3rem}
+  body.theme-teen .lt-card h1, body.theme-teen .lt-q h2, body.theme-teen .lt-q .ar{color:var(--lumio-cocoa)}
+  body.theme-teen .lt-card{color:var(--lumio-ink)}
+</style>
+</head>
+<body>
+<div class="lt-wrap">
+  <div class="lt-top"><img src="assets/logo/lumio-logo.png" alt=""><b>Level Test</b><span class="sp"></span><a href="student.html" id="exitLink">✕ Exit</a></div>
+
+  <!-- intro -->
+  <div class="lt-card" id="stepIntro">
+    <span class="lt-badge" id="levelBadge">Level</span>
+    <h1>Level Test · اختبار المستوى</h1>
+    <p class="lead" id="introLead">You finished every lesson. This test checks what you can do now — <b id="qCount">30</b> questions, about 15 minutes.</p>
+    <div class="lt-list"><h3>What this test covers · ماذا يغطي الاختبار</h3><ul id="canList"></ul></div>
+    <div class="lt-list"><h3>How it works</h3><ul>
+      <li>Pictures, Arabic words, sentences and listening — all from this level's own lessons.<span>صور وكلمات عربية وجمل واستماع — كلها من دروس هذا المستوى.</span></li>
+      <li>Pass mark 70%. Your best score goes on your certificate.<span>درجة النجاح ٧٠٪، وأفضل نتيجة تُكتب في شهادتك.</span></li>
+      <li>You can take it again if you need to.<span>يمكنك إعادته إذا احتجت.</span></li>
+    </ul></div>
+    <div id="prevResult" style="display:none" class="lt-list"></div>
+    <button class="btn btn-primary btn-big" id="startBtn">Start the test →</button>
+  </div>
+
+  <!-- locked -->
+  <div class="lt-card lt-lock" id="stepLocked" style="display:none">
+    <div class="ic">🔒</div>
+    <h1>Not yet!</h1>
+    <p class="lead" id="lockText">Finish all the lessons of this level first.</p>
+    <a class="btn btn-primary" href="student.html">Back to my lessons</a>
+  </div>
+
+  <!-- questions -->
+  <div class="lt-card" id="stepTest" style="display:none">
+    <div class="lt-prog"><div class="lt-bar"><div id="bar" style="width:0%"></div></div><div class="lt-lbl" id="progLbl">1 / 30</div></div>
+    <span class="lt-kind" id="kind"></span>
+    <div class="lt-q" id="q"></div>
+    <div class="lt-opts" id="opts"></div>
+  </div>
+
+  <!-- result -->
+  <div class="lt-card" id="stepResult" style="display:none">
+    <h1 id="resTitle">Well done!</h1>
+    <div class="lt-res-score"><b id="resPct">0%</b><span id="resScore"></span><br><span class="lt-band" id="resBand"></span></div>
+    <div class="lt-skills" id="resSkills"></div>
+    <p class="lead" id="resNote"></p>
+    <div class="lt-actions" id="resActions"></div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var v = "20260918a";
+  try { var xhr = new XMLHttpRequest(); xhr.open("GET", "js/version.json?_=" + Date.now(), false); xhr.send(null);
+    if (xhr.status === 200) { var parsed = JSON.parse(xhr.responseText); if (parsed && parsed.v) v = parsed.v; } } catch (e) {}
+  document.write('<script src="js/app.js?v=' + v + '"><' + '/script>');
+  document.write('<script src="js/lumio-profiles.js?v=' + v + '"><' + '/script>');
+  document.write('<script src="js/lumio-schedule.js?v=' + v + '"><' + '/script>');
+  document.write('<script src="js/lessons-data.js?v=' + v + '"><' + '/script>');
+  document.write('<script src="js/level-outcomes.js?v=' + v + '"><' + '/script>');
+})();
+</script>
+<script>
+(() => {
+  const qs = k => new URLSearchParams(location.search).get(k);
+  const preview = qs("preview") === "1" && Lumio.isTeacherSession();   // teacher: always open, never saved
+  const u = preview ? { name: "Teacher preview", level: qs("level") || "pre-a" } : Lumio.requireUser();
+  if (!u) return;
+  const level = (preview && qs("level")) || u.level || "pre-a";
+  const isTeen = ["level3", "level4", "level5", "level6"].includes(level);
+  if (isTeen) document.body.classList.add("theme-teen");
+  const meta = (Lumio.LEVELS || []).find(l => l.id === level) || { name: level, lessons: 20 };
+  const outcomes = (window.LUMIO_OUTCOMES || {})[level];
+  const lessons = Object.values((window.LUMIO_LESSONS || {})[level] || {});
+  if (preview) document.getElementById("exitLink").href = "teacher.html";
+
+  // ---- gate: every lesson done (prep + class + homework) ----
+  const done = preview ? meta.lessons : Lumio.lessonsDoneCount(u.name, level);
+  document.getElementById("levelBadge").textContent = meta.name;
+  if (!preview && done < meta.lessons) {
+    document.getElementById("stepIntro").style.display = "none";
+    const L = document.getElementById("stepLocked"); L.style.display = "";
+    document.getElementById("lockText").textContent = `The ${meta.name} test opens after all ${meta.lessons} lessons — ${done} done so far.`;
+    return;
+  }
+  // ---- intro content ----
+  document.getElementById("canList").innerHTML = (outcomes ? outcomes.can : []).map(c => `<li>${c.en}<span>${c.ar}</span></li>`).join("");
+  const prev = preview ? null : Lumio.levelTestFor(u.name, level);
+  if (prev) {
+    const pr = document.getElementById("prevResult"); pr.style.display = "";
+    pr.innerHTML = `<h3>Your best result so far</h3><div style="font-weight:800">${prev.pct}% · ${prev.band} · ${prev.date}${prev.attempts > 1 ? ` · ${prev.attempts} attempts` : ""}</div>`;
+    if (prev.pct >= Lumio.TEST_PASS_PCT) document.getElementById("startBtn").textContent = "Take it again (best score is kept) →";
+  }
+
+  // ---- build the question set from the level's own lessons ----
+  const slug = w => String(w).toLowerCase().replace(/'/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const imgOf = w => `assets/vocab/${(w.image || slug(w.en) + ".png")}`;
+  const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const pool = []; lessons.forEach(ls => (ls.vocab || []).forEach(w => { if (w.en && w.ar) pool.push(Object.assign({ lesson: ls.number }, w)); }));
+  const byEn = {}; pool.forEach(w => { byEn[w.en] = byEn[w.en] || w; });
+  const uniq = Object.values(byEn);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  function distractors(target, n, pred) {
+    const cands = shuffle(uniq.filter(w => w.en !== target.en && (!pred || pred(w))));
+    return cands.slice(0, n);
+  }
+  const PLAN = isTeen ? { picture: 8, arabic: 8, sentence: 8, listen: 6 } : { picture: 10, arabic: 8, sentence: 6, listen: 6 };
+  const picked = shuffle(uniq);
+  const qset = []; let cursor = 0;
+  const take = (n, pred) => { const out = []; while (out.length < n && cursor < picked.length) { const w = picked[cursor++]; if (!pred || pred(w)) out.push(w); } return out; };
+  take(PLAN.picture).forEach(w => qset.push({ kind: "picture", w, options: shuffle([w, ...distractors(w, 3)]) }));
+  take(PLAN.arabic).forEach(w => qset.push({ kind: "arabic", w, options: shuffle([w, ...distractors(w, 3)]) }));
+  take(PLAN.sentence, w => w.example && new RegExp("\\b" + w.en.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b", "i").test(w.example))
+    .forEach(w => qset.push({ kind: "sentence", w, options: shuffle([w, ...distractors(w, 3)]) }));
+  take(PLAN.listen).forEach(w => qset.push({ kind: "listen", w, options: shuffle([w, ...distractors(w, 3)]) }));
+  const questions = shuffle(qset);
+  document.getElementById("qCount").textContent = questions.length;
+
+  // ---- run ----
+  const S = id => document.getElementById(id);
+  let i = 0, score = 0; const perKind = {};
+  const KIND = { picture: ["🖼️ Picture", "Which word is this?"], arabic: ["🔤 Arabic → English", "How do you say this in English?"], sentence: ["✍️ Sentence", "Which word completes the sentence?"], listen: ["👂 Listening", "Tap the word you hear"] };
+  function render() {
+    const q = questions[i]; const w = q.w;
+    S("bar").style.width = Math.round((i / questions.length) * 100) + "%"; S("progLbl").textContent = `${i + 1} / ${questions.length}`;
+    S("kind").textContent = KIND[q.kind][0];
+    let body = `<h2 style="font-size:.95rem;color:var(--lumio-muted);margin-bottom:8px">${KIND[q.kind][1]}</h2>`;
+    if (q.kind === "picture") body += `<img src="${imgOf(w)}" alt="" onerror="this.style.display='none'">`;
+    if (q.kind === "arabic") body += `<div class="ar">${esc(w.ar)}</div>`;
+    if (q.kind === "sentence") body += `<h2>${esc(w.example).replace(new RegExp("\\b" + w.en.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b", "i"), '<span class="gap">______</span>')}</h2>`;
+    if (q.kind === "listen") body += `<button class="lt-listen" id="listenBtn">🔊 Listen</button>`;
+    S("q").innerHTML = body;
+    if (q.kind === "listen") { const say = () => Lumio.speak(w.en); S("listenBtn").onclick = say; setTimeout(say, 350); }
+    const showAr = q.kind === "picture" || q.kind === "listen" || q.kind === "sentence";
+    S("opts").innerHTML = q.options.map(o => `<button class="lt-opt" data-en="${esc(o.en)}">${esc(o.en)}${showAr && q.kind !== "sentence" ? "" : ""}</button>`).join("");
+    S("opts").querySelectorAll(".lt-opt").forEach(btn => btn.onclick = () => answer(btn, q));
+  }
+  function answer(btn, q) {
+    const ok = btn.dataset.en === q.w.en;
+    perKind[q.kind] = perKind[q.kind] || { ok: 0, n: 0 }; perKind[q.kind].n++; if (ok) { perKind[q.kind].ok++; score++; }
+    S("opts").querySelectorAll(".lt-opt").forEach(b => { b.disabled = true; if (b.dataset.en === q.w.en) b.classList.add("correct"); });
+    if (!ok) btn.classList.add("wrong");
+    setTimeout(() => { i++; if (i < questions.length) render(); else finish(); }, ok ? 650 : 1100);
+  }
+  function finish() {
+    S("stepTest").style.display = "none"; S("stepResult").style.display = "";
+    const total = questions.length; const pct = Math.round((score / total) * 100); const band = Lumio.testBand(pct); const passed = pct >= Lumio.TEST_PASS_PCT;
+    S("resTitle").textContent = passed ? (pct >= 90 ? "Outstanding! 🌟" : "Well done! 🎉") : "Almost there 💪";
+    S("resPct").textContent = pct + "%"; S("resScore").textContent = `${score} of ${total} correct`;
+    const bandEl = S("resBand"); bandEl.textContent = band; bandEl.className = "lt-band " + (passed ? "pass" : "fail");
+    S("resSkills").innerHTML = Object.entries(KIND).filter(([k]) => perKind[k]).map(([k, [lbl]]) => `<div class="lt-skill"><span>${lbl}</span><span>${perKind[k].ok}/${perKind[k].n}</span></div>`).join("");
+    let saved = null;
+    if (!preview) saved = Lumio.saveLevelTest(u.name, level, score, total);
+    S("resNote").textContent = preview ? "Teacher preview — nothing was saved." :
+      passed ? `This score is now on your ${meta.name} certificate.` + (saved && saved.pct > pct ? ` (Your best score, ${saved.pct}%, is the one shown.)` : "")
+             : `You need ${Lumio.TEST_PASS_PCT}% for the certificate. Review the Hub and try again — you can retake the test any time.`;
+    S("resActions").innerHTML = preview ? `<a class="btn btn-primary btn-big" href="teacher.html">Back to the teacher dashboard</a>` :
+      (passed ? `<a class="btn btn-primary btn-big" href="certificates.html">🏆 See my certificate</a>` : `<button class="btn btn-primary btn-big" onclick="location.reload()">Try again</button>`) +
+      `<a class="btn btn-big" style="background:#fff;color:var(--lumio-ink)" href="student.html">Back to my dashboard</a>`;
+  }
+  S("startBtn").onclick = () => { S("stepIntro").style.display = "none"; S("stepTest").style.display = ""; render(); };
+})();
+</script>
+</body>
+</html>

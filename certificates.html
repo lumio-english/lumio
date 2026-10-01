@@ -41,6 +41,29 @@
   body.theme-teen .cert h1 { color: var(--orange); }
   .cert-date { color: var(--cocoa-soft); }
   body.theme-teen .cert-date { color: var(--lumio-muted); }
+  .cert .sub { font-weight: 700; font-size: 1.05rem; margin: 0; }
+  .cert .cefr { display:inline-block; background: var(--lumio-orange-soft); color: var(--lumio-orange-dark); border-radius: 999px; padding: 4px 14px; font-weight: 800; font-size: .82rem; margin-top: 6px; }
+  .cert-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 22px auto 6px; max-width: 640px; }
+  .cert-stat { background: var(--lumio-cream); border: 1px solid var(--lumio-border); border-radius: 14px; padding: 10px 6px; }
+  .cert-stat b { display: block; font-family: var(--font-display); font-size: 1.5rem; color: var(--lumio-orange-dark); line-height: 1.1; }
+  .cert-stat span { font-size: .66rem; font-weight: 800; text-transform: uppercase; letter-spacing: .4px; color: var(--lumio-muted); }
+  .cert-stat.main b { color: var(--lumio-teal); font-size: 1.8rem; }
+  .cert-can { text-align: left; max-width: 640px; margin: 16px auto 0; background: #fff; border: 1px dashed var(--lumio-border); border-radius: 14px; padding: 12px 18px 10px; }
+  .cert-can h3 { font-family: var(--font-display); font-size: .95rem; margin: 0 0 6px; color: var(--lumio-cocoa); display: flex; justify-content: space-between; }
+  .cert-can h3 .ar { direction: rtl; font-weight: 800; }
+  .cert-can ul { margin: 0; padding: 0; list-style: none; columns: 2; column-gap: 18px; }
+  .cert-can li { font-size: .78rem; font-weight: 700; color: var(--lumio-ink-soft); margin: 0 0 5px; break-inside: avoid; padding-left: 14px; position: relative; }
+  .cert-can li::before { content: "✓"; color: var(--lumio-green); position: absolute; left: 0; font-weight: 900; }
+  .cert-can li .ar { display: block; direction: rtl; text-align: right; font-weight: 600; color: var(--lumio-muted); font-size: .74rem; }
+  .cert-foot { display: flex; justify-content: space-between; align-items: flex-end; max-width: 640px; margin: 18px auto 0; font-size: .78rem; font-weight: 700; color: var(--lumio-muted); }
+  .cert-foot .sig { text-align: center; }
+  .cert-foot .sig b { display: block; border-top: 2px solid var(--lumio-cocoa); padding-top: 4px; color: var(--lumio-cocoa); min-width: 150px; font-size: .85rem; }
+  .cert-id { font-family: monospace; font-size: .7rem; }
+  @media (max-width: 600px) { .cert { padding: 30px 16px; } .cert-stats { grid-template-columns: 1fr 1fr; } .cert-can ul { columns: 1; } }
+  @media print { .cert { margin: 0; box-shadow: none; max-width: none; } }
+  .lock-card { max-width: 560px; margin: 24px auto; background: #fff; border-radius: 20px; padding: 24px; text-align: center; box-shadow: var(--lumio-sh-md); color: var(--lumio-ink); }
+  .lock-card h2 { font-family: var(--font-display); margin: 6px 0; }
+  .lock-card p { font-weight: 700; color: var(--lumio-muted); }
 </style>
 </head>
 <body>
@@ -54,17 +77,31 @@
 
 <main>
   <div class="cert" id="cert">
-    <img src="assets/logo/lumio-logo.png" alt="Lumio English logo" style="width:130px;border-radius:20px">
+    <img src="assets/logo/lumio-logo.png" alt="Lumio English logo" style="width:150px">
     <h1>Certificate of Achievement</h1>
-    <p style="font-weight:700;font-size:1.1rem">This certificate is proudly presented to</p>
+    <p class="sub">This certificate is proudly presented to</p>
     <div class="name" id="certName">Student</div>
-    <p style="font-weight:700;font-size:1.15rem">for completing <b id="certLevel">Pre-A</b> of Lumio English<br>
-      with <span id="certStars">0</span> stars!</p>
-    <p class="mt" style="font-weight:800">Small Steps · Big Futures</p>
-    <p style="font-weight:700" class="cert-date" id="certDate"></p>
+    <p class="sub">for successfully completing <b id="certLevel">Pre-A</b> of Lumio English<br>and passing the level proficiency test</p>
+    <span class="cefr" id="certCefr"></span>
+    <div class="cert-stats">
+      <div class="cert-stat main"><b id="certScore">—</b><span>Level test score</span></div>
+      <div class="cert-stat"><b id="certBand">—</b><span>Result</span></div>
+      <div class="cert-stat"><b id="certGrade">—</b><span>Teacher grade</span></div>
+      <div class="cert-stat"><b id="certAtt">—</b><span>Attendance</span></div>
+    </div>
+    <p class="sub" style="font-size:.9rem;color:var(--lumio-muted)"><span id="certStars">★ 0</span> stars earned across <span id="certLessons">20</span> lessons</p>
+    <div class="cert-can" id="certCan"><h3><span>What this student can now do</span><span class="ar">ما يستطيع الطالب فعله الآن</span></h3><ul id="certCanList"></ul></div>
+    <div class="cert-foot">
+      <div><div class="cert-date" id="certDate"></div><div class="cert-id" id="certId"></div></div>
+      <div class="sig"><b>Lumio English</b><span>Small Steps · Big Futures</span></div>
+    </div>
   </div>
-  <p class="center no-print" id="notDone" style="display:none;font-weight:800;color:var(--coral)">
-    Finish all 20 lessons to unlock your certificate!</p>
+  <div class="lock-card no-print" id="notDone" style="display:none">
+    <div style="font-size:2.4rem">🔒</div>
+    <h2 id="lockTitle">Not unlocked yet</h2>
+    <p id="lockText"></p>
+    <a class="btn btn-primary" id="lockBtn" href="student.html">Back to my lessons</a>
+  </div>
 </main>
 
 <script>
@@ -94,31 +131,63 @@
   } catch (e) {}
   document.write('<script src="js/app.js?v=' + v + '"><' + '/script>');
   document.write('<script src="js/lumio-schedule.js?v=' + v + '"><' + '/script>'); // attendance for the lesson-done rule
+  document.write('<script src="js/level-outcomes.js?v=' + v + '"><' + '/script>');
 })();
 </script>
 <script>
 (() => {
-  const u = Lumio.requireUser();
-  const level = u.level || "pre-a";
-  if (["level3", "level4", "level5", "level6"].includes(level)) {
-    document.body.classList.add("theme-teen");
-  }
-  const meta = Lumio.LEVELS.find(l => l.id === level);
+  const qs = k => new URLSearchParams(location.search).get(k);
+  const preview = qs("preview") === "1" && Lumio.isTeacherSession();
+  const u = preview ? { name: qs("name") || "Student Name", level: qs("level") || "pre-a" } : Lumio.requireUser();
+  if (!u) return;
+  const level = (preview && qs("level")) || u.level || "pre-a";
+  if (["level3", "level4", "level5", "level6"].includes(level)) document.body.classList.add("theme-teen");
+  const meta = Lumio.LEVELS.find(l => l.id === level) || { name: level, lessons: 20 };
   const prog = (Lumio.progressFor(u.name)[level]) || {};
-  const done = Lumio.lessonsDoneCount(u.name, level); // prep + class + homework, in order
+  const done = preview ? meta.lessons : Lumio.lessonsDoneCount(u.name, level);
   const stars = Object.values(prog).reduce((s, r) => s + (r.stars || 0), 0);
+  const test = preview ? { pct: 92, band: "Distinction", score: 28, total: 30, date: new Date().toISOString().slice(0, 10) } : Lumio.levelTestFor(u.name, level);
+  const outcomes = (window.LUMIO_OUTCOMES || {})[level];
+
+  // teacher grade average (same scale as the reports) + attendance for this level
+  const GP = { "A+": 4.3, "A": 4.0, "A-": 3.7, "B+": 3.3, "B": 3.0, "B-": 2.7, "C+": 2.3, "C": 2.0, "C-": 1.7, "D": 1.0, "F": 0.0 };
+  const grades = (window.LumioSchedule && LumioSchedule.gradesForStudent) ? LumioSchedule.gradesForStudent(u.name, level) : [];
+  let gradeLetter = preview ? "A" : "—";
+  if (grades.length) { const p = grades.reduce((t, g) => t + (GP[g.grade] || 0), 0) / grades.length / 4.3 * 100;
+    gradeLetter = Object.keys(GP).reduce((b, L) => Math.abs(GP[L] / 4.3 * 100 - p) < Math.abs(GP[b] / 4.3 * 100 - p) ? L : b, "A+"); }
+  let attPct = preview ? 100 : null;
+  try { const cls = LumioSchedule.listClasses({ studentName: u.name, level }).filter(c => c.status !== "cancelled");
+    const marked = cls.map(c => (c.students || []).find(s => s.studentName === u.name)).filter(s => s && s.attendance);
+    if (marked.length) attPct = Math.round(marked.filter(s => s.attendance === "present").length / marked.length * 100); } catch (e) {}
 
   document.getElementById("certName").textContent = u.name;
-  document.getElementById("certLevel").textContent = meta ? meta.name : level;
+  document.getElementById("certLevel").textContent = meta.name;
+  document.getElementById("certCefr").textContent = outcomes ? `CEFR ${outcomes.cefr} · Ages ${outcomes.ages}` : "";
   document.getElementById("certStars").textContent = `★ ${stars}`;
-  document.getElementById("certDate").textContent = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+  document.getElementById("certLessons").textContent = meta.lessons;
+  document.getElementById("certScore").textContent = test ? `${test.pct}%` : "—";
+  document.getElementById("certBand").textContent = test ? test.band : "—";
+  document.getElementById("certGrade").textContent = gradeLetter;
+  document.getElementById("certAtt").textContent = attPct === null ? "—" : `${attPct}%`;
+  document.getElementById("certCanList").innerHTML = (outcomes ? outcomes.can : []).map(c => `<li>${c.en}<span class="ar">${c.ar}</span></li>`).join("");
+  const when = test && test.date ? new Date(test.date + "T12:00:00") : new Date();
+  document.getElementById("certDate").textContent = when.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+  const idSrc = `${u.name}|${level}|${test ? test.date : ""}`; let h = 0; for (const ch of idSrc) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  document.getElementById("certId").textContent = `Certificate no. LUM-${level.replace("level", "L").replace("pre-a", "L0").toUpperCase()}-${h.toString(16).toUpperCase().padStart(8, "0")}`;
 
-  if (done < (meta ? meta.lessons : 20)) {
-    document.getElementById("cert").style.opacity = ".35";
-    const nd = document.getElementById("notDone");
-    nd.style.display = "block";
-    nd.textContent = `Finish all ${meta ? meta.lessons : 20} lessons of ${meta ? meta.name : level} to earn this certificate — ${done} done so far.`;
-    // No printing a certificate for an unfinished level.
+  // ---- gate: all lessons done AND level test passed ----
+  const passed = !!(test && test.pct >= Lumio.TEST_PASS_PCT);
+  if (!preview && (done < meta.lessons || !passed)) {
+    document.getElementById("cert").style.opacity = ".3";
+    const nd = document.getElementById("notDone"); nd.style.display = "block";
+    if (done < meta.lessons) {
+      document.getElementById("lockTitle").textContent = "Finish the level first";
+      document.getElementById("lockText").textContent = `All ${meta.lessons} lessons of ${meta.name}, then the level test — ${done} lessons done so far.`;
+    } else {
+      document.getElementById("lockTitle").textContent = test ? "One more try" : "One last step: the level test";
+      document.getElementById("lockText").textContent = test ? `Your best score is ${test.pct}% — you need ${Lumio.TEST_PASS_PCT}% to earn the certificate.` : `You finished every lesson! Take the ${meta.name} level test to earn this certificate.`;
+      const b = document.getElementById("lockBtn"); b.textContent = test ? "Retake the level test" : "Take the level test →"; b.href = "level-test.html";
+    }
     document.querySelectorAll("button, .btn, a").forEach(el => { if (/print|save/i.test(el.textContent)) el.style.display = "none"; });
   }
 })();

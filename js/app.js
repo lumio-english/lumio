@@ -48,6 +48,26 @@ const Lumio = (() => {
     return u;
   };
 
+  /* ---------- Level proficiency test ----------
+     lumio_level_tests = { studentName: { levelId: {score, total, pct, band, date, attempts} } }
+     Taken once every lesson of a level is done (prep + class + homework);
+     the best attempt is kept. The certificate requires a passed test. */
+  const TEST_PASS_PCT = 70;
+  const testBand = (pct) => pct >= 90 ? "Distinction" : pct >= 80 ? "Merit" : pct >= TEST_PASS_PCT ? "Pass" : "Not yet";
+  const levelTestsAll = () => get("lumio_level_tests", {});
+  const levelTestFor = (name, levelId) => (levelTestsAll()[name] || {})[levelId] || null;
+  const saveLevelTest = (name, levelId, score, total) => {
+    const all = levelTestsAll();
+    all[name] = all[name] || {};
+    const prev = all[name][levelId];
+    const pct = total ? Math.round((score / total) * 100) : 0;
+    const rec = { score, total, pct, band: testBand(pct), date: new Date().toISOString().slice(0, 10), attempts: (prev ? prev.attempts || 1 : 0) + 1 };
+    if (!prev || pct >= (prev.pct || 0)) { all[name][levelId] = rec; }
+    else { all[name][levelId] = Object.assign({}, prev, { attempts: rec.attempts, lastPct: pct }); }
+    set("lumio_level_tests", all);
+    return all[name][levelId];
+  };
+
   /* ---------- Progress ----------
      lumio_progress = { studentName: { levelId: { lessonNum: {stars, score, total, date} } } } */
   const progressAll = () => get("lumio_progress", {});
@@ -567,6 +587,7 @@ const Lumio = (() => {
            COUNTRY_CODES, combinePhone, splitPhone,
            pushProgressAndHomework, pullProgressAndHomework,
            lessonCountFor, attendedSetFor, lessonDone, currentLesson, lessonsDoneCount, levelComplete, isTeacherSession,
+           TEST_PASS_PCT, testBand, levelTestsAll, levelTestFor, saveLevelTest,
            TZ, TZ_LABEL, TZ_LABEL_AR, TZ_OFFSET_MIN, tzNow, tzToDate, tzAddDays, tzDayOfWeek,
            deviceTz, deviceDiffersFromTz, fmt12, fmtClassTime };
 })();
