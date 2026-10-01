@@ -103,6 +103,12 @@
     // as empty arrays, no migration needed.
     if (!Array.isArray(data.patterns)) data.patterns = [];
     if (!Array.isArray(data.blockedDates)) data.blockedDates = [];
+    // Tombstones: ids of classes/patterns removed on ANY device. Without
+    // them the additive merge in syncNow() re-added a removed class from
+    // the Sheet on the very next sync (often the same click). Shared
+    // through the DeletedIds tab, same as students/teachers.
+    if (!Array.isArray(data.deletedClassIds)) data.deletedClassIds = [];
+    if (!Array.isArray(data.deletedPatternIds)) data.deletedPatternIds = [];
     return data;
   }
   function save(data) {
@@ -227,6 +233,7 @@
   function removeClass(id) {
     const data = load();
     data.classes = data.classes.filter(c => c.id !== id);
+    if (!data.deletedClassIds.includes(id)) data.deletedClassIds.push(id);
     save(data);
   }
   function cancelClass(id) {
@@ -430,14 +437,23 @@
     try {
       const res = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pullScheduleV2");
       const remote = await res.json();
+      if (remote && Array.isArray(remote.deletedIds)) {
+        remote.deletedIds.forEach(e => {
+          if (!e || !e.id) return;
+          if (e.type === "class" && !data.deletedClassIds.includes(e.id)) data.deletedClassIds.push(e.id);
+          if (e.type === "pattern" && !data.deletedPatternIds.includes(e.id)) data.deletedPatternIds.push(e.id);
+        });
+      }
       if (remote && Array.isArray(remote.classes)) {
         remote.classes.forEach(normalizeSheetDates);
-        data.classes = mergeById(data.classes, remote.classes);
+        data.classes = mergeById(data.classes, remote.classes.filter(c => !data.deletedClassIds.includes(c.id)));
       }
       if (remote && Array.isArray(remote.patterns)) {
         remote.patterns.forEach(normalizeSheetDates);
-        data.patterns = mergeById(data.patterns, remote.patterns);
+        data.patterns = mergeById(data.patterns, remote.patterns.filter(p => !data.deletedPatternIds.includes(p.id)));
       }
+      data.classes = data.classes.filter(c => !data.deletedClassIds.includes(c.id));
+      data.patterns = data.patterns.filter(p => !data.deletedPatternIds.includes(p.id));
       // Blocked dates are a small, rarely-changed shared list -- simple
       // union rather than per-record merge-by-id (plain date strings have
       // no id/updatedAt to compare).
@@ -452,7 +468,13 @@
       await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pushScheduleV2", {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ classes: data.classes, patterns: data.patterns, blockedDates: data.blockedDates }),
+        body: JSON.stringify({
+          classes: data.classes, patterns: data.patterns, blockedDates: data.blockedDates,
+          deletedIds: [
+            ...data.deletedClassIds.map(id => ({ id, type: "class", deletedAt: new Date().toISOString() })),
+            ...data.deletedPatternIds.map(id => ({ id, type: "pattern", deletedAt: new Date().toISOString() })),
+          ],
+        }),
       });
       return { ok: true, at: new Date().toISOString() };
     } catch (e) {
@@ -696,6 +718,7 @@
   function removePattern(id) {
     const data = load();
     data.patterns = data.patterns.filter(p => p.id !== id);
+    if (!data.deletedPatternIds.includes(id)) data.deletedPatternIds.push(id);
     save(data);
   }
 

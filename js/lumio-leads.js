@@ -108,6 +108,8 @@
   function removeLead(id) {
     const data = load();
     data.leads = data.leads.filter(l => l.id !== id);
+    if (!Array.isArray(data.deletedLeadIds)) data.deletedLeadIds = [];
+    if (!data.deletedLeadIds.includes(id)) data.deletedLeadIds.push(id); // tombstone, shared via DeletedIds
     save(data);
   }
   function countNew() {
@@ -170,13 +172,19 @@
         remote.leads.forEach(lead => {
           if (lead.phone !== undefined && lead.phone !== null && lead.phone !== "") lead.phone = String(lead.phone);
         });
-        data.leads = mergeById(data.leads, remote.leads);
+        if (!Array.isArray(data.deletedLeadIds)) data.deletedLeadIds = [];
+        (Array.isArray(remote.deletedIds) ? remote.deletedIds : []).forEach(e => {
+          if (e && e.id && e.type === "lead" && !data.deletedLeadIds.includes(e.id)) data.deletedLeadIds.push(e.id);
+        });
+        data.leads = mergeById(data.leads, remote.leads.filter(l => !data.deletedLeadIds.includes(l.id)))
+          .filter(l => !data.deletedLeadIds.includes(l.id));
         save(data);
       }
+      if (!Array.isArray(data.deletedLeadIds)) data.deletedLeadIds = [];
       await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pushLeads", {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" }, // avoids a CORS preflight against Apps Script
-        body: JSON.stringify({ leads: data.leads }),
+        body: JSON.stringify({ leads: data.leads, deletedIds: data.deletedLeadIds.map(id => ({ id, type: "lead", deletedAt: new Date().toISOString() })) }),
       });
       return { ok: true, at: new Date().toISOString() };
     } catch (e) {

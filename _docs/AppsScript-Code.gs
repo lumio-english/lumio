@@ -276,12 +276,37 @@ function jsonResponse_(obj) {
 
 // ---------- roster ----------
 
+// ---------- tombstones (shared by roster, schedule and leads) ----------
+// The DeletedIds tab is a UNION of every deletion ever pushed from any
+// device, for every record type (student, teacher, class, pattern,
+// lead). It only ever grows: a push merges by id instead of replacing
+// the tab, so a roster push can never wipe the schedule's tombstones.
+function deletedIdsOfType_(types) {
+  return readRows_(DELETED_IDS_SHEET, DELETED_IDS_COLUMNS).filter(function (r) {
+    return r && r.id && types.indexOf(String(r.type || "student")) !== -1;
+  });
+}
+function mergeDeletedIds_(incoming) {
+  if (!Array.isArray(incoming) || !incoming.length) return;
+  var existing = readRows_(DELETED_IDS_SHEET, DELETED_IDS_COLUMNS);
+  var seen = {};
+  existing.forEach(function (r) { if (r && r.id) seen[r.id] = true; });
+  var added = 0;
+  incoming.forEach(function (r) {
+    if (!r || !r.id || seen[r.id]) return;
+    seen[r.id] = true;
+    existing.push({ id: r.id, type: r.type || "student", deletedAt: r.deletedAt || new Date().toISOString() });
+    added++;
+  });
+  if (added) writeRows_(DELETED_IDS_SHEET, DELETED_IDS_COLUMNS, existing);
+}
+
 function pullRoster_() {
   return {
     students: readRows_(ROSTER_SHEET, ROSTER_COLUMNS),
     teachers: readRows_(TEACHERS_SHEET, TEACHERS_COLUMNS),
     rewardCatalog: readRows_(REWARD_CATALOG_SHEET, REWARD_CATALOG_COLUMNS),
-    deletedIds: readRows_(DELETED_IDS_SHEET, DELETED_IDS_COLUMNS),
+    deletedIds: deletedIdsOfType_(["student", "teacher"]),
   };
 }
 
@@ -293,7 +318,7 @@ function pushRoster_(body) {
   // knows locally, and only then pushes -- so a full-replace write here
   // (matching writeRows_'s usual semantics) is safe and can only ever
   // grow this list, never accidentally shrink it back down.
-  if (Array.isArray(body.deletedIds)) writeRows_(DELETED_IDS_SHEET, DELETED_IDS_COLUMNS, body.deletedIds);
+  mergeDeletedIds_(body.deletedIds);
   return { ok: true };
 }
 
@@ -322,6 +347,7 @@ function pullScheduleV2_() {
     classes: readRows_(SCHEDULE_SHEET, SCHEDULE_COLUMNS).map(rowToClass_),
     patterns: readRows_(PATTERNS_SHEET, PATTERNS_COLUMNS).map(rowToPattern_),
     blockedDates: readRows_(BLOCKED_DATES_SHEET, BLOCKED_DATES_COLUMNS),
+    deletedIds: deletedIdsOfType_(["class", "pattern"]),
   };
 }
 
@@ -334,6 +360,7 @@ function pushScheduleV2_(body) {
     });
     writeRows_(BLOCKED_DATES_SHEET, BLOCKED_DATES_COLUMNS, rows);
   }
+  mergeDeletedIds_(body.deletedIds);
   return { ok: true };
 }
 
@@ -386,11 +413,12 @@ function pullProgress_() {
 // ---------- leads ----------
 
 function pullLeads_() {
-  return { leads: readRows_(LEADS_SHEET, LEADS_COLUMNS) };
+  return { leads: readRows_(LEADS_SHEET, LEADS_COLUMNS), deletedIds: deletedIdsOfType_(["lead"]) };
 }
 
 function pushLeads_(body) {
   if (Array.isArray(body.leads)) writeRows_(LEADS_SHEET, LEADS_COLUMNS, body.leads);
+  mergeDeletedIds_(body.deletedIds);
   return { ok: true };
 }
 
