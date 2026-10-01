@@ -323,7 +323,21 @@
   .sd-cert-link:active{transform:translateY(0) scale(.96)}
   .sd-cert-link:focus-visible{outline:3px solid rgba(122,78,0,.35);outline-offset:2px}
   .sd-cert-link-logo{height:20px;width:auto;border-radius:0;flex-shrink:0}
-  .sd-map-links{display:flex;gap:10px;flex-wrap:wrap;align-items:stretch}
+  .sd-test-card{background:#fff;border-radius:var(--sd-radius);padding:22px 24px;box-shadow:0 4px 16px rgba(0,0,0,.05)}
+  .sd-test-top{display:flex;align-items:center;gap:14px}
+  .sd-test-badge{width:58px;height:58px;border-radius:18px;background:#F3EEE4;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0}
+  .sd-test-card.ready .sd-test-badge{background:var(--sd-teal-soft,#E0F5F3)}
+  .sd-test-card.passed .sd-test-badge{background:#FFF1D6}
+  .sd-test-title{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.15rem;color:var(--sd-cocoa)}
+  .sd-test-sub{font-size:.84rem;font-weight:700;color:var(--sd-cocoa-soft)}
+  .sd-test-bar{margin-top:14px;height:10px}
+  .sd-test-card.passed .sd-test-bar > div{background:linear-gradient(90deg,#FFD166,#F4A300)}
+  .sd-test-meta{font-size:.76rem;font-weight:700;color:var(--sd-cocoa-soft);margin-top:6px}
+  .sd-test-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+  .sd-test-facts div{background:#FAF6EE;border-radius:12px;padding:8px 10px;text-align:center}
+  .sd-test-facts b{display:block;font-family:'Baloo 2',sans-serif;font-size:1.1rem;color:var(--sd-cocoa)}
+  .sd-test-facts span{font-size:.66rem;font-weight:700;color:var(--sd-cocoa-soft);line-height:1.2;display:block}
+  .sd-test-card .sd-test-link{margin-top:14px;width:100%;justify-content:center;box-sizing:border-box}
   .sd-test-link{background:linear-gradient(135deg,var(--sd-teal),var(--sd-teal-deep));color:#fff;padding:8px 16px;gap:9px;line-height:1.15}
   .sd-test-link .ic{font-size:1.1rem}
   .sd-test-link small{display:block;font-size:.68rem;font-weight:700;opacity:.9}
@@ -806,6 +820,22 @@
   .sd-gate{display:inline-block;margin-top:8px;font-size:.76rem;font-weight:800;background:rgba(255,255,255,.22);color:#fff;padding:6px 12px;border-radius:999px;text-decoration:none}
   .sd-class-row .sd-gate{background:#FFF1E0;color:#7A3F0B;padding:4px 10px;font-size:.7rem;margin-top:3px}
   .sd-week-cap{font-size:.74rem;font-weight:700;color:var(--sd-cocoa-soft);margin-top:8px}
+  .sd-book-tabs{display:flex;gap:6px;background:#F6F1E7;border-radius:999px;padding:4px;margin:8px 0 10px}
+  .sd-book-tabs button{flex:1;border:none;background:transparent;border-radius:999px;padding:8px 10px;font-weight:800;font-size:.82rem;color:var(--sd-cocoa-soft);cursor:pointer;font-family:inherit}
+  .sd-book-tabs button.active{background:#fff;color:var(--sd-cocoa);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+  .sd-days.fx{grid-template-columns:repeat(5,1fr)}
+  .sd-day.picked{border-color:var(--sd-orange-deep)}
+  .sd-day.picked .dn{color:var(--sd-orange-deep)}
+  .sd-picks{display:flex;flex-direction:column;gap:6px}
+  .sd-pick{display:flex;align-items:center;gap:10px;border:2px solid var(--sd-teal-soft,#E0F5F3);background:var(--sd-teal-soft,#E0F5F3);border-radius:14px;padding:8px 10px;font-size:.85rem}
+  .sd-pick .face{width:38px;height:38px;border-radius:50%;overflow:hidden;background:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+  .sd-pick .face img{width:100%;height:100%;object-fit:cover}
+  .sd-pick b{display:block;font-weight:800}
+  .sd-pick small{font-size:.72rem;font-weight:700;color:var(--sd-cocoa-soft)}
+  .sd-pick button{margin-left:auto;border:none;background:#fff;color:var(--sd-coral);font-weight:900;width:28px;height:28px;border-radius:50%;cursor:pointer}
+  .sd-fx-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+  .sd-fx-actions .sd-cancel-link{margin:0}
+  .sd-book-note.extend{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px;background:var(--sd-teal-soft,#E0F5F3);color:var(--sd-teal-deep)}
   .sd-week-nav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;font-weight:800;font-size:.84rem;color:var(--sd-cocoa)}
   .sd-week-nav button{width:32px;height:32px;border-radius:50%;border:2px solid #F0E9DA;background:#fff;font-weight:800;font-size:1rem;cursor:pointer;color:var(--sd-cocoa)}
   .sd-week-nav button:disabled{opacity:.35;cursor:default}
@@ -1081,12 +1111,7 @@
       </div>
     </div>
     <div class="sd-progressbar"><div id="levelBar" style="width:0%"></div></div>
-    <div class="sd-map-links">
-      <a class="sd-cert-link sd-test-link locked" id="levelTestLink" href="#" aria-disabled="true">
-        <span class="ic">🔒</span><span><b id="levelTestTitle">Level test</b><small id="levelTestSub">Unlocks after all 20 lessons</small></span>
-      </a>
-      <a class="sd-cert-link" href="certificates.html"><img class="sd-cert-link-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> My certificate</a>
-    </div>
+    <a class="sd-cert-link" href="certificates.html"><img class="sd-cert-link-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> My certificate</a>
   </div>
 
   <!-- My Schedule -->
@@ -1248,6 +1273,26 @@
   <div class="sd-section-title"><h3>Adventure map</h3></div>
   <div class="sd-path-card">
     <div class="path" id="path"></div>
+  </div>
+
+  <!-- Level test (own window, after the map) -->
+  <div class="sd-section-title"><h3>📝 Level test</h3></div>
+  <div class="sd-test-card" id="levelTestCard">
+    <div class="sd-test-top">
+      <div class="sd-test-badge" id="levelTestIcon">🔒</div>
+      <div class="sd-test-text">
+        <div class="sd-test-title" id="levelTestTitle">Level test</div>
+        <div class="sd-test-sub" id="levelTestSub">Unlocks after all 20 lessons</div>
+      </div>
+    </div>
+    <div class="sd-progressbar sd-test-bar"><div id="levelTestBar" style="width:0%"></div></div>
+    <div class="sd-test-meta" id="levelTestMeta"></div>
+    <div class="sd-test-facts">
+      <div><b>30</b><span>questions</span></div>
+      <div><b>70%</b><span>to pass</span></div>
+      <div><b>4</b><span>skills: words, Arabic→English, sentences, listening</span></div>
+    </div>
+    <a class="sd-cert-link sd-test-link locked" id="levelTestLink" href="#" aria-disabled="true"><span class="ic">🔒</span><span><b id="levelTestBtn">Locked</b></span></a>
   </div>
 
 </main>
@@ -1533,32 +1578,34 @@
   // lesson count) until every lesson is done, then live: take / retake /
   // passed. The teacher-preview bypass (lumio_teacher) keeps it open.
   try {
+    const ltCard = document.getElementById("levelTestCard");
     const ltLink = document.getElementById("levelTestLink");
     const ltTitle = document.getElementById("levelTestTitle");
     const ltSub = document.getElementById("levelTestSub");
+    const ltBtn = document.getElementById("levelTestBtn");
+    const ltIcon = document.getElementById("levelTestIcon");
+    const ltMeta = document.getElementById("levelTestMeta");
     const lt = Lumio.levelTestFor ? Lumio.levelTestFor(u.name, level) : null;
     const unlocked = done >= total || (Lumio.isTeacherSession && Lumio.isTeacherSession());
     ltLink.className = "sd-cert-link sd-test-link";
+    ltCard.className = "sd-test-card";
+    document.getElementById("levelTestBar").style.width = Math.min(100, Math.round((done / total) * 100)) + "%";
+    const setState = (cls, icon, title, sub, btn, meta) => { ltCard.classList.add(cls); ltIcon.textContent = icon; ltLink.querySelector(".ic").textContent = icon; ltTitle.textContent = title; ltSub.textContent = sub; ltBtn.textContent = btn; ltMeta.textContent = meta || ""; };
     if (!unlocked) {
       ltLink.classList.add("locked"); ltLink.href = "#"; ltLink.setAttribute("aria-disabled", "true");
-      ltLink.querySelector(".ic").textContent = "🔒";
-      ltTitle.textContent = `${meta.name} level test`;
-      ltSub.textContent = `Unlocks after all ${total} lessons — ${done}/${total} done`;
+      setState("locked", "🔒", `${meta.name} level test`, `Opens the moment all ${total} lessons are done — then your certificate.`, `Locked — ${total - done} lesson${total - done === 1 ? "" : "s"} to go`, `${done}/${total} lessons done (prep + class + homework)`);
       ltLink.onclick = e => { e.preventDefault(); showToast(`Finish all ${total} lessons first — ${total - done} to go!`, "🔒"); };
     } else {
       ltLink.href = `level-test.html?level=${level}`; ltLink.removeAttribute("aria-disabled"); ltLink.onclick = null;
       if (lt && lt.pct >= Lumio.TEST_PASS_PCT) {
-        ltLink.classList.add("passed"); ltLink.querySelector(".ic").textContent = "🏅";
-        ltTitle.textContent = `Level test passed · ${lt.pct}%`;
-        ltSub.textContent = `${lt.band} — tap to try for a higher score`;
+        ltLink.classList.add("passed");
+        setState("passed", "🏅", `Level test passed · ${lt.pct}%`, `${lt.band} — your certificate is ready.`, "Try again for a higher score", `Best ${lt.score}/${lt.total} on ${lt.date}${lt.attempts > 1 ? ` · ${lt.attempts} attempts` : ""}`);
       } else if (lt) {
-        ltLink.classList.add("ready"); ltLink.querySelector(".ic").textContent = "🔁";
-        ltTitle.textContent = `Retake the level test`;
-        ltSub.textContent = `Best so far ${lt.pct}% — you need ${Lumio.TEST_PASS_PCT}%`;
+        ltLink.classList.add("ready");
+        setState("ready", "🔁", `Retake the ${meta.name} level test`, `Best so far ${lt.pct}% — you need ${Lumio.TEST_PASS_PCT}% for the certificate.`, "Retake the test", `Last try ${lt.score}/${lt.total} on ${lt.date}${lt.attempts > 1 ? ` · ${lt.attempts} attempts` : ""}`);
       } else {
-        ltLink.classList.add("ready"); ltLink.querySelector(".ic").textContent = "📝";
-        ltTitle.textContent = `Take the ${meta.name} level test`;
-        ltSub.textContent = "30 questions · unlocks your certificate";
+        ltLink.classList.add("ready");
+        setState("ready", "📝", `Take the ${meta.name} level test`, `All ${total} lessons done — this unlocks your certificate.`, "Start the level test", "About 15 minutes · you can retake it any time");
       }
     }
   } catch (e) { console.error("level test link", e); }
@@ -1751,6 +1798,8 @@
       const ov = document.getElementById("bookOverlay");
       document.getElementById("bookTitle").textContent = title;
       document.getElementById("bookBody").textContent = body;
+      document.getElementById("bookBody").style.whiteSpace = "pre-line";
+      document.getElementById("bookBody").style.textAlign = body.indexOf("\n") >= 0 ? "left" : "";
       const yes = document.getElementById("bookYes"), no = document.getElementById("bookNo");
       yes.textContent = yesLabel || "Yes, book it ✓";
       const done = v => { ov.classList.remove("show"); yes.onclick = no.onclick = null; resolve(v); };
@@ -1760,6 +1809,81 @@
     });
   }
   let bookingWeek = 0, bookingDay = null, bookingHour = null, bookingWeekPinned = false;
+  let bookingMode = "one", fxDay = null, fxHour = null, fxPicks = [];
+  const FX_DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const teacherFace = t => t && t.photoDataUrl ? `<img src="${t.photoDataUrl}" alt="">` : `<span>${(t && t.avatar) || "🧑‍🏫"}</span>`;
+  const starsOf = r => { const full = Math.floor(r), half = r - full >= 0.5; return "★".repeat(full) + (half ? "½" : "") + "☆".repeat(Math.max(0, 5 - full - (half ? 1 : 0))); };
+  const ratingLine = id => { const r = LumioSchedule.teacherAverageRating(id); return r ? `<b>${starsOf(r.average)}</b> ${r.average.toFixed(1)} · ${r.count} rating${r.count === 1 ? "" : "s"}` : "New teacher · no ratings yet"; };
+  // ---- fixed weekly schedule (student picks day + time + teacher, up to 3 a week) ----
+  function renderFixedMode(card, head, me, st, lessonLabel) {
+    const W = LumioSchedule.WORK;
+    const saved = LumioSchedule.fixedPlanFor(u.name);
+    if (!fxPicks.length && saved && saved.picks) fxPicks = saved.picks.slice();
+    const teacherOf = id => { try { return LumioProfiles.getTeacher(id) || null; } catch (e) { return null; } };
+    const pickKey = pk => `${pk.dayOfWeek}|${pk.startTime}`;
+    const picksHtml = fxPicks.length ? fxPicks.map((pk, i) => { const t = teacherOf(pk.teacherId); return `<div class="sd-pick"><div class="face">${teacherFace(t)}</div><div><b>${FX_DAYS[pk.dayOfWeek]} · ${Lumio.fmt12(pk.startTime)}</b><small>${(t && t.name) || pk.teacherName || "Teacher"}</small></div><button type="button" data-unpick="${i}" aria-label="Remove">✕</button></div>`; }).join("")
+      : `<div class="sd-book-note">No weekly times yet — pick up to ${LumioSchedule.MAX_PER_WEEK} below. Each one becomes a class every week, lesson after lesson, for as long as your package lasts.</div>`;
+    const canAdd = fxPicks.length < LumioSchedule.MAX_PER_WEEK;
+    const dayHtml = W.days.map(d => `<div class="sd-day fx${fxDay === d ? " active" : ""}${fxPicks.some(p => p.dayOfWeek === d) ? " picked" : ""}" data-fxday="${d}"><div class="dw">${FX_DAYS[d].slice(0, 3)}</div><div class="dn">${fxPicks.filter(p => p.dayOfWeek === d).length ? "✓" : "·"}</div><div class="ct">every week</div></div>`).join("");
+    const [sh] = W.start.split(":").map(Number), [eh] = W.end.split(":").map(Number);
+    const hourOf = t => Number(t.split(":")[0]);
+    const dayPats = fxDay === null ? [] : LumioSchedule.weeklySlotOptions(fxDay);
+    const openHours = new Set(dayPats.map(p => hourOf(p.startTime)));
+    if (fxHour !== null && !openHours.has(fxHour)) fxHour = null;
+    let hourHtml = "";
+    for (let hh = sh; hh < eh; hh++) {
+      const t = `${String(hh).padStart(2, "0")}:00`, open = openHours.has(hh), n = dayPats.filter(p => hourOf(p.startTime) === hh).length;
+      hourHtml += `<div class="sd-hour ${open ? "open" : "closed"}${fxHour === hh ? " active" : ""}" data-fxhour="${hh}">${Lumio.fmt12(t)}<span>${open ? `${n} teacher${n === 1 ? "" : "s"}` : "—"}</span></div>`;
+    }
+    const hourPats = fxHour === null ? [] : dayPats.filter(p => hourOf(p.startTime) === fxHour);
+    const teacherHtml = hourPats.map((p, i) => {
+      const t = teacherOf(p.teacherId);
+      const already = fxPicks.some(pk => pickKey(pk) === `${p.dayOfWeek}|${p.startTime}`);
+      return `<div class="sd-teacher"><div class="face">${teacherFace(t)}</div><div class="info"><div class="nm">${p.teacherName || (t && t.name) || "Teacher"}</div><div class="rt">${ratingLine(p.teacherId)}</div><div class="mt">Every ${FX_DAYS[p.dayOfWeek]} · ${Lumio.fmt12(p.startTime)} · ${p.durationMinutes} min</div></div><button type="button" class="sd-book-btn" data-fxadd="${i}" ${already || !canAdd ? "disabled" : ""}>${already ? "Added" : "Add"}</button></div>`;
+    }).join("");
+    card.innerHTML = head + `<div class="sd-book-sub">Choose a weekly time (Saudi time) and a teacher — up to ${LumioSchedule.MAX_PER_WEEK} a week. We book your next lessons into those times in order, following the same rules: up to 4 classmates at the same lesson, only your package's sessions, and you can still cancel any single class 30 min before.</div>
+      <div class="sd-step">🔁 My weekly times (${fxPicks.length}/${LumioSchedule.MAX_PER_WEEK})</div><div class="sd-picks">${picksHtml}</div>
+      ${fxPicks.length ? `<div class="sd-fx-actions"><button type="button" class="sd-book-btn" id="fxBookBtn">Preview &amp; book my weeks</button>${saved ? `<button type="button" class="sd-cancel-link" id="fxClearBtn">Remove fixed schedule</button>` : ""}</div>` : ""}
+      ${canAdd ? `<div class="sd-step">1 · Day</div><div class="sd-days week fx">${dayHtml}</div>
+      ${fxDay !== null ? `<div class="sd-step">2 · Time (working hours ${Lumio.fmt12(W.start)} – ${Lumio.fmt12(W.end)})</div><div class="sd-hours">${hourHtml}</div>` : ""}
+      ${fxHour !== null ? `<div class="sd-step">3 · Teacher</div><div class="sd-teachers">${teacherHtml}</div>` : ""}` : `<div class="sd-step muted">That's the maximum of ${LumioSchedule.MAX_PER_WEEK} a week — remove one to change it.</div>`}`;
+    card.querySelectorAll("[data-fxday]").forEach(el => el.addEventListener("click", () => { fxDay = Number(el.dataset.fxday); fxHour = null; renderBooking(); }));
+    card.querySelectorAll(".sd-hour.open[data-fxhour]").forEach(el => el.addEventListener("click", () => { fxHour = Number(el.dataset.fxhour); renderBooking(); }));
+    card.querySelectorAll(".sd-hour.closed[data-fxhour]").forEach(el => el.addEventListener("click", () => showToast("No teacher offers that time — pick an open one.", "⏰")));
+    card.querySelectorAll("[data-fxadd]").forEach(b => b.addEventListener("click", () => {
+      const p = hourPats[Number(b.dataset.fxadd)];
+      if (fxPicks.some(pk => pk.dayOfWeek === p.dayOfWeek && pk.startTime === p.startTime)) return;
+      fxPicks.push({ dayOfWeek: p.dayOfWeek, startTime: p.startTime, teacherId: p.teacherId, teacherName: p.teacherName });
+      fxDay = null; fxHour = null; renderBooking();
+    }));
+    card.querySelectorAll("[data-unpick]").forEach(b => b.addEventListener("click", () => { fxPicks.splice(Number(b.dataset.unpick), 1); renderBooking(); }));
+    const clearBtn = card.querySelector("#fxClearBtn");
+    if (clearBtn) clearBtn.addEventListener("click", async () => {
+      if (!(await askBooking("Remove your fixed schedule?", "Classes already booked stay as they are — you can cancel any of them one by one. We just stop booking new weeks automatically.", "Yes, remove it"))) return;
+      LumioSchedule.saveFixedPlan(u.name, null); fxPicks = []; renderBooking(); showToast("Fixed schedule removed.", "👋");
+    });
+    const bookBtn = card.querySelector("#fxBookBtn");
+    if (bookBtn) bookBtn.addEventListener("click", async () => {
+      const plan = LumioSchedule.weeklyPlanPreview({ studentName: u.name, studentId: me ? me.id : null, level, picks: fxPicks });
+      const okItems = plan.filter(x => x.ok), skipped = plan.filter(x => !x.ok);
+      const fmtD = d => new Date(d + "T00:00:00").toLocaleDateString("en", { weekday: "short", month: "short", day: "numeric" });
+      if (!okItems.length) {
+        LumioSchedule.saveFixedPlan(u.name, fxPicks);
+        return askBooking("Nothing to book yet", skipped.length ? `${skipped[0].reason} — your weekly times are saved and we'll offer the next weeks as they open.` : "Everything in the next three weeks is already booked. Your weekly times are saved.", "OK");
+      }
+      const body = okItems.map(x => `✓ ${fmtD(x.date)} ${Lumio.fmt12(x.startTime)} — Lesson ${x.lesson}${x.kind === "join" ? ` (join ${x.taken})` : ""}`).join("\n")
+        + (skipped.length ? `\n\nSkipped: ` + skipped.map(x => `${fmtD(x.date)} ${Lumio.fmt12(x.startTime)} — ${x.reason}`).join("; ") : "");
+      if (!(await askBooking(`Book ${okItems.length} class${okItems.length === 1 ? "" : "es"} for the next 3 weeks?`, body, "Yes, book them ✓"))) return;
+      bookBtn.disabled = true; bookBtn.textContent = "Booking…";
+      const res = await LumioSchedule.bookWeeklyRemote({ studentName: u.name, studentId: me ? me.id : null, level, picks: fxPicks });
+      const done = res.filter(x => x.ok).length;
+      if (done) LumioSchedule.saveFixedPlan(u.name, fxPicks);
+      const fail = res.find(x => !x.ok && /switched on|reach the booking server/i.test(x.reason || ""));
+      if (fail) { showToast(fail.reason, "⚠️"); bookBtn.disabled = false; bookBtn.textContent = "Preview & book my weeks"; return; }
+      showToast(`${done} class${done === 1 ? "" : "es"} booked 🎉`, "🔁");
+      setTimeout(() => location.reload(), 1200);
+    });
+  }
   function renderBooking() {
     const card = document.getElementById("bookingCard");
     if (!card || !window.LumioSchedule || !LumioSchedule.openSlots) return;
@@ -1774,6 +1898,26 @@
     if (st.levelDone) return note("🎉 Every lesson of this level is attended or booked. Your teacher will open the next level after the level test.");
     if (me && me.subscribed === false) return note("⏸️ Your subscription is paused — your teacher will activate it after the next payment, then you can book here.");
     if (me && !(Number(me.sessionsRemaining) > 0)) return note("🎟️ No sessions left on your package — ask your teacher to add more, then book here.");
+
+    const savedPlan = LumioSchedule.fixedPlanFor(u.name);
+    let extendNote = "";
+    if (savedPlan && savedPlan.picks && savedPlan.picks.length) {
+      const prev = LumioSchedule.weeklyPlanPreview({ studentName: u.name, studentId: me ? me.id : null, level, picks: savedPlan.picks }).filter(x => x.ok);
+      if (prev.length) extendNote = `<div class="sd-book-note extend">🔁 Your fixed schedule can book ${prev.length} more class${prev.length === 1 ? "" : "es"} in the weeks that just opened. <button type="button" class="sd-book-btn" id="fxExtendBtn">Book them</button></div>`;
+    }
+    const tabs = extendNote + `<div class="sd-book-tabs"><button type="button" class="${bookingMode === "one" ? "active" : ""}" data-mode="one">📅 One class</button><button type="button" class="${bookingMode === "fixed" ? "active" : ""}" data-mode="fixed">🔁 Fixed weekly</button></div>`;
+    const bindTabs = () => {
+      card.querySelectorAll("[data-mode]").forEach(b => b.addEventListener("click", () => { bookingMode = b.dataset.mode; renderBooking(); }));
+      const ext = card.querySelector("#fxExtendBtn");
+      if (ext) ext.addEventListener("click", async () => {
+        ext.disabled = true; ext.textContent = "Booking…";
+        const res = await LumioSchedule.bookWeeklyRemote({ studentName: u.name, studentId: me ? me.id : null, level, picks: savedPlan.picks });
+        const done = res.filter(x => x.ok).length, fail = res.find(x => !x.ok && /switched on|reach the booking server/i.test(x.reason || ""));
+        if (fail) { showToast(fail.reason, "⚠️"); ext.disabled = false; ext.textContent = "Book them"; return; }
+        showToast(`${done} class${done === 1 ? "" : "es"} booked 🎉`, "🔁"); setTimeout(() => location.reload(), 1200);
+      });
+    };
+    if (bookingMode === "fixed") { renderFixedMode(card, head + tabs, me, st, lessonLabel); bindTabs(); return; }
 
     const W = LumioSchedule.WORK;
     const today = LumioSchedule.todayStr();
@@ -1848,13 +1992,14 @@
       </div>`;
     }).join("");
 
-    card.innerHTML = head + `<div class="sd-book-sub">Pick a day, then a time (Saudi time), then your teacher. Up to ${LumioSchedule.MAX_PER_CLASS} students share a class at the same lesson · max ${LumioSchedule.MAX_PER_WEEK} a week · cancel up to ${LumioSchedule.CANCEL_MIN_BEFORE} min before.</div>
+    card.innerHTML = head + tabs + `<div class="sd-book-sub">Pick a day, then a time (Saudi time), then your teacher. Up to ${LumioSchedule.MAX_PER_CLASS} students share a class at the same lesson · max ${LumioSchedule.MAX_PER_WEEK} a week · cancel up to ${LumioSchedule.CANCEL_MIN_BEFORE} min before.</div>
       <div class="sd-week-nav"><button type="button" data-wk="-1" ${bookingWeek === 0 ? "disabled" : ""}>‹</button><span>${monthLabel}${bookingWeek === 0 ? " · this week" : bookingWeek === 1 ? " · next week" : ""}</span><button type="button" data-wk="1" ${bookingWeek === maxWeek ? "disabled" : ""}>›</button></div>
       <div class="sd-days week">${dayHtml}</div>
       ${bookingDay ? `<div class="sd-step">⏰ Working hours ${Lumio.fmt12(W.start)} – ${Lumio.fmt12(W.end)} · ${daySlots.length ? "tap an open time" : "no open times this day"}</div><div class="sd-hours">${hourHtml}</div>` : `<div class="sd-book-note" style="margin-top:10px">Lessons run Sunday to Thursday — pick a working day.</div>`}
       ${bookingHour !== null ? `<div class="sd-step">🧑‍🏫 Teachers free at ${Lumio.fmt12(String(bookingHour).padStart(2, "0") + ":00")}</div><div class="sd-teachers">${teacherHtml}</div>` : (daySlots.length ? `<div class="sd-step muted">Choose a time to see which teachers are free.</div>` : "")}
       ${capHit ? `<div class="sd-week-cap">You already have ${LumioSchedule.MAX_PER_WEEK} classes that week — pick another week.</div>` : ""}`;
 
+    bindTabs();
     card.querySelectorAll("[data-wk]").forEach(b => b.addEventListener("click", () => { bookingWeek += Number(b.dataset.wk); bookingWeekPinned = true; bookingDay = null; bookingHour = null; renderBooking(); }));
     card.querySelectorAll(".sd-day.open").forEach(el => el.addEventListener("click", () => { bookingDay = el.dataset.day; bookingHour = null; renderBooking(); }));
     card.querySelectorAll(".sd-day.full, .sd-day.off, .sd-day.past").forEach(el => el.addEventListener("click", () => {

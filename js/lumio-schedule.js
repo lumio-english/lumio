@@ -1142,9 +1142,77 @@
     }
   }
 
+  // ---- student fixed weekly schedule ----
+  // picks: [{ dayOfWeek, startTime, teacherId }] (max MAX_PER_WEEK). The
+  // plan is just the same single bookings made in sequence: every matching
+  // date in the horizon gets the student's next lesson, under exactly the
+  // rules above. Preview = run the bookings locally on a snapshot, collect
+  // the outcome per date, then put the data back untouched.
+  function weeklySlotOptions(dayOfWeek) {
+    return load().patterns.filter(p => p.active && !isLegacyPattern(p) && Number(p.dayOfWeek) === Number(dayOfWeek))
+      .sort((a, b) => hmToMin(a.startTime) - hmToMin(b.startTime));
+  }
+  function weeklyPlanPreview({ studentName, studentId, level, picks, days } = {}) {
+    const snap = snapshot();
+    const out = [];
+    try {
+      const today = todayStr();
+      const horizon = addDaysStr(today, days || BOOK_HORIZON_DAYS);
+      const full = global.LumioProfiles ? (studentId ? global.LumioProfiles.getStudent(studentId) : global.LumioProfiles.findByName(studentName)) : null;
+      let sessionsLeft = full ? Number(full.sessionsRemaining) || 0 : 99;
+      for (let d = today; d <= horizon; d = addDaysStr(d, 1)) {
+        const dow = dowOf(d);
+        (picks || []).filter(pk => Number(pk.dayOfWeek) === dow).sort((a, b) => hmToMin(a.startTime) - hmToMin(b.startTime)).forEach(pk => {
+          const pat = load().patterns.find(p => p.active && !isLegacyPattern(p) && p.teacherId === pk.teacherId && Number(p.dayOfWeek) === dow && p.startTime === pk.startTime);
+          const item = { date: d, startTime: pk.startTime, teacherId: pk.teacherId, teacherName: pat ? pat.teacherName : "", lesson: null, ok: false, reason: "" };
+          if (!pat) { item.reason = "That teacher no longer has this slot."; out.push(item); return; }
+          if (isPast(d, pk.startTime)) return; // silently skip what already passed
+          const st = studentBookingState(studentName, level);
+          if (st.levelDone) { item.reason = "Level complete — nothing more to book."; out.push(item); return; }
+          if (sessionsLeft <= 0) { item.reason = "No sessions left on the package after the bookings above."; out.push(item); return; }
+          try {
+            const cls = bookStudentIntoSlot({ studentName, studentId, level, lesson: st.nextLesson, patternId: pat.id, date: d });
+            item.lesson = cls.lessonNumber; item.ok = true; item.patternId = pat.id; item.classId = cls.id;
+            item.kind = cls.students.length > 1 ? "join" : "new"; item.taken = cls.students.length - 1;
+            sessionsLeft--;
+          } catch (e) { item.reason = e.message; }
+          out.push(item);
+        });
+      }
+    } finally { restore(snap); }
+    return out;
+  }
+  async function bookWeeklyRemote({ studentName, studentId, level, picks, days } = {}) {
+    const plan = weeklyPlanPreview({ studentName, studentId, level, picks, days });
+    const results = [];
+    for (const item of plan) {
+      if (!item.ok) { results.push(item); continue; }
+      try {
+        const cls = await bookSlotRemote({ studentName, studentId, level, lesson: item.lesson, patternId: item.patternId, date: item.date });
+        results.push(Object.assign({}, item, { ok: true, classId: cls.id }));
+      } catch (e) {
+        results.push(Object.assign({}, item, { ok: false, reason: e.message }));
+        if (/switched on|reach the booking server/i.test(e.message || "")) break; // no point continuing offline
+      }
+    }
+    return results;
+  }
+  const FIXED_PLAN_KEY = "lumio_fixed_plan_v1";
+  function fixedPlanFor(studentName) {
+    try { const all = JSON.parse(localStorage.getItem(FIXED_PLAN_KEY) || "{}"); return all[normName(studentName)] || null; } catch (e) { return null; }
+  }
+  function saveFixedPlan(studentName, picks) {
+    try {
+      const all = JSON.parse(localStorage.getItem(FIXED_PLAN_KEY) || "{}");
+      if (picks && picks.length) all[normName(studentName)] = { picks, savedAt: new Date().toISOString() }; else delete all[normName(studentName)];
+      localStorage.setItem(FIXED_PLAN_KEY, JSON.stringify(all));
+    } catch (e) {}
+  }
+
   global.LumioSchedule = {
     listClasses, getClass,
     bookSlotRemote, cancelBookingRemote, laterBookings,
+    weeklySlotOptions, weeklyPlanPreview, bookWeeklyRemote, fixedPlanFor, saveFixedPlan,
     // booking model
     WORK, MAX_PER_CLASS, MAX_PER_WEEK, CANCEL_MIN_BEFORE, lessonDuration, inWorkingHours, isPast, isLegacyPattern,
     addAvailability, setWeeklyAvailability, availabilityForTeacher, availabilityStatus, studentBookingState, bookingsInWeek, openSlots,
