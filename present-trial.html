@@ -32,6 +32,16 @@
   #gameLinks a { background:#fff; color:#43301F; text-decoration:none; font-weight:800; font-size:.8rem; padding:9px 16px;
     border-radius:999px; box-shadow:0 8px 16px rgba(0,0,0,.2); }
   #loadingMsg { color:#fff; font-family:'Baloo 2',sans-serif; font-weight:700; }
+  /* Point reaction: the tapped pill pops, flashes gold and floats a "+1" */
+  @keyframes pillPop { 0%{transform:scale(1)} 35%{transform:scale(1.22)} 70%{transform:scale(.96)} 100%{transform:scale(1)} }
+  @keyframes floatUp { 0%{opacity:1;transform:translate(-50%,0) scale(1)} 100%{opacity:0;transform:translate(-50%,-70px) scale(1.4)} }
+  @keyframes chipFlash { 0%,100%{background:rgba(255,255,255,.1)} 40%{background:rgba(255,201,60,.55)} }
+  .pill-pop { animation: pillPop .45s cubic-bezier(.22,1,.36,1); box-shadow: 0 0 0 4px #FFC93C, 0 10px 26px rgba(255,201,60,.55) !important; }
+  .plus-one { position:absolute; left:50%; top:-6px; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1.6rem; color:#FFC93C; text-shadow:0 2px 6px rgba(0,0,0,.35); pointer-events:none; animation: floatUp .9s ease-out forwards; }
+  .chip-flash { animation: chipFlash .7s ease; }
+  #qCounter { display:none; align-items:center; gap:8px; background:rgba(255,255,255,.1); border-radius:999px; padding:6px 12px; color:#fff; font-weight:800; font-size:.85rem; }
+  .q-badge { position:absolute; top:-50px; right:40px; background:#FFC93C; color:#43301F; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1rem; padding:6px 16px; border-radius:999px; box-shadow:0 6px 14px rgba(0,0,0,.15); z-index:6; }
+  #qCounter button { background:rgba(255,255,255,.18); color:#fff; border:none; border-radius:999px; width:26px; height:26px; font-weight:800; cursor:pointer; font-family:inherit; line-height:1; }
 </style>
 </head>
 <body>
@@ -39,6 +49,10 @@
 <div id="topbar">
   <div class="brand" id="lessonBrand">📖 Lumio English</div>
   <div id="scoreboardChip" style="display:none;align-items:center;gap:10px;background:rgba(255,255,255,.1);border-radius:999px;padding:6px 14px">
+  </div>
+  <div id="qCounter" title="Questions asked in this game — counts up each time a point is awarded; use − / + to correct it">
+    <span>❓ Question <b id="qNum">1</b><span id="qOf"></span></span>
+    <button onclick="bumpQ(-1)">−</button><button onclick="bumpQ(1)">+</button>
   </div>
   <div class="actions">
     <button id="manageRosterBtn">👥 <span id="rosterCountLabel">0</span> students</button>
@@ -260,11 +274,63 @@ function refreshScoreboardChip() {
     <span style="color:${TEAMS.B.color};font-weight:800;font-size:.85rem">${TEAMS.B.emoji} ${TEAMS.B.name} ${scores.B}</span>`;
 }
 
-function awardPoint(team, studentName) {
+// ---------- question counter: one "game" = the run of consecutive
+// challenge slides (buzzer / relay / copy-cat). Resets automatically on
+// the first challenge slide after a non-challenge slide; each awarded
+// point counts as one question answered; − / + in the top bar correct it.
+let qCount = 0, lastWasChallenge = false;
+const CHALLENGE_KINDS = ["buzzer", "team-relay", "copycat", "solo-answer", "solo-do"];
+function bumpQ(d) { qCount = Math.max(0, qCount + d); refreshQCounter(); }
+function refreshQCounter() {
+  const el = document.getElementById("qCounter"); if (!el) return;
+  const root = document.querySelector("[data-challenge]");
+  const kind = root ? root.dataset.challenge : "";
+  const show = CHALLENGE_KINDS.includes(kind) || (kind === "scoreboard" && qCount > 0);
+  el.style.display = show ? "flex" : "none";
+  // On a challenge slide: the question being asked now. On the scoreboard: how many were asked.
+  const onChallenge = CHALLENGE_KINDS.includes(kind);
+  document.getElementById("qNum").textContent = onChallenge ? qCount + 1 : qCount;
+  document.getElementById("qOf").textContent = onChallenge ? "" : " asked";
+  // the same number inside the slide, where the students see it too
+  if (root && CHALLENGE_KINDS.includes(kind)) {
+    let b = root.querySelector(".q-badge");
+    if (!b) { b = document.createElement("div"); b.className = "q-badge"; root.prepend(b); }
+    b.textContent = `Question ${qCount + 1}`;
+  }
+}
+function trackChallengeSlide() {
+  const root = document.querySelector("[data-challenge]");
+  const isCh = !!root && CHALLENGE_KINDS.includes(root.dataset.challenge);
+  if (isCh && !lastWasChallenge) qCount = 0;          // new game starts
+  lastWasChallenge = isCh;
+  refreshQCounter();
+}
+
+// ---------- point reaction: pop + gold ring + floating "+1" on the tapped
+// pill, a flash on the top-bar scoreboard, confetti and the win chime. ----------
+function reactToPoint(btn) {
+  try {
+    if (btn) {
+      btn.classList.remove("pill-pop"); void btn.offsetWidth; btn.classList.add("pill-pop");
+      btn.style.position = "relative";
+      const f = document.createElement("span"); f.className = "plus-one"; f.textContent = "+1 ⭐";
+      btn.appendChild(f); setTimeout(() => f.remove(), 950);
+    }
+    const chip = document.getElementById("scoreboardChip");
+    chip.classList.remove("chip-flash"); void chip.offsetWidth; chip.classList.add("chip-flash");
+    if (typeof Lumio !== "undefined") { if (Lumio.beep) Lumio.beep(true); if (Lumio.confetti) Lumio.confetti(40); }
+  } catch (e) {}
+}
+
+function awardPoint(team, studentName, btn) {
   scores[team] = (scores[team] || 0) + 1;
   if (studentName) shoutouts[studentName] = (shoutouts[studentName] || 0) + 1;
+  qCount++;
   refreshScoreboardChip();
-  renderChallengeUI(); // refresh in place so the score bump is visible immediately
+  reactToPoint(btn);
+  // re-render after the pop so the animation isn't cut off
+  setTimeout(() => { renderChallengeUI(); refreshQCounter(); }, 480);
+  refreshQCounter();
 }
 
 // ---------- challenge UI: renders into whatever placeholder containers
@@ -275,13 +341,13 @@ function awardPoint(team, studentName) {
 function pillButton(label, onClick, color) {
   const b = document.createElement("button");
   b.textContent = label;
-  b.onclick = onClick;
+  b.onclick = () => onClick(b);
   b.style.cssText = `background:${color};color:#fff;border:none;border-radius:999px;padding:10px 20px;
     font-weight:800;font-size:.95rem;cursor:pointer;font-family:'Baloo 2',sans-serif;margin:4px;box-shadow:0 4px 10px rgba(0,0,0,.15)`;
   return b;
 }
 
-function addStars(n) { stars = Math.max(0, stars + n); refreshScoreboardChip(); renderChallengeUI(); if (n > 0 && typeof Lumio !== "undefined" && Lumio.confetti) Lumio.confetti(30); }
+function addStars(n, btn) { stars = Math.max(0, stars + n); if (n > 0) { qCount++; reactToPoint(btn); } refreshScoreboardChip(); setTimeout(() => { renderChallengeUI(); refreshQCounter(); }, n > 0 ? 480 : 0); refreshQCounter(); }
 
 function renderChallengeUI() {
   const root = document.querySelector("[data-challenge]");
@@ -291,14 +357,14 @@ function renderChallengeUI() {
   if (kind === "solo-answer") {
     root.innerHTML = "";
     root.style.cssText = "display:flex;gap:12px;justify-content:center;flex-wrap:wrap";
-    root.appendChild(pillButton("⭐ Got it! (+1 star)", () => addStars(1), "#F97316"));
+    root.appendChild(pillButton("⭐ Got it! (+1 star)", (btn) => addStars(1, btn), "#F97316"));
     root.appendChild(pillButton("🔁 Almost — say it with me", () => { const el = document.querySelector("[data-say]"); if (el && typeof Lumio !== "undefined" && Lumio.speak) Lumio.speak(el.dataset.say); }, "#0D9488"));
     return;
   }
   if (kind === "solo-do") {
     root.innerHTML = "";
     root.style.cssText = "display:flex;gap:12px;justify-content:center;flex-wrap:wrap";
-    [1, 2, 3].forEach(k => root.appendChild(pillButton("⭐".repeat(k), () => addStars(k), k === 3 ? "#F97316" : k === 2 ? "#F59E0B" : "#0D9488")));
+    [1, 2, 3].forEach(k => root.appendChild(pillButton("⭐".repeat(k), (btn) => addStars(k, btn), k === 3 ? "#F97316" : k === 2 ? "#F59E0B" : "#0D9488")));
     return;
   }
   if (kind === "solo-meter") {
@@ -343,7 +409,7 @@ function renderChallengeUI() {
     if (!roster.length) { zone.innerHTML = `<div style="color:#9385C4">Add students from the 👥 button above.</div>`; return; }
     roster.forEach(s => {
       const color = s.team ? TEAMS[s.team].color : "#9385C4";
-      zone.appendChild(pillButton(s.name, () => awardPoint(s.team || "A", s.name), color));
+      zone.appendChild(pillButton(s.name, (btn) => awardPoint(s.team || "A", s.name, btn), color));
     });
   }
 
@@ -351,8 +417,8 @@ function renderChallengeUI() {
     const zone = root.querySelector("#teamZone");
     if (!zone) return;
     zone.innerHTML = "";
-    zone.appendChild(pillButton(`${TEAMS.A.emoji} ${TEAMS.A.name}`, () => awardPoint("A"), TEAMS.A.color));
-    zone.appendChild(pillButton(`${TEAMS.B.emoji} ${TEAMS.B.name}`, () => awardPoint("B"), TEAMS.B.color));
+    zone.appendChild(pillButton(`${TEAMS.A.emoji} ${TEAMS.A.name}`, (btn) => awardPoint("A", null, btn), TEAMS.A.color));
+    zone.appendChild(pillButton(`${TEAMS.B.emoji} ${TEAMS.B.name}`, (btn) => awardPoint("B", null, btn), TEAMS.B.color));
   }
 
   if (kind === "scoreboard") {
@@ -403,6 +469,7 @@ function loadSlide(n) {
       renderTrialNames();
       renderChallengeUI();
       refreshScoreboardChip();
+      trackChallengeSlide();
     })
     .catch(() => { document.getElementById("stageContent").innerHTML = "<div id='loadingMsg' style='padding:40px'>Slide not found.</div>"; });
 }
