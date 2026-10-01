@@ -1029,7 +1029,27 @@
     if (c.students.length === before) throw new Error("That student isn't in this class.");
     if (!c.students.length) c.status = "cancelled";
     c.updatedAt = new Date().toISOString();
+    // Lessons are booked in sequence, so dropping lesson N also drops the
+    // student's later bookings (N+1, N+2...) in the same level -- they
+    // can't happen before N anyway. Returned as `cascaded` for the UI.
+    const n = Number(c.lessonNumber) || 0;
+    const cascaded = [];
+    if (n) data.classes.forEach(x => {
+      if (x.id === c.id || x.status !== "scheduled" || x.level !== c.level || !(Number(x.lessonNumber) > n)) return;
+      const b = x.students.length;
+      x.students = x.students.filter(s => normName(s.studentName) !== normName(studentName));
+      if (x.students.length === b) return;
+      if (!x.students.length) x.status = "cancelled";
+      x.updatedAt = new Date().toISOString();
+      cascaded.push(x);
+    });
+    c.cascaded = cascaded.map(x => x.id);
     save(data); return c;
+  }
+  // Later lessons that would be dropped with this one (for the confirm text).
+  function laterBookings(classId, studentName) {
+    const c = getClass(classId); if (!c || !c.lessonNumber) return [];
+    return listClasses({ studentName, status: "scheduled" }).filter(x => x.id !== c.id && x.level === c.level && Number(x.lessonNumber) > Number(c.lessonNumber));
   }
   // Can this student actually join (open the meeting link for) this class?
   // Lesson N's class needs lesson N-1's homework done first.
@@ -1040,8 +1060,63 @@
     return hw ? { ok: true } : { ok: false, reason: `Finish the homework for Lesson ${n - 1} before joining Lesson ${n}.`, lesson: n - 1 };
   }
 
+  // ---- student-device booking: server is the referee ----
+  // A student's phone never pushes the whole schedule, so a booking goes
+  // through one narrow server call that re-checks the lock and capacity
+  // under a script lock (two students tapping the same seat at once). The
+  // local rules run first (instant feedback); the server's answer wins.
+  function snapshot() { return JSON.stringify(load()); }
+  function restore(snap) { try { save(JSON.parse(snap)); } catch (e) {} }
+  function replaceClass(cls) {
+    const data = load();
+    const i = data.classes.findIndex(c => c.id === cls.id);
+    if (i >= 0) data.classes[i] = cls; else data.classes.push(cls);
+    save(data);
+  }
+  async function bookSlotRemote(args) {
+    const snap = snapshot();
+    const cls = bookStudentIntoSlot(args);
+    const cfg = getSyncConfig();
+    if (!cfg.enabled || !cfg.url) return cls;
+    try {
+      const res = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=bookSlot", {
+        method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ cls, student: { studentId: args.studentId || null, studentName: args.studentName }, maxPerClass: MAX_PER_CLASS }),
+      });
+      const out = await res.json();
+      if (!out || !out.ok) { restore(snap); throw new Error((out && out.error) || "The server refused that booking."); }
+      if (out.cls) { normalizeSheetDates(out.cls); replaceClass(out.cls); return out.cls; }
+      return cls;
+    } catch (e) {
+      if (e && /server refused|different lesson|full|cancelled|already/i.test(e.message || "")) throw e;
+      restore(snap);
+      throw new Error("Couldn't reach the booking server — check your connection and try again.");
+    }
+  }
+  async function cancelBookingRemote(classId, studentName) {
+    const snap = snapshot();
+    const cls = cancelBooking(classId, studentName, {});
+    const cfg = getSyncConfig();
+    if (!cfg.enabled || !cfg.url) return cls;
+    try {
+      const res = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=cancelSlot", {
+        method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ classId, studentName, minBefore: CANCEL_MIN_BEFORE }),
+      });
+      const out = await res.json();
+      if (!out || !out.ok) { restore(snap); throw new Error((out && out.error) || "The server refused that cancellation."); }
+      if (out.cls) { normalizeSheetDates(out.cls); delete out.cls.cascaded; replaceClass(out.cls); }
+      return cls;
+    } catch (e) {
+      if (e && /server refused|minutes before|not found|isn't in/i.test(e.message || "")) throw e;
+      restore(snap);
+      throw new Error("Couldn't reach the booking server — check your connection and try again.");
+    }
+  }
+
   global.LumioSchedule = {
     listClasses, getClass,
+    bookSlotRemote, cancelBookingRemote, laterBookings,
     // booking model
     WORK, MAX_PER_CLASS, MAX_PER_WEEK, CANCEL_MIN_BEFORE, lessonDuration, inWorkingHours, isPast, isLegacyPattern,
     addAvailability, availabilityForTeacher, availabilityStatus, studentBookingState, bookingsInWeek, openSlots,

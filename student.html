@@ -770,6 +770,33 @@
   .sd-class-row .who{font-weight:700;font-size:.88rem}
   .sd-class-row .meta{font-size:.76rem;color:var(--sd-cocoa-soft);font-weight:600}
   .sd-empty-note{text-align:center;color:var(--sd-cocoa-soft);font-weight:700;font-size:.88rem;padding:10px 0}
+  /* ---------- booking ---------- */
+  .sd-book{margin-top:14px;border-top:2px dashed #F0E9DA;padding-top:14px}
+  .sd-book-title{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.02rem;color:var(--sd-cocoa);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .sd-book-title .lvl{font-size:.74rem;font-weight:800;background:var(--sd-teal-soft,#E0F5F3);color:var(--sd-teal-deep);padding:3px 10px;border-radius:999px}
+  .sd-book-sub{font-size:.8rem;font-weight:600;color:var(--sd-cocoa-soft);margin:2px 0 10px}
+  .sd-book-note{font-size:.84rem;font-weight:700;color:#7A3F0B;background:#FFF1E0;border-radius:12px;padding:10px 12px}
+  .sd-days{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}
+  .sd-day{flex:0 0 auto;min-width:62px;text-align:center;border:2px solid #F0E9DA;border-radius:14px;padding:8px 6px;cursor:pointer;background:#fff;font-weight:800;color:var(--sd-cocoa)}
+  .sd-day .dw{font-size:.68rem;text-transform:uppercase;letter-spacing:.04em;color:var(--sd-cocoa-soft)}
+  .sd-day .dn{font-size:1.15rem;line-height:1.1}
+  .sd-day .ct{font-size:.66rem;font-weight:700;color:var(--sd-teal-deep)}
+  .sd-day.active{border-color:var(--sd-teal-deep);background:var(--sd-teal-soft,#E0F5F3)}
+  .sd-slots{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+  .sd-slot{display:flex;align-items:center;gap:12px;border:2px solid #F0E9DA;border-radius:14px;padding:10px 12px;background:#fff}
+  .sd-slot .tm{font-weight:800;font-size:.95rem;min-width:72px}
+  .sd-slot .tm span{display:block;font-size:.68rem;font-weight:700;color:var(--sd-cocoa-soft)}
+  .sd-slot .who{flex:1;font-weight:700;font-size:.86rem}
+  .sd-slot .who small{display:block;font-size:.72rem;font-weight:700;color:var(--sd-cocoa-soft)}
+  .sd-slot .seats{font-size:.7rem;font-weight:800;padding:3px 9px;border-radius:999px;background:#F6F1E7;color:var(--sd-cocoa-soft)}
+  .sd-slot .seats.join{background:var(--sd-teal-soft,#E0F5F3);color:var(--sd-teal-deep)}
+  .sd-book-btn{border:none;background:var(--sd-orange-deep);color:#fff;font-weight:800;font-size:.82rem;padding:8px 14px;border-radius:999px;cursor:pointer;font-family:inherit}
+  .sd-book-btn:disabled{opacity:.55;cursor:default}
+  .sd-cancel-link{display:inline-block;margin-top:6px;margin-left:6px;font-size:.72rem;font-weight:800;color:var(--sd-coral);background:transparent;border:1.5px solid var(--sd-coral);padding:3px 10px;border-radius:999px;cursor:pointer;font-family:inherit}
+  .sd-next-class .sd-cancel-link{color:#fff;border-color:rgba(255,255,255,.65)}
+  .sd-gate{display:inline-block;margin-top:8px;font-size:.76rem;font-weight:800;background:rgba(255,255,255,.22);color:#fff;padding:6px 12px;border-radius:999px;text-decoration:none}
+  .sd-class-row .sd-gate{background:#FFF1E0;color:#7A3F0B;padding:4px 10px;font-size:.7rem;margin-top:3px}
+  .sd-week-cap{font-size:.74rem;font-weight:700;color:var(--sd-cocoa-soft);margin-top:8px}
   .path{display:flex;flex-wrap:wrap;gap:14px;justify-content:flex-start}
 
   /* ---------- Generic modal shell ---------- */
@@ -1027,7 +1054,8 @@
     <div id="scheduleTrail"></div>
     <div id="scheduleNext"></div>
     <div id="scheduleList"></div>
-    <div class="sd-empty-note" id="scheduleEmptyNote" style="display:none">No classes booked yet — ask your teacher! 🙂</div>
+    <div class="sd-empty-note" id="scheduleEmptyNote" style="display:none">No classes booked yet — book one below! 🙂</div>
+    <div class="sd-book" id="bookingCard" style="display:none"></div>
   </div>
 
   <!-- Rate your class -- only appears when there's a real attended, unrated session to rate -->
@@ -1196,6 +1224,18 @@
     <p class="sd-hint" style="margin:14px 0 6px">...or pick a fun avatar instead</p>
     <div class="sd-avatar-grid" id="avatarGrid"></div>
     <button class="sd-modal-close" id="avatarSave">Save</button>
+  </div>
+</div>
+
+<!-- Booking confirm modal -->
+<div class="sd-modal-overlay" id="bookOverlay">
+  <div class="sd-modal">
+    <h3 id="bookTitle">Book this class?</h3>
+    <p class="sd-hint" id="bookBody"></p>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:14px">
+      <button class="sd-photo-btn ghost" id="bookNo" type="button">Not now</button>
+      <button class="sd-modal-close" id="bookYes" type="button" style="margin:0">Yes, book it ✓</button>
+    </div>
   </div>
 </div>
 
@@ -1625,6 +1665,80 @@
   } catch (e) {
     console.error("Lumio schedule trail render error:", e);
   }
+  // ---------- booking helpers ----------
+  function canCancel(c) {
+    try { return (Lumio.tzToDate(c.date, c.startTime).getTime() - Date.now()) / 60000 >= LumioSchedule.CANCEL_MIN_BEFORE; } catch (e) { return false; }
+  }
+  function askBooking(title, body, yesLabel) {
+    return new Promise(resolve => {
+      const ov = document.getElementById("bookOverlay");
+      document.getElementById("bookTitle").textContent = title;
+      document.getElementById("bookBody").textContent = body;
+      const yes = document.getElementById("bookYes"), no = document.getElementById("bookNo");
+      yes.textContent = yesLabel || "Yes, book it ✓";
+      const done = v => { ov.classList.remove("show"); yes.onclick = no.onclick = null; resolve(v); };
+      yes.onclick = () => done(true); no.onclick = () => done(false);
+      ov.onclick = e => { if (e.target === ov) done(false); };
+      ov.classList.add("show");
+    });
+  }
+  let bookingDay = null;
+  function renderBooking() {
+    const card = document.getElementById("bookingCard");
+    if (!card || !window.LumioSchedule || !LumioSchedule.openSlots) return;
+    // (rosterProfile is declared further down this script — resolve the row here.)
+    let me = null;
+    try { const oid = localStorage.getItem("lumio_student_id"); me = (oid && LumioProfiles.getStudent(oid)) || LumioProfiles.findByName(u.name) || null; } catch (e) {}
+    const st = LumioSchedule.studentBookingState(u.name, level);
+    const lessonLabel = st.nextLesson ? `Lesson ${st.nextLesson}` : "";
+    card.style.display = "block";
+    const head = `<div class="sd-book-title">📅 Book my next class ${st.nextLesson ? `<span class="lvl">${meta.name} · ${lessonLabel}</span>` : ""}</div>`;
+    const note = msg => { card.innerHTML = head + `<div class="sd-book-note">${msg}</div>`; };
+    if (st.levelDone) return note("🎉 Every lesson of this level is attended or booked. Your teacher will open the next level after the level test.");
+    if (me && me.subscribed === false) return note("⏸️ Your subscription is paused — your teacher will activate it after the next payment, then you can book here.");
+    if (me && !(Number(me.sessionsRemaining) > 0)) return note("🎟️ No sessions left on your package — ask your teacher to add more, then book here.");
+    const slots = LumioSchedule.openSlots({ studentName: u.name, level, lesson: st.nextLesson });
+    if (!slots.length) return note("No open times in the next three weeks yet — your teacher is adding slots. Check back soon!");
+    const byDay = {};
+    slots.forEach(s => { (byDay[s.date] = byDay[s.date] || []).push(s); });
+    const days = Object.keys(byDay).sort();
+    if (!bookingDay || !byDay[bookingDay]) bookingDay = days[0];
+    const dayHtml = days.map(d => {
+      const dt = new Date(d + "T00:00:00");
+      return `<div class="sd-day${d === bookingDay ? " active" : ""}" data-day="${d}">
+        <div class="dw">${dt.toLocaleDateString("en", { weekday: "short" })}</div>
+        <div class="dn">${dt.getDate()}</div>
+        <div class="ct">${byDay[d].length} time${byDay[d].length === 1 ? "" : "s"}</div></div>`;
+    }).join("");
+    const capHit = LumioSchedule.bookingsInWeek(u.name, bookingDay) >= LumioSchedule.MAX_PER_WEEK;
+    const slotHtml = byDay[bookingDay].map((s, i) => `
+      <div class="sd-slot">
+        <div class="tm">${Lumio.fmt12(s.startTime)}<span>${s.durationMinutes} min${Lumio.deviceDiffersFromTz() ? " · " + Lumio.fmtClassTime(s.date, s.startTime).split(" (").slice(1).map(x => "(" + x).join("") : ""}</span></div>
+        <div class="who">${s.teacherName || "Teacher"}<small>${s.kind === "join" ? `Join ${lessonLabel} class · ${s.taken} classmate${s.taken === 1 ? "" : "s"} already in` : `Start a new ${lessonLabel} class`}</small></div>
+        <span class="seats${s.kind === "join" ? " join" : ""}">${s.taken}/${s.seats}</span>
+        <button type="button" class="sd-book-btn" data-slot="${i}" ${capHit ? "disabled" : ""}>Book</button>
+      </div>`).join("");
+    card.innerHTML = head + `<div class="sd-book-sub">Pick a day, then a time (Saudi time). Up to ${LumioSchedule.MAX_PER_CLASS} students share a class at the same lesson · max ${LumioSchedule.MAX_PER_WEEK} classes a week · cancel up to ${LumioSchedule.CANCEL_MIN_BEFORE} min before.</div>
+      <div class="sd-days">${dayHtml}</div><div class="sd-slots">${slotHtml}</div>${capHit ? `<div class="sd-week-cap">You already have ${LumioSchedule.MAX_PER_WEEK} classes that week — pick another week.</div>` : ""}`;
+    card.querySelectorAll(".sd-day").forEach(el => el.addEventListener("click", () => { bookingDay = el.dataset.day; renderBooking(); }));
+    card.querySelectorAll("[data-slot]").forEach(btn => btn.addEventListener("click", async () => {
+      const s = byDay[bookingDay][Number(btn.dataset.slot)];
+      const when = `${new Date(s.date + "T00:00:00").toLocaleDateString("en", { weekday: "long", month: "short", day: "numeric" })} at ${Lumio.fmtClassTime(s.date, s.startTime)}`;
+      const ok = await askBooking(`Book ${lessonLabel}?`, `${when} with ${s.teacherName || "your teacher"}${s.kind === "join" ? ` — you'll join ${s.taken} classmate${s.taken === 1 ? "" : "s"}.` : " — you'll be the first in this class; others at the same lesson can join."}`);
+      if (!ok) return;
+      btn.disabled = true; btn.textContent = "Booking…";
+      try {
+        await LumioSchedule.bookSlotRemote({ studentName: u.name, studentId: me ? me.id : null, level, lesson: st.nextLesson, patternId: s.patternId, classId: s.classId, date: s.date });
+        showToast(`${lessonLabel} booked! 🎉`, "📅");
+        setTimeout(() => location.reload(), 900);
+      } catch (e) {
+        btn.disabled = false; btn.textContent = "Book";
+        showToast(e.message || "Couldn't book that time.", "⚠️");
+        renderBooking();
+      }
+    }));
+  }
+
   try {
     if (window.LumioSchedule) {
       const upcoming = LumioSchedule.upcomingForStudent(u.name, 10);
@@ -1656,7 +1770,8 @@
             <div>
               <div class="when">${fmtSchedDay(next.date)} at ${fmtSchedTime(next.startTime, next.date)}</div>
               <div class="sub">Next class with ${next.teacherName || "your teacher"} · ${next.durationMinutes} min${next.students && next.students.length > 1 ? ` · with ${next.students.length - 1} classmate${next.students.length > 2 ? "s" : ""}` : ""}</div>
-              ${next.meetingLink ? `<a href="${next.meetingLink}" target="_blank" rel="noopener" class="sd-join-link">🔗 Join class link</a>` : ""}
+              ${(() => { const g = LumioSchedule.joinGate(u.name, next); if (!g.ok) return `<a class="sd-gate" href="homework.html?level=${next.level || level}&n=${g.lesson}">🔒 ${g.reason}</a>`; return next.meetingLink ? `<a href="${next.meetingLink}" target="_blank" rel="noopener" class="sd-join-link">🔗 Join class link</a>` : ""; })()}
+              ${canCancel(next) ? `<button type="button" class="sd-cancel-link" data-cancel="${next.id}">Cancel</button>` : ""}
             </div>
           </div>`;
         listEl.innerHTML = upcoming.slice(1).map(c => `
@@ -1665,10 +1780,27 @@
             <div>
               <div class="who">${c.teacherName || "Your teacher"}</div>
               <div class="meta">${c.durationMinutes} min${c.notes ? " · " + c.notes : ""}</div>
-              ${c.meetingLink ? `<a href="${c.meetingLink}" target="_blank" rel="noopener" class="sd-join-link">🔗 Join link</a>` : ""}
+              ${(() => { const g = LumioSchedule.joinGate(u.name, c); if (!g.ok) return `<a class="sd-gate" href="homework.html?level=${c.level || level}&n=${g.lesson}">🔒 Homework ${g.lesson} first</a>`; return c.meetingLink ? `<a href="${c.meetingLink}" target="_blank" rel="noopener" class="sd-join-link">🔗 Join link</a>` : ""; })()}
+              ${canCancel(c) ? `<button type="button" class="sd-cancel-link" data-cancel="${c.id}">Cancel</button>` : ""}
             </div>
           </div>`).join("");
       }
+      document.querySelectorAll("[data-cancel]").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const c = LumioSchedule.getClass(btn.dataset.cancel);
+          if (!c) return;
+          const later = LumioSchedule.laterBookings(c.id, u.name);
+          const laterNote = later.length ? ` Lesson${later.length === 1 ? "" : "s"} ${later.map(x => x.lessonNumber).sort((a, b) => a - b).join(", ")} booked after it will be cancelled too (lessons go in order).` : "";
+          if (!(await askBooking("Cancel this class?", `Lesson ${c.lessonNumber || ""} on ${fmtSchedDay(c.date)} at ${fmtSchedTime(c.startTime, c.date)} — your seat opens up for someone else and you can book another time.${laterNote}`, "Yes, cancel it"))) return;
+          btn.disabled = true;
+          try {
+            await LumioSchedule.cancelBookingRemote(c.id, u.name);
+            showToast("Class cancelled.", "👋");
+            setTimeout(() => location.reload(), 900);
+          } catch (e) { btn.disabled = false; showToast(e.message || "Couldn't cancel.", "⚠️"); }
+        });
+      });
+      renderBooking();
     }
   } catch (e) {
     console.error("Lumio schedule render error:", e);
