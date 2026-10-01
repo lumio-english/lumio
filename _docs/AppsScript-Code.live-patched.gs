@@ -415,8 +415,11 @@ function mergeRecordRows_(sheet, columns, incoming) {
   incoming.forEach(function (r) {
     var k = r.studentName + "|" + r.level + "|" + r.lesson;
     var prev = byKey[k];
-    var better = !prev || Number(r.stars || 0) > Number(prev.stars || 0)
-      || (Number(r.stars || 0) === Number(prev.stars || 0) && String(r.date || "") > String(prev.date || ""));
+    // Non-numeric stars (a malformed row) count as -1 so a real record
+    // always replaces it.
+    var num = function (v) { var n = Number(v); return (v !== "" && v !== null && v !== undefined && isFinite(n)) ? n : -1; };
+    var better = !prev || num(r.stars) > num(prev.stars)
+      || (num(r.stars) === num(prev.stars) && String(r.date || "") > String(prev.date || ""));
     if (better) { byKey[k] = r; changed++; }
   });
   if (changed) writeRows_(sheet, columns, Object.keys(byKey).map(function (k) { return byKey[k]; }));

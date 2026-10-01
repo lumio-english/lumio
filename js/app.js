@@ -57,7 +57,9 @@ const Lumio = (() => {
     all[name] = all[name] || {};
     all[name][levelId] = all[name][levelId] || {};
     const prev = all[name][levelId][lessonNum];
-    if (!prev || stars >= prev.stars) {
+    // A malformed earlier record (non-numeric stars) must never block a
+    // real result from saving.
+    if (!prev || Number(stars) >= (Number.isFinite(Number(prev.stars)) ? Number(prev.stars) : -1)) {
       all[name][levelId][lessonNum] = { stars, score, total, date: tzNow().date }; // Riyadh calendar day
     }
     set("lumio_progress", all);
@@ -126,7 +128,8 @@ const Lumio = (() => {
         prog[row.studentName] = prog[row.studentName] || {}; prog[row.studentName][row.level] = prog[row.studentName][row.level] || {};
         const prev = prog[row.studentName][row.level][row.lesson];
         const inc = { stars: Number(row.stars) || 0, score: Number(row.score) || 0, total: Number(row.total) || 0, date: String(row.date || "") };
-        if (!prev || inc.stars > Number(prev.stars || 0) || (inc.stars === Number(prev.stars || 0) && inc.date > String(prev.date || ""))) { prog[row.studentName][row.level][row.lesson] = inc; changed++; }
+        const prevStars = prev && Number.isFinite(Number(prev.stars)) ? Number(prev.stars) : -1;
+        if (!prev || inc.stars > prevStars || (inc.stars === prevStars && inc.date > String(prev.date || ""))) { prog[row.studentName][row.level][row.lesson] = inc; changed++; }
       });
       set("lumio_progress", prog);
       const hw = homeworkAll();
@@ -136,7 +139,8 @@ const Lumio = (() => {
         hw[row.studentName] = hw[row.studentName] || {}; hw[row.studentName][row.level] = hw[row.studentName][row.level] || {};
         const prev = hw[row.studentName][row.level][row.lesson];
         const inc = { stars: Number(row.stars) || 0, score: Number(row.score) || 0, total: Number(row.total) || 0, said: Number(row.said) || 0, saidTotal: Number(row.saidTotal) || 0, hasDrawing: String(row.hasDrawing) === "true" || row.hasDrawing === true, date: String(row.date || "") };
-        if (!prev || inc.stars > Number(prev.stars || 0) || (inc.stars === Number(prev.stars || 0) && inc.date > String(prev.date || ""))) {
+        const prevStars = prev && Number.isFinite(Number(prev.stars)) ? Number(prev.stars) : -1;
+        if (!prev || inc.stars > prevStars || (inc.stars === prevStars && inc.date > String(prev.date || ""))) {
           hw[row.studentName][row.level][row.lesson] = Object.assign({}, prev || {}, inc); changed++;
         }
       });

@@ -1800,14 +1800,19 @@
   })();
 
   // ---------- sessions remaining pill ----------
-  (function renderSessionsPill() {
+  function renderSessionsPill() {
     const pill = document.getElementById("sessionsRemainingPill");
-    if (!rosterProfile || rosterProfile.sessionsRemaining === undefined || rosterProfile.sessionsRemaining === null) return;
-    const n = rosterProfile.sessionsRemaining;
+    const fresh = (rosterProfile && window.LumioProfiles) ? (LumioProfiles.getStudent(rosterProfile.id) || rosterProfile) : rosterProfile;
+    if (!fresh || fresh.sessionsRemaining === undefined || fresh.sessionsRemaining === null) return;
+    const n = Number(fresh.sessionsRemaining) || 0;
     pill.style.display = "inline-block";
     pill.textContent = `${n} session${n === 1 ? "" : "s"} left`;
     pill.classList.toggle("low", n <= 3);
-  })();
+    // A redeemed bonus hour makes the "no sessions" banner stale.
+    const banner = document.getElementById("subscriptionBanner");
+    if (banner && n > 0 && fresh.subscribed !== false) banner.remove();
+  }
+  renderSessionsPill();
 
   // ---------- subscription banner ----------
   // An unsubscribed account (or one with no sessions left) keeps its
@@ -1858,7 +1863,7 @@
           // ends, since from here it looks like redeeming worked fine.
           LumioProfiles.pushStudentPatch(p.id).then(res => {
             if (!res.ok) showToast("Redeemed here, but your teacher's device may not see it yet — it'll catch up next time you're online.", "⚠️");
-            else renderRewardsCard();
+            else { renderRewardsCard(); renderSessionsPill(); }
           }).catch(() => {
             showToast("Redeemed here, but your teacher's device may not see it yet — it'll catch up next time you're online.", "⚠️");
           });

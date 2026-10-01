@@ -4078,7 +4078,7 @@
           queueSync();
           const fresh = LumioSchedule.getClass(c.id);
           if (fresh) openCourseDetails(fresh); // re-render this popup with the updated badge
-          renderSchedule();
+          renderScheduleActive(); // week calendar OR agenda, whichever is showing
           const labels = { present: "present ✓", absent: "absent", "no-show": "a no-show" };
           showToast(`Marked ${sname} ${labels[val]}.`, val === "present" ? "success" : "error");
         };
