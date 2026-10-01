@@ -361,6 +361,33 @@
   // without this, syncing shortly after editing a class (before that edit
   // had been pushed anywhere) would silently revert it back to whatever
   // was already on the Sheet.
+  // Safety net for rows the Sheet auto-typed before the Apps Script
+  // started storing everything as text: a `date` that arrives as
+  // "2026-09-18T21:00:00.000Z" (midnight in the Sheet's timezone) or a
+  // `startTime` that arrives as "1899-12-30T13:00:00.000Z" is turned back
+  // into the "YYYY-MM-DD" / "HH:MM" strings every comparison here expects.
+  // Without this a synced class matched no calendar day and no "next
+  // class" card. Dates are read in the browser's local timezone, which is
+  // the same region as the Sheet's for a Lumio teacher.
+  function normalizeSheetDates(rec) {
+    if (!rec) return rec;
+    const pad = n => String(n).padStart(2, "0");
+    ["date", "startDate", "endDate"].forEach(k => {
+      const v = rec[k];
+      if (typeof v === "string" && /^\d{4}-\d{2}-\d{2}T/.test(v)) {
+        const d = new Date(v);
+        if (!isNaN(d)) rec[k] = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+      }
+    });
+    const t = rec.startTime;
+    if (typeof t === "string" && /^\d{4}-\d{2}-\d{2}T/.test(t)) {
+      const d = new Date(t);
+      if (!isNaN(d)) rec.startTime = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+    if (typeof rec.lessonNumber === "string" && /^\d+$/.test(rec.lessonNumber)) rec.lessonNumber = Number(rec.lessonNumber);
+    if (typeof rec.durationMinutes === "string" && /^\d+$/.test(rec.durationMinutes)) rec.durationMinutes = Number(rec.durationMinutes);
+    return rec;
+  }
   function mergeById(localList, remoteList) {
     const byId = {};
     localList.forEach(r => { byId[r.id] = r; });
@@ -391,9 +418,11 @@
       const res = await fetchWithTimeout(cfg.url + "?action=pullScheduleV2");
       const remote = await res.json();
       if (remote && Array.isArray(remote.classes)) {
+        remote.classes.forEach(normalizeSheetDates);
         data.classes = mergeById(data.classes, remote.classes);
       }
       if (remote && Array.isArray(remote.patterns)) {
+        remote.patterns.forEach(normalizeSheetDates);
         data.patterns = mergeById(data.patterns, remote.patterns);
       }
       // Blocked dates are a small, rarely-changed shared list -- simple

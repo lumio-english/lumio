@@ -66,11 +66,10 @@ var ROSTER_COLUMNS = [
   "messages", "pendingDeletion", "deletionConfirmed",
   // People this student referred (JSON array) -- see referrals in
   // js/lumio-profiles.js.
-  "referrals", "referralsUpdatedAt",
-  // Plaintext 4-digit PIN (appended LAST so an existing Roster sheet's
-  // header stays aligned -- getOrCreateSheet_ adds missing trailing
-  // columns automatically). Lets any teacher device show/share a PIN.
-  "pin"
+  "referrals", "referralsUpdatedAt"
+  // NOTE: no plaintext "pin" column. The live deployment never had one,
+  // and adding it would put every student's PIN into a Sheet that the
+  // public endpoint can read. Only pinHash travels.
 ];
 
 // Reward catalog is shared across all students (teacher-managed list of
@@ -172,6 +171,35 @@ function getOrCreateSheet_(name, columns) {
   return sheet;
 }
 
+// ---- cell typing ----
+// Sheets auto-types what setValues() writes: "2026-09-18" becomes a date
+// cell, "16:00" a time cell, "052183" the number 52183. getValues() then
+// hands back Date objects / numbers, and JSON turns them into
+// "2026-09-18T21:00:00.000Z" (midnight in the Sheet's timezone, shifted
+// to UTC) and "1899-12-30T04:24:51.000Z" -- which the site compares as
+// plain "YYYY-MM-DD" / "HH:MM" strings, so synced classes vanished from
+// every calendar and login codes with a leading zero stopped working.
+// Two layers of protection:
+//   1. writeRows_ formats the data range as plain text ("@") BEFORE
+//      writing, so nothing is ever auto-typed again.
+//   2. readRows_ normalises anything already stored as a Date (old rows)
+//      back to the string the site expects, using the Sheet's own
+//      timezone so the calendar day is the one the teacher typed.
+var DATE_ONLY_COLUMNS = { date: 1, startDate: 1, endDate: 1, deletedAt: 0 };
+var TIME_ONLY_COLUMNS = { startTime: 1 };
+var TEXT_NUMBER_COLUMNS = { loginCode: 1, phone: 1, pin: 1, id: 1, studentId: 1, teacherId: 1 };
+
+function cellToString_(col, v) {
+  if (v instanceof Date) {
+    var tz = SpreadsheetApp.getActiveSpreadsheet().getSpreadsheetTimeZone();
+    if (TIME_ONLY_COLUMNS[col]) return Utilities.formatDate(v, tz, "HH:mm");
+    if (DATE_ONLY_COLUMNS[col]) return Utilities.formatDate(v, tz, "yyyy-MM-dd");
+    return v.toISOString();
+  }
+  if (typeof v === "number" && TEXT_NUMBER_COLUMNS[col]) return String(v);
+  return v;
+}
+
 function readRows_(name, columns) {
   var sheet = getOrCreateSheet_(name, columns);
   var lastRow = sheet.getLastRow();
@@ -181,7 +209,7 @@ function readRows_(name, columns) {
     .filter(function (row) { return row.some(function (cell) { return cell !== "" && cell !== null; }); })
     .map(function (row) {
       var obj = {};
-      columns.forEach(function (col, i) { obj[col] = row[i]; });
+      columns.forEach(function (col, i) { obj[col] = cellToString_(col, row[i]); });
       return obj;
     });
 }
@@ -196,10 +224,39 @@ function writeRows_(name, columns, rows) {
   var values = rows.map(function (r) {
     return columns.map(function (col) {
       var v = r[col];
-      return v === undefined || v === null ? "" : v;
+      if (v === undefined || v === null) return "";
+      if (typeof v === "object") return JSON.stringify(v);
+      return v;
     });
   });
-  sheet.getRange(2, 1, values.length, columns.length).setValues(values);
+  var range = sheet.getRange(2, 1, values.length, columns.length);
+  range.setNumberFormat("@");   // plain text: no auto-typing of dates, times or numbers
+  range.setValues(values);
+}
+
+// One-off repair for a Sheet that already has auto-typed cells: rewrites
+// every data row of every tab as text (through readRows_'s normalisation)
+// and refreshes the header rows from the column lists above. Run it once
+// from the Apps Script editor after deploying this version.
+function repairSheetTypes() {
+  var tabs = [
+    [TEACHERS_SHEET, TEACHERS_COLUMNS], [ROSTER_SHEET, ROSTER_COLUMNS],
+    [SCHEDULE_SHEET, SCHEDULE_COLUMNS], [PATTERNS_SHEET, PATTERNS_COLUMNS],
+    [BLOCKED_DATES_SHEET, BLOCKED_DATES_COLUMNS], [PROGRESS_SHEET, PROGRESS_COLUMNS],
+    [LEADS_SHEET, LEADS_COLUMNS], [REWARD_CATALOG_SHEET, REWARD_CATALOG_COLUMNS],
+    [DELETED_IDS_SHEET, DELETED_IDS_COLUMNS], [PRO_ADMINS_SHEET, PRO_ADMINS_COLUMNS],
+    [PRO_TEST_RESULTS_SHEET, PRO_TEST_RESULTS_COLUMNS],
+  ];
+  tabs.forEach(function (t) {
+    var sheet = getOrCreateSheet_(t[0], t[1]);
+    var rows = readRows_(t[0], t[1]);
+    var lastCol = sheet.getLastColumn();
+    if (lastCol > 0) sheet.getRange(1, 1, 1, lastCol).clearContent();
+    sheet.getRange(1, 1, 1, t[1].length).setValues([t[1]]);
+    var lastRow = sheet.getLastRow();
+    if (lastRow > 1) sheet.getRange(2, 1, lastRow - 1, Math.max(lastCol, t[1].length)).clearContent();
+    writeRows_(t[0], t[1], rows);
+  });
 }
 
 function jsonResponse_(obj) {
