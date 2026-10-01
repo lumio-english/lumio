@@ -167,6 +167,7 @@
     students.forEach(s => { if (!s.studentName) throw new Error("Every student needs a name."); });
     if (!date) throw new Error("Pick a date for this class.");
     if (!startTime) throw new Error("Pick a start time for this class.");
+    if (isPast(date, startTime)) throw new Error("That date and time have already passed.");
     const data = load();
     const record = {
       id: genId(),

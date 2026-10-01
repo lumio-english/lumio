@@ -224,6 +224,9 @@
     color:var(--td-indigo-dark);
   }
   .td-cal-slot:hover .create-hint{display:flex}
+  .td-cal-slot.past{cursor:not-allowed;background:repeating-linear-gradient(135deg,transparent 0 6px,rgba(67,48,31,.05) 6px 8px)}
+  .td-cal-slot.past:hover{background:repeating-linear-gradient(135deg,transparent 0 6px,rgba(67,48,31,.05) 6px 8px)}
+  .td-cal-slot.past .create-hint{display:none !important}
   .td-cal-block{
     position:absolute;left:2px;right:2px;border-radius:7px;padding:4px 6px;overflow:hidden;cursor:pointer;
     font-size:.68rem;line-height:1.25;border-left:3px solid var(--td-indigo);background:var(--td-indigo-soft,var(--lumio-orange-soft));
@@ -3910,7 +3913,8 @@
         const mins = CAL_START_HOUR * 60 + r * CAL_ROW_MIN;
         const hh = String(Math.floor(mins / 60)).padStart(2, "0");
         const mm = String(mins % 60).padStart(2, "0");
-        col += `<div class="td-cal-slot" style="top:${r * CAL_ROW_PX}px;height:${CAL_ROW_PX}px" data-time="${hh}:${mm}">
+        const past = LumioSchedule.isPast(dateStr, `${hh}:${mm}`);
+        col += `<div class="td-cal-slot${past ? " past" : ""}" style="top:${r * CAL_ROW_PX}px;height:${CAL_ROW_PX}px" data-time="${hh}:${mm}"${past ? ' title="This time has passed"' : ""}>
           <div class="create-hint">+ Create</div>
         </div>`;
       }
@@ -3950,6 +3954,7 @@
       if (bulkSelections.has(key)) slot.classList.add("bulk-selected");
       slot.addEventListener("click", () => {
         const dateStr = slot.parentElement.dataset.date;
+        if (slot.classList.contains("past")) { showToast("That time has already passed — pick a future slot.", "error"); return; }
         if (bulkModeActive) {
           const k = dateStr + "|" + slot.dataset.time;
           if (bulkSelections.has(k)) bulkSelections.delete(k); else bulkSelections.add(k);
