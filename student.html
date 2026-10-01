@@ -147,6 +147,69 @@
   body.theme-teen .sd-progressbar{ background:rgba(249,115,22,.18) !important; }
   body.theme-teen .sd-progressbar > div{ background:linear-gradient(90deg,var(--lumio-orange),var(--lumio-sun)) !important; box-shadow:0 0 10px rgba(34,211,238,.5); }
 
+  /* Booking + fixed-schedule UI on the night theme: dark tiles, light ink,
+     teal/orange accents kept. Specific enough to beat the blanket rule. */
+  body.theme-teen .sd-book{ border-top-color:rgba(255,243,214,.18); }
+  body.theme-teen .sd-book-title .lvl{ background:rgba(34,211,238,.15) !important; color:#7DE8F5 !important; }
+  body.theme-teen .sd-book-note{ background:rgba(249,115,22,.14); color:var(--lumio-night-ink) !important; }
+  body.theme-teen .sd-book-note.extend{ background:rgba(34,211,238,.12); }
+  body.theme-teen .sd-book-tabs{ background:rgba(255,255,255,.08); }
+  body.theme-teen .sd-book-tabs button{ color:var(--lumio-night-muted) !important; }
+  body.theme-teen .sd-book-tabs button.active{ background:rgba(255,255,255,.14); color:#fff !important; box-shadow:none; }
+  body.theme-teen .sd-week-nav button{ background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.18); color:var(--lumio-night-ink) !important; }
+  body.theme-teen .sd-day{ background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.14); }
+  body.theme-teen .sd-day .dw, body.theme-teen .sd-day .dn{ color:var(--lumio-night-ink) !important; }
+  body.theme-teen .sd-day .ct{ color:#7DE8F5 !important; }
+  body.theme-teen .sd-day.active{ background:rgba(34,211,238,.18); border-color:#22D3EE; }
+  body.theme-teen .sd-day.off, body.theme-teen .sd-day.past{ background:rgba(255,255,255,.03); opacity:.5; }
+  body.theme-teen .sd-day.full{ border-style:dashed; }
+  body.theme-teen .sd-day.full .ct, body.theme-teen .sd-day.off .ct, body.theme-teen .sd-day.past .ct{ color:var(--lumio-night-muted) !important; }
+  body.theme-teen .sd-day.picked{ border-color:var(--lumio-orange); }
+  body.theme-teen .sd-day.picked .dn{ color:var(--lumio-orange) !important; }
+  body.theme-teen .sd-step{ color:var(--lumio-night-ink) !important; }
+  body.theme-teen .sd-step.muted{ color:var(--lumio-night-muted) !important; }
+  body.theme-teen .sd-hour{ background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.14); color:var(--lumio-night-ink) !important; }
+  body.theme-teen .sd-hour span{ color:#7DE8F5 !important; }
+  body.theme-teen .sd-hour.closed{ background:repeating-linear-gradient(135deg,rgba(255,255,255,.03) 0 6px,rgba(255,255,255,.07) 6px 8px); color:rgba(255,243,214,.35) !important; }
+  body.theme-teen .sd-hour.closed span{ color:rgba(255,243,214,.3) !important; }
+  body.theme-teen .sd-hour.active{ background:rgba(34,211,238,.18); border-color:#22D3EE; }
+  body.theme-teen .sd-teacher, body.theme-teen .sd-slot{ background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.14); }
+  body.theme-teen .sd-teacher .nm{ color:#fff !important; }
+  body.theme-teen .sd-teacher .rt, body.theme-teen .sd-teacher .mt{ color:var(--lumio-night-muted) !important; }
+  body.theme-teen .sd-teacher .rt b{ color:var(--lumio-sun) !important; }
+  body.theme-teen .sd-teacher .kind{ color:#7DE8F5 !important; }
+  body.theme-teen .sd-teacher .kind.new{ color:var(--lumio-sun) !important; }
+  body.theme-teen .sd-teacher .seats{ background:rgba(255,255,255,.12); color:var(--lumio-night-ink) !important; }
+  body.theme-teen .sd-teacher .face{ background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.2); }
+  body.theme-teen .sd-book-btn{ background:var(--lumio-orange); color:#fff !important; }
+  body.theme-teen .sd-book-btn:disabled{ opacity:.45; }
+  body.theme-teen .sd-pick{ background:rgba(34,211,238,.12); border-color:rgba(34,211,238,.35); }
+  body.theme-teen .sd-pick b{ color:#fff !important; }
+  body.theme-teen .sd-pick small{ color:var(--lumio-night-muted) !important; }
+  body.theme-teen .sd-pick .face{ background:rgba(255,255,255,.12); }
+  body.theme-teen .sd-pick button{ background:rgba(255,255,255,.12); color:#FCA5A5 !important; }
+  body.theme-teen .sd-cancel-link{ color:#FCA5A5 !important; border-color:#FCA5A5; }
+  body.theme-teen .sd-gate{ background:rgba(249,115,22,.2); color:var(--lumio-night-ink) !important; }
+  body.theme-teen .sd-week-cap, body.theme-teen .sd-book-sub{ color:var(--lumio-night-muted) !important; }
+  body.theme-teen .sd-class-row{ border-bottom-color:rgba(255,255,255,.1); }
+  body.theme-teen .sd-class-row .sd-join-link{ background:rgba(34,211,238,.15); color:#7DE8F5 !important; }
+  /* Level test card on night */
+  body.theme-teen .sd-test-card{ background:var(--lumio-night-card); box-shadow:none; border:2px solid rgba(255,243,214,.12); }
+  body.theme-teen .sd-test-title{ color:var(--lumio-night-ink); }
+  body.theme-teen .sd-test-sub, body.theme-teen .sd-test-meta{ color:var(--lumio-night-muted); }
+  body.theme-teen .sd-test-badge{ background:rgba(255,255,255,.08); }
+  body.theme-teen .sd-test-card.ready .sd-test-badge{ background:rgba(34,211,238,.18); }
+  body.theme-teen .sd-test-card.passed .sd-test-badge{ background:rgba(255,209,102,.2); }
+  body.theme-teen .sd-test-facts div{ background:rgba(255,255,255,.06); }
+  body.theme-teen .sd-test-facts b{ color:var(--lumio-night-ink); }
+  body.theme-teen .sd-test-facts span{ color:var(--lumio-night-muted); }
+  body.theme-teen .sd-test-link.locked{ background:rgba(255,255,255,.08); color:var(--lumio-night-muted); }
+  body.theme-teen .sd-test-link.ready{ background:linear-gradient(135deg,#22D3EE,#0E7490); color:#fff; }
+  body.theme-teen .sd-test-link.passed{ background:linear-gradient(135deg,#FFD166,#F4A300); color:#5A3A00; }
+  /* Booking confirm modal stays white on both themes: force dark ink */
+  .sd-modal #bookTitle{ color:#2A2118; }
+  .sd-modal #bookBody{ color:#6B5040; }
+
   /* XP readout: reuses the same star-count element, relabeled + rescaled for teen levels only */
   body.theme-teen .sd-xp-icon{ background:rgba(34,211,238,.15) !important; color:var(--lumio-sun) !important; }
 
