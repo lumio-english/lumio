@@ -591,3 +591,6 @@ const Lumio = (() => {
            TZ, TZ_LABEL, TZ_LABEL_AR, TZ_OFFSET_MIN, tzNow, tzToDate, tzAddDays, tzDayOfWeek,
            deviceTz, deviceDiffersFromTz, fmt12, fmtClassTime };
 })();
+// Expose for modules that check window.Lumio (lumio-schedule.js, lumio-profiles.js); a top-level `const` is not a window property.
+if (typeof window !== "undefined") window.Lumio = Lumio;
+
