@@ -323,6 +323,15 @@
   .sd-cert-link:active{transform:translateY(0) scale(.96)}
   .sd-cert-link:focus-visible{outline:3px solid rgba(122,78,0,.35);outline-offset:2px}
   .sd-cert-link-logo{height:20px;width:auto;border-radius:0;flex-shrink:0}
+  .sd-map-links{display:flex;gap:10px;flex-wrap:wrap;align-items:stretch}
+  .sd-test-link{background:linear-gradient(135deg,var(--sd-teal),var(--sd-teal-deep));color:#fff;padding:8px 16px;gap:9px;line-height:1.15}
+  .sd-test-link .ic{font-size:1.1rem}
+  .sd-test-link small{display:block;font-size:.68rem;font-weight:700;opacity:.9}
+  .sd-test-link.locked{background:#F3EEE4;color:var(--sd-cocoa-soft);box-shadow:none;cursor:default}
+  .sd-test-link.locked:hover{transform:none;box-shadow:none}
+  .sd-test-link.passed{background:linear-gradient(135deg,#FFD166,#F4A300);color:#5A3A00}
+  .sd-test-link.ready{animation:sdTestPulse 1.8s ease-in-out infinite}
+  @keyframes sdTestPulse{0%,100%{box-shadow:0 4px 10px rgba(0,0,0,.08)}50%{box-shadow:0 6px 18px rgba(13,148,136,.45)}}
 
   /* ---------- Section headers ---------- */
   .sd-section-title{display:flex;align-items:center;gap:8px;margin:26px 0 12px}
@@ -1042,7 +1051,12 @@
       </div>
     </div>
     <div class="sd-progressbar"><div id="levelBar" style="width:0%"></div></div>
-    <a class="sd-cert-link" href="certificates.html"><img class="sd-cert-link-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> My certificate</a>
+    <div class="sd-map-links">
+      <a class="sd-cert-link sd-test-link locked" id="levelTestLink" href="#" aria-disabled="true">
+        <span class="ic">🔒</span><span><b id="levelTestTitle">Level test</b><small id="levelTestSub">Unlocks after all 20 lessons</small></span>
+      </a>
+      <a class="sd-cert-link" href="certificates.html"><img class="sd-cert-link-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> My certificate</a>
+    </div>
   </div>
 
   <!-- My Schedule -->
@@ -1485,6 +1499,39 @@
   document.getElementById("levelTitle").textContent = `${meta.name} adventure map`;
   document.getElementById("levelBar").style.width = pct + "%";
   document.getElementById("levelPct").textContent = pct + "%";
+  // Level test entry — always visible on the map card. Locked (with the
+  // lesson count) until every lesson is done, then live: take / retake /
+  // passed. The teacher-preview bypass (lumio_teacher) keeps it open.
+  try {
+    const ltLink = document.getElementById("levelTestLink");
+    const ltTitle = document.getElementById("levelTestTitle");
+    const ltSub = document.getElementById("levelTestSub");
+    const lt = Lumio.levelTestFor ? Lumio.levelTestFor(u.name, level) : null;
+    const unlocked = done >= total || (Lumio.isTeacherSession && Lumio.isTeacherSession());
+    ltLink.className = "sd-cert-link sd-test-link";
+    if (!unlocked) {
+      ltLink.classList.add("locked"); ltLink.href = "#"; ltLink.setAttribute("aria-disabled", "true");
+      ltLink.querySelector(".ic").textContent = "🔒";
+      ltTitle.textContent = `${meta.name} level test`;
+      ltSub.textContent = `Unlocks after all ${total} lessons — ${done}/${total} done`;
+      ltLink.onclick = e => { e.preventDefault(); showToast(`Finish all ${total} lessons first — ${total - done} to go!`, "🔒"); };
+    } else {
+      ltLink.href = `level-test.html?level=${level}`; ltLink.removeAttribute("aria-disabled"); ltLink.onclick = null;
+      if (lt && lt.pct >= Lumio.TEST_PASS_PCT) {
+        ltLink.classList.add("passed"); ltLink.querySelector(".ic").textContent = "🏅";
+        ltTitle.textContent = `Level test passed · ${lt.pct}%`;
+        ltSub.textContent = `${lt.band} — tap to try for a higher score`;
+      } else if (lt) {
+        ltLink.classList.add("ready"); ltLink.querySelector(".ic").textContent = "🔁";
+        ltTitle.textContent = `Retake the level test`;
+        ltSub.textContent = `Best so far ${lt.pct}% — you need ${Lumio.TEST_PASS_PCT}%`;
+      } else {
+        ltLink.classList.add("ready"); ltLink.querySelector(".ic").textContent = "📝";
+        ltTitle.textContent = `Take the ${meta.name} level test`;
+        ltSub.textContent = "30 questions · unlocks your certificate";
+      }
+    }
+  } catch (e) { console.error("level test link", e); }
   // Teacher grade tile: average of the A+..F grades the teacher gives per
   // attended class (LumioSchedule.gradeStudent). Hidden until one exists.
   try {
