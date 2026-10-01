@@ -1063,19 +1063,6 @@
   <p class="sd-hint" style="margin:-6px 0 12px;font-weight:700;color:var(--sd-cocoa-soft);font-size:.85rem">Tap a friend to say hi! 👋</p>
   <div class="sd-buddies-grid" id="buddiesGrid"></div>
 
-  <!-- Review weak words -->
-  <div id="reviewSection" style="display:none">
-    <div class="sd-section-title"><h3>🔄 Review your tricky words</h3></div>
-    <div class="sd-schedule-card">
-      <p class="sd-hint" style="margin:0 0 10px;font-weight:700;color:var(--sd-cocoa-soft);font-size:.85rem" id="reviewSub"></p>
-      <div class="row" style="gap:8px;flex-wrap:wrap">
-        <button class="sd-game-play" id="reviewMemory" style="background:#6D5AE0">🧠 Memory Match</button>
-        <button class="sd-game-play" id="reviewWordPop" style="background:#0EA5E9">🎈 Word Pop</button>
-        <button class="sd-game-play" id="reviewBuilder" style="background:#F9720C">🔤 Word Builder</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Mini-game -->
   <div class="sd-section-title"><h3>🎮 Mini-Game</h3></div>
   <div class="sd-game-wide" id="gameWideCard">
@@ -1755,7 +1742,7 @@
   const perfectLessons = entries.filter(([,r]) => (r.stars || 0) >= 3).length;
 
   const badgeDefs = [
-    { ic: "👋", t: "First step", d: "Finish 1 lesson", earned: totalDoneAllLevels >= 1 },
+    { ic: "👋", t: "First step", d: "Finish your first prep", earned: totalDoneAllLevels >= 1 },
     { ic: "🔥", t: "On a roll", d: "3-day streak", earned: streakVal >= 3 },
     { ic: "⭐", t: "Star collector", d: (["level3","level4","level5","level6"].includes(level) ? "1,000 XP" : "10 stars"), earned: totalStarsAllLevels >= 10 },
     { ic: "🌟", t: "Super star", d: (["level3","level4","level5","level6"].includes(level) ? "3,000 XP" : "30 stars"), earned: totalStarsAllLevels >= 30 },
@@ -2668,21 +2655,9 @@
   // fallback bank and quietly upgrade to real vocab once this resolves.
   loadLessonVocabForGames().catch(() => {});
 
-  // Populate the Review section once we know which lessons (if any) need it.
-  loadWeakWordsForReview().then(({ words, lessonNums }) => {
-    if (!words.length) return; // nothing weak yet — section stays hidden
-    reviewWordBank = words;
-    reviewLessonNums = lessonNums;
-    const label = lessonNums.length === 1
-      ? `Lesson ${lessonNums[0]}`
-      : `Lessons ${lessonNums.join(", ")}`;
-    document.getElementById("reviewSub").textContent =
-      `Practice words from ${label} — playing here won't change those lessons' stars, it's just extra practice.`;
-    document.getElementById("reviewSection").style.display = "block";
-    document.getElementById("reviewMemory").onclick = () => { reviewMode = true; memoryOverlay.classList.add("show"); startMemory(reviewWordBank); };
-    document.getElementById("reviewWordPop").onclick = () => { reviewMode = true; wordpopOverlay.classList.add("show"); startWordPop(reviewWordBank); };
-    document.getElementById("reviewBuilder").onclick = () => { reviewMode = true; builderOverlay.classList.add("show"); startBuilder(reviewWordBank); };
-  }).catch(() => {});
+  // The "Review your tricky words" section was removed (Oct 2026) -- the
+  // weak-word helpers below stay only because the game result notes still
+  // reference reviewMode (always false now).
 
   // Blends a mini-game result into that lesson's saved progress, using
   // the exact same "keep the best" rule Lumio.saveResult() already uses,
