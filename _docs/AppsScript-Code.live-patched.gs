@@ -114,6 +114,13 @@ var TIME_ONLY_COLUMNS = { startTime: 1 };
 var TEXT_NUMBER_COLUMNS = { loginCode: 1, phone: 1, pin: 1, id: 1, studentId: 1, teacherId: 1 };
 
 function cellToString_(col, v) {
+  // Rows that round-tripped through the old code may hold the ISO text
+  // "2026-09-18T21:00:00.000Z" (a date) or "1899-12-30T13:00:00.000Z" (a
+  // time) as a plain string -- treat those exactly like Date cells.
+  if (typeof v === "string" && (TIME_ONLY_COLUMNS[col] || DATE_ONLY_COLUMNS[col]) && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(v)) {
+    var parsed = new Date(v);
+    if (!isNaN(parsed.getTime())) v = parsed;
+  }
   if (v instanceof Date) {
     var tz = SpreadsheetApp.getActiveSpreadsheet().getSpreadsheetTimeZone();
     if (TIME_ONLY_COLUMNS[col]) return Utilities.formatDate(v, tz, "HH:mm");
