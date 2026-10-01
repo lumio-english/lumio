@@ -481,6 +481,20 @@
   .mp-field .lbl{color:var(--sd-cocoa-soft);font-weight:700;font-size:.66rem;text-transform:uppercase;letter-spacing:.3px}
   .mp-field .val{font-weight:800;margin-top:1px;font-size:.85rem;color:var(--sd-cocoa)}
   .mp-field .val i{font-weight:600;font-style:normal;opacity:.6}
+  .mp-grades{margin-top:12px;background:var(--lumio-cream,#FFF8EC);border:1px solid var(--lumio-border,#EAE3D8);border-radius:14px;padding:12px 14px}
+  .mp-grades-head{display:flex;align-items:center;gap:12px}
+  .mp-grade-avg{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:64px;padding:6px 10px;border-radius:12px;background:var(--lumio-teal-soft);color:var(--lumio-teal)}
+  .mp-grade-avg b{font-family:'Baloo 2',sans-serif;font-size:1.5rem;line-height:1}
+  .mp-grade-avg span{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.3px;opacity:.85;margin-top:2px}
+  .mp-grade-avg.blue{background:var(--lumio-blue-soft);color:var(--lumio-blue)} .mp-grade-avg.purple{background:var(--lumio-sun-soft);color:#7B4A0E} .mp-grade-avg.coral{background:var(--lumio-coral-soft);color:var(--lumio-coral)}
+  .mp-grades-sub{font-size:.74rem;font-weight:700;color:var(--sd-cocoa-soft)}
+  .mp-grade-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .mp-grade-chip{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--lumio-border,#EAE3D8);border-radius:999px;padding:3px 10px 3px 8px;font-size:.72rem;font-weight:800;color:var(--sd-cocoa-soft)}
+  .mp-grade-chip b{font-family:'Baloo 2',sans-serif;font-size:.9rem;color:var(--lumio-teal)}
+  .mp-grade-chip.blue b{color:var(--lumio-blue)} .mp-grade-chip.purple b{color:#B45309} .mp-grade-chip.coral b{color:var(--lumio-coral)}
+  body.theme-teen .mp-grades{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)}
+  body.theme-teen .mp-grade-chip{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.14);color:var(--lumio-night-muted)}
+  body.theme-teen .mp-grades-sub{color:var(--lumio-night-muted)}
   .mp-subbanner{
     display:flex;align-items:center;gap:8px;margin-top:12px;padding:10px 14px;border-radius:13px;font-weight:800;font-size:.82rem;
   }
@@ -902,6 +916,7 @@
       <div class="mp-fields" id="mpFields"></div>
       <div class="mp-subbanner" id="mpSubBanner"></div>
       <div class="mp-tiles" id="mpTiles"></div>
+      <div class="mp-grades" id="mpGrades"></div>
       <button class="mp-report-btn" id="mpReportBtn">📄 Download my performance report</button>
     </div>
   </div>
@@ -966,6 +981,10 @@
       <div class="sd-stat-card sd-fade-up sd-anim-d2">
         <div class="sd-stat-icon" style="background:#E4FBF8;color:#0D9488">✓</div>
         <div><b id="doneCount">0/20</b><span>Lessons done</span></div>
+      </div>
+      <div class="sd-stat-card sd-fade-up sd-anim-d3" id="gradeCard" style="display:none;cursor:pointer" title="Open My Profile to see every grade">
+        <div class="sd-stat-icon" style="background:#E8EFFB;color:#1E4FA3">🎓</div>
+        <div><b id="gradeAvg">—</b><span id="gradeLabel">Teacher grade</span></div>
       </div>
     </div>
   </div>
@@ -1438,6 +1457,20 @@
   document.getElementById("levelTitle").textContent = `${meta.name} adventure map`;
   document.getElementById("levelBar").style.width = pct + "%";
   document.getElementById("levelPct").textContent = pct + "%";
+  // Teacher grade tile: average of the A+..F grades the teacher gives per
+  // attended class (LumioSchedule.gradeStudent). Hidden until one exists.
+  try {
+    const GP = { "A+": 4.3, "A": 4.0, "A-": 3.7, "B+": 3.3, "B": 3.0, "B-": 2.7, "C+": 2.3, "C": 2.0, "C-": 1.7, "D": 1.0, "F": 0.0 };
+    const gl = (window.LumioSchedule && LumioSchedule.gradesForStudent) ? LumioSchedule.gradesForStudent(u.name, level) : [];
+    if (gl.length) {
+      const pctG = gl.reduce((t, g) => t + (GP[g.grade] || 0), 0) / gl.length / 4.3 * 100;
+      const letter = Object.keys(GP).reduce((b, L) => Math.abs(GP[L] / 4.3 * 100 - pctG) < Math.abs(GP[b] / 4.3 * 100 - pctG) ? L : b, "A+");
+      document.getElementById("gradeAvg").textContent = letter;
+      document.getElementById("gradeLabel").textContent = `Teacher grade · ${gl.length} class${gl.length === 1 ? "" : "es"}`;
+      const gc = document.getElementById("gradeCard"); gc.style.display = "";
+      gc.onclick = () => { const b = document.getElementById("myProfileBtn"); if (b && b.style.display !== "none") b.click(); };
+    }
+  } catch (e) {}
 
   // Story banner — works for both Pre-A ("Lumi's Magic Map") and
   // Level 1 ("The Treehouse Club"), each with its own vocabulary
@@ -2268,6 +2301,20 @@
     btn.style.display = "inline-flex";
     const overlay = document.getElementById("myProfileOverlay");
 
+    // Teacher grades: one letter (A+ .. F) per attended class, set by the
+    // teacher in the attendance popup (LumioSchedule.gradeStudent). Same
+    // GPA-style average as report.html so the two never disagree.
+    const GRADE_POINTS = { "A+": 4.3, "A": 4.0, "A-": 3.7, "B+": 3.3, "B": 3.0, "B-": 2.7, "C+": 2.3, "C": 2.0, "C-": 1.7, "D": 1.0, "F": 0.0 };
+    function teacherGrades(p) {
+      const list = (window.LumioSchedule && LumioSchedule.gradesForStudent) ? LumioSchedule.gradesForStudent(p.name, p.level || "pre-a") : [];
+      list.sort((a, b) => (a.lessonNumber || 0) - (b.lessonNumber || 0) || String(a.date).localeCompare(String(b.date)));
+      const pct = list.length ? Math.round((list.reduce((t, g) => t + (GRADE_POINTS[g.grade] || 0), 0) / list.length / 4.3) * 100) : null;
+      const avgLetter = pct === null ? null : Object.keys(GRADE_POINTS).reduce((best, L) =>
+        Math.abs(GRADE_POINTS[L] / 4.3 * 100 - pct) < Math.abs(GRADE_POINTS[best] / 4.3 * 100 - pct) ? L : best, "A+");
+      return { list, pct, avgLetter, latest: list.length ? list[list.length - 1] : null };
+    }
+    function gradeClass(g) { return !g ? "" : g[0] === "A" ? "teal" : g[0] === "B" ? "blue" : g[0] === "C" ? "purple" : "coral"; }
+
     function renderProfile() {
       const p = window.LumioProfiles ? LumioProfiles.getStudent(rosterProfile.id) : rosterProfile;
       document.getElementById("mpName").textContent = p.name;
@@ -2293,6 +2340,17 @@
         <div class="mp-tile ${(p.sessionsRemaining || 0) <= 3 ? "coral" : "teal"}"><span class="ic">🎟️</span><b>${p.sessionsRemaining || 0}</b><span>Sessions left</span></div>
         <div class="mp-tile teal"><span class="ic">🏆</span><b>${p.rewardPoints || 0}</b><span>Reward points</span></div>
       `;
+      const tg = teacherGrades(p);
+      const gradesEl = document.getElementById("mpGrades");
+      if (gradesEl) {
+        gradesEl.innerHTML = tg.list.length ? `
+          <div class="mp-grades-head">
+            <div class="mp-grade-avg ${gradeClass(tg.avgLetter)}"><b>${tg.avgLetter}</b><span>Average · ${tg.pct}%</span></div>
+            <div class="mp-grades-sub">Your teacher's grade for each live class · تقييم المعلم لكل حصة</div>
+          </div>
+          <div class="mp-grade-list">${tg.list.map(g => `<div class="mp-grade-chip ${gradeClass(g.grade)}" title="${g.date}"><span>L${g.lessonNumber || "–"}</span><b>${g.grade}</b></div>`).join("")}</div>`
+        : `<div class="mp-grades-sub">No teacher grades yet — your teacher grades each live class you attend.</div>`;
+      }
     }
 
     btn.onclick = () => { renderProfile(); overlay.classList.add("show"); };
@@ -2323,10 +2381,12 @@
       const attPct = attStats.total ? Math.round((attStats.present / attStats.total) * 100) : null;
       const today = new Date().toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" });
 
+      const tg = teacherGrades(p);
+      const gradeByLesson = {}; tg.list.forEach(g => { if (g.lessonNumber) gradeByLesson[g.lessonNumber] = g.grade; });
       const lessonRows = entries
         .map(([n, r]) => ({ n: Number(n), r }))
         .sort((a, b) => a.n - b.n)
-        .map(({ n, r }) => `<tr><td>Lesson ${n}</td><td>${"★".repeat(r.stars || 0)}</td><td>${r.score || 0}%</td><td>${r.date || "—"}</td></tr>`)
+        .map(({ n, r }) => `<tr><td>Lesson ${n}</td><td>${"★".repeat(r.stars || 0)}</td><td>${r.score || 0}%</td><td>${gradeByLesson[n] || "—"}</td><td>${r.date || "—"}</td></tr>`)
         .join("");
 
       return `
@@ -2356,9 +2416,20 @@
             </div>
           </div>
           <div class="pr-section">
+            <h2>🎓 Teacher grades · تقييم المعلم</h2>
+            ${tg.list.length ? `
+            <div class="pr-stats">
+              <div class="pr-stat"><b>${tg.avgLetter}</b><span>Average grade (${tg.pct}%)</span></div>
+              <div class="pr-stat"><b>${tg.list.length}</b><span>Classes graded</span></div>
+              <div class="pr-stat"><b>${tg.latest.grade}</b><span>Latest · Lesson ${tg.latest.lessonNumber || "–"}</span></div>
+            </div>
+            <p style="font-size:.8rem;color:#6B5040;margin:8px 0 0">${tg.list.map(g => `Lesson ${g.lessonNumber || "?"}: <b>${g.grade}</b>`).join(" · ")}</p>`
+            : `<p style="color:#8891A3;font-size:.85rem">No teacher grades yet — each live class attended is graded by the teacher.</p>`}
+          </div>
+          <div class="pr-section">
             <h2>📋 Lesson-by-lesson</h2>
             ${lessonRows
-              ? `<table class="pr-table"><thead><tr><th>Lesson</th><th>Stars</th><th>Score</th><th>Date</th></tr></thead><tbody>${lessonRows}</tbody></table>`
+              ? `<table class="pr-table"><thead><tr><th>Lesson</th><th>Stars</th><th>Score</th><th>Teacher grade</th><th>Date</th></tr></thead><tbody>${lessonRows}</tbody></table>`
               : `<p style="color:#8891A3;font-size:.85rem">No lessons recorded yet.</p>`}
           </div>
           <div class="pr-foot">Lumio English · Small Steps · Big Futures</div>
