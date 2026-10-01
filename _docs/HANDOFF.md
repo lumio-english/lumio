@@ -85,5 +85,8 @@ Run 1 → 2 after any visual change (theme, logo, slide templates, vocab picture
 - `certificates.html` requires lessons done AND a passed test; shows test %, band, teacher-grade average, attendance %, stars, CEFR, a certificate number, and the "what this student can now do" list from `js/level-outcomes.js` (EN+AR; English mirrors level_manuals.json outcomes). `?level=X&preview=1&name=Y` for teachers. Student dashboard routes "Level complete" to the test first.
 - NOT yet synced to the Google Sheet: `lumio_level_tests` lives on the device only (progress/homework sync untouched). Needs a LevelTests tab + push/pull actions in Code.gs (Eslam redeploys) — do it with the next backend batch.
 
+## 3f. 1-on-1 trial classes (1 Oct 2026)
+`lib/trial_solo.py` builds a one-on-one variant of every level's trial deck by swapping the group-only slide builders on the generator module (welcome, team-assign -> star-goal, buzzer -> Quick Answer, relay -> Your Turn, copy-cat -> Show Me! (rated 1-3 stars), scoreboard -> Star Meter, finale -> Today's Badges, finish) and re-running its `_build()`. Output: `slide-content/trial-solo/<level>/` (same slide count as the group deck). Every `gen_trial_<level>.py` now writes both decks, so `regen_level.py` keeps both current. Presenter: `present-trial.html?level=X&mode=solo` (one name, no roster button, star chip in the top bar, goal 10 stars). Teacher Materials row has both links. Group decks are untouched.
+
 ## 4. Working style
 Verify in a browser before claiming done; check files before writing prompts; never duplicate; fix in templates not per slide; say plainly what was NOT done; ask one specific question when ambiguous.

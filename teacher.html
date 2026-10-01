@@ -5095,9 +5095,10 @@
     trialRow.style.gridColumn = "1 / -1";
     if (TRIAL_LEVELS.includes(level)) {
       trialRow.innerHTML = `<div class="td-mat-top"><div class="num" style="background:#F97316;color:#fff">★</div><b>Trial Class</b></div>
-        <div style="font-size:.78rem;color:var(--td-muted);margin:-4px 0 8px">A high-energy group class for new students, with live team challenges pulled from this level's real lessons.</div>
+        <div style="font-size:.78rem;color:var(--td-muted);margin:-4px 0 8px">Group: a high-energy class with live team challenges. 1-on-1: the same lessons and games adapted for a single student — no teams, a star meter and personal badges instead.</div>
         <div class="td-mat-actions">
-          <a class="act present" href="present-trial.html?level=${level}">▶ Start Trial Class</a>
+          <a class="act present" href="present-trial.html?level=${level}">▶ Group trial (2–4 students)</a>
+          <a class="act present" href="present-trial.html?level=${level}&mode=solo">👤 1-on-1 trial</a>
         </div>`;
     } else {
       trialRow.style.opacity = ".6";

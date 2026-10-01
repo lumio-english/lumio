@@ -11,7 +11,8 @@ vocab pictures by file name, so a new image is live the moment it is saved --
 but the worksheet/flashcard/writing PDFs embed the pictures and must be
 rebuilt, and the trial-class deck must be rebuilt whenever the lesson data
 (words, examples, image overrides) changes.  This script always includes the
-trial deck so trial classes never fall behind the main course.
+trial deck (group AND the 1-on-1 variant, both written by gen_trial_<level>.py)
+so trial classes never fall behind the main course.
 
 PDF rendering needs Chromium; set LUMIO_CHROMIUM if Playwright's own download
 is not present (this container: /opt/pw-browsers/chromium).

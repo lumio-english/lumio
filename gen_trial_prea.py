@@ -325,3 +325,6 @@ def build():
 
 if __name__ == "__main__":
     build()
+    # 1-on-1 variant: same content, group-only slides swapped (lib/trial_solo.py)
+    import trial_solo
+    trial_solo.build(sys.modules[__name__], "pre-a")
