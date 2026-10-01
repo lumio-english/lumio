@@ -1001,7 +1001,7 @@
     if (!n) return null;
     return load().teachers.find(t => t.name.trim().toLowerCase() === n) || null;
   }
-  async function addTeacher({ name, avatar, pin, isOwner } = {}) {
+  async function addTeacher({ name, avatar, pin, isOwner, photoDataUrl } = {}) {
     const data = load();
     name = (name || "").trim();
     if (!name) throw new Error("A teacher needs a name.");
@@ -1014,6 +1014,7 @@
       pin: finalPin,
       pinHash: await hashPin(finalPin),
       isOwner: !!isOwner,
+      photoDataUrl: photoDataUrl || "",
       createdAt: new Date().toISOString().slice(0, 10),
       updatedAt: new Date().toISOString(),
     };
@@ -1033,6 +1034,7 @@
       t.name = newName;
     }
     if (patch.avatar !== undefined) t.avatar = patch.avatar;
+    if (patch.photoDataUrl !== undefined) t.photoDataUrl = patch.photoDataUrl || "";
     if (patch.pin !== undefined) {
       const newPin = normalizePin(patch.pin) || t.pin;
       t.pin = newPin;

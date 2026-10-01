@@ -849,7 +849,8 @@
   //  * Every booking -- by a student, by a teacher for a student -- goes
   //    through bookStudentIntoSlot(), so the rules can't be bypassed.
   // =====================================================================
-  const WORK = { days: [0, 1, 2, 3, 4], start: "12:00", end: "20:00", minSlotsPerTeacher: 4 };
+  // Every teacher runs 4 fixed sessions a day, Sunday-Thursday (20 a week).
+  const WORK = { days: [0, 1, 2, 3, 4], start: "12:00", end: "20:00", minSlotsPerDay: 4, minSlotsPerTeacher: 20 };
   const MAX_PER_CLASS = 4;
   const MAX_PER_WEEK = 3;
   const CANCEL_MIN_BEFORE = 30;   // minutes before start a student may still cancel
@@ -895,10 +896,29 @@
     return listPatterns({ teacherId, active: true }).filter(p => !isLegacyPattern(p))
       .sort((a, b) => a.dayOfWeek - b.dayOfWeek || hmToMin(a.startTime) - hmToMin(b.startTime));
   }
-  // Minimum-4 rule: how a teacher stands against it (warning, not a hard block).
+  // The 4-a-day rule: how a teacher stands against it (warning, not a hard
+  // block). perDay[dow] = base slots that day; missingDays lists Sun-Thu
+  // days still under 4.
   function availabilityStatus(teacherId) {
-    const n = availabilityForTeacher(teacherId).filter(p => !p.extra).length;
-    return { count: n, required: WORK.minSlotsPerTeacher, ok: n >= WORK.minSlotsPerTeacher };
+    const base = availabilityForTeacher(teacherId).filter(p => !p.extra);
+    const perDay = {}; WORK.days.forEach(d => { perDay[d] = 0; });
+    base.forEach(p => { if (perDay[p.dayOfWeek] !== undefined) perDay[p.dayOfWeek]++; });
+    const missingDays = WORK.days.filter(d => perDay[d] < WORK.minSlotsPerDay);
+    const n = base.length;
+    return { count: n, required: WORK.minSlotsPerTeacher, perDay, perDayRequired: WORK.minSlotsPerDay, missingDays, ok: missingDays.length === 0 };
+  }
+  // One-shot weekly setup: the same start times on every working day.
+  // Existing/overlapping slots are skipped, never duplicated.
+  function setWeeklyAvailability({ teacherId, teacherName, startTimes, durationMinutes, meetingLink } = {}) {
+    if (!teacherId) throw new Error("Pick a teacher.");
+    const times = (startTimes || []).filter(Boolean);
+    if (!times.length) throw new Error("Pick at least one start time.");
+    let created = 0, skipped = 0;
+    WORK.days.forEach(d => times.forEach(t => {
+      try { addAvailability({ teacherId, teacherName, dayOfWeek: d, startTime: t, durationMinutes: durationMinutes || 60, meetingLink }); created++; }
+      catch (e) { skipped++; }
+    }));
+    return { created, skipped };
   }
 
   // ---- what the student may book next ----
@@ -1084,11 +1104,15 @@
         body: JSON.stringify({ cls, student: { studentId: args.studentId || null, studentName: args.studentName }, maxPerClass: MAX_PER_CLASS }),
       });
       const out = await res.json();
-      if (!out || !out.ok) { restore(snap); throw new Error((out && out.error) || "The server refused that booking."); }
+      if (!out || !out.ok) {
+        restore(snap);
+        if (out && /Unknown action/i.test(out.error || "")) throw new Error("Online booking isn't switched on yet — please tell your teacher (the booking server needs its update).");
+        throw new Error((out && out.error) || "The server refused that booking.");
+      }
       if (out.cls) { normalizeSheetDates(out.cls); replaceClass(out.cls); return out.cls; }
       return cls;
     } catch (e) {
-      if (e && /server refused|different lesson|full|cancelled|already/i.test(e.message || "")) throw e;
+      if (e && /server refused|different lesson|full|cancelled|already|switched on/i.test(e.message || "")) throw e;
       restore(snap);
       throw new Error("Couldn't reach the booking server — check your connection and try again.");
     }
@@ -1104,11 +1128,15 @@
         body: JSON.stringify({ classId, studentName, minBefore: CANCEL_MIN_BEFORE }),
       });
       const out = await res.json();
-      if (!out || !out.ok) { restore(snap); throw new Error((out && out.error) || "The server refused that cancellation."); }
+      if (!out || !out.ok) {
+        restore(snap);
+        if (out && /Unknown action/i.test(out.error || "")) throw new Error("Online booking isn't switched on yet — please tell your teacher (the booking server needs its update).");
+        throw new Error((out && out.error) || "The server refused that cancellation.");
+      }
       if (out.cls) { normalizeSheetDates(out.cls); delete out.cls.cascaded; replaceClass(out.cls); }
       return cls;
     } catch (e) {
-      if (e && /server refused|minutes before|not found|isn't in/i.test(e.message || "")) throw e;
+      if (e && /server refused|minutes before|not found|isn't in|switched on/i.test(e.message || "")) throw e;
       restore(snap);
       throw new Error("Couldn't reach the booking server — check your connection and try again.");
     }
@@ -1119,7 +1147,7 @@
     bookSlotRemote, cancelBookingRemote, laterBookings,
     // booking model
     WORK, MAX_PER_CLASS, MAX_PER_WEEK, CANCEL_MIN_BEFORE, lessonDuration, inWorkingHours, isPast, isLegacyPattern,
-    addAvailability, availabilityForTeacher, availabilityStatus, studentBookingState, bookingsInWeek, openSlots,
+    addAvailability, setWeeklyAvailability, availabilityForTeacher, availabilityStatus, studentBookingState, bookingsInWeek, openSlots,
     bookStudentIntoSlot, cancelBooking, joinGate,
     addClass, updateClass, removeClass, cancelClass,
     markAttendance, gradeStudent, rateTeacher, completionState,

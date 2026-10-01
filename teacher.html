@@ -232,7 +232,7 @@
   .td-cal-avail.past{border-color:var(--td-border);color:var(--td-muted);opacity:.6}
   .td-fs-status{font-size:.85rem;font-weight:800;padding:8px 12px;border-radius:10px;background:var(--td-teal-soft);color:var(--td-teal);margin-bottom:8px}
   .td-fs-status.warn{background:var(--td-coral-soft);color:var(--td-coral)}
-  .td-fs-list{display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto}
+  .td-fs-list{display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto}
   .td-fs-row{display:flex;align-items:center;gap:10px;border:1px solid var(--td-border);border-radius:10px;padding:7px 10px;font-size:.85rem;font-weight:700}
   .td-fs-row .meta{color:var(--td-muted);font-weight:600;font-size:.76rem}
   .td-fs-row button{margin-left:auto}
@@ -1657,7 +1657,18 @@
       <div class="td-field-error" id="tchNameError"></div>
     </div>
     <div class="td-field">
-      <label>Avatar</label>
+      <label>Photo <span style="font-weight:600;color:var(--td-muted)">(students see it when they pick a teacher)</span></label>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div id="tchPhotoPreview" style="width:72px;height:72px;border-radius:50%;background:var(--td-teal-soft);display:flex;align-items:center;justify-content:center;font-size:2rem;overflow:hidden;flex-shrink:0"></div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button class="td-btn" id="tchPhotoUpload" type="button">📷 Upload photo</button>
+          <button class="td-btn" id="tchPhotoRemove" type="button" style="display:none">✕ Remove photo</button>
+          <input type="file" id="tchPhotoFile" accept="image/*" style="display:none">
+        </div>
+      </div>
+    </div>
+    <div class="td-field">
+      <label>Avatar <span style="font-weight:600;color:var(--td-muted)">(used when there's no photo)</span></label>
       <div class="td-avatar-grid" id="tchAvatarGrid"></div>
     </div>
     <div class="td-field">
@@ -1752,7 +1763,7 @@
 <div class="td-overlay" id="fsModalOverlay">
   <div class="td-modal-box td-modal-box-wide">
     <h3>Fixed weekly slots</h3>
-    <p class="sub" style="margin-top:-4px">Your standing teaching times. Every teacher keeps at least <b>4 base slots</b>, Sunday to Thursday, between 12:00 and 20:00 Saudi time. Slots stay empty until the first student books one — that booking sets the level and lesson, and up to 4 students at the same level and lesson can join it.</p>
+    <p class="sub" style="margin-top:-4px">Your standing teaching times: <b>4 sessions a day, Sunday to Thursday</b> (20 a week), between 12:00 and 20:00 Saudi time. Slots stay empty until the first student books one — that booking sets the level and lesson, and up to 4 students at the same level and lesson can join it.</p>
     <div class="td-field" id="fsTeacherField" style="display:none">
       <label for="fsTeacherPicker">Teacher <span style="font-weight:600;color:var(--td-muted)">(owner view — manage any teacher's slots)</span></label>
       <select id="fsTeacherPicker"></select>
@@ -1760,7 +1771,14 @@
     <div id="fsStatus" class="td-fs-status"></div>
     <div id="fsSlotList" class="td-fs-list"></div>
     <div id="fsOwnerSummary" style="display:none"></div>
-    <h4 style="margin:14px 0 6px;font-size:.9rem">Add a slot</h4>
+    <h4 style="margin:14px 0 6px;font-size:.9rem">Set my week in one go</h4>
+    <div class="sub" style="font-size:.78rem;margin-bottom:6px">Tick 4 start times — they're added to every day, Sunday to Thursday (existing slots are kept).</div>
+    <div id="fsWeekTimes" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px"></div>
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px">
+      <select id="fsWeekDuration" class="td-select" style="flex:0 0 140px;width:140px"><option value="45">45 min</option><option value="60" selected>60 min</option><option value="90">90 min</option></select>
+      <button class="td-btn td-btn-primary" id="fsWeekApply" type="button" style="white-space:nowrap">Apply to Sun–Thu</button>
+    </div>
+    <h4 style="margin:14px 0 6px;font-size:.9rem">Or add one slot</h4>
     <div class="td-field" style="display:flex;gap:10px">
       <div style="flex:1">
         <label for="fsDayOfWeek">Day</label>
@@ -3483,6 +3501,7 @@
       opt.textContent = a;
       opt.onclick = () => {
         selectedTeacherAvatar = a;
+        if (!tchPhoto) renderTchPhoto();
         tchAvatarGrid.querySelectorAll(".td-avatar-opt").forEach(o => o.classList.remove("selected"));
         opt.classList.add("selected");
       };
@@ -3505,7 +3524,7 @@
       card.className = "td-roster-card";
       card.innerHTML = `
         <div class="top">
-          <div class="av">${t.avatar}</div>
+          <div class="av">${avatarHtml(t)}</div>
           <div><div class="nm">${t.name}${t.isOwner ? ' <span class="td-owner-crown" title="Platform owner">👑</span>' : ""}${t.id === activeId ? ' <span class="td-badge teal">you</span>' : ""}</div><div><span class="lv">${studentCount} student${studentCount === 1 ? "" : "s"}</span></div></div>
         </div>
         ${stats ? `<div class="td-teacher-stats">
@@ -3573,11 +3592,52 @@
     tchNameError.textContent = "";
     document.getElementById("tchOwnerError").textContent = "";
     document.getElementById("tchIsOwner").checked = t ? !!t.isOwner : false;
+    tchPhoto = t ? (t.photoDataUrl || "") : "";
+    renderTchPhoto();
     renderTeacherAvatarGrid();
     teacherModalOverlay.classList.add("show");
     tchNameInput.focus();
   }
   function closeTeacherModal() { teacherModalOverlay.classList.remove("show"); }
+  // Teacher photo: square-cropped 200px JPEG data URL on the teacher record
+  // (`photoDataUrl`, synced through the Teachers tab) -- same approach as
+  // student photos. Shown on the Team cards and in the student booking picker.
+  let tchPhoto = "";
+  function renderTchPhoto() {
+    const box = document.getElementById("tchPhotoPreview");
+    box.innerHTML = tchPhoto ? `<img src="${tchPhoto}" alt="" style="width:100%;height:100%;object-fit:cover">` : (selectedTeacherAvatar || "🐥");
+    document.getElementById("tchPhotoRemove").style.display = tchPhoto ? "" : "none";
+  }
+  function resizeTeacherPhoto(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error("Couldn't read that file."));
+      reader.onload = () => {
+        const img = new Image();
+        img.onerror = () => reject(new Error("That doesn't look like a valid image."));
+        img.onload = () => {
+          const size = 200, canvas = document.createElement("canvas");
+          canvas.width = size; canvas.height = size;
+          const ctx = canvas.getContext("2d");
+          const scale = Math.max(size / img.width, size / img.height);
+          const w = img.width * scale, hh = img.height * scale;
+          ctx.drawImage(img, (size - w) / 2, (size - hh) / 2, w, hh);
+          resolve(canvas.toDataURL("image/jpeg", 0.85));
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+  document.getElementById("tchPhotoUpload").onclick = () => document.getElementById("tchPhotoFile").click();
+  document.getElementById("tchPhotoRemove").onclick = () => { tchPhoto = ""; renderTchPhoto(); };
+  document.getElementById("tchPhotoFile").onchange = async e => {
+    const file = e.target.files[0]; e.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/")) { showToast("Please choose an image file.", "error"); return; }
+    try { tchPhoto = await resizeTeacherPhoto(file); renderTchPhoto(); }
+    catch (err) { showToast(err.message || "Couldn't use that photo.", "error"); }
+  };
   document.getElementById("addTeacherBtn").onclick = () => openTeacherModal(null);
   document.getElementById("teacherModalCancel").onclick = closeTeacherModal;
   teacherModalOverlay.onclick = e => { if (e.target === teacherModalOverlay) closeTeacherModal(); };
@@ -3598,11 +3658,11 @@
     await withLoading(e.currentTarget, async () => {
       try {
         if (editingTeacherId) {
-          const tpatch = { name, avatar: selectedTeacherAvatar, isOwner: isOwnerVal };
+          const tpatch = { name, avatar: selectedTeacherAvatar, isOwner: isOwnerVal, photoDataUrl: tchPhoto };
           if (pinVal !== undefined) tpatch.pin = pinVal;
           await LumioProfiles.updateTeacher(editingTeacherId, tpatch);
         } else {
-          await LumioProfiles.addTeacher({ name, avatar: selectedTeacherAvatar, pin: pinVal, isOwner: isOwnerVal });
+          await LumioProfiles.addTeacher({ name, avatar: selectedTeacherAvatar, pin: pinVal, isOwner: isOwnerVal, photoDataUrl: tchPhoto });
         }
         closeTeacherModal();
         renderTeamGrid();
@@ -4217,9 +4277,11 @@
     const slots = tid ? LumioSchedule.availabilityForTeacher(tid) : [];
     const st = tid ? LumioSchedule.availabilityStatus(tid) : { count: 0, required: 4, ok: false };
     status.className = "td-fs-status" + (st.ok ? "" : " warn");
-    status.textContent = st.ok
-      ? `✓ ${st.count} base slot${st.count === 1 ? "" : "s"} set — minimum of ${st.required} met.`
-      : `⚠ ${st.count} of ${st.required} base slots set — add ${st.required - st.count} more so students always have times to book.`;
+    const dayBits = LumioSchedule.WORK.days.map(d => `${FS_DAYS[d].slice(0, 3)} ${st.perDay[d]}/${st.perDayRequired}`).join(" · ");
+    status.innerHTML = (st.ok
+      ? `✓ ${st.count} base slots set — 4 a day, Sunday to Thursday.`
+      : `⚠ ${st.count} of ${st.required} base slots — ${st.missingDays.map(d => FS_DAYS[d]).join(", ")} still under ${st.perDayRequired} a day.`)
+      + `<div style="font-weight:700;font-size:.74rem;opacity:.85;margin-top:3px">${dayBits}</div>`;
     list.innerHTML = "";
     if (!slots.length) { list.innerHTML = `<div class="sub" style="font-size:.8rem">No fixed slots yet. Add the first one below.</div>`; }
     slots.forEach(p => {
@@ -4239,7 +4301,7 @@
         let msg = `Remove the ${FS_DAYS[p.dayOfWeek]} ${fmtTime(p.startTime)} slot?`;
         if (upcoming.length) msg += ` ${upcoming.length} already-booked session${upcoming.length === 1 ? "" : "s"} in it will be cancelled and the students notified.`;
         const stAfter = LumioSchedule.availabilityStatus(fsSelectedTeacherId());
-        if (!p.extra && stAfter.count - 1 < stAfter.required) msg += ` This drops the teacher below the ${stAfter.required}-slot minimum.`;
+        if (!p.extra && (stAfter.perDay[p.dayOfWeek] || 0) - 1 < stAfter.perDayRequired) msg += ` This drops ${FS_DAYS[p.dayOfWeek]} below ${stAfter.perDayRequired} sessions.`;
         if (!(await confirmDialog(msg, "Remove slot"))) return;
         LumioSchedule.cancelPatternFromDate(p.id, LumioSchedule.todayStr());
         upcoming.forEach(c => notifyStudentsClassCancelled(c));
@@ -4256,12 +4318,39 @@
     box.style.display = "";
     box.innerHTML = low.length
       ? `<div class="sub" style="font-size:.8rem;margin-top:10px;font-weight:800;color:var(--td-coral)">Teachers below the minimum:</div>` +
-        low.map(x => `<div class="td-fs-teacher">${x.t.avatar || ""} ${x.t.name} <span class="meta" style="color:var(--td-muted);font-weight:600">${x.st.count}/${x.st.required} base slots</span></div>`).join("")
-      : `<div class="sub" style="font-size:.8rem;margin-top:10px;color:var(--td-teal);font-weight:800">✓ Every teacher has at least 4 base slots.</div>`;
+        low.map(x => `<div class="td-fs-teacher">${x.t.avatar || ""} ${x.t.name} <span class="meta" style="color:var(--td-muted);font-weight:600">${x.st.count}/${x.st.required} slots · short on ${x.st.missingDays.map(d => FS_DAYS[d].slice(0, 3)).join(", ")}</span></div>`).join("")
+      : `<div class="sub" style="font-size:.8rem;margin-top:10px;color:var(--td-teal);font-weight:800">✓ Every teacher has 4 sessions a day, Sunday to Thursday.</div>`;
   }
+  function fsFillWeekTimes() {
+    const wrap = document.getElementById("fsWeekTimes");
+    if (wrap.children.length) return;
+    const W = LumioSchedule.WORK;
+    const [sh] = W.start.split(":").map(Number), [eh] = W.end.split(":").map(Number);
+    const defaults = new Set(["14:00", "15:00", "16:00", "17:00"]);
+    for (let hh = sh; hh < eh; hh++) {
+      const t = `${String(hh).padStart(2, "0")}:00`;
+      const lab = document.createElement("label");
+      lab.style.cssText = "display:flex;align-items:center;gap:5px;font-size:.8rem;font-weight:700;border:1px solid var(--td-border);border-radius:999px;padding:4px 10px;cursor:pointer";
+      lab.innerHTML = `<input type="checkbox" value="${t}" ${defaults.has(t) ? "checked" : ""}> ${fmtTime(t)}`;
+      wrap.appendChild(lab);
+    }
+  }
+  document.getElementById("fsWeekApply").onclick = () => {
+    const errEl = document.getElementById("fsStudentError");
+    const tid = fsSelectedTeacherId();
+    const t = tid ? LumioProfiles.getTeacher(tid) : null;
+    const times = Array.from(document.querySelectorAll("#fsWeekTimes input:checked")).map(i => i.value);
+    try {
+      const r = LumioSchedule.setWeeklyAvailability({ teacherId: tid, teacherName: t ? t.name : "", startTimes: times, durationMinutes: document.getElementById("fsWeekDuration").value });
+      errEl.textContent = "";
+      queueSync();
+      fsRenderTeacherPicker(); fsRenderList(); fsRenderOwnerSummary(); renderScheduleActive();
+      showToast(`${r.created} slot${r.created === 1 ? "" : "s"} added across Sunday–Thursday${r.skipped ? ` (${r.skipped} already existed or overlapped)` : ""}.`, "success");
+    } catch (err) { errEl.textContent = err.message || "Couldn't set the week."; }
+  };
   function openFsModal() {
     if (!window.LumioSchedule || !window.LumioProfiles) return;
-    fsFillTimeOptions();
+    fsFillTimeOptions(); fsFillWeekTimes();
     fsRenderTeacherPicker();
     fsRenderList();
     fsRenderOwnerSummary();
@@ -4294,7 +4383,7 @@
       queueSync();
       fsRenderTeacherPicker(); fsRenderList(); fsRenderOwnerSummary(); renderScheduleActive();
       const st = LumioSchedule.availabilityStatus(tid);
-      showToast(st.ok ? "Slot added." : `Slot added — ${st.required - st.count} more needed to reach the minimum.`, "success");
+      showToast(st.ok ? "Slot added." : `Slot added — ${st.required - st.count} more to reach 4 a day.`, "success");
     } catch (err) {
       errEl.textContent = err.message || "Couldn't add that slot.";
     }
@@ -4305,7 +4394,7 @@
     const tid = LumioProfiles.getCurrentTeacherId();
     if (!tid || sessionStorage.getItem("lumio_fs_nudged") === tid) return;
     const st = LumioSchedule.availabilityStatus(tid);
-    if (!st.ok) { showToast(`Your fixed schedule has ${st.count} of ${st.required} base slots — open 🔁 Fixed slots to add more.`, "error"); }
+    if (!st.ok) { showToast(`Your fixed schedule has ${st.count} of ${st.required} slots (4 a day, Sun–Thu) — open 🔁 Fixed slots to set your week.`, "error"); }
     sessionStorage.setItem("lumio_fs_nudged", tid);
   }
 
