@@ -528,7 +528,7 @@ body { overflow-x: hidden; -webkit-text-size-adjust: 100%; }
           </svg>
           <div class="score-ring-text">
             <span class="score-number" id="ring-score">0</span>
-            <span class="score-label">/ 30</span>
+            <span class="score-label" id="ring-total">/ 36</span>
           </div>
         </div>
       </div>
@@ -545,7 +545,7 @@ body { overflow-x: hidden; -webkit-text-size-adjust: 100%; }
       <div class="score-breakdown">
         <div class="score-box"><div class="score-box-label">Listening</div><div class="score-box-val" id="sb-listen">0/8</div></div>
         <div class="score-box"><div class="score-box-label">Reading</div><div class="score-box-val" id="sb-read">0/8</div></div>
-        <div class="score-box"><div class="score-box-label">Writing</div><div class="score-box-val" id="sb-write">0/2</div></div>
+        <div class="score-box"><div class="score-box-label" id="sb-write-label">Writing</div><div class="score-box-val" id="sb-write">0/4</div></div>
         <div class="score-box"><div class="score-box-label">Grammar</div><div class="score-box-val" id="sb-gram">0/12</div></div>
       </div>
       <div class="tips-section">
@@ -807,6 +807,7 @@ const GRAMMAR_QS   = pickByLevel(BANK_GRAMMAR,   {A1:4, A2:4, B1:4, B2:4});
 
 const ALL_QUESTIONS = [...LISTENING_QS,...READING_QS,...WRITING_QS,...GRAMMAR_QS];
 const TOTAL = ALL_QUESTIONS.length; // 40 (10 listening + 10 reading + 4 writing + 16 grammar)
+const SCORED_TOTAL = LISTENING_QS.length + READING_QS.length + GRAMMAR_QS.length; // 36 -- writing is read by the teacher, not auto-scored
 // Writing now draws one question from every CEFR level (A1/A2/B1/B2) instead
 // of only A1 and B2 -- the bank already had 3-4 questions per level sitting
 // unused at A2/B1, so this closes a real coverage gap rather than needing
@@ -915,7 +916,7 @@ function combinePhone(countryCode, local) {
     if (!document.getElementById('countryPicker').contains(e.target)) list.classList.remove('open');
   });
 
-  setSelected('20'); // Egypt default
+  setSelected('966'); // Saudi Arabia default -- Lumio's home market
 })();
 
 // Public entry point for the inline onclick. Everything real happens in
@@ -1477,15 +1478,21 @@ function calcScore(){
   LISTENING_QS.forEach((q,i)=>{ if(answers[i]===q.answer) listenScore++; });
   // Reading (READ_START to READ_END)
   READING_QS.forEach((q,i)=>{ if(answers[READ_START+i]===q.answer) readScore++; });
-  // Writing (WRITE_START to WRITE_END) — presence-based
-  WRITING_QS.forEach((q,i)=>{ if(answers[WRITE_START+i] && String(answers[WRITE_START+i]).trim().length>5) writeScore++; });
+  // Writing (WRITE_START to WRITE_END): counted as "answered" only. The
+  // writing answers go to the teacher (and the dashboard's AI feedback)
+  // for a human read; they do NOT move the automatic level. Before this
+  // change any text longer than 5 characters scored a full point, so a
+  // child who typed anything got +4/40 = +10% and was placed a whole
+  // level too high.
+  WRITING_QS.forEach((q,i)=>{ if(answers[WRITE_START+i] && String(answers[WRITE_START+i]).trim().length>0) writeScore++; });
   // Grammar (GRAMMAR_START to GRAMMAR_END)
   GRAMMAR_QS.forEach((q,i)=>{ if(answers[GRAMMAR_START+i]===q.answer) gramScore++; });
 
-  const total = listenScore + readScore + writeScore + gramScore;
-  const pct = total / TOTAL;
+  const total = listenScore + readScore + gramScore;   // writing excluded
+  const pct = total / SCORED_TOTAL;
 
-  // Map score to LEVEL_INFO index (0-9)
+  // Map score to LEVEL_INFO index (0-9); the Lumio level shown and
+  // stored is capped at 6 below (highest built level).
   let level;
   if      (pct >= 0.90) level = 9;
   else if (pct >= 0.80) level = 8;
@@ -1498,8 +1505,13 @@ function calcScore(){
   else if (pct >= 0.10) level = 1;
   else                  level = 0;
 
-  return { total, listenScore, readScore, writeScore, gramScore, level, pct };
+  return { total, listenScore, readScore, writeScore, gramScore, level: Math.min(level, MAX_LUMIO_LEVEL), rawLevel: level, pct };
 }
+// Lumio has seven built levels (Pre-A = 0 .. Level 6). The test's own
+// scale runs to 9 for B1+, so a strong teen is told honestly that they
+// scored above Level 6 but is placed in Level 6, the highest we teach.
+const MAX_LUMIO_LEVEL = 6;
+const LUMIO_LEVEL_NAMES = ['Pre-A · First Words','Level 1 · About Me','Level 2 · My World','Level 3 · Everyday Life','Level 4 · Smart Choices','Level 5 · Telling My Story','Level 6 · Looking Ahead'];
 
 const LEVEL_INFO=[
   {level:0,cefr:'Pre-A1',name:'Starter',desc:'You are beginning your English journey. With practice, you will grow fast!',color:'#ef4444'},
@@ -1665,8 +1677,9 @@ function showResult(){
   window._resultShown = true;
   clearInterval(timerInterval);
   if(synth&&synth.speaking)try{synth.cancel();}catch(e){}
-  const {total,level,listenScore,readScore,writeScore,gramScore}=calcScore();
+  const {total,level,rawLevel,listenScore,readScore,writeScore,gramScore}=calcScore();
   const info=LEVEL_INFO[level];
+  const aboveTop = rawLevel > level;
 
   const age=document.getElementById('student-age').value||'';
   const selfLevel=document.getElementById('student-self-level').value||'';
@@ -1687,40 +1700,50 @@ function showResult(){
     selfAssessedLevel:SELF_LEVEL_LABELS[selfLevel]||'',
     listening:listenScore+'/'+LISTENING_QS.length,
     reading:readScore+'/'+READING_QS.length,
-    writing:writeScore+'/'+WRITING_QS.length,
+    writing:writeScore+'/'+WRITING_QS.length+' answered',
     grammar:gramScore+'/'+GRAMMAR_QS.length,
-    total:total+'/'+TOTAL,
+    total:total+'/'+SCORED_TOTAL,
     level:'Level '+level,
     levelNum:level,
-    cefr:info.cefr+' — '+info.name
+    rawLevelNum:rawLevel,
+    cefr:info.cefr+' — '+info.name+(aboveTop?' (scored above Level 6)':'')
   });
+  // Keep the age on the student's own record too (it was only ever on the lead).
+  if (registeredStudent && window.LumioProfiles && age) {
+    LumioProfiles.updateStudent(registeredStudent.id, { age: Number(age) }).catch(()=>{});
+  }
 
   document.getElementById('result-name').textContent='Great job, '+studentName+'!';
   document.getElementById('ring-score').textContent=total;
+  document.getElementById('ring-total').textContent='/ '+SCORED_TOTAL;
   document.getElementById('sb-listen').textContent=listenScore+'/'+LISTENING_QS.length;
   document.getElementById('sb-read').textContent=readScore+'/'+READING_QS.length;
   document.getElementById('sb-write').textContent=writeScore+'/'+WRITING_QS.length;
+  document.getElementById('sb-write').title='Your writing goes to your teacher to read -- it does not change the automatic level.';
+  document.getElementById('sb-write-label').textContent='Writing (teacher reads)';
   document.getElementById('sb-gram').textContent=gramScore+'/'+GRAMMAR_QS.length;
 
   // Ring animation
   const arc=document.getElementById('ring-arc');
-  const pct=total/TOTAL;
+  const pct=total/SCORED_TOTAL;
   const circ=2*Math.PI*68;
   setTimeout(()=>{arc.style.transition='stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)';arc.style.strokeDashoffset=circ*(1-pct);},100);
 
   // Level scale
   const scaleEl=document.getElementById('level-scale');
   const scaleColors=['#ef4444','#f97316','#f59e0b','#eab308','#84cc16','#22c55e','#10b981','#06b6d4','#3b82f6','#6366f1'];
-  scaleEl.innerHTML=scaleColors.map((c,idx)=>`<div class="scale-seg" style="background:${idx<=level?c:'var(--lumio-border)'};border-radius:100px;height:10px;" title="Level ${idx}"></div>`).join('');
+  scaleEl.innerHTML=scaleColors.slice(0, MAX_LUMIO_LEVEL+1).map((c,idx)=>`<div class="scale-seg" style="background:${idx<=level?c:'var(--lumio-border)'};border-radius:100px;height:10px;" title="${LUMIO_LEVEL_NAMES[idx]}"></div>`).join('');
 
   // Badge
   document.getElementById('level-badge-big').textContent=level;
   document.getElementById('level-badge-big').style.background=info.color;
-  document.getElementById('level-name-big').textContent='Level '+level+' — '+info.name+' ('+info.cefr+')';
-  document.getElementById('level-desc-big').textContent=info.desc;
+  document.getElementById('level-name-big').textContent=LUMIO_LEVEL_NAMES[level]+' ('+info.cefr+')';
+  document.getElementById('level-desc-big').textContent=aboveTop
+    ? 'You scored above our highest level, so you start in Level 6 — our most advanced course. ' + info.desc
+    : info.desc;
 
   // Tips
-  const tips=TIPS[level]||TIPS[0];
+  const tips=TIPS[rawLevel]||TIPS[0];
   document.getElementById('tips-list').innerHTML=tips.map(t=>`<div class="tip-item"><div class="tip-dot"></div><span>${t}</span></div>`).join('');
 
   showPage('result');

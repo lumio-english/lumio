@@ -65,5 +65,9 @@ Run 1 → 2 after any visual change (theme, logo, slide templates, vocab picture
 - TOMBSTONES for classes/patterns/leads (`deletedClassIds`, `deletedPatternIds` in lumio_schedule_v2; `deletedLeadIds` in lumio_leads_v1) travel through the same DeletedIds tab as students/teachers (`type` = class|pattern|lead). The script MERGES the tab by id on every push (`mergeDeletedIds_`) and each pull returns only its own types. Removing a class/lead on one device now sticks everywhere.
 - Deploying the script: Claude's browser is blocked from editing the Apps Script editor; Eslam pastes the file, Deploy -> Manage deployments -> New version (same URL), then runs `repairSheetTypes` when the column layout changed.
 
+## 3f. Placement test (1 Oct 2026)
+- `lumio-pro-test.html` is the ONLY placement test; `placement-test.html` just redirects to it. Auto level = listening + reading + grammar out of 36 (`SCORED_TOTAL`); the 4 writing answers are "answered" counts only and go to the teacher / pro-dashboard AI feedback -- they never move the level. Level shown/stored is capped at 6 (`MAX_LUMIO_LEVEL`, names in `LUMIO_LEVEL_NAMES`); raw 0-9 kept as `rawLevelNum` in the result record. Country picker defaults to +966. Age is saved on the student record too.
+- Still open from the QA report: an age-appropriate short test for under-7s, Arabic UI.
+
 ## 4. Working style
 Verify in a browser before claiming done; check files before writing prompts; never duplicate; fix in templates not per slide; say plainly what was NOT done; ask one specific question when ambiguous.
