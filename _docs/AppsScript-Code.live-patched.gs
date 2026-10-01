@@ -62,6 +62,9 @@ var BLOCKED_DATES_COLUMNS = ["date", "label"];
 
 var PROGRESS_SHEET = "Progress";
 var PROGRESS_COLUMNS = ["studentName", "level", "lesson", "stars", "score", "total", "date"];
+// Interactive homework results (drawings stay on the student's device).
+var HOMEWORK_SHEET = "Homework";
+var HOMEWORK_COLUMNS = ["studentName", "level", "lesson", "stars", "score", "total", "said", "saidTotal", "hasDrawing", "date"];
 
 var LEADS_SHEET = "Leads";
 var LEADS_COLUMNS = [
@@ -177,7 +180,7 @@ function repairSheetTypes() {
     [TEACHERS_SHEET, TEACHERS_COLUMNS], [ROSTER_SHEET, ROSTER_COLUMNS],
     [SCHEDULE_SHEET, SCHEDULE_COLUMNS], [PATTERNS_SHEET, PATTERNS_COLUMNS],
     [BLOCKED_DATES_SHEET, BLOCKED_DATES_COLUMNS], [PROGRESS_SHEET, PROGRESS_COLUMNS],
-    [LEADS_SHEET, LEADS_COLUMNS], [REWARD_CATALOG_SHEET, REWARD_CATALOG_COLUMNS],
+    [LEADS_SHEET, LEADS_COLUMNS], [REWARD_CATALOG_SHEET, REWARD_CATALOG_COLUMNS], [HOMEWORK_SHEET, HOMEWORK_COLUMNS],
     [DELETED_IDS_SHEET, DELETED_IDS_COLUMNS], [PRO_ADMINS_SHEET, PRO_ADMINS_COLUMNS],
     [PRO_TEST_RESULTS_SHEET, PRO_TEST_RESULTS_COLUMNS],
   ];
@@ -199,6 +202,93 @@ function jsonResponse_(obj) {
 }
 
 // ---------- roster ----------
+
+// Narrow write path for STUDENT devices. A student device never pushes the
+// whole roster (its copy of other students is stale and it must not be
+// able to overwrite teacher-only fields). It only sends the few things a
+// student may change about their own row, and the script merges them into
+// that one row:
+//   avatar                     -- replaced
+//   messages                   -- union by message id; read = either side
+//   pendingDeletion / deletionConfirmed -- replaced (student's answer)
+//   redemptions                -- union by date; a NEW redemption deducts
+//                                 its cost from rewardPoints and credits
+//                                 bonusHours/sessionsRemaining (hours field)
+function pushStudentPatch_(body) {
+  var patch = body && body.patch;
+  if (!patch || !patch.id) return { ok: false, error: "missing patch.id" };
+  var rows = readRows_(ROSTER_SHEET, ROSTER_COLUMNS);
+  var row = null;
+  for (var i = 0; i < rows.length; i++) if (rows[i].id === patch.id) { row = rows[i]; break; }
+  if (!row) return { ok: false, error: "student not found" };
+  var parseArr = function (v) { try { var a = JSON.parse(v || "[]"); return Array.isArray(a) ? a : []; } catch (e) { return []; } };
+  var changed = false;
+
+  if (typeof patch.avatar === "string" && patch.avatar && patch.avatar !== row.avatar) { row.avatar = patch.avatar; changed = true; }
+
+  if (Array.isArray(patch.messages)) {
+    var existing = parseArr(row.messages);
+    var byId = {};
+    existing.forEach(function (m) { if (m && m.id) byId[m.id] = m; });
+    var msgChanged = false;
+    patch.messages.forEach(function (m) {
+      if (!m || !m.id) return;
+      var prev = byId[m.id];
+      if (!prev) { byId[m.id] = m; msgChanged = true; }
+      else if (m.read && !prev.read) { prev.read = true; msgChanged = true; }
+    });
+    if (msgChanged) {
+      var merged = Object.keys(byId).map(function (k) { return byId[k]; });
+      merged.sort(function (a, b) { return Date.parse(a.date || 0) - Date.parse(b.date || 0); });
+      row.messages = JSON.stringify(merged);
+      changed = true;
+    }
+  }
+
+  if (patch.pendingDeletion !== undefined) {
+    var pd = patch.pendingDeletion === true || patch.pendingDeletion === "true";
+    if (String(pd) !== String(row.pendingDeletion === true || row.pendingDeletion === "true")) { row.pendingDeletion = pd; changed = true; }
+  }
+  if (patch.deletionConfirmed !== undefined) {
+    var dc = patch.deletionConfirmed === true || patch.deletionConfirmed === "true";
+    if (String(dc) !== String(row.deletionConfirmed === true || row.deletionConfirmed === "true")) { row.deletionConfirmed = dc; changed = true; }
+  }
+
+  if (Array.isArray(patch.redemptions)) {
+    var have = parseArr(row.redemptions);
+    var seen = {};
+    have.forEach(function (r) { if (r && r.date) seen[r.date] = true; });
+    var points = Number(row.rewardPoints) || 0;
+    var bonus = Number(row.bonusHours) || 0;
+    var sessions = Number(row.sessionsRemaining) || 0;
+    var added = false;
+    patch.redemptions.forEach(function (r) {
+      if (!r || !r.date || seen[r.date]) return;
+      var cost = Number(r.cost) || 0;
+      if (cost <= 0 || cost > points) return;   // cannot redeem more than the row has
+      var hours = Number(r.hours) || 0;
+      points -= cost;
+      bonus += hours;
+      sessions += hours;
+      have.push({ date: r.date, label: r.label || "", cost: cost, hours: hours });
+      seen[r.date] = true;
+      added = true;
+    });
+    if (added) {
+      row.redemptions = JSON.stringify(have);
+      row.rewardPoints = points;
+      row.bonusHours = bonus;
+      row.sessionsRemaining = sessions;
+      changed = true;
+    }
+  }
+
+  if (changed) {
+    row.updatedAt = new Date().toISOString();
+    writeRows_(ROSTER_SHEET, ROSTER_COLUMNS, rows);
+  }
+  return { ok: true, changed: changed, student: row };
+}
 
 // ---------- tombstones (shared by roster, schedule and leads) ----------
 // The DeletedIds tab is a UNION of every deletion ever pushed from any
@@ -297,28 +387,56 @@ function rowToPattern_(row) {
 
 // ---------- progress ----------
 
-function pushProgress_(body) {
+// Progress and homework rows are MERGED by student+level+lesson (higher
+// stars win, then the newer date), never replaced wholesale: student
+// phones push only their own records, teacher devices push everything
+// they know, and neither can wipe the other's rows.
+function flattenRecords_(tree, columns) {
   var rows = [];
-  var progress = body.progress || {};
-  Object.keys(progress).forEach(function (studentName) {
-    var levels = progress[studentName] || {};
+  Object.keys(tree || {}).forEach(function (studentName) {
+    var levels = tree[studentName] || {};
     Object.keys(levels).forEach(function (level) {
       var lessons = levels[level] || {};
       Object.keys(lessons).forEach(function (lessonId) {
         var r = lessons[lessonId] || {};
-        rows.push({
-          studentName: studentName, level: level, lesson: lessonId,
-          stars: r.stars || 0, score: r.score || 0, total: r.total || 0, date: r.date || "",
-        });
+        var row = { studentName: studentName, level: level, lesson: lessonId };
+        columns.forEach(function (col) { if (!(col in row)) row[col] = r[col] === undefined || r[col] === null ? "" : r[col]; });
+        rows.push(row);
       });
     });
   });
-  writeRows_(PROGRESS_SHEET, PROGRESS_COLUMNS, rows);
-  return { ok: true, rows: rows.length };
+  return rows;
 }
-
+function mergeRecordRows_(sheet, columns, incoming) {
+  var existing = readRows_(sheet, columns);
+  var byKey = {};
+  existing.forEach(function (r) { byKey[r.studentName + "|" + r.level + "|" + r.lesson] = r; });
+  var changed = 0;
+  incoming.forEach(function (r) {
+    var k = r.studentName + "|" + r.level + "|" + r.lesson;
+    var prev = byKey[k];
+    var better = !prev || Number(r.stars || 0) > Number(prev.stars || 0)
+      || (Number(r.stars || 0) === Number(prev.stars || 0) && String(r.date || "") > String(prev.date || ""));
+    if (better) { byKey[k] = r; changed++; }
+  });
+  if (changed) writeRows_(sheet, columns, Object.keys(byKey).map(function (k) { return byKey[k]; }));
+  return changed;
+}
+function pushProgress_(body) {
+  var rows = flattenRecords_(body.progress, PROGRESS_COLUMNS);
+  var changed = mergeRecordRows_(PROGRESS_SHEET, PROGRESS_COLUMNS, rows);
+  return { ok: true, rows: rows.length, changed: changed };
+}
 function pullProgress_() {
   return { rows: readRows_(PROGRESS_SHEET, PROGRESS_COLUMNS) };
+}
+function pushHomework_(body) {
+  var rows = flattenRecords_(body.homework, HOMEWORK_COLUMNS);
+  var changed = mergeRecordRows_(HOMEWORK_SHEET, HOMEWORK_COLUMNS, rows);
+  return { ok: true, rows: rows.length, changed: changed };
+}
+function pullHomework_() {
+  return { rows: readRows_(HOMEWORK_SHEET, HOMEWORK_COLUMNS) };
 }
 
 // ---------- leads ----------
@@ -509,6 +627,7 @@ function doGet(e) {
     if (action === "pullRoster") return jsonResponse_(pullRoster_());
     if (action === "pullScheduleV2") return jsonResponse_(pullScheduleV2_());
     if (action === "pullProgress") return jsonResponse_(pullProgress_());
+    if (action === "pullHomework") return jsonResponse_(pullHomework_());
     if (action === "pullLeads") return jsonResponse_(pullLeads_());
     if (action === "pullProAdmins") return jsonResponse_(pullProAdmins_());
     if (action === "pullProTestResults") return jsonResponse_(pullProTestResults_());
@@ -525,8 +644,10 @@ function doPost(e) {
     var body = {};
     if (e && e.postData && e.postData.contents) body = JSON.parse(e.postData.contents);
     if (action === "pushRoster") return jsonResponse_(pushRoster_(body));
+    if (action === "pushStudentPatch") return jsonResponse_(pushStudentPatch_(body));
     if (action === "pushScheduleV2") return jsonResponse_(pushScheduleV2_(body));
     if (action === "pushProgress") return jsonResponse_(pushProgress_(body));
+    if (action === "pushHomework") return jsonResponse_(pushHomework_(body));
     if (action === "pushLeads") return jsonResponse_(pushLeads_(body));
     if (action === "pushProAdmins") return jsonResponse_(pushProAdmins_(body));
     if (action === "pushProTestResult") return jsonResponse_(pushProTestResult_(body));

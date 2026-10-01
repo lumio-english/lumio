@@ -430,7 +430,9 @@
       .finally(() => clearTimeout(timer));
   }
 
-  async function syncNow() {
+  // opts.pullOnly: pull + merge + save only (student devices never push).
+  async function syncNow(opts) {
+    const pullOnly = !!(opts && opts.pullOnly);
     const cfg = getSyncConfig();
     if (!cfg.enabled || !cfg.url) return { ok: false, reason: "not-configured" };
     const data = load();
@@ -465,6 +467,7 @@
         });
       }
       save(data);
+      if (pullOnly) return { ok: true, at: new Date().toISOString(), pullOnly: true };
       await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pushScheduleV2", {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -802,13 +805,17 @@
             return full ? !!full.subscribed : true; // unknown/guest students don't block generation
           });
           if (allSubscribed) {
-            const weekIndex = Math.round((new Date(d) - new Date(p.startDate)) / (7 * 86400000));
+            // Lesson numbers count the sessions this pattern actually
+            // produced before this date -- not calendar weeks -- so a
+            // start date that isn't on the pattern's weekday, a holiday or
+            // a skipped week never leaves a gap (e.g. "Lesson 2" first).
+            const priorSessions = data.classes.filter(c => c.patternId === p.id && c.date < d && c.status !== "cancelled").length;
             const record = {
               id: genId(),
               teacherId: p.teacherId, teacherName: p.teacherName,
               date: d, startTime: p.startTime, durationMinutes: p.durationMinutes,
               level: p.level, cohort: p.cohort,
-              lessonNumber: p.lessonStart ? p.lessonStart + weekIndex : null,
+              lessonNumber: p.lessonStart ? Number(p.lessonStart) + priorSessions : null,
               meetingLink: p.meetingLink || "", notes: p.notes || "", sessionNotes: "",
               status: "scheduled", patternId: p.id,
               students: p.students.map(s => ({ studentId: s.studentId || null, studentName: s.studentName, attendance: null, grade: null, teacherRatingStars: null })),

@@ -376,7 +376,7 @@
   // own date), nothing estimated.
   const allDates = [
     ...prepLessons.map(r => r.date), ...hwLessons.map(r => r.date),
-    ...((window.LumioSchedule && LumioSchedule.listClasses) ? LumioSchedule.listClasses({ studentName: student.name }).filter(c => c.attendance === "present").map(c => c.date) : []),
+    ...((window.LumioSchedule && LumioSchedule.listClasses) ? LumioSchedule.listClasses({ studentName: student.name }).filter(c => (c.students || []).some(x => x.studentName === student.name && x.attendance === "present")).map(c => c.date) : []),
   ].filter(Boolean).sort();
   const lastActiveDate = allDates.length ? allDates[allDates.length - 1] : null;
   const daysSinceActive = lastActiveDate ? Math.max(0, Math.floor((new Date() - new Date(lastActiveDate)) / 86400000)) : null;

@@ -145,6 +145,8 @@
       <label for="tpin">Classroom PIN</label>
       <input type="password" id="tpin" placeholder="••••" inputmode="numeric">
       <p class="tp-hint">This unlocks the dashboard itself. Ask your school admin if you don't have it.</p>
+      <div class="tp-pin-error" id="teacherConfirmHint" style="display:none;color:#1e8a4c"></div>
+      <div class="tp-pin-error" id="teacherGateError"></div>
       <button class="tp-submit" id="goTeacher">Open dashboard</button>
     </div>
     <!-- kept for backward compatibility with any code still reading #tname -->
@@ -223,6 +225,17 @@
     let tPinBuffer = "";
     let selectedTeacherId = (window.LumioProfiles && LumioProfiles.getCurrentTeacherId())
       || (teachers[0] && teachers[0].id) || null;
+    // Teacher id confirmed by a personal PIN *in this page load*. The
+    // dashboard is only opened for a confirmed teacher, so nobody can
+    // reach it under someone else's name by just knowing the classroom PIN.
+    let confirmedTeacherId = null;
+    const confirmHint = document.getElementById("teacherConfirmHint");
+    function updateConfirmHint() {
+      if (!confirmHint) return;
+      const t = confirmedTeacherId && teachers.find(x => x.id === confirmedTeacherId);
+      confirmHint.textContent = t ? ("✓ Signed in as " + t.name) : "";
+      confirmHint.style.display = t ? "block" : "none";
+    }
 
     function renderTeacherGrid() {
       tGrid.innerHTML = "";
@@ -291,17 +304,21 @@
         return;
       }
       selectedTeacherId = ok.id;
+      confirmedTeacherId = ok.id;
       if (window.LumioProfiles) LumioProfiles.setCurrentTeacherId(ok.id);
       tnameHidden.value = ok.name;
       closeTeacherPinView();
       renderTeacherGrid();
+      updateConfirmHint();
+      const tpin = document.getElementById("tpin");
+      if (tpin) tpin.focus();
     }
     document.getElementById("teacherPinBack").onclick = closeTeacherPinView;
 
-    // Selecting who's teaching just marks them "pending" — no PIN needed to
-    // *choose* an identity; the personal PIN only confirms it. If they never
-    // tap a card, the previously-selected (or first) teacher stays selected,
-    // so a single-teacher setup needs zero extra taps here.
+    // Every visit: tap your avatar, enter your personal PIN (confirms who
+    // you are), then the classroom PIN (unlocks the dashboard). The
+    // dashboard never opens for an unconfirmed teacher -- see the
+    // #goTeacher gate below.
     renderTeacherGrid();
     renderTeacherPad();
 
@@ -322,6 +339,22 @@
       LumioProfiles.syncNow().then(res => {
         if (res && res.ok) {
           teachers = LumioProfiles.listTeachers();
+          // The Sheet is the source of truth. Only if it truly has no
+          // teachers do we create the placeholder owner account.
+          if (!teachers.length) {
+            LumioProfiles.ensureDefaultTeacher();
+            teachers = LumioProfiles.listTeachers();
+          }
+          // Sync may have replaced a local-only teacher id with the Sheet's
+          // id for the same name -- follow it so the selection stays valid.
+          const cur = LumioProfiles.getCurrentTeacherId();
+          if (selectedTeacherId && !teachers.some(t => t.id === selectedTeacherId)) {
+            selectedTeacherId = (cur && teachers.some(t => t.id === cur)) ? cur : (teachers[0] && teachers[0].id) || null;
+          }
+          if (confirmedTeacherId && !teachers.some(t => t.id === confirmedTeacherId)) {
+            confirmedTeacherId = (cur && teachers.some(t => t.id === cur)) ? cur : null;
+            updateConfirmHint();
+          }
           if (!activeTeacher) renderTeacherGrid();
         }
       }).catch(() => {});
@@ -331,8 +364,24 @@
 
     // Ensure the classroom-PIN button still records whichever teacher was
     // last confirmed (or the default) before your existing auth.js runs.
-    document.getElementById("goTeacher").addEventListener("click", () => {
-      if (window.LumioProfiles && selectedTeacherId) LumioProfiles.setCurrentTeacherId(selectedTeacherId);
+    // Runs BEFORE auth.js's classroom-PIN handler (registered later) and
+    // blocks it until a teacher has confirmed their personal PIN.
+    document.getElementById("goTeacher").addEventListener("click", (e) => {
+      const err = document.getElementById("teacherGateError");
+      const confirmed = confirmedTeacherId && teachers.some(t => t.id === confirmedTeacherId);
+      if (!confirmed) {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        if (err) {
+          err.textContent = teachers.length
+            ? "First tap your avatar above and enter your personal PIN."
+            : "No teacher profiles found yet. Ask the platform owner to add you.";
+          err.classList.remove("shake"); void err.offsetWidth; err.classList.add("shake");
+        }
+        return;
+      }
+      if (err) err.textContent = "";
+      if (window.LumioProfiles) LumioProfiles.setCurrentTeacherId(confirmedTeacherId);
     });
   } catch (e) {
     console.error("Lumio teacher picker error:", e);

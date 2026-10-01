@@ -93,6 +93,7 @@
     }
   } catch (e) {}
   document.write('<script src="js/app.js?v=' + v + '"><' + '/script>');
+  document.write('<script src="js/lumio-schedule.js?v=' + v + '"><' + '/script>'); // attendance for the lesson-done rule
 })();
 </script>
 <script>
@@ -104,7 +105,7 @@
   }
   const meta = Lumio.LEVELS.find(l => l.id === level);
   const prog = (Lumio.progressFor(u.name)[level]) || {};
-  const done = Object.keys(prog).length;
+  const done = Lumio.lessonsDoneCount(u.name, level); // prep + class + homework, in order
   const stars = Object.values(prog).reduce((s, r) => s + (r.stars || 0), 0);
 
   document.getElementById("certName").textContent = u.name;
@@ -114,7 +115,11 @@
 
   if (done < (meta ? meta.lessons : 20)) {
     document.getElementById("cert").style.opacity = ".35";
-    document.getElementById("notDone").style.display = "block";
+    const nd = document.getElementById("notDone");
+    nd.style.display = "block";
+    nd.textContent = `Finish all ${meta ? meta.lessons : 20} lessons of ${meta ? meta.name : level} to earn this certificate — ${done} done so far.`;
+    // No printing a certificate for an unfinished level.
+    document.querySelectorAll("button, .btn, a").forEach(el => { if (/print|save/i.test(el.textContent)) el.style.display = "none"; });
   }
 })();
 </script>

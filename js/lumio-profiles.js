@@ -129,6 +129,28 @@
     return String(100000 + (base % 900000));
   }
 
+  function defaultTeacherRecord_() {
+    return {
+      id: genId("t"),
+      name: "Teacher Lumi",
+      avatar: "🦉",
+      pin: "1111",
+      isOwner: true,
+      createdAt: new Date().toISOString().slice(0, 10),
+    };
+  }
+
+  // Create the placeholder owner account only when the roster truly has no
+  // teachers (called by the portal after a sync that returned none).
+  function ensureDefaultTeacher() {
+    const data = load();
+    if (data.teachers.length) return data.teachers[0];
+    const t = defaultTeacherRecord_();
+    data.teachers.push(t);
+    save(data);
+    return t;
+  }
+
   function load() {
     let data;
     try { data = JSON.parse(safeGet(ROSTER_KEY) || "null"); } catch (e) { data = null; }
@@ -152,21 +174,20 @@
     }
     delete data.teacher;
 
-    // always guarantee at least one teacher exists so login is never a dead end
-    if (!data.teachers.length) {
-      data.teachers.push({
-        id: genId("t"),
-        name: "Teacher Lumi",
-        avatar: "🦉",
-        pin: "1111",
-        isOwner: true,
-        createdAt: new Date().toISOString().slice(0, 10),
-      });
+    // Guarantee at least one teacher exists so login is never a dead end --
+    // but ONLY when there is no backend to pull the real teachers from.
+    // With a sync URL configured, a fresh device must wait for the Sheet
+    // instead of minting a local-only "Teacher Lumi" that then has to be
+    // deduped away (and used to leave the dashboard pointing at a ghost
+    // teacher id). The portal calls ensureDefaultTeacher() if the Sheet
+    // really has no teachers.
+    if (!data.teachers.length && !getSyncConfig().url) {
+      data.teachers.push(defaultTeacherRecord_());
       needsSave = true;
     }
 
     // safety net for roster data saved before "isOwner" existed
-    if (!data.teachers.some(t => t.isOwner)) {
+    if (data.teachers.length && !data.teachers.some(t => t.isOwner)) {
       data.teachers[0].isOwner = true;
       needsSave = true;
     }
@@ -361,6 +382,35 @@
   // meant to be written on a sticker or read aloud over the phone.
   // Regenerated on collision (astronomically rare at 6 digits for a
   // roster this size, but checked rather than assumed).
+  // Progress, homework, the report log and schedule slots are keyed by the
+  // student's NAME. Renaming used to orphan all of it (back to Lesson 1,
+  // classes no longer matching). Move every name-keyed record over.
+  function migrateStudentName_(oldName, newName, id) {
+    try {
+      ["lumio_progress", "lumio_homework", "lumio_report_log"].forEach(k => {
+        const all = JSON.parse(safeGet(k) || "{}") || {};
+        if (all[oldName] === undefined) return;
+        if (k === "lumio_report_log") { all[newName] = all[oldName]; }
+        else {
+          const merged = all[newName] || {};
+          Object.entries(all[oldName]).forEach(([lv, lessons]) => { merged[lv] = Object.assign({}, lessons, merged[lv] || {}); });
+          all[newName] = merged;
+        }
+        delete all[oldName];
+        safeSet(k, JSON.stringify(all));
+      });
+      const sched = JSON.parse(safeGet("lumio_schedule_v2") || "null");
+      if (sched && Array.isArray(sched.classes)) {
+        let touched = false;
+        const fix = list => (list || []).forEach(c => (c.students || []).forEach(st => {
+          if (st.studentId === id || st.studentName === oldName) { st.studentName = newName; touched = true; }
+        }));
+        fix(sched.classes); fix(sched.patterns);
+        if (touched) safeSet("lumio_schedule_v2", JSON.stringify(sched));
+      }
+    } catch (e) { console.warn("Lumio: rename migration failed", e); }
+  }
+
   function genLoginCode() {
     const data = load();
     let code;
@@ -516,6 +566,7 @@
       if (!newName) throw new Error("A student needs a name.");
       const dupe = data.students.find(x => x.id !== id && x.name.trim().toLowerCase() === newName.toLowerCase());
       if (dupe) throw new Error(`"${newName}" is already on the roster.`);
+      if (newName !== s.name) migrateStudentName_(s.name, newName, s.id);
       s.name = newName;
     }
     if (patch.level !== undefined) s.level = patch.level;
@@ -626,7 +677,7 @@
     // session, with no separate manual step for the teacher to remember.
     s.sessionsRemaining = (s.sessionsRemaining || 0) + blocks;
     if (!Array.isArray(s.redemptions)) s.redemptions = [];
-    s.redemptions.push({ date: new Date().toISOString(), label: `+${blocks} bonus hour${blocks === 1 ? "" : "s"}`, cost: blocks * POINTS_PER_HOUR });
+    s.redemptions.push({ date: new Date().toISOString(), label: `+${blocks} bonus hour${blocks === 1 ? "" : "s"}`, cost: blocks * POINTS_PER_HOUR, hours: blocks });
     s.updatedAt = new Date().toISOString();
     save(data);
     return { student: s, hoursRedeemed: blocks };
@@ -668,7 +719,7 @@
     if ((s.rewardPoints || 0) < item.cost) throw new Error(`Needs ${item.cost} points — has ${s.rewardPoints || 0}.`);
     s.rewardPoints -= item.cost;
     if (!Array.isArray(s.redemptions)) s.redemptions = [];
-    s.redemptions.push({ date: new Date().toISOString(), label: item.label, cost: item.cost });
+    s.redemptions.push({ date: new Date().toISOString(), label: item.label, cost: item.cost, hours: 0 });
     s.updatedAt = new Date().toISOString();
     save(data);
     return s;
@@ -1284,7 +1335,11 @@
       .finally(() => clearTimeout(timer));
   }
 
-  async function syncNow() {
+  // opts.pullOnly: pull + merge + save, but never push the roster back.
+  // Student devices use this (see pushStudentPatch for their write path);
+  // a student's stale copy of the roster must never overwrite the Sheet.
+  async function syncNow(opts) {
+    const pullOnly = !!(opts && opts.pullOnly);
     const cfg = getSyncConfig();
     if (!cfg.enabled || !cfg.url) return { ok: false, reason: "not-configured" };
     const data = load();
@@ -1350,6 +1405,7 @@
       }
       await backfillMissingHashes(data);
       save(data);
+      if (pullOnly) return { ok: true, at: new Date().toISOString(), pullOnly: true };
 
       await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pushRoster", {
         method: "POST",
@@ -1375,6 +1431,51 @@
     }
   }
 
+  // Student-side write path: send only the fields a student may change on
+  // their OWN row (avatar, read flags, deletion answer, redemptions). The
+  // script merges them into that single row -- see pushStudentPatch_ in
+  // the Apps Script. Returns the merged row so the caller can refresh.
+  async function pushStudentPatch(studentId) {
+    const cfg = getSyncConfig();
+    if (!cfg.enabled || !cfg.url) return { ok: false, reason: "not-configured" };
+    const data = load();
+    const s = data.students.find(x => x.id === studentId);
+    if (!s) return { ok: false, reason: "not-found" };
+    const patch = {
+      id: s.id,
+      avatar: s.avatar || "",
+      messages: (Array.isArray(s.messages) ? s.messages : []).map(m => ({ id: m.id, type: m.type, text: m.text, meta: m.meta || null, date: m.date, read: !!m.read })),
+      pendingDeletion: !!s.pendingDeletion,
+      deletionConfirmed: !!s.deletionConfirmed,
+      redemptions: Array.isArray(s.redemptions) ? s.redemptions : [],
+    };
+    try {
+      const res = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pushStudentPatch", {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ patch }),
+      });
+      const out = await res.json();
+      if (out && out.ok && out.student) {
+        // Adopt the Sheet's view of points/sessions right away so the
+        // student never sees a number the teacher side will later undo.
+        parseSyncedStudent(out.student);
+        const fresh = load();
+        const mine = fresh.students.find(x => x.id === studentId);
+        if (mine) {
+          ["rewardPoints", "bonusHours", "sessionsRemaining", "redemptions", "messages", "pendingDeletion", "deletionConfirmed", "updatedAt"].forEach(k => {
+            if (out.student[k] !== undefined) mine[k] = out.student[k];
+          });
+          ["rewardPoints", "bonusHours", "sessionsRemaining"].forEach(k => { mine[k] = Number(mine[k]) || 0; });
+          save(fresh);
+        }
+      }
+      return out || { ok: false };
+    } catch (e) {
+      return { ok: false, reason: e && e.name === "AbortError" ? "timeout" : "network", error: e && e.message };
+    }
+  }
+
   global.LumioProfiles = {
     AVATARS, TEACHER_AVATARS,
     listStudents, getStudent, findByName, findByPhone, findByLoginCode, groupmatesOf,
@@ -1388,9 +1489,9 @@
     addReferral, updateReferralStatus, removeReferral, listReferrals, referralStats,
     verifyStudentLogin, randomPin,
     listTeachers, getTeacher, findTeacherByName,
-    addTeacher, updateTeacher, removeTeacher, verifyTeacherLogin,
+    addTeacher, updateTeacher, removeTeacher, verifyTeacherLogin, ensureDefaultTeacher,
     getCurrentTeacherId, setCurrentTeacherId, getCurrentTeacher, clearCurrentTeacher, isCurrentTeacherOwner,
     getTeacherName, setTeacherName,
-    getSyncConfig, configureSync, syncNow,
+    getSyncConfig, configureSync, syncNow, pushStudentPatch,
   };
 })(window);

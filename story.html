@@ -128,6 +128,7 @@
   } catch (e) {}
   window.LUMIO_V = v;
   document.write('<script src="js/app.js?v=' + v + '"><' + '/script>');
+  document.write('<script src="js/lumio-schedule.js?v=' + v + '"><' + '/script>'); // attendance for the lesson-done rule
 })();
 </script>
 <script>
@@ -187,8 +188,8 @@ function getDoneCount() {
   try {
     const u = Lumio.user();
     if (!u) return 0;
-    const levelProgress = Lumio.progressFor(u.name)[storyLevel] || {};
-    return Object.keys(levelProgress).length;
+    // Same rule as the map: prep + attended class + homework, in order.
+    return Lumio.lessonsDoneCount(u.name, storyLevel);
   } catch (e) { return 0; }
 }
 
@@ -197,7 +198,7 @@ function isTeacherSession() {
   try { return localStorage.getItem("lumio_teacher") === "1"; } catch (e) { return false; }
 }
 // See the matching comment in homework.html -- same reasoning, same fix.
-const previewMode = qs("preview") === "1";
+const previewMode = qs("preview") === "1" && isTeacherSession(); // preview is for teachers only
 
 const part = PARTS.find(p => p.id === partNum);
 const doneCount = getDoneCount();

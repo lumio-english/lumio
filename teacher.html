@@ -29,8 +29,15 @@
     background:var(--lumio-page-bg); background-attachment:fixed; color:var(--td-ink);
     font-family:'Inter',system-ui,sans-serif; font-size:14px; line-height:1.5;
     display:flex; min-height:100vh;
-    opacity:0; animation:tdFadeIn .35s ease forwards;
+    opacity:0; animation:tdBodyIn .35s ease forwards;
   }
+  /* body's own fade must be opacity-only: an animation that ends with a
+     transform (even translateY(0)) leaves body with a transform applied
+     by "forwards", which makes body the containing block for EVERY
+     position:fixed element inside it -- overlays and toasts then size
+     to the full page height instead of the viewport, and a centred
+     confirm dialog lands below the fold on a tall page. */
+  @keyframes tdBodyIn{from{opacity:0}to{opacity:1}}
   @keyframes tdFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
   a{color:inherit;text-decoration:none}
   button{font-family:inherit}
@@ -1295,7 +1302,7 @@
   </div>
 
   <!-- ===== Materials view ===== -->
-  <div id="viewMaterials">
+  <div id="viewMaterials" style="display:none">
     <div class="td-panel">
       <div class="td-panel-head"><h2>Teaching materials</h2><span class="td-badge teal" style="margin-left:8px" id="matBadge">Pre-A · 20 lessons</span></div>
       <p class="sub">"Present" opens the lesson full-screen as a live, interactive deck — audio, clickable quizzes, and quick links to games — perfect for Zoom/Meet screen share. Need the raw PowerPoint files? Grab them all at once on the left instead of one by one. Levels without slides yet link straight to the live online lesson instead.</p>
@@ -1315,7 +1322,7 @@
     </div>
   </div>
 
-  <div id="viewManuals">
+  <div id="viewManuals" style="display:none">
     <div class="td-panel">
       <div class="td-panel-head"><h2>Level Manuals</h2><span class="td-badge teal" style="margin-left:8px">9 documents</span></div>
       <p class="sub">A complete, parent-friendly guide to the whole curriculum, plus a detailed manual for each level covering every lesson, its vocabulary, and its bonus game. Great for sharing with parents or new teachers.</p>
@@ -1323,7 +1330,7 @@
     </div>
   </div>
 
-  <div id="viewStory">
+  <div id="viewStory" style="display:none">
     <div class="td-panel">
       <div class="td-panel-head"><h2>📖 Lumi's Magic Map</h2><span class="td-badge teal" style="margin-left:8px">Pre-A</span></div>
       <p class="sub">Preview any part instantly — students unlock these gradually as they complete lessons, but you always have full access.</p>
@@ -1878,6 +1885,28 @@
   // they're genuinely already logged in elsewhere.
   if (localStorage && !localStorage.getItem("lumio_teacher")) { location.href = "teacher-portal.html"; return; }
 
+  // The current teacher id must point at a real teacher. It can go stale
+  // when a sync replaces a local-only id with the Sheet's id, or when the
+  // account was removed on another device -- that used to leave "My
+  // classes" empty with no explanation. Fall back to the sole teacher if
+  // there is only one, otherwise send them back to the portal to pick.
+  try {
+    if (window.LumioProfiles) {
+      const tlist = LumioProfiles.listTeachers();
+      const cid = LumioProfiles.getCurrentTeacherId();
+      if (!cid || !tlist.some(t => t.id === cid)) {
+        if (tlist.length === 1) {
+          LumioProfiles.setCurrentTeacherId(tlist[0].id);
+        } else {
+          LumioProfiles.clearCurrentTeacher();
+          try { localStorage.removeItem("lumio_teacher"); } catch (err) {}
+          location.href = "teacher-portal.html";
+          return;
+        }
+      }
+    }
+  } catch (e) { console.warn("teacher id check failed", e); }
+
  try {
   // ================= Shared UI helpers (toasts, confirm dialog, button loading) =================
   const toastStack = document.getElementById("td-toast-stack");
@@ -1962,10 +1991,16 @@
   } catch (e) {}
 
   // ---------- data ----------
-  const LEVEL_NAMES = (typeof Lumio !== "undefined" && Lumio.LEVELS) ? Lumio.LEVELS : [{id:"pre-a", name:"Pre-A", lessons:20}];
+  // Only levels that actually have lessons built (Lumio.AVAILABLE_LEVELS)
+  // are offered in filters and the student form -- Levels 7-10 exist as
+  // names only and assigning a student there leads to an empty map.
+  const LEVEL_NAMES_ALL = (typeof Lumio !== "undefined" && Lumio.LEVELS) ? Lumio.LEVELS : [{id:"pre-a", name:"Pre-A", lessons:20}];
+  const LEVEL_NAMES = (typeof Lumio !== "undefined" && Array.isArray(Lumio.AVAILABLE_LEVELS))
+    ? LEVEL_NAMES_ALL.filter(l => Lumio.AVAILABLE_LEVELS.includes(l.id))
+    : LEVEL_NAMES_ALL;
   const LEVEL_LESSON_COUNT = {};
   LEVEL_NAMES.forEach(l => LEVEL_LESSON_COUNT[l.id] = l.lessons || 20);
-  const levelName = id => (LEVEL_NAMES.find(l => l.id === id) || {}).name || id;
+  const levelName = id => (LEVEL_NAMES_ALL.find(l => l.id === id) || {}).name || id;
   // Shared avatar renderer: a photo, if the student has uploaded one,
   // otherwise their emoji exactly as before. Used anywhere a roster card
   // shows a circular ".av" avatar -- the img fills that same circle via
@@ -2190,88 +2225,105 @@
   };
 
 
-  const all = ((typeof Lumio !== "undefined" && Lumio.progressAll) ? Lumio.progressAll() : {}) || {};
+  // Overview/table/report figures. Built from localStorage at load and
+  // REBUILT by rebuildRowsFromStorage() after every sync, so progress
+  // and homework pulled from the Sheet show without a page reload.
   const rows = [];
-  const activity = [];
+  const homeworkCounts = {}; // name -> {count, starsSum}
   let totLessons = 0, totStars = 0, scoreSum = 0, scoreN = 0;
-  const levelTotals = {};
-  const oneWeekAgo = new Date(Date.now() - 7*24*60*60*1000);
-  const activeStudents = new Set();
+  const attendedFor = (name, lvl) => (window.LumioSchedule && LumioSchedule.attendedLessonNumbers) ? LumioSchedule.attendedLessonNumbers(name, lvl) : null;
+  function rebuildRowsFromStorage() {
+    const all = ((typeof Lumio !== "undefined" && Lumio.progressAll) ? Lumio.progressAll() : {}) || {};
+    rows.length = 0;
+    Object.keys(homeworkCounts).forEach(k => delete homeworkCounts[k]);
+    const activity = [];
+    totLessons = 0; totStars = 0; scoreSum = 0; scoreN = 0;
+    const levelTotals = {};
+    const oneWeekAgo = new Date(Date.now() - 7*24*60*60*1000);
+    const activeStudents = new Set();
+    const hwAll = ((typeof Lumio !== "undefined" && Lumio.homeworkAll) ? Lumio.homeworkAll() : {}) || {};
 
-  Object.entries(all).forEach(([name, levels]) => {
-    Object.entries(levels).forEach(([lvl, lessons]) => {
-      const entries = Object.entries(lessons);
-      const done = entries.length;
-      const stars = entries.reduce((s, [,r]) => s + (r.stars || 0), 0);
-      const avg = entries.length
-        ? Math.round(entries.reduce((s, [,r]) => s + (r.total ? r.score / r.total : 1), 0) / entries.length * 100) : 0;
-      const last = entries.map(([,r]) => r.date).filter(Boolean).sort().pop() || "–";
-      totLessons += done; totStars += stars; scoreSum += avg; scoreN++;
-      levelTotals[lvl] = (levelTotals[lvl] || 0) + done;
-      rows.push({ name, lvl, done, stars, avg, last, lessons: entries });
+    Object.entries(all).forEach(([name, levels]) => {
+      Object.entries(levels).forEach(([lvl, lessons]) => {
+        const entries = Object.entries(lessons);
+        // "done" = the shared rule (prep + attended + homework) when the
+        // schedule is available on this device, else prep count.
+        const done = (typeof Lumio !== "undefined" && Lumio.lessonsDoneCount)
+          ? Lumio.lessonsDoneCount(name, lvl, attendedFor(name, lvl)) : entries.length;
+        const stars = entries.reduce((s, [,r]) => s + (r.stars || 0), 0);
+        const avg = entries.length
+          ? Math.round(entries.reduce((s, [,r]) => s + (r.total ? r.score / r.total : 1), 0) / entries.length * 100) : 0;
+        const last = entries.map(([,r]) => r.date).filter(Boolean).sort().pop() || "–";
+        totLessons += done; totStars += stars; scoreSum += avg; scoreN++;
+        levelTotals[lvl] = (levelTotals[lvl] || 0) + done;
+        rows.push({ name, lvl, done, prepped: entries.length, stars, avg, last, lessons: entries });
 
-      entries.forEach(([lessonId, r]) => {
-        if (r.date) {
-          activity.push({ name, lvl, lessonId, stars: r.stars || 0, date: r.date, type: "lesson" });
-          if (new Date(r.date) >= oneWeekAgo) activeStudents.add(name);
-        }
+        entries.forEach(([lessonId, r]) => {
+          if (r.date) {
+            activity.push({ name, lvl, lessonId, stars: r.stars || 0, date: r.date, type: "lesson" });
+            if (new Date(r.date) >= oneWeekAgo) activeStudents.add(name);
+          }
+        });
       });
     });
-  });
 
-  // ---------- homework (interactive) ----------
-  const homeworkAll = ((typeof Lumio !== "undefined" && Lumio.homeworkAll) ? Lumio.homeworkAll() : {}) || {};
-  const homeworkCounts = {}; // name -> {count, avgStars}
-  Object.entries(homeworkAll).forEach(([name, levels]) => {
-    Object.entries(levels).forEach(([lvl, lessons]) => {
-      Object.entries(lessons).forEach(([lessonId, r]) => {
-        homeworkCounts[name] = homeworkCounts[name] || { count: 0, starsSum: 0 };
-        homeworkCounts[name].count++;
-        homeworkCounts[name].starsSum += (r.stars || 0);
-        if (r.date) {
-          activity.push({ name, lvl, lessonId, stars: r.stars || 0, date: r.date, type: "homework" });
-          if (new Date(r.date) >= oneWeekAgo) activeStudents.add(name);
-        }
+    // ---------- homework (interactive) ----------
+    Object.entries(hwAll).forEach(([name, levels]) => {
+      Object.entries(levels).forEach(([lvl, lessons]) => {
+        Object.entries(lessons).forEach(([lessonId, r]) => {
+          homeworkCounts[name] = homeworkCounts[name] || { count: 0, starsSum: 0 };
+          homeworkCounts[name].count++;
+          homeworkCounts[name].starsSum += (r.stars || 0);
+          if (r.date) {
+            activity.push({ name, lvl, lessonId, stars: r.stars || 0, date: r.date, type: "homework" });
+            if (new Date(r.date) >= oneWeekAgo) activeStudents.add(name);
+          }
+        });
       });
     });
-  });
 
-  const rosterCount = (window.LumioProfiles ? LumioProfiles.listStudents().length : 0);
-  document.getElementById("kpiRoster").textContent = rosterCount || Object.keys(all).length;
-  document.getElementById("kpiLessons").textContent = totLessons;
-  document.getElementById("kpiStars").textContent = totStars;
-  document.getElementById("kpiAvg").textContent = scoreN ? Math.round(scoreSum / scoreN) + "%" : "–";
-  document.getElementById("kpiActive").textContent = activeStudents.size;
+    const rosterCount = (window.LumioProfiles ? LumioProfiles.listStudents().length : 0);
+    document.getElementById("kpiRoster").textContent = rosterCount || Object.keys(all).length;
+    document.getElementById("kpiLessons").textContent = totLessons;
+    document.getElementById("kpiStars").textContent = totStars;
+    document.getElementById("kpiAvg").textContent = scoreN ? Math.round(scoreSum / scoreN) + "%" : "–";
+    document.getElementById("kpiActive").textContent = activeStudents.size;
 
-  // ---------- level chart ----------
-  const chartEl = document.getElementById("levelChart");
-  const maxLevelTotal = Math.max(1, ...Object.values(levelTotals));
-  const levelIdsWithData = Object.keys(levelTotals).length ? Object.keys(levelTotals) : ["pre-a"];
-  levelIdsWithData.forEach(id => {
-    const v = levelTotals[id] || 0;
-    const pct = Math.round((v / maxLevelTotal) * 100);
-    const row = document.createElement("div");
-    row.className = "td-chart-row";
-    row.innerHTML = `<div class="lvl-lbl">${levelName(id)}</div>
-      <div class="td-chart-track"><div class="td-chart-fill" style="width:${pct}%"></div></div>
-      <div class="td-chart-val">${v} done</div>`;
-    chartEl.appendChild(row);
-  });
-  if (!totLessons) chartEl.innerHTML = `<div class="td-empty">No lesson activity yet.</div>`;
+    // ---------- level chart ----------
+    const chartEl = document.getElementById("levelChart");
+    chartEl.innerHTML = "";
+    const maxLevelTotal = Math.max(1, ...Object.values(levelTotals));
+    const levelIdsWithData = Object.keys(levelTotals).length ? Object.keys(levelTotals) : ["pre-a"];
+    levelIdsWithData.forEach(id => {
+      const v = levelTotals[id] || 0;
+      const pct = Math.round((v / maxLevelTotal) * 100);
+      const row = document.createElement("div");
+      row.className = "td-chart-row";
+      row.innerHTML = `<div class="lvl-lbl">${levelName(id)}</div>
+        <div class="td-chart-track"><div class="td-chart-fill" style="width:${pct}%"></div></div>
+        <div class="td-chart-val">${v} done</div>`;
+      chartEl.appendChild(row);
+    });
+    if (!totLessons) chartEl.innerHTML = `<div class="td-empty">No lesson activity yet.</div>`;
 
-  // ---------- recent activity ----------
-  const activityList = document.getElementById("activityList");
-  activity.sort((a, b) => (b.date || "").localeCompare(a.date || "")).slice(0, 8).forEach(a => {
-    const row = document.createElement("div");
-    row.className = "td-arow";
-    const initials = a.name.slice(0, 2).toUpperCase();
-    const verb = a.type === "homework" ? "completed homework in" : "finished a lesson in";
-    row.innerHTML = `<div class="td-avatar">${initials}</div>
-      <div><div class="who">${a.name}</div><div class="what">${a.type === "homework" ? "📝 " : ""}${verb} ${levelName(a.lvl)} · ★${a.stars}</div></div>
-      <div class="when">${a.date}</div>`;
-    activityList.appendChild(row);
-  });
-  if (!activity.length) activityList.innerHTML = `<div class="td-empty">No activity yet — this fills in as students finish lessons.</div>`;
+    // ---------- recent activity ----------
+    const activityList = document.getElementById("activityList");
+    activityList.innerHTML = "";
+    activity.sort((a, b) => (b.date || "").localeCompare(a.date || "")).slice(0, 8).forEach(a => {
+      const row = document.createElement("div");
+      row.className = "td-arow";
+      const initials = a.name.slice(0, 2).toUpperCase();
+      const verb = a.type === "homework" ? "completed homework in" : "finished a lesson in";
+      row.innerHTML = `<div class="td-avatar">${initials}</div>
+        <div><div class="who">${a.name}</div><div class="what">${a.type === "homework" ? "📝 " : ""}${verb} ${levelName(a.lvl)} · ★${a.stars}</div></div>
+        <div class="when">${a.date}</div>`;
+      activityList.appendChild(row);
+    });
+    if (!activity.length) activityList.innerHTML = `<div class="td-empty">No activity yet — this fills in as students finish lessons.</div>`;
+    if (typeof renderTable === "function") { try { renderTable(); } catch (e) {} }
+    if (typeof renderRosterCards === "function") { try { renderRosterCards(); } catch (e) {} }
+  }
+  rebuildRowsFromStorage();
 
   // ---------- inactivity alerts ----------
   // Flags students who've gone quiet, so a teacher can reach out before it
@@ -2279,21 +2331,36 @@
   // asks. Deliberately checks activity across ALL of a student's levels,
   // not just their current one, and gives brand-new adds a few days'
   // grace period before flagging "hasn't started yet."
+  // Accepts "YYYY-MM-DD" or a full ISO timestamp; missing/invalid -> 0
+  // (never NaN, which used to render as "NaN days").
   function daysSince(dateStr) {
-    const then = new Date(dateStr + "T00:00:00");
+    if (!dateStr) return 0;
+    const str = String(dateStr);
+    const then = /^\d{4}-\d{2}-\d{2}$/.test(str) ? new Date(str + "T00:00:00") : new Date(str);
+    if (isNaN(then.getTime())) return 0;
     const diff = Date.now() - then.getTime();
     return Math.max(0, Math.floor(diff / 86400000));
   }
+  // Latest dated activity of any kind: lesson prep, homework, or an
+  // attended live class.
   function lastActiveDateForStudent(name) {
-    if (typeof Lumio === "undefined" || !Lumio.progressAll) return null;
-    const studentProg = Lumio.progressAll()[name];
-    if (!studentProg) return null;
     let latest = null;
-    Object.values(studentProg).forEach(levelProg => {
-      Object.values(levelProg).forEach(res => {
-        if (res.date && (!latest || res.date > latest)) latest = res.date;
-      });
-    });
+    const consider = d => { if (d) { const s = String(d).slice(0, 10); if (!latest || s > latest) latest = s; } };
+    if (typeof Lumio !== "undefined" && Lumio.progressAll) {
+      const studentProg = Lumio.progressAll()[name];
+      if (studentProg) Object.values(studentProg).forEach(levelProg => Object.values(levelProg).forEach(res => consider(res && res.date)));
+    }
+    if (typeof Lumio !== "undefined" && Lumio.homeworkAll) {
+      const hw = Lumio.homeworkAll()[name];
+      if (hw) Object.values(hw).forEach(levelHw => Object.values(levelHw).forEach(res => consider(res && res.date)));
+    }
+    if (window.LumioSchedule && LumioSchedule.listClasses) {
+      try {
+        LumioSchedule.listClasses({ studentName: name }).forEach(c => {
+          if ((c.students || []).some(x => x.studentName === name && x.attendance === "present")) consider(c.date);
+        });
+      } catch (e) {}
+    }
     return latest;
   }
   function renderInactivity() {
@@ -2674,6 +2741,7 @@
         input.value = "";
         renderDrawerNotes(p);
         showToast("Note added.");
+        queueSync();
       } catch (err) { showToast(err.message || "Couldn't add note.", "error"); }
     };
   }
@@ -2945,6 +3013,7 @@
   const stuLevelError = document.getElementById("stuLevelError");
   const stuAvatarGrid = document.getElementById("stuAvatarGrid");
   const stuPinInput = document.getElementById("stuPin");
+  let stuPinOriginal = "";
   const stuPhoneInput = document.getElementById("stuPhone");
   const stuPhoneCountry = document.getElementById("stuPhoneCountry");
   const stuNameError = document.getElementById("stuNameError");
@@ -2984,6 +3053,14 @@
     opt.value = l.id; opt.textContent = l.name;
     stuLevelSelect.appendChild(opt);
   });
+  // A student already on a not-yet-built level keeps that option visible
+  // (marked) so editing them doesn't silently blank their level.
+  function ensureLevelOption(levelId) {
+    if (!levelId || [...stuLevelSelect.options].some(o => o.value === levelId)) return;
+    const opt = document.createElement("option");
+    opt.value = levelId; opt.textContent = levelName(levelId) + " (not built yet)";
+    stuLevelSelect.appendChild(opt);
+  }
 
   function renderAvatarGrid() {
     stuAvatarGrid.innerHTML = "";
@@ -3209,9 +3286,13 @@
     document.getElementById("studentModalTitle").textContent = profile ? "Edit student" : "Add student";
     document.getElementById("studentModalSub").textContent = profile ? `Update ${profile.name}'s profile and settings` : "A new student on your roster";
     stuNameInput.value = profile ? profile.name : (prefill && prefill.name) || "";
+    if (profile && profile.level) ensureLevelOption(profile.level);
     stuLevelSelect.value = profile ? profile.level : (prefill && prefill.level) || "";
     document.getElementById("stuCohort").value = profile ? (profile.cohort || "") : "";
-    stuPinInput.value = profile ? profile.pin : (window.LumioProfiles ? LumioProfiles.randomPin() : "1234");
+    stuPinInput.value = profile ? (profile.pin || "") : (window.LumioProfiles ? LumioProfiles.randomPin() : "1234");
+    stuPinOriginal = stuPinInput.value;
+    if (profile && !profile.pin) stuPinInput.placeholder = "•••• (set on another device — leave blank to keep)";
+    else stuPinInput.placeholder = "1234";
     document.getElementById("stuAge").value = profile && profile.age != null ? profile.age : "";
     document.getElementById("stuGender").value = profile ? (profile.gender || "") : "";
     document.getElementById("stuGrade").value = profile ? (profile.grade || "") : "";
@@ -3285,7 +3366,15 @@
       stuLevelError.textContent = "Pick a level — this decides which lessons, games, and materials match this student.";
       return;
     }
-    const pinVal = stuPinInput.value.length === 4 ? stuPinInput.value : LumioProfiles.randomPin();
+    // Only send a PIN when it was actually set/changed in this form. On
+    // edit, an unchanged (or blank -- plaintext unknown on this device)
+    // field must NOT re-hash or randomise the student's PIN.
+    let pinVal;
+    if (editingId) {
+      pinVal = (stuPinInput.value.length === 4 && stuPinInput.value !== stuPinOriginal) ? stuPinInput.value : undefined;
+    } else {
+      pinVal = stuPinInput.value.length === 4 ? stuPinInput.value : LumioProfiles.randomPin();
+    }
     const teacherIdVal = document.getElementById("stuTeacher").value || null;
     const phoneVal = combinePhone(stuPhoneCountry.value, stuPhoneInput.value);
     const cohortVal = document.getElementById("stuCohort").value;
@@ -3305,12 +3394,13 @@
     await withLoading(e.currentTarget, async () => {
       try {
         const payload = {
-          name, level: stuLevelSelect.value, avatar: selectedAvatar, pin: pinVal, teacherId: teacherIdVal,
+          name, level: stuLevelSelect.value, avatar: selectedAvatar, teacherId: teacherIdVal,
           phone: phoneVal, cohort: cohortVal,
           age: ageVal, gender: genderVal, grade: gradeVal, country: countryVal, tags: tagsVal,
           subscribed: subscribedVal, amountPaid: amountPaidVal, currency: currencyVal, levelsPurchased: levelsPurchasedVal,
           sessionsRemaining: sessionsRemainingVal, approved: approvedVal,
         };
+        if (pinVal !== undefined) payload.pin = pinVal;
         if (editingId) {
           await LumioProfiles.updateStudent(editingId, payload);
         } else {
@@ -3360,6 +3450,7 @@
   const tchNameInput = document.getElementById("tchName");
   const tchAvatarGrid = document.getElementById("tchAvatarGrid");
   const tchPinInput = document.getElementById("tchPin");
+  let tchPinOriginal = "";
   const tchNameError = document.getElementById("tchNameError");
   let editingTeacherId = null;
   let selectedTeacherAvatar = (window.LumioProfiles ? LumioProfiles.TEACHER_AVATARS[0] : "🐥");
@@ -3455,7 +3546,9 @@
     editingTeacherId = t ? t.id : null;
     document.getElementById("teacherModalTitle").textContent = t ? "Edit teacher" : "Add teacher";
     tchNameInput.value = t ? t.name : "";
-    tchPinInput.value = t ? t.pin : (window.LumioProfiles ? LumioProfiles.randomPin() : "1234");
+    tchPinInput.value = t ? (t.pin || "") : (window.LumioProfiles ? LumioProfiles.randomPin() : "1234");
+    tchPinOriginal = tchPinInput.value;
+    tchPinInput.placeholder = (t && !t.pin) ? "•••• (set on another device — leave blank to keep)" : "1234";
     selectedTeacherAvatar = t ? t.avatar : (window.LumioProfiles ? LumioProfiles.TEACHER_AVATARS[Math.floor(Math.random() * LumioProfiles.TEACHER_AVATARS.length)] : "🐥");
     tchNameError.textContent = "";
     document.getElementById("tchOwnerError").textContent = "";
@@ -3477,13 +3570,17 @@
   document.getElementById("teacherModalSave").onclick = async (e) => {
     if (!window.LumioProfiles) { closeTeacherModal(); return; }
     const name = tchNameInput.value.trim();
-    const pinVal = tchPinInput.value.length === 4 ? tchPinInput.value : LumioProfiles.randomPin();
+    const pinVal = editingTeacherId
+      ? ((tchPinInput.value.length === 4 && tchPinInput.value !== tchPinOriginal) ? tchPinInput.value : undefined)
+      : (tchPinInput.value.length === 4 ? tchPinInput.value : LumioProfiles.randomPin());
     const isOwnerVal = document.getElementById("tchIsOwner").checked;
     const wasEditing = !!editingTeacherId;
     await withLoading(e.currentTarget, async () => {
       try {
         if (editingTeacherId) {
-          await LumioProfiles.updateTeacher(editingTeacherId, { name, avatar: selectedTeacherAvatar, pin: pinVal, isOwner: isOwnerVal });
+          const tpatch = { name, avatar: selectedTeacherAvatar, isOwner: isOwnerVal };
+          if (pinVal !== undefined) tpatch.pin = pinVal;
+          await LumioProfiles.updateTeacher(editingTeacherId, tpatch);
         } else {
           await LumioProfiles.addTeacher({ name, avatar: selectedTeacherAvatar, pin: pinVal, isOwner: isOwnerVal });
         }
@@ -3672,6 +3769,7 @@
           if (sessionNotesEl.value === (c.sessionNotes || "")) return;
           LumioSchedule.updateClass(c.id, { sessionNotes: sessionNotesEl.value });
           showToast(`Session notes saved.`, "success");
+          queueSync();
         });
       }
       row.querySelectorAll(".td-class-student").forEach(studentRow => {
@@ -3685,6 +3783,7 @@
             LumioSchedule.markAttendance(c.id, ref, val);
             if (val === "present") notifyStudentAttended(c, ref);
             renderSchedule();
+            queueSync();
             const labels = { present: "present ✓", absent: "absent", "no-show": "a no-show" };
             showToast(`Marked ${sname} ${labels[val]}.`, val === "present" ? "success" : "error");
           };
@@ -3693,6 +3792,7 @@
         if (gradeSel) {
           gradeSel.onchange = () => {
             LumioSchedule.gradeStudent(c.id, ref, gradeSel.value || null);
+            queueSync();
             showToast(gradeSel.value ? `Graded ${sname}: ${gradeSel.value}.` : `Cleared ${sname}'s grade.`, "success");
           };
         }
@@ -3823,7 +3923,7 @@
         const capClass = capacityWarn ? "capacity-warn" : "";
         const title = `English Club${c.level ? " · " + c.level : ""}${c.lessonNumber ? " · Lesson " + c.lessonNumber : ""}${capacityWarn ? " — ⚠ group size outside 2–4" : ""}`;
         col += `<div class="td-cal-block ${statusClass} ${attnClass} ${capClass}" style="top:${top}px;height:${height}px" data-class-id="${c.id}" title="${fmtTimeTz(c.date, c.startTime)} · ${title} — ${c.students.map(s=>s.studentName).join(', ')}">
-          <div class="cb-title">${c.patternId ? "🔁 " : ""}${capacityWarn ? "⚠ " : ""}${fmtTime(c.startTime)} · ${c.students.length}/${c.students.length} student${c.students.length===1?"":"s"}</div>
+          <div class="cb-title">${c.patternId ? "🔁 " : ""}${capacityWarn ? "⚠ " : ""}${fmtTime(c.startTime)} · ${c.students.length} student${c.students.length===1?"":"s"}${(() => { const marked = c.students.filter(s => s.attendance).length; return marked ? ` · ${marked}/${c.students.length} marked` : ""; })()}</div>
           <div class="cb-meta">${c.level || c.notes || "Class"}</div>
         </div>`;
       });
@@ -3975,6 +4075,7 @@
         btn.onclick = () => {
           LumioSchedule.markAttendance(c.id, ref, val);
           if (val === "present") notifyStudentAttended(c, ref);
+          queueSync();
           const fresh = LumioSchedule.getClass(c.id);
           if (fresh) openCourseDetails(fresh); // re-render this popup with the updated badge
           renderSchedule();
@@ -4115,6 +4216,7 @@
       const result = LumioSchedule.generateUpcoming(4);
       fsModalOverlay.classList.remove("show");
       renderScheduleActive();
+      queueSync();
       const names = picked.map(s => s.name).join(", ");
       let msg = `Fixed weekly schedule set for ${names} — ${result.created} session${result.created === 1 ? "" : "s"} booked for the next few weeks.`;
       if (result.skippedUnsubscribed.length) msg += ` Some weeks were skipped because a student isn't currently subscribed.`;
@@ -4277,16 +4379,20 @@
       clsLessonSelect.value = String(presetLessonNumber);
       return;
     }
-    let guess = 1;
-    if (picked.length && typeof Lumio !== "undefined") {
+    // Default to the next lesson the group needs: the lowest "current
+    // lesson" among the checked students (same done-rule as the student
+    // map -- prep + homework + attended), so the least-advanced student
+    // decides.
+    let guess = null;
+    if (picked.length && typeof Lumio !== "undefined" && Lumio.currentLesson) {
       picked.forEach(student => {
-        const prog = (Lumio.progressFor(student.name)[student.level]) || {};
-        let g = 1;
-        while (g <= N && prog[g]) g++;
-        if (g > guess) guess = g; // least-advanced student's next lesson wins
+        if (!student.level) return;
+        const cur = Lumio.currentLesson(student.name, student.level, attendedFor(student.name, student.level));
+        if (guess === null || cur < guess) guess = cur;
       });
-      if (guess > N) guess = N;
     }
+    if (guess === null) guess = 1;
+    if (guess > N) guess = N;
     clsLessonSelect.value = String(guess);
   }
 
@@ -4346,10 +4452,28 @@
   document.getElementById("classModalCancel").onclick = closeClassModal;
   classModalOverlay.onclick = e => { if (e.target === classModalOverlay) closeClassModal(); };
 
-  document.getElementById("classModalSave").onclick = () => {
+  // Students who can't really take a class right now: unsubscribed or
+  // out of paid sessions. Booking isn't blocked outright (trial / make-up
+  // sessions happen) but the teacher must confirm, so it's never a
+  // surprise when the student's "sessions left" goes negative.
+  async function confirmBookableStudents(picked, isEditing) {
+    if (isEditing) return true;
+    const problems = picked.map(s => {
+      const full = LumioProfiles.getStudent(s.id) || s;
+      if (full.subscribed === false) return `${full.name} isn't subscribed`;
+      if ((Number(full.sessionsRemaining) || 0) <= 0) return `${full.name} has 0 sessions left`;
+      return null;
+    }).filter(Boolean);
+    if (!problems.length) return true;
+    return confirmDialog(`${problems.join("; ")}. Book this class anyway?`, "Book anyway");
+  }
+
+  document.getElementById("classModalSave").onclick = async () => {
     if (!window.LumioSchedule || !window.LumioProfiles) { closeClassModal(); return; }
     const picked = checkedStudents();
     if (!picked.length) { clsStudentError.textContent = "Pick at least one student for this class."; return; }
+    clsStudentError.textContent = "";
+    if (!(await confirmBookableStudents(picked, !!editingClassId))) return;
     const combo = currentComboStudents();
     const first = combo[0];
     const activeTeacher = LumioProfiles.getCurrentTeacher();
@@ -4376,6 +4500,7 @@
           created++;
         } catch (e) { /* skip a slot that fails validation, keep going */ }
       });
+      queueSync();
       bulkSelections.clear();
       bulkModeActive = false;
       document.getElementById("bulkBookToggle").classList.remove("td-btn-primary");
@@ -4408,6 +4533,7 @@
       }
       closeClassModal();
       renderScheduleActive();
+      queueSync();
       const names = picked.map(s => s.name).join(", ");
       showToast(wasEditing ? "Class updated." : `Class booked with ${names}.`, "success");
     } catch (e) {
@@ -4676,6 +4802,16 @@
   // loading spinner/toasts/status text for the background timer, so it
   // never interrupts whatever the teacher is doing; the manual button
   // still gets full visible feedback.
+  // Debounced background sync, called right after any teacher write
+  // (attendance, grade, booking, notes...) so the Sheet -- and therefore
+  // the student's phone -- sees it within seconds instead of waiting for
+  // the 5-minute timer. Several quick edits collapse into one sync.
+  let queuedSyncTimer = null;
+  function queueSync() {
+    if (!window.LumioProfiles || !LumioProfiles.getSyncConfig().enabled) return;
+    clearTimeout(queuedSyncTimer);
+    queuedSyncTimer = setTimeout(() => { performFullSync(true).catch(() => {}); }, 1500);
+  }
   async function performFullSync(silent) {
     if (!window.LumioProfiles) return;
     if (!silent) syncStatus.textContent = "Syncing…";
@@ -4688,13 +4824,13 @@
       if (cfg.enabled && cfg.url && typeof Lumio !== "undefined" && Lumio.progressAll) {
         // pull + merge first, same reasoning as roster/schedule: never let
         // an empty/behind local copy push over what's already shared
-        await pullAndMergeProgress(cfg);
-        await fetch(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pushProgress", {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ progress: Lumio.progressAll() }),
-        });
+        // Shared helper (js/app.js): pulls progress AND homework for every
+        // student, merges best-result-wins, then pushes everything this
+        // device knows. The Sheet merges too, so nothing is ever replaced.
+        await Lumio.pullProgressAndHomework(null);
+        await Lumio.pushProgressAndHomework(null);
         progressSynced = true;
+        rebuildRowsFromStorage(); // Overview/table/report figures from the fresh data
       }
     } catch (e2) { /* progress sync is best-effort; roster/schedule already reported below */ }
 

@@ -250,6 +250,9 @@
     renderPad();
     renderDots();
     showTab("current");
+    const PENDING_MSG = "Your account is pending your teacher's approval — please check back soon!";
+    const arrivedPending = new URLSearchParams(location.search).get("msg") === "pending";
+    if (arrivedPending) pinError.textContent = PENDING_MSG;
 
 
     // ---- Await sync before accepting login ---------------------------------
@@ -273,7 +276,7 @@
         setTimeout(() => resolve({ ok: false, reason: "timeout" }), 6000)
       );
 
-      Promise.race([LumioProfiles.syncNow(), timeoutPromise])
+      Promise.race([LumioProfiles.syncNow({ pullOnly: true }), timeoutPromise])
         .catch(e => ({ ok: false, reason: "exception", error: e && e.message }))
         .then(res => {
           // Make a failed roster pull VISIBLE instead of silently falling
@@ -289,7 +292,9 @@
             syncStatus.textContent = "Couldn't reach the Lumio server to load your account (" + (res.reason || "unknown") + "). Check your connection and reload, or ask your teacher.";
           } else {
             syncStatus.style.color = "";
-            syncStatus.textContent = "";
+            // Keep the "pending approval" notice a student just arrived
+            // with; the sync status line shares this element.
+            syncStatus.textContent = arrivedPending ? PENDING_MSG : "";
           }
           pinPad.querySelectorAll("button").forEach(b => b.disabled = false);
           idInput.disabled = false;

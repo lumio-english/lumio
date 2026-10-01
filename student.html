@@ -1356,11 +1356,22 @@
   // dashboard" should hold even against that.
   let rosterEntry = null;
   if (window.LumioProfiles) {
-    rosterEntry = LumioProfiles.findByName(u.name);
+    // Prefer the id saved at login (two students may share a name).
+    let sid = null; try { sid = localStorage.getItem("lumio_student_id"); } catch (e) {}
+    rosterEntry = (sid && LumioProfiles.getStudent(sid)) || LumioProfiles.findByName(u.name);
     if (!rosterEntry) {
       try { localStorage.removeItem("lumio_user"); } catch (e) {}
       location.href = "login.html";
       throw new Error("Not a roster student — redirecting to login.");
+    }
+    // Approval was only checked at login; a student whose account the
+    // teacher later un-approved (or deleted) kept the full dashboard.
+    if (rosterEntry.approved === false) {
+      try { localStorage.removeItem("lumio_user"); localStorage.removeItem("lumio_student_id"); } catch (e) {}
+      location.href = "login.html?msg=pending";
+      const redirecting = new Error("Account not approved — redirecting to login.");
+      redirecting.redirecting = true;
+      throw redirecting;
     }
   }
 
@@ -1775,10 +1786,16 @@
     if (Date.now() - lastSync < MIN_INTERVAL_MS) return;
     try { sessionStorage.setItem(SYNC_KEY, String(Date.now())); } catch (e) {}
     Promise.all([
-      LumioProfiles.syncNow(),
-      window.LumioSchedule ? LumioSchedule.syncNow() : Promise.resolve({ ok: true }),
-    ]).then(([r1, r2]) => {
-      if (r1.ok || r2.ok) location.reload();
+      // Student devices PULL the roster only -- they never push the whole
+      // roster back (their copy of everyone else is stale). Their own
+      // edits go through LumioProfiles.pushStudentPatch instead.
+      LumioProfiles.syncNow({ pullOnly: true }),
+      window.LumioSchedule ? LumioSchedule.syncNow({ pullOnly: true }) : Promise.resolve({ ok: true }),
+      // Progress + homework done on another device (or pushed by the
+      // teacher) -- pull this student's records before the reload below.
+      Lumio.pullProgressAndHomework ? Lumio.pullProgressAndHomework(u.name) : Promise.resolve({ ok: true }),
+    ]).then(([r1, r2, r3]) => {
+      if (r1.ok || r2.ok || (r3 && r3.changed)) location.reload();
     }).catch(() => {});
   })();
 
@@ -1790,6 +1807,26 @@
     pill.style.display = "inline-block";
     pill.textContent = `${n} session${n === 1 ? "" : "s"} left`;
     pill.classList.toggle("low", n <= 3);
+  })();
+
+  // ---------- subscription banner ----------
+  // An unsubscribed account (or one with no sessions left) keeps its
+  // dashboard -- the parent can still see progress, songs and the story
+  // -- but a clear banner says why no new class is coming. Nothing was
+  // shown before, so a lapsed family saw a normal dashboard and waited.
+  (function renderSubscriptionBanner() {
+    if (!rosterProfile) return;
+    const lapsed = rosterProfile.subscribed === false;
+    const empty = Number(rosterProfile.sessionsRemaining || 0) <= 0;
+    if (!lapsed && !empty) return;
+    const banner = document.createElement("div");
+    banner.id = "subscriptionBanner";
+    banner.style.cssText = "margin:0 auto 14px;max-width:1120px;padding:12px 16px;border-radius:14px;background:#FFF1E0;border:2px solid #F97316;color:#7A3F0B;font-weight:800;display:flex;gap:10px;align-items:center";
+    banner.innerHTML = lapsed
+      ? `<span>⏸️</span><span>Your subscription is paused — your teacher will activate it after the next payment. Prep, songs and stories stay open. <span dir="rtl">اشتراككم متوقّف مؤقتاً — تواصلوا مع المعلّم لتجديده.</span></span>`
+      : `<span>🎟️</span><span>No sessions left — ask your teacher to add more so your next class can be booked. <span dir="rtl">انتهت الحصص المتبقية — تواصلوا مع المعلّم لإضافة حصص جديدة.</span></span>`;
+    const anchor = document.querySelector(".sd-hero");
+    if (anchor) anchor.parentElement.insertBefore(banner, anchor); else document.body.prepend(banner);
   })();
 
 
@@ -1819,8 +1856,9 @@
           // device would keep showing the old points/sessions total
           // until some other sync happened to run -- confusing on both
           // ends, since from here it looks like redeeming worked fine.
-          LumioProfiles.syncNow().then(res => {
+          LumioProfiles.pushStudentPatch(p.id).then(res => {
             if (!res.ok) showToast("Redeemed here, but your teacher's device may not see it yet — it'll catch up next time you're online.", "⚠️");
+            else renderRewardsCard();
           }).catch(() => {
             showToast("Redeemed here, but your teacher's device may not see it yet — it'll catch up next time you're online.", "⚠️");
           });
@@ -2117,14 +2155,14 @@
           LumioProfiles.declineAccountDeletion(rosterProfile.id);
           renderInbox(); refreshBadge();
           showToast("Okay — your account stays. Your teacher has been told.", "✅");
-          LumioProfiles.syncNow().catch(() => {});
+          LumioProfiles.pushStudentPatch(rosterProfile.id).catch(() => {});
         };
         if (confirmBtn) confirmBtn.onclick = async () => {
           if (!confirm("Are you sure? Once your teacher completes this, your account and progress are deleted permanently.")) return;
           LumioProfiles.confirmAccountDeletion(rosterProfile.id);
           renderInbox(); refreshBadge();
           showToast("Confirmed. Your teacher will complete the deletion.", "✅");
-          LumioProfiles.syncNow().catch(() => {});
+          LumioProfiles.pushStudentPatch(rosterProfile.id).catch(() => {});
         };
         list.appendChild(el);
       });
@@ -2136,7 +2174,7 @@
       // Opening the inbox counts as reading it.
       LumioProfiles.markMessagesRead(rosterProfile.id);
       refreshBadge();
-      LumioProfiles.syncNow().catch(() => {});
+      LumioProfiles.pushStudentPatch(rosterProfile.id).catch(() => {});
     };
     document.getElementById("msgCloseBtn").onclick = () => overlay.classList.remove("show");
     overlay.onclick = e => { if (e.target === overlay) overlay.classList.remove("show"); };
@@ -2425,6 +2463,7 @@
     safeSet(avatarKey, currentAvatar);
     if (window.LumioProfiles && rosterProfile) {
       try { await LumioProfiles.updateStudent(rosterProfile.id, { avatar: currentAvatar, photoDataUrl: currentPhoto }); } catch (e) {}
+      LumioProfiles.pushStudentPatch(rosterProfile.id).catch(() => {});
     }
     renderAvatarBtn();
     document.getElementById("avatarOverlay").classList.remove("show");
@@ -3408,6 +3447,7 @@
   gameMapOverlay.addEventListener("click", e => { if (e.target === gameMapOverlay) gameMapOverlay.classList.remove("show"); });
 
  } catch (e) {
+   if (e && e.redirecting) return; // deliberate stop while navigating away -- no banner
    console.error("Lumio student dashboard error:", e);
    // This catch wraps the ENTIRE dashboard script. Swallowing the error here
    // with only a console.error meant that whatever failed, EVERYTHING below

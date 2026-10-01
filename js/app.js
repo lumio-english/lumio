@@ -61,6 +61,7 @@ const Lumio = (() => {
       all[name][levelId][lessonNum] = { stars, score, total, date: tzNow().date }; // Riyadh calendar day
     }
     set("lumio_progress", all);
+    pushProgressAndHomework(name).catch(() => {}); // best-effort, never blocks the lesson
   };
 
   /* ---------- Homework (interactive) ----------
@@ -73,7 +74,108 @@ const Lumio = (() => {
     all[name][levelId] = all[name][levelId] || {};
     all[name][levelId][lessonNum] = record;
     set("lumio_homework", all);
+    pushProgressAndHomework(name).catch(() => {});
   };
+
+  /* ---------- Progress + homework sync (Sheet) ----------
+     Until 1 Oct 2026 lesson progress and homework lived ONLY in the
+     browser they were done in: the teacher dashboard, reports and the
+     homework gate were blind to anything a student did on their own
+     phone, and a new phone started the child back at Lesson 1. Now every
+     saveResult/saveHomework also pushes that student's records to the
+     Sheet (merged there by student+level+lesson, best result wins) and
+     the dashboards pull before rendering. Drawings (data URLs) stay local.
+     Same URL + key as js/lumio-profiles.js -- keep all copies identical. */
+  const SYNC_URL = "https://script.google.com/macros/s/AKfycbxlKY07coAR_Uj6UQf2bvy6yi6I3cG9WsnTROvKI5v_l9MhhXIbP3Ke8jxbYx5btZzAGA/exec";
+  const LUMIO_API_KEY = "504bc50951590970a9faf630";
+  const syncUrl = () => {
+    try { const c = window.LumioProfiles && LumioProfiles.getSyncConfig(); if (c && c.url) return c.url; } catch (e) {}
+    return SYNC_URL;
+  };
+  const syncFetch = (action, body) => {
+    const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), 20000);
+    return fetch(`${syncUrl()}?key=${LUMIO_API_KEY}&action=${action}`, body
+      ? { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(body), signal: ctrl.signal }
+      : { signal: ctrl.signal }).finally(() => clearTimeout(t)).then(r => r.json());
+  };
+  const stripDrawing = (rec) => { const r = Object.assign({}, rec); delete r.drawingDataUrl; return r; };
+  // Push one student's progress + homework (or everyone's when name is null).
+  const pushProgressAndHomework = async (name) => {
+    const pick = (all) => name ? (all[name] ? { [name]: all[name] } : {}) : all;
+    const hw = {};
+    Object.entries(pick(homeworkAll())).forEach(([n, levels]) => {
+      hw[n] = {};
+      Object.entries(levels).forEach(([lv, lessons]) => { hw[n][lv] = {}; Object.entries(lessons).forEach(([k, r]) => { hw[n][lv][k] = stripDrawing(r); }); });
+    });
+    try {
+      await syncFetch("pushProgress", { progress: pick(progressAll()) });
+      await syncFetch("pushHomework", { homework: hw });
+      return { ok: true };
+    } catch (e) { return { ok: false, error: e && e.message }; }
+  };
+  // Pull everyone's (or one student's) records and merge: higher stars win,
+  // then the newer date. Returns how many local records changed.
+  const pullProgressAndHomework = async (name) => {
+    let changed = 0;
+    try {
+      const [p, h] = await Promise.all([syncFetch("pullProgress"), syncFetch("pullHomework")]);
+      const prog = progressAll();
+      (p && p.rows || []).forEach(row => {
+        if (!row.studentName || !row.level || row.lesson === "" || row.lesson === undefined) return;
+        if (name && row.studentName !== name) return;
+        prog[row.studentName] = prog[row.studentName] || {}; prog[row.studentName][row.level] = prog[row.studentName][row.level] || {};
+        const prev = prog[row.studentName][row.level][row.lesson];
+        const inc = { stars: Number(row.stars) || 0, score: Number(row.score) || 0, total: Number(row.total) || 0, date: String(row.date || "") };
+        if (!prev || inc.stars > Number(prev.stars || 0) || (inc.stars === Number(prev.stars || 0) && inc.date > String(prev.date || ""))) { prog[row.studentName][row.level][row.lesson] = inc; changed++; }
+      });
+      set("lumio_progress", prog);
+      const hw = homeworkAll();
+      (h && h.rows || []).forEach(row => {
+        if (!row.studentName || !row.level || row.lesson === "" || row.lesson === undefined) return;
+        if (name && row.studentName !== name) return;
+        hw[row.studentName] = hw[row.studentName] || {}; hw[row.studentName][row.level] = hw[row.studentName][row.level] || {};
+        const prev = hw[row.studentName][row.level][row.lesson];
+        const inc = { stars: Number(row.stars) || 0, score: Number(row.score) || 0, total: Number(row.total) || 0, said: Number(row.said) || 0, saidTotal: Number(row.saidTotal) || 0, hasDrawing: String(row.hasDrawing) === "true" || row.hasDrawing === true, date: String(row.date || "") };
+        if (!prev || inc.stars > Number(prev.stars || 0) || (inc.stars === Number(prev.stars || 0) && inc.date > String(prev.date || ""))) {
+          hw[row.studentName][row.level][row.lesson] = Object.assign({}, prev || {}, inc); changed++;
+        }
+      });
+      set("lumio_homework", hw);
+      return { ok: true, changed };
+    } catch (e) { return { ok: false, changed, error: e && e.message }; }
+  };
+
+  /* ---------- The ONE "lesson done" rule ----------
+     A lesson is done when its prep is finished, its live class was
+     attended AND its homework is submitted -- in order. `current(name,
+     level)` is the first lesson that is not fully done; everything after
+     it is locked. The adventure map, lesson.html, homework.html,
+     story.html, certificates.html and the teacher table all use these,
+     so "8/10 lessons" means the same thing everywhere.
+     attendedSet: a Set of lesson numbers with a "present" mark (from
+     LumioSchedule.attendedLessonNumbers). Pages that do not load the
+     schedule pass null, which counts attendance as unknown = not done. */
+  const lessonCountFor = (levelId) => { const l = LEVELS.find(x => x.id === levelId); return l ? l.lessons : 20; };
+  const attendedSetFor = (name, levelId) => {
+    try { return (window.LumioSchedule && LumioSchedule.attendedLessonNumbers) ? LumioSchedule.attendedLessonNumbers(name, levelId) : null; } catch (e) { return null; }
+  };
+  const lessonDone = (name, levelId, n, attendedSet) => {
+    const prep = (progressFor(name)[levelId] || {})[n];
+    const hw = (homeworkFor(name)[levelId] || {})[n];
+    const att = attendedSet === undefined ? attendedSetFor(name, levelId) : attendedSet;
+    return !!prep && !!hw && !!(att && att.has(Number(n)));
+  };
+  // First lesson not fully done (N+1 when the level is finished).
+  const currentLesson = (name, levelId, attendedSet) => {
+    const N = lessonCountFor(levelId);
+    const att = attendedSet === undefined ? attendedSetFor(name, levelId) : attendedSet;
+    for (let n = 1; n <= N; n++) if (!lessonDone(name, levelId, n, att)) return n;
+    return N + 1;
+  };
+  const lessonsDoneCount = (name, levelId, attendedSet) => currentLesson(name, levelId, attendedSet) - 1;
+  const levelComplete = (name, levelId, attendedSet) => lessonsDoneCount(name, levelId, attendedSet) >= lessonCountFor(levelId);
+  // Teacher session on this device? (preview links, presenter, overrides)
+  const isTeacherSession = () => { try { return localStorage.getItem("lumio_teacher") === "1"; } catch (e) { return false; } };
 
   /* ---------- Report send log ----------
      lumio_report_log = { studentName: "YYYY-MM-DD" }  -- the date a
@@ -459,6 +561,8 @@ const Lumio = (() => {
            lastReportDateFor, logReportSent,
            speak, speakPhonicsSound, beep, confetti, toast, shuffle, qs, letterTile,
            COUNTRY_CODES, combinePhone, splitPhone,
+           pushProgressAndHomework, pullProgressAndHomework,
+           lessonCountFor, attendedSetFor, lessonDone, currentLesson, lessonsDoneCount, levelComplete, isTeacherSession,
            TZ, TZ_LABEL, TZ_LABEL_AR, TZ_OFFSET_MIN, tzNow, tzToDate, tzAddDays, tzDayOfWeek,
            deviceTz, deviceDiffersFromTz, fmt12, fmtClassTime };
 })();

@@ -239,7 +239,10 @@ function isTeacherSession() {
 // The URL parameter alone is already a deliberate, explicit choice --
 // not something a real student stumbles into -- so it doesn't need a
 // second, fragile check on top of it.
-const previewMode = qs("preview") === "1";
+// Preview is a TEACHER tool: the URL flag alone used to open any homework
+// for anyone (and skip the class gate). It now also needs the teacher
+// session flag on this device.
+const previewMode = qs("preview") === "1" && (() => { try { return localStorage.getItem("lumio_teacher") === "1"; } catch (e) { return false; } })();
 if (previewMode) document.getElementById("hwPreviewBanner").style.display = "block";
 
 const user = (typeof Lumio !== "undefined" && Lumio.user) ? Lumio.user() : null;
@@ -600,6 +603,16 @@ function answerQuiz(qi, chosen, correct, btn) {
 }
 
 function submitHomework() {
+  // An untouched homework used to save with 1 star and unlock the next
+  // lesson. Require that the spelling and the quiz were at least attempted.
+  const spellingTried = Object.keys(results.spelling).length;
+  const quizTried = Object.keys(results.quiz).length;
+  if (!previewMode && (spellingTried === 0 || quizTried === 0)) {
+    const msg = spellingTried === 0 ? "Try the spelling words first ✏️" : "Answer the quiz questions first ❓";
+    if (typeof Lumio !== "undefined" && Lumio.toast) Lumio.toast(msg); else alert(msg);
+    goToStep(spellingTried === 0 ? 0 : Math.max(0, STEPS.findIndex(st => st.key === "quiz")));
+    return;
+  }
   const spellingCorrect = Object.values(results.spelling).filter(Boolean).length;
   const quizCorrect = Object.values(results.quiz).filter(Boolean).length;
   const isPhonics = skillType === "phonics";
@@ -682,6 +695,26 @@ async function init() {
   // content works. Checked first, before even looking at `user`, so this
   // holds even if a real student happens to still be logged in on the
   // same device a teacher is testing from.
+  // Gate, in course order: this must be the student's current lesson
+  // (every earlier lesson fully done), its prep must be finished, and the
+  // live class attended. Previously only attendance was checked, so
+  // homework 7 opened while lesson 3 was unfinished and before any prep.
+  if (!previewMode && user) {
+    const lockMsg = (title, body) => {
+      document.getElementById("hwSections").innerHTML = `
+        <div class="hw-card" style="text-align:center">
+          <div style="font-size:2.4rem;margin-bottom:6px">🔒</div>
+          <h2 style="justify-content:center">${title}</h2>
+          <p style="color:var(--cocoa-soft);font-weight:700;margin:0">${body}</p>
+        </div>`;
+      document.getElementById("hwLevelLabel").textContent = "";
+      document.getElementById("hwSteps").style.display = "none";
+    };
+    if (user.level && level !== user.level) { lockMsg("This homework is in another level", `Your lessons are in your own level — go back to <a href="student.html" style="color:var(--orange-deep)">My map</a>.`); return; }
+    const cur = Lumio.currentLesson(user.name, level);
+    if (num > cur) { lockMsg(`Lesson ${num} is locked`, `Finish Lesson ${cur} first (prep, live class and homework), then this one opens. <a href="student.html" style="color:var(--orange-deep)">Back to my map</a>.`); return; }
+    if (!(Lumio.progressFor(user.name)[level] || {})[num]) { lockMsg("Do the prep first", `Homework comes after the lesson prep. <a href="lesson.html?level=${level}&n=${num}" style="color:var(--orange-deep)">Open Lesson ${num} prep</a>.`); return; }
+  }
   if (!previewMode && user && window.LumioSchedule && LumioSchedule.attendedLessonNumbers) {
     const attended = LumioSchedule.attendedLessonNumbers(user.name, level);
     if (!attended.has(num)) {

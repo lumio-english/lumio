@@ -21,6 +21,26 @@
   const barEl = document.getElementById("bar");
   const crumbs = document.getElementById("crumbs");
 
+  // ---- Course order is enforced here, not only on the map ----
+  // Any lesson used to open from the URL (lesson.html?level=level6&n=20)
+  // and count as done. Students may open their own level only, up to the
+  // first lesson that is not fully done (prep + class + homework); a
+  // teacher session (presenter/preview) can open anything.
+  if (!Lumio.isTeacherSession()) {
+    const lockCard = (title, text, href, label) => {
+      stage.innerHTML = `<div class="card center"><div style="font-size:3rem">🔒</div><h1 class="mt">${title}</h1><p class="mt" style="font-weight:700">${text}</p><div class="row mt" style="justify-content:center"><a class="btn btn-teal" href="${href}">${label}</a></div></div>`;
+    };
+    if (user.level && level !== user.level) {
+      lockCard("This lesson is in another level", `Your lessons are in ${(Lumio.LEVELS.find(l => l.id === user.level) || {}).name || user.level}.`, "student.html", "Go to my map");
+      return;
+    }
+    const cur = Lumio.currentLesson(user.name, level);
+    if (num > cur) {
+      lockCard(`Lesson ${num} is locked`, `Finish Lesson ${cur} first: do the prep, join your live class and send the homework. Then Lesson ${num} opens.`, `lesson.html?level=${level}&n=${cur}`, `Open Lesson ${cur}`);
+      return;
+    }
+  }
+
   let lesson;
   // 1) embedded bundle (works when opening index.html directly, no server)
   if (window.LUMIO_LESSONS && window.LUMIO_LESSONS[level] && window.LUMIO_LESSONS[level][num]) {
@@ -603,7 +623,7 @@
           check My Schedule on your map.
         </p>
         <div class="mt" style="padding-top:14px;border-top:1.5px solid #F5EEE1">
-          ${game ? `<a class="btn" style="background:#E6F7F4;color:#0D9488;margin-right:8px" href="games/${game.file}?level=${level}&n=${num}&from=lesson">${game.label}</a>` : ""}
+          ${game && (Lumio.homeworkFor(user.name)[level] || {})[num] ? `<a class="btn" style="background:#E6F7F4;color:#0D9488;margin-right:8px" href="games/${game.file}?level=${level}&n=${num}&from=lesson">${game.label}</a>` : ""}
           <a class="btn" style="background:#FFF3D6;color:#C2530A" href="homework.html?level=${level}&n=${num}">📝 Do your homework</a>
         </div>
       </div>`;
@@ -626,5 +646,9 @@
   }
 
   setBar();
+  if (!steps.length) {
+    stage.innerHTML = `<div class="card center"><h1>This lesson isn't ready yet</h1><p class="mt">Your teacher is still preparing it. Check back soon!</p><div class="row mt" style="justify-content:center"><a class="btn btn-teal" href="student.html">My map</a></div></div>`;
+    return;
+  }
   render(steps[0]);
 })();

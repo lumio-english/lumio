@@ -1,49 +1,23 @@
+function testGroqAuth() {
+  // Temporary helper - run this once from the editor (not via a web
+  // request) to trigger the permission popup for calling a new
+  // external domain (the Groq API). Safe to delete once authorized.
+  var result = writingFeedback_({ prompt: "test", answer: "This is a test answer to trigger the authorization prompt.", minWords: 5 });
+  Logger.log(result);
+}
+
+/**
 /**
  * Lumio English — Sync backend (Google Apps Script)
+ * One project, one deployment URL: roster/schedule/leads/progress sync,
+ * test-result backup, student inbox + referrals, Zoom auto-links, and
+ * AI writing feedback.
  *
- * What this does: gives your Lumio site a shared Google Sheet backend for
- * the roster (students + teachers), the class schedule, lesson progress,
- * and leads, so every teacher's device sees the same data instead of
- * everything living only in one browser's storage. It also auto-creates
- * a Zoom meeting for each booked class 2 hours before it starts, so
- * teachers never have to paste in a meeting link by hand — see the
- * "ZOOM AUTO-LINK GENERATION" section near the bottom — and it powers
- * the professional dashboard's "Get Feedback" AI writing review button
- * (see the "AI WRITING FEEDBACK" section) from this same URL, so there's
- * only ever one Apps Script project and one deployment URL to manage.
- *
- * Setup: see SETUP-GOOGLE-SHEETS-SYNC.md for the full walkthrough of the
- * roster/schedule/progress sync. Short version:
- *   1. Create a new Google Sheet.
- *   2. Extensions -> Apps Script, delete the placeholder code, paste this
- *      whole file in instead.
- *   3. For AI writing feedback: gear icon (Project Settings) -> Script
- *      Properties -> add GROQ_API_KEY with your key from console.groq.com.
- *      Then run testGroqAuth once from the function dropdown and click
- *      Allow on the permission popup -- this grants the one-time
- *      authorization for calling Groq's API.
- *   4. Deploy -> New deployment -> type "Web app".
- *        Execute as: Me
- *        Who has access: Anyone
- *   5. Copy the Web App URL it gives you. Paste it into Lumio's teacher
- *      dashboard -> Students -> Sync settings -> Save, then "Sync now" --
- *      AND into lumio-pro-dashboard.html's AI_FEEDBACK_URL near the top
- *      of its script. Same URL, both places.
- *
- * For the Zoom automation on top of that, see the setup steps in the
- * comment above autoGenerateZoomLinks() below — you'll need a free Zoom
- * "Server-to-Server OAuth" app and a one-time trigger.
- *
- * This script creates its own sheet tabs (Teachers, Roster, Schedule,
- * Progress, Leads, ProDashboardAdmins, DeletedIds) the first time it
- * runs, with header rows, so you don't need to set anything up inside
- * the Sheet itself.
- *
- * Security note: student/teacher PINs are only ever sent here as a hash
- * (pinHash), never in plain text. Zoom and Groq credentials are stored in
- * this script's Script Properties (Project Settings -> Script
- * Properties), never in the Sheet or in the site's code, so they're
- * never exposed to a browser.
+ * Setup (once): paste into the Sheet's bound script (Extensions ->
+ * Apps Script). Script Properties: GROQ_API_KEY (AI feedback), and
+ * optionally ZOOM_ACCOUNT_ID / ZOOM_CLIENT_ID / ZOOM_CLIENT_SECRET /
+ * ZOOM_HOST_EMAIL. Deploy -> Web app, Execute as: Me, Access: Anyone.
+ * New sheet tabs/columns are created automatically on first run.
  */
 
 // ---------- tab + column definitions ----------
@@ -59,71 +33,38 @@ var ROSTER_COLUMNS = [
   "subscribed", "amountPaid", "currency", "levelsPurchased",
   "rewardPoints", "bonusHours", "sessionsRemaining",
   "pointsLog", "redemptions", "notes",
-  // Student inbox (JSON array) + the "teacher asked to delete this
-  // account, student hasn't answered / has confirmed" flags -- both
-  // travel with the student record so the two devices involved can
-  // see each other's side of the exchange through the normal sync.
   "messages", "pendingDeletion", "deletionConfirmed",
-  // People this student referred (JSON array) -- see referrals in
-  // js/lumio-profiles.js.
   "referrals", "referralsUpdatedAt"
-  // NOTE: no plaintext "pin" column. The live deployment never had one,
-  // and adding it would put every student's PIN into a Sheet that the
-  // public endpoint can read. Only pinHash travels.
 ];
 
-// Reward catalog is shared across all students (teacher-managed list of
-// extra redeemable items), not per-student -- its own small sheet.
 var REWARD_CATALOG_SHEET = "RewardCatalog";
 var REWARD_CATALOG_COLUMNS = ["id", "label", "cost"];
 
-// Tombstones for deleted students/teachers. Without this, a deletion
-// only ever lived in the deleting device's OWN localStorage -- it kept
-// that specific device from re-adding the record on its next sync, but
-// never told any OTHER device the record was gone. A second device that
-// already had the record cached locally from before the deletion would
-// keep it forever: the roster/teacher pull-merge is deliberately
-// additive (a missing-from-remote record is never inferred as deleted,
-// since a device with a not-yet-pushed new record must not have it
-// wiped out by an unrelated pull), so nothing short of an explicit,
-// shared tombstone list can make a deletion actually reach every
-// device. This sheet is that list: whichever device deletes something
-// pushes the id here, and every other device's own pull now also learns
-// about it and can prune its local copy in turn.
 var DELETED_IDS_SHEET = "DeletedIds";
 var DELETED_IDS_COLUMNS = ["id", "type", "deletedAt"];
 
-// V2 schedule schema — one row per group class session. `studentsJson` is
-// the class's `students` array (see js/lumio-schedule.js) serialized as a
-// JSON string, since a Sheet row can't hold a nested array directly. This
-// matches what the site's LumioSchedule.syncNow() actually pushes/pulls
-// (?action=pushScheduleV2 / pullScheduleV2) — the old v1 columns (one
-// row per single student, no meetingLink/lessonNumber/group) are gone.
 var SCHEDULE_SHEET = "Schedule";
 var SCHEDULE_COLUMNS = [
   "id", "teacherId", "teacherName", "date", "startTime", "durationMinutes",
-  "level", "cohort", "lessonNumber", "meetingLink", "notes",
+  "level", "cohort", "group", "lessonNumber", "meetingLink", "notes",
   "sessionNotes", "status", "patternId", "studentsJson", "createdAt", "updatedAt"
 ];
 
-// Fixed weekly schedules ("this group, every Tuesday at 5pm") — see the
-// FIXED SCHEDULES section of js/lumio-schedule.js for how these generate
-// real Schedule rows. studentsJson is that pattern's `students` array
-// serialized the same way as a class's.
 var PATTERNS_SHEET = "SchedulePatterns";
 var PATTERNS_COLUMNS = [
   "id", "teacherId", "teacherName", "dayOfWeek", "startTime", "durationMinutes",
-  "level", "cohort", "notes", "meetingLink", "studentsJson",
+  "level", "cohort", "group", "notes", "meetingLink", "studentsJson",
   "startDate", "endDate", "lessonStart", "active", "createdAt", "updatedAt"
 ];
 
-// Holidays / days off the fixed-schedule generator should never book
-// into. One row per blocked date.
 var BLOCKED_DATES_SHEET = "BlockedDates";
 var BLOCKED_DATES_COLUMNS = ["date", "label"];
 
 var PROGRESS_SHEET = "Progress";
 var PROGRESS_COLUMNS = ["studentName", "level", "lesson", "stars", "score", "total", "date"];
+// Interactive homework results (drawings stay on the student's device).
+var HOMEWORK_SHEET = "Homework";
+var HOMEWORK_COLUMNS = ["studentName", "level", "lesson", "stars", "score", "total", "said", "saidTotal", "hasDrawing", "date"];
 
 var LEADS_SHEET = "Leads";
 var LEADS_COLUMNS = [
@@ -131,23 +72,9 @@ var LEADS_COLUMNS = [
   "status", "notes", "createdAt", "updatedAt"
 ];
 
-// Admin accounts for lumio-pro-dashboard.html — its own login system,
-// unrelated to student/teacher roster accounts. Stored as plain text,
-// same as that dashboard's original standalone login.
 var PRO_ADMINS_SHEET = "ProDashboardAdmins";
 var PRO_ADMINS_COLUMNS = ["username", "password", "updatedAt"];
 
-// Professional placement test results (lumio-pro-test.html ->
-// lumio-pro-dashboard.html). Previously these lived ONLY in the
-// browser's localStorage on whichever device the test was taken on,
-// with the dashboard reading that same local copy and nothing else --
-// no server backup at all. A cleared browser (cache/cookies wiped, a
-// different device, "Clear All" on the dashboard) meant the result was
-// simply gone, no way back. dataJson holds the full result record
-// (scores, every answer, writing text) as one serialized blob, the
-// same pattern already used for Schedule/SchedulePatterns' nested
-// `students` arrays -- a submission's shape is too deeply nested for a
-// flat column schema to be worth maintaining.
 var PRO_TEST_RESULTS_SHEET = "ProTestResults";
 var PRO_TEST_RESULTS_COLUMNS = ["id", "name", "student_id", "timestamp", "dataJson"];
 
@@ -253,7 +180,7 @@ function repairSheetTypes() {
     [TEACHERS_SHEET, TEACHERS_COLUMNS], [ROSTER_SHEET, ROSTER_COLUMNS],
     [SCHEDULE_SHEET, SCHEDULE_COLUMNS], [PATTERNS_SHEET, PATTERNS_COLUMNS],
     [BLOCKED_DATES_SHEET, BLOCKED_DATES_COLUMNS], [PROGRESS_SHEET, PROGRESS_COLUMNS],
-    [LEADS_SHEET, LEADS_COLUMNS], [REWARD_CATALOG_SHEET, REWARD_CATALOG_COLUMNS],
+    [LEADS_SHEET, LEADS_COLUMNS], [REWARD_CATALOG_SHEET, REWARD_CATALOG_COLUMNS], [HOMEWORK_SHEET, HOMEWORK_COLUMNS],
     [DELETED_IDS_SHEET, DELETED_IDS_COLUMNS], [PRO_ADMINS_SHEET, PRO_ADMINS_COLUMNS],
     [PRO_TEST_RESULTS_SHEET, PRO_TEST_RESULTS_COLUMNS],
   ];
@@ -275,6 +202,93 @@ function jsonResponse_(obj) {
 }
 
 // ---------- roster ----------
+
+// Narrow write path for STUDENT devices. A student device never pushes the
+// whole roster (its copy of other students is stale and it must not be
+// able to overwrite teacher-only fields). It only sends the few things a
+// student may change about their own row, and the script merges them into
+// that one row:
+//   avatar                     -- replaced
+//   messages                   -- union by message id; read = either side
+//   pendingDeletion / deletionConfirmed -- replaced (student's answer)
+//   redemptions                -- union by date; a NEW redemption deducts
+//                                 its cost from rewardPoints and credits
+//                                 bonusHours/sessionsRemaining (hours field)
+function pushStudentPatch_(body) {
+  var patch = body && body.patch;
+  if (!patch || !patch.id) return { ok: false, error: "missing patch.id" };
+  var rows = readRows_(ROSTER_SHEET, ROSTER_COLUMNS);
+  var row = null;
+  for (var i = 0; i < rows.length; i++) if (rows[i].id === patch.id) { row = rows[i]; break; }
+  if (!row) return { ok: false, error: "student not found" };
+  var parseArr = function (v) { try { var a = JSON.parse(v || "[]"); return Array.isArray(a) ? a : []; } catch (e) { return []; } };
+  var changed = false;
+
+  if (typeof patch.avatar === "string" && patch.avatar && patch.avatar !== row.avatar) { row.avatar = patch.avatar; changed = true; }
+
+  if (Array.isArray(patch.messages)) {
+    var existing = parseArr(row.messages);
+    var byId = {};
+    existing.forEach(function (m) { if (m && m.id) byId[m.id] = m; });
+    var msgChanged = false;
+    patch.messages.forEach(function (m) {
+      if (!m || !m.id) return;
+      var prev = byId[m.id];
+      if (!prev) { byId[m.id] = m; msgChanged = true; }
+      else if (m.read && !prev.read) { prev.read = true; msgChanged = true; }
+    });
+    if (msgChanged) {
+      var merged = Object.keys(byId).map(function (k) { return byId[k]; });
+      merged.sort(function (a, b) { return Date.parse(a.date || 0) - Date.parse(b.date || 0); });
+      row.messages = JSON.stringify(merged);
+      changed = true;
+    }
+  }
+
+  if (patch.pendingDeletion !== undefined) {
+    var pd = patch.pendingDeletion === true || patch.pendingDeletion === "true";
+    if (String(pd) !== String(row.pendingDeletion === true || row.pendingDeletion === "true")) { row.pendingDeletion = pd; changed = true; }
+  }
+  if (patch.deletionConfirmed !== undefined) {
+    var dc = patch.deletionConfirmed === true || patch.deletionConfirmed === "true";
+    if (String(dc) !== String(row.deletionConfirmed === true || row.deletionConfirmed === "true")) { row.deletionConfirmed = dc; changed = true; }
+  }
+
+  if (Array.isArray(patch.redemptions)) {
+    var have = parseArr(row.redemptions);
+    var seen = {};
+    have.forEach(function (r) { if (r && r.date) seen[r.date] = true; });
+    var points = Number(row.rewardPoints) || 0;
+    var bonus = Number(row.bonusHours) || 0;
+    var sessions = Number(row.sessionsRemaining) || 0;
+    var added = false;
+    patch.redemptions.forEach(function (r) {
+      if (!r || !r.date || seen[r.date]) return;
+      var cost = Number(r.cost) || 0;
+      if (cost <= 0 || cost > points) return;   // cannot redeem more than the row has
+      var hours = Number(r.hours) || 0;
+      points -= cost;
+      bonus += hours;
+      sessions += hours;
+      have.push({ date: r.date, label: r.label || "", cost: cost, hours: hours });
+      seen[r.date] = true;
+      added = true;
+    });
+    if (added) {
+      row.redemptions = JSON.stringify(have);
+      row.rewardPoints = points;
+      row.bonusHours = bonus;
+      row.sessionsRemaining = sessions;
+      changed = true;
+    }
+  }
+
+  if (changed) {
+    row.updatedAt = new Date().toISOString();
+    writeRows_(ROSTER_SHEET, ROSTER_COLUMNS, rows);
+  }
+  return { ok: true, changed: changed, student: row };
+}
 
 // ---------- tombstones (shared by roster, schedule and leads) ----------
 // The DeletedIds tab is a UNION of every deletion ever pushed from any
@@ -314,19 +328,11 @@ function pushRoster_(body) {
   if (Array.isArray(body.students)) writeRows_(ROSTER_SHEET, ROSTER_COLUMNS, body.students);
   if (Array.isArray(body.teachers)) writeRows_(TEACHERS_SHEET, TEACHERS_COLUMNS, body.teachers);
   if (Array.isArray(body.rewardCatalog)) writeRows_(REWARD_CATALOG_SHEET, REWARD_CATALOG_COLUMNS, body.rewardCatalog);
-  // The client always pulls this same list, unions it with whatever it
-  // knows locally, and only then pushes -- so a full-replace write here
-  // (matching writeRows_'s usual semantics) is safe and can only ever
-  // grow this list, never accidentally shrink it back down.
   mergeDeletedIds_(body.deletedIds);
   return { ok: true };
 }
 
 // ---------- schedule (V2) ----------
-// The site's `classes` array has a nested `students` array per class;
-// here it's flattened to `studentsJson` for storage and expanded back
-// out on the way to the client, so the Sheet <-> LumioSchedule shape
-// round-trips exactly.
 
 function classToRow_(c) {
   var row = {};
@@ -381,33 +387,56 @@ function rowToPattern_(row) {
 
 // ---------- progress ----------
 
-function pushProgress_(body) {
+// Progress and homework rows are MERGED by student+level+lesson (higher
+// stars win, then the newer date), never replaced wholesale: student
+// phones push only their own records, teacher devices push everything
+// they know, and neither can wipe the other's rows.
+function flattenRecords_(tree, columns) {
   var rows = [];
-  var progress = body.progress || {};
-  Object.keys(progress).forEach(function (studentName) {
-    var levels = progress[studentName] || {};
+  Object.keys(tree || {}).forEach(function (studentName) {
+    var levels = tree[studentName] || {};
     Object.keys(levels).forEach(function (level) {
       var lessons = levels[level] || {};
       Object.keys(lessons).forEach(function (lessonId) {
         var r = lessons[lessonId] || {};
-        rows.push({
-          studentName: studentName,
-          level: level,
-          lesson: lessonId,
-          stars: r.stars || 0,
-          score: r.score || 0,
-          total: r.total || 0,
-          date: r.date || "",
-        });
+        var row = { studentName: studentName, level: level, lesson: lessonId };
+        columns.forEach(function (col) { if (!(col in row)) row[col] = r[col] === undefined || r[col] === null ? "" : r[col]; });
+        rows.push(row);
       });
     });
   });
-  writeRows_(PROGRESS_SHEET, PROGRESS_COLUMNS, rows);
-  return { ok: true, rows: rows.length };
+  return rows;
 }
-
+function mergeRecordRows_(sheet, columns, incoming) {
+  var existing = readRows_(sheet, columns);
+  var byKey = {};
+  existing.forEach(function (r) { byKey[r.studentName + "|" + r.level + "|" + r.lesson] = r; });
+  var changed = 0;
+  incoming.forEach(function (r) {
+    var k = r.studentName + "|" + r.level + "|" + r.lesson;
+    var prev = byKey[k];
+    var better = !prev || Number(r.stars || 0) > Number(prev.stars || 0)
+      || (Number(r.stars || 0) === Number(prev.stars || 0) && String(r.date || "") > String(prev.date || ""));
+    if (better) { byKey[k] = r; changed++; }
+  });
+  if (changed) writeRows_(sheet, columns, Object.keys(byKey).map(function (k) { return byKey[k]; }));
+  return changed;
+}
+function pushProgress_(body) {
+  var rows = flattenRecords_(body.progress, PROGRESS_COLUMNS);
+  var changed = mergeRecordRows_(PROGRESS_SHEET, PROGRESS_COLUMNS, rows);
+  return { ok: true, rows: rows.length, changed: changed };
+}
 function pullProgress_() {
   return { rows: readRows_(PROGRESS_SHEET, PROGRESS_COLUMNS) };
+}
+function pushHomework_(body) {
+  var rows = flattenRecords_(body.homework, HOMEWORK_COLUMNS);
+  var changed = mergeRecordRows_(HOMEWORK_SHEET, HOMEWORK_COLUMNS, rows);
+  return { ok: true, rows: rows.length, changed: changed };
+}
+function pullHomework_() {
+  return { rows: readRows_(HOMEWORK_SHEET, HOMEWORK_COLUMNS) };
 }
 
 // ---------- leads ----------
@@ -444,12 +473,6 @@ function pullProTestResults_() {
   };
 }
 
-// Additive, not a full replace like writeRows_'s usual callers -- each
-// test submission happens independently on whatever device the student
-// used, so pushing must never overwrite results some OTHER device has
-// already saved to the Sheet. Reads what's there, skips it if this
-// exact result (by id) already exists (a retry after a flaky network
-// response shouldn't duplicate it), appends, writes the full list back.
 function pushProTestResult_(body) {
   var result = body.result;
   if (!result) return { ok: false, error: "No result provided." };
@@ -458,76 +481,22 @@ function pushProTestResult_(body) {
   var alreadyThere = existing.some(function (row) { return row.id === id; });
   if (!alreadyThere) {
     existing.push({
-      id: id,
-      name: result.name || "",
-      student_id: result.student_id || "",
-      timestamp: result.timestamp || "",
-      dataJson: JSON.stringify(result),
+      id: id, name: result.name || "", student_id: result.student_id || "",
+      timestamp: result.timestamp || "", dataJson: JSON.stringify(result),
     });
     writeRows_(PRO_TEST_RESULTS_SHEET, PRO_TEST_RESULTS_COLUMNS, existing);
   }
   return { ok: true };
 }
 
-// The dashboard's "Clear All" button -- an explicit, confirmed, full
-// wipe, unlike the additive push above. Clears the shared copy too, so
-// a deliberate clear doesn't leave stale results reappearing from the
-// Sheet on the next sync.
 function clearProTestResults_() {
   writeRows_(PRO_TEST_RESULTS_SHEET, PRO_TEST_RESULTS_COLUMNS, []);
   return { ok: true };
 }
 
-// ═══════════════════════════════════════════════════════════════════
-//  ZOOM AUTO-LINK GENERATION
-// ═══════════════════════════════════════════════════════════════════
-//
-// Goal: a teacher books a class with a date/time and never has to touch
-// Zoom themselves. Exactly ~2 hours before each class starts, this
-// script creates a real Zoom meeting via the Zoom API and writes the
-// join URL into that class's `meetingLink` — which both the teacher
-// dashboard and student.html already display automatically once it's
-// synced, since that field already existed in the schema.
-//
-// ---- One-time setup (you do this once) ----
-//
-// 1. Create a Zoom "Server-to-Server OAuth" app (free, no user login
-//    flow needed — this is the right app type for a script, not
-//    "OAuth" or "JWT" which Zoom has deprecated):
-//      Zoom App Marketplace -> Develop -> Build App -> Server-to-Server OAuth
-//    Add a "create meetings" scope for your plan (Zoom's exact scope
-//    name varies — meeting:write:admin or meeting:write). Activate the
-//    app. Copy the Account ID, Client ID, and Client Secret it gives you.
-//
-// 2. In this Apps Script project: Project Settings (gear icon) -> Script
-//    Properties -> add these four:
-//      ZOOM_ACCOUNT_ID     = <your Account ID>
-//      ZOOM_CLIENT_ID      = <your Client ID>
-//      ZOOM_CLIENT_SECRET  = <your Client Secret>
-//      ZOOM_HOST_EMAIL     = <the Zoom account email meetings should be
-//                             created under — usually your own Zoom login>
-//
-// 3. Add a time-driven trigger so this actually runs on a schedule:
-//      Apps Script editor -> Triggers (clock icon) -> + Add Trigger
-//        Function: autoGenerateZoomLinks
-//        Event source: Time-driven
-//        Type: Minutes timer -> Every 10 minutes
-//    No code change needed for the trigger itself.
-//
-// ---- How it decides what to generate ----
-// Every run, it looks at every class in the Schedule sheet where:
-//   - status is "scheduled" (not cancelled/completed)
-//   - it doesn't already have a meetingLink
-//   - its start time is between "right now" and "2 hours from now"
-// ...and for each one, creates a Zoom meeting and writes the join URL
-// back into that row. Running every 10 minutes means a link reliably
-// appears within ~10 minutes of the 2-hour mark, not exactly on the
-// dot — fine for this purpose, and safe to run more or less often.
-//
-// A class booked with LESS than 2 hours' notice still gets a link on
-// the very next run (nothing here requires a full 2-hour window to
-// exist — "within the next 2 hours" already covers "starts in 20
-// minutes and doesn't have a link yet").
+// ---------- Zoom auto-link generation ----------
+// Trigger: Triggers (clock icon) -> Add Trigger -> autoGenerateZoomLinks,
+// Time-driven, every 10 minutes. Needs the four ZOOM_* Script Properties.
 
 function autoGenerateZoomLinks() {
   var props = PropertiesService.getScriptProperties();
@@ -536,14 +505,12 @@ function autoGenerateZoomLinks() {
   var clientSecret = props.getProperty("ZOOM_CLIENT_SECRET");
   var hostEmail = props.getProperty("ZOOM_HOST_EMAIL");
   if (!accountId || !clientId || !clientSecret || !hostEmail) {
-    Logger.log("Zoom auto-link: Script Properties not set up yet — skipping. See the setup comment above autoGenerateZoomLinks().");
+    Logger.log("Zoom auto-link: Script Properties not set up yet — skipping.");
     return;
   }
-
   var sheet = getOrCreateSheet_(SCHEDULE_SHEET, SCHEDULE_COLUMNS);
   var lastRow = sheet.getLastRow();
   if (lastRow < 2) return;
-
   var idCol = SCHEDULE_COLUMNS.indexOf("id") + 1;
   var dateCol = SCHEDULE_COLUMNS.indexOf("date") + 1;
   var startCol = SCHEDULE_COLUMNS.indexOf("startTime") + 1;
@@ -553,38 +520,26 @@ function autoGenerateZoomLinks() {
   var linkCol = SCHEDULE_COLUMNS.indexOf("meetingLink") + 1;
   var statusCol = SCHEDULE_COLUMNS.indexOf("status") + 1;
   var updatedCol = SCHEDULE_COLUMNS.indexOf("updatedAt") + 1;
-
   var values = sheet.getRange(2, 1, lastRow - 1, SCHEDULE_COLUMNS.length).getValues();
   var now = new Date();
   var twoHoursOut = new Date(now.getTime() + 2 * 60 * 60 * 1000);
-  var accessToken = null; // fetched lazily, only if there's actually work to do
-
+  var accessToken = null;
   for (var i = 0; i < values.length; i++) {
     var row = values[i];
-    var status = row[statusCol - 1];
-    var link = row[linkCol - 1];
-    var dateStr = row[dateCol - 1];
-    var startTime = row[startCol - 1];
-    if (status !== "scheduled" || link || !dateStr || !startTime) continue;
-
-    var startDate = new Date(dateStr + "T" + startTime + ":00+03:00"); // Saudi wall time
-    if (isNaN(startDate.getTime())) continue;
-    if (startDate < now || startDate > twoHoursOut) continue; // not in the "next 2 hours" window
-
+    if (row[statusCol - 1] !== "scheduled" || row[linkCol - 1] || !row[dateCol - 1] || !row[startCol - 1]) continue;
+    var startDate = new Date(row[dateCol - 1] + "T" + row[startCol - 1] + ":00+03:00"); // Saudi wall time
+    if (isNaN(startDate.getTime()) || startDate < now || startDate > twoHoursOut) continue;
     if (!accessToken) accessToken = getZoomAccessToken_(accountId, clientId, clientSecret);
-    if (!accessToken) { Logger.log("Zoom auto-link: couldn't get an access token — check your Script Properties."); return; }
-
+    if (!accessToken) { Logger.log("Zoom auto-link: couldn't get an access token."); return; }
     var level = row[levelCol - 1] || "";
     var lessonNumber = row[lessonCol - 1] || "";
     var topic = "Lumio English Club" + (level ? " – " + level : "") + (lessonNumber ? " – Lesson " + lessonNumber : "");
     var durationMinutes = Number(row[durCol - 1]) || 45;
-
     try {
       var joinUrl = createZoomMeeting_(accessToken, hostEmail, topic, startDate, durationMinutes);
       if (joinUrl) {
         sheet.getRange(i + 2, linkCol).setValue(joinUrl);
         sheet.getRange(i + 2, updatedCol).setValue(new Date().toISOString());
-        Logger.log("Zoom auto-link: created meeting for class " + row[idCol - 1] + " -> " + joinUrl);
       }
     } catch (err) {
       Logger.log("Zoom auto-link: failed for class " + row[idCol - 1] + ": " + err);
@@ -595,40 +550,19 @@ function autoGenerateZoomLinks() {
 function getZoomAccessToken_(accountId, clientId, clientSecret) {
   var url = "https://zoom.us/oauth/token?grant_type=account_credentials&account_id=" + encodeURIComponent(accountId);
   var basicAuth = Utilities.base64Encode(clientId + ":" + clientSecret);
-  var res = UrlFetchApp.fetch(url, {
-    method: "post",
-    headers: { Authorization: "Basic " + basicAuth },
-    muteHttpExceptions: true,
-  });
+  var res = UrlFetchApp.fetch(url, { method: "post", headers: { Authorization: "Basic " + basicAuth }, muteHttpExceptions: true });
   var body = JSON.parse(res.getContentText() || "{}");
   return body.access_token || null;
 }
 
-// startDate: a JS Date in this script's timezone (Project Settings ->
-// General -> time zone — set that to match your classes, e.g.
-// Asia/Riyadh, so the meeting's actual start time matches what teachers
-// booked). Returns the join_url, or null on failure.
 function createZoomMeeting_(accessToken, hostEmail, topic, startDate, durationMinutes) {
   var tz = PLATFORM_TZ; // class times on Lumio are Saudi time
   var startIso = Utilities.formatDate(startDate, tz, "yyyy-MM-dd'T'HH:mm:ss");
-  var payload = {
-    topic: topic,
-    type: 2, // scheduled meeting
-    start_time: startIso,
-    duration: durationMinutes,
-    timezone: tz,
-    settings: {
-      join_before_host: true,
-      waiting_room: false,
-      approval_type: 2, // no registration required
-    },
-  };
+  var payload = { topic: topic, type: 2, start_time: startIso, duration: durationMinutes, timezone: tz,
+    settings: { join_before_host: true, waiting_room: false, approval_type: 2 } };
   var res = UrlFetchApp.fetch("https://api.zoom.us/v2/users/" + encodeURIComponent(hostEmail) + "/meetings", {
-    method: "post",
-    contentType: "application/json",
-    headers: { Authorization: "Bearer " + accessToken },
-    payload: JSON.stringify(payload),
-    muteHttpExceptions: true,
+    method: "post", contentType: "application/json", headers: { Authorization: "Bearer " + accessToken },
+    payload: JSON.stringify(payload), muteHttpExceptions: true,
   });
   var code = res.getResponseCode();
   var body = JSON.parse(res.getContentText() || "{}");
@@ -636,15 +570,7 @@ function createZoomMeeting_(accessToken, hostEmail, topic, startDate, durationMi
   throw new Error("Zoom API error " + code + ": " + res.getContentText());
 }
 
-
-// ═══════════════════════════════════════════════════════════════════
-//  AI WRITING FEEDBACK (professional dashboard's "Get Feedback" button)
-// ═══════════════════════════════════════════════════════════════════
-// Merged into this same project/deployment rather than kept separate --
-// this project's own UrlFetchApp authorization already works fine here,
-// so there's no need for a second Apps Script project and a second URL
-// just for this one feature. Uses the exact same GROQ_API_KEY Script
-// Property either way.
+// ---------- AI writing feedback ----------
 
 function testGroqAuth() {
   var result = writingFeedback_({ prompt: "test", answer: "This is a test answer to trigger the authorization prompt.", minWords: 5 });
@@ -653,79 +579,24 @@ function testGroqAuth() {
 
 function writingFeedback_(body) {
   var apiKey = PropertiesService.getScriptProperties().getProperty("GROQ_API_KEY");
-  if (!apiKey) {
-    return { ok: false, error: "No Groq API key set up yet. In the Apps Script editor: Project Settings -> Script Properties -> add GROQ_API_KEY with your key from console.groq.com." };
-  }
+  if (!apiKey) return { ok: false, error: "No Groq API key set up yet. Project Settings -> Script Properties -> add GROQ_API_KEY." };
   var prompt = String(body.prompt || "").slice(0, 500);
   var answer = String(body.answer || "").slice(0, 1000);
   var minWords = Number(body.minWords) || 0;
-  if (!answer.trim()) {
-    return { ok: false, error: "No answer to review yet." };
-  }
-
-  var systemPrompt = "You are an English teacher giving feedback on a young English-language " +
-    "learner's short writing answer. The student is a child learning English as a second " +
-    "language. Your feedback MUST directly reference their actual writing, not generic advice. " +
-    "Structure your reply as exactly this: " +
-    "(1) One short genuinely positive sentence about their effort or something they got right. " +
-    "(2) Point out 1-3 SPECIFIC errors by quoting the exact word or phrase they wrote and giving " +
-    "the correct version, in the form: you wrote \"X\", try \"Y\" instead. Cover grammar, spelling, " +
-    "or word choice, only for mistakes actually present in their answer. " +
-    "(3) One short encouraging closing sentence. " +
-    "If their answer has no real, readable English words or sentences at all (for example random " +
-    "keyboard mashing), skip step 2 and instead gently tell them to write real English words and " +
-    "sentences about the topic, with one simple example sentence they could use to start. " +
-    "Keep language simple enough for a child, warm, never harsh. Do not use markdown formatting.";
-  var userPrompt = "Writing prompt: " + prompt + "\n" +
-    (minWords ? "Expected length: at least " + minWords + " words.\n" : "") +
-    "Student's actual answer (quote from this directly): " + answer;
-
-  var payload = {
-    // llama-3.3-70b-versatile was deprecated by Groq (shutdown 08/16/2026 --
-    // see https://console.groq.com/docs/deprecations) and now returns
-    // "The model `llama-3.3-70b-versatile` does not exist or you do not
-    // have access to it." on every request. openai/gpt-oss-120b is Groq's
-    // own recommended replacement for it.
-    //
-    // gpt-oss-120b is a reasoning model, which changes two things from a
-    // plain chat model: (1) by default it also generates internal
-    // "reasoning" content alongside the real answer -- include_reasoning:
-    // false keeps that out of the response so `content` stays just the
-    // feedback text; reasoning_effort: "low" is enough for a short,
-    // templated writing-feedback reply and keeps latency down. (2) Groq's
-    // current docs use max_completion_tokens rather than max_tokens for
-    // this model family.
-    model: "openai/gpt-oss-120b",
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: userPrompt }
-    ],
-    temperature: 0.5,
-    max_completion_tokens: 300,
-    reasoning_effort: "low",
-    include_reasoning: false
-  };
-
+  if (!answer.trim()) return { ok: false, error: "No answer to review yet." };
+  var systemPrompt = "You are an English teacher giving feedback on a young English-language learner's short writing answer. The student is a child learning English as a second language. Your feedback MUST directly reference their actual writing, not generic advice. Structure your reply as exactly this: (1) One short genuinely positive sentence about their effort or something they got right. (2) Point out 1-3 SPECIFIC errors by quoting the exact word or phrase they wrote and giving the correct version, in the form: you wrote \"X\", try \"Y\" instead. Cover grammar, spelling, or word choice, only for mistakes actually present in their answer. (3) One short encouraging closing sentence. If their answer has no real, readable English words or sentences at all (for example random keyboard mashing), skip step 2 and instead gently tell them to write real English words and sentences about the topic, with one simple example sentence they could use to start. Keep language simple enough for a child, warm, never harsh. Do not use markdown formatting.";
+  var userPrompt = "Writing prompt: " + prompt + "\n" + (minWords ? "Expected length: at least " + minWords + " words.\n" : "") + "Student's actual answer (quote from this directly): " + answer;
+  var payload = { model: "openai/gpt-oss-120b", messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }],
+    temperature: 0.5, max_completion_tokens: 300, reasoning_effort: "low", include_reasoning: false };
   try {
     var res = UrlFetchApp.fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "post",
-      contentType: "application/json",
-      headers: { "Authorization": "Bearer " + apiKey },
-      payload: JSON.stringify(payload),
-      muteHttpExceptions: true
+      method: "post", contentType: "application/json", headers: { "Authorization": "Bearer " + apiKey },
+      payload: JSON.stringify(payload), muteHttpExceptions: true
     });
     var code = res.getResponseCode();
     var data = JSON.parse(res.getContentText());
-    if (code !== 200) {
-      var errMsg = (data.error && data.error.message) ? data.error.message : ("Groq API returned status " + code);
-      return { ok: false, error: errMsg };
-    }
+    if (code !== 200) return { ok: false, error: (data.error && data.error.message) ? data.error.message : ("Groq API returned status " + code) };
     var msg = data.choices && data.choices[0] && data.choices[0].message;
-    // gpt-oss models have a known, occasionally-triggered Groq platform
-    // quirk (see community.groq.com) where despite include_reasoning:
-    // false, a reply's real text still lands in `reasoning` instead of
-    // `content`. Fall back to it rather than surfacing a confusing "empty
-    // response" error when the model actually did answer.
     var feedback = (msg && msg.content) || (msg && msg.reasoning) || "";
     if (!feedback) return { ok: false, error: "Empty response from Groq." };
     return { ok: true, feedback: feedback.trim() };
@@ -756,10 +627,11 @@ function doGet(e) {
     if (action === "pullRoster") return jsonResponse_(pullRoster_());
     if (action === "pullScheduleV2") return jsonResponse_(pullScheduleV2_());
     if (action === "pullProgress") return jsonResponse_(pullProgress_());
+    if (action === "pullHomework") return jsonResponse_(pullHomework_());
     if (action === "pullLeads") return jsonResponse_(pullLeads_());
     if (action === "pullProAdmins") return jsonResponse_(pullProAdmins_());
     if (action === "pullProTestResults") return jsonResponse_(pullProTestResults_());
-    return jsonResponse_({ ok: true, message: "Lumio sync backend is running. Pass ?action=pullRoster / pullScheduleV2 / pullProgress / pullLeads / pullProAdmins." });
+    return jsonResponse_({ ok: true, message: "Lumio sync backend is running." });
   } catch (err) {
     return jsonResponse_({ ok: false, error: String(err) });
   }
@@ -770,12 +642,12 @@ function doPost(e) {
     if (!keyOk_(e)) return jsonResponse_({ ok: false, error: "unauthorized" });
     var action = (e && e.parameter) ? e.parameter.action : null;
     var body = {};
-    if (e && e.postData && e.postData.contents) {
-      body = JSON.parse(e.postData.contents);
-    }
+    if (e && e.postData && e.postData.contents) body = JSON.parse(e.postData.contents);
     if (action === "pushRoster") return jsonResponse_(pushRoster_(body));
+    if (action === "pushStudentPatch") return jsonResponse_(pushStudentPatch_(body));
     if (action === "pushScheduleV2") return jsonResponse_(pushScheduleV2_(body));
     if (action === "pushProgress") return jsonResponse_(pushProgress_(body));
+    if (action === "pushHomework") return jsonResponse_(pushHomework_(body));
     if (action === "pushLeads") return jsonResponse_(pushLeads_(body));
     if (action === "pushProAdmins") return jsonResponse_(pushProAdmins_(body));
     if (action === "pushProTestResult") return jsonResponse_(pushProTestResult_(body));
