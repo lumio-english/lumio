@@ -1737,19 +1737,24 @@
   // ---------- badges ----------
   const totalStarsAllLevels = Object.values(progAll).reduce((sum, lvlProg) =>
     sum + Object.values(lvlProg).reduce((s, r) => s + (r.stars || 0), 0), 0);
-  const totalDoneAllLevels = Object.values(progAll).reduce((sum, lvlProg) =>
-    sum + Object.keys(lvlProg).length, 0);
+  // Lesson-count badges use the full cycle (prep + live class + homework),
+  // the same rule as the map -- summed over every level the student has
+  // touched, not just prep records.
+  const totalDoneAllLevels = Object.keys(progAll).reduce((sum, lvlId) => {
+    const att = (window.LumioSchedule && LumioSchedule.attendedLessonNumbers) ? LumioSchedule.attendedLessonNumbers(u.name, lvlId) : null;
+    return sum + (Lumio.lessonsDoneCount ? Lumio.lessonsDoneCount(u.name, lvlId, att) : 0);
+  }, 0);
   const perfectLessons = entries.filter(([,r]) => (r.stars || 0) >= 3).length;
 
   const badgeDefs = [
-    { ic: "👋", t: "First step", d: "Finish your first prep", earned: totalDoneAllLevels >= 1 },
+    { ic: "👋", t: "First step", d: "Finish 1 full lesson", earned: totalDoneAllLevels >= 1 },
     { ic: "🔥", t: "On a roll", d: "3-day streak", earned: streakVal >= 3 },
     { ic: "⭐", t: "Star collector", d: (["level3","level4","level5","level6"].includes(level) ? "1,000 XP" : "10 stars"), earned: totalStarsAllLevels >= 10 },
     { ic: "🌟", t: "Super star", d: (["level3","level4","level5","level6"].includes(level) ? "3,000 XP" : "30 stars"), earned: totalStarsAllLevels >= 30 },
     { ic: "💯", t: "Perfectionist", d: (["level3","level4","level5","level6"].includes(level) ? "Max XP in a lesson" : "3-star a lesson"), earned: perfectLessons >= 1 },
     { ic: "📚", t: "Halfway there", d: `${Math.ceil(total/2)} lessons`, earned: done >= Math.ceil(total/2) },
     { ic: "🏆", t: "Level up!", d: `Finish ${meta.name}`, earned: done >= total },
-    { ic: "🎯", t: "Dedicated", d: "10 lessons total", earned: totalDoneAllLevels >= 10 },
+    { ic: "🎯", t: "Dedicated", d: "10 full lessons", earned: totalDoneAllLevels >= 10 },
   ];
   const badgeGrid = document.getElementById("badgeGrid");
   badgeDefs.forEach(b => {
