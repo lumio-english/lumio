@@ -40,6 +40,12 @@
   // redeploy the Apps Script to a new URL.
   const DEFAULT_SYNC_URL = "https://script.google.com/macros/s/AKfycbxlKY07coAR_Uj6UQf2bvy6yi6I3cG9WsnTROvKI5v_l9MhhXIbP3Ke8jxbYx5btZzAGA/exec";
   const CURRENT_TEACHER_KEY = "lumio_current_teacher_id";
+  // Shared secret the Apps Script checks on every request (Script
+  // Property LUMIO_API_KEY). Stops anyone who finds the URL from pulling
+  // or overwriting the roster. Same value in every file that calls the
+  // script: lumio-schedule.js, lumio-leads.js, teacher.html,
+  // lumio-pro-test.html, lumio-pro-dashboard.html.
+  const LUMIO_API_KEY = "504bc50951590970a9faf630";
 
   const AVATARS = ["🦊", "🐼", "🦁", "🐸", "🐵", "🐨", "🦄", "🐯", "🐰", "🐶", "🐱"];
   const TEACHER_AVATARS = ["🦉", "🎓", "📚", "🍎", "⭐", "🧑‍🏫", "👩‍🏫", "👨‍🏫", "✏️", "🌟", "💡", "🏆"];
@@ -1285,7 +1291,7 @@
     try {
       // Pull + merge first, so a brand-new device can never push an empty
       // local roster over whatever's already shared.
-      const res = await fetchWithTimeout(cfg.url + "?action=pullRoster");
+      const res = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pullRoster");
       const remote = await res.json();
       // Fold the SHARED tombstone list into this device's own local one
       // before anything else. This is what makes a deletion actually
@@ -1345,7 +1351,7 @@
       await backfillMissingHashes(data);
       save(data);
 
-      await fetchWithTimeout(cfg.url + "?action=pushRoster", {
+      await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pushRoster", {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify({

@@ -4643,8 +4643,9 @@
   function saveLocalProgress(data) {
     try { localStorage.setItem("lumio_progress", JSON.stringify(data)); } catch (e) {}
   }
+  const LUMIO_API_KEY = "504bc50951590970a9faf630"; // see js/lumio-profiles.js
   async function pullAndMergeProgress(cfg) {
-    const res = await fetch(cfg.url + "?action=pullProgress");
+    const res = await fetch(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pullProgress");
     const remote = await res.json();
     if (!remote || !Array.isArray(remote.rows)) return 0;
     const local = loadLocalProgress();
@@ -4688,7 +4689,7 @@
         // pull + merge first, same reasoning as roster/schedule: never let
         // an empty/behind local copy push over what's already shared
         await pullAndMergeProgress(cfg);
-        await fetch(cfg.url + "?action=pushProgress", {
+        await fetch(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pushProgress", {
           method: "POST",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({ progress: Lumio.progressAll() }),

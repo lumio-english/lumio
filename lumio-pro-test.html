@@ -1535,6 +1535,7 @@ const TIPS={
 // reads from), so a completed professional test shows up right next
 // to leads from the simpler placement test, ready for a teacher to
 // review and convert to an enrolled student.
+const LUMIO_API_KEY = '504bc50951590970a9faf630'; // see js/lumio-profiles.js
 const LUMIO_SYNC_URL = 'https://script.google.com/macros/s/AKfycbxlKY07coAR_Uj6UQf2bvy6yi6I3cG9WsnTROvKI5v_l9MhhXIbP3Ke8jxbYx5btZzAGA/exec';
 // The pro test's proficiency scale genuinely runs 0-9 (matching the
 // named-but-not-yet-built Level 7/8/9 in Lumio.LEVELS), and a student's
@@ -1562,7 +1563,7 @@ async function pushResultAsLumioLead(fullData, levelNum) {
     // Pull first, same "don't clobber other devices' changes" pattern
     // the rest of Lumio uses for every synced data type.
     try {
-      const res = await fetch(LUMIO_SYNC_URL + '?action=pullLeads');
+      const res = await fetch(LUMIO_SYNC_URL + '?key=' + LUMIO_API_KEY + '&action=pullLeads');
       const remote = await res.json();
       if (remote && Array.isArray(remote.leads)) {
         const byId = {};
@@ -1612,7 +1613,7 @@ async function pushResultAsLumioLead(fullData, levelNum) {
     store.updatedAt = now;
     localStorage.setItem(LEADS_KEY, JSON.stringify(store));
 
-    await fetch(LUMIO_SYNC_URL + '?action=pushLeads', {
+    await fetch(LUMIO_SYNC_URL + '?key=' + LUMIO_API_KEY + '&action=pushLeads', {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({ leads: store.leads }),
@@ -1640,7 +1641,7 @@ function saveResultLocally(data){
   // dashboard's own "Clear All" button meant it was simply gone for
   // good. Best-effort, never blocks showing the student their result:
   // if this fails, the local copy above still works exactly as before.
-  fetch(LUMIO_SYNC_URL + '?action=pushProTestResult', {
+  fetch(LUMIO_SYNC_URL + '?key=' + LUMIO_API_KEY + '&action=pushProTestResult', {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: JSON.stringify({ result: fullData }),

@@ -708,8 +708,22 @@ function writingFeedback_(body) {
 
 // ---------- HTTP entry points ----------
 
+// ---------- access key ----------
+// Script Property LUMIO_API_KEY (Project Settings -> Script Properties)
+// must match the ?key= every Lumio page sends (LUMIO_API_KEY constant in
+// js/lumio-profiles.js and friends). While the property is NOT set the
+// check is skipped, so deploying this version can never lock the site
+// out; set the property right after deploying to turn the lock on.
+function keyOk_(e) {
+  var want = PropertiesService.getScriptProperties().getProperty("LUMIO_API_KEY");
+  if (!want) return true;
+  var got = (e && e.parameter) ? e.parameter.key : "";
+  return got === want;
+}
+
 function doGet(e) {
   try {
+    if (!keyOk_(e)) return jsonResponse_({ ok: false, error: "unauthorized" });
     var action = (e && e.parameter) ? e.parameter.action : null;
     if (action === "pullRoster") return jsonResponse_(pullRoster_());
     if (action === "pullScheduleV2") return jsonResponse_(pullScheduleV2_());
@@ -725,6 +739,7 @@ function doGet(e) {
 
 function doPost(e) {
   try {
+    if (!keyOk_(e)) return jsonResponse_({ ok: false, error: "unauthorized" });
     var action = (e && e.parameter) ? e.parameter.action : null;
     var body = {};
     if (e && e.postData && e.postData.contents) {

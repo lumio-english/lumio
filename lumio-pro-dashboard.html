@@ -330,6 +330,7 @@ try {
 // accounts (added/removed here) sync across every device, not just
 // the one they were added on. Test results stay local-only by design
 // (see loadR() below); this URL is only used for admin account sync.
+const LUMIO_API_KEY = '504bc50951590970a9faf630'; // see js/lumio-profiles.js
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxlKY07coAR_Uj6UQf2bvy6yi6I3cG9WsnTROvKI5v_l9MhhXIbP3Ke8jxbYx5btZzAGA/exec';
 
 // AI writing feedback uses a SEPARATE, standalone Apps Script project
@@ -406,7 +407,7 @@ let LUMIO_TEACHERS_CACHE = [];
 async function pullLumioTeachersForLogin() {
   if (!SCRIPT_URL) return;
   try {
-    const res = await fetch(SCRIPT_URL + '?action=pullRoster');
+    const res = await fetch(SCRIPT_URL + '?key=' + LUMIO_API_KEY + '&action=pullRoster');
     const data = await res.json();
     if (data && Array.isArray(data.teachers)) LUMIO_TEACHERS_CACHE = data.teachers;
   } catch (e) { /* offline is fine — falls back to admin-only login below */ }
@@ -591,7 +592,7 @@ async function loadR() {
   // before.
   loadFromLocal();
   try {
-    const res = await fetch(SCRIPT_URL + '?action=pullProTestResults');
+    const res = await fetch(SCRIPT_URL + '?key=' + LUMIO_API_KEY + '&action=pullProTestResults');
     const data = await res.json();
     if (data && Array.isArray(data.results) && data.results.length) {
       const localIds = new Set(allR.map(r => (r.student_id || '') + '_' + (r.timestamp || '')));
@@ -824,7 +825,7 @@ async function runAI(si,wi,btn){
   try{
     // Route through the standalone Apps Script (keeps the Groq API key
     // secure, never sent to or stored in the browser)
-    const rs = await fetch(AI_FEEDBACK_URL + '?action=writingFeedback', {
+    const rs = await fetch(AI_FEEDBACK_URL + '?key=' + LUMIO_API_KEY + '&action=writingFeedback', {
       method: 'POST',
       headers: {'Content-Type':'text/plain;charset=utf-8'},
       body: JSON.stringify({ prompt: w.prompt||'', answer: w.text||'', minWords: w.minWords||0 })
@@ -902,7 +903,7 @@ function clearAll(){
   // 30-second auto-refresh) would pull everything right back from the
   // Sheet, making a confirmed, deliberate "Clear All" look like it
   // silently undid itself.
-  fetch(SCRIPT_URL + '?action=clearProTestResults', { method: 'POST' }).catch(() => {});
+  fetch(SCRIPT_URL + '?key=' + LUMIO_API_KEY + '&action=clearProTestResults', { method: 'POST' }).catch(() => {});
 }
 
 // ══════════════════════════════════════════
@@ -1196,7 +1197,7 @@ async function saveAdminPwd(u){
 async function pullAndMergeProAdmins(){
   if(!SCRIPT_URL) return;
   try{
-    const res = await fetch(SCRIPT_URL + '?action=pullProAdmins');
+    const res = await fetch(SCRIPT_URL + '?key=' + LUMIO_API_KEY + '&action=pullProAdmins');
     const data = await res.json();
     if(data && Array.isArray(data.admins)){
       const local = getSavedAdmins();
@@ -1209,7 +1210,7 @@ function pushProAdminsToBackend(){
   if(!SCRIPT_URL) return;
   const local = getSavedAdmins();
   const admins = Object.keys(local).map(u => ({ username:u, password:local[u], updatedAt:new Date().toISOString() }));
-  fetch(SCRIPT_URL+'?action=pushProAdmins', {
+  fetch(SCRIPT_URL+'?key=' + LUMIO_API_KEY + '&action=pushProAdmins', {
     method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
     body: JSON.stringify({ admins })
   }).then(()=>{}).catch(()=>{});
@@ -1222,7 +1223,7 @@ async function addAdminUser(){
   var s=getSavedAdmins();s[u]=await hashAdminPwd(p);localStorage.setItem(DASH_LS_KEY+'_admins',JSON.stringify(s));
   if(SCRIPT_URL){
     const admins = Object.keys(s).map(k => ({ username:k, password:s[k], updatedAt:new Date().toISOString() }));
-    fetch(SCRIPT_URL+'?action=pushProAdmins',{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+    fetch(SCRIPT_URL+'?key=' + LUMIO_API_KEY + '&action=pushProAdmins',{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
       body: JSON.stringify({ admins })})
     .then(function(){showT('✅ Admin added and synced: '+u);}).catch(function(){showT('✅ Added locally (sync failed — check connection)');});
   } else {
@@ -1235,7 +1236,7 @@ function removeAdminUser(u){
   const s=getSavedAdmins();delete s[u];localStorage.setItem(DASH_LS_KEY+'_admins',JSON.stringify(s));
   if(SCRIPT_URL){
     const admins = Object.keys(s).map(k => ({ username:k, password:s[k], updatedAt:new Date().toISOString() }));
-    fetch(SCRIPT_URL+'?action=pushProAdmins',{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+    fetch(SCRIPT_URL+'?key=' + LUMIO_API_KEY + '&action=pushProAdmins',{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
       body: JSON.stringify({ admins })})
     .then(function(){showT('🗑 Removed and synced: '+u);}).catch(function(){showT('🗑 Removed locally (sync failed — check connection)');});
   } else {

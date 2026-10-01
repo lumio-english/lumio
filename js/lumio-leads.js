@@ -33,6 +33,7 @@
   const SYNC_KEY = "lumio_sync_cfg_v1"; // same key the other modules use
   // Same baked-in default as lumio-profiles.js / lumio-schedule.js — keep
   // these in sync if the Apps Script is ever redeployed to a new URL.
+  const LUMIO_API_KEY = "504bc50951590970a9faf630"; // see lumio-profiles.js
   const DEFAULT_SYNC_URL = "https://script.google.com/macros/s/AKfycbxlKY07coAR_Uj6UQf2bvy6yi6I3cG9WsnTROvKI5v_l9MhhXIbP3Ke8jxbYx5btZzAGA/exec";
 
   const memory = {};
@@ -151,7 +152,7 @@
     if (!cfg.enabled || !cfg.url) return { ok: false, reason: "not-configured" };
     const data = load();
     try {
-      const res = await fetchWithTimeout(cfg.url + "?action=pullLeads");
+      const res = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pullLeads");
       const remote = await res.json();
       if (remote && Array.isArray(remote.leads)) {
         // Same bug class already fixed in js/lumio-profiles.js's
@@ -172,7 +173,7 @@
         data.leads = mergeById(data.leads, remote.leads);
         save(data);
       }
-      await fetchWithTimeout(cfg.url + "?action=pushLeads", {
+      await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pushLeads", {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" }, // avoids a CORS preflight against Apps Script
         body: JSON.stringify({ leads: data.leads }),

@@ -77,6 +77,7 @@
 
   const SCHEDULE_KEY = "lumio_schedule_v2";
   const SYNC_KEY = "lumio_sync_cfg_v1"; // same key lumio-profiles.js uses
+  const LUMIO_API_KEY = "504bc50951590970a9faf630"; // see lumio-profiles.js
   // Same baked-in default as lumio-profiles.js — keep these in sync if the
   // Apps Script is ever redeployed to a new URL.
   const DEFAULT_SYNC_URL = "https://script.google.com/macros/s/AKfycbxlKY07coAR_Uj6UQf2bvy6yi6I3cG9WsnTROvKI5v_l9MhhXIbP3Ke8jxbYx5btZzAGA/exec";
@@ -427,7 +428,7 @@
     if (!cfg.enabled || !cfg.url) return { ok: false, reason: "not-configured" };
     const data = load();
     try {
-      const res = await fetchWithTimeout(cfg.url + "?action=pullScheduleV2");
+      const res = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pullScheduleV2");
       const remote = await res.json();
       if (remote && Array.isArray(remote.classes)) {
         remote.classes.forEach(normalizeSheetDates);
@@ -448,7 +449,7 @@
         });
       }
       save(data);
-      await fetchWithTimeout(cfg.url + "?action=pushScheduleV2", {
+      await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pushScheduleV2", {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify({ classes: data.classes, patterns: data.patterns, blockedDates: data.blockedDates }),
