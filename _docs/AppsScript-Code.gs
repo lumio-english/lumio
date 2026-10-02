@@ -23,7 +23,7 @@ function testGroqAuth() {
 // ---------- tab + column definitions ----------
 
 var TEACHERS_SHEET = "Teachers";
-var TEACHERS_COLUMNS = ["id", "name", "avatar", "pinHash", "isOwner", "createdAt", "updatedAt"];
+var TEACHERS_COLUMNS = ["id", "name", "avatar", "pinHash", "isOwner", "createdAt", "updatedAt", "photoDataUrl"];
 
 var ROSTER_SHEET = "Roster";
 var ROSTER_COLUMNS = [
@@ -55,7 +55,7 @@ var PATTERNS_SHEET = "SchedulePatterns";
 var PATTERNS_COLUMNS = [
   "id", "teacherId", "teacherName", "dayOfWeek", "startTime", "durationMinutes",
   "level", "cohort", "group", "notes", "meetingLink", "studentsJson",
-  "startDate", "endDate", "lessonStart", "active", "createdAt", "updatedAt"
+  "startDate", "endDate", "lessonStart", "active", "createdAt", "updatedAt", "extra"
 ];
 
 var BLOCKED_DATES_SHEET = "BlockedDates";
@@ -422,7 +422,90 @@ function rowToPattern_(row) {
   PATTERNS_COLUMNS.forEach(function (col) { if (col !== "studentsJson") p[col] = row[col]; });
   try { p.students = JSON.parse(row.studentsJson || "[]"); } catch (e) { p.students = []; }
   p.active = row.active === true || row.active === "true" || row.active === 1;
+  p.extra = row.extra === true || row.extra === "true" || row.extra === 1;
   return p;
+}
+
+// ---------- student-device booking (narrow, locked write path) ----------
+// A student's phone never pushes the whole schedule (its copy is stale).
+// It sends ONE class it wants to book into / create, and this re-checks
+// the rules that matter for fairness under a script lock, so two students
+// tapping the same seat at once can't both get it:
+//   - a slot (patternId+date) that already has a class: same level+lesson
+//     only, max `maxPerClass` students, no duplicates
+//   - an empty slot: the first booking creates the class and locks it
+function normStudent_(n) { return String(n || "").trim().toLowerCase(); }
+function bookSlot_(body) {
+  var cls = body && body.cls, student = body && body.student;
+  if (!cls || !cls.id || !student || !student.studentName) return { ok: false, error: "missing class or student" };
+  var max = Number(body.maxPerClass) || 4;
+  var lock = LockService.getScriptLock();
+  lock.waitLock(15000);
+  try {
+    var rows = readRows_(SCHEDULE_SHEET, SCHEDULE_COLUMNS).map(rowToClass_);
+    var existing = null;
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      if (r.id === cls.id) { existing = r; break; }
+      if (cls.patternId && r.patternId === cls.patternId && r.date === cls.date && r.status !== "cancelled") { existing = r; break; }
+    }
+    var nowIso = new Date().toISOString();
+    if (existing) {
+      if (existing.status === "cancelled") return { ok: false, error: "That class was cancelled." };
+      var already = existing.students.some(function (s) { return normStudent_(s.studentName) === normStudent_(student.studentName); });
+      if (already) return { ok: true, cls: existing };
+      if (existing.lessonNumber && (String(existing.level) !== String(cls.level) || Number(existing.lessonNumber) !== Number(cls.lessonNumber))) return { ok: false, error: "That class is for a different lesson." };
+      if (existing.students.length >= max) return { ok: false, error: "That class is full (" + max + "/" + max + ")." };
+      if (!existing.lessonNumber) { existing.level = cls.level; existing.lessonNumber = cls.lessonNumber; existing.durationMinutes = cls.durationMinutes; }
+      existing.students.push({ studentId: student.studentId || null, studentName: student.studentName, attendance: null, grade: null, teacherRatingStars: null });
+      existing.updatedAt = nowIso;
+      writeRows_(SCHEDULE_SHEET, SCHEDULE_COLUMNS, rows.map(classToRow_));
+      return { ok: true, cls: existing };
+    }
+    cls.students = [{ studentId: student.studentId || null, studentName: student.studentName, attendance: null, grade: null, teacherRatingStars: null }];
+    cls.status = "scheduled";
+    cls.createdAt = cls.createdAt || nowIso; cls.updatedAt = nowIso;
+    rows.push(cls);
+    writeRows_(SCHEDULE_SHEET, SCHEDULE_COLUMNS, rows.map(classToRow_));
+    return { ok: true, cls: cls };
+  } finally { lock.releaseLock(); }
+}
+// Student cancels their own seat: allowed up to `minBefore` minutes before
+// the class starts (Saudi time). An emptied class is cancelled so the
+// teacher's slot opens again.
+function cancelSlot_(body) {
+  var classId = body && body.classId, studentName = body && body.studentName;
+  if (!classId || !studentName) return { ok: false, error: "missing classId or studentName" };
+  var minBefore = Number(body.minBefore) || 30;
+  var lock = LockService.getScriptLock();
+  lock.waitLock(15000);
+  try {
+    var rows = readRows_(SCHEDULE_SHEET, SCHEDULE_COLUMNS).map(rowToClass_);
+    var c = null;
+    for (var i = 0; i < rows.length; i++) if (rows[i].id === classId) { c = rows[i]; break; }
+    if (!c) return { ok: false, error: "Class not found." };
+    var start = new Date(c.date + "T" + c.startTime + ":00+03:00"); // Riyadh has no DST
+    var minsToStart = (start.getTime() - Date.now()) / 60000;
+    if (minsToStart < minBefore) return { ok: false, error: "Classes can be cancelled up to " + minBefore + " minutes before they start." };
+    var before = c.students.length;
+    c.students = c.students.filter(function (s) { return normStudent_(s.studentName) !== normStudent_(studentName); });
+    if (c.students.length === before) return { ok: false, error: "That student isn't in this class." };
+    if (!c.students.length) c.status = "cancelled";
+    c.updatedAt = new Date().toISOString();
+    // Lessons are booked in sequence: dropping lesson N drops this
+    // student's later bookings in the same level too.
+    var n = Number(c.lessonNumber) || 0;
+    if (n) rows.forEach(function (x) {
+      if (x.id === c.id || x.status !== "scheduled" || String(x.level) !== String(c.level) || !(Number(x.lessonNumber) > n)) return;
+      var b = x.students.length;
+      x.students = x.students.filter(function (s) { return normStudent_(s.studentName) !== normStudent_(studentName); });
+      if (x.students.length === b) return;
+      if (!x.students.length) x.status = "cancelled";
+      x.updatedAt = new Date().toISOString();
+    });
+    writeRows_(SCHEDULE_SHEET, SCHEDULE_COLUMNS, rows.map(classToRow_));
+    return { ok: true, cls: c };
+  } finally { lock.releaseLock(); }
 }
 
 // ---------- progress ----------
@@ -715,7 +798,7 @@ function selfView_(row) {
 }
 function publicTeachers_() {
   return readRows_(TEACHERS_SHEET, TEACHERS_COLUMNS).map(function (t) {
-    return { id: t.id, name: t.name, avatar: t.avatar, isOwner: t.isOwner, updatedAt: t.updatedAt };
+    return { id: t.id, name: t.name, avatar: t.avatar, isOwner: t.isOwner, updatedAt: t.updatedAt, photoDataUrl: t.photoDataUrl || "" };
   });
 }
 // Plain text only for anything typed on a public page: no tags, capped.
@@ -839,24 +922,43 @@ function studentRoster_(who) {
 function inClass_(c, me) {
   return (c.students || []).some(function (x) { return x && ((x.studentId && x.studentId === me.id) || (!x.studentId && x.studentName === me.name) || x.studentName === me.name); });
 }
-// A student sees the classes they are booked into. Classmates appear by
-// name only (no attendance, grades or notes of anyone else).
-function studentSchedule_(who) {
-  var me = who.student;
-  var full = pullScheduleV2_();
-  var trim = function (c) {
-    var copy = {};
-    Object.keys(c).forEach(function (k) { copy[k] = c[k]; });
+// A student sees their own classes in full (classmates by name only) and,
+// for booking, every other class as anonymous seats: level, lesson, slot,
+// teacher and how many seats are taken -- never another child's name,
+// attendance, grade, notes or the meeting link. Ratings stay (as bare
+// stars) because the booking screen shows each teacher's average.
+function seatFor_(x, me) {
+  if (!x) return x;
+  var mine = (x.studentId && x.studentId === me.id) || x.studentName === me.name;
+  return mine ? x : { studentName: "", studentId: null, teacherRatingStars: x.teacherRatingStars || null };
+}
+function studentClassView_(c, me) {
+  var copy = {};
+  Object.keys(c).forEach(function (k) { copy[k] = c[k]; });
+  if (inClass_(c, me)) {
     copy.students = (c.students || []).map(function (x) {
       if (!x) return x;
       var mine = (x.studentId && x.studentId === me.id) || x.studentName === me.name;
       return mine ? x : { studentName: x.studentName, studentId: x.studentId };
     });
-    return copy;
-  };
+  } else {
+    copy.students = (c.students || []).map(function (x) { return seatFor_(x, me); });
+    copy.meetingLink = ""; copy.notes = ""; copy.sessionNotes = "";
+  }
+  return copy;
+}
+function studentSchedule_(who) {
+  var me = who.student;
+  var full = pullScheduleV2_();
   return { ok: true,
-    classes: full.classes.filter(function (c) { return inClass_(c, me); }).map(trim),
-    patterns: full.patterns.filter(function (p) { return inClass_(p, me); }).map(trim),
+    classes: full.classes.map(function (c) { return studentClassView_(c, me); }),
+    // Open teacher slots (no students) are what a student books into;
+    // an old-style group pattern is shown only to its own students.
+    patterns: full.patterns.filter(function (p) { return !(p.students || []).length || inClass_(p, me); }).map(function (p) {
+      var copy = studentClassView_(p, me);
+      if (!inClass_(p, me)) copy.meetingLink = "";
+      return copy;
+    }),
     blockedDates: full.blockedDates, deletedIds: full.deletedIds };
 }
 function ownRows_(rows, me) { return rows.filter(function (r) { return r.studentName === me.name; }); }
@@ -939,6 +1041,20 @@ function doPost(e) {
         if (out && out.student) out.student = selfView_(out.student);
         return jsonResponse_(out);
       }
+      // Booking: only themselves, and the answer only shows their own seat.
+      if (action === "bookSlot") {
+        if (!body.student || (body.student.studentId && body.student.studentId !== me.id)) return denied_({});
+        body.student = { studentId: me.id, studentName: me.name };
+        var booked = bookSlot_(body);
+        if (booked && booked.cls) booked.cls = studentClassView_(booked.cls, me);
+        return jsonResponse_(booked);
+      }
+      if (action === "cancelSlot") {
+        if (normStudent_(body.studentName) !== normStudent_(me.name)) return denied_({});
+        var cancelled = cancelSlot_(body);
+        if (cancelled && cancelled.cls) cancelled.cls = studentClassView_(cancelled.cls, me);
+        return jsonResponse_(cancelled);
+      }
       if (action === "pushProgress") return jsonResponse_(pushProgress_({ progress: ownTree_(body.progress, me) }));
       if (action === "pushHomework") return jsonResponse_(pushHomework_({ homework: ownTree_(body.homework, me) }));
       return denied_({});
@@ -947,6 +1063,8 @@ function doPost(e) {
     if (action === "pushRoster") return jsonResponse_(pushRoster_(body));
     if (action === "pushStudentPatch") return jsonResponse_(pushStudentPatch_(body));
     if (action === "pushScheduleV2") return jsonResponse_(pushScheduleV2_(body));
+    if (action === "bookSlot") return jsonResponse_(bookSlot_(body));
+    if (action === "cancelSlot") return jsonResponse_(cancelSlot_(body));
     if (action === "pushProgress") return jsonResponse_(pushProgress_(body));
     if (action === "pushHomework") return jsonResponse_(pushHomework_(body));
     if (action === "pushLeads") return jsonResponse_(pushLeads_(body));

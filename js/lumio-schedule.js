@@ -167,6 +167,7 @@
     students.forEach(s => { if (!s.studentName) throw new Error("Every student needs a name."); });
     if (!date) throw new Error("Pick a date for this class.");
     if (!startTime) throw new Error("Pick a start time for this class.");
+    if (isPast(date, startTime)) throw new Error("That date and time have already passed.");
     const data = load();
     const record = {
       id: genId(),
@@ -700,7 +701,7 @@
     const data = load();
     const p = data.patterns.find(x => x.id === id);
     if (!p) throw new Error("Fixed schedule not found.");
-    ["teacherId", "teacherName", "startTime", "level", "cohort", "notes", "meetingLink", "active"].forEach(k => {
+    ["teacherId", "teacherName", "startTime", "level", "cohort", "notes", "meetingLink", "active", "extra"].forEach(k => {
       if (patch[k] !== undefined) p[k] = patch[k];
     });
     if (patch.dayOfWeek !== undefined) p.dayOfWeek = Number(patch.dayOfWeek);
@@ -809,7 +810,7 @@
     const skippedUnsubscribed = [];
 
     data.patterns.forEach(p => {
-      if (!p.active) return;
+      if (!p.active || !isLegacyPattern(p)) return; // availability slots materialize on first booking, not here
       let d = nextDateForDayOfWeek(p.startDate > today ? p.startDate : today, p.dayOfWeek);
       while (d <= horizon) {
         const inRange = d >= p.startDate && (!p.endDate || d < p.endDate);
@@ -851,8 +852,387 @@
     return { created: created.length, skippedUnsubscribed };
   }
 
+
+  // =====================================================================
+  //  BOOKING MODEL (1 Oct 2026) -- teacher-first fixed schedule
+  //  * A fixed-schedule pattern is a TEACHER'S AVAILABILITY: weekday +
+  //    start time inside working hours. It has no students and no lesson
+  //    (patterns created before this date still carry students/lessonStart
+  //    and keep generating as before -- "legacy" patterns).
+  //  * A class is created from an availability slot by the FIRST booking,
+  //    which locks the class to that student's level + lesson. Later
+  //    bookings may join only if level+lesson match and there is room.
+  //  * Every booking -- by a student, by a teacher for a student -- goes
+  //    through bookStudentIntoSlot(), so the rules can't be bypassed.
+  // =====================================================================
+  // Every teacher runs 4 fixed sessions a day, Sunday-Thursday (20 a week).
+  const WORK = { days: [0, 1, 2, 3, 4], start: "12:00", end: "20:00", minSlotsPerDay: 4, minSlotsPerTeacher: 20 };
+  const MAX_PER_CLASS = 4;
+  const MAX_PER_WEEK = 3;
+  const CANCEL_MIN_BEFORE = 30;   // minutes before start a student may still cancel
+  const BOOK_HORIZON_DAYS = 21;
+
+  const hmToMin = hm => { const [h, m] = String(hm || "0:0").split(":").map(Number); return h * 60 + (m || 0); };
+  const minToHm = m => `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+  const dowOf = d => { const [y, m, dd] = String(d).split("-").map(Number); return new Date(Date.UTC(y, m - 1, dd)).getUTCDay(); };
+  // Live classes run 45-90 min depending on the lesson (first lessons a
+  // little shorter, the level's Big Review the full 90).
+  function lessonDuration(level, lesson) {
+    const n = Number(lesson) || 1;
+    const N = (global.Lumio && Lumio.lessonCountFor) ? Lumio.lessonCountFor(level) : 20;
+    if (n >= N) return 90;
+    if (n <= 3) return 45;
+    return 60;
+  }
+  function isLegacyPattern(p) { return Array.isArray(p.students) && p.students.length > 0; }
+  function inWorkingHours(dayOfWeek, startTime, durationMinutes) {
+    if (!WORK.days.includes(Number(dayOfWeek))) return `Fixed slots are Sunday to Thursday only.`;
+    const s = hmToMin(startTime), e = s + (Number(durationMinutes) || 60);
+    if (s < hmToMin(WORK.start) || e > hmToMin(WORK.end)) return `Fixed slots must start at or after ${WORK.start} and end by ${WORK.end} (Saudi time).`;
+    return null;
+  }
+  // Teacher availability slot (the new kind of pattern).
+  function addAvailability({ teacherId, teacherName, dayOfWeek, startTime, durationMinutes, meetingLink, notes, startDate, extra } = {}) {
+    if (!teacherId) throw new Error("Pick a teacher.");
+    const bad = inWorkingHours(dayOfWeek, startTime, durationMinutes || 60);
+    if (bad) throw new Error(bad);
+    const data = load();
+    const clash = data.patterns.some(p => p.active && p.teacherId === teacherId && Number(p.dayOfWeek) === Number(dayOfWeek)
+      && Math.abs(hmToMin(p.startTime) - hmToMin(startTime)) < Math.max(Number(p.durationMinutes) || 60, Number(durationMinutes) || 60));
+    if (clash) throw new Error("That overlaps another slot this teacher already has on that day.");
+    const record = {
+      id: genPatternId(), teacherId, teacherName: teacherName || "", dayOfWeek: Number(dayOfWeek), startTime,
+      durationMinutes: Number(durationMinutes) || 60, level: "", cohort: "", group: "", notes: notes || "", meetingLink: meetingLink || "",
+      students: [], startDate: startDate || todayStr(), endDate: null, lessonStart: null, active: true, extra: !!extra,
+      createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+    };
+    data.patterns.push(record); save(data); return record;
+  }
+  function availabilityForTeacher(teacherId) {
+    return listPatterns({ teacherId, active: true }).filter(p => !isLegacyPattern(p))
+      .sort((a, b) => a.dayOfWeek - b.dayOfWeek || hmToMin(a.startTime) - hmToMin(b.startTime));
+  }
+  // The 4-a-day rule: how a teacher stands against it (warning, not a hard
+  // block). perDay[dow] = base slots that day; missingDays lists Sun-Thu
+  // days still under 4.
+  function availabilityStatus(teacherId) {
+    const base = availabilityForTeacher(teacherId).filter(p => !p.extra);
+    const perDay = {}; WORK.days.forEach(d => { perDay[d] = 0; });
+    base.forEach(p => { if (perDay[p.dayOfWeek] !== undefined) perDay[p.dayOfWeek]++; });
+    const missingDays = WORK.days.filter(d => perDay[d] < WORK.minSlotsPerDay);
+    const n = base.length;
+    return { count: n, required: WORK.minSlotsPerTeacher, perDay, perDayRequired: WORK.minSlotsPerDay, missingDays, ok: missingDays.length === 0 };
+  }
+  // One-shot weekly setup: the same start times on every working day.
+  // Existing/overlapping slots are skipped, never duplicated.
+  function setWeeklyAvailability({ teacherId, teacherName, startTimes, durationMinutes, meetingLink } = {}) {
+    if (!teacherId) throw new Error("Pick a teacher.");
+    const times = (startTimes || []).filter(Boolean);
+    if (!times.length) throw new Error("Pick at least one start time.");
+    let created = 0, skipped = 0;
+    WORK.days.forEach(d => times.forEach(t => {
+      try { addAvailability({ teacherId, teacherName, dayOfWeek: d, startTime: t, durationMinutes: durationMinutes || 60, meetingLink }); created++; }
+      catch (e) { skipped++; }
+    }));
+    return { created, skipped };
+  }
+
+  // ---- what the student may book next ----
+  function studentBookingState(studentName, level) {
+    const now = nowTz();
+    const attended = attendedLessonNumbers(studentName, level);
+    const maxAttended = attended.size ? Math.max(...attended) : 0;
+    const future = listClasses({ studentName, status: "scheduled" }).filter(c => c.level === level && stillRunning(c, now));
+    const maxBooked = future.reduce((m, c) => Math.max(m, Number(c.lessonNumber) || 0), 0);
+    const N = (global.Lumio && Lumio.lessonCountFor) ? Lumio.lessonCountFor(level) : 20;
+    const nextLesson = Math.max(maxAttended, maxBooked) + 1;
+    return { nextLesson: nextLesson > N ? null : nextLesson, maxAttended, maxBooked, futureCount: future.length, levelDone: nextLesson > N };
+  }
+  // Sun..Sat week (Riyadh) containing date d.
+  function weekKey(d) { return addDaysStr(d, -dowOf(d)); }
+  function bookingsInWeek(studentName, d) {
+    const wk = weekKey(d);
+    return listClasses({ studentName, status: "scheduled" }).filter(c => weekKey(c.date) === wk).length;
+  }
+  function isPast(date, startTime, now) {
+    now = now || nowTz();
+    return date < now.date || (date === now.date && hmToMin(startTime) <= now.minutes);
+  }
+
+  // Every slot a student could book for (level, lesson) in the next
+  // BOOK_HORIZON_DAYS: availability slots with no class yet ("new"), and
+  // existing classes with the same level+lesson and a free seat ("join").
+  // Past slots, blocked dates and full/mismatched classes never appear.
+  function openSlots({ studentName, level, lesson, days } = {}) {
+    const data = load(); const now = nowTz(); const today = now.date;
+    const horizon = addDaysStr(today, days || BOOK_HORIZON_DAYS);
+    const teacherName = id => { const t = global.LumioProfiles && global.LumioProfiles.listTeachers ? global.LumioProfiles.listTeachers().find(x => x.id === id) : null; return t ? t.name : ""; };
+    const out = [];
+    const mine = listClasses({ studentName, status: "scheduled" });
+    const busy = (d, hm) => mine.some(c => c.date === d && c.startTime === hm);
+    for (let d = today; d <= horizon; d = addDaysStr(d, 1)) {
+      if (isDateBlocked(d)) continue;
+      const dow = dowOf(d);
+      data.patterns.forEach(p => {
+        if (!p.active || isLegacyPattern(p) || Number(p.dayOfWeek) !== dow) return;
+        if (d < p.startDate || (p.endDate && d >= p.endDate)) return;
+        if (isPast(d, p.startTime, now) || busy(d, p.startTime)) return;
+        const cls = data.classes.find(c => c.patternId === p.id && c.date === d && c.status !== "cancelled");
+        if (!cls) {
+          out.push({ kind: "new", date: d, startTime: p.startTime, durationMinutes: lessonDuration(level, lesson), patternId: p.id,
+                     teacherId: p.teacherId, teacherName: p.teacherName || teacherName(p.teacherId), seats: MAX_PER_CLASS, taken: 0 });
+        } else if (cls.level === level && Number(cls.lessonNumber) === Number(lesson) && cls.students.length < MAX_PER_CLASS
+                   && !cls.students.some(s => normName(s.studentName) === normName(studentName))) {
+          out.push({ kind: "join", date: d, startTime: cls.startTime, durationMinutes: cls.durationMinutes, classId: cls.id, patternId: p.id,
+                     teacherId: cls.teacherId, teacherName: cls.teacherName || teacherName(cls.teacherId), seats: MAX_PER_CLASS, taken: cls.students.length });
+        }
+      });
+      // Manual (teacher-made) sessions for the same level+lesson with a free seat.
+      data.classes.forEach(c => {
+        if (c.patternId || c.date !== d || c.status !== "scheduled") return;
+        if (c.level !== level || Number(c.lessonNumber) !== Number(lesson) || c.students.length >= MAX_PER_CLASS) return;
+        if (isPast(d, c.startTime, now) || busy(d, c.startTime)) return;
+        if (c.students.some(s => normName(s.studentName) === normName(studentName))) return;
+        out.push({ kind: "join", date: d, startTime: c.startTime, durationMinutes: c.durationMinutes, classId: c.id, patternId: null,
+                   teacherId: c.teacherId, teacherName: c.teacherName || teacherName(c.teacherId), seats: MAX_PER_CLASS, taken: c.students.length, manual: true });
+      });
+    }
+    return out.sort((a, b) => a.date.localeCompare(b.date) || hmToMin(a.startTime) - hmToMin(b.startTime));
+  }
+
+  // THE booking function. `override` (teacher only) skips the subscription,
+  // sessions-left and weekly-cap checks -- never the lesson lock, capacity
+  // or the past-slot rule.
+  function bookStudentIntoSlot({ studentName, studentId, level, lesson, patternId, classId, date, override, notes } = {}) {
+    if (!studentName) throw new Error("Which student?");
+    if (!level) throw new Error("The student has no level yet.");
+    const data = load(); const now = nowTz();
+    const st = studentBookingState(studentName, level);
+    if (st.levelDone) throw new Error("Every lesson of this level is already attended or booked.");
+    lesson = Number(lesson || st.nextLesson);
+    if (lesson !== st.nextLesson) throw new Error(`The next class to book is Lesson ${st.nextLesson}.`);
+    let cls = classId ? data.classes.find(c => c.id === classId) : null;
+    let pat = patternId ? data.patterns.find(p => p.id === patternId) : null;
+    if (!cls && pat && date) cls = data.classes.find(c => c.patternId === pat.id && c.date === date && c.status !== "cancelled") || null;
+    if (!cls && !pat) throw new Error("Pick a time slot.");
+    const slotDate = cls ? cls.date : date, slotTime = cls ? cls.startTime : pat.startTime;
+    if (!slotDate) throw new Error("Pick a date.");
+    if (isPast(slotDate, slotTime, now)) throw new Error("That time has already passed.");
+    if (isDateBlocked(slotDate)) throw new Error("That date is blocked (holiday / day off).");
+    if (pat && !isLegacyPattern(pat) && (slotDate < pat.startDate || (pat.endDate && slotDate >= pat.endDate) || Number(pat.dayOfWeek) !== dowOf(slotDate))) throw new Error("That slot isn't available on that date.");
+    if (listClasses({ studentName, status: "scheduled" }).some(c => c.date === slotDate && c.startTime === slotTime)) throw new Error("The student already has a class at that time.");
+    if (!override) {
+      const full = global.LumioProfiles ? (studentId ? global.LumioProfiles.getStudent(studentId) : global.LumioProfiles.findByName(studentName)) : null;
+      if (full && !full.subscribed) throw new Error("This student isn't subscribed yet.");
+      if (full && !(Number(full.sessionsRemaining) > 0)) throw new Error("No sessions left on this student's package.");
+      if (bookingsInWeek(studentName, slotDate) >= MAX_PER_WEEK) throw new Error(`Maximum ${MAX_PER_WEEK} classes per week.`);
+    }
+    if (cls) {
+      if (cls.status === "cancelled") throw new Error("That class was cancelled.");
+      if (cls.students.length >= MAX_PER_CLASS) throw new Error("That class is full (4/4).");
+      if (cls.lessonNumber && (cls.level !== level || Number(cls.lessonNumber) !== lesson)) throw new Error("That class is for a different lesson.");
+      if (!cls.lessonNumber) { cls.level = level; cls.lessonNumber = lesson; cls.durationMinutes = lessonDuration(level, lesson); }
+      if (cls.students.some(s => normName(s.studentName) === normName(studentName))) throw new Error("Already booked in that class.");
+      cls.students.push({ studentId: studentId || null, studentName, attendance: null, grade: null, teacherRatingStars: null });
+      if (notes) cls.notes = (cls.notes ? cls.notes + " · " : "") + notes;
+      cls.updatedAt = new Date().toISOString();
+      save(data); return cls;
+    }
+    // first booking creates the class from the availability slot and locks it
+    const record = {
+      id: genId(), teacherId: pat.teacherId, teacherName: pat.teacherName, date: slotDate, startTime: pat.startTime,
+      durationMinutes: lessonDuration(level, lesson), level, cohort: "", group: "", lessonNumber: lesson,
+      meetingLink: pat.meetingLink || "", notes: notes || "", sessionNotes: "", status: "scheduled", patternId: pat.id,
+      students: [{ studentId: studentId || null, studentName, attendance: null, grade: null, teacherRatingStars: null }],
+      createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+    };
+    data.classes.push(record); save(data); return record;
+  }
+  // Student-side cancellation: up to CANCEL_MIN_BEFORE minutes before start.
+  // Removes the student; an emptied class is cancelled so the slot reopens.
+  function cancelBooking(classId, studentName, { byTeacher } = {}) {
+    const data = load(); const now = nowTz();
+    const c = data.classes.find(x => x.id === classId);
+    if (!c) throw new Error("Class not found.");
+    if (!byTeacher) {
+      let minsToStart;
+      if (global.Lumio && Lumio.tzToDate) minsToStart = (Lumio.tzToDate(c.date, c.startTime).getTime() - Date.now()) / 60000;
+      else minsToStart = c.date === now.date ? hmToMin(c.startTime) - now.minutes : (c.date > now.date ? 1e9 : -1e9);
+      if (minsToStart < CANCEL_MIN_BEFORE) throw new Error(`Classes can be cancelled up to ${CANCEL_MIN_BEFORE} minutes before they start.`);
+    }
+    const before = c.students.length;
+    c.students = c.students.filter(s => normName(s.studentName) !== normName(studentName));
+    if (c.students.length === before) throw new Error("That student isn't in this class.");
+    if (!c.students.length) c.status = "cancelled";
+    c.updatedAt = new Date().toISOString();
+    // Lessons are booked in sequence, so dropping lesson N also drops the
+    // student's later bookings (N+1, N+2...) in the same level -- they
+    // can't happen before N anyway. Returned as `cascaded` for the UI.
+    const n = Number(c.lessonNumber) || 0;
+    const cascaded = [];
+    if (n) data.classes.forEach(x => {
+      if (x.id === c.id || x.status !== "scheduled" || x.level !== c.level || !(Number(x.lessonNumber) > n)) return;
+      const b = x.students.length;
+      x.students = x.students.filter(s => normName(s.studentName) !== normName(studentName));
+      if (x.students.length === b) return;
+      if (!x.students.length) x.status = "cancelled";
+      x.updatedAt = new Date().toISOString();
+      cascaded.push(x);
+    });
+    c.cascaded = cascaded.map(x => x.id);
+    save(data); return c;
+  }
+  // Later lessons that would be dropped with this one (for the confirm text).
+  function laterBookings(classId, studentName) {
+    const c = getClass(classId); if (!c || !c.lessonNumber) return [];
+    return listClasses({ studentName, status: "scheduled" }).filter(x => x.id !== c.id && x.level === c.level && Number(x.lessonNumber) > Number(c.lessonNumber));
+  }
+  // Can this student actually join (open the meeting link for) this class?
+  // Lesson N's class needs lesson N-1's homework done first.
+  function joinGate(studentName, cls) {
+    const n = Number(cls.lessonNumber) || 0;
+    if (n <= 1 || !global.Lumio || !Lumio.homeworkFor) return { ok: true };
+    const hw = (Lumio.homeworkFor(studentName)[cls.level] || {})[n - 1];
+    return hw ? { ok: true } : { ok: false, reason: `Finish the homework for Lesson ${n - 1} before joining Lesson ${n}.`, lesson: n - 1 };
+  }
+
+  // ---- student-device booking: server is the referee ----
+  // A student's phone never pushes the whole schedule, so a booking goes
+  // through one narrow server call that re-checks the lock and capacity
+  // under a script lock (two students tapping the same seat at once). The
+  // local rules run first (instant feedback); the server's answer wins.
+  function snapshot() { return JSON.stringify(load()); }
+  function restore(snap) { try { save(JSON.parse(snap)); } catch (e) {} }
+  function replaceClass(cls) {
+    const data = load();
+    const i = data.classes.findIndex(c => c.id === cls.id);
+    if (i >= 0) data.classes[i] = cls; else data.classes.push(cls);
+    save(data);
+  }
+  async function bookSlotRemote(args) {
+    const snap = snapshot();
+    const cls = bookStudentIntoSlot(args);
+    const cfg = getSyncConfig();
+    if (!cfg.enabled || !cfg.url) return cls;
+    try {
+      const res = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=bookSlot" + ((global.LumioProfiles && LumioProfiles.authQuery) ? LumioProfiles.authQuery() : ""), {
+        method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ cls, student: { studentId: args.studentId || null, studentName: args.studentName }, maxPerClass: MAX_PER_CLASS }),
+      });
+      const out = await res.json();
+      if (!out || !out.ok) {
+        restore(snap);
+        if (out && /Unknown action/i.test(out.error || "")) throw new Error("Online booking isn't switched on yet — please tell your teacher (the booking server needs its update).");
+        throw new Error((out && out.error) || "The server refused that booking.");
+      }
+      if (out.cls) { normalizeSheetDates(out.cls); replaceClass(out.cls); return out.cls; }
+      return cls;
+    } catch (e) {
+      if (e && /server refused|different lesson|full|cancelled|already|switched on/i.test(e.message || "")) throw e;
+      restore(snap);
+      throw new Error("Couldn't reach the booking server — check your connection and try again.");
+    }
+  }
+  async function cancelBookingRemote(classId, studentName) {
+    const snap = snapshot();
+    const cls = cancelBooking(classId, studentName, {});
+    const cfg = getSyncConfig();
+    if (!cfg.enabled || !cfg.url) return cls;
+    try {
+      const res = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=cancelSlot" + ((global.LumioProfiles && LumioProfiles.authQuery) ? LumioProfiles.authQuery() : ""), {
+        method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ classId, studentName, minBefore: CANCEL_MIN_BEFORE }),
+      });
+      const out = await res.json();
+      if (!out || !out.ok) {
+        restore(snap);
+        if (out && /Unknown action/i.test(out.error || "")) throw new Error("Online booking isn't switched on yet — please tell your teacher (the booking server needs its update).");
+        throw new Error((out && out.error) || "The server refused that cancellation.");
+      }
+      if (out.cls) { normalizeSheetDates(out.cls); delete out.cls.cascaded; replaceClass(out.cls); }
+      return cls;
+    } catch (e) {
+      if (e && /server refused|minutes before|not found|isn't in|switched on/i.test(e.message || "")) throw e;
+      restore(snap);
+      throw new Error("Couldn't reach the booking server — check your connection and try again.");
+    }
+  }
+
+  // ---- student fixed weekly schedule ----
+  // picks: [{ dayOfWeek, startTime, teacherId }] (max MAX_PER_WEEK). The
+  // plan is just the same single bookings made in sequence: every matching
+  // date in the horizon gets the student's next lesson, under exactly the
+  // rules above. Preview = run the bookings locally on a snapshot, collect
+  // the outcome per date, then put the data back untouched.
+  function weeklySlotOptions(dayOfWeek) {
+    return load().patterns.filter(p => p.active && !isLegacyPattern(p) && Number(p.dayOfWeek) === Number(dayOfWeek))
+      .sort((a, b) => hmToMin(a.startTime) - hmToMin(b.startTime));
+  }
+  function weeklyPlanPreview({ studentName, studentId, level, picks, days } = {}) {
+    const snap = snapshot();
+    const out = [];
+    try {
+      const today = todayStr();
+      const horizon = addDaysStr(today, days || BOOK_HORIZON_DAYS);
+      const full = global.LumioProfiles ? (studentId ? global.LumioProfiles.getStudent(studentId) : global.LumioProfiles.findByName(studentName)) : null;
+      let sessionsLeft = full ? Number(full.sessionsRemaining) || 0 : 99;
+      for (let d = today; d <= horizon; d = addDaysStr(d, 1)) {
+        const dow = dowOf(d);
+        (picks || []).filter(pk => Number(pk.dayOfWeek) === dow).sort((a, b) => hmToMin(a.startTime) - hmToMin(b.startTime)).forEach(pk => {
+          const pat = load().patterns.find(p => p.active && !isLegacyPattern(p) && p.teacherId === pk.teacherId && Number(p.dayOfWeek) === dow && p.startTime === pk.startTime);
+          const item = { date: d, startTime: pk.startTime, teacherId: pk.teacherId, teacherName: pat ? pat.teacherName : "", lesson: null, ok: false, reason: "" };
+          if (!pat) { item.reason = "That teacher no longer has this slot."; out.push(item); return; }
+          if (isPast(d, pk.startTime)) return; // silently skip what already passed
+          const st = studentBookingState(studentName, level);
+          if (st.levelDone) { item.reason = "Level complete — nothing more to book."; out.push(item); return; }
+          if (sessionsLeft <= 0) { item.reason = "No sessions left on the package after the bookings above."; out.push(item); return; }
+          try {
+            const cls = bookStudentIntoSlot({ studentName, studentId, level, lesson: st.nextLesson, patternId: pat.id, date: d });
+            item.lesson = cls.lessonNumber; item.ok = true; item.patternId = pat.id; item.classId = cls.id;
+            item.kind = cls.students.length > 1 ? "join" : "new"; item.taken = cls.students.length - 1;
+            sessionsLeft--;
+          } catch (e) { item.reason = e.message; }
+          out.push(item);
+        });
+      }
+    } finally { restore(snap); }
+    return out;
+  }
+  async function bookWeeklyRemote({ studentName, studentId, level, picks, days } = {}) {
+    const plan = weeklyPlanPreview({ studentName, studentId, level, picks, days });
+    const results = [];
+    for (const item of plan) {
+      if (!item.ok) { results.push(item); continue; }
+      try {
+        const cls = await bookSlotRemote({ studentName, studentId, level, lesson: item.lesson, patternId: item.patternId, date: item.date });
+        results.push(Object.assign({}, item, { ok: true, classId: cls.id }));
+      } catch (e) {
+        results.push(Object.assign({}, item, { ok: false, reason: e.message }));
+        if (/switched on|reach the booking server/i.test(e.message || "")) break; // no point continuing offline
+      }
+    }
+    return results;
+  }
+  const FIXED_PLAN_KEY = "lumio_fixed_plan_v1";
+  function fixedPlanFor(studentName) {
+    try { const all = JSON.parse(localStorage.getItem(FIXED_PLAN_KEY) || "{}"); return all[normName(studentName)] || null; } catch (e) { return null; }
+  }
+  function saveFixedPlan(studentName, picks) {
+    try {
+      const all = JSON.parse(localStorage.getItem(FIXED_PLAN_KEY) || "{}");
+      if (picks && picks.length) all[normName(studentName)] = { picks, savedAt: new Date().toISOString() }; else delete all[normName(studentName)];
+      localStorage.setItem(FIXED_PLAN_KEY, JSON.stringify(all));
+    } catch (e) {}
+  }
+
   global.LumioSchedule = {
     listClasses, getClass,
+    bookSlotRemote, cancelBookingRemote, laterBookings,
+    weeklySlotOptions, weeklyPlanPreview, bookWeeklyRemote, fixedPlanFor, saveFixedPlan,
+    // booking model
+    WORK, MAX_PER_CLASS, MAX_PER_WEEK, CANCEL_MIN_BEFORE, lessonDuration, inWorkingHours, isPast, isLegacyPattern,
+    addAvailability, setWeeklyAvailability, availabilityForTeacher, availabilityStatus, studentBookingState, bookingsInWeek, openSlots,
+    bookStudentIntoSlot, cancelBooking, joinGate,
     addClass, updateClass, removeClass, cancelClass,
     markAttendance, gradeStudent, rateTeacher, completionState,
     needsAttendance, attendanceStatsForStudent, gradesForStudent, teacherRatingsGiven, teacherAverageRating,

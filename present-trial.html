@@ -32,6 +32,16 @@
   #gameLinks a { background:#fff; color:#43301F; text-decoration:none; font-weight:800; font-size:.8rem; padding:9px 16px;
     border-radius:999px; box-shadow:0 8px 16px rgba(0,0,0,.2); }
   #loadingMsg { color:#fff; font-family:'Baloo 2',sans-serif; font-weight:700; }
+  /* Point reaction: the tapped pill pops, flashes gold and floats a "+1" */
+  @keyframes pillPop { 0%{transform:scale(1)} 35%{transform:scale(1.22)} 70%{transform:scale(.96)} 100%{transform:scale(1)} }
+  @keyframes floatUp { 0%{opacity:1;transform:translate(-50%,0) scale(1)} 100%{opacity:0;transform:translate(-50%,-70px) scale(1.4)} }
+  @keyframes chipFlash { 0%,100%{background:rgba(255,255,255,.1)} 40%{background:rgba(255,201,60,.55)} }
+  .pill-pop { animation: pillPop .45s cubic-bezier(.22,1,.36,1); box-shadow: 0 0 0 4px #FFC93C, 0 10px 26px rgba(255,201,60,.55) !important; }
+  .plus-one { position:absolute; left:50%; top:-6px; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1.6rem; color:#FFC93C; text-shadow:0 2px 6px rgba(0,0,0,.35); pointer-events:none; animation: floatUp .9s ease-out forwards; }
+  .chip-flash { animation: chipFlash .7s ease; }
+  #qCounter { display:none; align-items:center; gap:8px; background:rgba(255,255,255,.1); border-radius:999px; padding:6px 12px; color:#fff; font-weight:800; font-size:.85rem; }
+  .q-badge { position:absolute; top:-50px; right:40px; background:#FFC93C; color:#43301F; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1rem; padding:6px 16px; border-radius:999px; box-shadow:0 6px 14px rgba(0,0,0,.15); z-index:6; }
+  #qCounter button { background:rgba(255,255,255,.18); color:#fff; border:none; border-radius:999px; width:26px; height:26px; font-weight:800; cursor:pointer; font-family:inherit; line-height:1; }
 </style>
 </head>
 <body>
@@ -39,6 +49,10 @@
 <div id="topbar">
   <div class="brand" id="lessonBrand">📖 Lumio English</div>
   <div id="scoreboardChip" style="display:none;align-items:center;gap:10px;background:rgba(255,255,255,.1);border-radius:999px;padding:6px 14px">
+  </div>
+  <div id="qCounter" title="Questions asked in this game — counts up each time a point is awarded; use − / + to correct it">
+    <span>❓ Question <b id="qNum">1</b><span id="qOf"></span></span>
+    <button onclick="bumpQ(-1)">−</button><button onclick="bumpQ(1)">+</button>
   </div>
   <div class="actions">
     <button id="manageRosterBtn">👥 <span id="rosterCountLabel">0</span> students</button>
@@ -124,6 +138,12 @@
 <script>
 const qs = k => new URLSearchParams(location.search).get(k);
 const level = qs("level") || "pre-a";
+// mode=solo: the 1-on-1 trial (slide-content/trial-solo/, built by
+// lib/trial_solo.py) -- one student, no teams, a star meter instead of
+// the scoreboard, and solo challenge slides (see renderChallengeUI).
+const SOLO = qs("mode") === "solo";
+const DECK_DIR = SOLO ? "trial-solo" : "trial";
+let stars = 0; const STAR_GOAL = 10; const badgesEarned = {};
 
 // ---------- roster (no fixed limit -- add/remove any time, including
 // mid-class for latecomers, which is routine on a live Zoom trial) ----------
@@ -189,7 +209,16 @@ rosterNameInput.addEventListener("keydown", e => { if (e.key === "Enter") docume
 let cur = 1;
 let total = 1;
 
-document.getElementById("lessonBrand").textContent = `📖 ${level.toUpperCase()} · Trial Class`;
+document.getElementById("lessonBrand").textContent = `📖 ${level.toUpperCase()} · ${SOLO ? "1-on-1 Trial" : "Trial Class"}`;
+if (SOLO) {
+  document.getElementById("manageRosterBtn").style.display = "none";
+  document.querySelector("#nameSetupOverlay h2").textContent = "Who's your student today?";
+  document.querySelector("#nameSetupOverlay p").textContent = "One name — this is a one-on-one class.";
+  document.getElementById("rosterNameInput").placeholder = "Student's name…";
+  document.getElementById("startTrialBtn").textContent = "Start 1-on-1 Trial →";
+  document.getElementById("rosterAddBtn").style.display = "none";
+  document.getElementById("rosterList").style.display = "none";
+}
 
 // Trial decks are hand-built, not generated from a lesson's real vocab
 // count -- fixed slide totals per level, filled in as each level's trial
@@ -198,7 +227,8 @@ document.getElementById("lessonBrand").textContent = `📖 ${level.toUpperCase()
 // Pre-A / L1 / L2 decks had grown (48/43/41) but these stale counts made
 // the player stop early, so the closing slides were never reachable.
 const TRIAL_TOTALS = { "pre-a": 53, "level1": 44, "level2": 43, "level3": 48, "level4": 43, "level5": 41, "level6": 41 };
-total = TRIAL_TOTALS[level] || 1;
+const SOLO_TOTALS = { "pre-a": 53, "level1": 44, "level2": 43, "level3": 48, "level4": 43, "level5": 41, "level6": 41 };
+total = (SOLO ? SOLO_TOTALS : TRIAL_TOTALS)[level] || 1;
 
 if (roster.length) {
   nameOverlay.style.display = "none";
@@ -207,6 +237,7 @@ if (roster.length) {
   document.getElementById("stageWrap").style.visibility = "hidden";
 }
 document.getElementById("startTrialBtn").onclick = () => {
+  if (SOLO) { const nm = rosterNameInput.value.trim(); if (nm) { roster.length = 0; roster.push({ name: nm, team: null }); } }
   if (!roster.length) { rosterNameInput.focus(); return; }
   nameOverlay.style.display = "none";
   document.getElementById("stageWrap").style.visibility = "visible";
@@ -229,6 +260,11 @@ rosterModalInput.addEventListener("keydown", e => { if (e.key === "Enter") docum
 // ---------- scoreboard chip (topbar, visible on every slide once teams exist) ----------
 function refreshScoreboardChip() {
   const chip = document.getElementById("scoreboardChip");
+  if (SOLO) {
+    chip.style.display = "flex";
+    chip.innerHTML = `<span style="color:#FFC93C;font-weight:800;font-size:.9rem">⭐ ${stars} / ${STAR_GOAL} stars</span>`;
+    return;
+  }
   const anyTeamed = roster.some(s => s.team);
   if (!anyTeamed) { chip.style.display = "none"; return; }
   chip.style.display = "flex";
@@ -238,11 +274,63 @@ function refreshScoreboardChip() {
     <span style="color:${TEAMS.B.color};font-weight:800;font-size:.85rem">${TEAMS.B.emoji} ${TEAMS.B.name} ${scores.B}</span>`;
 }
 
-function awardPoint(team, studentName) {
+// ---------- question counter: one "game" = the run of consecutive
+// challenge slides (buzzer / relay / copy-cat). Resets automatically on
+// the first challenge slide after a non-challenge slide; each awarded
+// point counts as one question answered; − / + in the top bar correct it.
+let qCount = 0, lastWasChallenge = false;
+const CHALLENGE_KINDS = ["buzzer", "team-relay", "copycat", "solo-answer", "solo-do"];
+function bumpQ(d) { qCount = Math.max(0, qCount + d); refreshQCounter(); }
+function refreshQCounter() {
+  const el = document.getElementById("qCounter"); if (!el) return;
+  const root = document.querySelector("[data-challenge]");
+  const kind = root ? root.dataset.challenge : "";
+  const show = CHALLENGE_KINDS.includes(kind) || (kind === "scoreboard" && qCount > 0);
+  el.style.display = show ? "flex" : "none";
+  // On a challenge slide: the question being asked now. On the scoreboard: how many were asked.
+  const onChallenge = CHALLENGE_KINDS.includes(kind);
+  document.getElementById("qNum").textContent = onChallenge ? qCount + 1 : qCount;
+  document.getElementById("qOf").textContent = onChallenge ? "" : " asked";
+  // the same number inside the slide, where the students see it too
+  if (root && CHALLENGE_KINDS.includes(kind)) {
+    let b = root.querySelector(".q-badge");
+    if (!b) { b = document.createElement("div"); b.className = "q-badge"; root.prepend(b); }
+    b.textContent = `Question ${qCount + 1}`;
+  }
+}
+function trackChallengeSlide() {
+  const root = document.querySelector("[data-challenge]");
+  const isCh = !!root && CHALLENGE_KINDS.includes(root.dataset.challenge);
+  if (isCh && !lastWasChallenge) qCount = 0;          // new game starts
+  lastWasChallenge = isCh;
+  refreshQCounter();
+}
+
+// ---------- point reaction: pop + gold ring + floating "+1" on the tapped
+// pill, a flash on the top-bar scoreboard, confetti and the win chime. ----------
+function reactToPoint(btn) {
+  try {
+    if (btn) {
+      btn.classList.remove("pill-pop"); void btn.offsetWidth; btn.classList.add("pill-pop");
+      btn.style.position = "relative";
+      const f = document.createElement("span"); f.className = "plus-one"; f.textContent = "+1 ⭐";
+      btn.appendChild(f); setTimeout(() => f.remove(), 950);
+    }
+    const chip = document.getElementById("scoreboardChip");
+    chip.classList.remove("chip-flash"); void chip.offsetWidth; chip.classList.add("chip-flash");
+    if (typeof Lumio !== "undefined") { if (Lumio.beep) Lumio.beep(true); if (Lumio.confetti) Lumio.confetti(40); }
+  } catch (e) {}
+}
+
+function awardPoint(team, studentName, btn) {
   scores[team] = (scores[team] || 0) + 1;
   if (studentName) shoutouts[studentName] = (shoutouts[studentName] || 0) + 1;
+  qCount++;
   refreshScoreboardChip();
-  renderChallengeUI(); // refresh in place so the score bump is visible immediately
+  reactToPoint(btn);
+  // re-render after the pop so the animation isn't cut off
+  setTimeout(() => { renderChallengeUI(); refreshQCounter(); }, 480);
+  refreshQCounter();
 }
 
 // ---------- challenge UI: renders into whatever placeholder containers
@@ -253,16 +341,53 @@ function awardPoint(team, studentName) {
 function pillButton(label, onClick, color) {
   const b = document.createElement("button");
   b.textContent = label;
-  b.onclick = onClick;
+  b.onclick = () => onClick(b);
   b.style.cssText = `background:${color};color:#fff;border:none;border-radius:999px;padding:10px 20px;
     font-weight:800;font-size:.95rem;cursor:pointer;font-family:'Baloo 2',sans-serif;margin:4px;box-shadow:0 4px 10px rgba(0,0,0,.15)`;
   return b;
 }
 
+function addStars(n, btn) { stars = Math.max(0, stars + n); if (n > 0) { qCount++; reactToPoint(btn); } refreshScoreboardChip(); setTimeout(() => { renderChallengeUI(); refreshQCounter(); }, n > 0 ? 480 : 0); refreshQCounter(); }
+
 function renderChallengeUI() {
   const root = document.querySelector("[data-challenge]");
   if (!root) return;
   const kind = root.dataset.challenge;
+
+  if (kind === "solo-answer") {
+    root.innerHTML = "";
+    root.style.cssText = "display:flex;gap:12px;justify-content:center;flex-wrap:wrap";
+    root.appendChild(pillButton("⭐ Got it! (+1 star)", (btn) => addStars(1, btn), "#F97316"));
+    root.appendChild(pillButton("🔁 Almost — say it with me", () => { const el = document.querySelector("[data-say]"); if (el && typeof Lumio !== "undefined" && Lumio.speak) Lumio.speak(el.dataset.say); }, "#0D9488"));
+    return;
+  }
+  if (kind === "solo-do") {
+    root.innerHTML = "";
+    root.style.cssText = "display:flex;gap:12px;justify-content:center;flex-wrap:wrap";
+    [1, 2, 3].forEach(k => root.appendChild(pillButton("⭐".repeat(k), (btn) => addStars(k, btn), k === 3 ? "#F97316" : k === 2 ? "#F59E0B" : "#0D9488")));
+    return;
+  }
+  if (kind === "solo-meter") {
+    const el = root.querySelector("#soloMeter"); if (!el) return;
+    const compact = el.dataset.compact === "1";
+    const pct = Math.min(100, Math.round(stars / STAR_GOAL * 100));
+    const full = "⭐".repeat(Math.min(stars, STAR_GOAL)) + "☆".repeat(Math.max(0, STAR_GOAL - stars));
+    el.innerHTML = `<div style="background:#fff;border-radius:20px;padding:${compact ? "10px 22px" : "18px 34px"};box-shadow:0 10px 24px rgba(0,0,0,.14);text-align:center;min-width:${compact ? 380 : 520}px">
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:${compact ? "1.9rem" : "2.8rem"};color:#43301F;line-height:1">${stars} <span style="font-size:1rem;color:#8A7160">/ ${STAR_GOAL} stars</span></div>
+        <div style="font-size:${compact ? "1.2rem" : "1.6rem"};letter-spacing:2px;margin:6px 0">${full}</div>
+        <div style="height:12px;background:#F3EEE4;border-radius:999px;overflow:hidden"><div style="width:${pct}%;height:100%;background:linear-gradient(90deg,#FFC93C,#F97316);transition:width .3s"></div></div>
+        ${stars >= STAR_GOAL ? `<div style="margin-top:8px;font-weight:800;color:#16A34A">🎉 Goal reached — superstar!</div>` : `<div style="margin-top:8px;font-weight:700;color:#8A7160;font-size:.9rem">${STAR_GOAL - stars} more to the goal</div>`}
+        ${compact ? "" : `<div style="margin-top:10px;display:flex;gap:8px;justify-content:center"><button onclick="addStars(1)" style="background:#F97316;color:#fff;border:none;border-radius:999px;padding:6px 14px;font-weight:800;cursor:pointer;font-family:inherit">+1 ⭐</button><button onclick="addStars(-1)" style="background:#EEE;color:#43301F;border:none;border-radius:999px;padding:6px 14px;font-weight:800;cursor:pointer;font-family:inherit">−1</button></div>`}
+      </div>`;
+    return;
+  }
+  if (kind === "solo-badges") {
+    const zone = root.querySelector("#soloBadges") || root; 
+    const BADGES = ["⚡ Fast Thinker", "🗣️ Brave Speaker", "👂 Super Listener", "🏃 Action Hero", "🌟 Star Collector", "😊 Big Smile"];
+    zone.innerHTML = BADGES.map(b => `<label style="display:flex;align-items:center;gap:12px;background:#fff;border-radius:14px;padding:12px 18px;margin-bottom:8px;box-shadow:0 4px 12px rgba(0,0,0,.08);cursor:pointer;font-weight:800;color:#2B2640;font-size:1rem">
+        <input type="checkbox" ${badgesEarned[b] ? "checked" : ""} onchange="badgesEarned[${JSON.stringify(b)}]=this.checked" style="width:20px;height:20px;accent-color:#F97316">${b}</label>`).join("");
+    return;
+  }
 
   if (kind === "team-assign") {
     autoAssignTeams();
@@ -284,7 +409,7 @@ function renderChallengeUI() {
     if (!roster.length) { zone.innerHTML = `<div style="color:#9385C4">Add students from the 👥 button above.</div>`; return; }
     roster.forEach(s => {
       const color = s.team ? TEAMS[s.team].color : "#9385C4";
-      zone.appendChild(pillButton(s.name, () => awardPoint(s.team || "A", s.name), color));
+      zone.appendChild(pillButton(s.name, (btn) => awardPoint(s.team || "A", s.name, btn), color));
     });
   }
 
@@ -292,8 +417,8 @@ function renderChallengeUI() {
     const zone = root.querySelector("#teamZone");
     if (!zone) return;
     zone.innerHTML = "";
-    zone.appendChild(pillButton(`${TEAMS.A.emoji} ${TEAMS.A.name}`, () => awardPoint("A"), TEAMS.A.color));
-    zone.appendChild(pillButton(`${TEAMS.B.emoji} ${TEAMS.B.name}`, () => awardPoint("B"), TEAMS.B.color));
+    zone.appendChild(pillButton(`${TEAMS.A.emoji} ${TEAMS.A.name}`, (btn) => awardPoint("A", null, btn), TEAMS.A.color));
+    zone.appendChild(pillButton(`${TEAMS.B.emoji} ${TEAMS.B.name}`, (btn) => awardPoint("B", null, btn), TEAMS.B.color));
   }
 
   if (kind === "scoreboard") {
@@ -332,7 +457,7 @@ function renderChallengeUI() {
 
 function loadSlide(n) {
   cur = n;
-  fetch(`slide-content/trial/${level}/slide-${String(n).padStart(2,"0")}.html`)
+  fetch(`slide-content/${DECK_DIR}/${level}/slide-${String(n).padStart(2,"0")}.html`)
     .then(r => { if (!r.ok) throw new Error("missing"); return r.text(); })
     .then(html => {
       const stageContent = document.getElementById("stageContent");
@@ -344,6 +469,7 @@ function loadSlide(n) {
       renderTrialNames();
       renderChallengeUI();
       refreshScoreboardChip();
+      trackChallengeSlide();
     })
     .catch(() => { document.getElementById("stageContent").innerHTML = "<div id='loadingMsg' style='padding:40px'>Slide not found.</div>"; });
 }

@@ -147,6 +147,69 @@
   body.theme-teen .sd-progressbar{ background:rgba(249,115,22,.18) !important; }
   body.theme-teen .sd-progressbar > div{ background:linear-gradient(90deg,var(--lumio-orange),var(--lumio-sun)) !important; box-shadow:0 0 10px rgba(34,211,238,.5); }
 
+  /* Booking + fixed-schedule UI on the night theme: dark tiles, light ink,
+     teal/orange accents kept. Specific enough to beat the blanket rule. */
+  body.theme-teen .sd-book{ border-top-color:rgba(255,243,214,.18); }
+  body.theme-teen .sd-book-title .lvl{ background:rgba(34,211,238,.15) !important; color:#7DE8F5 !important; }
+  body.theme-teen .sd-book-note{ background:rgba(249,115,22,.14); color:var(--lumio-night-ink) !important; }
+  body.theme-teen .sd-book-note.extend{ background:rgba(34,211,238,.12); }
+  body.theme-teen .sd-book-tabs{ background:rgba(255,255,255,.08); }
+  body.theme-teen .sd-book-tabs button{ color:var(--lumio-night-muted) !important; }
+  body.theme-teen .sd-book-tabs button.active{ background:rgba(255,255,255,.14); color:#fff !important; box-shadow:none; }
+  body.theme-teen .sd-week-nav button{ background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.18); color:var(--lumio-night-ink) !important; }
+  body.theme-teen .sd-day{ background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.14); }
+  body.theme-teen .sd-day .dw, body.theme-teen .sd-day .dn{ color:var(--lumio-night-ink) !important; }
+  body.theme-teen .sd-day .ct{ color:#7DE8F5 !important; }
+  body.theme-teen .sd-day.active{ background:rgba(34,211,238,.18); border-color:#22D3EE; }
+  body.theme-teen .sd-day.off, body.theme-teen .sd-day.past{ background:rgba(255,255,255,.03); opacity:.5; }
+  body.theme-teen .sd-day.full{ border-style:dashed; }
+  body.theme-teen .sd-day.full .ct, body.theme-teen .sd-day.off .ct, body.theme-teen .sd-day.past .ct{ color:var(--lumio-night-muted) !important; }
+  body.theme-teen .sd-day.picked{ border-color:var(--lumio-orange); }
+  body.theme-teen .sd-day.picked .dn{ color:var(--lumio-orange) !important; }
+  body.theme-teen .sd-step{ color:var(--lumio-night-ink) !important; }
+  body.theme-teen .sd-step.muted{ color:var(--lumio-night-muted) !important; }
+  body.theme-teen .sd-hour{ background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.14); color:var(--lumio-night-ink) !important; }
+  body.theme-teen .sd-hour span{ color:#7DE8F5 !important; }
+  body.theme-teen .sd-hour.closed{ background:repeating-linear-gradient(135deg,rgba(255,255,255,.03) 0 6px,rgba(255,255,255,.07) 6px 8px); color:rgba(255,243,214,.35) !important; }
+  body.theme-teen .sd-hour.closed span{ color:rgba(255,243,214,.3) !important; }
+  body.theme-teen .sd-hour.active{ background:rgba(34,211,238,.18); border-color:#22D3EE; }
+  body.theme-teen .sd-teacher, body.theme-teen .sd-slot{ background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.14); }
+  body.theme-teen .sd-teacher .nm{ color:#fff !important; }
+  body.theme-teen .sd-teacher .rt, body.theme-teen .sd-teacher .mt{ color:var(--lumio-night-muted) !important; }
+  body.theme-teen .sd-teacher .rt b{ color:var(--lumio-sun) !important; }
+  body.theme-teen .sd-teacher .kind{ color:#7DE8F5 !important; }
+  body.theme-teen .sd-teacher .kind.new{ color:var(--lumio-sun) !important; }
+  body.theme-teen .sd-teacher .seats{ background:rgba(255,255,255,.12); color:var(--lumio-night-ink) !important; }
+  body.theme-teen .sd-teacher .face{ background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.2); }
+  body.theme-teen .sd-book-btn{ background:var(--lumio-orange); color:#fff !important; }
+  body.theme-teen .sd-book-btn:disabled{ opacity:.45; }
+  body.theme-teen .sd-pick{ background:rgba(34,211,238,.12); border-color:rgba(34,211,238,.35); }
+  body.theme-teen .sd-pick b{ color:#fff !important; }
+  body.theme-teen .sd-pick small{ color:var(--lumio-night-muted) !important; }
+  body.theme-teen .sd-pick .face{ background:rgba(255,255,255,.12); }
+  body.theme-teen .sd-pick button{ background:rgba(255,255,255,.12); color:#FCA5A5 !important; }
+  body.theme-teen .sd-cancel-link{ color:#FCA5A5 !important; border-color:#FCA5A5; }
+  body.theme-teen .sd-gate{ background:rgba(249,115,22,.2); color:var(--lumio-night-ink) !important; }
+  body.theme-teen .sd-week-cap, body.theme-teen .sd-book-sub{ color:var(--lumio-night-muted) !important; }
+  body.theme-teen .sd-class-row{ border-bottom-color:rgba(255,255,255,.1); }
+  body.theme-teen .sd-class-row .sd-join-link{ background:rgba(34,211,238,.15); color:#7DE8F5 !important; }
+  /* Level test card on night */
+  body.theme-teen .sd-test-card{ background:var(--lumio-night-card); box-shadow:none; border:2px solid rgba(255,243,214,.12); }
+  body.theme-teen .sd-test-title{ color:var(--lumio-night-ink); }
+  body.theme-teen .sd-test-sub, body.theme-teen .sd-test-meta{ color:var(--lumio-night-muted); }
+  body.theme-teen .sd-test-badge{ background:rgba(255,255,255,.08); }
+  body.theme-teen .sd-test-card.ready .sd-test-badge{ background:rgba(34,211,238,.18); }
+  body.theme-teen .sd-test-card.passed .sd-test-badge{ background:rgba(255,209,102,.2); }
+  body.theme-teen .sd-test-facts div{ background:rgba(255,255,255,.06); }
+  body.theme-teen .sd-test-facts b{ color:var(--lumio-night-ink); }
+  body.theme-teen .sd-test-facts span{ color:var(--lumio-night-muted); }
+  body.theme-teen .sd-test-link.locked{ background:rgba(255,255,255,.08); color:var(--lumio-night-muted); }
+  body.theme-teen .sd-test-link.ready{ background:linear-gradient(135deg,#22D3EE,#0E7490); color:#fff; }
+  body.theme-teen .sd-test-link.passed{ background:linear-gradient(135deg,#FFD166,#F4A300); color:#5A3A00; }
+  /* Booking confirm modal stays white on both themes: force dark ink */
+  .sd-modal #bookTitle{ color:#2A2118; }
+  .sd-modal #bookBody{ color:#6B5040; }
+
   /* XP readout: reuses the same star-count element, relabeled + rescaled for teen levels only */
   body.theme-teen .sd-xp-icon{ background:rgba(34,211,238,.15) !important; color:var(--lumio-sun) !important; }
 
@@ -332,6 +395,29 @@
   .sd-cert-link:active{transform:translateY(0) scale(.96)}
   .sd-cert-link:focus-visible{outline:3px solid rgba(122,78,0,.35);outline-offset:2px}
   .sd-cert-link-logo{height:20px;width:auto;border-radius:0;flex-shrink:0}
+  .sd-test-card{background:#fff;border-radius:var(--sd-radius);padding:22px 24px;box-shadow:0 4px 16px rgba(0,0,0,.05)}
+  .sd-test-top{display:flex;align-items:center;gap:14px}
+  .sd-test-badge{width:58px;height:58px;border-radius:18px;background:#F3EEE4;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0}
+  .sd-test-card.ready .sd-test-badge{background:var(--sd-teal-soft,#E0F5F3)}
+  .sd-test-card.passed .sd-test-badge{background:#FFF1D6}
+  .sd-test-title{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.15rem;color:var(--sd-cocoa)}
+  .sd-test-sub{font-size:.84rem;font-weight:700;color:var(--sd-cocoa-soft)}
+  .sd-test-bar{margin-top:14px;height:10px}
+  .sd-test-card.passed .sd-test-bar > div{background:linear-gradient(90deg,#FFD166,#F4A300)}
+  .sd-test-meta{font-size:.76rem;font-weight:700;color:var(--sd-cocoa-soft);margin-top:6px}
+  .sd-test-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+  .sd-test-facts div{background:#FAF6EE;border-radius:12px;padding:8px 10px;text-align:center}
+  .sd-test-facts b{display:block;font-family:'Baloo 2',sans-serif;font-size:1.1rem;color:var(--sd-cocoa)}
+  .sd-test-facts span{font-size:.66rem;font-weight:700;color:var(--sd-cocoa-soft);line-height:1.2;display:block}
+  .sd-test-card .sd-test-link{margin-top:14px;width:100%;justify-content:center;box-sizing:border-box}
+  .sd-test-link{background:linear-gradient(135deg,var(--sd-teal),var(--sd-teal-deep));color:#fff;padding:8px 16px;gap:9px;line-height:1.15}
+  .sd-test-link .ic{font-size:1.1rem}
+  .sd-test-link small{display:block;font-size:.68rem;font-weight:700;opacity:.9}
+  .sd-test-link.locked{background:#F3EEE4;color:var(--sd-cocoa-soft);box-shadow:none;cursor:default}
+  .sd-test-link.locked:hover{transform:none;box-shadow:none}
+  .sd-test-link.passed{background:linear-gradient(135deg,#FFD166,#F4A300);color:#5A3A00}
+  .sd-test-link.ready{animation:sdTestPulse 1.8s ease-in-out infinite}
+  @keyframes sdTestPulse{0%,100%{box-shadow:0 4px 10px rgba(0,0,0,.08)}50%{box-shadow:0 6px 18px rgba(13,148,136,.45)}}
 
   /* ---------- Section headers ---------- */
   .sd-section-title{display:flex;align-items:center;gap:8px;margin:26px 0 12px}
@@ -490,6 +576,20 @@
   .mp-field .lbl{color:var(--sd-cocoa-soft);font-weight:700;font-size:.66rem;text-transform:uppercase;letter-spacing:.3px}
   .mp-field .val{font-weight:800;margin-top:1px;font-size:.85rem;color:var(--sd-cocoa)}
   .mp-field .val i{font-weight:600;font-style:normal;opacity:.6}
+  .mp-grades{margin-top:12px;background:var(--lumio-cream,#FFF8EC);border:1px solid var(--lumio-border,#EAE3D8);border-radius:14px;padding:12px 14px}
+  .mp-grades-head{display:flex;align-items:center;gap:12px}
+  .mp-grade-avg{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:64px;padding:6px 10px;border-radius:12px;background:var(--lumio-teal-soft);color:var(--lumio-teal)}
+  .mp-grade-avg b{font-family:'Baloo 2',sans-serif;font-size:1.5rem;line-height:1}
+  .mp-grade-avg span{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.3px;opacity:.85;margin-top:2px}
+  .mp-grade-avg.blue{background:var(--lumio-blue-soft);color:var(--lumio-blue)} .mp-grade-avg.purple{background:var(--lumio-sun-soft);color:#7B4A0E} .mp-grade-avg.coral{background:var(--lumio-coral-soft);color:var(--lumio-coral)}
+  .mp-grades-sub{font-size:.74rem;font-weight:700;color:var(--sd-cocoa-soft)}
+  .mp-grade-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .mp-grade-chip{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--lumio-border,#EAE3D8);border-radius:999px;padding:3px 10px 3px 8px;font-size:.72rem;font-weight:800;color:var(--sd-cocoa-soft)}
+  .mp-grade-chip b{font-family:'Baloo 2',sans-serif;font-size:.9rem;color:var(--lumio-teal)}
+  .mp-grade-chip.blue b{color:var(--lumio-blue)} .mp-grade-chip.purple b{color:#B45309} .mp-grade-chip.coral b{color:var(--lumio-coral)}
+  body.theme-teen .mp-grades{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)}
+  body.theme-teen .mp-grade-chip{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.14);color:var(--lumio-night-muted)}
+  body.theme-teen .mp-grades-sub{color:var(--lumio-night-muted)}
   .mp-subbanner{
     display:flex;align-items:center;gap:8px;margin-top:12px;padding:10px 14px;border-radius:13px;font-weight:800;font-size:.82rem;
   }
@@ -765,6 +865,79 @@
   .sd-class-row .who{font-weight:700;font-size:.88rem}
   .sd-class-row .meta{font-size:.76rem;color:var(--sd-cocoa-soft);font-weight:600}
   .sd-empty-note{text-align:center;color:var(--sd-cocoa-soft);font-weight:700;font-size:.88rem;padding:10px 0}
+  /* ---------- booking ---------- */
+  .sd-book{margin-top:14px;border-top:2px dashed #F0E9DA;padding-top:14px}
+  .sd-book-title{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.02rem;color:var(--sd-cocoa);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .sd-book-title .lvl{font-size:.74rem;font-weight:800;background:var(--sd-teal-soft,#E0F5F3);color:var(--sd-teal-deep);padding:3px 10px;border-radius:999px}
+  .sd-book-sub{font-size:.8rem;font-weight:600;color:var(--sd-cocoa-soft);margin:2px 0 10px}
+  .sd-book-note{font-size:.84rem;font-weight:700;color:#7A3F0B;background:#FFF1E0;border-radius:12px;padding:10px 12px}
+  .sd-days{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}
+  .sd-day{flex:0 0 auto;min-width:62px;text-align:center;border:2px solid #F0E9DA;border-radius:14px;padding:8px 6px;cursor:pointer;background:#fff;font-weight:800;color:var(--sd-cocoa)}
+  .sd-day .dw{font-size:.68rem;text-transform:uppercase;letter-spacing:.04em;color:var(--sd-cocoa-soft)}
+  .sd-day .dn{font-size:1.15rem;line-height:1.1}
+  .sd-day .ct{font-size:.66rem;font-weight:700;color:var(--sd-teal-deep)}
+  .sd-day.active{border-color:var(--sd-teal-deep);background:var(--sd-teal-soft,#E0F5F3)}
+  .sd-slots{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+  .sd-slot{display:flex;align-items:center;gap:12px;border:2px solid #F0E9DA;border-radius:14px;padding:10px 12px;background:#fff}
+  .sd-slot .tm{font-weight:800;font-size:.95rem;min-width:72px}
+  .sd-slot .tm span{display:block;font-size:.68rem;font-weight:700;color:var(--sd-cocoa-soft)}
+  .sd-slot .who{flex:1;font-weight:700;font-size:.86rem}
+  .sd-slot .who small{display:block;font-size:.72rem;font-weight:700;color:var(--sd-cocoa-soft)}
+  .sd-slot .seats{font-size:.7rem;font-weight:800;padding:3px 9px;border-radius:999px;background:#F6F1E7;color:var(--sd-cocoa-soft)}
+  .sd-slot .seats.join{background:var(--sd-teal-soft,#E0F5F3);color:var(--sd-teal-deep)}
+  .sd-book-btn{border:none;background:var(--sd-orange-deep);color:#fff;font-weight:800;font-size:.82rem;padding:8px 14px;border-radius:999px;cursor:pointer;font-family:inherit}
+  .sd-book-btn:disabled{opacity:.55;cursor:default}
+  .sd-cancel-link{display:inline-block;margin-top:6px;margin-left:6px;font-size:.72rem;font-weight:800;color:var(--sd-coral);background:transparent;border:1.5px solid var(--sd-coral);padding:3px 10px;border-radius:999px;cursor:pointer;font-family:inherit}
+  .sd-next-class .sd-cancel-link{color:#fff;border-color:rgba(255,255,255,.65)}
+  .sd-gate{display:inline-block;margin-top:8px;font-size:.76rem;font-weight:800;background:rgba(255,255,255,.22);color:#fff;padding:6px 12px;border-radius:999px;text-decoration:none}
+  .sd-class-row .sd-gate{background:#FFF1E0;color:#7A3F0B;padding:4px 10px;font-size:.7rem;margin-top:3px}
+  .sd-week-cap{font-size:.74rem;font-weight:700;color:var(--sd-cocoa-soft);margin-top:8px}
+  .sd-book-tabs{display:flex;gap:6px;background:#F6F1E7;border-radius:999px;padding:4px;margin:8px 0 10px}
+  .sd-book-tabs button{flex:1;border:none;background:transparent;border-radius:999px;padding:8px 10px;font-weight:800;font-size:.82rem;color:var(--sd-cocoa-soft);cursor:pointer;font-family:inherit}
+  .sd-book-tabs button.active{background:#fff;color:var(--sd-cocoa);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+  .sd-days.fx{grid-template-columns:repeat(5,1fr)}
+  .sd-day.picked{border-color:var(--sd-orange-deep)}
+  .sd-day.picked .dn{color:var(--sd-orange-deep)}
+  .sd-picks{display:flex;flex-direction:column;gap:6px}
+  .sd-pick{display:flex;align-items:center;gap:10px;border:2px solid var(--sd-teal-soft,#E0F5F3);background:var(--sd-teal-soft,#E0F5F3);border-radius:14px;padding:8px 10px;font-size:.85rem}
+  .sd-pick .face{width:38px;height:38px;border-radius:50%;overflow:hidden;background:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+  .sd-pick .face img{width:100%;height:100%;object-fit:cover}
+  .sd-pick b{display:block;font-weight:800}
+  .sd-pick small{font-size:.72rem;font-weight:700;color:var(--sd-cocoa-soft)}
+  .sd-pick button{margin-left:auto;border:none;background:#fff;color:var(--sd-coral);font-weight:900;width:28px;height:28px;border-radius:50%;cursor:pointer}
+  .sd-fx-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+  .sd-fx-actions .sd-cancel-link{margin:0}
+  .sd-book-note.extend{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px;background:var(--sd-teal-soft,#E0F5F3);color:var(--sd-teal-deep)}
+  .sd-week-nav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;font-weight:800;font-size:.84rem;color:var(--sd-cocoa)}
+  .sd-week-nav button{width:32px;height:32px;border-radius:50%;border:2px solid #F0E9DA;background:#fff;font-weight:800;font-size:1rem;cursor:pointer;color:var(--sd-cocoa)}
+  .sd-week-nav button:disabled{opacity:.35;cursor:default}
+  .sd-days.week{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;overflow:visible}
+  .sd-days.week .sd-day{min-width:0;padding:7px 2px}
+  .sd-day.off,.sd-day.past{opacity:.45;cursor:default;background:#FAF6EE}
+  .sd-day.full{cursor:default;border-style:dashed}
+  .sd-day.full .ct{color:var(--sd-cocoa-soft)}
+  .sd-day.today .dw{color:var(--sd-orange-deep)}
+  .sd-step{font-size:.8rem;font-weight:800;color:var(--sd-cocoa);margin:12px 0 6px}
+  .sd-step.muted{color:var(--sd-cocoa-soft);font-weight:700}
+  .sd-hours{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+  .sd-hour{border:2px solid #F0E9DA;border-radius:12px;padding:8px 4px;text-align:center;font-weight:800;font-size:.82rem;cursor:pointer;background:#fff;color:var(--sd-cocoa)}
+  .sd-hour span{display:block;font-size:.64rem;font-weight:700;color:var(--sd-teal-deep)}
+  .sd-hour.closed{background:repeating-linear-gradient(135deg,#FAF6EE 0 6px,#F3EEE4 6px 8px);color:#B9AC9A;cursor:default}
+  .sd-hour.closed span{color:#C9BFAE}
+  .sd-hour.open:hover{border-color:var(--sd-teal)}
+  .sd-hour.active{border-color:var(--sd-teal-deep);background:var(--sd-teal-soft,#E0F5F3)}
+  .sd-teachers{display:flex;flex-direction:column;gap:8px}
+  .sd-teacher{display:flex;align-items:center;gap:12px;border:2px solid #F0E9DA;border-radius:16px;padding:10px 12px;background:#fff}
+  .sd-teacher .face{width:54px;height:54px;border-radius:50%;background:var(--sd-teal-soft,#E0F5F3);display:flex;align-items:center;justify-content:center;font-size:1.7rem;overflow:hidden;flex-shrink:0;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+  .sd-teacher .face img{width:100%;height:100%;object-fit:cover}
+  .sd-teacher .info{flex:1;min-width:0}
+  .sd-teacher .nm{font-weight:800;font-size:.95rem}
+  .sd-teacher .rt{font-size:.74rem;font-weight:700;color:var(--sd-cocoa-soft)}
+  .sd-teacher .rt b{color:#F4A300;letter-spacing:1px}
+  .sd-teacher .mt{font-size:.74rem;font-weight:700;color:var(--sd-cocoa-soft)}
+  .sd-teacher .kind{font-size:.72rem;font-weight:800;color:var(--sd-teal-deep);margin-top:2px}
+  .sd-teacher .kind.new{color:var(--sd-orange-deep)}
+  .sd-teacher .seats{display:inline-block;font-size:.66rem;padding:1px 7px;border-radius:999px;background:#F6F1E7;color:var(--sd-cocoa-soft);margin-left:4px}
   .path{display:flex;flex-wrap:wrap;gap:14px;justify-content:flex-start}
 
   /* ---------- Generic modal shell ---------- */
@@ -911,6 +1084,8 @@
       <div class="mp-fields" id="mpFields"></div>
       <div class="mp-subbanner" id="mpSubBanner"></div>
       <div class="mp-tiles" id="mpTiles"></div>
+      <div class="mp-grades" id="mpLevelTest" style="display:none"></div>
+      <div class="mp-grades" id="mpGrades"></div>
       <button class="mp-report-btn" id="mpReportBtn">📄 Download my performance report</button>
     </div>
   </div>
@@ -976,6 +1151,10 @@
         <div class="sd-stat-icon" style="background:#E4FBF8;color:#0D9488">✓</div>
         <div><b id="doneCount">0/20</b><span>Lessons done</span></div>
       </div>
+      <div class="sd-stat-card sd-fade-up sd-anim-d3" id="gradeCard" style="display:none;cursor:pointer" title="Open My Profile to see every grade">
+        <div class="sd-stat-icon" style="background:#E8EFFB;color:#1E4FA3">🎓</div>
+        <div><b id="gradeAvg">—</b><span id="gradeLabel">Teacher grade</span></div>
+      </div>
     </div>
   </div>
 
@@ -1016,7 +1195,8 @@
     <div id="scheduleTrail"></div>
     <div id="scheduleNext"></div>
     <div id="scheduleList"></div>
-    <div class="sd-empty-note" id="scheduleEmptyNote" style="display:none">No classes booked yet — ask your teacher! 🙂</div>
+    <div class="sd-empty-note" id="scheduleEmptyNote" style="display:none">No classes booked yet — book one below! 🙂</div>
+    <div class="sd-book" id="bookingCard" style="display:none"></div>
   </div>
 
   <!-- Rate your class -- only appears when there's a real attended, unrated session to rate -->
@@ -1052,19 +1232,6 @@
   <div class="sd-section-title"><h3>Meet your study buddies</h3></div>
   <p class="sd-hint" style="margin:-6px 0 12px;font-weight:700;color:var(--sd-cocoa-soft);font-size:.85rem">Tap a friend to say hi! 👋</p>
   <div class="sd-buddies-grid" id="buddiesGrid"></div>
-
-  <!-- Review weak words -->
-  <div id="reviewSection" style="display:none">
-    <div class="sd-section-title"><h3>🔄 Review your tricky words</h3></div>
-    <div class="sd-schedule-card">
-      <p class="sd-hint" style="margin:0 0 10px;font-weight:700;color:var(--sd-cocoa-soft);font-size:.85rem" id="reviewSub"></p>
-      <div class="row" style="gap:8px;flex-wrap:wrap">
-        <button class="sd-game-play" id="reviewMemory" style="background:#6D5AE0">🧠 Memory Match</button>
-        <button class="sd-game-play" id="reviewWordPop" style="background:#0EA5E9">🎈 Word Pop</button>
-        <button class="sd-game-play" id="reviewBuilder" style="background:#F9720C">🔤 Word Builder</button>
-      </div>
-    </div>
-  </div>
 
   <!-- Mini-game -->
   <div class="sd-section-title"><h3>🎮 Mini-Game</h3></div>
@@ -1180,6 +1347,26 @@
     <div class="path" id="path"></div>
   </div>
 
+  <!-- Level test (own window, after the map) -->
+  <div class="sd-section-title"><h3>📝 Level test</h3></div>
+  <div class="sd-test-card" id="levelTestCard">
+    <div class="sd-test-top">
+      <div class="sd-test-badge" id="levelTestIcon">🔒</div>
+      <div class="sd-test-text">
+        <div class="sd-test-title" id="levelTestTitle">Level test</div>
+        <div class="sd-test-sub" id="levelTestSub">Unlocks after all 20 lessons</div>
+      </div>
+    </div>
+    <div class="sd-progressbar sd-test-bar"><div id="levelTestBar" style="width:0%"></div></div>
+    <div class="sd-test-meta" id="levelTestMeta"></div>
+    <div class="sd-test-facts">
+      <div><b>30</b><span>questions</span></div>
+      <div><b>70%</b><span>to pass</span></div>
+      <div><b>4</b><span>skills: words, Arabic→English, sentences, listening</span></div>
+    </div>
+    <a class="sd-cert-link sd-test-link locked" id="levelTestLink" href="#" aria-disabled="true"><span class="ic">🔒</span><span><b id="levelTestBtn">Locked</b></span></a>
+  </div>
+
 </main>
 
 <!-- Avatar picker -->
@@ -1198,6 +1385,18 @@
     <p class="sd-hint" style="margin:14px 0 6px">...or pick a fun avatar instead</p>
     <div class="sd-avatar-grid" id="avatarGrid"></div>
     <button class="sd-modal-close" id="avatarSave">Save</button>
+  </div>
+</div>
+
+<!-- Booking confirm modal -->
+<div class="sd-modal-overlay" id="bookOverlay">
+  <div class="sd-modal">
+    <h3 id="bookTitle">Book this class?</h3>
+    <p class="sd-hint" id="bookBody"></p>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:14px">
+      <button class="sd-photo-btn ghost" id="bookNo" type="button">Not now</button>
+      <button class="sd-modal-close" id="bookYes" type="button" style="margin:0">Yes, book it ✓</button>
+    </div>
   </div>
 </div>
 
@@ -1460,6 +1659,55 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
   document.getElementById("levelTitle").textContent = `${meta.name} adventure map`;
   document.getElementById("levelBar").style.width = pct + "%";
   document.getElementById("levelPct").textContent = pct + "%";
+  // Level test entry — always visible on the map card. Locked (with the
+  // lesson count) until every lesson is done, then live: take / retake /
+  // passed. The teacher-preview bypass (lumio_teacher) keeps it open.
+  try {
+    const ltCard = document.getElementById("levelTestCard");
+    const ltLink = document.getElementById("levelTestLink");
+    const ltTitle = document.getElementById("levelTestTitle");
+    const ltSub = document.getElementById("levelTestSub");
+    const ltBtn = document.getElementById("levelTestBtn");
+    const ltIcon = document.getElementById("levelTestIcon");
+    const ltMeta = document.getElementById("levelTestMeta");
+    const lt = Lumio.levelTestFor ? Lumio.levelTestFor(u.name, level) : null;
+    const unlocked = done >= total || (Lumio.isTeacherSession && Lumio.isTeacherSession());
+    ltLink.className = "sd-cert-link sd-test-link";
+    ltCard.className = "sd-test-card";
+    document.getElementById("levelTestBar").style.width = Math.min(100, Math.round((done / total) * 100)) + "%";
+    const setState = (cls, icon, title, sub, btn, meta) => { ltCard.classList.add(cls); ltIcon.textContent = icon; ltLink.querySelector(".ic").textContent = icon; ltTitle.textContent = title; ltSub.textContent = sub; ltBtn.textContent = btn; ltMeta.textContent = meta || ""; };
+    if (!unlocked) {
+      ltLink.classList.add("locked"); ltLink.href = "#"; ltLink.setAttribute("aria-disabled", "true");
+      setState("locked", "🔒", `${meta.name} level test`, `Opens the moment all ${total} lessons are done — then your certificate.`, `Locked — ${total - done} lesson${total - done === 1 ? "" : "s"} to go`, `${done}/${total} lessons done (prep + class + homework)`);
+      ltLink.onclick = e => { e.preventDefault(); showToast(`Finish all ${total} lessons first — ${total - done} to go!`, "🔒"); };
+    } else {
+      ltLink.href = `level-test.html?level=${level}`; ltLink.removeAttribute("aria-disabled"); ltLink.onclick = null;
+      if (lt && lt.pct >= Lumio.TEST_PASS_PCT) {
+        ltLink.classList.add("passed");
+        setState("passed", "🏅", `Level test passed · ${lt.pct}%`, `${lt.band} — your certificate is ready.`, "Try again for a higher score", `Best ${lt.score}/${lt.total} on ${lt.date}${lt.attempts > 1 ? ` · ${lt.attempts} attempts` : ""}`);
+      } else if (lt) {
+        ltLink.classList.add("ready");
+        setState("ready", "🔁", `Retake the ${meta.name} level test`, `Best so far ${lt.pct}% — you need ${Lumio.TEST_PASS_PCT}% for the certificate.`, "Retake the test", `Last try ${lt.score}/${lt.total} on ${lt.date}${lt.attempts > 1 ? ` · ${lt.attempts} attempts` : ""}`);
+      } else {
+        ltLink.classList.add("ready");
+        setState("ready", "📝", `Take the ${meta.name} level test`, `All ${total} lessons done — this unlocks your certificate.`, "Start the level test", "About 15 minutes · you can retake it any time");
+      }
+    }
+  } catch (e) { console.error("level test link", e); }
+  // Teacher grade tile: average of the A+..F grades the teacher gives per
+  // attended class (LumioSchedule.gradeStudent). Hidden until one exists.
+  try {
+    const GP = { "A+": 4.3, "A": 4.0, "A-": 3.7, "B+": 3.3, "B": 3.0, "B-": 2.7, "C+": 2.3, "C": 2.0, "C-": 1.7, "D": 1.0, "F": 0.0 };
+    const gl = (window.LumioSchedule && LumioSchedule.gradesForStudent) ? LumioSchedule.gradesForStudent(u.name, level) : [];
+    if (gl.length) {
+      const pctG = gl.reduce((t, g) => t + (GP[g.grade] || 0), 0) / gl.length / 4.3 * 100;
+      const letter = Object.keys(GP).reduce((b, L) => Math.abs(GP[L] / 4.3 * 100 - pctG) < Math.abs(GP[b] / 4.3 * 100 - pctG) ? L : b, "A+");
+      document.getElementById("gradeAvg").textContent = letter;
+      document.getElementById("gradeLabel").textContent = `Teacher grade · ${gl.length} class${gl.length === 1 ? "" : "es"}`;
+      const gc = document.getElementById("gradeCard"); gc.style.display = "";
+      gc.onclick = () => { const b = document.getElementById("myProfileBtn"); if (b && b.style.display !== "none") b.click(); };
+    }
+  } catch (e) {}
 
   // Story banner — works for both Pre-A ("Lumi's Magic Map") and
   // Level 1 ("The Treehouse Club"), each with its own vocabulary
@@ -1521,10 +1769,14 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
   const hasWritingPractice = ["pre-a", "level1", "level2", "level3"].includes(level);
   if (!hasWritingPractice) document.getElementById("writingBtn").style.display = "none";
   if (done >= total) {
-    document.getElementById("missionTitle").textContent = "Level complete! 🎉";
-    document.getElementById("missionSub").textContent = "You finished every lesson — go check your certificate!";
-    document.getElementById("missionBtn").textContent = "🏆 See certificate";
-    document.getElementById("missionBtn").href = "certificates.html";
+    const lt = Lumio.levelTestFor ? Lumio.levelTestFor(u.name, level) : null;
+    const ltPassed = !!(lt && lt.pct >= Lumio.TEST_PASS_PCT);
+    document.getElementById("missionTitle").textContent = ltPassed ? "Level complete! 🎉" : "All lessons done! 🎉";
+    document.getElementById("missionSub").textContent = ltPassed ? `You passed the level test with ${lt.pct}% — your certificate is ready!`
+      : lt ? `Your best level-test score is ${lt.pct}% — you need ${Lumio.TEST_PASS_PCT}% for the certificate. Try again!`
+           : "One last step: take the level test to earn your certificate.";
+    document.getElementById("missionBtn").textContent = ltPassed ? "🏆 See certificate" : lt ? "🔁 Retake the level test" : "📝 Take the level test";
+    document.getElementById("missionBtn").href = ltPassed ? "certificates.html" : "level-test.html";
     document.getElementById("homeworkBtn").style.display = "none";
     document.getElementById("worksheetBtn").style.display = "none";
     document.getElementById("writingBtn").style.display = "none";
@@ -1622,6 +1874,243 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
   } catch (e) {
     console.error("Lumio schedule trail render error:", e);
   }
+  // ---------- booking helpers ----------
+  function canCancel(c) {
+    try { return (Lumio.tzToDate(c.date, c.startTime).getTime() - Date.now()) / 60000 >= LumioSchedule.CANCEL_MIN_BEFORE; } catch (e) { return false; }
+  }
+  function askBooking(title, body, yesLabel) {
+    return new Promise(resolve => {
+      const ov = document.getElementById("bookOverlay");
+      document.getElementById("bookTitle").textContent = title;
+      document.getElementById("bookBody").textContent = body;
+      document.getElementById("bookBody").style.whiteSpace = "pre-line";
+      document.getElementById("bookBody").style.textAlign = body.indexOf("\n") >= 0 ? "left" : "";
+      const yes = document.getElementById("bookYes"), no = document.getElementById("bookNo");
+      yes.textContent = yesLabel || "Yes, book it ✓";
+      const done = v => { ov.classList.remove("show"); yes.onclick = no.onclick = null; resolve(v); };
+      yes.onclick = () => done(true); no.onclick = () => done(false);
+      ov.onclick = e => { if (e.target === ov) done(false); };
+      ov.classList.add("show");
+    });
+  }
+  let bookingWeek = 0, bookingDay = null, bookingHour = null, bookingWeekPinned = false;
+  let bookingMode = "one", fxDay = null, fxHour = null, fxPicks = [];
+  const FX_DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const teacherFace = t => t && /^data:image\//.test(String(t.photoDataUrl || "")) ? `<img src="${sdEsc(t.photoDataUrl)}" alt="">` : `<span>${sdEsc((t && t.avatar) || "🧑‍🏫")}</span>`;
+  const starsOf = r => { const full = Math.floor(r), half = r - full >= 0.5; return "★".repeat(full) + (half ? "½" : "") + "☆".repeat(Math.max(0, 5 - full - (half ? 1 : 0))); };
+  const ratingLine = id => { const r = LumioSchedule.teacherAverageRating(id); return r ? `<b>${starsOf(r.average)}</b> ${r.average.toFixed(1)} · ${r.count} rating${r.count === 1 ? "" : "s"}` : "New teacher · no ratings yet"; };
+  // ---- fixed weekly schedule (student picks day + time + teacher, up to 3 a week) ----
+  function renderFixedMode(card, head, me, st, lessonLabel) {
+    const W = LumioSchedule.WORK;
+    const saved = LumioSchedule.fixedPlanFor(u.name);
+    if (!fxPicks.length && saved && saved.picks) fxPicks = saved.picks.slice();
+    const teacherOf = id => { try { return LumioProfiles.getTeacher(id) || null; } catch (e) { return null; } };
+    const pickKey = pk => `${pk.dayOfWeek}|${pk.startTime}`;
+    const picksHtml = fxPicks.length ? fxPicks.map((pk, i) => { const t = teacherOf(pk.teacherId); return `<div class="sd-pick"><div class="face">${teacherFace(t)}</div><div><b>${FX_DAYS[pk.dayOfWeek]} · ${Lumio.fmt12(pk.startTime)}</b><small>${(t && t.name) || pk.teacherName || "Teacher"}</small></div><button type="button" data-unpick="${i}" aria-label="Remove">✕</button></div>`; }).join("")
+      : `<div class="sd-book-note">No weekly times yet — pick up to ${LumioSchedule.MAX_PER_WEEK} below. Each one becomes a class every week, lesson after lesson, for as long as your package lasts.</div>`;
+    const canAdd = fxPicks.length < LumioSchedule.MAX_PER_WEEK;
+    const dayHtml = W.days.map(d => `<div class="sd-day fx${fxDay === d ? " active" : ""}${fxPicks.some(p => p.dayOfWeek === d) ? " picked" : ""}" data-fxday="${d}"><div class="dw">${FX_DAYS[d].slice(0, 3)}</div><div class="dn">${fxPicks.filter(p => p.dayOfWeek === d).length ? "✓" : "·"}</div><div class="ct">every week</div></div>`).join("");
+    const [sh] = W.start.split(":").map(Number), [eh] = W.end.split(":").map(Number);
+    const hourOf = t => Number(t.split(":")[0]);
+    const dayPats = fxDay === null ? [] : LumioSchedule.weeklySlotOptions(fxDay);
+    const openHours = new Set(dayPats.map(p => hourOf(p.startTime)));
+    if (fxHour !== null && !openHours.has(fxHour)) fxHour = null;
+    let hourHtml = "";
+    for (let hh = sh; hh < eh; hh++) {
+      const t = `${String(hh).padStart(2, "0")}:00`, open = openHours.has(hh), n = dayPats.filter(p => hourOf(p.startTime) === hh).length;
+      hourHtml += `<div class="sd-hour ${open ? "open" : "closed"}${fxHour === hh ? " active" : ""}" data-fxhour="${hh}">${Lumio.fmt12(t)}<span>${open ? `${n} teacher${n === 1 ? "" : "s"}` : "—"}</span></div>`;
+    }
+    const hourPats = fxHour === null ? [] : dayPats.filter(p => hourOf(p.startTime) === fxHour);
+    const teacherHtml = hourPats.map((p, i) => {
+      const t = teacherOf(p.teacherId);
+      const already = fxPicks.some(pk => pickKey(pk) === `${p.dayOfWeek}|${p.startTime}`);
+      return `<div class="sd-teacher"><div class="face">${teacherFace(t)}</div><div class="info"><div class="nm">${sdEsc(p.teacherName || (t && t.name) || "Teacher")}</div><div class="rt">${ratingLine(p.teacherId)}</div><div class="mt">Every ${FX_DAYS[p.dayOfWeek]} · ${Lumio.fmt12(p.startTime)} · ${p.durationMinutes} min</div></div><button type="button" class="sd-book-btn" data-fxadd="${i}" ${already || !canAdd ? "disabled" : ""}>${already ? "Added" : "Add"}</button></div>`;
+    }).join("");
+    card.innerHTML = head + `<div class="sd-book-sub">Choose a weekly time (Saudi time) and a teacher — up to ${LumioSchedule.MAX_PER_WEEK} a week. We book your next lessons into those times in order, following the same rules: up to 4 classmates at the same lesson, only your package's sessions, and you can still cancel any single class 30 min before.</div>
+      <div class="sd-step">🔁 My weekly times (${fxPicks.length}/${LumioSchedule.MAX_PER_WEEK})</div><div class="sd-picks">${picksHtml}</div>
+      ${fxPicks.length ? `<div class="sd-fx-actions"><button type="button" class="sd-book-btn" id="fxBookBtn">Preview &amp; book my weeks</button>${saved ? `<button type="button" class="sd-cancel-link" id="fxClearBtn">Remove fixed schedule</button>` : ""}</div>` : ""}
+      ${canAdd ? `<div class="sd-step">1 · Day</div><div class="sd-days week fx">${dayHtml}</div>
+      ${fxDay !== null ? `<div class="sd-step">2 · Time (working hours ${Lumio.fmt12(W.start)} – ${Lumio.fmt12(W.end)})</div><div class="sd-hours">${hourHtml}</div>` : ""}
+      ${fxHour !== null ? `<div class="sd-step">3 · Teacher</div><div class="sd-teachers">${teacherHtml}</div>` : ""}` : `<div class="sd-step muted">That's the maximum of ${LumioSchedule.MAX_PER_WEEK} a week — remove one to change it.</div>`}`;
+    card.querySelectorAll("[data-fxday]").forEach(el => el.addEventListener("click", () => { fxDay = Number(el.dataset.fxday); fxHour = null; renderBooking(); }));
+    card.querySelectorAll(".sd-hour.open[data-fxhour]").forEach(el => el.addEventListener("click", () => { fxHour = Number(el.dataset.fxhour); renderBooking(); }));
+    card.querySelectorAll(".sd-hour.closed[data-fxhour]").forEach(el => el.addEventListener("click", () => showToast("No teacher offers that time — pick an open one.", "⏰")));
+    card.querySelectorAll("[data-fxadd]").forEach(b => b.addEventListener("click", () => {
+      const p = hourPats[Number(b.dataset.fxadd)];
+      if (fxPicks.some(pk => pk.dayOfWeek === p.dayOfWeek && pk.startTime === p.startTime)) return;
+      fxPicks.push({ dayOfWeek: p.dayOfWeek, startTime: p.startTime, teacherId: p.teacherId, teacherName: p.teacherName });
+      fxDay = null; fxHour = null; renderBooking();
+    }));
+    card.querySelectorAll("[data-unpick]").forEach(b => b.addEventListener("click", () => { fxPicks.splice(Number(b.dataset.unpick), 1); renderBooking(); }));
+    const clearBtn = card.querySelector("#fxClearBtn");
+    if (clearBtn) clearBtn.addEventListener("click", async () => {
+      if (!(await askBooking("Remove your fixed schedule?", "Classes already booked stay as they are — you can cancel any of them one by one. We just stop booking new weeks automatically.", "Yes, remove it"))) return;
+      LumioSchedule.saveFixedPlan(u.name, null); fxPicks = []; renderBooking(); showToast("Fixed schedule removed.", "👋");
+    });
+    const bookBtn = card.querySelector("#fxBookBtn");
+    if (bookBtn) bookBtn.addEventListener("click", async () => {
+      const plan = LumioSchedule.weeklyPlanPreview({ studentName: u.name, studentId: me ? me.id : null, level, picks: fxPicks });
+      const okItems = plan.filter(x => x.ok), skipped = plan.filter(x => !x.ok);
+      const fmtD = d => new Date(d + "T00:00:00").toLocaleDateString("en", { weekday: "short", month: "short", day: "numeric" });
+      if (!okItems.length) {
+        LumioSchedule.saveFixedPlan(u.name, fxPicks);
+        return askBooking("Nothing to book yet", skipped.length ? `${skipped[0].reason} — your weekly times are saved and we'll offer the next weeks as they open.` : "Everything in the next three weeks is already booked. Your weekly times are saved.", "OK");
+      }
+      const body = okItems.map(x => `✓ ${fmtD(x.date)} ${Lumio.fmt12(x.startTime)} — Lesson ${x.lesson}${x.kind === "join" ? ` (join ${x.taken})` : ""}`).join("\n")
+        + (skipped.length ? `\n\nSkipped: ` + skipped.map(x => `${fmtD(x.date)} ${Lumio.fmt12(x.startTime)} — ${x.reason}`).join("; ") : "");
+      if (!(await askBooking(`Book ${okItems.length} class${okItems.length === 1 ? "" : "es"} for the next 3 weeks?`, body, "Yes, book them ✓"))) return;
+      bookBtn.disabled = true; bookBtn.textContent = "Booking…";
+      const res = await LumioSchedule.bookWeeklyRemote({ studentName: u.name, studentId: me ? me.id : null, level, picks: fxPicks });
+      const done = res.filter(x => x.ok).length;
+      if (done) LumioSchedule.saveFixedPlan(u.name, fxPicks);
+      const fail = res.find(x => !x.ok && /switched on|reach the booking server/i.test(x.reason || ""));
+      if (fail) { showToast(fail.reason, "⚠️"); bookBtn.disabled = false; bookBtn.textContent = "Preview & book my weeks"; return; }
+      showToast(`${done} class${done === 1 ? "" : "es"} booked 🎉`, "🔁");
+      setTimeout(() => location.reload(), 1200);
+    });
+  }
+  function renderBooking() {
+    const card = document.getElementById("bookingCard");
+    if (!card || !window.LumioSchedule || !LumioSchedule.openSlots) return;
+    // (rosterProfile is declared further down this script — resolve the row here.)
+    let me = null;
+    try { const oid = localStorage.getItem("lumio_student_id"); me = (oid && LumioProfiles.getStudent(oid)) || LumioProfiles.findByName(u.name) || null; } catch (e) {}
+    const st = LumioSchedule.studentBookingState(u.name, level);
+    const lessonLabel = st.nextLesson ? `Lesson ${st.nextLesson}` : "";
+    card.style.display = "block";
+    const head = `<div class="sd-book-title">📅 Book my next class ${st.nextLesson ? `<span class="lvl">${meta.name} · ${lessonLabel}</span>` : ""}</div>`;
+    const note = msg => { card.innerHTML = head + `<div class="sd-book-note">${msg}</div>`; };
+    if (st.levelDone) return note("🎉 Every lesson of this level is attended or booked. Your teacher will open the next level after the level test.");
+    if (me && me.subscribed === false) return note("⏸️ Your subscription is paused — your teacher will activate it after the next payment, then you can book here.");
+    if (me && !(Number(me.sessionsRemaining) > 0)) return note("🎟️ No sessions left on your package — ask your teacher to add more, then book here.");
+
+    const savedPlan = LumioSchedule.fixedPlanFor(u.name);
+    let extendNote = "";
+    if (savedPlan && savedPlan.picks && savedPlan.picks.length) {
+      const prev = LumioSchedule.weeklyPlanPreview({ studentName: u.name, studentId: me ? me.id : null, level, picks: savedPlan.picks }).filter(x => x.ok);
+      if (prev.length) extendNote = `<div class="sd-book-note extend">🔁 Your fixed schedule can book ${prev.length} more class${prev.length === 1 ? "" : "es"} in the weeks that just opened. <button type="button" class="sd-book-btn" id="fxExtendBtn">Book them</button></div>`;
+    }
+    const tabs = extendNote + `<div class="sd-book-tabs"><button type="button" class="${bookingMode === "one" ? "active" : ""}" data-mode="one">📅 One class</button><button type="button" class="${bookingMode === "fixed" ? "active" : ""}" data-mode="fixed">🔁 Fixed weekly</button></div>`;
+    const bindTabs = () => {
+      card.querySelectorAll("[data-mode]").forEach(b => b.addEventListener("click", () => { bookingMode = b.dataset.mode; renderBooking(); }));
+      const ext = card.querySelector("#fxExtendBtn");
+      if (ext) ext.addEventListener("click", async () => {
+        ext.disabled = true; ext.textContent = "Booking…";
+        const res = await LumioSchedule.bookWeeklyRemote({ studentName: u.name, studentId: me ? me.id : null, level, picks: savedPlan.picks });
+        const done = res.filter(x => x.ok).length, fail = res.find(x => !x.ok && /switched on|reach the booking server/i.test(x.reason || ""));
+        if (fail) { showToast(fail.reason, "⚠️"); ext.disabled = false; ext.textContent = "Book them"; return; }
+        showToast(`${done} class${done === 1 ? "" : "es"} booked 🎉`, "🔁"); setTimeout(() => location.reload(), 1200);
+      });
+    };
+    if (bookingMode === "fixed") { renderFixedMode(card, head + tabs, me, st, lessonLabel); bindTabs(); return; }
+
+    const W = LumioSchedule.WORK;
+    const today = LumioSchedule.todayStr();
+    const weekStart0 = Lumio.tzAddDays(today, -Lumio.tzDayOfWeek(today)); // this Sunday (Riyadh)
+    const maxWeek = 2;
+    const slots = LumioSchedule.openSlots({ studentName: u.name, level, lesson: st.nextLesson, days: (maxWeek + 1) * 7 });
+    const byDay = {};
+    slots.forEach(s => { (byDay[s.date] = byDay[s.date] || []).push(s); });
+    // First open: start on the week that has the first open time (this
+    // week is often finished by the evening).
+    if (!bookingDay && !bookingWeekPinned && slots.length) {
+      const first = slots[0].date;
+      const diff = Math.round((Date.UTC(+first.slice(0, 4), +first.slice(5, 7) - 1, +first.slice(8, 10)) - Date.UTC(+weekStart0.slice(0, 4), +weekStart0.slice(5, 7) - 1, +weekStart0.slice(8, 10))) / 86400000);
+      bookingWeek = Math.floor(diff / 7);
+    }
+    bookingWeek = Math.max(0, Math.min(maxWeek, bookingWeek));
+    const weekStart = Lumio.tzAddDays(weekStart0, bookingWeek * 7);
+    const days = [];
+    for (let i = 0; i < 7; i++) days.push(Lumio.tzAddDays(weekStart, i));
+    const dayState = d => {
+      const dow = Lumio.tzDayOfWeek(d);
+      if (!W.days.includes(dow)) return "off";
+      if (d < today) return "past";
+      return (byDay[d] || []).length ? "open" : "full";
+    };
+    if (!bookingDay || !days.includes(bookingDay) || dayState(bookingDay) !== "open") {
+      bookingDay = days.find(d => dayState(d) === "open") || days.find(d => dayState(d) !== "past" && dayState(d) !== "off") || null;
+      bookingHour = null;
+    }
+    const dayHtml = days.map(d => {
+      const dt = new Date(d + "T00:00:00"), s = dayState(d), n = (byDay[d] || []).length;
+      return `<div class="sd-day ${s}${d === bookingDay ? " active" : ""}${d === today ? " today" : ""}" data-day="${d}">
+        <div class="dw">${dt.toLocaleDateString("en", { weekday: "short" })}</div>
+        <div class="dn">${dt.getDate()}</div>
+        <div class="ct">${s === "off" ? "off" : s === "past" ? "—" : n ? `${n} open` : "full"}</div></div>`;
+    }).join("");
+    const monthLabel = `${new Date(weekStart + "T00:00:00").toLocaleDateString("en", { month: "short", day: "numeric" })} – ${new Date(days[6] + "T00:00:00").toLocaleDateString("en", { month: "short", day: "numeric" })}`;
+
+    // Working-hours grid for the selected day: one cell per hour, open
+    // only where at least one teacher's slot starts in that hour.
+    const [sh] = W.start.split(":").map(Number), [eh] = W.end.split(":").map(Number);
+    const daySlots = bookingDay ? (byDay[bookingDay] || []) : [];
+    const hourOf = t => Number(t.split(":")[0]);
+    const hours = [];
+    for (let hh = sh; hh < eh; hh++) hours.push(hh);
+    const openHours = new Set(daySlots.map(s => hourOf(s.startTime)));
+    if (bookingHour === null || !openHours.has(bookingHour)) bookingHour = null;
+    const hourHtml = bookingDay ? hours.map(hh => {
+      const open = openHours.has(hh);
+      const t = `${String(hh).padStart(2, "0")}:00`;
+      const n = daySlots.filter(s => hourOf(s.startTime) === hh).length;
+      return `<div class="sd-hour ${open ? "open" : "closed"}${bookingHour === hh ? " active" : ""}" data-hour="${hh}">${Lumio.fmt12(t)}${open ? `<span>${n} teacher${n === 1 ? "" : "s"}</span>` : "<span>—</span>"}</div>`;
+    }).join("") : "";
+
+    const capHit = bookingDay ? LumioSchedule.bookingsInWeek(u.name, bookingDay) >= LumioSchedule.MAX_PER_WEEK : false;
+    const hourSlots = bookingHour === null ? [] : daySlots.filter(s => hourOf(s.startTime) === bookingHour);
+    const teacherOf = id => { try { return LumioProfiles.getTeacher(id) || null; } catch (e) { return null; } };
+    const stars = r => { const full = Math.floor(r), half = r - full >= 0.5; return "★".repeat(full) + (half ? "½" : "") + "☆".repeat(Math.max(0, 5 - full - (half ? 1 : 0))); };
+    const teacherHtml = hourSlots.map((s, i) => {
+      const t = teacherOf(s.teacherId);
+      const rating = LumioSchedule.teacherAverageRating(s.teacherId);
+      const face = t && /^data:image\//.test(String(t.photoDataUrl || "")) ? `<img src="${sdEsc(t.photoDataUrl)}" alt="">` : `<span>${sdEsc((t && t.avatar) || "🧑‍🏫")}</span>`;
+      return `<div class="sd-teacher">
+        <div class="face">${face}</div>
+        <div class="info">
+          <div class="nm">${sdEsc(s.teacherName || (t && t.name) || "Teacher")}</div>
+          <div class="rt">${rating ? `<b>${stars(rating.average)}</b> ${rating.average.toFixed(1)} · ${rating.count} rating${rating.count === 1 ? "" : "s"}` : "New teacher · no ratings yet"}</div>
+          <div class="mt">${Lumio.fmt12(s.startTime)} · ${s.durationMinutes} min${Lumio.deviceDiffersFromTz() ? " · " + Lumio.fmtClassTime(s.date, s.startTime).split(" (").slice(1).map(x => "(" + x).join("") : ""}</div>
+          <div class="kind ${s.kind}">${s.kind === "join" ? `Join · ${s.taken} classmate${s.taken === 1 ? "" : "s"} at ${lessonLabel}` : `New ${lessonLabel} class · you'd be first`} <span class="seats">${s.taken}/${s.seats}</span></div>
+        </div>
+        <button type="button" class="sd-book-btn" data-slot="${i}" ${capHit ? "disabled" : ""}>Book</button>
+      </div>`;
+    }).join("");
+
+    card.innerHTML = head + tabs + `<div class="sd-book-sub">Pick a day, then a time (Saudi time), then your teacher. Up to ${LumioSchedule.MAX_PER_CLASS} students share a class at the same lesson · max ${LumioSchedule.MAX_PER_WEEK} a week · cancel up to ${LumioSchedule.CANCEL_MIN_BEFORE} min before.</div>
+      <div class="sd-week-nav"><button type="button" data-wk="-1" ${bookingWeek === 0 ? "disabled" : ""}>‹</button><span>${monthLabel}${bookingWeek === 0 ? " · this week" : bookingWeek === 1 ? " · next week" : ""}</span><button type="button" data-wk="1" ${bookingWeek === maxWeek ? "disabled" : ""}>›</button></div>
+      <div class="sd-days week">${dayHtml}</div>
+      ${bookingDay ? `<div class="sd-step">⏰ Working hours ${Lumio.fmt12(W.start)} – ${Lumio.fmt12(W.end)} · ${daySlots.length ? "tap an open time" : "no open times this day"}</div><div class="sd-hours">${hourHtml}</div>` : `<div class="sd-book-note" style="margin-top:10px">Lessons run Sunday to Thursday — pick a working day.</div>`}
+      ${bookingHour !== null ? `<div class="sd-step">🧑‍🏫 Teachers free at ${Lumio.fmt12(String(bookingHour).padStart(2, "0") + ":00")}</div><div class="sd-teachers">${teacherHtml}</div>` : (daySlots.length ? `<div class="sd-step muted">Choose a time to see which teachers are free.</div>` : "")}
+      ${capHit ? `<div class="sd-week-cap">You already have ${LumioSchedule.MAX_PER_WEEK} classes that week — pick another week.</div>` : ""}`;
+
+    bindTabs();
+    card.querySelectorAll("[data-wk]").forEach(b => b.addEventListener("click", () => { bookingWeek += Number(b.dataset.wk); bookingWeekPinned = true; bookingDay = null; bookingHour = null; renderBooking(); }));
+    card.querySelectorAll(".sd-day.open").forEach(el => el.addEventListener("click", () => { bookingDay = el.dataset.day; bookingHour = null; renderBooking(); }));
+    card.querySelectorAll(".sd-day.full, .sd-day.off, .sd-day.past").forEach(el => el.addEventListener("click", () => {
+      const s = dayState(el.dataset.day);
+      showToast(s === "off" ? "Lessons run Sunday to Thursday." : s === "past" ? "That day has passed." : "No open times that day — try another.", "📅");
+    }));
+    card.querySelectorAll(".sd-hour.open").forEach(el => el.addEventListener("click", () => { bookingHour = Number(el.dataset.hour); renderBooking(); card.querySelector(".sd-teachers") && card.querySelector(".sd-teachers").scrollIntoView({ behavior: "smooth", block: "nearest" }); }));
+    card.querySelectorAll(".sd-hour.closed").forEach(el => el.addEventListener("click", () => showToast("That time is taken or not offered — pick an open one.", "⏰")));
+    card.querySelectorAll("[data-slot]").forEach(btn => btn.addEventListener("click", async () => {
+      const s = hourSlots[Number(btn.dataset.slot)];
+      const when = `${new Date(s.date + "T00:00:00").toLocaleDateString("en", { weekday: "long", month: "short", day: "numeric" })} at ${Lumio.fmtClassTime(s.date, s.startTime)}`;
+      const ok = await askBooking(`Book ${lessonLabel}?`, `${when} with ${s.teacherName || "your teacher"}${s.kind === "join" ? ` — you'll join ${s.taken} classmate${s.taken === 1 ? "" : "s"}.` : " — you'll be the first in this class; others at the same lesson can join."}`);
+      if (!ok) return;
+      btn.disabled = true; btn.textContent = "Booking…";
+      try {
+        await LumioSchedule.bookSlotRemote({ studentName: u.name, studentId: me ? me.id : null, level, lesson: st.nextLesson, patternId: s.patternId, classId: s.classId, date: s.date });
+        showToast(`${lessonLabel} booked! 🎉`, "📅");
+        setTimeout(() => location.reload(), 900);
+      } catch (e) {
+        btn.disabled = false; btn.textContent = "Book";
+        showToast(e.message || "Couldn't book that time.", "⚠️");
+        renderBooking();
+      }
+    }));
+  }
+
   try {
     if (window.LumioSchedule) {
       const upcoming = LumioSchedule.upcomingForStudent(u.name, 10);
@@ -1653,7 +2142,8 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
             <div>
               <div class="when">${fmtSchedDay(next.date)} at ${fmtSchedTime(next.startTime, next.date)}</div>
               <div class="sub">Next class with ${sdEsc(next.teacherName || "your teacher")} · ${next.durationMinutes} min${next.students && next.students.length > 1 ? ` · with ${next.students.length - 1} classmate${next.students.length > 2 ? "s" : ""}` : ""}</div>
-              ${next.meetingLink ? `<a href="${sdUrl(next.meetingLink)}" target="_blank" rel="noopener" class="sd-join-link">🔗 Join class link</a>` : ""}
+              ${(() => { const g = LumioSchedule.joinGate(u.name, next); if (!g.ok) return `<a class="sd-gate" href="homework.html?level=${next.level || level}&n=${g.lesson}">🔒 ${sdEsc(g.reason)}</a>`; return next.meetingLink ? `<a href="${sdUrl(next.meetingLink)}" target="_blank" rel="noopener" class="sd-join-link">🔗 Join class link</a>` : ""; })()}
+              ${canCancel(next) ? `<button type="button" class="sd-cancel-link" data-cancel="${next.id}">Cancel</button>` : ""}
             </div>
           </div>`;
         listEl.innerHTML = upcoming.slice(1).map(c => `
@@ -1662,10 +2152,27 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
             <div>
               <div class="who">${sdEsc(c.teacherName || "Your teacher")}</div>
               <div class="meta">${c.durationMinutes} min${c.notes ? " · " + sdEsc(c.notes) : ""}</div>
-              ${c.meetingLink ? `<a href="${sdUrl(c.meetingLink)}" target="_blank" rel="noopener" class="sd-join-link">🔗 Join link</a>` : ""}
+              ${(() => { const g = LumioSchedule.joinGate(u.name, c); if (!g.ok) return `<a class="sd-gate" href="homework.html?level=${c.level || level}&n=${g.lesson}">🔒 Homework ${g.lesson} first</a>`; return c.meetingLink ? `<a href="${sdUrl(c.meetingLink)}" target="_blank" rel="noopener" class="sd-join-link">🔗 Join link</a>` : ""; })()}
+              ${canCancel(c) ? `<button type="button" class="sd-cancel-link" data-cancel="${c.id}">Cancel</button>` : ""}
             </div>
           </div>`).join("");
       }
+      document.querySelectorAll("[data-cancel]").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const c = LumioSchedule.getClass(btn.dataset.cancel);
+          if (!c) return;
+          const later = LumioSchedule.laterBookings(c.id, u.name);
+          const laterNote = later.length ? ` Lesson${later.length === 1 ? "" : "s"} ${later.map(x => x.lessonNumber).sort((a, b) => a - b).join(", ")} booked after it will be cancelled too (lessons go in order).` : "";
+          if (!(await askBooking("Cancel this class?", `Lesson ${c.lessonNumber || ""} on ${fmtSchedDay(c.date)} at ${fmtSchedTime(c.startTime, c.date)} — your seat opens up for someone else and you can book another time.${laterNote}`, "Yes, cancel it"))) return;
+          btn.disabled = true;
+          try {
+            await LumioSchedule.cancelBookingRemote(c.id, u.name);
+            showToast("Class cancelled.", "👋");
+            setTimeout(() => location.reload(), 900);
+          } catch (e) { btn.disabled = false; showToast(e.message || "Couldn't cancel.", "⚠️"); }
+        });
+      });
+      renderBooking();
     }
   } catch (e) {
     console.error("Lumio schedule render error:", e);
@@ -1739,19 +2246,24 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
   // ---------- badges ----------
   const totalStarsAllLevels = Object.values(progAll).reduce((sum, lvlProg) =>
     sum + Object.values(lvlProg).reduce((s, r) => s + (r.stars || 0), 0), 0);
-  const totalDoneAllLevels = Object.values(progAll).reduce((sum, lvlProg) =>
-    sum + Object.keys(lvlProg).length, 0);
+  // Lesson-count badges use the full cycle (prep + live class + homework),
+  // the same rule as the map -- summed over every level the student has
+  // touched, not just prep records.
+  const totalDoneAllLevels = Object.keys(progAll).reduce((sum, lvlId) => {
+    const att = (window.LumioSchedule && LumioSchedule.attendedLessonNumbers) ? LumioSchedule.attendedLessonNumbers(u.name, lvlId) : null;
+    return sum + (Lumio.lessonsDoneCount ? Lumio.lessonsDoneCount(u.name, lvlId, att) : 0);
+  }, 0);
   const perfectLessons = entries.filter(([,r]) => (r.stars || 0) >= 3).length;
 
   const badgeDefs = [
-    { ic: "👋", t: "First step", d: "Finish 1 lesson", earned: totalDoneAllLevels >= 1 },
+    { ic: "👋", t: "First step", d: "Finish 1 full lesson", earned: totalDoneAllLevels >= 1 },
     { ic: "🔥", t: "On a roll", d: "3-day streak", earned: streakVal >= 3 },
     { ic: "⭐", t: "Star collector", d: (["level3","level4","level5","level6"].includes(level) ? "1,000 XP" : "10 stars"), earned: totalStarsAllLevels >= 10 },
     { ic: "🌟", t: "Super star", d: (["level3","level4","level5","level6"].includes(level) ? "3,000 XP" : "30 stars"), earned: totalStarsAllLevels >= 30 },
     { ic: "💯", t: "Perfectionist", d: (["level3","level4","level5","level6"].includes(level) ? "Max XP in a lesson" : "3-star a lesson"), earned: perfectLessons >= 1 },
     { ic: "📚", t: "Halfway there", d: `${Math.ceil(total/2)} lessons`, earned: done >= Math.ceil(total/2) },
     { ic: "🏆", t: "Level up!", d: `Finish ${meta.name}`, earned: done >= total },
-    { ic: "🎯", t: "Dedicated", d: "10 lessons total", earned: totalDoneAllLevels >= 10 },
+    { ic: "🎯", t: "Dedicated", d: "10 full lessons", earned: totalDoneAllLevels >= 10 },
   ];
   const badgeGrid = document.getElementById("badgeGrid");
   badgeDefs.forEach(b => {
@@ -2313,6 +2825,20 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
     btn.style.display = "inline-flex";
     const overlay = document.getElementById("myProfileOverlay");
 
+    // Teacher grades: one letter (A+ .. F) per attended class, set by the
+    // teacher in the attendance popup (LumioSchedule.gradeStudent). Same
+    // GPA-style average as report.html so the two never disagree.
+    const GRADE_POINTS = { "A+": 4.3, "A": 4.0, "A-": 3.7, "B+": 3.3, "B": 3.0, "B-": 2.7, "C+": 2.3, "C": 2.0, "C-": 1.7, "D": 1.0, "F": 0.0 };
+    function teacherGrades(p) {
+      const list = (window.LumioSchedule && LumioSchedule.gradesForStudent) ? LumioSchedule.gradesForStudent(p.name, p.level || "pre-a") : [];
+      list.sort((a, b) => (a.lessonNumber || 0) - (b.lessonNumber || 0) || String(a.date).localeCompare(String(b.date)));
+      const pct = list.length ? Math.round((list.reduce((t, g) => t + (GRADE_POINTS[g.grade] || 0), 0) / list.length / 4.3) * 100) : null;
+      const avgLetter = pct === null ? null : Object.keys(GRADE_POINTS).reduce((best, L) =>
+        Math.abs(GRADE_POINTS[L] / 4.3 * 100 - pct) < Math.abs(GRADE_POINTS[best] / 4.3 * 100 - pct) ? L : best, "A+");
+      return { list, pct, avgLetter, latest: list.length ? list[list.length - 1] : null };
+    }
+    function gradeClass(g) { return !g ? "" : g[0] === "A" ? "teal" : g[0] === "B" ? "blue" : g[0] === "C" ? "purple" : "coral"; }
+
     function renderProfile() {
       const p = window.LumioProfiles ? LumioProfiles.getStudent(rosterProfile.id) : rosterProfile;
       document.getElementById("mpName").textContent = p.name;
@@ -2338,6 +2864,24 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
         <div class="mp-tile ${(p.sessionsRemaining || 0) <= 3 ? "coral" : "teal"}"><span class="ic">🎟️</span><b>${p.sessionsRemaining || 0}</b><span>Sessions left</span></div>
         <div class="mp-tile teal"><span class="ic">🏆</span><b>${p.rewardPoints || 0}</b><span>Reward points</span></div>
       `;
+      const tg = teacherGrades(p);
+      const gradesEl = document.getElementById("mpGrades");
+      const lt = Lumio.levelTestFor ? Lumio.levelTestFor(p.name, p.level || "pre-a") : null;
+      const ltEl = document.getElementById("mpLevelTest");
+      if (ltEl) {
+        ltEl.innerHTML = lt ? `<div class="mp-grades-head"><div class="mp-grade-avg ${lt.pct >= Lumio.TEST_PASS_PCT ? "teal" : "coral"}"><b>${lt.pct}%</b><span>${lt.band}</span></div>
+          <div class="mp-grades-sub">Level test · اختبار المستوى — ${lt.score}/${lt.total} on ${lt.date}${lt.attempts > 1 ? ` · ${lt.attempts} attempts` : ""}</div></div>` : "";
+        ltEl.style.display = lt ? "" : "none";
+      }
+      if (gradesEl) {
+        gradesEl.innerHTML = tg.list.length ? `
+          <div class="mp-grades-head">
+            <div class="mp-grade-avg ${gradeClass(tg.avgLetter)}"><b>${tg.avgLetter}</b><span>Average · ${tg.pct}%</span></div>
+            <div class="mp-grades-sub">Your teacher's grade for each live class · تقييم المعلم لكل حصة</div>
+          </div>
+          <div class="mp-grade-list">${tg.list.map(g => `<div class="mp-grade-chip ${gradeClass(g.grade)}" title="${g.date}"><span>L${g.lessonNumber || "–"}</span><b>${g.grade}</b></div>`).join("")}</div>`
+        : `<div class="mp-grades-sub">No teacher grades yet — your teacher grades each live class you attend.</div>`;
+      }
     }
 
     btn.onclick = () => { renderProfile(); overlay.classList.add("show"); };
@@ -2368,10 +2912,12 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
       const attPct = attStats.total ? Math.round((attStats.present / attStats.total) * 100) : null;
       const today = new Date().toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" });
 
+      const tg = teacherGrades(p);
+      const gradeByLesson = {}; tg.list.forEach(g => { if (g.lessonNumber) gradeByLesson[g.lessonNumber] = g.grade; });
       const lessonRows = entries
         .map(([n, r]) => ({ n: Number(n), r }))
         .sort((a, b) => a.n - b.n)
-        .map(({ n, r }) => `<tr><td>Lesson ${n}</td><td>${"★".repeat(r.stars || 0)}</td><td>${r.score || 0}%</td><td>${r.date || "—"}</td></tr>`)
+        .map(({ n, r }) => `<tr><td>Lesson ${n}</td><td>${"★".repeat(r.stars || 0)}</td><td>${r.score || 0}%</td><td>${gradeByLesson[n] || "—"}</td><td>${r.date || "—"}</td></tr>`)
         .join("");
 
       return `
@@ -2401,9 +2947,24 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
             </div>
           </div>
           <div class="pr-section">
+            <h2>📝 Level test · اختبار المستوى</h2>
+            ${(() => { const lt = Lumio.levelTestFor ? Lumio.levelTestFor(p.name, level) : null; return lt ? `<div class="pr-stats"><div class="pr-stat"><b>${lt.pct}%</b><span>Best score (${lt.score}/${lt.total})</span></div><div class="pr-stat"><b>${lt.band}</b><span>Result</span></div><div class="pr-stat"><b>${lt.date}</b><span>Taken${lt.attempts > 1 ? ` · ${lt.attempts} attempts` : ""}</span></div></div>` : `<p style="color:#8891A3;font-size:.85rem">Not taken yet — opens after all ${total} lessons.</p>`; })()}
+          </div>
+          <div class="pr-section">
+            <h2>🎓 Teacher grades · تقييم المعلم</h2>
+            ${tg.list.length ? `
+            <div class="pr-stats">
+              <div class="pr-stat"><b>${tg.avgLetter}</b><span>Average grade (${tg.pct}%)</span></div>
+              <div class="pr-stat"><b>${tg.list.length}</b><span>Classes graded</span></div>
+              <div class="pr-stat"><b>${tg.latest.grade}</b><span>Latest · Lesson ${tg.latest.lessonNumber || "–"}</span></div>
+            </div>
+            <p style="font-size:.8rem;color:#6B5040;margin:8px 0 0">${tg.list.map(g => `Lesson ${g.lessonNumber || "?"}: <b>${g.grade}</b>`).join(" · ")}</p>`
+            : `<p style="color:#8891A3;font-size:.85rem">No teacher grades yet — each live class attended is graded by the teacher.</p>`}
+          </div>
+          <div class="pr-section">
             <h2>📋 Lesson-by-lesson</h2>
             ${lessonRows
-              ? `<table class="pr-table"><thead><tr><th>Lesson</th><th>Stars</th><th>Score</th><th>Date</th></tr></thead><tbody>${lessonRows}</tbody></table>`
+              ? `<table class="pr-table"><thead><tr><th>Lesson</th><th>Stars</th><th>Score</th><th>Teacher grade</th><th>Date</th></tr></thead><tbody>${lessonRows}</tbody></table>`
               : `<p style="color:#8891A3;font-size:.85rem">No lessons recorded yet.</p>`}
           </div>
           <div class="pr-foot">Lumio English · Small Steps · Big Futures</div>
@@ -2642,21 +3203,9 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
   // fallback bank and quietly upgrade to real vocab once this resolves.
   loadLessonVocabForGames().catch(() => {});
 
-  // Populate the Review section once we know which lessons (if any) need it.
-  loadWeakWordsForReview().then(({ words, lessonNums }) => {
-    if (!words.length) return; // nothing weak yet — section stays hidden
-    reviewWordBank = words;
-    reviewLessonNums = lessonNums;
-    const label = lessonNums.length === 1
-      ? `Lesson ${lessonNums[0]}`
-      : `Lessons ${lessonNums.join(", ")}`;
-    document.getElementById("reviewSub").textContent =
-      `Practice words from ${label} — playing here won't change those lessons' stars, it's just extra practice.`;
-    document.getElementById("reviewSection").style.display = "block";
-    document.getElementById("reviewMemory").onclick = () => { reviewMode = true; memoryOverlay.classList.add("show"); startMemory(reviewWordBank); };
-    document.getElementById("reviewWordPop").onclick = () => { reviewMode = true; wordpopOverlay.classList.add("show"); startWordPop(reviewWordBank); };
-    document.getElementById("reviewBuilder").onclick = () => { reviewMode = true; builderOverlay.classList.add("show"); startBuilder(reviewWordBank); };
-  }).catch(() => {});
+  // The "Review your tricky words" section was removed (Oct 2026) -- the
+  // weak-word helpers below stay only because the game result notes still
+  // reference reviewMode (always false now).
 
   // Blends a mini-game result into that lesson's saved progress, using
   // the exact same "keep the best" rule Lumio.saveResult() already uses,
