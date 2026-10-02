@@ -244,7 +244,8 @@
         const el = document.createElement("div");
         el.className = "tp-profile" + (t.id === selectedTeacherId ? " selected" : "");
         el.tabIndex = 0;
-        el.innerHTML = `<div class="tp-avatar">${t.avatar || "🙂"}</div><div class="tp-name">${t.name}</div>`;
+        const esc = v => String(v == null ? "" : v).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+        el.innerHTML = `<div class="tp-avatar">${esc(t.avatar || "🙂")}</div><div class="tp-name">${esc(t.name)}</div>`;
         el.onclick = () => openTeacherPinFor(t);
         el.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openTeacherPinFor(t); } };
         tGrid.appendChild(el);

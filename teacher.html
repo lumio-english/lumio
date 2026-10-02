@@ -1910,11 +1910,17 @@
  try {
   // ================= Shared UI helpers (toasts, confirm dialog, button loading) =================
   const toastStack = document.getElementById("td-toast-stack");
+  // Every name, note, phone, avatar and label shown on this page can come
+  // from somewhere other than this teacher (the public placement test, a
+  // student device, another teacher), so anything put into innerHTML goes
+  // through escHtml; links typed by a person go through safeUrl.
+  function escHtml(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch])); }
+  function safeUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.test(s) ? escHtml(s) : "#"; }
   function showToast(message, type) {
     const el = document.createElement("div");
     el.className = "td-toast" + (type ? " " + type : "");
     const icon = type === "success" ? "✓" : type === "error" ? "✕" : "ℹ";
-    el.innerHTML = `<span class="ic">${icon}</span><span>${message}</span>`;
+    el.innerHTML = `<span class="ic">${icon}</span><span>${escHtml(message)}</span>`;
     toastStack.appendChild(el);
     setTimeout(() => {
       el.classList.add("out");
@@ -1986,7 +1992,7 @@
     const activeTeacher = window.LumioProfiles ? LumioProfiles.getCurrentTeacher() : null;
     document.getElementById("teacherTagAvatar").textContent = activeTeacher ? activeTeacher.avatar : "👋";
     document.getElementById("teacherTagName").innerHTML = activeTeacher
-      ? `Hi, ${activeTeacher.name}!` + (IS_OWNER ? ' <span class="td-owner-crown" title="Platform owner">👑</span>' : "")
+      ? `Hi, ${escHtml(activeTeacher.name)}!` + (IS_OWNER ? ' <span class="td-owner-crown" title="Platform owner">👑</span>' : "")
       : "Welcome back!";
   } catch (e) {}
 
@@ -2007,9 +2013,9 @@
   // inline sizing rather than needing separate CSS per context.
   function avatarHtml(person) {
     if (person && person.photoDataUrl) {
-      return `<img src="${person.photoDataUrl}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+      return `<img src="${/^data:image\//.test(String(person.photoDataUrl)) ? escHtml(person.photoDataUrl) : ""}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
     }
-    return (person && person.avatar) || "";
+    return escHtml((person && person.avatar) || "");
   }
 
   // ================= Recordings modal =================
@@ -2147,7 +2153,7 @@
     ).map(([num]) => Number(num)).sort((a,b) => a-b);
 
     if (!reachable.length) {
-      checkpointReportBody.innerHTML = `<p class="sub">${studentName} hasn't completed any lessons in a checkpoint range yet. A report becomes available once they've done at least one lesson between 1-6.</p>`;
+      checkpointReportBody.innerHTML = `<p class="sub">${escHtml(studentName)} hasn't completed any lessons in a checkpoint range yet. A report becomes available once they've done at least one lesson between 1-6.</p>`;
       checkpointReportText = "";
       copyBtn.style.display = "none";
       return;
@@ -2186,10 +2192,10 @@
     checkpointReportBody.innerHTML = `
       ${picker}
       <div style="background:var(--td-bg-soft,#FAF9FC);border-radius:12px;padding:14px 16px;margin-bottom:12px">
-        <div style="font-weight:800;margin-bottom:6px">What ${studentName} can do now:</div>
+        <div style="font-weight:800;margin-bottom:6px">What ${escHtml(studentName)} can do now:</div>
         ${skillRows}
       </div>
-      <div style="font-weight:800;margin-bottom:6px">How ${studentName} did (lessons ${start}-${end}):</div>
+      <div style="font-weight:800;margin-bottom:6px">How ${escHtml(studentName)} did (lessons ${start}-${end}):</div>
       <p class="sub" style="margin-bottom:6px">${done.length}/${lessonNums.length} lessons completed${pct !== null ? ` \u2014 ${pct}% average score` : ""}.</p>
       ${needsPractice.length
         ? `<p class="sub" style="color:#C2530A">Could use a bit more practice: ${needsPractice.map(x => `Lesson ${x.n}`).join(", ")}.</p>`
@@ -2315,7 +2321,7 @@
       const initials = a.name.slice(0, 2).toUpperCase();
       const verb = a.type === "homework" ? "completed homework in" : "finished a lesson in";
       row.innerHTML = `<div class="td-avatar">${initials}</div>
-        <div><div class="who">${a.name}</div><div class="what">${a.type === "homework" ? "📝 " : ""}${verb} ${levelName(a.lvl)} · ★${a.stars}</div></div>
+        <div><div class="who">${escHtml(a.name)}</div><div class="what">${a.type === "homework" ? "📝 " : ""}${verb} ${levelName(a.lvl)} · ★${a.stars}</div></div>
         <div class="when">${a.date}</div>`;
       activityList.appendChild(row);
     });
@@ -2392,7 +2398,7 @@
         ? `<a class="td-wa-btn" target="_blank" rel="noopener" href="https://wa.me/${String(f.student.phone).replace(/\D/g, "")}?text=${encodeURIComponent(message)}">💬 WhatsApp</a>`
         : `<span class="sub" style="font-size:.72rem;flex-shrink:0">No phone on file</span>`;
       return `<div class="td-inactive-row">
-        <div><div class="who">${f.student.avatar || ""} ${f.student.name}</div><div class="meta">${label} · ${levelName(f.student.level)}</div></div>
+        <div><div class="who">${escHtml(f.student.avatar || "")} ${escHtml(f.student.name)}</div><div class="meta">${label} · ${levelName(f.student.level)}</div></div>
         ${action}
       </div>`;
     }).join("");
@@ -2425,8 +2431,8 @@
     list.innerHTML = flagged.map(f => {
       const label = f.never ? "No report sent yet" : `${f.days} days since last report`;
       return `<div class="td-inactive-row">
-        <div><div class="who">${f.student.avatar || ""} ${f.student.name}</div><div class="meta">${label} · ${levelName(f.student.level)}</div></div>
-        <a class="td-wa-btn" href="report.html?student=${f.student.id}">📋 View report</a>
+        <div><div class="who">${escHtml(f.student.avatar || "")} ${escHtml(f.student.name)}</div><div class="meta">${label} · ${levelName(f.student.level)}</div></div>
+        <a class="td-wa-btn" href="report.html?student=${encodeURIComponent(f.student.id)}">📋 View report</a>
       </div>`;
     }).join("");
   }
@@ -2491,7 +2497,7 @@
       const tr = document.createElement("tr");
       tr.className = "td-clickable";
       tr.innerHTML = `
-        <td><div class="td-name-cell"><div class="td-avatar">${r.name.slice(0,2).toUpperCase()}</div><b>${r.name}</b>${r.onRoster ? "" : ' <span class="td-badge grey" title="Finished a lesson but is not on your roster yet">guest</span>'}</div></td>
+        <td><div class="td-name-cell"><div class="td-avatar">${escHtml(r.name.slice(0,2).toUpperCase())}</div><b>${escHtml(r.name)}</b>${r.onRoster ? "" : ' <span class="td-badge grey" title="Finished a lesson but is not on your roster yet">guest</span>'}</div></td>
         <td><span class="td-badge teal">${levelName(r.lvl)}</span></td>
         <td><span class="td-mini-track"><span class="td-mini-fill" style="width:${pct}%"></span></span>${r.done}/${total}</td>
         <td><span class="td-badge amber">★ ${r.stars}</span></td>
@@ -2580,20 +2586,20 @@
       rwEl.innerHTML = `<div class="td-empty" style="padding:12px 6px">Not on the roster yet.</div>`;
       ["drawerNotes", "drawerReferrals", "drawerMessages"].forEach(id => {
         const panel = document.getElementById(id);
-        if (panel) panel.innerHTML = `<div class="td-empty" style="padding:12px 6px">${r.name} isn't on the roster yet — add them as a student first.</div>`;
+        if (panel) panel.innerHTML = `<div class="td-empty" style="padding:12px 6px">${escHtml(r.name)} isn't on the roster yet — add them as a student first.</div>`;
       });
       return;
     }
-    const tagsHtml = (p.tags || []).map(t => `<span class="td-dp-tag">${t}</span>`).join("");
+    const tagsHtml = (p.tags || []).map(t => `<span class="td-dp-tag">${escHtml(t)}</span>`).join("");
     const streak = window.LumioSchedule ? LumioSchedule.attendanceStreakForStudent(p.name) : 0;
     const fixedCount = window.LumioSchedule ? LumioSchedule.fixedScheduleCountForStudent(p.name) : 0;
     const isApproved = p.approved !== false;
     const pinKnownDrawer = !!p.pin;
     el.innerHTML = `
       <div class="td-dp-login">
-        <div class="row"><span class="lbl">Login ID</span><span class="val">${p.loginCode || "—"}</span></div>
-        <div class="row"><span class="lbl">Phone</span><span class="val">${p.phone ? formatPhoneDisplay(p.phone) : "<i>Not set</i>"}</span></div>
-        <div class="row"><span class="lbl">PIN</span><span class="val">${pinKnownDrawer ? p.pin : '<i>set on another device</i>'}</span></div>
+        <div class="row"><span class="lbl">Login ID</span><span class="val">${escHtml(p.loginCode || "—")}</span></div>
+        <div class="row"><span class="lbl">Phone</span><span class="val">${p.phone ? escHtml(formatPhoneDisplay(p.phone)) : "<i>Not set</i>"}</span></div>
+        <div class="row"><span class="lbl">PIN</span><span class="val">${pinKnownDrawer ? escHtml(p.pin) : '<i>set on another device</i>'}</span></div>
         ${!pinKnownDrawer ? `<p class="hint">Only the device that created this account knows the current PIN — use "🔑 New PIN" from the roster card to set one you can see and share.</p>` : ""}
       </div>
       ${!isApproved ? `
@@ -2602,10 +2608,10 @@
         <button type="button" id="drawerApproveBtn">✅ Approve &amp; activate login</button>
       </div>` : ""}
       <div class="td-dp-fields">
-        <div class="td-dp-field"><span class="ic">🎂</span><div><div class="lbl">Age</div><div class="val">${p.age != null ? p.age : "<i>Not set</i>"}</div></div></div>
+        <div class="td-dp-field"><span class="ic">🎂</span><div><div class="lbl">Age</div><div class="val">${p.age != null ? escHtml(p.age) : "<i>Not set</i>"}</div></div></div>
         <div class="td-dp-field"><span class="ic">${p.gender === "F" ? "♀️" : "♂️"}</span><div><div class="lbl">Gender</div><div class="val">${p.gender === "M" ? "Male" : p.gender === "F" ? "Female" : "<i>Not set</i>"}</div></div></div>
-        <div class="td-dp-field"><span class="ic">🎓</span><div><div class="lbl">Grade</div><div class="val">${p.grade || "<i>Not set</i>"}</div></div></div>
-        <div class="td-dp-field"><span class="ic">🌍</span><div><div class="lbl">Country</div><div class="val">${p.country || "<i>Not set</i>"}</div></div></div>
+        <div class="td-dp-field"><span class="ic">🎓</span><div><div class="lbl">Grade</div><div class="val">${p.grade ? escHtml(p.grade) : "<i>Not set</i>"}</div></div></div>
+        <div class="td-dp-field"><span class="ic">🌍</span><div><div class="lbl">Country</div><div class="val">${p.country ? escHtml(p.country) : "<i>Not set</i>"}</div></div></div>
       </div>
       ${tagsHtml ? `<div class="td-dp-tags">${tagsHtml}</div>` : ""}
       ${streak > 0 ? `<div class="td-dp-streak">🔥 <b>${streak}</b>-week attendance streak</div>` : ""}
@@ -2659,8 +2665,8 @@
     if (rewardsTab) rewardsTab.classList.toggle("has-alert", canRedeem);
     const catalog = window.LumioProfiles ? LumioProfiles.listRewardCatalog() : [];
     const catalogHtml = catalog.map(item => `
-      <button type="button" class="td-rw-catalog-item" data-item="${item.id}" ${points >= item.cost ? "" : "disabled"}>
-        ${item.label} <span>${item.cost} pts</span>
+      <button type="button" class="td-rw-catalog-item" data-item="${escHtml(item.id)}" ${points >= item.cost ? "" : "disabled"}>
+        ${escHtml(item.label)} <span>${item.cost} pts</span>
       </button>`).join("");
     rwEl.innerHTML = `
       <div class="td-rw-row">
@@ -2723,7 +2729,7 @@
     if (!wrap) return;
     const notes = window.LumioProfiles ? LumioProfiles.listNotes(p.id) : [];
     const listHtml = notes.length
-      ? notes.map(n => `<div class="td-note-row"><div class="txt">${n.text}</div><div class="meta">${new Date(n.date).toLocaleDateString()}${n.author ? " · " + n.author : ""}</div></div>`).join("")
+      ? notes.map(n => `<div class="td-note-row"><div class="txt">${escHtml(n.text)}</div><div class="meta">${new Date(n.date).toLocaleDateString()}${n.author ? " · " + escHtml(n.author) : ""}</div></div>`).join("")
       : `<div class="td-empty" style="padding:8px 0">No notes yet.</div>`;
     wrap.innerHTML = `
       <div style="display:flex;gap:6px;margin-bottom:10px">
@@ -2760,10 +2766,10 @@
       <div class="td-note-row" style="${m.read ? "" : "border-left:3px solid var(--td-indigo);padding-left:9px"}">
         <div class="txt">${ICONS[m.type] || ICONS.info} ${esc(m.text)}</div>
         <div class="meta">${new Date(m.date).toLocaleString()} · ${m.read ? "read ✓" : "<b>unread</b>"}${m.type === "teacher" && m.meta && m.meta.from ? " · sent by " + esc(m.meta.from) : ""}</div>
-      </div>`).join("") : `<div class="td-empty" style="padding:8px 0">Nothing sent to ${p.name} yet.</div>`;
+      </div>`).join("") : `<div class="td-empty" style="padding:8px 0">Nothing sent to ${escHtml(p.name)} yet.</div>`;
     wrap.innerHTML = `
       <div style="margin-bottom:12px">
-        <textarea id="msgComposer" rows="3" placeholder="Write a message to ${p.name}… (they'll see it under 📬 Messages on their dashboard)" style="width:100%;box-sizing:border-box;padding:9px 11px;border-radius:10px;border:1px solid var(--td-border);font-family:inherit;font-size:.86rem;resize:vertical"></textarea>
+        <textarea id="msgComposer" rows="3" placeholder="Write a message to ${escHtml(p.name)}… (they'll see it under 📬 Messages on their dashboard)" style="width:100%;box-sizing:border-box;padding:9px 11px;border-radius:10px;border:1px solid var(--td-border);font-family:inherit;font-size:.86rem;resize:vertical"></textarea>
         <div style="display:flex;justify-content:flex-end;margin-top:6px">
           <button type="button" class="td-btn td-btn-primary" id="msgSendBtn">📨 Send message</button>
         </div>
@@ -2793,16 +2799,16 @@
     const st = LumioProfiles.referralStats(p.id);
     const STATUS_LABELS = { added: "Added", tested: "Took the test", trial: "Attended trial", subscribed: "Subscribed ✓" };
     const rows = refs.length ? refs.map(r => `
-      <div class="td-note-row" data-ref="${r.id}" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <div class="td-note-row" data-ref="${escHtml(r.id)}" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
         <div style="flex:1;min-width:120px">
-          <div class="txt" style="font-weight:800">${r.name}${r.rewardedAt ? ' <span class="td-badge green" style="margin-left:4px">+' + st.rewardPerSubscription + ' sessions</span>' : ""}</div>
-          <div class="meta">${r.phone ? "+" + r.phone + " · " : ""}${new Date(r.date).toLocaleDateString()}</div>
+          <div class="txt" style="font-weight:800">${escHtml(r.name)}${r.rewardedAt ? ' <span class="td-badge green" style="margin-left:4px">+' + st.rewardPerSubscription + ' sessions</span>' : ""}</div>
+          <div class="meta">${r.phone ? "+" + escHtml(r.phone) + " · " : ""}${new Date(r.date).toLocaleDateString()}</div>
         </div>
         <select data-act="status" style="padding:6px 8px;border-radius:8px;border:1px solid var(--td-border);font-family:inherit;font-weight:700">
           ${Object.keys(STATUS_LABELS).map(k => `<option value="${k}" ${r.status === k ? "selected" : ""}>${STATUS_LABELS[k]}</option>`).join("")}
         </select>
         <button type="button" class="td-btn" data-act="del" title="Remove referral" style="padding:6px 9px">✕</button>
-      </div>`).join("") : `<div class="td-empty" style="padding:8px 0">No referrals yet. Add the people ${p.name} has referred below.</div>`;
+      </div>`).join("") : `<div class="td-empty" style="padding:8px 0">No referrals yet. Add the people ${escHtml(p.name)} has referred below.</div>`;
     wrap.innerHTML = `
       <div class="td-dp-tiles" style="margin-bottom:12px">
         <div class="td-dp-tile"><b>${st.total}</b><span>Referred</span></div>
@@ -2810,7 +2816,7 @@
         <div class="td-dp-tile"><b>${st.trial}</b><span>Trial</span></div>
         <div class="td-dp-tile"><b>${st.subscribed}</b><span>Subscribed</span></div>
       </div>
-      <p class="sub" style="font-size:.74rem;margin:0 0 10px">Each subscribed referral credits ${p.name} <b>${st.rewardPerSubscription} free sessions</b> automatically (once per referral). Earned so far: <b>${st.sessionsEarned}</b>.</p>
+      <p class="sub" style="font-size:.74rem;margin:0 0 10px">Each subscribed referral credits ${escHtml(p.name)} <b>${st.rewardPerSubscription} free sessions</b> automatically (once per referral). Earned so far: <b>${st.sessionsEarned}</b>.</p>
       <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
         <input type="text" id="refNameInput" placeholder="Referred person's name" style="flex:2;min-width:140px;padding:7px 10px;border-radius:8px;border:1px solid var(--td-border);font-family:inherit">
         <input type="text" id="refPhoneInput" placeholder="Phone (optional)" style="flex:1;min-width:110px;padding:7px 10px;border-radius:8px;border:1px solid var(--td-border);font-family:inherit">
@@ -2935,7 +2941,7 @@
       const attPct = attStats.total ? Math.round((attStats.present / attStats.total) * 100) : null;
       const grades = LumioSchedule.gradesForStudent(r.name, r.lvl);
       const gradesHtml = grades.length
-        ? grades.map(g => `Lesson ${g.lessonNumber || "–"}: ${g.grade}`).join(" · ")
+        ? grades.map(g => `Lesson ${g.lessonNumber || "–"}: ${escHtml(g.grade)}`).join(" · ")
         : "No grades recorded yet.";
       extraSection = `
         <div class="pr-section">
@@ -2955,13 +2961,13 @@
           <img src="assets/logo/lumio-logo.png" alt="Lumio English logo" onerror="this.style.display='none'">
           <div>
             <div class="brand">Lumio <span>English</span></div>
-            <div class="sub">Performance Report · generated ${today} by ${teacherName}</div>
+            <div class="sub">Performance Report · generated ${today} by ${escHtml(teacherName)}</div>
           </div>
         </div>
         <div class="pr-student">
-          <div class="av">${avatarHtml(r) || r.name.slice(0, 2).toUpperCase()}</div>
+          <div class="av">${avatarHtml(r) || escHtml(r.name.slice(0, 2).toUpperCase())}</div>
           <div>
-            <h1>${r.name}</h1>
+            <h1>${escHtml(r.name)}</h1>
             <p>${levelName(r.lvl)}</p>
           </div>
         </div>
@@ -2972,7 +2978,7 @@
         </div>
         <div class="pr-section">
           <h2>📝 Summary</h2>
-          <div class="pr-note-box info">${summary}</div>
+          <div class="pr-note-box info">${escHtml(summary)}</div>
         </div>
         ${strongHtml || weakHtml || notStartedHtml ? `<div class="pr-section"><h2>🔍 Highlights</h2>${strongHtml}${weakHtml}${notStartedHtml}</div>` : ""}
         ${extraSection}
@@ -3117,17 +3123,17 @@
         <div class="top">
           <div class="av">${avatarHtml(p)}</div>
           <div>
-            <div class="nm">${p.name}</div>
+            <div class="nm">${escHtml(p.name)}</div>
             <div><span class="lv">${levelName(p.level)}</span>${p.approved === false ? ' <span class="td-pending-badge">⏳ Pending approval</span>' : ""}</div>
             <div class="teacher-line">👩‍🏫 ${teacherLabel}</div>
-            ${p.cohort ? `<div class="group-line">${p.cohort}</div>` : ""}
+            ${p.cohort ? `<div class="group-line">${escHtml(p.cohort)}</div>` : ""}
           </div>
         </div>
         ${hw ? `<div class="hw-summary">📝 ${hw.count} homework${hw.count === 1 ? "" : "s"} done · avg ${(hw.starsSum / hw.count).toFixed(1)}★</div>` : ""}
-        <div class="pinrow"><span class="lbl">ID</span><span class="idval">${p.loginCode || "—"}</span></div>
-        <div class="pinrow"><span class="lbl">Phone</span><span class="idval">${p.phone ? formatPhoneDisplay(p.phone) : "<i style=\"font-style:italic;opacity:.6\">Not set</i>"}</span></div>
+        <div class="pinrow"><span class="lbl">ID</span><span class="idval">${escHtml(p.loginCode || "—")}</span></div>
+        <div class="pinrow"><span class="lbl">Phone</span><span class="idval">${p.phone ? escHtml(formatPhoneDisplay(p.phone)) : "<i style=\"font-style:italic;opacity:.6\">Not set</i>"}</span></div>
         <div class="pinrow"><span class="lbl">PIN</span>${pinKnown
-          ? `<span class="pinval" data-pin="${p.pin}">••••</span><button class="pintoggle" type="button">show</button>`
+          ? `<span class="pinval" data-pin="${escHtml(p.pin)}">••••</span><button class="pintoggle" type="button">show</button>`
           : `<span class="pinval" style="opacity:.6;letter-spacing:0;font-size:.68rem">set on another device — click "New PIN" to set one you can see</span>`}
         </div>
         <div class="acts">
@@ -3152,7 +3158,7 @@
       }
       card.querySelector('[data-act="edit"]').onclick = () => openStudentModal(p);
       card.querySelector('[data-act="recordings"]').onclick = () => openRecordingsModal(p.name);
-      card.querySelector('[data-act="report"]').href = `report.html?student=${p.id}`;
+      card.querySelector('[data-act="report"]').href = `report.html?student=${encodeURIComponent(p.id)}`;
       card.querySelector('[data-act="pin"]').onclick = async (e) => {
         await withLoading(e.currentTarget, async () => {
           const newPin = LumioProfiles.randomPin();
@@ -3485,8 +3491,8 @@
       card.className = "td-roster-card";
       card.innerHTML = `
         <div class="top">
-          <div class="av">${t.avatar}</div>
-          <div><div class="nm">${t.name}${t.isOwner ? ' <span class="td-owner-crown" title="Platform owner">👑</span>' : ""}${t.id === activeId ? ' <span class="td-badge teal">you</span>' : ""}</div><div><span class="lv">${studentCount} student${studentCount === 1 ? "" : "s"}</span></div></div>
+          <div class="av">${escHtml(t.avatar)}</div>
+          <div><div class="nm">${escHtml(t.name)}${t.isOwner ? ' <span class="td-owner-crown" title="Platform owner">👑</span>' : ""}${t.id === activeId ? ' <span class="td-badge teal">you</span>' : ""}</div><div><span class="lv">${studentCount} student${studentCount === 1 ? "" : "s"}</span></div></div>
         </div>
         ${stats ? `<div class="td-teacher-stats">
           <div class="item"><b>${stats.classesThisMonth}</b><span>This month</span></div>
@@ -3494,7 +3500,7 @@
           <div class="item"><b>${stats.punctualityPct != null ? stats.punctualityPct + "%" : "—"}</b><span>Marked</span></div>
         </div>` : ""}
         <div class="pinrow"><span class="lbl">PIN</span>${pinKnown
-          ? `<span class="pinval" data-pin="${t.pin}">••••</span><button class="pintoggle" type="button">show</button>`
+          ? `<span class="pinval" data-pin="${escHtml(t.pin)}">••••</span><button class="pintoggle" type="button">show</button>`
           : `<span class="pinval" style="opacity:.6;letter-spacing:0;font-size:.72rem">set on another device</span>`}
         </div>
         ${IS_OWNER ? `<div class="acts">
@@ -3604,8 +3610,8 @@
     const teachers = LumioProfiles.listTeachers();
     const fromSel = document.getElementById("subFromTeacher");
     const toSel = document.getElementById("subToTeacher");
-    fromSel.innerHTML = teachers.map(t => `<option value="${t.id}">${t.name}</option>`).join("");
-    toSel.innerHTML = teachers.map(t => `<option value="${t.id}">${t.name}</option>`).join("");
+    fromSel.innerHTML = teachers.map(t => `<option value="${escHtml(t.id)}">${escHtml(t.name)}</option>`).join("");
+    toSel.innerHTML = teachers.map(t => `<option value="${escHtml(t.id)}">${escHtml(t.name)}</option>`).join("");
     document.getElementById("subFromDate").value = LumioSchedule.todayStr();
     document.getElementById("subToDate").value = LumioSchedule.todayStr();
     document.getElementById("subError").textContent = "";
@@ -3732,10 +3738,10 @@
       const row = document.createElement("div");
       row.className = "td-class-row" + (c.status === "cancelled" ? " cancelled" : "");
       const studentsHtml = c.students.map(s => `
-        <div class="td-class-student" data-sid="${s.studentId || ""}" data-sname="${s.studentName}">
-          <span class="nm">${s.studentName}</span>
+        <div class="td-class-student" data-sid="${escHtml(s.studentId || "")}" data-sname="${escHtml(s.studentName)}">
+          <span class="nm">${escHtml(s.studentName)}</span>
           ${attendanceBadge(s.attendance)}
-          ${s.grade ? `<span class="td-badge grade">${s.grade}</span>` : ""}
+          ${s.grade ? `<span class="td-badge grade">${escHtml(s.grade)}</span>` : ""}
           ${s.teacherRatingStars ? `<span class="td-badge grey">★${s.teacherRatingStars} from student</span>` : ""}
           ${c.status !== "cancelled" && c.date <= LumioSchedule.todayStr() ? `
             <span class="td-student-acts">
@@ -3755,9 +3761,9 @@
             ${c.status === "cancelled" ? '<span class="td-badge grey">cancelled</span>' : ""}
           </div>
           <div class="td-class-students-list">${studentsHtml}</div>
-          <div class="meta">${teacher ? teacher.name : (c.teacherName || "Unassigned")}${c.lessonNumber ? " · Lesson " + c.lessonNumber : ""}${c.cohort ? " · " + c.cohort : ""}${c.notes ? " · " + c.notes : ""}</div>
-          ${c.meetingLink ? `<div class="meta"><a href="${c.meetingLink}" target="_blank" rel="noopener">🔗 Join meeting link</a></div>` : ""}
-          ${c.status === "completed" ? `<textarea class="td-session-notes" placeholder="What did you cover this session? Any homework given?">${c.sessionNotes || ""}</textarea>` : ""}
+          <div class="meta">${escHtml(teacher ? teacher.name : (c.teacherName || "Unassigned"))}${c.lessonNumber ? " · Lesson " + c.lessonNumber : ""}${c.cohort ? " · " + escHtml(c.cohort) : ""}${c.notes ? " · " + escHtml(c.notes) : ""}</div>
+          ${c.meetingLink ? `<div class="meta"><a href="${safeUrl(c.meetingLink)}" target="_blank" rel="noopener">🔗 Join meeting link</a></div>` : ""}
+          ${c.status === "completed" ? `<textarea class="td-session-notes" placeholder="What did you cover this session? Any homework given?">${escHtml(c.sessionNotes || "")}</textarea>` : ""}
         </div>
         <div class="td-class-acts">
           <button type="button" data-act="edit">Edit</button>
@@ -3922,9 +3928,9 @@
         const capacityWarn = c.status !== "cancelled" && (c.students.length < 2 || c.students.length > 4);
         const capClass = capacityWarn ? "capacity-warn" : "";
         const title = `English Club${c.level ? " · " + c.level : ""}${c.lessonNumber ? " · Lesson " + c.lessonNumber : ""}${capacityWarn ? " — ⚠ group size outside 2–4" : ""}`;
-        col += `<div class="td-cal-block ${statusClass} ${attnClass} ${capClass}" style="top:${top}px;height:${height}px" data-class-id="${c.id}" title="${fmtTimeTz(c.date, c.startTime)} · ${title} — ${c.students.map(s=>s.studentName).join(', ')}">
+        col += `<div class="td-cal-block ${statusClass} ${attnClass} ${capClass}" style="top:${top}px;height:${height}px" data-class-id="${c.id}" title="${escHtml(fmtTimeTz(c.date, c.startTime) + ' · ' + title + ' — ' + c.students.map(s=>s.studentName).join(', '))}">
           <div class="cb-title">${c.patternId ? "🔁 " : ""}${capacityWarn ? "⚠ " : ""}${fmtTime(c.startTime)} · ${c.students.length} student${c.students.length===1?"":"s"}${(() => { const marked = c.students.filter(s => s.attendance).length; return marked ? ` · ${marked}/${c.students.length} marked` : ""; })()}</div>
-          <div class="cb-meta">${c.level || c.notes || "Class"}</div>
+          <div class="cb-meta">${escHtml(c.level ? levelName(c.level) : (c.notes || "Class"))}</div>
         </div>`;
       });
       if (isToday) {
@@ -4028,9 +4034,9 @@
     // that hasn't happened yet.
     const canMarkHere = c.status !== "cancelled" && c.date <= LumioSchedule.todayStr();
     const studentsHtml = c.students.map(s => `
-      <div class="td-cd-student" data-sid="${s.studentId || ""}" data-sname="${s.studentName}">
-        <div class="av">${initials(s.studentName)}</div>
-        <span style="flex:1">${s.studentName}</span>
+      <div class="td-cd-student" data-sid="${escHtml(s.studentId || "")}" data-sname="${escHtml(s.studentName)}">
+        <div class="av">${escHtml(initials(s.studentName))}</div>
+        <span style="flex:1">${escHtml(s.studentName)}</span>
         ${attendanceBadge(s.attendance)}
         ${canMarkHere ? `
           <span class="td-student-acts">
@@ -4051,11 +4057,11 @@
         <div class="ic">🧑‍🏫</div>
         <div class="val">
           <div class="lbl">Teacher</div>
-          <div class="main">${teacher ? teacher.name : (c.teacherName || "Unassigned")}</div>
+          <div class="main">${escHtml(teacher ? teacher.name : (c.teacherName || "Unassigned"))}</div>
         </div>
       </div>
-      ${c.meetingLink ? `<div class="td-cd-row"><div class="ic">🔗</div><div class="val"><div class="lbl">Meeting link</div><a class="main" href="${c.meetingLink}" target="_blank" rel="noopener" style="color:var(--td-indigo)">${c.meetingLink}</a></div></div>` : ""}
-      ${c.notes ? `<div class="td-cd-row"><div class="ic">📝</div><div class="val"><div class="lbl">Notes</div><div class="sub">${c.notes}</div></div></div>` : ""}
+      ${c.meetingLink ? `<div class="td-cd-row"><div class="ic">🔗</div><div class="val"><div class="lbl">Meeting link</div><a class="main" href="${safeUrl(c.meetingLink)}" target="_blank" rel="noopener" style="color:var(--td-indigo)">${c.meetingLink}</a></div></div>` : ""}
+      ${c.notes ? `<div class="td-cd-row"><div class="ic">📝</div><div class="val"><div class="lbl">Notes</div><div class="sub">${escHtml(c.notes)}</div></div></div>` : ""}
       <div class="td-cd-row">
         <div class="ic">👥</div>
         <div class="val" style="width:100%">
@@ -4143,7 +4149,7 @@
       const row = document.createElement("label");
       row.style.cssText = "display:flex;align-items:center;gap:7px;font-size:.85rem;font-weight:600;cursor:pointer";
       const subLabel = s.subscribed ? "" : ' <span style="color:var(--td-coral);font-weight:800">(not subscribed — won\'t generate)</span>';
-      row.innerHTML = `<input type="checkbox" value="${s.id}" checked> ${s.avatar} ${s.name}${subLabel}`;
+      row.innerHTML = `<input type="checkbox" value="${escHtml(s.id)}" checked> ${escHtml(s.avatar)} ${escHtml(s.name)}${subLabel}`;
       wrap.appendChild(row);
     });
   }
@@ -4239,7 +4245,7 @@
       const label = typeof d === "string" ? "" : (d.label || "");
       const row = document.createElement("div");
       row.style.cssText = "display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--td-bg);border-radius:9px;font-size:.84rem;font-weight:700";
-      row.innerHTML = `<span style="flex:1">${dateStr}${label ? " · " + label : ""}</span><button type="button" class="td-btn" style="padding:4px 10px">Remove</button>`;
+      row.innerHTML = `<span style="flex:1">${dateStr}${label ? " · " + escHtml(label) : ""}</span><button type="button" class="td-btn" style="padding:4px 10px">Remove</button>`;
       row.querySelector("button").onclick = () => {
         LumioSchedule.removeBlockedDate(dateStr);
         renderHolidaysList();
@@ -4345,7 +4351,7 @@
       const row = document.createElement("label");
       row.style.cssText = "display:flex;align-items:center;gap:7px;font-size:.85rem;font-weight:600;cursor:pointer";
       const checked = preselected.size ? preselected.has(s.id) : true;
-      row.innerHTML = `<input type="checkbox" id="${id}" value="${s.id}" ${checked ? "checked" : ""}> ${s.avatar} ${s.name}`;
+      row.innerHTML = `<input type="checkbox" id="${id}" value="${escHtml(s.id)}" ${checked ? "checked" : ""}> ${escHtml(s.avatar)} ${escHtml(s.name)}`;
       wrap.appendChild(row);
     });
     renderClsLessonOptions();
@@ -4604,18 +4610,18 @@
       const linkedAccount = window.LumioProfiles ? LumioProfiles.findByPhone(lead.phone) : null;
       const accountHtml = linkedAccount ? `
           <div class="td-lead-account ${linkedAccount.approved === false ? "pending" : ""}">
-            ${linkedAccount.approved === false ? "🔒 Account created — pending approval" : "✅ Approved &amp; can log in"} — ID: <b>${linkedAccount.loginCode}</b>
-            ${linkedAccount.pin ? ` · PIN: <b>${linkedAccount.pin}</b>` : ` · PIN set on another device`}
+            ${linkedAccount.approved === false ? "🔒 Account created — pending approval" : "✅ Approved &amp; can log in"} — ID: <b>${escHtml(linkedAccount.loginCode)}</b>
+            ${linkedAccount.pin ? ` · PIN: <b>${escHtml(linkedAccount.pin)}</b>` : ` · PIN set on another device`}
           </div>` : "";
       row.innerHTML = `
         <div class="td-lead-info">
-          <div class="who">${lead.name}
-            <span class="td-lead-status ${lead.status}">${lead.status}</span>
+          <div class="who">${escHtml(lead.name)}
+            <span class="td-lead-status ${escHtml(lead.status)}">${escHtml(lead.status)}</span>
             ${lead.suggestedLevel ? `<span class="td-badge teal">${levelName(lead.suggestedLevel)}</span>` : ""}
           </div>
-          <div class="meta">📞 <a href="tel:+${lead.phone}">+${lead.phone}</a>${lead.age ? ` · Age ${lead.age}` : ""} · Submitted ${fmtLeadDate(lead.createdAt)}</div>
+          <div class="meta">📞 <a href="tel:+${escHtml(String(lead.phone || "").replace(/[^\d]/g, ""))}">+${escHtml(lead.phone)}</a>${lead.age ? ` · Age ${escHtml(lead.age)}` : ""} · Submitted ${fmtLeadDate(lead.createdAt)}</div>
           ${accountHtml}
-          <textarea class="td-lead-notes" placeholder="Add a note — e.g. spoke to mom, wants to start next week…">${lead.notes || ""}</textarea>
+          <textarea class="td-lead-notes" placeholder="Add a note — e.g. spoke to mom, wants to start next week…">${escHtml(lead.notes || "")}</textarea>
         </div>
         <div class="td-lead-score"><b>${scoreLabel}</b><span>Test score</span></div>
         <div class="td-lead-acts">
@@ -4729,10 +4735,10 @@
     grid.innerHTML = printable.map(p => `
       <div class="pc-card">
         <div class="av">${avatarHtml(p)}</div>
-        <div class="nm">${p.name}</div>
+        <div class="nm">${escHtml(p.name)}</div>
         <div class="lv">${levelName(p.level)} · your Lumio site</div>
         <div class="lbl">Your PIN</div>
-        <div class="pin">${p.pin}</div>
+        <div class="pin">${escHtml(p.pin)}</div>
       </div>`).join("");
     if (skipped > 0) {
       alert(`${skipped} student${skipped === 1 ? "" : "s"} were set up on another device, so this one doesn't know their PIN — give them a new PIN here first if you need to print their card.`);
@@ -4771,7 +4777,7 @@
   }
   const LUMIO_API_KEY = "504bc50951590970a9faf630"; // see js/lumio-profiles.js
   async function pullAndMergeProgress(cfg) {
-    const res = await fetch(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pullProgress");
+    const res = await fetch(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pullProgress" + (LumioProfiles.authQuery ? LumioProfiles.authQuery() : ""));
     const remote = await res.json();
     if (!remote || !Array.isArray(remote.rows)) return 0;
     const local = loadLocalProgress();
@@ -4818,6 +4824,19 @@
     const rosterRes = await LumioProfiles.syncNow();
     const scheduleRes = window.LumioSchedule ? await LumioSchedule.syncNow() : { ok: true };
     const leadsRes = window.LumioLeads ? await LumioLeads.syncNow() : { ok: true };
+    // The script no longer accepts this device's sign-in (PIN changed on
+    // another device, teacher removed, or never signed in since the
+    // update): back to the portal instead of pretending the sync worked.
+    if ([rosterRes, scheduleRes, leadsRes].some(r => r && (r.reason === "unauthorized" || r.reason === "locked"))) {
+      syncStatus.textContent = "Please sign in again with your personal PIN.";
+      showToast("Your sign-in has expired — please sign in again with your personal PIN.", "error");
+      setTimeout(() => {
+        LumioProfiles.clearCurrentTeacher();
+        try { localStorage.removeItem("lumio_teacher"); } catch (err) {}
+        location.href = "teacher-portal.html";
+      }, 2500);
+      return;
+    }
     let progressSynced = false;
     try {
       const cfg = LumioProfiles.getSyncConfig();
@@ -4827,9 +4846,9 @@
         // Shared helper (js/app.js): pulls progress AND homework for every
         // student, merges best-result-wins, then pushes everything this
         // device knows. The Sheet merges too, so nothing is ever replaced.
-        await Lumio.pullProgressAndHomework(null);
-        await Lumio.pushProgressAndHomework(null);
-        progressSynced = true;
+        const pulled = await Lumio.pullProgressAndHomework(null);
+        const pushed = await Lumio.pushProgressAndHomework(null);
+        progressSynced = !!(pulled && pulled.ok && pushed && pushed.ok);
         rebuildRowsFromStorage(); // Overview/table/report figures from the fresh data
       }
     } catch (e2) { /* progress sync is best-effort; roster/schedule already reported below */ }
@@ -4858,7 +4877,7 @@
       try { renderLeads(); updateLeadsBadge(); }
       catch (e) { console.error("Lumio post-sync render error (leads):", e); }
     }
-    const ok = rosterRes.ok && scheduleRes.ok && leadsRes.ok;
+    const ok = rosterRes.ok && scheduleRes.ok && leadsRes.ok && progressSynced;
     if (!silent) {
       if (ok) {
         syncStatus.textContent = "Synced just now" + (progressSynced ? " (roster, schedule, leads & progress)." : " (roster, schedule & leads).");
@@ -5178,7 +5197,7 @@
       <a href="story.html?part=${p.id}&level=${level}&preview=1" style="text-decoration:none;background:#fff;border:1px solid var(--td-border);
           border-radius:16px;padding:18px;display:block;transition:.15s" class="td-story-tile">
         <div style="font-size:.72rem;font-weight:800;color:#F97316;letter-spacing:.5px;text-transform:uppercase">Part ${p.id} of 4</div>
-        <div style="font-weight:800;font-size:1rem;color:var(--td-ink);margin:4px 0 8px">${p.name}</div>
+        <div style="font-weight:800;font-size:1rem;color:var(--td-ink);margin:4px 0 8px">${escHtml(p.name)}</div>
         <div style="font-size:.78rem;color:var(--td-muted);font-weight:600">${p.pages} pages &bull; Open →</div>
       </a>
     `).join("");
@@ -5226,7 +5245,7 @@
     items.forEach(item => {
       const row = document.createElement("div");
       row.style.cssText = "display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--td-bg);border-radius:9px;font-size:.84rem;font-weight:700";
-      row.innerHTML = `<span style="flex:1">${item.label}</span><span style="color:var(--td-muted)">${item.cost} pts</span><button type="button" class="td-btn" style="padding:4px 10px">Remove</button>`;
+      row.innerHTML = `<span style="flex:1">${escHtml(item.label)}</span><span style="color:var(--td-muted)">${item.cost} pts</span><button type="button" class="td-btn" style="padding:4px 10px">Remove</button>`;
       row.querySelector("button").onclick = () => {
         LumioProfiles.removeRewardCatalogItem(item.id);
         renderCatalogList();
@@ -5315,7 +5334,7 @@
       row.innerHTML = `
         <div class="td-class-time"><span style="color:var(--td-coral);font-weight:800;font-size:1rem">${s.sessionsRemaining || 0}</span><span>left</span></div>
         <div class="td-class-info">
-          <div class="who">${s.avatar} <b>${s.name}</b></div>
+          <div class="who">${escHtml(s.avatar)} <b>${escHtml(s.name)}</b></div>
           <div class="meta">${levelName(s.level)} · Paid ${s.amountPaid || 0} for ${s.levelsPurchased || 0} level${(s.levelsPurchased || 0) === 1 ? "" : "s"}</div>
         </div>
         <div class="td-class-acts">${waBtn}</div>`;
@@ -5342,7 +5361,7 @@
       <div class="td-lead-row">
         <div style="width:32px;text-align:center;font-size:1.1rem">${medals[i] || (i + 1)}</div>
         <div class="td-lead-info">
-          <div class="who">${x.s.avatar} <b>${x.s.name}</b></div>
+          <div class="who">${escHtml(x.s.avatar)} <b>${escHtml(x.s.name)}</b></div>
           <div class="meta">${levelName(x.s.level)}</div>
         </div>
         <div class="td-lead-score"><b>${x.score}</b><span>points</span></div>
@@ -5375,7 +5394,7 @@
       const avgAttPct = attRates.length ? Math.round((attRates.reduce((a, b) => a + b, 0) / attRates.length) * 100) : null;
       return `
         <div style="margin-bottom:14px">
-          <div style="font-weight:800;font-size:.86rem;margin-bottom:6px">${key} <span class="sub" style="font-weight:600">(${members.length} student${members.length === 1 ? "" : "s"})</span></div>
+          <div style="font-weight:800;font-size:.86rem;margin-bottom:6px">${escHtml(key)} <span class="sub" style="font-weight:600">(${members.length} student${members.length === 1 ? "" : "s"})</span></div>
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
             <span style="width:110px;font-size:.72rem;color:var(--td-muted);font-weight:700">Avg progress</span>
             <span class="td-mini-track" style="flex:1"><span class="td-mini-fill" style="width:${avgProgressPct}%"></span></span>

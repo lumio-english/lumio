@@ -34,7 +34,8 @@ var ROSTER_COLUMNS = [
   "rewardPoints", "bonusHours", "sessionsRemaining",
   "pointsLog", "redemptions", "notes",
   "messages", "pendingDeletion", "deletionConfirmed",
-  "referrals", "referralsUpdatedAt"
+  "referrals", "referralsUpdatedAt",
+  "cohort"   // batch (join month); was missing, so every sync erased it
 ];
 
 var REWARD_CATALOG_SHEET = "RewardCatalog";
@@ -324,12 +325,51 @@ function pullRoster_() {
   };
 }
 
+// A pushed row with an empty pinHash never clears one the Sheet already
+// has (a device that was only shown the public teacher list has none).
+function keepPinHashes_(incoming, sheet, columns) {
+  var have = {};
+  readRows_(sheet, columns).forEach(function (r) { if (r.id && r.pinHash) have[r.id] = r.pinHash; });
+  return incoming.map(function (r) {
+    if (r && !r.pinHash && have[r.id]) { var c = {}; Object.keys(r).forEach(function (k) { c[k] = r[k]; }); c.pinHash = have[r.id]; return c; }
+    return r;
+  });
+}
+// Renaming a student (teacher dashboard) moves their Progress/Homework
+// rows and class seats to the new name, keeping the best result per lesson.
+function applyRenames_(renames) {
+  var done = 0;
+  (renames || []).forEach(function (rn) {
+    if (!rn || !rn.from || !rn.to || rn.from === rn.to) return;
+    [[PROGRESS_SHEET, PROGRESS_COLUMNS], [HOMEWORK_SHEET, HOMEWORK_COLUMNS]].forEach(function (t) {
+      var rows = readRows_(t[0], t[1]);
+      var moving = rows.filter(function (r) { return r.studentName === rn.from; });
+      if (!moving.length) return;
+      writeRows_(t[0], t[1], rows.filter(function (r) { return r.studentName !== rn.from; }));
+      mergeRecordRows_(t[0], t[1], moving.map(function (r) { r.studentName = rn.to; return r; }));
+      done++;
+    });
+    [[SCHEDULE_SHEET, SCHEDULE_COLUMNS], [PATTERNS_SHEET, PATTERNS_COLUMNS]].forEach(function (t) {
+      var rows = readRows_(t[0], t[1]), changed = false, now = new Date().toISOString();
+      rows.forEach(function (r) {
+        var seats; try { seats = JSON.parse(r.studentsJson || "[]"); } catch (e) { return; }
+        var hit = false;
+        seats.forEach(function (st) { if (st && ((rn.id && st.studentId === rn.id) || st.studentName === rn.from)) { st.studentName = rn.to; hit = true; } });
+        if (hit) { r.studentsJson = JSON.stringify(seats); r.updatedAt = now; changed = true; }
+      });
+      if (changed) { writeRows_(t[0], t[1], rows); done++; }
+    });
+  });
+  return done;
+}
+
 function pushRoster_(body) {
-  if (Array.isArray(body.students)) writeRows_(ROSTER_SHEET, ROSTER_COLUMNS, body.students);
-  if (Array.isArray(body.teachers)) writeRows_(TEACHERS_SHEET, TEACHERS_COLUMNS, body.teachers);
+  if (Array.isArray(body.students)) writeRows_(ROSTER_SHEET, ROSTER_COLUMNS, keepPinHashes_(body.students, ROSTER_SHEET, ROSTER_COLUMNS));
+  if (Array.isArray(body.teachers)) writeRows_(TEACHERS_SHEET, TEACHERS_COLUMNS, keepPinHashes_(body.teachers, TEACHERS_SHEET, TEACHERS_COLUMNS));
   if (Array.isArray(body.rewardCatalog)) writeRows_(REWARD_CATALOG_SHEET, REWARD_CATALOG_COLUMNS, body.rewardCatalog);
   mergeDeletedIds_(body.deletedIds);
-  return { ok: true };
+  var renamed = applyRenames_(body.renames);
+  return { ok: true, renamed: renamed };
 }
 
 // ---------- schedule (V2) ----------
@@ -479,12 +519,14 @@ function pullProTestResults_() {
 function pushProTestResult_(body) {
   var result = body.result;
   if (!result) return { ok: false, error: "No result provided." };
+  if (JSON.stringify(result).length > 60000) return { ok: false, error: "too big" };
+  result.name = cleanText_(result.name, 60);
   var id = result.student_id + "_" + result.timestamp;
   var existing = readRows_(PRO_TEST_RESULTS_SHEET, PRO_TEST_RESULTS_COLUMNS);
   var alreadyThere = existing.some(function (row) { return row.id === id; });
   if (!alreadyThere) {
     existing.push({
-      id: id, name: result.name || "", student_id: result.student_id || "",
+      id: id, name: cleanText_(result.name, 60), student_id: String(result.student_id || "").replace(/\D/g, "").slice(0, 16),
       timestamp: result.timestamp || "", dataJson: JSON.stringify(result),
     });
     writeRows_(PRO_TEST_RESULTS_SHEET, PRO_TEST_RESULTS_COLUMNS, existing);
@@ -608,6 +650,218 @@ function writingFeedback_(body) {
   }
 }
 
+// ---------- who is calling (2 Oct 2026) ----------
+// The ?key= on every request is public (it ships in the site's JS), so it
+// only keeps casual bots out. What a caller may READ or WRITE is decided
+// here, from the credentials the page sends with every request:
+//   &tid=<teacher id>&th=<teacher pinHash>  -> "teacher": everything
+//   &sid=<student id>&sh=<student pinHash>  -> "student": only their own
+//                                              row, classes and progress
+//   nothing                                 -> "public": the teacher list
+//                                              (names + avatars) and the
+//                                              narrow placement-test actions
+// Until any teacher has a PIN on the Sheet (a brand-new install) every
+// caller counts as a teacher, so setting up can never lock the owner out.
+// Emergency switch: Script Property LUMIO_AUTH_OFF = 1 turns the checks
+// off (old behaviour) without redeploying.
+// Repeated wrong PINs for one id are refused for 15 minutes (CacheService),
+// so the 10,000 possible PINs cannot be tried one after another.
+var FAIL_LIMIT = 10, FAIL_WINDOW_S = 15 * 60;
+function failKey_(kind, id) { return "fail_" + kind + "_" + String(id || "").slice(0, 80); }
+function isLocked_(kind, id) {
+  var n = Number(CacheService.getScriptCache().get(failKey_(kind, id)) || 0);
+  return n >= FAIL_LIMIT;
+}
+function noteFail_(kind, id) {
+  var c = CacheService.getScriptCache(), k = failKey_(kind, id);
+  c.put(k, String(Number(c.get(k) || 0) + 1), FAIL_WINDOW_S);
+}
+function clearFails_(kind, id) { CacheService.getScriptCache().remove(failKey_(kind, id)); }
+
+function authOff_() { return String(PropertiesService.getScriptProperties().getProperty("LUMIO_AUTH_OFF") || "") === "1"; }
+
+// Returns { role: "teacher"|"student"|"public", teacher?, student?, error? }
+function whoIs_(e) {
+  var p = (e && e.parameter) || {};
+  if (authOff_()) return { role: "teacher", open: true };
+  var teachers = readRows_(TEACHERS_SHEET, TEACHERS_COLUMNS);
+  var anyTeacherPin = teachers.some(function (t) { return t.pinHash; });
+  if (!anyTeacherPin) return { role: "teacher", open: true };
+  if (p.tid) {
+    if (isLocked_("t", p.tid)) return { role: "public", error: "locked" };
+    var t = teachers.filter(function (x) { return x.id === p.tid; })[0];
+    if (t && t.pinHash && p.th && t.pinHash === p.th) return { role: "teacher", teacher: t };
+    noteFail_("t", p.tid);
+    return { role: "public", error: "unauthorized" };
+  }
+  if (p.sid) {
+    if (isLocked_("s", p.sid)) return { role: "public", error: "locked" };
+    var rows = readRows_(ROSTER_SHEET, ROSTER_COLUMNS);
+    var s = rows.filter(function (x) { return x.id === p.sid; })[0];
+    if (s && s.pinHash && p.sh && s.pinHash === p.sh) return { role: "student", student: s, roster: rows };
+    if (!s && deletedIdsOfType_(["student"]).some(function (d) { return d.id === p.sid; })) return { role: "public", error: "deleted" };
+    noteFail_("s", p.sid);
+    return { role: "public", error: "unauthorized" };
+  }
+  return { role: "public" };
+}
+
+// What a student device may hold about itself: no PIN hash, no teacher
+// CRM notes. Other students are never sent to a student device.
+function selfView_(row) {
+  var out = {};
+  Object.keys(row).forEach(function (k) { if (k !== "pinHash" && k !== "notes" && k !== "pin") out[k] = row[k]; });
+  return out;
+}
+function publicTeachers_() {
+  return readRows_(TEACHERS_SHEET, TEACHERS_COLUMNS).map(function (t) {
+    return { id: t.id, name: t.name, avatar: t.avatar, isOwner: t.isOwner, updatedAt: t.updatedAt };
+  });
+}
+// Plain text only for anything typed on a public page: no tags, capped.
+function cleanText_(v, max) {
+  return String(v == null ? "" : v).replace(/[<>]/g, "").slice(0, max || 200);
+}
+
+// ---- logins (public actions; answer only yes/no + the caller's own row) ----
+function teacherLogin_(body) {
+  var id = String(body.id || ""), hash = String(body.pinHash || "");
+  if (!id || !hash) return { ok: false, error: "missing" };
+  if (isLocked_("t", id)) return { ok: false, error: "locked" };
+  var t = readRows_(TEACHERS_SHEET, TEACHERS_COLUMNS).filter(function (x) { return x.id === id; })[0];
+  if (!t || !t.pinHash || t.pinHash !== hash) { noteFail_("t", id); return { ok: false, error: "no_match" }; }
+  clearFails_("t", id);
+  return { ok: true, teacher: t };
+}
+function studentLogin_(body) {
+  var ident = String(body.identifier || "").trim(), hash = String(body.pinHash || "");
+  if (!ident || !hash) return { ok: false, error: "missing" };
+  if (isLocked_("s", ident)) return { ok: false, error: "locked" };
+  var digits = ident.replace(/\D/g, "");
+  var rows = readRows_(ROSTER_SHEET, ROSTER_COLUMNS);
+  var gone = {};
+  deletedIdsOfType_(["student"]).forEach(function (d) { gone[d.id] = true; });
+  var phoneTail = function (ph) { var d = String(ph || "").replace(/\D/g, ""); return d.length >= 8 ? d.slice(-9) : d; };
+  var s = rows.filter(function (r) {
+    if (gone[r.id]) return false;
+    if (String(r.loginCode || "") === ident) return true;
+    if (digits.length >= 8 && r.phone && phoneTail(r.phone) === phoneTail(digits)) return true;
+    return String(r.name || "").trim().toLowerCase() === ident.toLowerCase();
+  }).filter(function (r) { return r.pinHash === hash; })[0];
+  if (!s) { noteFail_("s", ident); return { ok: false, error: "no_match" }; }
+  clearFails_("s", ident);
+  if (String(s.approved) === "false") return { ok: false, error: "pending_approval" };
+  return { ok: true, student: selfView_(s), teachers: publicTeachers_(), rewardCatalog: readRows_(REWARD_CATALOG_SHEET, REWARD_CATALOG_COLUMNS) };
+}
+
+// ---- placement test (public): exists?, register, fill in level/age, lead ----
+function findByPhone_(rows, phone) {
+  var d = String(phone || "").replace(/\D/g, "");
+  if (d.length < 6) return null;
+  var tail = d.slice(-9);
+  var gone = {};
+  deletedIdsOfType_(["student"]).forEach(function (x) { gone[x.id] = true; });
+  return rows.filter(function (r) { return !gone[r.id] && String(r.phone || "").replace(/\D/g, "").slice(-9) === tail; })[0] || null;
+}
+function checkPhone_(body) {
+  var s = findByPhone_(readRows_(ROSTER_SHEET, ROSTER_COLUMNS), body.phone);
+  return { ok: true, exists: !!s, subscribed: !!(s && String(s.subscribed) !== "false") };
+}
+function registerStudent_(body) {
+  var name = cleanText_(body.name, 60).trim(), phone = String(body.phone || "").replace(/\D/g, "").slice(0, 16), hash = String(body.pinHash || "");
+  if (!name || phone.length < 6 || !/^[0-9a-f]{64}$|^fnv1a-/.test(hash)) return { ok: false, error: "missing" };
+  var lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    var rows = readRows_(ROSTER_SHEET, ROSTER_COLUMNS);
+    var existing = findByPhone_(rows, phone);
+    if (existing) return { ok: false, error: "exists", subscribed: String(existing.subscribed) !== "false" };
+    var code;
+    do { code = String(Math.floor(100000 + Math.random() * 900000)); }
+    while (rows.some(function (r) { return String(r.loginCode) === code; }));
+    var now = new Date().toISOString();
+    var avatars = ["🦊", "🐼", "🐯", "🐸", "🦁", "🐨", "🐵", "🐰"];
+    var row = {
+      id: "s_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+      name: name, level: "", avatar: avatars[Math.floor(Math.random() * avatars.length)],
+      pinHash: hash, loginCode: code, teacherId: "", createdAt: now, updatedAt: now, phone: phone,
+      age: body.age ? cleanText_(body.age, 3) : "", paid: false, approved: false, subscribed: false,
+      amountPaid: 0, currency: "", levelsPurchased: 0, rewardPoints: 0, bonusHours: 0, sessionsRemaining: 0,
+      pointsLog: "[]", redemptions: "[]", notes: "[]", messages: "[]", referrals: "[]", tags: "placement-test",
+    };
+    rows.push(row);
+    writeRows_(ROSTER_SHEET, ROSTER_COLUMNS, rows);
+    return { ok: true, student: { id: row.id, name: row.name, loginCode: code } };
+  } finally { lock.releaseLock(); }
+}
+// Only a self-registered account that the teacher has NOT approved yet can
+// be touched from the public test, and only its level and age.
+function placementUpdate_(body) {
+  var lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    var rows = readRows_(ROSTER_SHEET, ROSTER_COLUMNS);
+    var s = findByPhone_(rows, body.phone);
+    if (!s || String(s.approved) !== "false") return { ok: false, error: "not_allowed" };
+    var lv = String(body.level || "");
+    if (lv && /^(pre-a|level[1-6])$/.test(lv)) s.level = lv;
+    if (body.age !== undefined && body.age !== "" && isFinite(Number(body.age))) s.age = Number(body.age);
+    s.updatedAt = new Date().toISOString();
+    writeRows_(ROSTER_SHEET, ROSTER_COLUMNS, rows);
+    return { ok: true };
+  } finally { lock.releaseLock(); }
+}
+function addLead_(body) {
+  var l = body && body.lead;
+  if (!l) return { ok: false, error: "missing" };
+  var lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    var rows = readRows_(LEADS_SHEET, LEADS_COLUMNS);
+    var id = cleanText_(l.id, 60) || ("lead_" + Date.now().toString(36));
+    if (rows.some(function (r) { return r.id === id; })) return { ok: true, duplicate: true };
+    var now = new Date().toISOString();
+    rows.push({
+      id: id, name: cleanText_(l.name, 60), phone: String(l.phone || "").replace(/\D/g, "").slice(0, 16),
+      age: isFinite(Number(l.age)) && l.age !== null && l.age !== "" ? Number(l.age) : "",
+      suggestedLevel: /^(pre-a|level[1-6])$/.test(String(l.suggestedLevel || "")) ? l.suggestedLevel : "",
+      testScore: isFinite(Number(l.testScore)) ? Number(l.testScore) : "", testTotal: isFinite(Number(l.testTotal)) ? Number(l.testTotal) : "",
+      status: "new", notes: cleanText_(l.notes, 500), createdAt: now, updatedAt: now,
+    });
+    writeRows_(LEADS_SHEET, LEADS_COLUMNS, rows);
+    return { ok: true };
+  } finally { lock.releaseLock(); }
+}
+
+// ---- student-scoped views of the shared tabs ----
+function studentRoster_(who) {
+  var me = who.student;
+  return { ok: true, students: [selfView_(me)], teachers: publicTeachers_(),
+    rewardCatalog: readRows_(REWARD_CATALOG_SHEET, REWARD_CATALOG_COLUMNS), deletedIds: [] };
+}
+function inClass_(c, me) {
+  return (c.students || []).some(function (x) { return x && ((x.studentId && x.studentId === me.id) || (!x.studentId && x.studentName === me.name) || x.studentName === me.name); });
+}
+// A student sees the classes they are booked into. Classmates appear by
+// name only (no attendance, grades or notes of anyone else).
+function studentSchedule_(who) {
+  var me = who.student;
+  var full = pullScheduleV2_();
+  var trim = function (c) {
+    var copy = {};
+    Object.keys(c).forEach(function (k) { copy[k] = c[k]; });
+    copy.students = (c.students || []).map(function (x) {
+      if (!x) return x;
+      var mine = (x.studentId && x.studentId === me.id) || x.studentName === me.name;
+      return mine ? x : { studentName: x.studentName, studentId: x.studentId };
+    });
+    return copy;
+  };
+  return { ok: true,
+    classes: full.classes.filter(function (c) { return inClass_(c, me); }).map(trim),
+    patterns: full.patterns.filter(function (p) { return inClass_(p, me); }).map(trim),
+    blockedDates: full.blockedDates, deletedIds: full.deletedIds };
+}
+function ownRows_(rows, me) { return rows.filter(function (r) { return r.studentName === me.name; }); }
+function ownTree_(tree, me) { var out = {}; if (tree && tree[me.name]) out[me.name] = tree[me.name]; return out; }
+
 // ---------- HTTP entry points ----------
 
 // ---------- access key ----------
@@ -623,10 +877,30 @@ function keyOk_(e) {
   return got === want;
 }
 
+function denied_(who) { return jsonResponse_({ ok: false, error: who.error || "unauthorized" }); }
+
 function doGet(e) {
   try {
     if (!keyOk_(e)) return jsonResponse_({ ok: false, error: "unauthorized" });
     var action = (e && e.parameter) ? e.parameter.action : null;
+    // Lets a page tell this version apart from older deployments.
+    if (action === "version") return jsonResponse_({ ok: true, version: 7, auth: true });
+    var who = whoIs_(e);
+    if (who.error) return denied_(who);
+    if (who.role === "student") {
+      if (action === "pullRoster") return jsonResponse_(studentRoster_(who));
+      if (action === "pullScheduleV2") return jsonResponse_(studentSchedule_(who));
+      if (action === "pullProgress") return jsonResponse_({ ok: true, rows: ownRows_(pullProgress_().rows, who.student) });
+      if (action === "pullHomework") return jsonResponse_({ ok: true, rows: ownRows_(pullHomework_().rows, who.student) });
+      return denied_(who);
+    }
+    if (who.role === "public") {
+      // The teacher portal needs the list of teachers to show before
+      // anyone has signed in -- names and avatars only.
+      if (action === "pullRoster") return jsonResponse_({ ok: true, students: [], teachers: publicTeachers_(), rewardCatalog: [], deletedIds: deletedIdsOfType_(["teacher"]) });
+      if (action) return denied_(who);
+      return jsonResponse_({ ok: true, message: "Lumio sync backend is running." });
+    }
     if (action === "pullRoster") return jsonResponse_(pullRoster_());
     if (action === "pullScheduleV2") return jsonResponse_(pullScheduleV2_());
     if (action === "pullProgress") return jsonResponse_(pullProgress_());
@@ -646,6 +920,30 @@ function doPost(e) {
     var action = (e && e.parameter) ? e.parameter.action : null;
     var body = {};
     if (e && e.postData && e.postData.contents) body = JSON.parse(e.postData.contents);
+    // Public actions: the logins and the placement test.
+    if (action === "teacherLogin") return jsonResponse_(teacherLogin_(body));
+    if (action === "studentLogin") return jsonResponse_(studentLogin_(body));
+    if (action === "checkPhone") return jsonResponse_(checkPhone_(body));
+    if (action === "registerStudent") return jsonResponse_(registerStudent_(body));
+    if (action === "placementUpdate") return jsonResponse_(placementUpdate_(body));
+    if (action === "addLead") return jsonResponse_(addLead_(body));
+    if (action === "pushProTestResult") return jsonResponse_(pushProTestResult_(body));
+    if (action === "writingFeedback") return jsonResponse_(writingFeedback_(body));
+    var who = whoIs_(e);
+    if (who.error) return denied_(who);
+    if (who.role === "student") {
+      var me = who.student;
+      if (action === "pushStudentPatch") {
+        if (!body.patch || body.patch.id !== me.id) return denied_({});
+        var out = pushStudentPatch_(body);
+        if (out && out.student) out.student = selfView_(out.student);
+        return jsonResponse_(out);
+      }
+      if (action === "pushProgress") return jsonResponse_(pushProgress_({ progress: ownTree_(body.progress, me) }));
+      if (action === "pushHomework") return jsonResponse_(pushHomework_({ homework: ownTree_(body.homework, me) }));
+      return denied_({});
+    }
+    if (who.role !== "teacher") return denied_({});
     if (action === "pushRoster") return jsonResponse_(pushRoster_(body));
     if (action === "pushStudentPatch") return jsonResponse_(pushStudentPatch_(body));
     if (action === "pushScheduleV2") return jsonResponse_(pushScheduleV2_(body));
@@ -653,9 +951,7 @@ function doPost(e) {
     if (action === "pushHomework") return jsonResponse_(pushHomework_(body));
     if (action === "pushLeads") return jsonResponse_(pushLeads_(body));
     if (action === "pushProAdmins") return jsonResponse_(pushProAdmins_(body));
-    if (action === "pushProTestResult") return jsonResponse_(pushProTestResult_(body));
     if (action === "clearProTestResults") return jsonResponse_(clearProTestResults_());
-    if (action === "writingFeedback") return jsonResponse_(writingFeedback_(body));
     return jsonResponse_({ ok: false, error: "Unknown action: " + action });
   } catch (err) {
     return jsonResponse_({ ok: false, error: String(err) });

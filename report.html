@@ -124,6 +124,7 @@
 </script>
 <script>
 (() => {
+  const esc = v => String(v == null ? "" : v).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
   // Teacher-only, same localStorage-based check teacher.html itself uses
   // (switched from sessionStorage -- see the comment on this flag in
   // js/auth.js/teacher.html for why: sessionStorage is per-tab, and a
@@ -361,10 +362,10 @@
   if (!hasAnyData) {
     main.innerHTML = `
       <div class="top-card">
-        <h1>${student.name}</h1>
-        <div class="meta"><span>${levelName}</span>${student.cohort ? `<span>${student.cohort}</span>` : ""}</div>
+        <h1>${esc(student.name)}</h1>
+        <div class="meta"><span>${levelName}</span>${student.cohort ? `<span>${esc(student.cohort)}</span>` : ""}</div>
       </div>
-      <div class="empty-state">${student.name} hasn't completed any lessons or homework yet — a report becomes available once they have.</div>`;
+      <div class="empty-state">${esc(student.name)} hasn't completed any lessons or homework yet — a report becomes available once they have.</div>`;
     return;
   }
 
@@ -439,12 +440,12 @@
 
   const cohortNote = mates.length
     ? `<p style="color:var(--cocoa-soft);font-weight:700;font-size:.85rem">Compared against ${mates.length} student${mates.length > 1 ? "s" : ""} in the same cohort, group, and level.</p>`
-    : `<p class="no-cohort">No cohort comparison available — assign ${student.name} a cohort (batch) to compare against classmates in the same batch.</p>`;
+    : `<p class="no-cohort">No cohort comparison available — assign ${esc(student.name)} a cohort (batch) to compare against classmates in the same batch.</p>`;
 
   main.innerHTML = `
     <div class="top-card">
-      <h1>${student.name}</h1>
-      <div class="meta"><span>${levelName}</span>${student.cohort ? `<span>${student.cohort}</span>` : ""}</div>
+      <h1>${esc(student.name)}</h1>
+      <div class="meta"><span>${levelName}</span>${student.cohort ? `<span>${esc(student.cohort)}</span>` : ""}</div>
       <div class="tags">
         <span class="tag">${prepLessons.length} lesson${prepLessons.length === 1 ? "" : "s"} prepped</span>
         <span class="tag teal">${hwLessons.length} homework${hwLessons.length === 1 ? "" : "s"} done</span>
@@ -471,10 +472,10 @@
       ${hasCorrelation ? `
       <div class="habit-insight">
         <div class="habit-insight-title">📈 Prep-to-homework connection · العلاقة بين التحضير والواجب</div>
-        <p class="en">On lessons where ${student.name} finished prep strongly (85%+), homework scores averaged <b>${wellPreppedHwAvg}%</b>. On lessons with weaker prep, homework averaged <b>${underPreppedHwAvg}%</b>.</p>
-        <p class="ar">في الدروس التي أنهى فيها ${student.name} التحضير بشكل قوي (85% فأكثر)، بلغ متوسط درجات الواجب <b>${wellPreppedHwAvg}%</b>. أما في الدروس ذات التحضير الأضعف، بلغ المتوسط <b>${underPreppedHwAvg}%</b>.</p>
+        <p class="en">On lessons where ${esc(student.name)} finished prep strongly (85%+), homework scores averaged <b>${wellPreppedHwAvg}%</b>. On lessons with weaker prep, homework averaged <b>${underPreppedHwAvg}%</b>.</p>
+        <p class="ar">في الدروس التي أنهى فيها ${esc(student.name)} التحضير بشكل قوي (85% فأكثر)، بلغ متوسط درجات الواجب <b>${wellPreppedHwAvg}%</b>. أما في الدروس ذات التحضير الأضعف، بلغ المتوسط <b>${underPreppedHwAvg}%</b>.</p>
         ${wellPreppedHwAvg !== null && underPreppedHwAvg !== null && wellPreppedHwAvg > underPreppedHwAvg
-          ? `<p class="habit-tip">💡 Strong prep is clearly paying off for ${student.name} — worth mentioning to keep the habit going. / التحضير القوي يُحدث فرقاً واضحاً؛ يستحق الإشارة إليه للحفاظ على هذه العادة.</p>`
+          ? `<p class="habit-tip">💡 Strong prep is clearly paying off for ${esc(student.name)} — worth mentioning to keep the habit going. / التحضير القوي يُحدث فرقاً واضحاً؛ يستحق الإشارة إليه للحفاظ على هذه العادة.</p>`
           : ""}
       </div>` : `<p class="habit-note">Not enough paired prep + homework data yet for a reliable pattern — this appears once a few more lessons are done.</p>`}
     </div>
@@ -492,16 +493,16 @@
       <div class="bar-track"><div class="bar-fill" style="width:${gradeAvgPct}%"></div></div>
       <div class="skill-text-block">
         <div class="label">Grades by session</div>
-        <p class="en">${grades.slice().reverse().map(g => `Lesson ${g.lessonNumber || "?"} (${g.date}): <b>${g.grade}</b>`).join(" · ")}</p>
+        <p class="en">${grades.slice().reverse().map(g => `Lesson ${g.lessonNumber || "?"} (${g.date}): <b>${esc(g.grade)}</b>`).join(" · ")}</p>
       </div>
-      ${ratingsGiven.length ? `<div class="cohort-row">⭐ ${student.name} has rated ${ratingsGiven.length} class${ratingsGiven.length === 1 ? "" : "es"} with their teacher, averaging ${(ratingsGiven.reduce((s, r) => s + r.stars, 0) / ratingsGiven.length).toFixed(1)}/5 — a good sign of engagement, not a performance score.</div>` : ""}
+      ${ratingsGiven.length ? `<div class="cohort-row">⭐ ${esc(student.name)} has rated ${ratingsGiven.length} class${ratingsGiven.length === 1 ? "" : "es"} with their teacher, averaging ${(ratingsGiven.reduce((s, r) => s + r.stars, 0) / ratingsGiven.length).toFixed(1)}/5 — a good sign of engagement, not a performance score.</div>` : ""}
     </div>` : ""}
 
     <h2 class="section-title">Cohort Comparison · مقارنة الدفعة</h2>
     ${trendLabels.length > 1 ? `
     <div class="chart-card">
       <div class="chart-legend">
-        <span><i style="background:var(--orange)"></i>${student.name}</span>
+        <span><i style="background:var(--orange)"></i>${esc(student.name)}</span>
         ${mates.length ? `<span><i style="background:var(--purple);border-radius:0;height:3px;margin-top:6px"></i>Cohort average</span>` : ""}
       </div>
       ${buildTrendChartSvg(trendLabels, trendStudent, trendCohort)}

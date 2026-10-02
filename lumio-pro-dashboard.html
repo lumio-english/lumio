@@ -331,6 +331,16 @@ try {
 // the one they were added on. Test results stay local-only by design
 // (see loadR() below); this URL is only used for admin account sync.
 const LUMIO_API_KEY = '504bc50951590970a9faf630'; // see js/lumio-profiles.js
+// Signed-in Lumio teacher on this device (set by the teacher portal or by
+// a teacher login here). The Sheet script only returns results/settings
+// to a signed-in teacher; the built-in admin logins see this device's
+// local results only.
+function proAuth() {
+  try {
+    const a = JSON.parse(localStorage.getItem('lumio_teacher_auth') || 'null');
+    return a && a.id && a.pinHash ? '&tid=' + encodeURIComponent(a.id) + '&th=' + encodeURIComponent(a.pinHash) : '';
+  } catch (e) { return ''; }
+}
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxlKY07coAR_Uj6UQf2bvy6yi6I3cG9WsnTROvKI5v_l9MhhXIbP3Ke8jxbYx5btZzAGA/exec';
 
 // AI writing feedback uses a SEPARATE, standalone Apps Script project
@@ -407,7 +417,7 @@ let LUMIO_TEACHERS_CACHE = [];
 async function pullLumioTeachersForLogin() {
   if (!SCRIPT_URL) return;
   try {
-    const res = await fetch(SCRIPT_URL + '?key=' + LUMIO_API_KEY + '&action=pullRoster');
+    const res = await fetch(SCRIPT_URL + '?key=' + LUMIO_API_KEY + '&action=pullRoster' + proAuth());
     const data = await res.json();
     if (data && Array.isArray(data.teachers)) LUMIO_TEACHERS_CACHE = data.teachers;
   } catch (e) { /* offline is fine — falls back to admin-only login below */ }
@@ -463,9 +473,23 @@ async function resolveLogin(user, pass) {
   const pinEntered = normalizeRosterPin(p);
   if (pinEntered) {
     const teacher = LUMIO_TEACHERS_CACHE.find(t => (t.name || '').trim().toLowerCase() === u);
-    if (teacher && teacher.pinHash) {
+    if (teacher) {
       const enteredPinHash = await hashRosterPin(pinEntered);
-      if (enteredPinHash === teacher.pinHash) {
+      // The teacher list the script gives a signed-out page has no PIN
+      // hashes any more, so the script checks the PIN itself.
+      let pinOk = !!teacher.pinHash && enteredPinHash === teacher.pinHash;
+      if (!teacher.pinHash) {
+        try {
+          const r = await fetch(SCRIPT_URL + '?key=' + LUMIO_API_KEY + '&action=teacherLogin', { method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ id: teacher.id, pinHash: enteredPinHash }) });
+          const j = await r.json();
+          pinOk = !!(j && j.ok);
+        } catch (e) { pinOk = false; }
+      }
+      if (pinOk) {
+        // Same sign-in the main dashboard stores: results and settings
+        // come from the Sheet only for a signed-in Lumio teacher.
+        try { localStorage.setItem('lumio_teacher_auth', JSON.stringify({ id: teacher.id, pinHash: enteredPinHash })); } catch (e) {}
         const role = teacher.isOwner === true || teacher.isOwner === 'true' ? 'super_admin' : 'admin';
         return { role, display: teacher.name, username: teacher.name.toLowerCase(), studentIds: null, groupKey: null };
       }
@@ -592,7 +616,7 @@ async function loadR() {
   // before.
   loadFromLocal();
   try {
-    const res = await fetch(SCRIPT_URL + '?key=' + LUMIO_API_KEY + '&action=pullProTestResults');
+    const res = await fetch(SCRIPT_URL + '?key=' + LUMIO_API_KEY + '&action=pullProTestResults' + proAuth());
     const data = await res.json();
     if (data && Array.isArray(data.results) && data.results.length) {
       const localIds = new Set(allR.map(r => (r.student_id || '') + '_' + (r.timestamp || '')));
@@ -756,7 +780,7 @@ function openDInner(idx){
           <option value="8" ${lv===8?'selected':''}>8 &mdash; Proficient</option>
           <option value="9" ${lv===9?'selected':''}>9 &mdash; Master</option>
         </select>
-        <button onclick="overrideLevel('${h(r.student_id)}')" style="background:#43301F;color:#F97316;border:none;border-radius:8px;padding:7px 16px;font-weight:800;font-size:.85rem;cursor:pointer;font-family:inherit">Save</button>
+        <button onclick="overrideLevel(${h(JSON.stringify(String(r.student_id)))})" style="background:#43301F;color:#F97316;border:none;border-radius:8px;padding:7px 16px;font-weight:800;font-size:.85rem;cursor:pointer;font-family:inherit">Save</button>
       </div>
     </div>
    ${buildMist(r)}`;
@@ -903,13 +927,13 @@ function clearAll(){
   // 30-second auto-refresh) would pull everything right back from the
   // Sheet, making a confirmed, deliberate "Clear All" look like it
   // silently undid itself.
-  fetch(SCRIPT_URL + '?key=' + LUMIO_API_KEY + '&action=clearProTestResults', { method: 'POST' }).catch(() => {});
+  fetch(SCRIPT_URL + '?key=' + LUMIO_API_KEY + '&action=clearProTestResults' + proAuth(), { method: 'POST' }).catch(() => {});
 }
 
 // ══════════════════════════════════════════
 //  UTILS
 // ══════════════════════════════════════════
-function h(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function h(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 function copyPwd(text, btn) {
   navigator.clipboard.writeText(text).then(() => {
     const orig = btn.textContent;
@@ -1055,7 +1079,7 @@ function loadSettingsView(){
     // main Lumio Team tab uses, so a teacher created here can log into this
     // dashboard AND the teacher portal straight away, on any device once synced.
     const teachers=(window.LumioProfiles?LumioProfiles.listTeachers():[]);
-    const teacherRows=teachers.length?teachers.map(t=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:8px 12px;background:var(--g);border-radius:7px"><div style="font-weight:800;font-size:.86rem;color:var(--b);flex:1">${h(t.name)}${t.isOwner?' <span style="font-size:.7rem;color:#6b7280">(owner)</span>':''}</div><div style="font-size:.8rem;color:#374151;font-family:monospace">PIN ${h(t.pin||'••••')}</div><button class="btn bd btn-sm" title="Remove" onclick="removeTeacherAccount('${h(t.id)}','${h(t.name)}')">🗑</button></div>`).join(''):'<div style="font-size:.82rem;color:#6b7280;margin-bottom:8px">No teachers yet.</div>';
+    const teacherRows=teachers.length?teachers.map(t=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:8px 12px;background:var(--g);border-radius:7px"><div style="font-weight:800;font-size:.86rem;color:var(--b);flex:1">${h(t.name)}${t.isOwner?' <span style="font-size:.7rem;color:#6b7280">(owner)</span>':''}</div><div style="font-size:.8rem;color:#374151;font-family:monospace">PIN ${h(t.pin||'••••')}</div><button class="btn bd btn-sm" title="Remove" onclick="removeTeacherAccount(${h(JSON.stringify(String(t.id)))},${h(JSON.stringify(String(t.name)))})">🗑</button></div>`).join(''):'<div style="font-size:.82rem;color:#6b7280;margin-bottom:8px">No teachers yet.</div>';
     el.innerHTML=`<div class="tc" style="margin-bottom:16px"><div class="tto"><div class="tt">👩‍🏫 Teacher accounts</div></div><div style="padding:18px 20px">
       <div style="font-size:.82rem;color:#374151;margin-bottom:12px">Create a teacher login here. They sign in to this dashboard and the teacher portal with their <strong>name + 4-digit PIN</strong>.</div>
       ${teacherRows}
@@ -1089,7 +1113,7 @@ function loadSettingsView(){
     <div class="tc" style="margin-bottom:16px"><div class="tto"><div class="tt">👥 Group Passwords</div></div><div style="padding:16px 20px"><div style="font-size:.84rem;color:var(--mu);margin-bottom:10px">Default: <strong>${gp}</strong> <button class="btn bg btn-sm" onclick="copyPwd('${gp}',this)" title="Copy">📋</button><div style="display:flex;gap:8px;margin-top:7px"><input id="grp-default-pass" class="si2" placeholder="New default" style="width:180px"/><button class="btn bp" onclick="saveGroupDefaultPass()">💾</button></div></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"><input id="custom-grp-name" class="si2" placeholder="Group key e.g. me-egss01" style="width:190px"/><input id="custom-grp-pass" class="si2" placeholder="Password" style="width:130px"/><button class="btn bp" onclick="setGroupPwd()">💾 Set</button></div><div id="group-pwd-list" style="max-height:160px;overflow-y:auto"></div></div></div>
     <div style="background:var(--yellow-light);border-radius:var(--r);padding:12px 16px;font-size:.83rem;color:#7a5c00">✅ Admin accounts sync across your devices automatically. Passwords are hashed before they're stored or synced — nobody, including you, can look up a forgotten password; set a new one instead.</div>`;
     const al=document.getElementById('admin-pwd-list');
-    if(al)al.innerHTML=Object.entries(allAdmins).map(([u,p])=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:9px;padding:9px 12px;background:var(--g);border-radius:7px"><div style="font-weight:800;font-size:.86rem;color:var(--b);width:120px">${h(u)}</div><input class="si2" id="pwd-${h(u)}" type="password" placeholder="${ADMINS[u]?'Fixed default password':'Enter a new password to change it'}" style="flex:1"/><button class="btn bp btn-sm" onclick="saveAdminPwd('${h(u)}')">💾</button>${!ADMINS[u]?`<button class="btn bd btn-sm" onclick="removeAdminUser('${h(u)}')">🗑</button>`:''}</div>`).join('');
+    if(al)al.innerHTML=Object.entries(allAdmins).map(([u,p])=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:9px;padding:9px 12px;background:var(--g);border-radius:7px"><div style="font-weight:800;font-size:.86rem;color:var(--b);width:120px">${h(u)}</div><input class="si2" id="pwd-${h(u)}" type="password" placeholder="${ADMINS[u]?'Fixed default password':'Enter a new password to change it'}" style="flex:1"/><button class="btn bp btn-sm" onclick="saveAdminPwd(${h(JSON.stringify(String(u)))})">💾</button>${!ADMINS[u]?`<button class="btn bd btn-sm" onclick="removeAdminUser(${h(JSON.stringify(String(u)))})">🗑</button>`:''}</div>`).join('');
     renderAgentPwds('');renderGroupPwdList();
   } else {
     // Group manager / SS / LP / both agents — can only change their OWN password
@@ -1111,7 +1135,7 @@ function loadSettingsView(){
           <div style="font-size:.78rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Current Password</div>
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
             <code style="font-family:monospace;font-size:.95rem;background:var(--g);padding:7px 12px;border-radius:7px;border:1px solid #e5e9f2">${h(myPwd)}</code>
-            <button class="btn bg btn-sm" onclick="copyPwd('${h(myPwd)}',this)" title="Copy">📋</button>
+            <button class="btn bg btn-sm" onclick="copyPwd(${h(JSON.stringify(String(myPwd)))},this)" title="Copy">📋</button>
           </div>
           <div style="font-size:.78rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Change Password</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -1158,7 +1182,7 @@ function saveMyOwnPwd() {
   loadSettingsView();
 }
 
-function renderGroupPwdList(){const el=document.getElementById('group-pwd-list');if(!el)return;const e=Object.entries(getSavedGroupPwds());if(!e.length){el.innerHTML='<div style="color:var(--mu);font-size:.82rem">No custom group passwords yet.</div>';return;}el.innerHTML=e.map(([k,p])=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;padding:8px 11px;background:var(--g);border-radius:7px"><div style="font-size:.81rem;font-weight:700;color:var(--b);flex:1">${h(k)}</div><input class="si2" id="grppwd-${h(k)}" value="${h(p)}" style="width:130px;font-family:monospace"/><button class="btn bg btn-sm" onclick="copyPwd('${h(p)}',this)" title="Copy">📋</button><button class="btn bp btn-sm" onclick="updateGroupPwd('${h(k)}')">💾</button><button class="btn bd btn-sm" onclick="removeGroupPwd('${h(k)}')">✕</button></div>`).join('');}
+function renderGroupPwdList(){const el=document.getElementById('group-pwd-list');if(!el)return;const e=Object.entries(getSavedGroupPwds());if(!e.length){el.innerHTML='<div style="color:var(--mu);font-size:.82rem">No custom group passwords yet.</div>';return;}el.innerHTML=e.map(([k,p])=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;padding:8px 11px;background:var(--g);border-radius:7px"><div style="font-size:.81rem;font-weight:700;color:var(--b);flex:1">${h(k)}</div><input class="si2" id="grppwd-${h(k)}" value="${h(p)}" style="width:130px;font-family:monospace"/><button class="btn bg btn-sm" onclick="copyPwd(${h(JSON.stringify(String(p)))},this)" title="Copy">📋</button><button class="btn bp btn-sm" onclick="updateGroupPwd(${h(JSON.stringify(String(k)))})">💾</button><button class="btn bd btn-sm" onclick="removeGroupPwd(${h(JSON.stringify(String(k)))})">✕</button></div>`).join('');}
 async function createTeacherAccount(){
   const name=(document.getElementById('new-teacher-name')?.value||'').trim(), pin=(document.getElementById('new-teacher-pin')?.value||'').trim();
   const st=document.getElementById('teacher-create-status');
@@ -1197,7 +1221,7 @@ async function saveAdminPwd(u){
 async function pullAndMergeProAdmins(){
   if(!SCRIPT_URL) return;
   try{
-    const res = await fetch(SCRIPT_URL + '?key=' + LUMIO_API_KEY + '&action=pullProAdmins');
+    const res = await fetch(SCRIPT_URL + '?key=' + LUMIO_API_KEY + '&action=pullProAdmins' + proAuth());
     const data = await res.json();
     if(data && Array.isArray(data.admins)){
       const local = getSavedAdmins();
@@ -1210,7 +1234,7 @@ function pushProAdminsToBackend(){
   if(!SCRIPT_URL) return;
   const local = getSavedAdmins();
   const admins = Object.keys(local).map(u => ({ username:u, password:local[u], updatedAt:new Date().toISOString() }));
-  fetch(SCRIPT_URL+'?key=' + LUMIO_API_KEY + '&action=pushProAdmins', {
+  fetch(SCRIPT_URL+'?key=' + LUMIO_API_KEY + '&action=pushProAdmins' + proAuth(), {
     method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
     body: JSON.stringify({ admins })
   }).then(()=>{}).catch(()=>{});
@@ -1223,7 +1247,7 @@ async function addAdminUser(){
   var s=getSavedAdmins();s[u]=await hashAdminPwd(p);localStorage.setItem(DASH_LS_KEY+'_admins',JSON.stringify(s));
   if(SCRIPT_URL){
     const admins = Object.keys(s).map(k => ({ username:k, password:s[k], updatedAt:new Date().toISOString() }));
-    fetch(SCRIPT_URL+'?key=' + LUMIO_API_KEY + '&action=pushProAdmins',{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+    fetch(SCRIPT_URL+'?key=' + LUMIO_API_KEY + '&action=pushProAdmins' + proAuth(),{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
       body: JSON.stringify({ admins })})
     .then(function(){showT('✅ Admin added and synced: '+u);}).catch(function(){showT('✅ Added locally (sync failed — check connection)');});
   } else {
@@ -1236,7 +1260,7 @@ function removeAdminUser(u){
   const s=getSavedAdmins();delete s[u];localStorage.setItem(DASH_LS_KEY+'_admins',JSON.stringify(s));
   if(SCRIPT_URL){
     const admins = Object.keys(s).map(k => ({ username:k, password:s[k], updatedAt:new Date().toISOString() }));
-    fetch(SCRIPT_URL+'?key=' + LUMIO_API_KEY + '&action=pushProAdmins',{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+    fetch(SCRIPT_URL+'?key=' + LUMIO_API_KEY + '&action=pushProAdmins' + proAuth(),{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
       body: JSON.stringify({ admins })})
     .then(function(){showT('🗑 Removed and synced: '+u);}).catch(function(){showT('🗑 Removed locally (sync failed — check connection)');});
   } else {
@@ -1245,7 +1269,7 @@ function removeAdminUser(u){
   loadSettingsView();
 }
 function saveAgentPass(){const v=(document.getElementById('agent-pass-input')?.value||'').trim();if(!v){showT('⚠️ Enter password');return;}localStorage.setItem(DASH_LS_KEY+'_agent_pass',v);showT('✅ Agent default: '+v);loadSettingsView();}
-function renderAgentPwds(search){const cp=getSavedAgentPwds(),def=localStorage.getItem(DASH_LS_KEY+'_agent_pass')||'1234',q=(search||'').toLowerCase().trim(),el=document.getElementById('agent-pwd-list'),ce=document.getElementById('custom-count'),en=Object.entries(cp);if(ce)ce.textContent=en.length?`(${en.length} custom)`:'';let rows=en;if(q){const m=Object.keys(AGENTS).filter(k=>k.includes(q)&&!cp[k]).slice(0,15).map(k=>[k,null]);rows=[...rows.filter(([k])=>k.includes(q)),...m];}if(!el)return;if(!rows.length){el.innerHTML=q?`<div style="color:var(--mu);font-size:.83rem">No match for "${h(q)}"</div>`:'<div style="color:var(--mu);font-size:.83rem">No custom passwords yet.</div>';return;}el.innerHTML=rows.map(([k,p])=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;padding:8px 12px;background:var(--g);border-radius:7px"><div style="font-size:.81rem;font-weight:700;color:var(--b);width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${h(k)}</div>${p!==null?`<input class="si2" id="agpwd-${h(k)}" value="${h(p)}" style="flex:1;font-family:monospace"/><button class="btn bg btn-sm" onclick="copyPwd('${h(p)}',this)" title="Copy">📋</button><button class="btn bp btn-sm" onclick="updateAgentPwd('${h(k)}')">💾</button><button class="btn bd btn-sm" onclick="removeAgentPwd('${h(k)}')">✕</button>`:`<span style="flex:1;font-size:.81rem;color:var(--mu);font-style:italic">Default (${h(def)})</span><button class="btn bp btn-sm" onclick="document.getElementById('custom-agent-name').value='${h(k)}';document.getElementById('custom-agent-pass').focus()">Set</button>`}</div>`).join('');}
+function renderAgentPwds(search){const cp=getSavedAgentPwds(),def=localStorage.getItem(DASH_LS_KEY+'_agent_pass')||'1234',q=(search||'').toLowerCase().trim(),el=document.getElementById('agent-pwd-list'),ce=document.getElementById('custom-count'),en=Object.entries(cp);if(ce)ce.textContent=en.length?`(${en.length} custom)`:'';let rows=en;if(q){const m=Object.keys(AGENTS).filter(k=>k.includes(q)&&!cp[k]).slice(0,15).map(k=>[k,null]);rows=[...rows.filter(([k])=>k.includes(q)),...m];}if(!el)return;if(!rows.length){el.innerHTML=q?`<div style="color:var(--mu);font-size:.83rem">No match for "${h(q)}"</div>`:'<div style="color:var(--mu);font-size:.83rem">No custom passwords yet.</div>';return;}el.innerHTML=rows.map(([k,p])=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;padding:8px 12px;background:var(--g);border-radius:7px"><div style="font-size:.81rem;font-weight:700;color:var(--b);width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${h(k)}</div>${p!==null?`<input class="si2" id="agpwd-${h(k)}" value="${h(p)}" style="flex:1;font-family:monospace"/><button class="btn bg btn-sm" onclick="copyPwd(${h(JSON.stringify(String(p)))},this)" title="Copy">📋</button><button class="btn bp btn-sm" onclick="updateAgentPwd(${h(JSON.stringify(String(k)))})">💾</button><button class="btn bd btn-sm" onclick="removeAgentPwd(${h(JSON.stringify(String(k)))})">✕</button>`:`<span style="flex:1;font-size:.81rem;color:var(--mu);font-style:italic">Default (${h(def)})</span><button class="btn bp btn-sm" onclick="document.getElementById('custom-agent-name').value=${h(JSON.stringify(String(k)))};document.getElementById('custom-agent-pass').focus()">Set</button>`}</div>`).join('');}
 function setAgentPwd(){let n=(document.getElementById('custom-agent-name')?.value||'').trim().toLowerCase(),p=(document.getElementById('custom-agent-pass')?.value||'').trim();if(!n||!p){showT('⚠️ Enter agent name and password');return;}const agentKey=Object.keys(AGENTS).find(k=>k.toLowerCase()===n)||n;if(!AGENTS[agentKey]){showT('⚠️ Agent "'+n+'" not found');return;}n=agentKey;const s=getSavedAgentPwds();s[n]=p;localStorage.setItem(DASH_LS_KEY+'_agent_pwds',JSON.stringify(s));showT('✅ Set for: '+n);loadSettingsView();}
 function updateAgentPwd(k){const i=document.getElementById('agpwd-'+k);if(!i||!i.value.trim())return;const s=getSavedAgentPwds();s[k]=i.value.trim();localStorage.setItem(DASH_LS_KEY+'_agent_pwds',JSON.stringify(s));showT('✅ Updated: '+k);renderAgentPwds(document.getElementById('agent-search')?.value||'');}
 function removeAgentPwd(k){const s=getSavedAgentPwds();delete s[k];localStorage.setItem(DASH_LS_KEY+'_agent_pwds',JSON.stringify(s));showT('🗑 Removed: '+k);renderAgentPwds(document.getElementById('agent-search')?.value||'');}

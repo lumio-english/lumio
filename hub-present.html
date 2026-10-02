@@ -21,7 +21,7 @@
   #topbar button, #topbar a { background:rgba(255,255,255,.14); color:#fff; border:none; border-radius:999px; padding:7px 16px;
     font-weight:800; font-size:.8rem; cursor:pointer; text-decoration:none; }
   #stageWrap { position:absolute; top:52px; left:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center; }
-  .slideStage { transform-origin: center center; box-shadow:0 30px 70px rgba(0,0,0,.4); border-radius:8px; overflow:hidden; }
+  .slideStage { flex-shrink:0; transform-origin: center center; box-shadow:0 30px 70px rgba(0,0,0,.4); border-radius:8px; overflow:hidden; }
   #navRow { position:absolute; bottom:0; left:0; right:0; height:52px; z-index:50;
     display:flex; align-items:center; justify-content:space-between; padding:0 26px; pointer-events:none; }
   .navbtn { pointer-events:auto; background:rgba(255,255,255,.92); border:none; border-radius:999px; width:100px; height:40px;
@@ -58,9 +58,14 @@
   #stage.theme-teen .dot.on{ background: var(--lumio-orange); }
   #stage.theme-teen .wgrid-card{ background: #fff; }
   #stage.theme-teen .wtxtinput{ border-color: #E3D6BE; }
+  /* Portrait phone: the 16:9 stage is small; suggest turning sideways. */
+  #rotateHint { display:none; position:fixed; left:50%; bottom:14px; transform:translateX(-50%); z-index:120;
+    background:rgba(0,0,0,.72); color:#fff; font:800 .82rem 'Nunito',sans-serif; padding:8px 14px; border-radius:16px; width:max-content; max-width:calc(100% - 24px); text-align:center; line-height:1.35; pointer-events:none; }
+  @media (orientation:portrait) and (max-width:700px) { #rotateHint { display:block; } }
 </style>
 </head>
 <body>
+<div id="rotateHint">📱↻ Turn your phone sideways for a bigger view · أدر الهاتف بالعرض</div>
 
 <div id="topbar">
   <div class="brand" id="hubBrand">🌐 English Hub</div>

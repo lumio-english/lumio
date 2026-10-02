@@ -201,6 +201,15 @@
   .sd-logout:active{transform:translateY(0) scale(.96)}
   .sd-logout:focus-visible{outline:3px solid rgba(255,107,107,.35);outline-offset:2px}
 
+  /* Phones: the header wraps, the menu buttons (Profile, Messages,
+     Referrals, guide) take a second row, so Log out / avatar / streak
+     stay on screen instead of being pushed past the right edge. */
+  @media (max-width:760px){
+    .sd-topbar{flex-wrap:wrap;row-gap:8px}
+    .sd-topbar .pg-launch-btn{order:10;font-size:.74rem;padding:6px 10px}
+  }
+  @media (max-width:380px){ .sd-brand{display:none} }
+
   .sd-wrap{max-width:1080px;margin:0 auto;padding:22px 20px 60px}
 
   /* ---------- Hero / mission card ---------- */
@@ -1329,6 +1338,10 @@
 })();
 </script>
 <script>
+// Names, notes and links shown here are typed by teachers or other
+// students, so they are escaped before going into innerHTML.
+function sdEsc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch])); }
+function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.test(s) ? sdEsc(s) : "#"; }
 (() => {
  try {
   // ---------- toast helper ----------
@@ -1379,6 +1392,15 @@
   // student's level after they'd already logged in once, this keeps their
   // dashboard (and which lessons/games/materials match them) correct
   // without needing them to log out and back in first.
+  // Same for the name: a teacher can rename a student (progress, homework
+  // and classes move with the new name), so the session follows it.
+  if (rosterEntry && rosterEntry.name && rosterEntry.name !== u.name) {
+    u.name = rosterEntry.name;
+    try {
+      const raw = JSON.parse(localStorage.getItem("lumio_user") || "null");
+      if (raw) { raw.name = rosterEntry.name; localStorage.setItem("lumio_user", JSON.stringify(raw)); }
+    } catch (e) {}
+  }
   if (rosterEntry && rosterEntry.level) {
     u.level = rosterEntry.level;
     try {
@@ -1630,17 +1652,17 @@
             <div class="ic">🎥</div>
             <div>
               <div class="when">${fmtSchedDay(next.date)} at ${fmtSchedTime(next.startTime, next.date)}</div>
-              <div class="sub">Next class with ${next.teacherName || "your teacher"} · ${next.durationMinutes} min${next.students && next.students.length > 1 ? ` · with ${next.students.length - 1} classmate${next.students.length > 2 ? "s" : ""}` : ""}</div>
-              ${next.meetingLink ? `<a href="${next.meetingLink}" target="_blank" rel="noopener" class="sd-join-link">🔗 Join class link</a>` : ""}
+              <div class="sub">Next class with ${sdEsc(next.teacherName || "your teacher")} · ${next.durationMinutes} min${next.students && next.students.length > 1 ? ` · with ${next.students.length - 1} classmate${next.students.length > 2 ? "s" : ""}` : ""}</div>
+              ${next.meetingLink ? `<a href="${sdUrl(next.meetingLink)}" target="_blank" rel="noopener" class="sd-join-link">🔗 Join class link</a>` : ""}
             </div>
           </div>`;
         listEl.innerHTML = upcoming.slice(1).map(c => `
           <div class="sd-class-row">
             <div class="dt">${fmtSchedDay(c.date)}<span>${fmtSchedTime(c.startTime, c.date)}</span></div>
             <div>
-              <div class="who">${c.teacherName || "Your teacher"}</div>
-              <div class="meta">${c.durationMinutes} min${c.notes ? " · " + c.notes : ""}</div>
-              ${c.meetingLink ? `<a href="${c.meetingLink}" target="_blank" rel="noopener" class="sd-join-link">🔗 Join link</a>` : ""}
+              <div class="who">${sdEsc(c.teacherName || "Your teacher")}</div>
+              <div class="meta">${c.durationMinutes} min${c.notes ? " · " + sdEsc(c.notes) : ""}</div>
+              ${c.meetingLink ? `<a href="${sdUrl(c.meetingLink)}" target="_blank" rel="noopener" class="sd-join-link">🔗 Join link</a>` : ""}
             </div>
           </div>`).join("");
       }
@@ -1668,7 +1690,7 @@
         rateCard.style.display = "block";
         rateCard.innerHTML = `
           <div class="sd-rate-card">
-            <div class="sd-rate-title">How was your class with ${target.teacherName || "your teacher"}? ⭐</div>
+            <div class="sd-rate-title">How was your class with ${sdEsc(target.teacherName || "your teacher")}? ⭐</div>
             <div class="sd-rate-stars" id="rateStars">
               ${[1,2,3,4,5].map(n => `<span class="sd-star" data-n="${n}">★</span>`).join("")}
             </div>
@@ -1795,6 +1817,9 @@
       // teacher) -- pull this student's records before the reload below.
       Lumio.pullProgressAndHomework ? Lumio.pullProgressAndHomework(u.name) : Promise.resolve({ ok: true }),
     ]).then(([r1, r2, r3]) => {
+      // The PIN was changed or the account removed by the teacher: sign
+      // this device out rather than keep showing an old copy.
+      if (r1 && (r1.reason === "unauthorized" || r1.reason === "deleted")) { Lumio.logout(); return; }
       if (r1.ok || r2.ok || (r3 && r3.changed)) location.reload();
     }).catch(() => {});
   })();
@@ -1893,12 +1918,12 @@
       {
         target: ".sd-topbar",
         icon: "🎉",
-        title: `تم تفعيل اشتراك ${u.name} بنجاح`,
+        title: `تم تفعيل اشتراك ${sdEsc(u.name)} بنجاح`,
         titleEn: "Subscription activated",
         html: `<p>أهلاً بكم في عائلة Lumio English! 👋<br>
-          في الجولة القادمة سنأخذكم في صفحة ${u.name} الحقيقية، قسماً بقسم.</p>
+          في الجولة القادمة سنأخذكم في صفحة ${sdEsc(u.name)} الحقيقية، قسماً بقسم.</p>
           <div class="pg-en-block">Welcome to the Lumio English family! 👋<br>
-          This tour will walk you through ${u.name}'s real dashboard, section by section.</div>`,
+          This tour will walk you through ${sdEsc(u.name)}'s real dashboard, section by section.</div>`,
       },
       {
         target: ".sd-hero-card",
@@ -1979,7 +2004,7 @@
         icon: "🎟️",
         title: "الحصص والاشتراك",
         titleEn: "Sessions & Subscription",
-        html: `<p style="margin-bottom:8px">يتبقى لدى <b>${u.name}</b> حالياً
+        html: `<p style="margin-bottom:8px">يتبقى لدى <b>${sdEsc(u.name)}</b> حالياً
           <span style="color:var(--sd-orange-deep);font-weight:800">${sessionsLeft} حصة</span>.</p>
           <ul>
           <li><span class="em">➖</span> يُخصم العدد تلقائياً عند حضور كل حصة مباشرة.
@@ -2048,6 +2073,7 @@
         return;
       }
       let top = fitsBelow ? rect.bottom + margin : rect.top - cardRect.height - margin;
+      top = Math.min(Math.max(top, margin), vh - cardRect.height - margin);
       let left = rect.left + rect.width / 2 - cardRect.width / 2;
       left = Math.min(Math.max(left, margin), vw - cardRect.width - margin);
       card.style.top = top + "px";
@@ -2076,8 +2102,21 @@
       if (visible) {
         targetEl.classList.add("pg-spotlight");
         currentTargetEl = targetEl;
-        targetEl.scrollIntoView({ behavior: "smooth", block: "center" });
-        setTimeout(() => positionCard(targetEl), 380); // after the smooth scroll settles
+        targetEl.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+        // Place the card once the smooth scroll has really stopped. A fixed
+        // 380 ms was too short for long scrolls on phones, so the card was
+        // placed from a stale position and ended up off-screen.
+        const myStep = step;
+        let lastY = -1, still = 0;
+        const started = Date.now();
+        (function waitScroll() {
+          if (step !== myStep) return;
+          const y = window.scrollY;
+          still = (y === lastY) ? still + 1 : 0;
+          lastY = y;
+          if (still >= 5 || Date.now() - started > 1500) positionCard(targetEl);
+          else requestAnimationFrame(waitScroll);
+        })();
       } else {
         setTimeout(() => positionCard(null), 50);
       }
@@ -2094,6 +2133,12 @@
     document.getElementById("pgCloseBtn").onclick = closeGuide;
     btn.onclick = openGuide;
     window.addEventListener("resize", () => { if (overlay.classList.contains("show")) positionCard(currentTargetEl); });
+    // Keep the card next to its target if the page scrolls under it.
+    let pgScrollRaf = 0;
+    window.addEventListener("scroll", () => {
+      if (!overlay.classList.contains("show") || pgScrollRaf) return;
+      pgScrollRaf = requestAnimationFrame(() => { pgScrollRaf = 0; positionCard(currentTargetEl); });
+    }, { passive: true });
 
     // Auto-launch once, the first time a subscribed student's profile is
     // opened after subscribing -- afterwards it's only ever reopened
@@ -2339,8 +2384,8 @@
             </div>
           </div>
           <div class="pr-student">
-            <div class="av">${p.avatar || "🦊"}</div>
-            <div><h1>${p.name}</h1><p>${meta.name}</p></div>
+            <div class="av">${sdEsc(p.avatar || "🦊")}</div>
+            <div><h1>${sdEsc(p.name)}</h1><p>${meta.name}</p></div>
           </div>
           <div class="pr-stats">
             <div class="pr-stat"><b>${done}/${total}</b><span>Lessons done</span></div>
@@ -2885,7 +2930,7 @@
   function renderWritingTab(promptKey) {
     const saved = getWritingAnswers()[promptKey];
     return `
-      <textarea class="sd-wr-textarea" id="wrTextarea" placeholder="Type your answer here...">${saved ? saved.text : ""}</textarea>
+      <textarea class="sd-wr-textarea" id="wrTextarea" placeholder="Type your answer here...">${saved ? sdEsc(saved.text) : ""}</textarea>
       <div class="sd-wr-save-row">
         <button class="sd-wr-save-btn" id="wrSaveBtn">💾 Save</button>
         <span class="sd-wr-saved-note" id="wrSavedNote">${saved ? "Saved" : ""}</span>

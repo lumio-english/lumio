@@ -24,7 +24,7 @@
   .caption { transition:opacity .25s ease, transform .25s ease; }
   .caption.text-hidden { opacity:0; transform:translateY(16px); pointer-events:none; }
   #stageWrap { position:absolute; top:56px; left:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center; }
-  #stage { width:1600px; height:900px; position:relative; background:#FFF3D6; transform-origin: center center; overflow:hidden;
+  #stage { width:1600px; height:900px; flex-shrink:0; position:relative; background:#FFF3D6; transform-origin: center center; overflow:hidden;
     border-radius:12px; box-shadow:0 30px 70px rgba(0,0,0,.4); }
   #stageContent { position:absolute; inset:0; }
   /* Single generated scene image per page (replaces bg + character cut-outs). Caption box still overlays it. */
@@ -79,9 +79,14 @@
   body.theme-teen #lockScreen { background: linear-gradient(160deg, #3A2A1C 0%, var(--lumio-night-deep) 100%); }
   body.theme-teen #lockScreen h2 { color: var(--lumio-night-ink); }
   body.theme-teen #lockScreen p { color: var(--lumio-night-muted); }
+  /* Portrait phone: the 16:9 stage is small; suggest turning sideways. */
+  #rotateHint { display:none; position:fixed; left:50%; bottom:14px; transform:translateX(-50%); z-index:120;
+    background:rgba(0,0,0,.72); color:#fff; font:800 .82rem 'Nunito',sans-serif; padding:8px 14px; border-radius:16px; width:max-content; max-width:calc(100% - 24px); text-align:center; line-height:1.35; pointer-events:none; }
+  @media (orientation:portrait) and (max-width:700px) { #rotateHint { display:block; } }
 </style>
 </head>
 <body>
+<div id="rotateHint">📱↻ Turn your phone sideways for a bigger view · أدر الهاتف بالعرض</div>
 
 <div id="topbar">
   <div class="brand">📖 Lumi's Magic Map</div>

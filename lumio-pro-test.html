@@ -923,9 +923,9 @@ function combinePhone(countryCode, local) {
 // startTestInner(); this wrapper exists so that a thrown error becomes a
 // VISIBLE message instead of a dead button. A button that does nothing at
 // all is the single most expensive kind of bug to chase.
-function startTest(){
+async function startTest(){
   try {
-    startTestInner();
+    await startTestInner();
   } catch (err) {
     console.error('[Lumio] startTest failed:', err);
     const box = document.getElementById('id-error');
@@ -940,7 +940,7 @@ function startTest(){
   }
 }
 
-function startTestInner(){
+async function startTestInner(){
   window._resultShown = false;  // reset submission guard
   const nameEl=document.getElementById('student-name');
   const phoneEl=document.getElementById('student-phone');
@@ -1008,6 +1008,16 @@ function startTestInner(){
     console.error('[Lumio] findByPhone lookup failed, treating number as new:', e);
     registeredStudent = null;
   }
+  // Once the Sheet script checks who is calling, this public page no
+  // longer downloads the roster -- it asks the script about this one
+  // phone number instead (exists? subscribed? -- nothing else).
+  try {
+    const caps = window.LumioProfiles && LumioProfiles.serverCaps ? await LumioProfiles.serverCaps() : { auth: false };
+    if (caps.auth) {
+      const r = await LumioProfiles.postAction('checkPhone', { phone: studentId });
+      if (r && r.ok) registeredStudent = r.exists ? { phone: studentId, subscribed: !!r.subscribed, remote: true } : null;
+    }
+  } catch (e) { /* offline: keep the local answer above */ }
   if (registeredStudent && registeredStudent.subscribed) {
     phoneEl.style.borderColor = '#ef4444';
     phoneEl.style.background = 'rgba(239,68,68,0.15)';
@@ -1096,6 +1106,20 @@ async function handleRegPinComplete(){
     return;
   }
   try {
+    const caps = LumioProfiles.serverCaps ? await LumioProfiles.serverCaps() : { auth: false };
+    if (caps.auth) {
+      // The script creates the pending account itself and hands back the
+      // login ID; this page never holds anyone else's data.
+      const out = await LumioProfiles.postAction('registerStudent', {
+        name: studentName, phone: studentId, pinHash: await LumioProfiles.hashPin(regFirstPin),
+      });
+      if (!out || !out.ok || !out.student) {
+        throw new Error(out && out.error === 'exists'
+          ? 'This phone number is already registered — log in from the student page instead.'
+          : "Couldn't create your account — please check your connection and try again.");
+      }
+      registeredStudent = { id: out.student.id, name: out.student.name, loginCode: out.student.loginCode, phone: studentId, remote: true };
+    } else {
     registeredStudent = await LumioProfiles.addStudent({
       name: studentName,
       phone: studentId,
@@ -1127,6 +1151,7 @@ async function handleRegPinComplete(){
     // online, or the teacher's own auto-sync picks it up once this
     // device eventually does push through).
     if (window.LumioProfiles) LumioProfiles.syncNow().catch(() => {});
+    }
   } catch (e) {
     document.getElementById('regPinError').textContent = e.message || "Couldn't create your account — please try again.";
     regPinBuffer = ''; regFirstPin = ''; regPinStage = 'create';
@@ -1566,6 +1591,20 @@ function mapProTestLevelToLumioId(n) {
 async function pushResultAsLumioLead(fullData, levelNum) {
   if (!LUMIO_SYNC_URL) return;
   try {
+    const caps = window.LumioProfiles && LumioProfiles.serverCaps ? await LumioProfiles.serverCaps() : { auth: false };
+    if (caps.auth) {
+      // Add just this one lead; the full Leads list is teacher-only now.
+      const total = String(fullData.total || '').split('/');
+      await LumioProfiles.postAction('addLead', { lead: {
+        id: 'lead_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+        name: fullData.name, phone: fullData.student_id, age: fullData.age ? Number(fullData.age) : null,
+        suggestedLevel: mapProTestLevelToLumioId(levelNum),
+        testScore: Number(total[0]), testTotal: Number(total[1]),
+        notes: `Professional test — Listening ${fullData.listening}, Reading ${fullData.reading}, Writing ${fullData.writing}, Grammar ${fullData.grammar} (${fullData.cefr})`
+          + (fullData.selfAssessedLevel ? ` · Self-assessed: "${fullData.selfAssessedLevel}"` : ''),
+      } });
+      return;
+    }
     const LEADS_KEY = 'lumio_leads_v1';
     let store;
     try { store = JSON.parse(localStorage.getItem(LEADS_KEY) || 'null'); } catch (e) { store = null; }
@@ -1664,7 +1703,9 @@ function saveResultLocally(data){
   // same way a lead's suggestedLevel is computed, and the account is
   // ready for a trial class. Best-effort: never blocks showing the
   // student their result if this fails for any reason.
-  if (registeredStudent && window.LumioProfiles) {
+  if (registeredStudent && registeredStudent.remote && window.LumioProfiles) {
+    LumioProfiles.postAction('placementUpdate', { phone: registeredStudent.phone, level: mapProTestLevelToLumioId(data.levelNum), age: data.age || '' }).catch(()=>{});
+  } else if (registeredStudent && window.LumioProfiles) {
     LumioProfiles.updateStudent(registeredStudent.id, { level: mapProTestLevelToLumioId(data.levelNum) })
       .then(() => { LumioProfiles.syncNow().catch(() => {}); })
       .catch(()=>{});
@@ -1709,7 +1750,7 @@ function showResult(){
     cefr:info.cefr+' — '+info.name+(aboveTop?' (scored above Level 6)':'')
   });
   // Keep the age on the student's own record too (it was only ever on the lead).
-  if (registeredStudent && window.LumioProfiles && age) {
+  if (registeredStudent && !registeredStudent.remote && window.LumioProfiles && age) {
     LumioProfiles.updateStudent(registeredStudent.id, { age: Number(age) }).catch(()=>{});
   }
 

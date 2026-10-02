@@ -232,6 +232,7 @@
       // record saved before that rule existed.
       { const derived = currencyForCountry(s.country); if (derived && s.currency !== derived) { s.currency = derived; needsSave = true; } }
       if (s.sessionsRemaining === undefined) { s.sessionsRemaining = 0; needsSave = true; }
+      if (coerceNumbers(s)) needsSave = true;
     });
     if (!Array.isArray(data.rewardCatalog)) { data.rewardCatalog = []; needsSave = true; }
     // Tombstones: ids removed on THIS device, so a later sync's additive
@@ -402,14 +403,25 @@
       const sched = JSON.parse(safeGet("lumio_schedule_v2") || "null");
       if (sched && Array.isArray(sched.classes)) {
         let touched = false;
+        const now = new Date().toISOString();
+        // Bump updatedAt on every class that changed: without it the
+        // Sheet's copy (same timestamp, old name) won the next merge and
+        // the rename was undone.
         const fix = list => (list || []).forEach(c => (c.students || []).forEach(st => {
-          if (st.studentId === id || st.studentName === oldName) { st.studentName = newName; touched = true; }
+          if (st.studentId === id || st.studentName === oldName) { st.studentName = newName; c.updatedAt = now; touched = true; }
         }));
         fix(sched.classes); fix(sched.patterns);
         if (touched) safeSet("lumio_schedule_v2", JSON.stringify(sched));
       }
+      // The Sheet's Progress/Homework rows are keyed by name too: the next
+      // roster push asks the script to move them (see pushRoster_), or the
+      // old-name rows came straight back as a "guest" row.
+      const pending = JSON.parse(safeGet(PENDING_RENAMES_KEY) || "[]") || [];
+      pending.push({ from: oldName, to: newName, id, at: new Date().toISOString() });
+      safeSet(PENDING_RENAMES_KEY, JSON.stringify(pending));
     } catch (e) { console.warn("Lumio: rename migration failed", e); }
   }
+  const PENDING_RENAMES_KEY = "lumio_pending_renames";
 
   function genLoginCode() {
     const data = load();
@@ -646,7 +658,7 @@
     const s = data.students.find(x => x.id === id);
     if (!s) throw new Error("Student not found.");
     const amt = Number(amount || 0);
-    s.rewardPoints = Math.max(0, (s.rewardPoints || 0) + amt);
+    s.rewardPoints = Math.max(0, (Number(s.rewardPoints) || 0) + amt);
     if (!Array.isArray(s.pointsLog)) s.pointsLog = [];
     s.pointsLog.push({ date: new Date().toISOString(), amount: amt });
     s.updatedAt = new Date().toISOString();
@@ -664,10 +676,11 @@
     const s = data.students.find(x => x.id === id);
     if (!s) throw new Error("Student not found.");
     const POINTS_PER_HOUR = 50;
-    const blocks = Math.floor((s.rewardPoints || 0) / POINTS_PER_HOUR);
+    s.rewardPoints = Number(s.rewardPoints) || 0;
+    const blocks = Math.floor(s.rewardPoints / POINTS_PER_HOUR);
     if (blocks < 1) throw new Error(`Needs at least ${POINTS_PER_HOUR} points to redeem — has ${s.rewardPoints || 0}.`);
     s.rewardPoints -= blocks * POINTS_PER_HOUR;
-    s.bonusHours = (s.bonusHours || 0) + blocks;
+    s.bonusHours = (Number(s.bonusHours) || 0) + blocks;
     // Redeeming used to only bump the separate bonusHours counter shown on
     // the rewards card, with a "ask your teacher to book it in!" note --
     // meaning the student's actual usable session count never changed, so
@@ -675,7 +688,7 @@
     // bonus hour is a real extra session, so credit it straight to
     // sessionsRemaining too -- it shows up immediately, same as any other
     // session, with no separate manual step for the teacher to remember.
-    s.sessionsRemaining = (s.sessionsRemaining || 0) + blocks;
+    s.sessionsRemaining = (Number(s.sessionsRemaining) || 0) + blocks;
     if (!Array.isArray(s.redemptions)) s.redemptions = [];
     s.redemptions.push({ date: new Date().toISOString(), label: `+${blocks} bonus hour${blocks === 1 ? "" : "s"}`, cost: blocks * POINTS_PER_HOUR, hours: blocks });
     s.updatedAt = new Date().toISOString();
@@ -716,10 +729,12 @@
     if (!s) throw new Error("Student not found.");
     const item = (data.rewardCatalog || []).find(r => r.id === itemId);
     if (!item) throw new Error("Reward not found.");
-    if ((s.rewardPoints || 0) < item.cost) throw new Error(`Needs ${item.cost} points — has ${s.rewardPoints || 0}.`);
-    s.rewardPoints -= item.cost;
+    s.rewardPoints = Number(s.rewardPoints) || 0;
+    const cost = Number(item.cost) || 0;
+    if (s.rewardPoints < cost) throw new Error(`Needs ${cost} points — has ${s.rewardPoints}.`);
+    s.rewardPoints -= cost;
     if (!Array.isArray(s.redemptions)) s.redemptions = [];
-    s.redemptions.push({ date: new Date().toISOString(), label: item.label, cost: item.cost, hours: 0 });
+    s.redemptions.push({ date: new Date().toISOString(), label: item.label, cost, hours: 0 });
     s.updatedAt = new Date().toISOString();
     save(data);
     return s;
@@ -957,6 +972,43 @@
   // that order since code and phone are the two ways login.html now
   // actually asks for.
   async function verifyStudentLogin(identifier, pin) {
+    const caps = await serverCaps();
+    if (caps.auth && normalizePin(pin)) {
+      const pinHash = await hashPin(normalizePin(pin));
+      let out = null;
+      try { out = await postAction("studentLogin", { identifier: String(identifier || "").trim(), pinHash }); } catch (e) { out = null; }
+      if (out && out.ok && out.student) {
+        // This device now holds exactly one student: this one. Anything a
+        // previous version cached about other students is dropped.
+        const me = parseSyncedStudent(Object.assign({}, out.student, { pinHash }));
+        const data = load();
+        const prev = data.students.find(x => x.id === me.id);
+        const merged = prev ? Object.assign({}, prev, me, { notes: prev.notes || [] }) : me;
+        // On a teacher's own device (testing a student login) keep the
+        // rest of the roster; on a student's phone keep only this student.
+        data.students = isTeacherDevice()
+          ? data.students.filter(x => x.id !== me.id).concat([merged])
+          : [Object.assign({}, merged, { notes: [] })];
+        if (Array.isArray(out.teachers)) data.teachers = mergeById(data.teachers, out.teachers);
+        if (Array.isArray(out.rewardCatalog)) data.rewardCatalog = out.rewardCatalog.map(r => ({ ...r, cost: Number(r.cost) || 0 }));
+        save(data);
+        setStudentAuth(me.id, pinHash);
+        return data.students.find(x => x.id === me.id);
+      }
+      if (out && out.error === "pending_approval") {
+        const err = new Error("Your teacher hasn't activated your account yet — check back soon!");
+        err.code = "pending_approval";
+        throw err;
+      }
+      if (out && out.error === "locked") {
+        const err = new Error("Too many wrong PINs — please wait 15 minutes and try again.");
+        err.code = "locked";
+        throw err;
+      }
+      if (out) return null;
+      // No answer from the server (offline): fall through to this
+      // device's own saved record, if it has one.
+    }
     const s = findByLoginCode(identifier) || findByPhone(identifier) || findByName(identifier);
     if (!s) return null;
     const p = normalizePin(pin);
@@ -982,6 +1034,7 @@
       err.code = "pending_approval";
       throw err;
     }
+    if (s.pinHash) setStudentAuth(s.id, s.pinHash);
     return s;
   }
 
@@ -1067,12 +1120,37 @@
     if (!t) return null;
     const p = normalizePin(pin);
     if (!p) return null;
+    const pinHash = await hashPin(p);
+    const caps = await serverCaps();
+    if (caps.auth) {
+      // The teacher list a device gets before sign-in has no PIN hashes,
+      // so the script checks the PIN.
+      let out = null;
+      try { out = await postAction("teacherLogin", { id: t.id, pinHash }); } catch (e) { out = null; }
+      if (out && out.ok) {
+        setTeacherAuth(t.id, pinHash);
+        if (out.teacher) {
+          const data = load();
+          data.teachers = data.teachers.map(x => x.id === t.id ? Object.assign({}, x, out.teacher) : x);
+          save(data);
+        }
+        return getTeacher(t.id) || t;
+      }
+      if (out && out.error === "locked") {
+        const err = new Error("Too many wrong PINs — please wait 15 minutes and try again.");
+        err.code = "locked";
+        throw err;
+      }
+      if (out) return null;
+    }
     if (t.pinHash) {
-      if ((await hashPin(p)) !== t.pinHash) return null;
+      if (pinHash !== t.pinHash) return null;
+      setTeacherAuth(t.id, t.pinHash);
       return t;
     }
     if (p !== t.pin) return null;
     try { await updateTeacher(t.id, { pin: p }); } catch (e) { /* non-fatal */ }
+    setTeacherAuth(t.id, pinHash);
     return t;
   }
 
@@ -1089,6 +1167,7 @@
   }
   function clearCurrentTeacher() {
     safeSessionRemove(CURRENT_TEACHER_KEY);
+    clearTeacherAuth();
   }
   function isCurrentTeacherOwner() {
     const t = getCurrentTeacher();
@@ -1119,6 +1198,75 @@
     safeSet(SYNC_KEY, JSON.stringify(cfg));
     return cfg;
   }
+  // ---- who this device is (2 Oct 2026) ----
+  // Sent with every Sheet request so the script can decide what this
+  // device may see (see whoIs_ in the Apps Script): a teacher who proved
+  // their PIN gets everything, a student only their own record, classes
+  // and progress, an anonymous page only the teacher list. Stored in
+  // localStorage so new tabs (report, presenter) and the 5-minute auto
+  // sync keep working; removed on logout / teacher switch.
+  const TEACHER_AUTH_KEY = "lumio_teacher_auth";
+  const STUDENT_AUTH_KEY = "lumio_student_auth";
+  function readAuth(k) {
+    try { const a = JSON.parse(safeGet(k) || "null"); return a && a.id && a.pinHash ? a : null; } catch (e) { return null; }
+  }
+  function getTeacherAuth() { return readAuth(TEACHER_AUTH_KEY); }
+  function getStudentAuth() { return readAuth(STUDENT_AUTH_KEY); }
+  function setTeacherAuth(id, pinHash) { safeSet(TEACHER_AUTH_KEY, JSON.stringify({ id, pinHash })); }
+  function setStudentAuth(id, pinHash) { safeSet(STUDENT_AUTH_KEY, JSON.stringify({ id, pinHash })); }
+  function clearTeacherAuth() { try { localStorage.removeItem(TEACHER_AUTH_KEY); } catch (e) {} }
+  function clearStudentAuth() { try { localStorage.removeItem(STUDENT_AUTH_KEY); } catch (e) {} }
+  function authQuery() {
+    const enc = encodeURIComponent;
+    const t = getTeacherAuth();
+    if (t) return "&tid=" + enc(t.id) + "&th=" + enc(t.pinHash);
+    const st = getStudentAuth();
+    if (st) return "&sid=" + enc(st.id) + "&sh=" + enc(st.pinHash);
+    return "";
+  }
+  // A device that is not signed in as a teacher. It only ever holds its
+  // own student record (the script sends nothing else any more).
+  function isTeacherDevice() { return !!getTeacherAuth() || safeGet("lumio_teacher") === "1"; }
+  function isStudentDevice() { return !isTeacherDevice() && !!getStudentAuth(); }
+  // Students who logged in before this change have no stored credentials,
+  // but their phone still has their own record (with its pinHash) from
+  // the old full-roster download -- adopt it once so they stay signed in.
+  function adoptLegacyStudentAuth() {
+    if (isTeacherDevice() || getStudentAuth()) return;
+    const id = safeGet("lumio_student_id");
+    if (!id) return;
+    const me = load().students.find(x => x.id === id);
+    if (me && me.pinHash) setStudentAuth(me.id, me.pinHash);
+  }
+  // Does the deployed script check who is calling (version 7+)? Older
+  // deployments answer the "version" action with their plain "running"
+  // message. Asked once per tab; until the new script is deployed every
+  // page keeps the previous behaviour.
+  let capsPromise = null;
+  function serverCaps() {
+    try { const c = JSON.parse(sessionStorage.getItem("lumio_srv_caps") || "null"); if (c) return Promise.resolve(c); } catch (e) {}
+    if (capsPromise) return capsPromise;
+    const cfg = getSyncConfig();
+    if (!cfg.enabled || !cfg.url) return Promise.resolve({ auth: false });
+    capsPromise = fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=version", {}, 10000)
+      .then(r => r.json())
+      .then(j => {
+        const c = { auth: !!(j && j.auth), version: (j && j.version) || 0 };
+        try { sessionStorage.setItem("lumio_srv_caps", JSON.stringify(c)); } catch (e) {}
+        return c;
+      })
+      .catch(() => ({ auth: false, unknown: true }))
+      .finally(() => { capsPromise = null; });
+    return capsPromise;
+  }
+  async function postAction(action, body) {
+    const cfg = getSyncConfig();
+    const res = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=" + action + authQuery(), {
+      method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(body || {}),
+    });
+    return res.json();
+  }
+
   function stripPin(record) {
     const copy = Object.assign({}, record);
     // `pin` now DOES sync (Eslam's call): teachers need to see and share a
@@ -1137,8 +1285,24 @@
     if (Array.isArray(copy.referrals)) copy.referrals = JSON.stringify(copy.referrals);
     return copy;
   }
+  // The Sheet stores every cell as text (writeRows_ formats the range as
+  // "@"), so counters come back as "20", not 20 -- and "20" + 60 is
+  // "2060". Every numeric field is coerced here and in load(), the only
+  // two ways a record enters this device.
+  const NUMERIC_FIELDS = ["rewardPoints", "bonusHours", "sessionsRemaining", "amountPaid", "levelsPurchased"];
+  function coerceNumbers(s) {
+    let changed = false;
+    NUMERIC_FIELDS.forEach(k => {
+      if (s[k] === undefined || s[k] === null) return;
+      const n = Number(s[k]);
+      const v = (s[k] === "" || !isFinite(n)) ? 0 : n;
+      if (v !== s[k]) { s[k] = v; changed = true; }
+    });
+    return changed;
+  }
   function parseSyncedStudent(s) {
     if (!s) return s;
+    coerceNumbers(s);
     if (typeof s.tags === "string") s.tags = s.tags.split(",").map(t => t.trim()).filter(Boolean);
     else if (!Array.isArray(s.tags)) s.tags = [];
     ["pointsLog", "redemptions", "notes", "messages", "referrals"].forEach(k => {
@@ -1197,6 +1361,20 @@
   // that edit had been pushed anywhere) would silently revert it back to
   // whatever was already on the Sheet, since the old code always preferred
   // "remote" on any mismatch regardless of which side was actually newer.
+  // The script leaves pinHash (and a student's CRM notes) out of what it
+  // sends to anyone but a signed-in teacher. A missing field there means
+  // "not shown to you", never "cleared", so the local value is kept.
+  function keepHidden(before, merged) {
+    const prev = {};
+    before.forEach(r => { prev[r.id] = r; });
+    return merged.map(r => {
+      const old = prev[r.id];
+      if (!old) return r;
+      const out = Object.assign({}, r);
+      ["pinHash", "notes"].forEach(k => { if ((out[k] === undefined) && old[k] !== undefined) out[k] = old[k]; });
+      return out;
+    });
+  }
   function mergeById(localList, remoteList) {
     const byId = {};
     localList.forEach(r => { byId[r.id] = Object.assign({}, r); });
@@ -1339,15 +1517,37 @@
   // Student devices use this (see pushStudentPatch for their write path);
   // a student's stale copy of the roster must never overwrite the Sheet.
   async function syncNow(opts) {
-    const pullOnly = !!(opts && opts.pullOnly);
+    let pullOnly = !!(opts && opts.pullOnly);
     const cfg = getSyncConfig();
     if (!cfg.enabled || !cfg.url) return { ok: false, reason: "not-configured" };
+    const caps = await serverCaps();
+    // Only a signed-in teacher may write the roster once the script checks.
+    if (caps.auth && !getTeacherAuth()) pullOnly = true;
+    if (caps.auth) adoptLegacyStudentAuth();
     const data = load();
     try {
       // Pull + merge first, so a brand-new device can never push an empty
       // local roster over whatever's already shared.
-      const res = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pullRoster");
+      const res = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pullRoster" + authQuery());
       const remote = await res.json();
+      if (remote && remote.ok === false) {
+        // The script refused: wrong/old PIN, or this student was deleted.
+        const reason = remote.error || "refused";
+        if (reason === "deleted" || reason === "unauthorized") {
+          const st = getStudentAuth();
+          if (st && !getTeacherAuth()) {
+            clearStudentAuth();
+            if (reason === "deleted") {
+              if (!data.deletedStudentIds.includes(st.id)) data.deletedStudentIds.push(st.id);
+              data.students = data.students.filter(x => x.id !== st.id);
+              save(data);
+            }
+          } else if (getTeacherAuth()) {
+            clearTeacherAuth();
+          }
+        }
+        return { ok: false, reason };
+      }
       // Fold the SHARED tombstone list into this device's own local one
       // before anything else. This is what makes a deletion actually
       // reach every device, not just prevent it from bouncing back on
@@ -1378,11 +1578,17 @@
         // additive merge below -- otherwise a still-present Sheet row for
         // an id we deliberately deleted comes right back as "remote-only".
         const incomingStudents = remote.students.filter(s => !data.deletedStudentIds.includes(s.id));
-        data.students = mergeById(data.students, incomingStudents);
+        data.students = keepHidden(data.students, mergeById(data.students, incomingStudents));
+        // A device that is not a teacher's keeps only its own student
+        // (older versions cached the whole roster on every phone).
+        if (caps.auth && isStudentDevice()) {
+          const st = getStudentAuth();
+          data.students = data.students.filter(x => st && x.id === st.id);
+        }
       }
       if (remote && Array.isArray(remote.teachers) && remote.teachers.length) {
         const incomingTeachers = remote.teachers.filter(t => !data.deletedTeacherIds.includes(t.id));
-        const merged = mergeById(data.teachers, incomingTeachers);
+        const merged = keepHidden(data.teachers, mergeById(data.teachers, incomingTeachers));
         // A brand-new device auto-seeds its own local-only "Teacher Lumi"
         // placeholder (see load() below) before anyone's had a chance to
         // sync — so the very first sync would otherwise end up with two
@@ -1401,19 +1607,20 @@
       // barely ever change.
       if (remote && Array.isArray(remote.rewardCatalog)) {
         const seen = new Set(data.rewardCatalog.map(r => r.id));
-        remote.rewardCatalog.forEach(r => { if (!seen.has(r.id)) { data.rewardCatalog.push(r); seen.add(r.id); } });
+        remote.rewardCatalog.forEach(r => { if (r && !seen.has(r.id)) { data.rewardCatalog.push({ ...r, cost: Number(r.cost) || 0 }); seen.add(r.id); } });
       }
       await backfillMissingHashes(data);
       save(data);
       if (pullOnly) return { ok: true, at: new Date().toISOString(), pullOnly: true };
 
-      await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pushRoster", {
+      const pushRes = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pushRoster" + authQuery(), {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify({
           students: data.students.map(stripPin),
           teachers: data.teachers.map(stripPin),
           rewardCatalog: data.rewardCatalog,
+          renames: (() => { try { return JSON.parse(safeGet(PENDING_RENAMES_KEY) || "[]") || []; } catch (e) { return []; } })(),
           // Always the union of what this device knew plus whatever the
           // Sheet already had (folded in during the pull above) -- never
           // just this device's own deletions -- so the shared list can
@@ -1425,6 +1632,11 @@
           ],
         }),
       });
+      let pushed = null;
+      try { pushed = await pushRes.json(); } catch (e) { pushed = null; }
+      if (!pushed || pushed.ok === false) return { ok: false, reason: (pushed && pushed.error) || "push-failed" };
+      // An older script ignores `renames`; keep them until one confirms.
+      if (pushed.renamed !== undefined) { try { localStorage.removeItem(PENDING_RENAMES_KEY); } catch (e) {} }
       return { ok: true, at: new Date().toISOString() };
     } catch (e) {
       return { ok: false, reason: e && e.name === "AbortError" ? "timeout" : "network", error: e && e.message };
@@ -1450,7 +1662,7 @@
       redemptions: Array.isArray(s.redemptions) ? s.redemptions : [],
     };
     try {
-      const res = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pushStudentPatch", {
+      const res = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pushStudentPatch" + authQuery(), {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify({ patch }),
@@ -1493,5 +1705,6 @@
     getCurrentTeacherId, setCurrentTeacherId, getCurrentTeacher, clearCurrentTeacher, isCurrentTeacherOwner,
     getTeacherName, setTeacherName,
     getSyncConfig, configureSync, syncNow, pushStudentPatch,
+    authQuery, serverCaps, postAction, getTeacherAuth, getStudentAuth, setTeacherAuth, clearTeacherAuth, clearStudentAuth, hashPin,
   };
 })(window);

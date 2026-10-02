@@ -41,7 +41,10 @@ const Lumio = (() => {
   /* ---------- Auth (simple v1) ---------- */
   const login = (name, level) => set("lumio_user", { name: name.trim(), level, t: Date.now() });
   const user = () => get("lumio_user");
-  const logout = () => { localStorage.removeItem("lumio_user"); location.href = "index.html"; };
+  const logout = () => {
+    ["lumio_user", "lumio_student_id", "lumio_student_auth"].forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
+    location.href = "login.html";
+  };
   const requireUser = () => {
     const u = user();
     if (!u) location.href = "login.html";
@@ -96,9 +99,13 @@ const Lumio = (() => {
   };
   const syncFetch = (action, body) => {
     const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), 20000);
-    return fetch(`${syncUrl()}?key=${LUMIO_API_KEY}&action=${action}`, body
+    // authQuery: who this device is -- the script only accepts a student's
+    // own records from a student device (see js/lumio-profiles.js).
+    const auth = (window.LumioProfiles && LumioProfiles.authQuery) ? LumioProfiles.authQuery() : "";
+    return fetch(`${syncUrl()}?key=${LUMIO_API_KEY}&action=${action}${auth}`, body
       ? { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(body), signal: ctrl.signal }
-      : { signal: ctrl.signal }).finally(() => clearTimeout(t)).then(r => r.json());
+      : { signal: ctrl.signal }).finally(() => clearTimeout(t)).then(r => r.json())
+      .then(j => { if (j && j.ok === false) throw new Error(j.error || "refused"); return j; });
   };
   const stripDrawing = (rec) => { const r = Object.assign({}, rec); delete r.drawingDataUrl; return r; };
   // Push one student's progress + homework (or everyone's when name is null).
@@ -570,3 +577,7 @@ const Lumio = (() => {
            TZ, TZ_LABEL, TZ_LABEL_AR, TZ_OFFSET_MIN, tzNow, tzToDate, tzAddDays, tzDayOfWeek,
            deviceTz, deviceDiffersFromTz, fmt12, fmtClassTime };
 })();
+// A top-level `const` is not a property of window, so modules that look for
+// `window.Lumio` / `global.Lumio` (lumio-schedule.js's Riyadh clock,
+// homework.html's date) never found it and fell back to the device clock.
+window.Lumio = Lumio;

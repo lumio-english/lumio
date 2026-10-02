@@ -154,8 +154,9 @@
     if (!cfg.enabled || !cfg.url) return { ok: false, reason: "not-configured" };
     const data = load();
     try {
-      const res = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pullLeads");
+      const res = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pullLeads" + ((global.LumioProfiles && LumioProfiles.authQuery) ? LumioProfiles.authQuery() : ""));
       const remote = await res.json();
+      if (remote && remote.ok === false) return { ok: false, reason: remote.error || "refused" };
       if (remote && Array.isArray(remote.leads)) {
         // Same bug class already fixed in js/lumio-profiles.js's
         // parseSyncedStudent: Google Sheets hands back any purely-
@@ -181,11 +182,14 @@
         save(data);
       }
       if (!Array.isArray(data.deletedLeadIds)) data.deletedLeadIds = [];
-      await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pushLeads", {
+      const pushRes = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pushLeads" + ((global.LumioProfiles && LumioProfiles.authQuery) ? LumioProfiles.authQuery() : ""), {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" }, // avoids a CORS preflight against Apps Script
         body: JSON.stringify({ leads: data.leads, deletedIds: data.deletedLeadIds.map(id => ({ id, type: "lead", deletedAt: new Date().toISOString() })) }),
       });
+      let pushed = null;
+      try { pushed = await pushRes.json(); } catch (e) { pushed = null; }
+      if (!pushed || pushed.ok === false) return { ok: false, reason: (pushed && pushed.error) || "push-failed" };
       return { ok: true, at: new Date().toISOString() };
     } catch (e) {
       return { ok: false, reason: e && e.name === "AbortError" ? "timeout" : "network", error: e && e.message };

@@ -216,6 +216,7 @@
         // "wait for your teacher."
         pinError.textContent = err && err.code === "pending_approval"
           ? "Your account is pending your teacher's approval — please check back soon!"
+          : err && err.code === "locked" ? err.message
           : "Something went wrong — please try again. (" + ((err && err.message) || "unknown error") + ")";
         pinError.classList.remove("shake"); void pinError.offsetWidth; pinError.classList.add("shake");
         pinBuffer = "";

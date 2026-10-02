@@ -276,7 +276,7 @@
       const full = slot.studentId ? global.LumioProfiles.getStudent(slot.studentId) : global.LumioProfiles.findByName(slot.studentName);
       if (full) {
         try {
-          global.LumioProfiles.updateStudent(full.id, { sessionsRemaining: Math.max(0, (full.sessionsRemaining || 0) - 1) });
+          global.LumioProfiles.updateStudent(full.id, { sessionsRemaining: Math.max(0, (Number(full.sessionsRemaining) || 0) - 1) });
           slot.sessionDeducted = true;
         } catch (e) { /* non-fatal -- attendance itself still gets marked */ }
       }
@@ -437,8 +437,21 @@
     if (!cfg.enabled || !cfg.url) return { ok: false, reason: "not-configured" };
     const data = load();
     try {
-      const res = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pullScheduleV2");
+      const res = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pullScheduleV2" + ((global.LumioProfiles && LumioProfiles.authQuery) ? LumioProfiles.authQuery() : ""));
       const remote = await res.json();
+      // The script refused (signed out, wrong PIN): report it, never
+      // treat it as "the schedule is empty".
+      if (remote && remote.ok === false) return { ok: false, reason: remote.error || "refused" };
+      // A student device now receives only its own classes; drop the
+      // rest of what an older version cached here.
+      const studentOnly = !!(global.LumioProfiles && LumioProfiles.getStudentAuth && LumioProfiles.getStudentAuth()
+        && !LumioProfiles.getTeacherAuth() && localStorage.getItem("lumio_teacher") !== "1");
+      if (studentOnly && remote && Array.isArray(remote.classes)) {
+        const keep = new Set(remote.classes.map(c => c.id));
+        data.classes = data.classes.filter(c => keep.has(c.id));
+        const keepP = new Set((remote.patterns || []).map(p => p.id));
+        data.patterns = data.patterns.filter(p => keepP.has(p.id));
+      }
       if (remote && Array.isArray(remote.deletedIds)) {
         remote.deletedIds.forEach(e => {
           if (!e || !e.id) return;
@@ -468,7 +481,7 @@
       }
       save(data);
       if (pullOnly) return { ok: true, at: new Date().toISOString(), pullOnly: true };
-      await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pushScheduleV2", {
+      const pushRes = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pushScheduleV2" + ((global.LumioProfiles && LumioProfiles.authQuery) ? LumioProfiles.authQuery() : ""), {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify({
@@ -479,6 +492,9 @@
           ],
         }),
       });
+      let pushed = null;
+      try { pushed = await pushRes.json(); } catch (e) { pushed = null; }
+      if (!pushed || pushed.ok === false) return { ok: false, reason: (pushed && pushed.error) || "push-failed" };
       return { ok: true, at: new Date().toISOString() };
     } catch (e) {
       return { ok: false, reason: e && e.name === "AbortError" ? "timeout" : "network", error: e && e.message };
