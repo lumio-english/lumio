@@ -20,6 +20,7 @@
    see exactly what they did before. */
 (() => {
   const user = Lumio.requireUser();
+  if (!user) return; // already redirecting to login.html
   const level = user.level || "pre-a";
   const meta = Lumio.LEVELS.find(l => l.id === level) || { name: level, lessons: 20 };
   const prepProg = (Lumio.progressFor(user.name)[level]) || {};
@@ -50,8 +51,12 @@
   const done = current - 1; // count of lessons fully complete, in order
   const stars = Object.values(prepProg).reduce((s, r) => s + (r.stars || 0), 0);
 
-  document.getElementById("doneCount").textContent = `${done}/${N} lessons`;
-  document.getElementById("starCount").textContent = `★ ${stars}`;
+  // Number only: the card has its own "Lessons done" label and ★/⚡ icon.
+  // This used to write "★ 3" over student.html's value, so kids saw a
+  // doubled star and teen levels lost their XP (stars x 100) readout.
+  const isTeen = ["level3", "level4", "level5", "level6"].includes(level);
+  document.getElementById("doneCount").textContent = `${done}/${N}`;
+  document.getElementById("starCount").textContent = isTeen ? (stars * 100).toLocaleString("en-US") : stars;
   document.getElementById("levelBar").style.width = `${(done / N) * 100}%`;
 
   const path = document.getElementById("path");

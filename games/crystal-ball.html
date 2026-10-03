@@ -315,7 +315,7 @@ if (!vocab.length) {
   function endGame() {
     Lumio.confetti(100);
     const pct = Math.round((score / ROUNDS) * 100);
-    Lumio.speak(pct >= 80 ? "The crystal ball is glowing! Your future looks amazing!" : "Good vision! Come see the crystal ball again soon!");
+    Lumio.speak(pct >= 80 ? "Amazing!" : "Great job!"); // was "The crystal ball is glowing! Your future looks amazing!" / "Good vision! Come see the crystal ball again soon!" -- no recordings for those (404), these two exist
     document.getElementById("finalScore").textContent = `You read ${score} out of ${ROUNDS} visions correctly!`;
     document.getElementById("endcard").style.display = "flex";
   }

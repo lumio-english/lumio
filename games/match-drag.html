@@ -143,7 +143,7 @@ function endDrag(clientX, clientY) {
       document.getElementById("matched").textContent = matched;
       Lumio.beep(true);
       if (matched === vocab.length) {
-        setTimeout(() => { Lumio.confetti(90); Lumio.speak("Amazing! You matched them all!"); document.getElementById("endcard").style.display = "flex"; }, 400);
+        setTimeout(() => { Lumio.confetti(90); Lumio.speak("Amazing!"); /* "Amazing! You matched them all!" has no recording (404); amazing.mp3 does */ document.getElementById("endcard").style.display = "flex"; }, 400);
       }
     } else {
       slot.classList.add("wrong-shake");

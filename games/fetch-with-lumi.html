@@ -154,7 +154,9 @@ if (!vocab.length) {
   }
 
   function playPrompt() {
-    Lumio.speak(`Fetch the ${order[r].en}!`);
+    // Only the word is spoken: "Fetch the <word>!" was never recorded, so every
+    // round requested a missing fetch-the-<word>.mp3 (404). Every vocab word has its own mp3.
+    Lumio.speak(order[r].en);
   }
 
   function drawRound() {
@@ -227,7 +229,7 @@ if (!vocab.length) {
   function endGame() {
     Lumio.confetti(90);
     const pct = Math.round((score / ROUNDS) * 100);
-    Lumio.speak(pct >= 80 ? "Wonderful! The puppy loved every fetch!" : "Great job! Let's play again soon!");
+    Lumio.speak(pct >= 80 ? "Amazing!" : "Great job!"); // was "Wonderful! The puppy loved every fetch!" / "Great job! Let's play again soon!" -- no recordings for those (404), these two exist
     document.getElementById("finalScore").textContent = `The puppy fetched ${score} out of ${ROUNDS}!`;
     document.getElementById("endcard").style.display = "flex";
   }

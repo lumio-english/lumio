@@ -323,7 +323,7 @@ if (!vocab.length && !eligibleLetters.length) {
   function endGame() {
     Lumio.confetti(90);
     const pct = Math.round((score / ROUNDS) * 100);
-    Lumio.speak(pct >= 80 ? "Wonderful! You found every picture!" : "Great listening! Let's play again soon!");
+    Lumio.speak(pct >= 80 ? "Amazing!" : "Great job!"); // was "Wonderful! You found every picture!" / "Great listening! Let's play again soon!" -- no recordings for those (404), these two exist
     document.getElementById("finalScore").textContent = `You found ${score} out of ${ROUNDS}!`;
     document.getElementById("endcard").style.display = "flex";
   }

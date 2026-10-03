@@ -313,7 +313,7 @@ if (!vocab.length) {
   function endGame() {
     Lumio.confetti(100);
     const pct = Math.round((score / ROUNDS) * 100);
-    Lumio.speak(pct >= 80 ? "Case closed! Great detective work!" : "Good clues! Let's crack the next case soon!");
+    Lumio.speak(pct >= 80 ? "Amazing!" : "Great job!"); // was "Case closed! Great detective work!" / "Good clues! Let's crack the next case soon!" -- no recordings for those (404), these two exist
     document.getElementById("finalScore").textContent = `You solved the case with ${score} out of ${ROUNDS} clues confirmed!`;
     document.getElementById("endcard").style.display = "flex";
   }

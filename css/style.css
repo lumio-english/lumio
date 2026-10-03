@@ -129,8 +129,11 @@ h3 { font-size: 1.15rem; }
 .chip-orange { background: #FFEDD5; color: #C2410C; }
 
 /* ---------- Stars ---------- */
-.stars { letter-spacing: 3px; }
-.star-off { color: #EADFCE; }
+/* Earned stars are gold: they used to inherit the cocoa text colour and
+   read as near-black on the results card. Deeper than --lumio-sun so they
+   still show on the cream .card-sun. */
+.stars { letter-spacing: 3px; color: #F5A300; text-shadow: 0 2px 0 rgba(194,83,10,.22); }
+.star-off { color: #EADFCE; text-shadow: none; }
 
 /* ---------- Progress bar ---------- */
 .progressbar {
