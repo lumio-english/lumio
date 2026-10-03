@@ -2973,8 +2973,10 @@
         } catch (err) { showToast(err.message || "Couldn't update referral.", "error"); }
       };
       row.querySelector('[data-act="del"]').onclick = async () => {
-        if (!confirm("Remove this referral from the list?")) return;
-        LumioProfiles.removeReferral(p.id, refId);
+        const r0 = LumioProfiles.listReferrals(p.id).find(x => x.id === refId);
+        if (!confirm(r0 && r0.rewardedAt ? `Remove this referral? The ${LumioProfiles.REFERRAL_REWARD_SESSIONS} free sessions it earned will be taken back from ${p.name}.` : "Remove this referral from the list?")) return;
+        const rr = LumioProfiles.removeReferral(p.id, refId);
+        if (rr.clawedBack) showToast(`${rr.clawedBack} session${rr.clawedBack === 1 ? "" : "s"} taken back from ${p.name} (now ${rr.sessionsRemaining} left).`);
         renderDrawerReferrals(p); renderRosterCards();
         await syncQuiet();
       };
@@ -5885,8 +5887,15 @@
         const si = document.getElementById("searchInput"); si.value = linked.name; si.dispatchEvent(new Event("input"));
       };
       row.querySelector('[data-act="del"]').onclick = async () => {
-        if (!(await confirmDialog("Remove this referral from the list? Sessions already credited stay with the referrer.", "Remove"))) return;
-        LumioProfiles.removeReferral(sid, rid); queueSync(); renderReferralsView(); renderRosterCards();
+        const r = LumioProfiles.listReferrals(sid).find(x => x.id === rid);
+        const referrer = LumioProfiles.getStudent(sid);
+        const msg = r && r.rewardedAt
+          ? `Remove ${r.name} from ${referrer.name}'s referrals? The ${LumioProfiles.REFERRAL_REWARD_SESSIONS} free sessions this referral earned will be taken back from ${referrer.name} (now ${Number(referrer.sessionsRemaining) || 0} left).`
+          : "Remove this referral from the list?";
+        if (!(await confirmDialog(msg, "Remove"))) return;
+        const res = LumioProfiles.removeReferral(sid, rid);
+        queueSync(); renderReferralsView(); renderRosterCards();
+        showToast(res.clawedBack ? `Referral removed — ${res.clawedBack} session${res.clawedBack === 1 ? "" : "s"} taken back from ${referrer.name} (now ${res.sessionsRemaining} left).` : "Referral removed.");
       };
     });
     refBadge();

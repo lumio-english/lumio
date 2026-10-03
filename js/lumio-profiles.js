@@ -1021,14 +1021,26 @@
     save(data);
     return { referral: ref, rewarded, sessionsRemaining: s.sessionsRemaining };
   }
+  // Removing a referral takes its reward back with it: the 5 free sessions
+  // credited when that referral subscribed are deducted again (never below
+  // zero) and the referrer is told why. Returns { clawedBack } for the UI.
   function removeReferral(studentId, referralId) {
     const data = load();
     const s = data.students.find(x => x.id === studentId);
     if (!s) throw new Error("Student not found.");
+    const ref = (s.referrals || []).find(r => r.id === referralId);
+    let clawedBack = 0;
+    if (ref && ref.rewardedAt) {
+      const before = Number(s.sessionsRemaining) || 0;
+      s.sessionsRemaining = Math.max(0, before - REFERRAL_REWARD_SESSIONS);
+      clawedBack = before - s.sessionsRemaining;
+      pushMessage_(s, "referral", `↩️ The referral for ${ref.name} was removed, so the ${REFERRAL_REWARD_SESSIONS} free sessions it earned were taken back (${clawedBack} removed from your sessions left).`, { referralId, sessions: -clawedBack });
+    }
     s.referrals = (s.referrals || []).filter(r => r.id !== referralId);
     s.referralsUpdatedAt = new Date().toISOString();
     s.updatedAt = new Date().toISOString();
     save(data);
+    return { clawedBack, sessionsRemaining: s.sessionsRemaining };
   }
   function listReferrals(studentId) {
     const s = getStudent(studentId);
