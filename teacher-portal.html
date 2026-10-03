@@ -86,7 +86,7 @@
   }
   .tp-pad button:hover{box-shadow:0 4px 10px rgba(20,25,45,.08); transform:translateY(-1px)}
   .tp-pad button:active{background:var(--tp-indigo-soft); transform:translateY(0) scale(.94)}
-  .tp-pin-error{color:var(--tp-coral); font-weight:700; font-size:.82rem; text-align:center; height:18px; margin-top:6px}
+  .tp-pin-error{color:var(--tp-coral); font-weight:700; font-size:.82rem; text-align:center; min-height:18px; margin-top:6px}
   .tp-pin-error.shake{animation:tpshake .3s}
   @keyframes tpshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 
@@ -314,6 +314,10 @@
       confirmedTeacherId = ok.id;
       if (window.LumioProfiles) LumioProfiles.setCurrentTeacherId(ok.id);
       tnameHidden.value = ok.name;
+      // A stale "First tap your avatar..." from an earlier Open dashboard
+      // click stayed on screen (and overlapped the button) after this.
+      const gateErr = document.getElementById("teacherGateError");
+      if (gateErr) gateErr.textContent = "";
       closeTeacherPinView();
       renderTeacherGrid();
       updateConfirmHint();

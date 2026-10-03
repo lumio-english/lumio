@@ -148,11 +148,10 @@
     return;
   }
 
-  const LEVEL_NAMES = {
-    "pre-a": "Level 0 · First Words", "level1": "Level 1", "level2": "Level 2",
-    "level3": "Level 3", "level4": "Level 4", "level5": "Level 5", "level6": "Level 6",
-  };
-  const levelName = LEVEL_NAMES[student.level] || student.level;
+  // Real level names from js/app.js ("Pre-A · First Words", "Level 1 · About Me"...),
+  // not a local copy that called Pre-A "Level 0". Escaped: it lands in innerHTML.
+  const levelInfo = (Lumio.LEVELS || []).find(l => l.id === student.level);
+  const levelName = esc(levelInfo ? levelInfo.name : (student.level || ""));
 
   // ---------- gather real data ----------
   const prep = (Lumio.progressFor(student.name)[student.level]) || {};
@@ -523,7 +522,7 @@
   `;
 
   document.getElementById("copyBtn").onclick = async () => {
-    const lines = [`${student.name} — ${levelName} — Skills Report`, ""];
+    const lines = [`${student.name} — ${levelInfo ? levelInfo.name : (student.level || "")} — Skills Report`, ""]; // plain text, unescaped
     if (hasCorrelation) {
       lines.push(`Learning habits: prep score ${prepAvgScore}%, homework score ${hwAvgScore}%.`);
       lines.push(`When prep was strong (85%+), homework averaged ${wellPreppedHwAvg}%; with weaker prep, it averaged ${underPreppedHwAvg}%.`);
