@@ -1789,14 +1789,22 @@
     </div>
     <div class="td-sm-content">
       <div class="td-sm-panel" data-clspanel="class">
-        <div class="td-field">
+        <div id="clsSlotBox" style="display:none">
+          <div class="td-fs-status" id="clsSlotSummary" style="margin-bottom:10px"></div>
+          <div class="td-field">
+            <label>Students in this slot <span style="font-weight:600;color:var(--td-muted)">(up to 4 · same level and lesson)</span></label>
+            <div id="clsSlotChecks" style="display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto;border:1px solid var(--td-border);border-radius:10px;padding:8px"></div>
+            <div class="td-field-hint" style="font-weight:600;color:var(--td-muted);font-size:.78rem;margin-top:4px">The first student booked sets the level and lesson of this slot — it can't be changed afterwards. Each student is booked into their own next lesson, so only students whose next lesson matches can join.</div>
+          </div>
+        </div>
+        <div class="td-field" id="clsGroupField">
           <label for="clsGroupPicker">Cohort (batch)</label>
           <select id="clsGroupPicker"></select>
           <div class="td-field-hint" style="font-weight:600;color:var(--td-muted);font-size:.78rem;margin-top:4px">
             Pick a level first if needed — only students sharing the same cohort (batch) and level can be booked into one session together.
           </div>
         </div>
-        <div class="td-field">
+        <div class="td-field" id="clsStudentsField">
           <label>Students in this session <span style="font-weight:600;color:var(--td-muted)">(2–4 typical)</span></label>
           <div id="clsStudentChecks" style="display:flex;flex-direction:column;gap:6px;max-height:140px;overflow-y:auto;border:1px solid var(--td-border);border-radius:10px;padding:8px"></div>
           <div class="td-field-error" id="clsStudentError"></div>
@@ -1811,7 +1819,7 @@
             <input type="time" id="clsTime">
           </div>
         </div>
-        <div class="td-field">
+        <div class="td-field" id="clsDurationField">
           <label for="clsDuration">Duration</label>
           <select id="clsDuration">
             <option value="45" selected>45 minutes</option>
@@ -1822,7 +1830,7 @@
         </div>
       </div>
       <div class="td-sm-panel" data-clspanel="lesson" style="display:none">
-        <div class="td-field">
+        <div class="td-field" id="clsLessonField">
           <label for="clsLesson">Lesson</label>
           <select id="clsLesson"></select>
           <div class="td-field-hint" style="font-weight:600;color:var(--td-muted);font-size:.78rem;margin-top:4px">
@@ -4719,9 +4727,88 @@
 
   let bulkBookingActive = false;
   let clsPrefillPatternId = null;
+  // ---- fixed-slot booking (no cohort, no lesson choice) ----
+  // A class that lives in a teacher's fixed slot follows the booking
+  // rules exactly like a student booking does: the first student sets
+  // level + lesson, the rest must match, max 4. The teacher only picks
+  // students; everything else is derived.
+  let clsSlotMode = false, clsSlotCtx = null;
+  function slotStudentsPool() {
+    const scope = scheduleScope.value;
+    const activeTeacherId = LumioProfiles.getCurrentTeacherId();
+    let students = LumioProfiles.listStudents();
+    if (scope === "mine" && activeTeacherId) students = students.filter(s => s.teacherId === activeTeacherId);
+    return students.sort((a, b) => a.name.localeCompare(b.name));
+  }
+  function renderSlotChecks() {
+    const wrap = document.getElementById("clsSlotChecks");
+    const ctx = clsSlotCtx;
+    const cls = ctx.classId ? LumioSchedule.getClass(ctx.classId) : null;
+    const inClass = new Set((cls ? cls.students : []).map(s => s.studentId).filter(Boolean));
+    const inClassNames = new Set((cls ? cls.students : []).map(s => String(s.studentName).trim().toLowerCase()));
+    const inited = wrap.dataset.inited === "1";
+    const checkedIds = new Set(Array.from(wrap.querySelectorAll("input:checked")).map(i => i.value));
+    if (!inited) inClass.forEach(id => checkedIds.add(id));
+    wrap.dataset.inited = "1";
+    const pool = slotStudentsPool();
+    // lock = the class's lesson, else the first checked student's next lesson
+    let lock = cls && cls.lessonNumber ? { level: cls.level, lesson: Number(cls.lessonNumber), by: "the first booking" } : null;
+    const nextOf = s => LumioSchedule.studentBookingState(s.name, s.level || "pre-a");
+    if (!lock) {
+      const firstChecked = pool.find(s => checkedIds.has(s.id));
+      if (firstChecked) { const st = nextOf(firstChecked); if (st.nextLesson) lock = { level: firstChecked.level, lesson: st.nextLesson, by: firstChecked.name }; }
+    }
+    const when = `${new Date(ctx.date + "T00:00:00").toLocaleDateString("en", { weekday: "long", month: "short", day: "numeric" })} · ${fmtTime(ctx.time)} · ${ctx.duration} min${ctx.teacherName ? " · " + ctx.teacherName : ""}`;
+    document.getElementById("clsSlotSummary").innerHTML = `🔁 Fixed slot — ${when}<div style="font-weight:700;font-size:.78rem;margin-top:3px">${lock ? `📚 ${levelName(lock.level)} · Lesson ${lock.lesson} <span style="opacity:.8">(set by ${escHtml(lock.by)})</span>` : "Level and lesson will be set by the first student you tick."}</div>`;
+    wrap.innerHTML = "";
+    if (!pool.length) { wrap.innerHTML = `<div class="sub" style="font-size:.78rem">No students on the roster yet.</div>`; return; }
+    const taken = cls ? cls.students.length : 0;
+    pool.forEach(s => {
+      const already = inClass.has(s.id) || inClassNames.has(s.name.trim().toLowerCase());
+      const st = nextOf(s);
+      let reason = "";
+      if (!already) {
+        if (st.levelDone) reason = "level complete";
+        else if (lock && (s.level !== lock.level || st.nextLesson !== lock.lesson)) reason = `next is ${levelName(s.level)} · Lesson ${st.nextLesson}`;
+        else if (!checkedIds.has(s.id) && [...checkedIds].length >= LumioSchedule.MAX_PER_CLASS) reason = "slot is full (4/4)";
+      }
+      const row = document.createElement("label");
+      row.style.cssText = `display:flex;align-items:center;gap:7px;font-size:.85rem;font-weight:600;cursor:${reason ? "not-allowed" : "pointer"};opacity:${reason ? ".5" : "1"}`;
+      const checked = checkedIds.has(s.id);
+      row.innerHTML = `<input type="checkbox" value="${escHtml(s.id)}" ${checked ? "checked" : ""} ${reason ? "disabled" : ""}> ${escHtml(s.avatar)} ${escHtml(s.name)} <span style="font-size:.72rem;color:var(--td-muted);font-weight:700">· ${already ? "booked" : st.levelDone ? "level complete" : `next: ${levelName(s.level)} · L${st.nextLesson}`}${reason && !already ? ` — ${reason}` : ""}${!s.subscribed && !already ? " · not subscribed" : ""}</span>`;
+      wrap.appendChild(row);
+    });
+    wrap.querySelectorAll("input").forEach(i => i.addEventListener("change", renderSlotChecks));
+  }
+  function setSlotMode(on) {
+    clsSlotMode = on;
+    document.getElementById("clsSlotBox").style.display = on ? "" : "none";
+    ["clsGroupField", "clsStudentsField", "clsDurationField", "clsLessonField"].forEach(id => document.getElementById(id).style.display = on ? "none" : "");
+    const dateRow = document.getElementById("clsDate").closest(".td-field-row");
+    if (on) dateRow.style.display = "none";
+  }
   function openClassModal(c, prefill) {
     editingClassId = c ? c.id : null;
     clsPrefillPatternId = (prefill && prefill.patternId) || (c && c.patternId) || null;
+    // slot mode: a click on an open fixed slot, or editing a class that sits in one
+    const pat = clsPrefillPatternId ? LumioSchedule.getPattern(clsPrefillPatternId) : null;
+    const slotMode = !!(pat && !LumioSchedule.isLegacyPattern(pat));
+    setSlotMode(slotMode);
+    if (slotMode) {
+      clsSlotCtx = c
+        ? { classId: c.id, patternId: pat.id, date: c.date, time: c.startTime, duration: c.durationMinutes, teacherName: c.teacherName }
+        : { classId: null, patternId: pat.id, date: prefill.date, time: prefill.time, duration: prefill.duration || pat.durationMinutes, teacherName: pat.teacherName };
+      document.getElementById("classModalTitle").textContent = c ? "Students in this slot" : "Book students into this slot";
+      clsNotesInput.value = c ? (c.notes || "") : "";
+      document.getElementById("clsMeetingLink").value = c ? (c.meetingLink || "") : "";
+      document.getElementById("clsSlotChecks").innerHTML = "";
+      document.getElementById("clsSlotChecks").dataset.inited = "0";
+      renderSlotChecks();
+      setClassModalTab("class");
+      clsStudentError.textContent = "";
+      classModalOverlay.classList.add("show");
+      return;
+    }
     clsDateInput.min = LumioSchedule.todayStr();
     bulkBookingActive = !!(prefill && prefill.bulk);
     document.getElementById("classModalTitle").textContent = c ? "Edit class" : (bulkBookingActive ? `Book ${bulkSelections.size} selected slots` : "Book a group class");
@@ -4769,6 +4856,7 @@
   function closeClassModal() {
     classModalOverlay.classList.remove("show");
     bulkBookingActive = false;
+    setSlotMode(false);
     const dateField = document.getElementById("clsDate").closest(".td-field-row");
     if (dateField) dateField.style.display = "";
   }
@@ -4792,8 +4880,42 @@
     return confirmDialog(`${problems.join("; ")}. Book this class anyway?`, "Book anyway");
   }
 
+  async function saveSlotBooking() {
+    const ctx = clsSlotCtx;
+    const wrap = document.getElementById("clsSlotChecks");
+    const pickedIds = new Set(Array.from(wrap.querySelectorAll("input:checked")).map(i => i.value));
+    let cls = ctx.classId ? LumioSchedule.getClass(ctx.classId) : null;
+    const before = cls ? cls.students.slice() : [];
+    const toAdd = slotStudentsPool().filter(s => pickedIds.has(s.id) && !before.some(b => b.studentId === s.id || String(b.studentName).trim().toLowerCase() === s.name.trim().toLowerCase()));
+    const toRemove = before.filter(b => !(b.studentId ? pickedIds.has(b.studentId) : true));
+    if (!cls && !toAdd.length) { clsStudentError.textContent = "Tick at least one student."; return; }
+    if (!(await confirmBookableStudents(toAdd, false))) return;
+    const added = [], failed = [];
+    for (const s of toAdd) {
+      try {
+        const st = LumioSchedule.studentBookingState(s.name, s.level);
+        const res = LumioSchedule.bookStudentIntoSlot({ studentName: s.name, studentId: s.id, level: s.level, lesson: st.nextLesson, patternId: ctx.patternId, classId: cls ? cls.id : null, date: ctx.date, override: true });
+        cls = res; added.push(s.name);
+      } catch (e) { failed.push(`${s.name}: ${e.message}`); }
+    }
+    for (const b of toRemove) {
+      try { LumioSchedule.cancelBooking(cls.id, b.studentName, { byTeacher: true }); } catch (e) { failed.push(`${b.studentName}: ${e.message}`); }
+    }
+    if (cls) {
+      const fresh = LumioSchedule.getClass(cls.id);
+      if (fresh && fresh.status !== "cancelled") {
+        LumioSchedule.updateClass(cls.id, { notes: clsNotesInput.value.trim(), meetingLink: document.getElementById("clsMeetingLink").value.trim() });
+        if (added.length) notifyStudentsClassBooked(LumioSchedule.getClass(cls.id));
+      }
+      toRemove.forEach(b => { const s = b.studentId ? LumioProfiles.getStudent(b.studentId) : LumioProfiles.findByName(b.studentName); if (s) LumioProfiles.addMessageOnce(s.id, `removed_${cls.id}`, { type: "class_cancelled", text: `❌ Your teacher removed you from the class on ${fmtClassWhen(fresh || cls)}. Book another time from your dashboard.`, meta: { classId: cls.id } }); });
+    }
+    if (failed.length) { clsStudentError.textContent = failed.join(" · "); renderSlotChecks(); renderScheduleActive(); queueSync(); return; }
+    closeClassModal(); renderScheduleActive(); queueSync();
+    showToast(added.length ? `Booked ${added.join(", ")} into the slot (Lesson ${cls.lessonNumber}).` : "Slot updated.", "success");
+  }
   document.getElementById("classModalSave").onclick = async () => {
     if (!window.LumioSchedule || !window.LumioProfiles) { closeClassModal(); return; }
+    if (clsSlotMode) { await saveSlotBooking(); return; }
     const picked = checkedStudents();
     if (!picked.length) { clsStudentError.textContent = "Pick at least one student for this class."; return; }
     clsStudentError.textContent = "";
