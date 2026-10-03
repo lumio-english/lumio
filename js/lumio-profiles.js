@@ -186,6 +186,13 @@
       needsSave = true;
     }
 
+    // The Sheet stores every cell as text, so isOwner comes back as
+    // "true"/"false" -- and the string "false" is truthy, which made every
+    // synced teacher an owner. Turned into a real boolean on every load.
+    data.teachers.forEach(t => {
+      if (typeof t.isOwner === "string") { t.isOwner = t.isOwner.trim().toLowerCase() === "true"; needsSave = true; }
+    });
+
     // safety net for roster data saved before "isOwner" existed
     if (data.teachers.length && !data.teachers.some(t => t.isOwner)) {
       data.teachers[0].isOwner = true;
