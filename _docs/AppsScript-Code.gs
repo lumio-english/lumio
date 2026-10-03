@@ -23,7 +23,7 @@ function testGroqAuth() {
 // ---------- tab + column definitions ----------
 
 var TEACHERS_SHEET = "Teachers";
-var TEACHERS_COLUMNS = ["id", "name", "avatar", "pinHash", "isOwner", "createdAt", "updatedAt", "photoDataUrl"];
+var TEACHERS_COLUMNS = ["id", "name", "avatar", "pinHash", "isOwner", "createdAt", "updatedAt", "photoDataUrl", "meetingLink"];
 
 var ROSTER_SHEET = "Roster";
 var ROSTER_COLUMNS = [

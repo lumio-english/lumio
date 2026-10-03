@@ -2158,7 +2158,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
             <div>
               <div class="when">${fmtSchedDay(next.date)} at ${fmtSchedTime(next.startTime, next.date)}</div>
               <div class="sub">Next class with ${sdEsc(next.teacherName || "your teacher")} · ${next.durationMinutes} min${next.students && next.students.length > 1 ? ` · with ${next.students.length - 1} classmate${next.students.length > 2 ? "s" : ""}` : ""}</div>
-              ${(() => { const g = LumioSchedule.joinGate(u.name, next); if (!g.ok) return `<a class="sd-gate" href="homework.html?level=${next.level || level}&n=${g.lesson}">🔒 ${sdEsc(g.reason)}</a>`; return next.meetingLink ? `<a href="${sdUrl(next.meetingLink)}" target="_blank" rel="noopener" class="sd-join-link">🔗 Join class link</a>` : ""; })()}
+              ${(() => { const g = LumioSchedule.joinGate(u.name, next); if (!g.ok) return `<a class="sd-gate" href="homework.html?level=${next.level || level}&n=${g.lesson}">🔒 ${sdEsc(g.reason)}</a>`; const ml = LumioSchedule.meetingLinkFor(next); return ml ? `<a href="${sdUrl(ml)}" target="_blank" rel="noopener" class="sd-join-link">${/teams\.microsoft|teams\.live/i.test(ml) ? "🟣 Join on Teams" : "🔗 Join class link"}</a>` : ""; })()}
               ${canCancel(next) ? `<button type="button" class="sd-cancel-link" data-cancel="${next.id}">Cancel</button>` : ""}
             </div>
           </div>`;
@@ -2168,7 +2168,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
             <div>
               <div class="who">${sdEsc(c.teacherName || "Your teacher")}</div>
               <div class="meta">${c.durationMinutes} min${c.notes ? " · " + sdEsc(c.notes) : ""}</div>
-              ${(() => { const g = LumioSchedule.joinGate(u.name, c); if (!g.ok) return `<a class="sd-gate" href="homework.html?level=${c.level || level}&n=${g.lesson}">🔒 Homework ${g.lesson} first</a>`; return c.meetingLink ? `<a href="${sdUrl(c.meetingLink)}" target="_blank" rel="noopener" class="sd-join-link">🔗 Join link</a>` : ""; })()}
+              ${(() => { const g = LumioSchedule.joinGate(u.name, c); if (!g.ok) return `<a class="sd-gate" href="homework.html?level=${c.level || level}&n=${g.lesson}">🔒 Homework ${g.lesson} first</a>`; const ml = LumioSchedule.meetingLinkFor(c); return ml ? `<a href="${sdUrl(ml)}" target="_blank" rel="noopener" class="sd-join-link">${/teams\.microsoft|teams\.live/i.test(ml) ? "🟣 Join on Teams" : "🔗 Join link"}</a>` : ""; })()}
               ${canCancel(c) ? `<button type="button" class="sd-cancel-link" data-cancel="${c.id}">Cancel</button>` : ""}
             </div>
           </div>`).join("");
@@ -2806,7 +2806,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
           const lesson = c.lessonNumber ? `Lesson ${c.lessonNumber}` : "Your class";
           const added = LumioProfiles.addMessageOnce(rosterProfile.id, `reminder_${c.id}`, {
             type: "class_reminder",
-            text: `⏰ ${lesson} starts in about ${Math.max(1, Math.round(minsUntil))} minute${Math.round(minsUntil) === 1 ? "" : "s"} (${Lumio.fmtClassTime(c.date, c.startTime)}). Get your notebook ready!${c.meetingLink ? " Your join link is on the dashboard." : ""}`,
+            text: `⏰ ${lesson} starts in about ${Math.max(1, Math.round(minsUntil))} minute${Math.round(minsUntil) === 1 ? "" : "s"} (${Lumio.fmtClassTime(c.date, c.startTime)}). Get your notebook ready!${LumioSchedule.meetingLinkFor(c) ? " Tap Join on your dashboard when it's time." : ""}`,
             meta: { classId: c.id },
           });
           if (added) { refreshBadge(); showToast(`⏰ ${lesson} starts soon!`, "⏰"); }

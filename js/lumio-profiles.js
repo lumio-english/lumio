@@ -1202,7 +1202,7 @@
     if (!n) return null;
     return load().teachers.find(t => t.name.trim().toLowerCase() === n) || null;
   }
-  async function addTeacher({ name, avatar, pin, isOwner, photoDataUrl } = {}) {
+  async function addTeacher({ name, avatar, pin, isOwner, photoDataUrl, meetingLink } = {}) {
     const data = load();
     name = (name || "").trim();
     if (!name) throw new Error("A teacher needs a name.");
@@ -1216,6 +1216,7 @@
       pinHash: await hashPin(finalPin),
       isOwner: !!isOwner,
       photoDataUrl: photoDataUrl || "",
+      meetingLink: (meetingLink || "").trim(), // the teacher's standing classroom link (Teams / Zoom / Meet)
       createdAt: new Date().toISOString().slice(0, 10),
       updatedAt: new Date().toISOString(),
     };
@@ -1236,6 +1237,7 @@
     }
     if (patch.avatar !== undefined) t.avatar = patch.avatar;
     if (patch.photoDataUrl !== undefined) t.photoDataUrl = patch.photoDataUrl || "";
+    if (patch.meetingLink !== undefined) t.meetingLink = String(patch.meetingLink || "").trim();
     if (patch.pin !== undefined) {
       const newPin = normalizePin(patch.pin) || t.pin;
       t.pin = newPin;

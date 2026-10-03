@@ -26,7 +26,7 @@
  *                      // session for -- e.g. 5. Required for a class to count
  *                      // toward unlocking the next lesson's prep (see
  *                      // js/dashboard.js) and toward homework.html's gate.
- *       meetingLink,  // Zoom/Google Meet URL for this session
+ *       meetingLink,  // Teams / Zoom / Google Meet URL for this session (falls back to the slot's, then the teacher's)
  *       notes,        // set when booking — plans/context going into the class
  *       sessionNotes, // set after the class — what was actually covered
  *       status,       // "scheduled" | "completed" | "cancelled"
@@ -355,7 +355,7 @@
       cohort: cohort || "",
       group: group || "",
       lessonNumber: lessonNumber ? Number(lessonNumber) : null,
-      meetingLink: meetingLink || "",
+      meetingLink: meetingLink || teacherDefaultLink(teacherId) || "",
       notes: notes || "",
       sessionNotes: "",
       status: "scheduled",
@@ -1285,6 +1285,23 @@
     return 60;
   }
   function isLegacyPattern(p) { return Array.isArray(p.students) && p.students.length > 0; }
+  // The link a student should click: the class's own link, else the slot's,
+  // else the teacher's standing classroom link (Teams/Zoom/Meet) set once
+  // on the Team page. Keeps "one click to join" true without a per-class
+  // meeting having to exist.
+  function meetingLinkFor(cls) {
+    if (!cls) return "";
+    if (cls.meetingLink) return cls.meetingLink;
+    if (cls.patternId) { const p = getPattern(cls.patternId); if (p && p.meetingLink) return p.meetingLink; }
+    try {
+      const t = global.LumioProfiles && global.LumioProfiles.getTeacher ? global.LumioProfiles.getTeacher(cls.teacherId) : null;
+      if (t && t.meetingLink) return t.meetingLink;
+    } catch (e) {}
+    return "";
+  }
+  function teacherDefaultLink(teacherId) {
+    try { const t = global.LumioProfiles && global.LumioProfiles.getTeacher ? global.LumioProfiles.getTeacher(teacherId) : null; return (t && t.meetingLink) || ""; } catch (e) { return ""; }
+  }
   function inWorkingHours(dayOfWeek, startTime, durationMinutes) {
     if (!WORK.days.includes(Number(dayOfWeek))) return `Fixed slots are Sunday to Thursday only.`;
     const s = hmToMin(startTime), e = s + (Number(durationMinutes) || 60);
@@ -1442,7 +1459,7 @@
     const record = {
       id: genId(), teacherId: pat.teacherId, teacherName: pat.teacherName, date: slotDate, startTime: pat.startTime,
       durationMinutes: lessonDuration(level, lesson), level, cohort: "", group: "", lessonNumber: lesson,
-      meetingLink: pat.meetingLink || "", notes: notes || "", sessionNotes: "", status: "scheduled", patternId: pat.id,
+      meetingLink: pat.meetingLink || teacherDefaultLink(pat.teacherId) || "", notes: notes || "", sessionNotes: "", status: "scheduled", patternId: pat.id,
       students: [{ studentId: studentId || null, studentName, attendance: null, grade: null, teacherRatingStars: null }],
       createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
     };
@@ -1630,7 +1647,7 @@
     bookSlotRemote, cancelBookingRemote, laterBookings,
     weeklySlotOptions, weeklyPlanPreview, bookWeeklyRemote, fixedPlanFor, saveFixedPlan,
     // booking model
-    WORK, MAX_PER_CLASS, MAX_PER_WEEK, CANCEL_MIN_BEFORE, lessonDuration, inWorkingHours, isPast, isLegacyPattern,
+    WORK, MAX_PER_CLASS, MAX_PER_WEEK, CANCEL_MIN_BEFORE, lessonDuration, inWorkingHours, isPast, isLegacyPattern, meetingLinkFor, teacherDefaultLink,
     addAvailability, setWeeklyAvailability, availabilityForTeacher, availabilityStatus, studentBookingState, bookingsInWeek, openSlots,
     bookStudentIntoSlot, cancelBooking, joinGate,
     addClass, updateClass, removeClass, cancelClass,

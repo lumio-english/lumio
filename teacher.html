@@ -1755,6 +1755,10 @@
       <div class="td-avatar-grid" id="tchAvatarGrid"></div>
     </div>
     <div class="td-field">
+      <label for="tchMeetingLink">My classroom link <span style="font-weight:600;color:var(--td-muted)">(Teams / Zoom / Meet — used for every class unless a slot or class has its own)</span></label>
+      <input type="url" id="tchMeetingLink" placeholder="https://teams.microsoft.com/l/meetup-join/…">
+    </div>
+    <div class="td-field">
       <label for="tchPin">4-digit PIN</label>
       <div class="td-pin-field">
         <input type="text" id="tchPin" maxlength="4" inputmode="numeric" placeholder="1234">
@@ -1826,7 +1830,7 @@
           </div>
         </div>
         <div class="td-field">
-          <label for="clsMeetingLink">Meeting link <span style="font-weight:600;color:var(--td-muted)">(Zoom or Google Meet)</span></label>
+          <label for="clsMeetingLink">Meeting link <span style="font-weight:600;color:var(--td-muted)">(optional — leave blank to use the teacher's classroom link from the Team page)</span></label>
           <input type="url" id="clsMeetingLink" placeholder="https://meet.google.com/xxx-xxxx-xxx">
         </div>
         <div class="td-field">
@@ -1890,7 +1894,7 @@
       <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:700"><input type="checkbox" id="fsExtra"> Extra slot <span style="font-weight:600;color:var(--td-muted)">(on top of the 4 base slots — can be removed any time)</span></label>
     </div>
     <div class="td-field">
-      <label for="fsMeetingLink">Meeting link <span style="font-weight:600;color:var(--td-muted)">(optional — leave blank if Zoom auto-links are set up)</span></label>
+      <label for="fsMeetingLink">Meeting link <span style="font-weight:600;color:var(--td-muted)">(optional — leave blank to use your classroom link from the Team page)</span></label>
       <input type="url" id="fsMeetingLink" placeholder="https://meet.google.com/xxx-xxxx-xxx">
     </div>
     <div class="td-field">
@@ -3243,6 +3247,7 @@
         ${hw ? `<div class="hw-summary">📝 ${hw.count} homework${hw.count === 1 ? "" : "s"} done · avg ${(hw.starsSum / hw.count).toFixed(1)}★</div>` : ""}
         <div class="pinrow"><span class="lbl">ID</span><span class="idval">${escHtml(p.loginCode || "—")}</span></div>
         <div class="pinrow"><span class="lbl">Phone</span><span class="idval">${p.phone ? escHtml(formatPhoneDisplay(p.phone)) : "<i style=\"font-style:italic;opacity:.6\">Not set</i>"}</span></div>
+        <div class="pinrow" style="margin-bottom:4px"><span class="lbl">Classroom</span><span class="pinval" style="letter-spacing:0;font-size:.72rem;${t.meetingLink ? "" : "opacity:.6"}">${t.meetingLink ? (/teams\.microsoft|teams\.live/i.test(t.meetingLink) ? "🟣 Teams link set" : "🔗 link set") : "no link yet — edit to add"}</span></div>
         <div class="pinrow"><span class="lbl">PIN</span>${pinKnown
           ? `<span class="pinval" data-pin="${escHtml(p.pin)}">••••</span><button class="pintoggle" type="button">show</button>`
           : `<span class="pinval" style="opacity:.6;letter-spacing:0;font-size:.68rem">set on another device — click "New PIN" to set one you can see</span>`}
@@ -3696,6 +3701,7 @@
     document.getElementById("tchOwnerError").textContent = "";
     document.getElementById("tchIsOwner").checked = t ? !!t.isOwner : false;
     tchPhoto = t ? (t.photoDataUrl || "") : "";
+    document.getElementById("tchMeetingLink").value = t ? (t.meetingLink || "") : "";
     renderTchPhoto();
     renderTeacherAvatarGrid();
     teacherModalOverlay.classList.add("show");
@@ -3761,11 +3767,11 @@
     await withLoading(e.currentTarget, async () => {
       try {
         if (editingTeacherId) {
-          const tpatch = { name, avatar: selectedTeacherAvatar, isOwner: isOwnerVal, photoDataUrl: tchPhoto };
+          const tpatch = { name, avatar: selectedTeacherAvatar, isOwner: isOwnerVal, photoDataUrl: tchPhoto, meetingLink: document.getElementById("tchMeetingLink").value.trim() };
           if (pinVal !== undefined) tpatch.pin = pinVal;
           await LumioProfiles.updateTeacher(editingTeacherId, tpatch);
         } else {
-          await LumioProfiles.addTeacher({ name, avatar: selectedTeacherAvatar, pin: pinVal, isOwner: isOwnerVal, photoDataUrl: tchPhoto });
+          await LumioProfiles.addTeacher({ name, avatar: selectedTeacherAvatar, pin: pinVal, isOwner: isOwnerVal, photoDataUrl: tchPhoto, meetingLink: document.getElementById("tchMeetingLink").value.trim() });
         }
         closeTeacherModal();
         renderTeamGrid();

@@ -138,5 +138,9 @@ Done by three parallel workers (sync layer / teacher UI / student UI), merged an
 - Student side (My Referrals overlay) shows only the logged-in student's own referrals: tiles Referred / Attended trial / Subscribed / Free sessions, plus the per-friend list. Data is still the shared roster pulled to the device (same as before); privacy is at the UI level.
 - Test: scratchpad `reftest.py` (eligibility, link, duplicate guard, create-new, subscribe → +5 once, trial auto-detect, student + other-student views).
 
+## 3l. Teams instead of Zoom (3 Oct 2026)
+- Each teacher has a standing classroom link (`meetingLink` on the teacher record; Team → Edit teacher; `TEACHERS_COLUMNS` gained it → redeploy). Resolution order for a class: class.meetingLink → slot (pattern).meetingLink → teacher.meetingLink (`LumioSchedule.meetingLinkFor(cls)`); classes created from a slot or by `addClass` copy the teacher link in at creation so student devices carry it. Student card shows "🟣 Join on Teams" for teams.microsoft.com / teams.live.com links (still gated by `joinGate`).
+- Teams setup (no code): create one recurring Teams meeting per teacher, Meeting options → lobby: Everyone bypasses, Who can present: Only organizer, allow anonymous/guest join; paste the join link on the teacher's Team card. The Zoom auto-link trigger (`autoGenerateZoomLinks`) only fires when ZOOM_* properties exist — delete the trigger/properties when fully on Teams. Per-class Teams meetings via Microsoft Graph (`OnlineMeetings.ReadWrite.All` + application access policy, M365 work tenant) is possible later; not built.
+
 ## 4. Working style
 Verify in a browser before claiming done; check files before writing prompts; never duplicate; fix in templates not per slide; say plainly what was NOT done; ask one specific question when ambiguous.
