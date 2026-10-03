@@ -137,7 +137,15 @@ fetch(`assets/slides/${level}/manifest.json`).then(r => r.json()).then(manifest 
   i++; // sentence builder
   i++; // turn
   i += yourTurnN;
-  gameStartSlide = i;
+  // This count is only a fallback: grammar, phonics, scene, check-in and
+  // review slides aren't in it, so it landed 30-50 slides early (Level 6
+  // L20 showed games on slide 88/108, a Grammar Check). The real answer is
+  // read from the slides themselves -- see findGameStartSlide().
+  const estimate = i;
+  findGameStartSlide(total).then(n => {
+    gameStartSlide = n || estimate;
+    renderGameLinks(); // the teacher may already be past it
+  });
   loadSlide(1);
 });
 
@@ -151,6 +159,39 @@ function loadSlide(n) {
       delete stageContent.dataset.quizAnswered; // reset per-slide -- this container persists across slide loads
       document.getElementById("prevBtn").disabled = n === 1;
       document.getElementById("nextBtn").disabled = n === total;
+      renderGameLinks();
+    })
+    .catch(() => { document.getElementById("stageContent").innerHTML = "<div id='loadingMsg' style='padding:40px'>Slide not found.</div>"; });
+}
+
+// The deck's games section starts right after the last "Your Turn" round
+// (kid decks: Quick Check + Teacher & Student Game; teen decks: Challenge /
+// Discussion). Scan backwards from the last slide in small parallel
+// batches -- that round sits 6-58 slides from the end -- and remember the
+// answer for this tab. null = no round found (caller uses the estimate).
+async function findGameStartSlide(total) {
+  const key = `lumio_game_start_${level}_${nn}_${total}`;
+  try { const c = sessionStorage.getItem(key); if (c) return Number(c); } catch (e) {}
+  const yourTurnRx = />\s*Your Turn\s*(?:&bull;|&middot;|·|•)/;
+  const BATCH = 8;
+  for (let hi = total; hi >= 1; hi -= BATCH) {
+    const nums = [];
+    for (let k = hi; k > Math.max(0, hi - BATCH); k--) nums.push(k);
+    const texts = await Promise.all(nums.map(k =>
+      fetch(`slide-content/${level}/${nn}/slide-${String(k).padStart(2, "0")}.html`)
+        .then(r => r.ok ? r.text() : "").catch(() => "")));
+    const idx = texts.findIndex(t => yourTurnRx.test(t));
+    if (idx !== -1) {
+      const start = Math.min(total, nums[idx] + 1);
+      try { sessionStorage.setItem(key, String(start)); } catch (e) {}
+      return start;
+    }
+  }
+  return null;
+}
+
+function renderGameLinks() {
+      const n = cur;
       const gameLinksEl = document.getElementById("gameLinks");
       // Games built so far, one per level. Match It (the generic picture-
       // matching game) is paired alongside a level's own tailored game for
@@ -171,11 +212,9 @@ function loadSlide(n) {
         "level6": [{ href: "crystal-ball.html", label: "🔮 Crystal Ball" }],
       };
       const games = LEVEL_GAMES[level];
-      gameLinksEl.innerHTML = (games && gameStartSlide && n >= gameStartSlide - 1)
-        ? games.map(g => `<a href="games/${g.href}?level=${level}&n=${num}">${g.label}</a>`).join("")
+      gameLinksEl.innerHTML = (games && gameStartSlide && n >= gameStartSlide)
+        ? games.map(g => `<a href="games/${g.href}?level=${encodeURIComponent(level)}&n=${num}">${g.label}</a>`).join("")
         : "";
-    })
-    .catch(() => { document.getElementById("stageContent").innerHTML = "<div id='loadingMsg' style='padding:40px'>Slide not found.</div>"; });
 }
 
 document.getElementById("prevBtn").onclick = () => { if (cur > 1) loadSlide(cur - 1); };

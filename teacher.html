@@ -200,8 +200,19 @@
   .td-cal-legend span{display:inline-flex;align-items:center;gap:5px}
   .td-cal-legend i{width:9px;height:9px;border-radius:2px;display:inline-block}
   .td-cal-wrap{
-    display:grid;grid-template-columns:56px repeat(7,1fr);border:1px solid var(--td-border);
+    display:grid;grid-template-columns:56px repeat(7,minmax(0,1fr));border:1px solid var(--td-border);
     border-radius:12px;overflow:hidden;background:#fff;margin-top:10px;
+  }
+  /* Phones: 7 day columns never fit 390px (Sat/Sun were cut off by
+     overflow:hidden) -- give each day a readable width and let the week
+     scroll sideways, with the time gutter pinned on the left. */
+  @media (max-width:760px){
+    .td-cal-wrap{grid-template-columns:54px repeat(7,minmax(112px,1fr));overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+    /* .td-cal-wrap prefix: the base rules below set position:relative */
+    .td-cal-wrap .td-cal-corner,.td-cal-wrap .td-cal-timegutter{position:sticky;left:0;z-index:4;background:var(--td-surface)}
+    .td-cal-wrap .td-cal-timegutter .tg-label{right:4px;font-size:.56rem;white-space:nowrap}
+    .td-cal-wrap .td-cal-block{font-size:.58rem;padding:2px 4px}
+    .td-cal-wrap .td-cal-block .cb-title,.td-cal-wrap .td-cal-block .cb-meta{line-height:1.08}
   }
   .td-cal-corner{border-bottom:1px solid var(--td-border);border-right:1px solid var(--td-border-soft);background:var(--td-surface)}
   .td-cal-daycol-head{
@@ -249,8 +260,11 @@
     color:var(--td-indigo-dark,var(--lumio-orange-dark));z-index:1;transition:box-shadow .12s ease,transform .12s ease;
   }
   .td-cal-block:hover{box-shadow:0 3px 10px rgba(0,0,0,.12);transform:translateY(-1px);z-index:2}
-  .td-cal-block .cb-title{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .td-cal-block .cb-meta{font-weight:600;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* Wrap instead of ellipsis: narrow day columns showed "4:00 PM · 1 st…".
+     Full details stay in the block's title tooltip. */
+  .td-cal-block .cb-title{font-weight:800;white-space:normal;overflow-wrap:anywhere;line-height:1.15}
+  .td-cal-block .cb-meta{font-weight:600;opacity:.85;white-space:normal;overflow-wrap:anywhere;line-height:1.15}
+  @media (max-width:1100px){.td-cal-block{font-size:.62rem;padding:3px 4px}}
   .td-cal-block.status-completed{border-left-color:var(--td-teal);background:var(--td-teal-soft);color:#0d6b5c}
   .td-cal-block.status-cancelled{border-left-color:var(--td-coral);background:var(--td-coral-soft);color:#a33;opacity:.75}
   .td-cal-block.needs-attn{border-left-color:var(--td-coral)}
@@ -1031,7 +1045,7 @@
     <div class="td-grid">
       <div class="td-panel">
         <div class="td-panel-head"><h2>Progress by level</h2></div>
-        <p class="sub">Lessons completed per level, across all students on this device.</p>
+        <p class="sub">Lessons completed per level, across all students (synced from your Sheet).</p>
         <div id="levelChart"></div>
       </div>
       <div class="td-panel">
@@ -1125,7 +1139,7 @@
         </table>
       </div>
       <p class="sub mt" style="margin-top:14px">
-        ℹ️ Lesson progress is stored on each device (localStorage). To see all students from anywhere, connect the Google Sheets backend described in the README.
+        ℹ️ Lesson progress and homework sync through your Google Sheet (Progress and Homework tabs): each student's device sends its results, and this dashboard pulls everyone's on load and on every sync. A result made offline shows here after that device is back online.
       </p>
     </div>
   </div>
@@ -2404,6 +2418,9 @@
     const GRACE_DAYS = 3; // don't flag a student added just a few days ago
     const flagged = [];
     LumioProfiles.listStudents().forEach(s => {
+      // A pending (unapproved) account can't log in yet -- it's a lead to
+      // approve, not an inactive student to chase.
+      if (s.approved === false) return;
       const lastActive = lastActiveDateForStudent(s.name);
       if (lastActive) {
         const inactiveDays = daysSince(lastActive);
@@ -3271,9 +3288,11 @@
   function fmtClassWhen(c) {
     try {
       const d = new Date(c.date + "T00:00:00");
-      const day = d.toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
-      return `${day} at ${c.startTime}`;
-    } catch (e) { return `${c.date} ${c.startTime}`; }
+      const day = d.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
+      // Stored times are Riyadh wall time; the student may be anywhere,
+      // so say so ("Tuesday, Oct 6 at 3:00 PM Saudi time").
+      return `${day} at ${Lumio.fmt12(c.startTime)} ${Lumio.TZ_LABEL}`;
+    } catch (e) { return `${c.date} ${c.startTime} (Saudi time)`; }
   }
   // A class was just booked -> each student in it gets: the booking
   // itself, and that this lesson's preparation is now open to them.
@@ -3483,6 +3502,7 @@
         if (leadIdToResolve && window.LumioLeads) {
           try { LumioLeads.updateLead(leadIdToResolve, { status: "enrolled" }); } catch (err2) {}
           renderLeads();
+          queueSync(); // the roster sync above doesn't carry leads
         }
       } catch (err) {
         setStudentModalTab("basic");
@@ -3569,10 +3589,18 @@
             await LumioProfiles.updateTeacher(t.id, { pin: LumioProfiles.randomPin() });
             renderTeamGrid();
             showToast(`New PIN set for ${t.name}.`, "success");
+            queueSync(); // the new PIN hash must reach the Sheet before they can sign in elsewhere
           });
         };
         card.querySelector('[data-act="remove"]').onclick = async () => {
-          const ok = await confirmDialog(`Remove ${t.name}? Their students will become unassigned, not deleted.`, "Remove");
+          // removeTeacher() hands their students to the first remaining
+          // teacher (it never leaves them unassigned) -- say exactly that.
+          const heir = LumioProfiles.listTeachers().find(x => x.id !== t.id);
+          const theirs = LumioProfiles.listStudents().filter(s => s.teacherId === t.id).length;
+          const moveNote = theirs && heir
+            ? ` Their ${theirs} student${theirs === 1 ? "" : "s"} will move to ${heir.name} (not deleted).`
+            : " Nobody's progress is deleted.";
+          const ok = await confirmDialog(`Remove ${t.name}?${moveNote}`, "Remove");
           if (!ok) return;
           try {
             LumioProfiles.removeTeacher(t.id);
@@ -3680,6 +3708,7 @@
         renderTeamGrid();
         renderTeacherOptions();
         showToast(wasEditing ? `${name} updated.` : `${name} added as a teacher.`, "success");
+        queueSync(); // a new teacher / PIN can't sign in on another device until the Sheet has it
       } catch (err) {
         const msg = err.message || "Couldn't save that teacher.";
         if (msg.indexOf("owner") !== -1) document.getElementById("tchOwnerError").textContent = msg;
@@ -3703,7 +3732,9 @@
     document.getElementById("subError").textContent = "";
     substituteOverlay.classList.add("show");
   }
-  document.getElementById("substituteSwapBtn").onclick = openSubstituteModal;
+  // Moving another teacher's classes is an owner decision.
+  document.getElementById("substituteSwapBtn").style.display = IS_OWNER ? "" : "none";
+  document.getElementById("substituteSwapBtn").onclick = () => { if (IS_OWNER) openSubstituteModal(); };
   document.getElementById("subCancelBtn").onclick = () => substituteOverlay.classList.remove("show");
   substituteOverlay.onclick = e => { if (e.target === substituteOverlay) substituteOverlay.classList.remove("show"); };
   document.getElementById("subSaveBtn").onclick = () => {
@@ -3714,9 +3745,11 @@
     const errEl = document.getElementById("subError");
     if (fromId === toId) { errEl.textContent = "Pick two different teachers."; return; }
     if (!fromDate || !toDate || fromDate > toDate) { errEl.textContent = "Pick a valid date range."; return; }
+    if (!IS_OWNER) { errEl.textContent = "Only the owner can swap teachers."; return; }
     try {
       const toTeacher = LumioProfiles.getTeacher(toId);
       const { reassigned } = LumioSchedule.reassignTeacherForRange(fromId, toId, fromDate, toDate, toTeacher ? toTeacher.name : "");
+      if (reassigned) queueSync();
       substituteOverlay.classList.remove("show");
       renderScheduleActive();
       showToast(`Reassigned ${reassigned} session${reassigned === 1 ? "" : "s"} to ${toTeacher ? toTeacher.name : "the substitute"}.`, "success");
@@ -3781,7 +3814,9 @@
     if (!window.LumioSchedule || !window.LumioProfiles) return;
     const scope = scheduleScope.value;
     const activeTeacherId = LumioProfiles.getCurrentTeacherId();
-    let needs = LumioSchedule.needsAttendance({});
+    // needsAttendance() is date-based (today's 6 PM class counts at 9 AM);
+    // keep only classes that have actually started.
+    let needs = LumioSchedule.needsAttendance({}).filter(classHasStarted);
     if (scope === "mine" && activeTeacherId) needs = needs.filter(c => c.teacherId === activeTeacherId);
     const badge = document.getElementById("needsAttendanceCount");
     if (needs.length) { badge.style.display = "inline-flex"; badge.textContent = needs.length; }
@@ -3794,10 +3829,13 @@
     const activeTeacherId = LumioProfiles.getCurrentTeacherId();
     let classes;
     if (scheduleRange === "needs-attendance") {
-      classes = LumioSchedule.needsAttendance({});
+      classes = LumioSchedule.needsAttendance({}).filter(classHasStarted);
     } else {
       const { from, to } = rangeToDates(scheduleRange);
       classes = LumioSchedule.listClasses({ from, to });
+      // Today's classes split by the clock: ended -> Past, not ended -> Upcoming.
+      if (scheduleRange === "past") classes = classes.filter(classHasEnded);
+      if (scheduleRange === "upcoming") classes = classes.filter(c => !classHasEnded(c));
     }
     if (scope === "mine" && activeTeacherId) classes = classes.filter(c => c.teacherId === activeTeacherId);
     if (scheduleRange === "past") classes = classes.slice().reverse();
@@ -3820,7 +3858,8 @@
         scheduleAgenda.appendChild(dayWrap);
       }
       const teacher = c.teacherId ? LumioProfiles.getTeacher(c.teacherId) : null;
-      const needsMarking = c.status !== "cancelled" && !LumioSchedule.completionState(c).complete && c.date <= LumioSchedule.todayStr();
+      const started = classHasStarted(c);
+      const needsMarking = c.status !== "cancelled" && !LumioSchedule.completionState(c).complete && started;
       const row = document.createElement("div");
       row.className = "td-class-row" + (c.status === "cancelled" ? " cancelled" : "");
       const studentsHtml = c.students.map(s => `
@@ -3829,7 +3868,7 @@
           ${attendanceBadge(s.attendance)}
           ${s.grade ? `<span class="td-badge grade">${escHtml(s.grade)}</span>` : ""}
           ${s.teacherRatingStars ? `<span class="td-badge grey">★${s.teacherRatingStars} from student</span>` : ""}
-          ${c.status !== "cancelled" && c.date <= LumioSchedule.todayStr() ? `
+          ${c.status !== "cancelled" && started ? `
             <span class="td-student-acts">
               <button type="button" class="att-present" data-act="present" title="Mark present">✓</button>
               <button type="button" class="att-absent" data-act="absent" title="Mark absent">✕</button>
@@ -3948,8 +3987,23 @@
     const [h, m] = c.startTime.split(":").map(Number);
     return h * 60 + m + Number(c.durationMinutes || 45);
   }
+  // Past/upcoming is decided by the class's Riyadh start/end time, not its
+  // date: a class later today is still upcoming (no attendance yet), and a
+  // class that ended an hour ago is past. LumioSchedule.hasStarted/hasEnded
+  // may be missing on an older lumio-schedule.js -- fall back to tzNow().
+  function classHasStarted(c) {
+    if (window.LumioSchedule && LumioSchedule.hasStarted) return LumioSchedule.hasStarted(c);
+    const now = Lumio.tzNow();
+    return c.date < now.date || (c.date === now.date && String(c.startTime || "00:00") <= now.hm);
+  }
+  function classHasEnded(c) {
+    if (window.LumioSchedule && LumioSchedule.hasEnded) return LumioSchedule.hasEnded(c);
+    const now = Lumio.tzNow();
+    if (c.date !== now.date) return c.date < now.date;
+    return classEndMinutes(c) <= now.minutes;
+  }
   function classNeedsAttention(c) {
-    return c.status !== "cancelled" && !LumioSchedule.completionState(c).complete && c.date <= LumioSchedule.todayStr();
+    return c.status !== "cancelled" && !LumioSchedule.completionState(c).complete && classHasStarted(c);
   }
 
   function renderWeekView() {
@@ -4029,10 +4083,11 @@
         const attnClass = classNeedsAttention(c) ? "needs-attn" : "";
         const capacityWarn = c.status !== "cancelled" && (c.students.length < 2 || c.students.length > 4);
         const capClass = capacityWarn ? "capacity-warn" : "";
-        const title = `English Club${c.level ? " · " + c.level : ""}${c.lessonNumber ? " · Lesson " + c.lessonNumber : ""}${capacityWarn ? " — ⚠ group size outside 2–4" : ""}`;
+        const title = `English Club${c.level ? " · " + levelName(c.level) : ""}${c.lessonNumber ? " · Lesson " + c.lessonNumber : ""}${capacityWarn ? " — ⚠ group size outside 2–4" : ""}`;
         col += `<div class="td-cal-block ${statusClass} ${attnClass} ${capClass}" style="top:${top}px;height:${height}px" data-class-id="${c.id}" title="${escHtml(fmtTimeTz(c.date, c.startTime) + ' · ' + title + ' — ' + c.students.map(s=>s.studentName).join(', '))}">
-          <div class="cb-title">${c.patternId ? "🔁 " : ""}${capacityWarn ? "⚠ " : ""}${fmtTime(c.startTime)} · ${c.students.length} student${c.students.length===1?"":"s"}${(() => { const marked = c.students.filter(s => s.attendance).length; return marked ? ` · ${marked}/${c.students.length} marked` : ""; })()}</div>
-          <div class="cb-meta">${escHtml(c.level ? levelName(c.level) : (c.notes || "Class"))}</div>
+          <div class="cb-title">${c.patternId ? "🔁 " : ""}${capacityWarn ? "⚠ " : ""}${fmtTime(c.startTime)}</div>
+          <div class="cb-meta">${c.students.length} student${c.students.length===1?"":"s"}${(() => { const marked = c.students.filter(s => s.attendance).length; return marked ? ` · ${marked}/${c.students.length} ✓` : ""; })()}</div>
+          <div class="cb-meta cb-level">${escHtml(c.level ? levelName(c.level) : (c.notes || "Class"))}</div>
         </div>`;
       });
       if (isToday) {
@@ -4143,7 +4198,7 @@
     // agenda view gates them: only for a class that's today or in the
     // past, and not cancelled -- you can't mark attendance for a class
     // that hasn't happened yet.
-    const canMarkHere = c.status !== "cancelled" && c.date <= LumioSchedule.todayStr();
+    const canMarkHere = c.status !== "cancelled" && classHasStarted(c);
     const studentsHtml = c.students.map(s => `
       <div class="td-cd-student" data-sid="${escHtml(s.studentId || "")}" data-sname="${escHtml(s.studentName)}">
         <div class="av">${escHtml(initials(s.studentName))}</div>
@@ -4160,8 +4215,8 @@
       <div class="td-cd-row">
         <div class="ic">🎯</div>
         <div class="val">
-          <div class="main">${c.level || "English Club"}${c.lessonNumber ? " · Lesson " + c.lessonNumber : ""}</div>
-          <div class="sub">${fmtDayLabel(c.date)} (${c.date}) ${fmtTime(c.startTime)}${c.durationMinutes ? " – " + fmtTime(minutesToHM(classEndMinutes(c))) : ""} · Saudi time${Lumio.deviceDiffersFromTz() ? ` <span style="opacity:.75">(${fmtTimeTz(c.date, c.startTime).replace(/^.*\(/, "(")}</span>` : ""}</div>
+          <div class="main">${escHtml(c.level ? levelName(c.level) : "English Club")}${c.lessonNumber ? " · Lesson " + c.lessonNumber : ""}</div>
+          <div class="sub">${fmtDayLabel(c.date)} (${c.date}) ${fmtTime(c.startTime)}${c.durationMinutes ? " – " + fmtTime(minutesToHM(classEndMinutes(c))) : ""} · Saudi time${Lumio.deviceDiffersFromTz() ? ` <span style="opacity:.75">${fmtTimeTz(c.date, c.startTime).replace(/^[^(]*/, "")}</span>` : ""}</div>
         </div>
       </div>
       <div class="td-cd-row">
@@ -4171,7 +4226,7 @@
           <div class="main">${escHtml(teacher ? teacher.name : (c.teacherName || "Unassigned"))}</div>
         </div>
       </div>
-      ${c.meetingLink ? `<div class="td-cd-row"><div class="ic">🔗</div><div class="val"><div class="lbl">Meeting link</div><a class="main" href="${safeUrl(c.meetingLink)}" target="_blank" rel="noopener" style="color:var(--td-indigo)">${c.meetingLink}</a></div></div>` : ""}
+      ${c.meetingLink ? `<div class="td-cd-row"><div class="ic">🔗</div><div class="val"><div class="lbl">Meeting link</div><a class="main" href="${safeUrl(c.meetingLink)}" target="_blank" rel="noopener" style="color:var(--td-indigo)">${escHtml(c.meetingLink)}</a></div></div>` : ""}
       ${c.notes ? `<div class="td-cd-row"><div class="ic">📝</div><div class="val"><div class="lbl">Notes</div><div class="sub">${escHtml(c.notes)}</div></div></div>` : ""}
       <div class="td-cd-row">
         <div class="ic">👥</div>
@@ -4226,6 +4281,7 @@
     const ok = await confirmDialog(`Remove this class with ${names}?`, "Remove");
     if (ok) {
       LumioSchedule.removeClass(c.id);
+      queueSync(); // the tombstone must reach the Sheet now, not on the 5-min auto-sync
       closeCourseDetails();
       renderWeekView();
       showToast("Class removed.");
@@ -4237,6 +4293,7 @@
     const ok = await confirmDialog("Cancel this session and every future session in this fixed schedule? Past sessions and their attendance stay on record.", "Cancel series");
     if (ok) {
       const { cancelledCount } = LumioSchedule.cancelPatternFromDate(c.patternId, c.date);
+      queueSync();
       closeCourseDetails();
       renderScheduleActive();
       showToast(`Fixed schedule stopped — ${cancelledCount} upcoming session${cancelledCount === 1 ? "" : "s"} cancelled.`);
@@ -4427,6 +4484,8 @@
       row.querySelector("button").onclick = () => {
         LumioSchedule.removeBlockedDate(dateStr);
         renderHolidaysList();
+        renderScheduleActive(); // classes the holiday cancelled may be back
+        queueSync();
         showToast("Blocked date removed.");
       };
       list.appendChild(row);
@@ -4444,11 +4503,20 @@
     const date = document.getElementById("holDate").value;
     const label = document.getElementById("holLabel").value.trim();
     if (!date) return;
+    // Newer lumio-schedule.js cancels classes booked on a blocked date;
+    // tell those students (diff before/after so this works either way).
+    const before = LumioSchedule.listClasses({ from: date, to: date }).filter(c => c.status !== "cancelled").map(c => c.id);
     LumioSchedule.addBlockedDate(date, label);
+    const cancelled = before.map(id => LumioSchedule.getClass(id)).filter(c => c && c.status === "cancelled");
+    cancelled.forEach(c => notifyStudentsClassCancelled(c));
     document.getElementById("holDate").value = "";
     document.getElementById("holLabel").value = "";
     renderHolidaysList();
-    showToast("Blocked date added — fixed schedules will skip it.", "success");
+    renderScheduleActive();
+    queueSync();
+    showToast(cancelled.length
+      ? `Blocked date added — ${cancelled.length} class${cancelled.length === 1 ? "" : "es"} on that day cancelled and the students told.`
+      : "Blocked date added — fixed schedules will skip it.", "success");
   };
 
   function renderClsGroupPicker(presetKey) {
@@ -4820,12 +4888,14 @@
         if (notesEl.value === (lead.notes || "")) return; // nothing actually changed
         LumioLeads.updateLead(lead.id, { notes: notesEl.value });
         showToast(`Note saved for ${lead.name}.`, "success");
+        queueSync(); // lead edits used to wait for the 5-min auto-sync
       });
       const contactedBtn = row.querySelector('[data-act="contacted"]');
       if (contactedBtn) contactedBtn.onclick = () => {
         LumioLeads.updateLead(lead.id, { status: "contacted" });
         renderLeads(); updateLeadsBadge();
         showToast(`${lead.name} marked as contacted.`, "success");
+        queueSync();
       };
       const trialLink = row.querySelector('[data-act="trial"]');
       if (trialLink) trialLink.addEventListener("click", () => {
@@ -4835,6 +4905,7 @@
         if (lead.status === "new") {
           LumioLeads.updateLead(lead.id, { status: "contacted" });
           renderLeads(); updateLeadsBadge();
+          queueSync();
         }
       });
       const convertBtn = row.querySelector('[data-act="convert"]');
@@ -4848,6 +4919,7 @@
           await LumioProfiles.updateStudent(linkedAccount.id, { approved: true, subscribed: true });
           LumioLeads.updateLead(lead.id, { status: "enrolled" });
           const res = await LumioProfiles.syncNow();
+          queueSync(); // roster sync above doesn't carry the lead's new status
           renderLeads(); updateLeadsBadge(); renderRosterCards(); renderTable();
           showToast(`${linkedAccount.name} approved and can now log in.`, "success");
           if (!res.ok) showToast(`Approved here, but syncing to their device failed (${res.reason || "unknown error"}) — try "Sync now".`, "error");
@@ -4857,6 +4929,7 @@
       if (dismissBtn) dismissBtn.onclick = () => {
         LumioLeads.updateLead(lead.id, { status: "dismissed" });
         renderLeads(); updateLeadsBadge();
+        queueSync();
       };
       row.querySelector('[data-act="remove"]').onclick = async () => {
         const ok = await confirmDialog(`Remove ${lead.name} from leads? This can't be undone.`, "Remove");
@@ -4885,27 +4958,50 @@
   };
 
   // ---------- demo/sample data ----------
-  document.getElementById("seedDemoBtn").onclick = async (e) => {
-    if (!window.LumioProfiles) return;
-    await withLoading(e.currentTarget, async () => {
-      let demoTeacher;
-      try { demoTeacher = await LumioProfiles.addTeacher({ name: "Miss Layla", avatar: "👩‍🏫", pin: "1111" }); }
-      catch (err) { demoTeacher = LumioProfiles.findTeacherByName("Miss Layla"); }
-      const demoLevel = (LEVEL_NAMES[0] || {}).id || "pre-a";
-      for (const s of [{ name: "Noor", avatar: "🧕" }, { name: "Omar", avatar: "👦" }]) {
-        try {
-          await LumioProfiles.addStudent({ name: s.name, avatar: s.avatar, level: demoLevel, teacherId: demoTeacher ? demoTeacher.id : null });
-        } catch (err) { /* already exists — skip */ }
+  // Owner-only. It used to create a "Miss Layla" teacher with PIN 1111 --
+  // a real, guessable teacher login that synced to the Sheet. Now it adds
+  // only two students tagged "sample" (random PINs, not approved, no
+  // sessions) under the current teacher, and the same button removes them
+  // again everywhere ("🧹 Remove sample data").
+  const seedDemoBtn = document.getElementById("seedDemoBtn");
+  const SAMPLE_TAG = "sample";
+  const sampleStudents = () => window.LumioProfiles ? LumioProfiles.listStudents().filter(s => Array.isArray(s.tags) && s.tags.includes(SAMPLE_TAG)) : [];
+  function refreshSeedDemoBtn() {
+    seedDemoBtn.style.display = IS_OWNER ? "" : "none";
+    seedDemoBtn.textContent = sampleStudents().length ? "🧹 Remove sample data" : "✨ Try sample data";
+  }
+  seedDemoBtn.onclick = async () => {
+    if (!window.LumioProfiles || !IS_OWNER) return;
+    const existing = sampleStudents();
+    const syncing = LumioProfiles.getSyncConfig().enabled;
+    if (!existing.length && syncing) {
+      const ok = await confirmDialog("Add 2 sample students (tagged \"sample\") to see how the dashboard works? They sync to your Sheet like real students; press this button again to remove them everywhere.", "Add samples");
+      if (!ok) return;
+    }
+    // (not e.currentTarget: it is null again after the await above)
+    await withLoading(seedDemoBtn, async () => {
+      if (existing.length) {
+        existing.forEach(s => { try { LumioProfiles.removeStudent(s.id); } catch (err) {} });
+      } else {
+        const demoLevel = (LEVEL_NAMES[0] || {}).id || "pre-a";
+        for (const s of [{ name: "Sample Noor", avatar: "🧕" }, { name: "Sample Omar", avatar: "👦" }]) {
+          try {
+            await LumioProfiles.addStudent({ name: s.name, avatar: s.avatar, level: demoLevel, tags: [SAMPLE_TAG], approved: false, subscribed: false, sessionsRemaining: 0 });
+          } catch (err) { /* already exists — skip */ }
+        }
       }
       renderTeamGrid();
       renderRosterCards();
       renderTable();
       renderTeacherOptions();
       renderInactivity();
+      refreshSeedDemoBtn();
       document.getElementById("kpiRoster").textContent = LumioProfiles.listStudents().length;
-      showToast("Sample data added.", "success");
+      showToast(existing.length ? "Sample students removed." : "Sample students added — press 🧹 Remove sample data when you're done.", "success");
+      queueSync();
     });
   };
+  try { refreshSeedDemoBtn(); } catch (e) {}
 
   // ---------- print login cards ----------
   document.getElementById("printCardsBtn").onclick = () => {
@@ -4919,6 +5015,8 @@
         <div class="av">${avatarHtml(p)}</div>
         <div class="nm">${escHtml(p.name)}</div>
         <div class="lv">${levelName(p.level)} · your Lumio site</div>
+        ${p.loginCode ? `<div class="lbl">Your login ID</div>
+        <div class="pin">${escHtml(p.loginCode)}</div>` : ""}
         <div class="lbl">Your PIN</div>
         <div class="pin">${escHtml(p.pin)}</div>
       </div>`).join("");
@@ -5050,6 +5148,10 @@
     if (rosterRes.ok) {
       try { renderRosterCards(); renderTable(); renderTeamGrid(); renderInactivity(); }
       catch (e) { console.error("Lumio post-sync render error (roster):", e); }
+      // Reports due reads the roster + the progress just pulled; on a fresh
+      // device it was only drawn at load (empty) and never again.
+      try { renderReportsDue(); refreshSeedDemoBtn(); }
+      catch (e) { console.error("Lumio post-sync render error (reports due):", e); }
     }
     if (scheduleRes.ok) {
       try { renderScheduleActive(); }
@@ -5447,6 +5549,7 @@
         LumioProfiles.removeRewardCatalogItem(item.id);
         renderCatalogList();
         showToast("Reward removed.");
+        queueSync(); // the catalog rides the roster push
       };
       list.appendChild(row);
     });
@@ -5477,6 +5580,7 @@
       document.getElementById("catItemCost").value = "";
       renderCatalogList();
       showToast("Reward added.", "success");
+      queueSync();
     } catch (err) { showToast(err.message || "Couldn't add that reward.", "error"); }
   };
 
@@ -5683,8 +5787,17 @@
     }
   }
   document.querySelectorAll(".td-overlay").forEach(overlay => {
+    // Per-overlay state: classList.add("show") on an overlay that is
+    // already shown (openCourseDetails re-renders after ✓ present) still
+    // fires a class mutation, which used to lock twice and unlock once --
+    // the page stayed frozen until reload. Only count real transitions.
+    let shown = overlay.classList.contains("show");
+    if (shown) lockBodyScroll();
     const obs = new MutationObserver(() => {
-      if (overlay.classList.contains("show")) {
+      const nowShown = overlay.classList.contains("show");
+      if (nowShown === shown) return;
+      shown = nowShown;
+      if (nowShown) {
         lockBodyScroll();
         overlay.scrollTop = 0;
         overlay.querySelectorAll(".td-modal-box").forEach(el => { el.scrollTop = 0; });
