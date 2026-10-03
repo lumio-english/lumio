@@ -1350,6 +1350,18 @@
   }
 
   // ---- sync ----
+  // Fields this site version expects the Apps Script to store. If the
+  // last pull shows the Teachers tab lacks any of them, the script needs
+  // redeploying (see _docs/HANDOFF.md) -- edits to those fields only live
+  // on this device until then.
+  const SERVER_TEACHER_FIELDS = ["photoDataUrl", "meetingLink"];
+  function serverMissingFields() {
+    try {
+      const keys = JSON.parse(safeGet("lumio_server_teacher_keys") || "null");
+      if (!Array.isArray(keys) || !keys.length) return [];
+      return SERVER_TEACHER_FIELDS.filter(k => !keys.includes(k));
+    } catch (e) { return []; }
+  }
   function getSyncConfig() {
     try {
       const saved = JSON.parse(safeGet(SYNC_KEY) || "null");
@@ -1778,6 +1790,12 @@
           data.students = data.students.filter(x => st && x.id === st.id);
         }
       }
+      // Remember which teacher columns the Sheet actually carries, so the
+      // dashboard can warn when the Apps Script is older than the site
+      // (fields it doesn't know are dropped on every push).
+      if (remote && Array.isArray(remote.teachers) && remote.teachers.length) {
+        try { safeSet("lumio_server_teacher_keys", JSON.stringify(Object.keys(remote.teachers[0]))); } catch (e) {}
+      }
       if (remote && Array.isArray(remote.teachers) && remote.teachers.length) {
         const incomingTeachers = remote.teachers.filter(t => !data.deletedTeacherIds.includes(t.id));
         const merged = keepHidden(data.teachers, mergeById(data.teachers, incomingTeachers));
@@ -1946,7 +1964,7 @@
     addTeacher, updateTeacher, removeTeacher, verifyTeacherLogin, ensureDefaultTeacher,
     getCurrentTeacherId, setCurrentTeacherId, getCurrentTeacher, clearCurrentTeacher, isCurrentTeacherOwner,
     getTeacherName, setTeacherName,
-    getSyncConfig, configureSync, syncNow, pushStudentPatch, retryPendingPatches,
+    getSyncConfig, configureSync, syncNow, pushStudentPatch, retryPendingPatches, serverMissingFields,
     authQuery, serverCaps, postAction, getTeacherAuth, getStudentAuth, setTeacherAuth, clearTeacherAuth, clearStudentAuth, hashPin,
   };
 })(window);

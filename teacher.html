@@ -1034,6 +1034,7 @@
     <div>
       <h1 id="pageTitle">Overview</h1>
       <p id="pageSub">A snapshot of how your students are doing right now.</p>
+      <div id="serverBanner" style="display:none;margin:14px 0 0;padding:12px 16px;border-radius:14px;background:#FFF1E0;border:2px solid #F97316;color:#7A3F0B;font-weight:700;font-size:.86rem;line-height:1.45"></div>
     </div>
     <div class="td-spacer"></div>
     <button class="td-btn" id="exportBtn">⬇ Export CSV</button>
@@ -3786,7 +3787,9 @@
         closeTeacherModal();
         renderTeamGrid();
         renderTeacherOptions();
+        queueSync();
         showToast(wasEditing ? `${name} updated.` : `${name} added as a teacher.`, "success");
+        renderServerBanner();
         queueSync(); // a new teacher / PIN can't sign in on another device until the Sheet has it
       } catch (err) {
         const msg = err.message || "Couldn't save that teacher.";
@@ -5325,6 +5328,7 @@
         rebuildRowsFromStorage(); // Overview/table/report figures from the fresh data
       }
     } catch (e2) { /* progress sync is best-effort; roster/schedule already reported below */ }
+    try { renderServerBanner(); } catch (e4) {}
     // Referrals follow the (freshly pulled) roster: a referred student who
     // was subscribed on another device credits the referrer here, now.
     try {
@@ -5818,6 +5822,22 @@
   });
 
   // ================= Renewals =================
+  // ================= Backend-version banner =================
+  // The site can be newer than the Apps Script pasted into the Sheet. A
+  // field the script doesn't know (teacher photo, classroom link, slot
+  // "extra" flag, student self-booking) is dropped on every push, so it
+  // looks like "it won't save". Say so, plainly, where the owner will see it.
+  function renderServerBanner() {
+    const el = document.getElementById("serverBanner");
+    if (!el || !window.LumioProfiles) return;
+    const missing = LumioProfiles.serverMissingFields();
+    if (!missing.length) { el.style.display = "none"; return; }
+    const pretty = { photoDataUrl: "teacher photos", meetingLink: "classroom (Teams) links" };
+    el.style.display = "";
+    el.innerHTML = `⚠️ <b>The Google Sheet script needs updating.</b> It doesn't store ${missing.map(k => pretty[k] || k).join(" and ")} yet, so those changes stay on this device only and don't reach students or other teachers. ${IS_OWNER ? `Paste <code>_docs/AppsScript-Code.live-patched.gs</code> into the Apps Script project, Deploy → Manage deployments → New version, then run <code>repairSheetTypes</code> once. Student self-booking needs the same update.` : "Ask the owner to redeploy it."}`;
+  }
+  try { renderServerBanner(); } catch (e) {}
+
   // ================= Referrals tab =================
   const REF_LABEL = { added: "Added", tested: "Took the test", trial: "Attended trial", subscribed: "Subscribed" };
   let refKind = "existing";
