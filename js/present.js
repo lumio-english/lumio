@@ -135,7 +135,10 @@
           wrap.appendChild(zone);
         });
       }
-      if (cur >= gameStartSlide - 1 && cur <= total) {
+      // NOTE: no page loads this file any more (present.html renders the
+      // slide-content HTML decks and finds the game slide itself). Kept in
+      // step: games from the first game slide on, never one slide early.
+      if (cur >= gameStartSlide && cur <= total) {
         // Same LEVEL_GAMES registry as present.html -- kept in sync so both
         // teacher-facing views always offer the same games per level. Match
         // It (picture-tap) is paired with a level's own game for levels 1-2,
