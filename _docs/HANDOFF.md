@@ -132,5 +132,11 @@ Done by three parallel workers (sync layer / teacher UI / student UI), merged an
 - OWNER TASKS: `_docs/levels4-6-missing-vocab-prompts.md` (134 pictures to generate) + missing recordings list in the same doc (Piper voice download blocked here). Placement scoring question: 18/36 lands in Level 5 — review the bands in lumio-pro-test.html.
 - STILL OPEN: simultaneous edits of the SAME number (session count by attendance vs redeem at the same moment) — newer wins; holiday doesn't cancel slot-booked classes; Teachers tab still whole-record merge; Memory/Word Pop/Builder games have no launch button on student.html; classroom PIN 2026 still in js/auth.js (second factor only).
 
+## 3k. Referrals tab (3 Oct 2026)
+- Teacher panel → Referrals (nav badge = open referrals). Rules in js/lumio-profiles.js: only `canRefer(s)` students (subscribed + approved + not pending deletion) may refer — `addReferral` throws otherwise; a referral may carry `linkedStudentId` (existing roster student, or one created on the spot: `addStudent({approved:false, subscribed:false, tags:['referral']})`); a student can't refer themselves and can be someone's referral only once (`findReferralByLinked`).
+- Status follows the linked record (`autoReferralStatus`: subscribed → subscribed; present in a class whose level/notes/cohort/group mention "trial" or tag "trial" → trial; tag "placement…" → tested), moving forward only; `syncReferrals()` runs on the tab, after every `performFullSync`, and inside `updateStudent` when `subscribed` flips on — the reward (5 sessions + inbox message, once per referral via `rewardedAt`) fires immediately. Manual status select still works for unlinked referrals.
+- Student side (My Referrals overlay) shows only the logged-in student's own referrals: tiles Referred / Attended trial / Subscribed / Free sessions, plus the per-friend list. Data is still the shared roster pulled to the device (same as before); privacy is at the UI level.
+- Test: scratchpad `reftest.py` (eligibility, link, duplicate guard, create-new, subscribe → +5 once, trial auto-detect, student + other-student views).
+
 ## 4. Working style
 Verify in a browser before claiming done; check files before writing prompts; never duplicate; fix in templates not per slide; say plainly what was NOT done; ask one specific question when ambiguous.

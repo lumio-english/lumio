@@ -2842,9 +2842,9 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
       const refs = LumioProfiles.listReferrals(rosterProfile.id);
       document.getElementById("refTiles").innerHTML = `
         <div class="mp-tile blue"><span class="ic">🤝</span><b>${st.total}</b><span>Referred</span></div>
-        <div class="mp-tile purple"><span class="ic">📝</span><b>${st.tested}</b><span>Took test</span></div>
-        <div class="mp-tile teal"><span class="ic">🎓</span><b>${st.trial}</b><span>Trial</span></div>
-        <div class="mp-tile coral"><span class="ic">🎁</span><b>${st.subscribed}</b><span>Subscribed</span></div>`;
+        <div class="mp-tile teal"><span class="ic">🎓</span><b>${st.trial}</b><span>Attended trial</span></div>
+        <div class="mp-tile coral"><span class="ic">🎁</span><b>${st.subscribed}</b><span>Subscribed</span></div>
+        <div class="mp-tile purple"><span class="ic">🎟️</span><b>${st.sessionsEarned}</b><span>Free sessions</span></div>`;
       document.getElementById("refHint").textContent = st.sessionsEarned
         ? `🎉 You've earned ${st.sessionsEarned} free session${st.sessionsEarned === 1 ? "" : "s"} from referrals so far. Every friend who subscribes adds ${st.rewardPerSubscription} more!`
         : `Every friend who subscribes earns you ${st.rewardPerSubscription} free sessions — added straight to your sessions left.`;

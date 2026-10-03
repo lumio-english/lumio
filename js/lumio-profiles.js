@@ -629,7 +629,7 @@
     // Snapshot the fields that should notify the student when they
     // change, so the messages added at the bottom reflect a real change
     // and not just a re-save of the same value.
-    const before = { pinHash: s.pinHash, phone: s.phone, level: s.level };
+    const before = { pinHash: s.pinHash, phone: s.phone, level: s.level, subscribed: !!s.subscribed };
     if (patch.name !== undefined) {
       const newName = patch.name.trim();
       if (!newName) throw new Error("A student needs a name.");
@@ -702,6 +702,11 @@
     }
     s.updatedAt = new Date().toISOString();
     save(data);
+    // A referred student who just became subscribed -> the referrer's
+    // reward fires right away (see syncReferrals).
+    if (patch.subscribed !== undefined && s.subscribed && !before.subscribed) {
+      try { syncReferrals({ linkedStudentId: s.id }); } catch (e) {}
+    }
     return s;
   }
   // Adds (or, with a negative amount, removes) reward points -- the
@@ -934,20 +939,53 @@
   // ---------- referrals ----------
   const REFERRAL_STATUSES = ["added", "tested", "trial", "subscribed"];
   const REFERRAL_REWARD_SESSIONS = 5;
-  function addReferral(studentId, { name, phone } = {}) {
+  // Who may refer: a subscribed, approved (active) student.
+  function canRefer(s) {
+    return !!(s && s.subscribed && s.approved !== false && !s.pendingDeletion);
+  }
+  function referrerBlockReason(s) {
+    if (!s) return "Student not found.";
+    if (s.approved === false) return `${s.name}'s account isn't approved yet — only active, subscribed students can refer.`;
+    if (!s.subscribed) return `${s.name} isn't subscribed — only subscribed students can refer friends.`;
+    return null;
+  }
+  // Every referral across the roster, newest first: [{ referrer, ref }].
+  function listAllReferrals() {
+    const out = [];
+    load().students.forEach(s => (s.referrals || []).forEach(r => out.push({ referrer: s, ref: r })));
+    return out.sort((a, b) => String(b.ref.date).localeCompare(String(a.ref.date)));
+  }
+  function findReferralByLinked(linkedStudentId) {
+    return listAllReferrals().find(x => x.ref.linkedStudentId === linkedStudentId) || null;
+  }
+  // linkedStudentId: the referred person's own roster record (existing
+  // student, or one the teacher just created for them). When set, the
+  // status follows that record automatically -- see syncReferrals.
+  function addReferral(studentId, { name, phone, linkedStudentId } = {}) {
     const data = load();
     const s = data.students.find(x => x.id === studentId);
     if (!s) throw new Error("Student not found.");
-    const n = String(name || "").trim();
+    const block = referrerBlockReason(s);
+    if (block) throw new Error(block);
+    let linked = null;
+    if (linkedStudentId) {
+      linked = data.students.find(x => x.id === linkedStudentId);
+      if (!linked) throw new Error("The referred student wasn't found on the roster.");
+      if (linked.id === s.id) throw new Error("A student can't refer themselves.");
+      const dupe = findReferralByLinked(linked.id);
+      if (dupe) throw new Error(`${linked.name} is already listed as referred by ${dupe.referrer.name}.`);
+    }
+    const n = String(name || (linked && linked.name) || "").trim();
     if (!n) throw new Error("The referred person needs a name.");
     if (!Array.isArray(s.referrals)) s.referrals = [];
     const ref = {
       id: "r_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
       name: n,
-      phone: String(phone || "").trim(),
+      phone: String(phone || (linked && linked.phone) || "").trim(),
       status: "added",
       date: new Date().toISOString(),
       rewardedAt: null,
+      linkedStudentId: linked ? linked.id : null,
     };
     s.referrals.push(ref);
     s.referralsUpdatedAt = new Date().toISOString();
@@ -995,6 +1033,51 @@
   function listReferrals(studentId) {
     const s = getStudent(studentId);
     return s && Array.isArray(s.referrals) ? s.referrals.slice().reverse() : [];
+  }
+  // What a linked referral's status should be, read off the referred
+  // student's own record: subscribed -> "subscribed"; marked present in a
+  // trial class -> "trial"; came through the placement test -> "tested".
+  // Statuses only ever move forward here; a teacher can still set one by hand.
+  function autoReferralStatus(linked) {
+    if (!linked) return null;
+    if (linked.subscribed) return "subscribed";
+    let trial = false;
+    try {
+      const LS = typeof window !== "undefined" ? window.LumioSchedule : null;
+      if (LS && LS.listClasses) {
+        trial = LS.listClasses({ studentName: linked.name }).some(c => {
+          const isTrial = /trial/i.test([c.level, c.notes, c.cohort, c.group].join(" "));
+          const slot = (c.students || []).find(x => String(x.studentName).trim().toLowerCase() === String(linked.name).trim().toLowerCase());
+          return isTrial && slot && slot.attendance === "present";
+        });
+      }
+    } catch (e) {}
+    if (trial || (Array.isArray(linked.tags) && linked.tags.some(t => /trial/i.test(t)))) return "trial";
+    if (Array.isArray(linked.tags) && linked.tags.some(t => /placement/i.test(t))) return "tested";
+    return "added";
+  }
+  // Brings every linked referral in line with the referred student's
+  // record (optionally only those pointing at one student). Returns the
+  // referrals that changed, with `rewarded` flags, so the caller can toast.
+  function syncReferrals({ linkedStudentId } = {}) {
+    const rank = st => REFERRAL_STATUSES.indexOf(st);
+    const changed = [];
+    listAllReferrals().forEach(({ referrer, ref }) => {
+      if (!ref.linkedStudentId || (linkedStudentId && ref.linkedStudentId !== linkedStudentId)) return;
+      const linked = getStudent(ref.linkedStudentId);
+      if (!linked) return;
+      const want = autoReferralStatus(linked);
+      if (!want || rank(want) <= rank(ref.status)) return;
+      const res = updateReferralStatus(referrer.id, ref.id, want);
+      changed.push({ referrer: getStudent(referrer.id), referral: res.referral, rewarded: res.rewarded, sessionsRemaining: res.sessionsRemaining });
+    });
+    return changed;
+  }
+  // Everyone a subscribed student may be credited for referring: roster
+  // students other than the referrer who aren't already someone's referral.
+  function referrableStudents(referrerId) {
+    const taken = new Set(listAllReferrals().map(x => x.ref.linkedStudentId).filter(Boolean));
+    return listStudents().filter(s => s.id !== referrerId && !taken.has(s.id));
   }
   function referralStats(studentId) {
     const refs = listReferrals(studentId);
@@ -1843,6 +1926,7 @@
     isStudentActive, requestAccountDeletion, confirmAccountDeletion, declineAccountDeletion,
     currencyForCountry,
     addReferral, updateReferralStatus, removeReferral, listReferrals, referralStats,
+    canRefer, referrerBlockReason, listAllReferrals, findReferralByLinked, autoReferralStatus, syncReferrals, referrableStudents, REFERRAL_STATUSES, REFERRAL_REWARD_SESSIONS,
     verifyStudentLogin, randomPin,
     listTeachers, getTeacher, findTeacherByName,
     addTeacher, updateTeacher, removeTeacher, verifyTeacherLogin, ensureDefaultTeacher,

@@ -247,6 +247,17 @@
   .td-cal-avail{position:absolute;left:3px;right:3px;border:2px dashed var(--td-teal);border-radius:8px;background:rgba(0,0,0,0);color:var(--td-teal);font-size:.7rem;font-weight:800;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;z-index:1}
   .td-cal-avail:hover{background:var(--td-teal-soft)}
   .td-cal-avail.past{border-color:var(--td-border);color:var(--td-muted);opacity:.6}
+  .td-ref-row{display:grid;grid-template-columns:1.3fr 1fr 150px 110px auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--td-border);border-radius:12px;margin-bottom:8px;font-size:.84rem;background:#fff}
+  .td-ref-row .nm{font-weight:800}
+  .td-ref-row .meta{font-size:.72rem;color:var(--td-muted);font-weight:600}
+  .td-ref-row .pill{display:inline-block;font-size:.7rem;font-weight:800;padding:3px 9px;border-radius:999px;background:#F3EEE4;color:var(--td-muted)}
+  .td-ref-row .pill.tested{background:#E8EFFB;color:#1E4FA3}
+  .td-ref-row .pill.trial{background:var(--td-teal-soft);color:var(--td-teal)}
+  .td-ref-row .pill.subscribed{background:#FFF1D6;color:#B45309}
+  .td-ref-row .link{font-size:.68rem;font-weight:800;color:var(--td-teal)}
+  .td-ref-row select{padding:5px 8px;border-radius:8px;border:1px solid var(--td-border);font-family:inherit;font-size:.78rem}
+  .td-ref-row .acts{display:flex;gap:6px}
+  @media (max-width:800px){.td-ref-row{grid-template-columns:1fr 1fr;}}
   .td-fs-status{font-size:.85rem;font-weight:800;padding:8px 12px;border-radius:10px;background:var(--td-teal-soft);color:var(--td-teal);margin-bottom:8px}
   .td-fs-status.warn{background:var(--td-coral-soft);color:var(--td-coral)}
   .td-fs-list{display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto}
@@ -986,6 +997,13 @@
       </span>
       <span id="renewalsNavBadge" style="display:none;background:var(--td-coral);color:#fff;font-size:.68rem;font-weight:800;padding:1px 7px;border-radius:99px"></span>
     </button>
+    <button class="td-navitem" data-view="referrals" style="justify-content:space-between">
+      <span style="display:flex;align-items:center;gap:10px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 11a4 4 0 1 0-8 0"/><circle cx="12" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h2"/><path d="M15 15h2a4 4 0 0 1 4 4v2"/><path d="M12 12v9"/><path d="m9 18 3 3 3-3"/></svg>
+        Referrals
+      </span>
+      <span id="referralsNavBadge" style="display:none;background:var(--td-teal);color:#fff;font-size:.68rem;font-weight:800;padding:1px 7px;border-radius:99px"></span>
+    </button>
     <button class="td-navitem" data-view="insights">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg>
       Insights
@@ -1311,6 +1329,51 @@
       <p class="sub" style="margin-top:4px">Sorted soonest-to-run-out first. Session counts tick down automatically when a class is marked present — set a student's starting count from their profile.</p>
       <div id="renewalsList" class="mt"></div>
       <div class="td-empty" id="renewalsEmpty" style="display:none">Nobody's running low right now.</div>
+    </div>
+  </div>
+
+  <!-- ===== Referrals view ===== -->
+  <div id="viewReferrals" style="display:none">
+    <div class="td-dp-tiles" id="refTiles" style="grid-template-columns:repeat(4,1fr);margin:0 0 16px"></div>
+    <div class="td-panel" style="margin-bottom:16px">
+      <div class="td-panel-head"><h2>🤝 Add a referral</h2></div>
+      <p class="sub">Only an <b>active, subscribed</b> student can refer. Link the referred person to their roster record and the status follows it by itself: present in a trial class → "Attended trial"; subscribed → "Subscribed" and the referrer is credited <b id="refRewardN">5</b> free sessions with a message, once per referral.</p>
+      <div class="td-field-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px">
+        <div class="td-field">
+          <label for="refReferrer">Referred by <span style="font-weight:600;color:var(--td-muted)">(subscribed students only)</span></label>
+          <select id="refReferrer"></select>
+        </div>
+        <div class="td-field">
+          <label>Referred person</label>
+          <div class="td-chip-row" style="margin-bottom:6px">
+            <button type="button" class="td-chip active" data-refkind="existing">On the roster</button>
+            <button type="button" class="td-chip" data-refkind="new">New person</button>
+          </div>
+          <select id="refLinked"></select>
+          <div id="refNewFields" style="display:none;gap:8px;flex-direction:column">
+            <input type="text" id="refNewName" placeholder="Name" style="padding:8px 10px;border-radius:8px;border:1px solid var(--td-border);font-family:inherit">
+            <input type="text" id="refNewPhone" placeholder="Phone (optional)" style="padding:8px 10px;border-radius:8px;border:1px solid var(--td-border);font-family:inherit">
+            <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;font-weight:700;cursor:pointer"><input type="checkbox" id="refCreateAccount" checked> Create their student account now (not approved, not subscribed) so the status tracks automatically</label>
+          </div>
+        </div>
+      </div>
+      <div class="td-field-error" id="refAddError"></div>
+      <div class="row" style="gap:10px;margin-top:6px"><button class="td-btn td-btn-primary" id="refAddBtn" type="button">+ Add referral</button><span class="sub" id="refAddHint" style="font-size:.78rem"></span></div>
+    </div>
+    <div class="td-panel">
+      <div class="td-roster-head">
+        <h2 style="flex:1">All referrals</h2>
+        <select class="td-select" id="refStatusFilter">
+          <option value="" selected>All statuses</option>
+          <option value="added">Added</option>
+          <option value="tested">Took the test</option>
+          <option value="trial">Attended trial</option>
+          <option value="subscribed">Subscribed</option>
+        </select>
+        <button class="td-btn" id="refSyncBtn" type="button" title="Re-check every linked referral against the roster">⟳ Re-check</button>
+      </div>
+      <div id="refTable" class="mt"></div>
+      <div class="td-empty" id="refEmpty" style="display:none">No referrals yet.</div>
     </div>
   </div>
 
@@ -5132,6 +5195,13 @@
         rebuildRowsFromStorage(); // Overview/table/report figures from the fresh data
       }
     } catch (e2) { /* progress sync is best-effort; roster/schedule already reported below */ }
+    // Referrals follow the (freshly pulled) roster: a referred student who
+    // was subscribed on another device credits the referrer here, now.
+    try {
+      const synced = LumioProfiles.syncReferrals();
+      synced.filter(x => x.rewarded).forEach(x => showToast(`🎁 ${x.referral.name} subscribed — ${x.referrer.name} earned ${LumioProfiles.REFERRAL_REWARD_SESSIONS} free sessions.`, "success"));
+      if (synced.length) { refBadge(); queueSync(); }
+    } catch (e3) {}
 
     // Re-render each piece based on its OWN sync result, not all-or-
     // nothing -- previously, if just one of roster/schedule/leads failed
@@ -5585,7 +5655,7 @@
   };
 
   // ---------- nav ----------
-  const views = { overview: "viewOverview", students: "viewStudents", team: "viewTeam", schedule: "viewSchedule", leads: "viewLeads", renewals: "viewRenewals", insights: "viewInsights", materials: "viewMaterials", manuals: "viewManuals", story: "viewStory" };
+  const views = { overview: "viewOverview", students: "viewStudents", team: "viewTeam", schedule: "viewSchedule", leads: "viewLeads", renewals: "viewRenewals", referrals: "viewReferrals", insights: "viewInsights", materials: "viewMaterials", manuals: "viewManuals", story: "viewStory" };
   const titles = {
     overview: ["Overview", "A snapshot of how your students are doing right now."],
     students: ["Students", "Manage your roster and dig into individual progress."],
@@ -5593,6 +5663,7 @@
     schedule: ["Schedule", "Book classes and see who's up next."],
     leads: ["Leads", "People who took the placement test but aren't enrolled yet."],
     renewals: ["Renewals", "Students running low on paid sessions — reach out before they lapse."],
+    referrals: ["Referrals", "Who referred whom, where each referral stands, and the free sessions earned."],
     insights: ["Insights", "Leaderboard and cohort comparison across your roster."],
     materials: ["Materials", "Present or download your Zoom-ready decks."],
     manuals: ["Levels Manuals", "The full curriculum guide, plus a detailed manual for each level — share these with parents."],
@@ -5610,12 +5681,126 @@
       document.getElementById("pageSub").textContent = titles[view][1];
       document.getElementById("sidebar").classList.remove("show");
       if (view === "renewals") renderRenewalsList();
+      if (view === "referrals") { try { renderReferralsView(); } catch (e) { console.error(e); } }
       if (view === "insights") { renderLeaderboard(); renderCohortCompare(); }
       if (view === "schedule") { try { fsMinimumNudge(); } catch (e) {} }
     });
   });
 
   // ================= Renewals =================
+  // ================= Referrals tab =================
+  const REF_LABEL = { added: "Added", tested: "Took the test", trial: "Attended trial", subscribed: "Subscribed" };
+  let refKind = "existing";
+  function refBadge() {
+    const b = document.getElementById("referralsNavBadge");
+    if (!b || !window.LumioProfiles) return;
+    const open = LumioProfiles.listAllReferrals().filter(x => x.ref.status !== "subscribed").length;
+    b.textContent = String(open); b.style.display = open ? "" : "none";
+  }
+  function renderReferralsView() {
+    if (!window.LumioProfiles) return;
+    document.getElementById("refRewardN").textContent = LumioProfiles.REFERRAL_REWARD_SESSIONS;
+    // bring linked referrals in line with the roster first (subscribed / trial)
+    const synced = LumioProfiles.syncReferrals();
+    synced.filter(x => x.rewarded).forEach(x => showToast(`🎁 ${x.referral.name} subscribed — ${x.referrer.name} earned ${LumioProfiles.REFERRAL_REWARD_SESSIONS} free sessions.`, "success"));
+    if (synced.length) queueSync();
+    const all = LumioProfiles.listAllReferrals();
+    const n = st => all.filter(x => x.ref.status === st).length;
+    const earned = all.filter(x => x.ref.rewardedAt).length * LumioProfiles.REFERRAL_REWARD_SESSIONS;
+    document.getElementById("refTiles").innerHTML = `
+      <div class="td-dp-tile"><b>${all.length}</b><span>Referred</span></div>
+      <div class="td-dp-tile"><b>${n("trial")}</b><span>Attended a trial</span></div>
+      <div class="td-dp-tile"><b>${n("subscribed")}</b><span>Subscribed</span></div>
+      <div class="td-dp-tile"><b>${earned}</b><span>Free sessions given</span></div>`;
+    // referrer picker: subscribed + approved only
+    const refSel = document.getElementById("refReferrer");
+    const keep = refSel.value;
+    const eligible = LumioProfiles.listStudents().filter(LumioProfiles.canRefer).sort((a, b) => a.name.localeCompare(b.name));
+    refSel.innerHTML = eligible.length ? eligible.map(s => `<option value="${s.id}">${escHtml(s.name)} · ${levelName(s.level)} · ${Number(s.sessionsRemaining) || 0} sessions</option>`).join("") : `<option value="">No subscribed students yet</option>`;
+    if (keep && eligible.some(s => s.id === keep)) refSel.value = keep;
+    refRenderLinkedPicker();
+    document.querySelectorAll("[data-refkind]").forEach(b => b.classList.toggle("active", b.dataset.refkind === refKind));
+    document.getElementById("refLinked").style.display = refKind === "existing" ? "" : "none";
+    document.getElementById("refNewFields").style.display = refKind === "new" ? "flex" : "none";
+    // table
+    const filter = document.getElementById("refStatusFilter").value;
+    const rows = all.filter(x => !filter || x.ref.status === filter);
+    const table = document.getElementById("refTable");
+    document.getElementById("refEmpty").style.display = rows.length ? "none" : "block";
+    table.innerHTML = rows.map(({ referrer, ref }) => {
+      const linked = ref.linkedStudentId ? LumioProfiles.getStudent(ref.linkedStudentId) : null;
+      const when = ref.date ? new Date(ref.date).toLocaleDateString() : "";
+      return `<div class="td-ref-row" data-sid="${referrer.id}" data-rid="${ref.id}">
+        <div><div class="nm">${escHtml(ref.name)}</div><div class="meta">${ref.phone ? "+" + escHtml(ref.phone) + " · " : ""}${when}${linked ? ` · <span class="link">🔗 on roster${linked.approved === false ? " (not approved)" : ""}${linked.subscribed ? " · subscribed" : ""}</span>` : ' · <span class="meta">not linked — status set by hand</span>'}</div></div>
+        <div><div class="nm">${escHtml(referrer.name)}</div><div class="meta">referrer · ${Number(referrer.sessionsRemaining) || 0} sessions left${ref.rewardedAt ? ` · <b style="color:var(--td-teal)">+${LumioProfiles.REFERRAL_REWARD_SESSIONS} given</b>` : ""}</div></div>
+        <div><span class="pill ${ref.status}">${REF_LABEL[ref.status] || ref.status}</span></div>
+        <div><select data-act="status">${LumioProfiles.REFERRAL_STATUSES.map(s => `<option value="${s}" ${s === ref.status ? "selected" : ""}>${REF_LABEL[s]}</option>`).join("")}</select></div>
+        <div class="acts">${linked ? `<button type="button" class="td-btn" data-act="open" title="Open on the roster" style="padding:5px 9px">👤</button>` : ""}<button type="button" class="td-btn" data-act="del" title="Remove" style="padding:5px 9px">✕</button></div>
+      </div>`;
+    }).join("");
+    table.querySelectorAll(".td-ref-row").forEach(row => {
+      const sid = row.dataset.sid, rid = row.dataset.rid;
+      row.querySelector('[data-act="status"]').onchange = e => {
+        try {
+          const res = LumioProfiles.updateReferralStatus(sid, rid, e.target.value);
+          const referrer = LumioProfiles.getStudent(sid);
+          if (res.rewarded) showToast(`🎁 ${res.referral.name} subscribed — ${referrer.name} earned ${LumioProfiles.REFERRAL_REWARD_SESSIONS} free sessions (now ${res.sessionsRemaining} left).`, "success");
+          else showToast("Referral status updated.");
+          queueSync(); renderReferralsView(); renderRosterCards();
+        } catch (err) { showToast(err.message || "Couldn't update referral.", "error"); renderReferralsView(); }
+      };
+      const openBtn = row.querySelector('[data-act="open"]');
+      if (openBtn) openBtn.onclick = () => {
+        const linked = LumioProfiles.getStudent((LumioProfiles.listReferrals(sid).find(r => r.id === rid) || {}).linkedStudentId);
+        if (!linked) return;
+        document.querySelector('.td-navitem[data-view="students"]').click();
+        const si = document.getElementById("searchInput"); si.value = linked.name; si.dispatchEvent(new Event("input"));
+      };
+      row.querySelector('[data-act="del"]').onclick = async () => {
+        if (!(await confirmDialog("Remove this referral from the list? Sessions already credited stay with the referrer.", "Remove"))) return;
+        LumioProfiles.removeReferral(sid, rid); queueSync(); renderReferralsView(); renderRosterCards();
+      };
+    });
+    refBadge();
+  }
+  function refRenderLinkedPicker() {
+    const sel = document.getElementById("refLinked");
+    const referrerId = document.getElementById("refReferrer").value;
+    const list = LumioProfiles.referrableStudents(referrerId).sort((a, b) => a.name.localeCompare(b.name));
+    sel.innerHTML = list.length ? `<option value="">Pick a student…</option>` + list.map(s => `<option value="${s.id}">${escHtml(s.name)} · ${levelName(s.level)}${s.subscribed ? " · subscribed" : s.approved === false ? " · not approved" : ""}</option>`).join("") : `<option value="">Everyone on the roster is already referred</option>`;
+    document.getElementById("refAddHint").textContent = `${list.length} student${list.length === 1 ? "" : "s"} can still be linked.`;
+  }
+  document.getElementById("refReferrer").addEventListener("change", refRenderLinkedPicker);
+  document.getElementById("refStatusFilter").addEventListener("change", renderReferralsView);
+  document.getElementById("refSyncBtn").onclick = () => { renderReferralsView(); showToast("Linked referrals re-checked."); };
+  document.querySelectorAll("[data-refkind]").forEach(b => b.addEventListener("click", () => { refKind = b.dataset.refkind; renderReferralsView(); }));
+  document.getElementById("refAddBtn").onclick = async () => {
+    const err = document.getElementById("refAddError"); err.textContent = "";
+    const referrerId = document.getElementById("refReferrer").value;
+    if (!referrerId) { err.textContent = "Pick a subscribed student as the referrer."; return; }
+    try {
+      let linkedStudentId = null, name = "", phone = "";
+      if (refKind === "existing") {
+        linkedStudentId = document.getElementById("refLinked").value;
+        if (!linkedStudentId) { err.textContent = "Pick the referred student from the roster."; return; }
+      } else {
+        name = document.getElementById("refNewName").value.trim();
+        phone = document.getElementById("refNewPhone").value.trim().replace(/\D/g, "");
+        if (!name) { err.textContent = "The referred person needs a name."; return; }
+        if (document.getElementById("refCreateAccount").checked) {
+          const created = await LumioProfiles.addStudent({ name, phone, level: "pre-a", approved: false, subscribed: false, sessionsRemaining: 0, tags: ["referral"] });
+          linkedStudentId = created.id;
+        }
+      }
+      const ref = LumioProfiles.addReferral(referrerId, { name, phone, linkedStudentId });
+      LumioProfiles.syncReferrals({ linkedStudentId });
+      document.getElementById("refNewName").value = ""; document.getElementById("refNewPhone").value = "";
+      queueSync(); renderReferralsView(); renderRosterCards();
+      showToast(`Referral added: ${ref.name}${linkedStudentId ? " (linked to the roster)" : ""}.`, "success");
+    } catch (e) { err.textContent = e.message || "Couldn't add that referral."; }
+  };
+  try { refBadge(); } catch (e) {}
+
   function renderRenewalsList() {
     const list = document.getElementById("renewalsList");
     const empty = document.getElementById("renewalsEmpty");
