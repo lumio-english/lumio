@@ -138,7 +138,10 @@
   audio.onpause = audio.onended = () => document.getElementById("play").textContent = "▶";
   document.getElementById("play").onclick = () => audio.paused ? audio.play() : audio.pause();
   document.getElementById("seek").oninput = e => { if (audio.duration) audio.currentTime = e.target.value/100*audio.duration; };
-  load(Math.min(+(qs.get("song")||1), songs.length-1));
+  // ?song= is 1-based like the list numbers; the default used to be read as
+  // index 1 and opened the Theme song instead of Hello (class order).
+  const startSong = parseInt(qs.get("song") || "1", 10);
+  load(Math.max(0, Math.min((isNaN(startSong) ? 1 : startSong) - 1, songs.length - 1)));
 })();
 </script>
 </body>

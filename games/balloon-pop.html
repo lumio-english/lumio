@@ -139,7 +139,7 @@ function endGame() {
   document.getElementById("finalScore").textContent = `You popped ${score} correct balloons!`;
   document.getElementById("endcard").style.display = "flex";
   Lumio.confetti(80);
-  Lumio.speak(score >= 8 ? "Amazing! You are a balloon pop champion!" : "Great job! Try again to pop even more!");
+  Lumio.speak(score >= 8 ? "Amazing!" : "Great job!"); // was "Amazing! You are a balloon pop champion!" / "Great job! Try again to pop even more!" -- no recordings for those (404), these two exist
 }
 
 if (vocab.length) {

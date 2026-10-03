@@ -36,7 +36,7 @@
   }
   .lg-pad button:hover{box-shadow:0 4px 10px rgba(0,0,0,.08);transform:translateY(-1px)}
   .lg-pad button:active{background:#FFF1E0;transform:translateY(0) scale(.94)}
-  .lg-pin-error{color:var(--coral,#FF6B6B);font-weight:800;font-size:.85rem;text-align:center;height:18px;margin-top:6px}
+  .lg-pin-error{color:var(--coral,#FF6B6B);font-weight:800;font-size:.85rem;text-align:center;min-height:18px;line-height:1.35;margin-top:6px} /* min-height: 2-3 line messages grow the card instead of spilling out */
   .lg-pin-error.shake{animation:lgshake .3s}
   @keyframes lgshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
   .lg-tabs{display:flex;gap:8px;margin-bottom:20px;background:var(--cream,#FBF6EC);border-radius:14px;padding:5px}

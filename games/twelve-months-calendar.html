@@ -298,7 +298,7 @@ if (!vocab.length) {
   function endGame() {
     Lumio.confetti(100);
     const pct = Math.round((score / ROUNDS) * 100);
-    Lumio.speak(pct >= 80 ? "Wonderful! Another page in the Twelve Months Club book!" : "Great job! Let's fill more pages soon!");
+    Lumio.speak(pct >= 80 ? "Amazing!" : "Great job!"); // was "Wonderful! Another page in the Twelve Months Club book!" / "Great job! Let's fill more pages soon!" -- no recordings for those (404), these two exist
     document.getElementById("finalScore").textContent = `You filled ${score} out of ${ROUNDS} calendar pages!`;
     document.getElementById("endcard").style.display = "flex";
   }

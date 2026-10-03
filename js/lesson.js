@@ -6,6 +6,7 @@
 
 (async () => {
   const user = Lumio.requireUser();
+  if (!user) return; // requireUser is already sending us to login.html
   const level = Lumio.qs("level") || user.level || "pre-a";
   const num = parseInt(Lumio.qs("n") || "1", 10);
   const nn = String(num).padStart(2, "0");
@@ -100,9 +101,13 @@
   // vocab entry can set an "image" field to point at a distinct file
   // instead of the word's own slug, without affecting any other lesson
   // that uses the same word.
+  // Same slug + override rule as homework.html (vocabFile there) and the
+  // Python generators: apostrophes dropped, any other run of non-letters -> "-".
+  const vSlug = t => String(t).toLowerCase().trim().replace(/'/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  const vocabFile = w => vSlug(w.image || w.en);
   const vocabImg = (word, boxStyle, imgKey) => {
     const id = `vi${vocabImgSeq++}`;
-    const file = (imgKey || word).toLowerCase().replace(/'/g,"").replace(/ /g,"-");
+    const file = vSlug(imgKey || word);
     return `<div style="${boxStyle};position:relative;overflow:hidden">
        <div id="${id}" style="position:absolute;inset:0">${Lumio.letterTile(word)}</div>
        <img src="assets/vocab/${file}.png" alt="${word}"
@@ -110,6 +115,54 @@
             onload="var t=document.getElementById('${id}');if(t)t.style.display='none';"
             onerror="this.remove()">
      </div>`;
+  };
+
+  /* Picture-question distractors -- keep in sync with homework.html.
+     A picture can show more than its own word: big.png is an elephant
+     (with a ball), small.png a mouse next to a ball, so "What is this?"
+     on big with "elephant" as an option had two right answers. Rules:
+     1. never offer a word whose picture IS the target's picture, or whose
+        word is part of the target's picture name (fish-food -> "fish");
+     2. describing words ("pos": "adj..." or the DESCRIBING list -- lessons
+        only tag noun/verb today) need a subject to be drawn, and the
+        lesson's nouns whose example uses a describing word ("The elephant
+        is big.") are those subjects -> never options for a describing
+        target; reverse too: a subject noun's picture never gets the
+        lesson's describing words as options (an elephant IS big);
+     3. too few left -> top up with plain words from the level's other
+        lessons (never describing words or subjects). */
+  const DESCRIBING = new Set(("big small bigger smaller tall short long fast slow faster hot cold warm cool " +
+    "happy sad angry scared tired hungry thirsty fine okay great excited old young new clean dirty heavy light " +
+    "sunny rainy cloudy windy snowy stormy foggy crowded quiet noisy loud amazing difficult easy boring " +
+    "peaceful unforgettable delicious kind funny strong weak beautiful cute").split(" "));
+  const isDescribing = w => /^adj/i.test(w.pos || "") || DESCRIBING.has(String(w.en).toLowerCase());
+  const mentions = (sentence, word) => new RegExp("\\b" + String(word).replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b", "i").test(sentence || "");
+  const isSubject = w => !isDescribing(w) && [...DESCRIBING].some(d => mentions(w.example, d));
+  const levelPool = () => {
+    const all = (window.LUMIO_LESSONS && window.LUMIO_LESSONS[level]) || {};
+    return Object.keys(all).filter(k => +k !== num).reduce((acc, k) => acc.concat(all[k].vocab || []), []);
+  };
+  const pictureDistractors = (target, n = 3) => {
+    const tFile = vocabFile(target), tSlug = vSlug(target.en), tDesc = isDescribing(target);
+    const clash = w => {
+      const s = vSlug(w.en), f = vocabFile(w);
+      if (s === tSlug || f === tFile) return true;
+      if (`-${tFile}-`.includes(`-${s}-`) || `-${f}-`.includes(`-${tSlug}-`)) return true;
+      if (tDesc && isSubject(w)) return true;
+      if (!tDesc && isDescribing(w) && (isSubject(target) || mentions(target.example, w.en))) return true;
+      return false;
+    };
+    const seen = new Set();
+    // A word ruled out in this lesson stays ruled out when the same word
+    // comes back from another lesson as a top-up ("ball" is in big.png).
+    const take = arr => Lumio.shuffle([...arr]).filter(w => {
+      const s = vSlug(w.en);
+      if (seen.has(s)) return false;
+      seen.add(s); return !clash(w);
+    });
+    let out = take(lesson.vocab).slice(0, n);
+    if (out.length < n) out = out.concat(take(levelPool().filter(w => !isDescribing(w) && !isSubject(w))).slice(0, n - out.length));
+    return out;
   };
 
   /* ============================================================
@@ -158,7 +211,7 @@
     let r = 0;
     const draw = () => {
       const target = rounds[r];
-      const opts = Lumio.shuffle([target, ...Lumio.shuffle(lesson.vocab.filter(v => v.en !== target.en)).slice(0, 3)]);
+      const opts = Lumio.shuffle([target, ...pictureDistractors(target)]);
       stage.innerHTML = `
         <div class="card center">
           <span class="chip chip-teal">Listen & tap · ${r + 1}/${rounds.length}</span>
@@ -281,7 +334,7 @@
     const auto = Lumio.shuffle([...lesson.vocab]).slice(0, a.rounds || 4).map(v => ({
       prompt: `${vocabImg(v.en, "height:130px;border-radius:18px;max-width:220px;margin:0 auto", v.image)}<h2 class="mt">What is this?</h2>`,
       answer: v.en,
-      options: Lumio.shuffle([v.en, ...Lumio.shuffle(lesson.vocab.filter(x => x.en !== v.en)).slice(0, 3).map(x => x.en)]),
+      options: Lumio.shuffle([v.en, ...pictureDistractors(v).map(x => x.en)]),
     }));
     const custom = (a.questions || []).map(q => ({
       prompt: `<h2>${q.q}</h2>`, answer: q.answer, options: Lumio.shuffle([...q.options]),
@@ -610,9 +663,12 @@
       <div class="card center card-sun">
         <img src="assets/story/characters/lumi-celebrate.png" alt="Lumi celebrating" style="width:170px;filter:drop-shadow(0 10px 16px rgba(67,48,31,.22))">
         <h1 class="mt">Lesson complete!</h1>
-        <div class="stars mt" style="font-size:3rem">
+        ${document.body.classList.contains("theme-teen")
+          // teen levels count XP (stars x 100), like their dashboard and certificate
+          ? `<div class="stars mt" style="font-size:2.4rem;letter-spacing:0;font-weight:800">⚡ +${stars * 100} XP</div>`
+          : `<div class="stars mt" style="font-size:3rem">
           ${"★".repeat(stars)}<span class="star-off">${"★".repeat(3 - stars)}</span>
-        </div>
+        </div>`}
         <p class="mt" style="font-weight:800;font-size:1.2rem">Score: ${score}/${total} (${pct}%)</p>
         <div class="row mt" style="justify-content:center">
           <a class="btn" href="lesson.html?level=${level}&n=${num}">↺ Play again</a>

@@ -355,7 +355,7 @@ if (!vocab.length) {
   function endGame() {
     Lumio.confetti(100);
     const pct = Math.round((score / ROUNDS) * 100);
-    Lumio.speak(pct >= 80 ? "Amazing! The Treehouse Club is open!" : "Great building! Let's finish the treehouse again soon!");
+    Lumio.speak(pct >= 80 ? "Amazing!" : "Great job!"); // was "Amazing! The Treehouse Club is open!" / "Great building! Let's finish the treehouse again soon!" -- no recordings for those (404), these two exist
     document.getElementById("finalScore").textContent = `You built the treehouse with ${score} out of ${ROUNDS} correct answers!`;
     document.getElementById("endcard").style.display = "flex";
   }

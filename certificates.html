@@ -169,7 +169,12 @@
   document.getElementById("certName").textContent = u.name;
   document.getElementById("certLevel").textContent = meta.name;
   document.getElementById("certCefr").textContent = outcomes ? `CEFR ${outcomes.cefr} · Ages ${outcomes.ages}` : "";
-  document.getElementById("certStars").textContent = `★ ${stars}`;
+  // Teen levels (3-6) count XP everywhere else (stars x 100), so the certificate does too.
+  if (["level3", "level4", "level5", "level6"].includes(level)) {
+    document.getElementById("certStars").parentNode.innerHTML = `<span id="certStars">⚡ ${(stars * 100).toLocaleString("en-US")} XP</span> earned across <span id="certLessons">20</span> lessons`;
+  } else {
+    document.getElementById("certStars").textContent = `★ ${stars}`;
+  }
   document.getElementById("certLessons").textContent = meta.lessons;
   document.getElementById("certScore").textContent = test ? `${test.pct}%` : "—";
   document.getElementById("certBand").textContent = test ? test.band : "—";

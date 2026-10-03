@@ -360,7 +360,7 @@ if (!vocab.length) {
   function endGame() {
     Lumio.confetti(100);
     const pct = Math.round((score / ROUNDS) * 100);
-    Lumio.speak(pct >= 80 ? "Amazing chatting! The crew loves you!" : "Good chat! Come back and text again soon!");
+    Lumio.speak(pct >= 80 ? "Amazing!" : "Great job!"); // was "Amazing chatting! The crew loves you!" / "Good chat! Come back and text again soon!" -- no recordings for those (404), these two exist
     document.getElementById("finalScore").textContent = `You replied correctly ${score} out of ${ROUNDS} times!`;
     document.getElementById("endcard").style.display = "flex";
   }

@@ -296,7 +296,7 @@ if (!vocab.length) {
     Lumio.confetti(100);
     const spent = Object.keys(prices).reduce((s, en) => s + prices[en], 0);
     const pct = Math.round((score / ROUNDS) * 100);
-    Lumio.speak(pct >= 80 ? "What a haul! Best squad shopping trip ever!" : "Great shopping! Let's fill the list again soon!");
+    Lumio.speak(pct >= 80 ? "Amazing!" : "Great job!"); // was "What a haul! Best squad shopping trip ever!" / "Great shopping! Let's fill the list again soon!" -- no recordings for those (404), these two exist
     document.getElementById("finalReceipt").innerHTML =
       order.map(w => `<div style="display:flex;justify-content:space-between"><span>${w.en}</span><span>${prices[w.en]}🪙</span></div>`).join("") +
       `<div class="tot"><span>Total spent</span><span>${spent}🪙</span></div>
