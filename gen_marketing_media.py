@@ -86,12 +86,17 @@ def main():
             shot("placement-test.html", f"{HB}/hb-placement.png")
             shot("story.html?level=pre-a&part=1&preview=1", f"{HB}/hb-story.png")
             # dashboard: seed a roster student with 6 fully-done lessons via the app's own APIs
-            pg.goto(f"{BASE}/teacher.html"); pg.wait_for_timeout(1500)
+            # (teacher.html now redirects to the portal without a teacher
+            # session, so seed from login.html with the schedule module injected)
+            pg.goto(f"{BASE}/login.html"); pg.wait_for_timeout(800)
             pg.evaluate("""async () => {
+              localStorage.setItem('lumio_teacher', '1');
+              if (!window.LumioSchedule) await new Promise(r => { const sc = document.createElement('script'); sc.src = 'js/lumio-schedule.js'; sc.onload = r; document.head.appendChild(sc); });
               const s = await LumioProfiles.addStudent({name:'Yousef', level:'pre-a', pin:'1234', phone:'0500000000', approved:true, subscribed:true, sessionsRemaining:20});
               localStorage.setItem('lumio_parent_guide_seen_v1_' + s.id, '1');
               for (let n = 1; n <= 6; n++) {
-                const c = LumioSchedule.addClass({students:[{studentName:'Yousef'}], teacherName:'Ms. Sara', date:'2026-09-0'+n, startTime:'16:00', durationMinutes:45, level:'pre-a', cohort:'2026-09', lessonNumber:n, meetingLink:'https://zoom.us/j/1'});
+                const dt = Lumio.tzAddDays(LumioSchedule.todayStr(), n); // addClass refuses past dates now
+                const c = LumioSchedule.addClass({students:[{studentName:'Yousef'}], teacherName:'Ms. Sara', date:dt, startTime:'16:00', durationMinutes:45, level:'pre-a', cohort:'2026-09', lessonNumber:n, meetingLink:'https://zoom.us/j/1'});
                 LumioSchedule.markAttendance(c.id, 'Yousef', 'present');
                 Lumio.saveHomework('Yousef', 'pre-a', n, {stars:3, score:9, total:10, said:4, saidTotal:4, hasDrawing:true, date:'2026-09-0'+n});
               }
