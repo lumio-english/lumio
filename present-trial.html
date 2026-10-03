@@ -56,9 +56,8 @@
   <div class="brand" id="lessonBrand">📖 Lumio English</div>
   <div id="scoreboardChip" style="display:none;align-items:center;gap:10px;background:rgba(255,255,255,.1);border-radius:999px;padding:6px 14px">
   </div>
-  <div id="qCounter" title="Questions asked in this game — counts up each time a point is awarded; use − / + to correct it">
-    <span>❓ Question <b id="qNum">1</b><span id="qOf"></span></span>
-    <button onclick="bumpQ(-1)">−</button><button onclick="bumpQ(1)">+</button>
+  <div id="qCounter" title="Which point/star question this is, out of all the questions in this trial">
+    <span id="qText">⭐ Question 1 of 1</span>
   </div>
   <div class="actions">
     <button id="manageRosterBtn">👥 <span id="rosterCountLabel">0</span> students</button>
@@ -232,8 +231,8 @@ if (SOLO) {
 // Must match the number of files in slide-content/trial/<level>/ -- the
 // Pre-A / L1 / L2 decks had grown (48/43/41) but these stale counts made
 // the player stop early, so the closing slides were never reachable.
-const TRIAL_TOTALS = { "pre-a": 53, "level1": 44, "level2": 43, "level3": 48, "level4": 43, "level5": 41, "level6": 41 };
-const SOLO_TOTALS = { "pre-a": 53, "level1": 44, "level2": 43, "level3": 48, "level4": 43, "level5": 41, "level6": 41 };
+const TRIAL_TOTALS = { "pre-a": 55, "level1": 46, "level2": 45, "level3": 50, "level4": 45, "level5": 43, "level6": 43 };
+const SOLO_TOTALS = { "pre-a": 55, "level1": 46, "level2": 45, "level3": 50, "level4": 45, "level5": 43, "level6": 43 };
 total = (SOLO ? SOLO_TOTALS : TRIAL_TOTALS)[level] || 1;
 
 if (roster.length) {
@@ -286,23 +285,15 @@ function refreshScoreboardChip() {
 // point counts as one question answered; − / + in the top bar correct it.
 let qCount = 0, lastWasChallenge = false;
 const CHALLENGE_KINDS = ["buzzer", "team-relay", "copycat", "solo-answer", "solo-do"];
-function bumpQ(d) { qCount = Math.max(0, qCount + d); refreshQCounter(); }
+function bumpQ() {}
+// The numbering is baked into each challenge slide at build time
+// ("Question k of N", lib/trial_common.number_challenges) so the
+// teacher always knows how long a challenge runs; the top bar mirrors it.
 function refreshQCounter() {
   const el = document.getElementById("qCounter"); if (!el) return;
-  const root = document.querySelector("[data-challenge]");
-  const kind = root ? root.dataset.challenge : "";
-  const show = CHALLENGE_KINDS.includes(kind) || (kind === "scoreboard" && qCount > 0);
-  el.style.display = show ? "flex" : "none";
-  // On a challenge slide: the question being asked now. On the scoreboard: how many were asked.
-  const onChallenge = CHALLENGE_KINDS.includes(kind);
-  document.getElementById("qNum").textContent = onChallenge ? qCount + 1 : qCount;
-  document.getElementById("qOf").textContent = onChallenge ? "" : " asked";
-  // the same number inside the slide, where the students see it too
-  if (root && CHALLENGE_KINDS.includes(kind)) {
-    let b = root.querySelector(".q-badge");
-    if (!b) { b = document.createElement("div"); b.className = "q-badge"; root.prepend(b); }
-    b.textContent = `Question ${qCount + 1}`;
-  }
+  const tag = document.querySelector("[data-qnum]");
+  el.style.display = tag ? "flex" : "none";
+  if (tag) document.getElementById("qText").textContent = tag.textContent.trim();
 }
 function trackChallengeSlide() {
   const root = document.querySelector("[data-challenge]");

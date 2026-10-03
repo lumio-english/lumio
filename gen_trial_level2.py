@@ -18,6 +18,7 @@ from deck_template_v2 import (
     slide_vocab_scene,
 )
 import trial_recap as TR
+import trial_common as TC
 
 _scene_slide = slide_vocab_scene
 def slide_vocab_scene(img, sentence, bold, *a, **k):
@@ -189,6 +190,7 @@ def _build():
     slides = []
 
     slides.append(slide_trial_welcome(1, TOTAL))
+    slides.append(TC.meet_characters(sys.modules[__name__], "level2", len(slides) + 1, TOTAL))
     slides.append(slide_team_assign(len(slides) + 1, TOTAL))
 
     # Family Tree section -- family-home theme + the real parents/grandparents scene.
@@ -246,6 +248,7 @@ def _build():
     slides.append(slide_vocab_scene("assets/vocab-scenes/level2/40.jpg", "I brush my teeth. I get dressed.", ["brush my teeth", "get dressed"], len(slides) + 1, TOTAL, 1))
     deck_template_v2.CURRENT_LESSON_BG = None
 
+    slides.append(TC.game_slide(sys.modules[__name__], "level2", len(slides) + 1, TOTAL))
     slides.append(slide_scoreboard("And the final score is...", len(slides) + 1, TOTAL))
     slides.extend(TR.kid_slides(len(slides) + 1, TOTAL))
     slides.append(slide_finale(len(slides) + 1, TOTAL))

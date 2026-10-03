@@ -18,6 +18,7 @@ from deck_template_teen import (
 import deck_template_teen2
 import trial_enrich as TE
 import trial_recap as TR
+import trial_common as TC
 from deck_template_teen2 import bg_theme
 
 TOTAL = 42
@@ -184,6 +185,7 @@ def _build():
     slides = []
 
     slides.append(slide_trial_welcome(1, TOTAL))
+    slides.append(TC.meet_characters(sys.modules[__name__], "level4", len(slides) + 1, TOTAL))
     slides.append(slide_team_assign(len(slides) + 1, TOTAL))
     slides.append(TE.hook_slide("level4", len(slides) + 1, TOTAL))
 
@@ -229,6 +231,7 @@ def _build():
         slides.append(slide_vocab(load_word("level4", 14, w_en), 0, len(slides) + 1, TOTAL, 1, "sara-teen-explain"))
     deck_template_teen2.CURRENT_LESSON_BG = None
 
+    slides.append(TC.game_slide(sys.modules[__name__], "level4", len(slides) + 1, TOTAL))
     slides.append(slide_scoreboard("And the final score is...", len(slides) + 1, TOTAL))
     slides.append(TE.discussion_slide("level4", len(slides) + 1, TOTAL))
     _dlg = [l[0] for l in TE._dialogues("level4").get(1, [])[:4]]

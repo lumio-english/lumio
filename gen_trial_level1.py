@@ -20,6 +20,7 @@ from deck_template_v2 import (
     slide_vocab_scene,
 )
 import trial_recap as TR
+import trial_common as TC
 
 _scene_slide = slide_vocab_scene
 def slide_vocab_scene(img, sentence, bold, *a, **k):
@@ -191,6 +192,7 @@ def _build():
     slides = []
 
     slides.append(slide_trial_welcome(1, TOTAL))
+    slides.append(TC.meet_characters(sys.modules[__name__], "level1", len(slides) + 1, TOTAL))
     slides.append(slide_team_assign(len(slides) + 1, TOTAL))
 
     # Food section -- market theme + the real apple/banana scene.
@@ -245,6 +247,7 @@ def _build():
     for w_en in ["read", "write", "draw"]:
         slides.append(slide_vocab(load_word("level1", 14, w_en), 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
 
+    slides.append(TC.game_slide(sys.modules[__name__], "level1", len(slides) + 1, TOTAL))
     slides.append(slide_scoreboard("And the final score is...", len(slides) + 1, TOTAL))
     slides.extend(TR.kid_slides(len(slides) + 1, TOTAL))
     slides.append(slide_finale(len(slides) + 1, TOTAL))

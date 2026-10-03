@@ -110,4 +110,5 @@ def two_pass_build(build_fn, set_total, first_total):
         reset(); set_total(len(slides))
         slides = build_fn()
     assert len(slides) == len(slides)
-    return slides
+    import trial_common
+    return trial_common.number_challenges(slides)
