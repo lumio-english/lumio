@@ -169,6 +169,32 @@ tbody tr:last-child td{border-bottom:none;}
      under 16px — not a layout bug, a native browser behavior, but it
      looks exactly like "the width is wrong" until you pinch back out. */
   .li, .si2 { font-size:16px; }
+  /* Phones: the 218px fixed sidebar left ~170px for the page (717px scroll
+     width at 390px). It becomes a top bar: brand + sign-out on one row,
+     the nav as a sideways-scrolling tab strip below it. */
+  .sb{position:sticky;top:0;width:auto;flex-direction:row;flex-wrap:wrap;align-items:center;z-index:120}
+  .sb-hd{border-bottom:none;padding:8px 12px;flex:1 1 auto}
+  .sb-img{width:30px;height:30px}
+  .sb-nav{order:3;flex:1 1 100%;display:flex;overflow-x:auto;padding:0;border-top:1px solid rgba(255,255,255,0.1);-webkit-overflow-scrolling:touch}
+  .sb-sec{display:none}
+  .sb-it{white-space:nowrap;border-left:none;border-bottom:3px solid transparent;padding:10px 12px}
+  .sb-it.on{border-left-color:transparent;border-bottom-color:var(--y)}
+  .sb-ft{border-top:none;padding:6px 12px;display:flex;align-items:center;gap:8px;min-width:0}
+  .sb-ft > div{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px}
+  .btn-lo{margin-top:0;width:auto;padding:6px 10px}
+  .mn{margin-left:0}
+  .tb{position:static;flex-wrap:wrap;gap:8px;padding:10px 12px}
+  .tb-r{flex-wrap:wrap}
+  .ct{padding:12px}
+  .sr{grid-template-columns:repeat(2,1fr);gap:9px}
+  .cg{grid-template-columns:1fr}
+  .sm{grid-template-columns:repeat(2,1fr)}
+  .pn{width:100%}
+  .si2{max-width:100%}
+  .tc{overflow-x:auto}
+  .lc{padding:28px 20px}
+  .blw{width:90px}
+  #toast{left:12px;right:12px;max-width:none}
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -243,7 +269,7 @@ tbody tr:last-child td{border-bottom:none;}
     <div id="vw-results">
       <div class="sr">
         <div class="sc"><div class="sl"><div class="sla">Total Tests</div><div class="sv" id="s-tot">0</div><div class="ss">completed</div></div><div class="si">📋</div></div>
-        <div class="sc"><div class="sl"><div class="sla">Avg Score</div><div class="sv" id="s-avg">—</div><div class="ss">out of 51</div></div><div class="si">⭐</div></div>
+        <div class="sc"><div class="sl"><div class="sla">Avg Score</div><div class="sv" id="s-avg">—</div><div class="ss" id="s-avg-of">out of 36</div></div><div class="si">⭐</div></div>
         <div class="sc"><div class="sl"><div class="sla">AI Reviews</div><div class="sv" id="s-rev">0</div><div class="ss">writing corrections</div></div><div class="si">✨</div></div>
         <div class="sc"><div class="sl"><div class="sla">Top Level</div><div class="sv" id="s-top">—</div><div class="ss">highest achieved</div></div><div class="si">🏆</div></div>
       </div>
@@ -359,14 +385,62 @@ const AI_FEEDBACK_URL = 'https://script.google.com/macros/s/AKfycbyNz4VuLuthHBk0
 
 // ══════════════════════════════════════════
 //  FIXED ADMIN ACCOUNTS
-//  CHANGE THESE before sharing this dashboard with anyone — these are
-//  just starting defaults, not meant to stay as-is in production.
+//  Only SHA-256 hashes of the built-in passwords live in this page now
+//  (hex of SHA-256("lumio-admin:" + password), see sha256Hex below), so
+//  reading the source no longer hands anyone a password. The same
+//  passwords keep working, and the owner can still set new ones in
+//  Settings. NOTE: this is a convenience gate only -- the real data
+//  protection is server-side (the Apps Script checks the teacher PIN /
+//  student PIN on every request, see whoIs_ in _docs/AppsScript-Code.gs).
 // ══════════════════════════════════════════
 const ADMINS = {
-  'lumio_admin': 'Lumio2026!',   // full access — change passwords, clear results
-  'admin':       'view2026',     // view only — sees all data, no settings
-  'manager':     'view2026b',    // view only
+  'lumio_admin': 'd7eeb6d0295eb5d482e116e184383beba2cf2b7a966a39d1c1e4cfb73c13fcf5', // full access — change passwords, clear results
+  'admin':       'da8c34d1a1c2a7b436cd3e6ccbf5493082d3ad75e62125e6d05cdb9a54a218df', // view only — sees all data, no settings
+  'manager':     '02a8340a26e7e641b5fe1aa6a9e94a4de84f4de5ce27b1a1c1bba731b2471a82', // view only
 };
+// Built-in agent / team-manager default passwords (hashed the same way),
+// used until the owner sets a default in Settings.
+const DEFAULT_AGENT_PASS_HASH = 'b0f861237fe794fe67e8690e38fe9e83bbb0cce152be9a2735a8d003247f4f4f';
+const DEFAULT_GROUP_PASS_HASH = '591eff8fdc109c3000c9cd3af3a01fedc4680b325a55d8d1fb0a873855004e64';
+// SHA-256 hex. Web Crypto when available; a small pure-JS version
+// otherwise (crypto.subtle is missing on plain-http LAN addresses), so
+// the built-in passwords work everywhere. hashAdminPwd keeps its own
+// fallback because saved custom hashes were made with it.
+async function sha256Hex(str) {
+  try {
+    if (window.crypto && window.crypto.subtle && window.crypto.subtle.digest) {
+      const d = await window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(d)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+  } catch (e) { /* fall through */ }
+  const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  const bytes = Array.from(new TextEncoder().encode(str));
+  const bitLen = bytes.length * 8;
+  bytes.push(0x80);
+  while (bytes.length % 64 !== 56) bytes.push(0);
+  for (let i = 7; i >= 0; i--) bytes.push(i >= 4 ? 0 : (bitLen >>> (i * 8)) & 0xff);
+  const H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+  const rotr = (x, n) => (x >>> n) | (x << (32 - n));
+  for (let o = 0; o < bytes.length; o += 64) {
+    const W = new Array(64);
+    for (let t = 0; t < 16; t++) W[t] = (bytes[o+t*4] << 24) | (bytes[o+t*4+1] << 16) | (bytes[o+t*4+2] << 8) | bytes[o+t*4+3];
+    for (let t = 16; t < 64; t++) {
+      const s0 = rotr(W[t-15], 7) ^ rotr(W[t-15], 18) ^ (W[t-15] >>> 3);
+      const s1 = rotr(W[t-2], 17) ^ rotr(W[t-2], 19) ^ (W[t-2] >>> 10);
+      W[t] = (W[t-16] + s0 + W[t-7] + s1) | 0;
+    }
+    let [a, b, c, d, e, f, g, hh] = H;
+    for (let t = 0; t < 64; t++) {
+      const T1 = (hh + (rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25)) + ((e & f) ^ (~e & g)) + K[t] + W[t]) | 0;
+      const T2 = ((rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22)) + ((a & b) ^ (a & c) ^ (b & c))) | 0;
+      hh = g; g = f; f = e; e = (d + T1) | 0; d = c; c = b; b = a; a = (T1 + T2) | 0;
+    }
+    H[0] = (H[0] + a) | 0; H[1] = (H[1] + b) | 0; H[2] = (H[2] + c) | 0; H[3] = (H[3] + d) | 0;
+    H[4] = (H[4] + e) | 0; H[5] = (H[5] + f) | 0; H[6] = (H[6] + g) | 0; H[7] = (H[7] + hh) | 0;
+  }
+  return H.map(x => (x >>> 0).toString(16).padStart(8, '0')).join('');
+}
+async function matchesBuiltIn(pwd, hash) { return !!hash && (await sha256Hex('lumio-admin:' + String(pwd || ''))) === hash; }
 
 // ══════════════════════════════════════════
 //  LOGIN
@@ -436,14 +510,14 @@ async function resolveLogin(user, pass) {
   const savedAdmins    = getSavedAdmins(); // custom admins: values are HASHES, not plain text
   const savedGroupPwds = getSavedGroupPwds();
   const savedAgentPwds = getSavedAgentPwds();
-  const agentPass      = localStorage.getItem(DASH_LS_KEY + '_agent_pass') || '1234';
-  const groupPass       = localStorage.getItem(DASH_LS_KEY + '_grp_default') || 'team1234';
+  // Owner-set defaults (Settings) are stored as typed; unset = the hashed
+  // built-in default (DEFAULT_AGENT_PASS_HASH / DEFAULT_GROUP_PASS_HASH).
+  const agentPass      = localStorage.getItem(DASH_LS_KEY + '_agent_pass') || '';
+  const groupPass       = localStorage.getItem(DASH_LS_KEY + '_grp_default') || '';
 
   // ── Super admin / admin ──
-  // Fixed defaults (ADMINS below) are compared in plain text — they're
-  // already sitting in this file's source as a readable constant, so
-  // hashing that specific comparison wouldn't add real protection.
-  // Custom admins (and password overrides for the fixed accounts,
+  // Fixed defaults (ADMINS above) are SHA-256 hashes, compared with
+  // matchesBuiltIn(). Custom admins (and password overrides for the fixed accounts,
   // saved via Settings) are genuinely hashed, since those get
   // persisted to local storage and synced to the Google Sheet, where
   // plain text would actually be exposed. A saved override takes
@@ -466,7 +540,7 @@ async function resolveLogin(user, pass) {
   // password wasn't working. The fixed default now always works as an
   // emergency fallback; a matching custom password (checked above) still
   // works too.
-  if (ADMINS[u] && ADMINS[u] === p) {
+  if (ADMINS[u] && await matchesBuiltIn(p, ADMINS[u])) {
     const role = u === 'lumio_admin' ? 'super_admin' : 'admin';
     return { role, display: u === 'lumio_admin' ? 'Super Admin' : 'Admin', username: u, studentIds: null, groupKey: null };
   }
@@ -505,7 +579,7 @@ async function resolveLogin(user, pass) {
   // ── Group login (team leader / sales manager) ──
   const grpEntry = GROUPS[u];
   const thisGrpPass = savedGroupPwds[u] || groupPass;
-  if (grpEntry && p === thisGrpPass) {
+  if (grpEntry && (thisGrpPass ? p === thisGrpPass : await matchesBuiltIn(p, DEFAULT_GROUP_PASS_HASH))) {
     return {
       role: 'group_manager',
       display: grpEntry.display,
@@ -520,7 +594,7 @@ async function resolveLogin(user, pass) {
   // ── Agent login ──
   const entry         = AGENTS[u];
   const thisAgentPass = savedAgentPwds[u] || agentPass;
-  if (entry && p === thisAgentPass) {
+  if (entry && (thisAgentPass ? p === thisAgentPass : await matchesBuiltIn(p, DEFAULT_AGENT_PASS_HASH))) {
     const rl = entry.r==='both'?'SS + LP':entry.r.toUpperCase();
     return { role: entry.r, display: entry.n, roleLabel: rl, username: u,
              studentIds: entry.i ? entry.i.split(',') : [], groupKey: null };
@@ -670,11 +744,25 @@ function updStats(){
   document.getElementById('s-tot').textContent=allR.length;
   document.getElementById('s-rev').textContent=aiN;
   if(allR.length){
-    const sc=allR.map(r=>{const v=parseInt((r.total||'0').split('/')[0]);return isNaN(v)?0:v;});
-    document.getElementById('s-avg').textContent=Math.round(sc.reduce((a,b)=>a+b,0)/sc.length);
+    const avg=avgScoreInfo(allR);
+    document.getElementById('s-avg').textContent=avg.text;
+    document.getElementById('s-avg-of').textContent=avg.label;
     const lv=allR.map(r=>{const v=parseInt((r.level||'Level 0').replace('Level ',''));return isNaN(v)?0:v;});
     document.getElementById('s-top').textContent='L'+Math.max(...lv);
   } else {document.getElementById('s-avg').textContent='—';document.getElementById('s-top').textContent='—';}
+}
+// The placement test is scored out of 36 (listening 10 + reading 10 +
+// grammar 16; writing is read by a teacher). Each result carries its own
+// "n/36" total, so the denominator comes from the data -- older results
+// from a 51-point version still average correctly (as a %).
+const PRO_TEST_TOTAL=36;
+function scoreParts(v,defMax){const m=String(v==null?'':v).match(/^\s*(\d+)\s*\/\s*(\d+)/);if(m)return{n:+m[1],d:+m[2]};const n=parseInt(v);return{n:isNaN(n)?0:n,d:defMax};}
+function avgScoreInfo(rows){
+  const ps=rows.map(r=>scoreParts(r.total,PRO_TEST_TOTAL));
+  const dens=[...new Set(ps.map(p=>p.d))];
+  if(dens.length<=1){const d=dens[0]||PRO_TEST_TOTAL;return{text:String(Math.round(ps.reduce((a,p)=>a+p.n,0)/ps.length)),outOf:d,label:'out of '+d};}
+  const pct=Math.round(ps.reduce((a,p)=>a+(p.d?p.n/p.d:0),0)/ps.length*100);
+  return{text:pct+'%',outOf:null,label:'average % (mixed test versions)'};
 }
 
 // ══════════════════════════════════════════
@@ -1080,7 +1168,7 @@ function loadSettingsView(){
   const el=document.getElementById('settings-content');
   if(!el)return;
   if(CU.role==='super_admin'){
-    const saved=getSavedAdmins(),ap=localStorage.getItem(DASH_LS_KEY+'_agent_pass')||'1234',gp=localStorage.getItem(DASH_LS_KEY+'_grp_default')||'team1234',allAdmins={...ADMINS,...saved};
+    const saved=getSavedAdmins(),ap=localStorage.getItem(DASH_LS_KEY+'_agent_pass')||'',gp=localStorage.getItem(DASH_LS_KEY+'_grp_default')||'',allAdmins={...ADMINS,...saved};
     // Teacher accounts (name + 4-digit PIN). These are the same records the
     // main Lumio Team tab uses, so a teacher created here can log into this
     // dashboard AND the teacher portal straight away, on any device once synced.
@@ -1105,7 +1193,7 @@ function loadSettingsView(){
       <div id="upload-status" style="margin-top:10px;font-size:.82rem;font-weight:700;color:#16a34a"></div>
     </div></div>
     <div class="tc" style="margin-bottom:16px"><div class="tto"><div class="tt">🔑 Admin Passwords</div></div><div style="padding:18px 20px"><div id="admin-pwd-list"></div><div style="margin-top:12px;padding-top:12px;border-top:1px solid #f0f2f5"><div style="font-size:.78rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Add New Admin</div><div style="display:flex;gap:8px;flex-wrap:wrap"><input id="new-admin-user" class="si2" placeholder="Username" style="width:140px"/><input id="new-admin-pass" class="si2" placeholder="Password" style="width:140px"/><button class="btn bp" onclick="addAdminUser()">+ Add</button></div></div></div></div>
-    <div class="tc" style="margin-bottom:16px"><div class="tto"><div class="tt">👤 Agent Passwords</div><input class="si2" id="agent-search" placeholder="🔍 Search agent…" oninput="renderAgentPwds(this.value)" style="width:170px"/></div><div style="padding:16px 20px"><div style="background:var(--bl);border-radius:8px;padding:11px 14px;margin-bottom:12px;font-size:.84rem;color:var(--b)">Default: <strong>${ap}</strong> <button class="btn bg btn-sm" onclick="copyPwd('${ap}',this)" title="Copy">📋</button><div style="display:flex;gap:8px;margin-top:7px"><input id="agent-pass-input" class="si2" placeholder="New default" style="width:150px"/><button class="btn bp" onclick="saveAgentPass()">💾</button></div></div><div style="font-size:.78rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Custom <span id="custom-count"></span></div><div id="agent-pwd-list" style="max-height:280px;overflow-y:auto"></div><div style="margin-top:10px;padding-top:10px;border-top:1px solid #f0f2f5;display:flex;gap:8px;flex-wrap:wrap"><input id="custom-agent-name" class="si2" placeholder="Agent name" style="width:200px"/><input id="custom-agent-pass" class="si2" placeholder="Password" style="width:130px"/><button class="btn bp" onclick="setAgentPwd()">💾 Set</button></div>
+    <div class="tc" style="margin-bottom:16px"><div class="tto"><div class="tt">👤 Agent Passwords</div><input class="si2" id="agent-search" placeholder="🔍 Search agent…" oninput="renderAgentPwds(this.value)" style="width:170px"/></div><div style="padding:16px 20px"><div style="background:var(--bl);border-radius:8px;padding:11px 14px;margin-bottom:12px;font-size:.84rem;color:var(--b)">Default: ${ap?`<strong>${h(ap)}</strong> <button class="btn bg btn-sm" onclick="copyPwd(${h(JSON.stringify(String(ap)))},this)" title="Copy">📋</button>`:'<em>built-in (hidden) — set your own below</em>'}<div style="display:flex;gap:8px;margin-top:7px"><input id="agent-pass-input" class="si2" placeholder="New default" style="width:150px"/><button class="btn bp" onclick="saveAgentPass()">💾</button></div></div><div style="font-size:.78rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Custom <span id="custom-count"></span></div><div id="agent-pwd-list" style="max-height:280px;overflow-y:auto"></div><div style="margin-top:10px;padding-top:10px;border-top:1px solid #f0f2f5;display:flex;gap:8px;flex-wrap:wrap"><input id="custom-agent-name" class="si2" placeholder="Agent name" style="width:200px"/><input id="custom-agent-pass" class="si2" placeholder="Password" style="width:130px"/><button class="btn bp" onclick="setAgentPwd()">💾 Set</button></div>
         <div style="margin-top:14px;padding-top:14px;border-top:1px solid #f0f2f5">
           <div style="font-size:.78rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">➕ Add New Agent</div>
           <div style="font-size:.78rem;color:var(--mu);margin-bottom:8px">Agent will be able to login and see their students only.</div>
@@ -1116,7 +1204,7 @@ function loadSettingsView(){
           </div>
         </div>
       </div></div></div>
-    <div class="tc" style="margin-bottom:16px"><div class="tto"><div class="tt">👥 Group Passwords</div></div><div style="padding:16px 20px"><div style="font-size:.84rem;color:var(--mu);margin-bottom:10px">Default: <strong>${gp}</strong> <button class="btn bg btn-sm" onclick="copyPwd('${gp}',this)" title="Copy">📋</button><div style="display:flex;gap:8px;margin-top:7px"><input id="grp-default-pass" class="si2" placeholder="New default" style="width:180px"/><button class="btn bp" onclick="saveGroupDefaultPass()">💾</button></div></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"><input id="custom-grp-name" class="si2" placeholder="Group key e.g. me-egss01" style="width:190px"/><input id="custom-grp-pass" class="si2" placeholder="Password" style="width:130px"/><button class="btn bp" onclick="setGroupPwd()">💾 Set</button></div><div id="group-pwd-list" style="max-height:160px;overflow-y:auto"></div></div></div>
+    <div class="tc" style="margin-bottom:16px"><div class="tto"><div class="tt">👥 Group Passwords</div></div><div style="padding:16px 20px"><div style="font-size:.84rem;color:var(--mu);margin-bottom:10px">Default: ${gp?`<strong>${h(gp)}</strong> <button class="btn bg btn-sm" onclick="copyPwd(${h(JSON.stringify(String(gp)))},this)" title="Copy">📋</button>`:'<em>built-in (hidden) — set your own below</em>'}<div style="display:flex;gap:8px;margin-top:7px"><input id="grp-default-pass" class="si2" placeholder="New default" style="width:180px"/><button class="btn bp" onclick="saveGroupDefaultPass()">💾</button></div></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"><input id="custom-grp-name" class="si2" placeholder="Group key e.g. me-egss01" style="width:190px"/><input id="custom-grp-pass" class="si2" placeholder="Password" style="width:130px"/><button class="btn bp" onclick="setGroupPwd()">💾 Set</button></div><div id="group-pwd-list" style="max-height:160px;overflow-y:auto"></div></div></div>
     <div style="background:var(--yellow-light);border-radius:var(--r);padding:12px 16px;font-size:.83rem;color:#7a5c00">✅ Admin accounts sync across your devices automatically. Passwords are hashed before they're stored or synced — nobody, including you, can look up a forgotten password; set a new one instead.</div>`;
     const al=document.getElementById('admin-pwd-list');
     if(al)al.innerHTML=Object.entries(allAdmins).map(([u,p])=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:9px;padding:9px 12px;background:var(--g);border-radius:7px"><div style="font-weight:800;font-size:.86rem;color:var(--b);width:120px">${h(u)}</div><input class="si2" id="pwd-${h(u)}" type="password" placeholder="${ADMINS[u]?'Fixed default password':'Enter a new password to change it'}" style="flex:1"/><button class="btn bp btn-sm" onclick="saveAdminPwd(${h(JSON.stringify(String(u)))})">💾</button>${!ADMINS[u]?`<button class="btn bd btn-sm" onclick="removeAdminUser(${h(JSON.stringify(String(u)))})">🗑</button>`:''}</div>`).join('');
@@ -1140,8 +1228,8 @@ function loadSettingsView(){
           <div style="font-family:monospace;font-size:.95rem;font-weight:700;color:var(--b);margin-bottom:14px">${h(CU.username)}</div>
           <div style="font-size:.78rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Current Password</div>
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
-            <code style="font-family:monospace;font-size:.95rem;background:var(--g);padding:7px 12px;border-radius:7px;border:1px solid #e5e9f2">${h(myPwd)}</code>
-            <button class="btn bg btn-sm" onclick="copyPwd(${h(JSON.stringify(String(myPwd)))},this)" title="Copy">📋</button>
+            ${myPwd ? `<code style="font-family:monospace;font-size:.95rem;background:var(--g);padding:7px 12px;border-radius:7px;border:1px solid #e5e9f2">${h(myPwd)}</code>
+            <button class="btn bg btn-sm" onclick="copyPwd(${h(JSON.stringify(String(myPwd)))},this)" title="Copy">📋</button>` : '<span style="font-size:.85rem;color:var(--mu)">The built-in default you signed in with — set your own below.</span>'}
           </div>
           <div style="font-size:.78rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Change Password</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -1158,11 +1246,11 @@ function getMyOwnPwd() {
   if (!CU) return '';
   if (CU.role === 'group_manager') {
     const saved = getSavedGroupPwds();
-    return saved[CU.username] || localStorage.getItem(DASH_LS_KEY+'_grp_default') || 'team1234';
+    return saved[CU.username] || localStorage.getItem(DASH_LS_KEY+'_grp_default') || '';
   }
   // ss / lp / both agents
   const saved = getSavedAgentPwds();
-  return saved[CU.username] || localStorage.getItem(DASH_LS_KEY+'_agent_pass') || '1234';
+  return saved[CU.username] || localStorage.getItem(DASH_LS_KEY+'_agent_pass') || ''; // '' = built-in default (only its hash is in the page)
 }
 
 function saveMyOwnPwd() {
@@ -1275,7 +1363,7 @@ function removeAdminUser(u){
   loadSettingsView();
 }
 function saveAgentPass(){const v=(document.getElementById('agent-pass-input')?.value||'').trim();if(!v){showT('⚠️ Enter password');return;}localStorage.setItem(DASH_LS_KEY+'_agent_pass',v);showT('✅ Agent default: '+v);loadSettingsView();}
-function renderAgentPwds(search){const cp=getSavedAgentPwds(),def=localStorage.getItem(DASH_LS_KEY+'_agent_pass')||'1234',q=(search||'').toLowerCase().trim(),el=document.getElementById('agent-pwd-list'),ce=document.getElementById('custom-count'),en=Object.entries(cp);if(ce)ce.textContent=en.length?`(${en.length} custom)`:'';let rows=en;if(q){const m=Object.keys(AGENTS).filter(k=>k.includes(q)&&!cp[k]).slice(0,15).map(k=>[k,null]);rows=[...rows.filter(([k])=>k.includes(q)),...m];}if(!el)return;if(!rows.length){el.innerHTML=q?`<div style="color:var(--mu);font-size:.83rem">No match for "${h(q)}"</div>`:'<div style="color:var(--mu);font-size:.83rem">No custom passwords yet.</div>';return;}el.innerHTML=rows.map(([k,p])=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;padding:8px 12px;background:var(--g);border-radius:7px"><div style="font-size:.81rem;font-weight:700;color:var(--b);width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${h(k)}</div>${p!==null?`<input class="si2" id="agpwd-${h(k)}" value="${h(p)}" style="flex:1;font-family:monospace"/><button class="btn bg btn-sm" onclick="copyPwd(${h(JSON.stringify(String(p)))},this)" title="Copy">📋</button><button class="btn bp btn-sm" onclick="updateAgentPwd(${h(JSON.stringify(String(k)))})">💾</button><button class="btn bd btn-sm" onclick="removeAgentPwd(${h(JSON.stringify(String(k)))})">✕</button>`:`<span style="flex:1;font-size:.81rem;color:var(--mu);font-style:italic">Default (${h(def)})</span><button class="btn bp btn-sm" onclick="document.getElementById('custom-agent-name').value=${h(JSON.stringify(String(k)))};document.getElementById('custom-agent-pass').focus()">Set</button>`}</div>`).join('');}
+function renderAgentPwds(search){const cp=getSavedAgentPwds(),def=localStorage.getItem(DASH_LS_KEY+'_agent_pass')||'built-in',q=(search||'').toLowerCase().trim(),el=document.getElementById('agent-pwd-list'),ce=document.getElementById('custom-count'),en=Object.entries(cp);if(ce)ce.textContent=en.length?`(${en.length} custom)`:'';let rows=en;if(q){const m=Object.keys(AGENTS).filter(k=>k.includes(q)&&!cp[k]).slice(0,15).map(k=>[k,null]);rows=[...rows.filter(([k])=>k.includes(q)),...m];}if(!el)return;if(!rows.length){el.innerHTML=q?`<div style="color:var(--mu);font-size:.83rem">No match for "${h(q)}"</div>`:'<div style="color:var(--mu);font-size:.83rem">No custom passwords yet.</div>';return;}el.innerHTML=rows.map(([k,p])=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;padding:8px 12px;background:var(--g);border-radius:7px"><div style="font-size:.81rem;font-weight:700;color:var(--b);width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${h(k)}</div>${p!==null?`<input class="si2" id="agpwd-${h(k)}" value="${h(p)}" style="flex:1;font-family:monospace"/><button class="btn bg btn-sm" onclick="copyPwd(${h(JSON.stringify(String(p)))},this)" title="Copy">📋</button><button class="btn bp btn-sm" onclick="updateAgentPwd(${h(JSON.stringify(String(k)))})">💾</button><button class="btn bd btn-sm" onclick="removeAgentPwd(${h(JSON.stringify(String(k)))})">✕</button>`:`<span style="flex:1;font-size:.81rem;color:var(--mu);font-style:italic">Default (${h(def)})</span><button class="btn bp btn-sm" onclick="document.getElementById('custom-agent-name').value=${h(JSON.stringify(String(k)))};document.getElementById('custom-agent-pass').focus()">Set</button>`}</div>`).join('');}
 function setAgentPwd(){let n=(document.getElementById('custom-agent-name')?.value||'').trim().toLowerCase(),p=(document.getElementById('custom-agent-pass')?.value||'').trim();if(!n||!p){showT('⚠️ Enter agent name and password');return;}const agentKey=Object.keys(AGENTS).find(k=>k.toLowerCase()===n)||n;if(!AGENTS[agentKey]){showT('⚠️ Agent "'+n+'" not found');return;}n=agentKey;const s=getSavedAgentPwds();s[n]=p;localStorage.setItem(DASH_LS_KEY+'_agent_pwds',JSON.stringify(s));showT('✅ Set for: '+n);loadSettingsView();}
 function updateAgentPwd(k){const i=document.getElementById('agpwd-'+k);if(!i||!i.value.trim())return;const s=getSavedAgentPwds();s[k]=i.value.trim();localStorage.setItem(DASH_LS_KEY+'_agent_pwds',JSON.stringify(s));showT('✅ Updated: '+k);renderAgentPwds(document.getElementById('agent-search')?.value||'');}
 function removeAgentPwd(k){const s=getSavedAgentPwds();delete s[k];localStorage.setItem(DASH_LS_KEY+'_agent_pwds',JSON.stringify(s));showT('🗑 Removed: '+k);renderAgentPwds(document.getElementById('agent-search')?.value||'');}
@@ -1341,7 +1429,7 @@ const RPT = {
 };
 
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function rptScorePct(val,max){const n=parseInt(String(val||'0').split('/')[0]);return isNaN(n)?0:Math.round(n/max*100);}
+function rptScorePct(val,max){const p=scoreParts(val,max);return p.d?Math.round(p.n/p.d*100):0;} // denominator from the result itself
 
 function rptRing(pct, color, size, stroke) {
   const r=(size-stroke)/2, circ=2*Math.PI*r, offset=circ*(1-pct/100);
@@ -1387,12 +1475,13 @@ function buildParentCard(r) {
   const tips_en=RPT.tips_en[lv]||RPT.tips_en[0];
   const tips_ar=RPT.tips_ar[lv]||RPT.tips_ar[0];
 
-  const totalNum=parseInt((r.total||'0').split('/')[0])||0;
-  const totalPct=Math.round(totalNum/51*100);
-  const lPct=rptScorePct(r.listening,14);
-  const rPct=rptScorePct(r.reading,14);
-  const wPct=rptScorePct(r.writing,3);
-  const gPct=rptScorePct(r.grammar,20);
+  const totalP=scoreParts(r.total,PRO_TEST_TOTAL);
+  const totalNum=totalP.n, totalOf=totalP.d||PRO_TEST_TOTAL;
+  const totalPct=Math.round(totalNum/totalOf*100);
+  const lPct=rptScorePct(r.listening,10);
+  const rPct=rptScorePct(r.reading,10);
+  const wPct=rptScorePct(r.writing,4);
+  const gPct=rptScorePct(r.grammar,16);
 
   function tag(pct){
     return pct>=80?{en:'Excellent',ar:'ممتاز',c:'#16a34a',bg:'#dcfce7'}
@@ -1470,7 +1559,7 @@ function buildParentCard(r) {
           ${rptRing(totalPct,color,100,10)}
           <div class="rw-ring-inner">
             <div class="rw-ring-score">${totalNum}</div>
-            <div class="rw-ring-label">/ 51</div>
+            <div class="rw-ring-label">/ ${totalOf}</div>
           </div>
         </div>
         <div class="rw-score-pct">${totalPct}%</div>
@@ -1744,7 +1833,7 @@ body{font-family:'Nunito',sans-serif;background:#FAF8F4;color:#2A2118;font-size:
 <div class="rw-wrap">
 
 <div class="rw-page-header">
-  <div class="rw-logo-box">51</div>
+  <div class="rw-logo-box">L</div>
   <div><div class="rw-logo-text">Lumio</div><div class="rw-logo-sub">English</div></div>
   <div class="rw-header-divider"></div>
   <div class="rw-header-titles">
@@ -1797,8 +1886,8 @@ function downloadReport() {
 
   const now=new Date();
   const dateStr=now.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
-  const scores=data.map(r=>{const v=parseInt((r.total||'0').split('/')[0]);return isNaN(v)?0:v;});
-  const avgScore=Math.round(scores.reduce((a,b)=>a+b,0)/scores.length);
+  const avgInfo=avgScoreInfo(data);
+  const avgScore=avgInfo.text;
   const levelCounts=Array(10).fill(0);
   data.forEach(r=>{const l=parseInt((r.level||'Level 0').replace('Level ',''));if(!isNaN(l)&&l>=0&&l<=9)levelCounts[l]++;});
   const cards=data.map(buildParentCard).join('\n');
@@ -1973,7 +2062,7 @@ body{font-family:'Nunito',sans-serif;background:#FAF8F4;color:#2A2118;font-size:
 <div class="rw-wrap">
 
 <div class="rw-page-header">
-  <div class="rw-logo-box">51</div>
+  <div class="rw-logo-box">L</div>
   <div style="display:flex;flex-direction:column;gap:2px">
     <div class="rw-logo-text">Lumio</div>
     <div class="rw-logo-sub">Middle East</div>
@@ -1988,7 +2077,7 @@ body{font-family:'Nunito',sans-serif;background:#FAF8F4;color:#2A2118;font-size:
 
 <div class="rw-summary">
   <div class="rw-stat"><div class="rw-stat-val">${data.length}</div><div class="rw-stat-en">Tested</div><div class="rw-stat-ar">تم اختبارهم</div></div>
-  <div class="rw-stat"><div class="rw-stat-val">${avgScore}<span style="font-size:1.1rem;color:#b0b8cc">/51</span></div><div class="rw-stat-en">Avg Score</div><div class="rw-stat-ar">متوسط الدرجة</div></div>
+  <div class="rw-stat"><div class="rw-stat-val">${avgScore}${avgInfo.outOf?`<span style="font-size:1.1rem;color:#b0b8cc">/${avgInfo.outOf}</span>`:''}</div><div class="rw-stat-en">Avg Score</div><div class="rw-stat-ar">متوسط الدرجة</div></div>
   ${levelCounts.map((c,i)=>c>0?`<div class="rw-stat"><div class="rw-stat-val" style="color:${RPT.color[i]}">${c}</div><div class="rw-stat-en">Level ${i}</div><div class="rw-stat-ar" style="font-family:sans-serif">المستوى ${i}</div></div>`:'').join('')}
 </div>
 
@@ -2049,11 +2138,11 @@ function normaliseResult(r) {
   }
   return {
     ...r,
-    listening: fixScore(r.listening, 14),
-    reading:   fixScore(r.reading,   14),
-    writing:   fixScore(r.writing,    3),
-    grammar:   fixScore(r.grammar,   20),
-    total:     fixScore(r.total,     51),
+    listening: fixScore(r.listening, 10),
+    reading:   fixScore(r.reading,   10),
+    writing:   fixScore(r.writing,    4),
+    grammar:   fixScore(r.grammar,   16),
+    total:     fixScore(r.total,     PRO_TEST_TOTAL),
   };
 }
 
