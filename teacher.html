@@ -3631,6 +3631,7 @@
           <div class="item"><b>${stats.rating ? stats.rating.average.toFixed(1) + "★" : "—"}</b><span>Rating</span></div>
           <div class="item"><b>${stats.punctualityPct != null ? stats.punctualityPct + "%" : "—"}</b><span>Marked</span></div>
         </div>` : ""}
+        <div class="pinrow" style="margin-bottom:4px"><span class="lbl">Classroom</span><span class="pinval" style="letter-spacing:0;font-size:.72rem;${t.meetingLink ? "" : "opacity:.6"}">${t.meetingLink ? (/teams\.microsoft|teams\.live/i.test(t.meetingLink) ? "🟣 Teams link set" : "🔗 link set") : "no link yet — edit to add"}</span></div>
         <div class="pinrow"><span class="lbl">PIN</span>${pinKnown
           ? `<span class="pinval" data-pin="${escHtml(t.pin)}">••••</span><button class="pintoggle" type="button">show</button>`
           : `<span class="pinval" style="opacity:.6;letter-spacing:0;font-size:.72rem">set on another device</span>`}
