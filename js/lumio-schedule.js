@@ -109,12 +109,187 @@
     // through the DeletedIds tab, same as students/teachers.
     if (!Array.isArray(data.deletedClassIds)) data.deletedClassIds = [];
     if (!Array.isArray(data.deletedPatternIds)) data.deletedPatternIds = [];
+    // Removed holidays: [{date, deletedAt}]. A blocked date without one of
+    // these came back from the Sheet's union on the next sync, so removing
+    // a holiday never stuck. Shared as DeletedIds type "blockedDate".
+    if (!Array.isArray(data.deletedBlockedDates)) data.deletedBlockedDates = [];
     return data;
   }
-  function save(data) {
-    data.updatedAt = new Date().toISOString();
+  // ---- field-level change times (3 Oct 2026) ----
+  // Same scheme as lumio-profiles.js: every class/pattern carries
+  // fieldTimes = { field: ISO time, _base: updatedAt before tracking }, and
+  // every seat in class.students carries its own updatedAt. save() stamps
+  // whatever changed against the stored copy, so updateClass, markAttendance,
+  // gradeStudent, rateTeacher, notes, bookings, cancellations are all
+  // covered. A removed seat leaves fieldTimes._seatsRemoved[key] = time so
+  // the per-seat union in mergeSeats can't bring it back. Sync and rollback
+  // saves pass { noStamp: true }.
+  const STAMP_SKIP = { id: 1, updatedAt: 1, fieldTimes: 1, createdAt: 1, students: 1 };
+  const nn = v => String(v || "").trim().toLowerCase();
+  function sameSeat(x, y) {
+    if (!x || !y) return false;
+    if (x.studentId && y.studentId) return x.studentId === y.studentId;
+    return nn(x.studentName) !== "" && nn(x.studentName) === nn(y.studentName);
+  }
+  function seatKeys(s) {
+    return [s && s.studentId ? "id:" + s.studentId : "", s && nn(s.studentName) ? "n:" + nn(s.studentName) : ""].filter(Boolean);
+  }
+  function seatSansTime(s) { const c = Object.assign({}, s); delete c.updatedAt; return JSON.stringify(c); }
+  function stampChanges(prev, data, now) {
+    ["classes", "patterns"].forEach(listKey => {
+      const before = {};
+      ((prev && prev[listKey]) || []).forEach(r => { if (r && r.id) before[r.id] = r; });
+      (data[listKey] || []).forEach(r => {
+        const old = r && before[r.id];
+        if (!old) return;
+        if (JSON.stringify(r) === JSON.stringify(old)) return; // cheap path: untouched record
+        let ft = null;
+        const touch = () => {
+          if (!ft) {
+            ft = (r.fieldTimes && typeof r.fieldTimes === "object") ? r.fieldTimes : {};
+            if (!ft._base) ft._base = old.updatedAt || r.createdAt || "";
+          }
+          return ft;
+        };
+        Object.keys(Object.assign({}, old, r)).forEach(k => {
+          if (STAMP_SKIP[k] && !(k === "students" && listKey === "patterns")) return;
+          if (JSON.stringify(r[k]) !== JSON.stringify(old[k])) touch()[k] = now;
+        });
+        if (listKey === "classes") {
+          const oldSeats = Array.isArray(old.students) ? old.students : [];
+          (r.students || []).forEach(s => {
+            const o = oldSeats.find(x => sameSeat(x, s));
+            if (!o || seatSansTime(o) !== seatSansTime(s)) { s.updatedAt = now; touch(); }
+          });
+          oldSeats.forEach(o => {
+            if ((r.students || []).some(s => sameSeat(o, s))) return;
+            const t = touch();
+            t._seatsRemoved = (t._seatsRemoved && typeof t._seatsRemoved === "object") ? t._seatsRemoved : {};
+            seatKeys(o).forEach(k => { t._seatsRemoved[k] = now; });
+          });
+        }
+        if (ft || r.updatedAt !== old.updatedAt) { touch(); r.fieldTimes = ft; r.updatedAt = now; }
+      });
+    });
+  }
+  function save(data, opts) {
+    const now = new Date().toISOString();
+    if (!(opts && opts.noStamp)) {
+      let prev = null;
+      try { prev = JSON.parse(safeGet(SCHEDULE_KEY) || "null"); } catch (e) { prev = null; }
+      stampChanges(prev, data, now);
+    }
+    data.updatedAt = now;
     safeSet(SCHEDULE_KEY, JSON.stringify(data));
     return data;
+  }
+
+  // ---- per-field merge (same rules as mergeFields_/mergeClass_ in the
+  // Apps Script; keep the three copies -- here, lumio-profiles.js, Code.gs --
+  // in step) ----
+  function ftOf(rec) {
+    let ft = rec && rec.fieldTimes;
+    if (typeof ft === "string") { try { ft = ft ? JSON.parse(ft) : null; } catch (e) { ft = null; } }
+    return ft && typeof ft === "object" ? ft : {};
+  }
+  function tms(v) { const n = v ? Date.parse(v) : NaN; return isNaN(n) ? 0 : n; }
+  function fieldTime(rec, ft, k) { return tms(ft[k]) || tms(ft._base) || tms(rec.updatedAt); }
+  function baseTime(rec, ft) { return tms(ft._base) || tms(rec.updatedAt); }
+  // a wins exact ties (the caller passes the Sheet's copy as a).
+  function mergeFields(a, b, skip) {
+    const fa = ftOf(a), fb = ftOf(b), out = {}, ft = {};
+    const base = Math.max(baseTime(a, fa), baseTime(b, fb));
+    Object.keys(Object.assign({}, a, b)).forEach(k => {
+      if (k === "fieldTimes" || k === "updatedAt" || (skip && skip[k])) return;
+      const va = a[k], vb = b[k];
+      let t;
+      if (vb === undefined) { out[k] = va; t = fieldTime(a, fa, k); }
+      else if (va === undefined) { out[k] = vb; t = fieldTime(b, fb, k); }
+      else {
+        const ta = fieldTime(a, fa, k), tb = fieldTime(b, fb, k);
+        if (JSON.stringify(va) === JSON.stringify(vb)) { out[k] = va; t = Math.max(ta, tb); }
+        else if (tb > ta) { out[k] = vb; t = tb; }
+        else { out[k] = va; t = ta; }
+      }
+      if (t && t !== base) ft[k] = new Date(t).toISOString();
+    });
+    if (base) ft._base = new Date(base).toISOString();
+    out.updatedAt = tms(b.updatedAt) > tms(a.updatedAt) ? b.updatedAt : a.updatedAt;
+    out.fieldTimes = ft;
+    return out;
+  }
+  // Seats merge one by one (matched by studentId, else name), each by its
+  // own updatedAt: a teacher marking attendance on one device and another
+  // device grading, or a student's rating arriving through the script, all
+  // survive. A seat removed on either side stays removed unless it was
+  // re-added after the removal.
+  function mergeSeats(a, b, tombs) {
+    const seatT = (cls, s) => tms(s && s.updatedAt) || fieldTime(cls, ftOf(cls), "students");
+    const out = [];
+    (a.students || []).forEach(s => { if (s) out.push({ s, t: seatT(a, s) }); });
+    (b.students || []).forEach(s => {
+      if (!s) return;
+      const t = seatT(b, s);
+      const hit = out.find(x => sameSeat(x.s, s));
+      if (!hit) { out.push({ s, t }); return; }
+      const win = t > hit.t ? s : hit.s, lose = win === s ? hit.s : s;
+      const m = Object.assign({}, win);
+      // Ratings are only ever set, and a deducted session stays deducted.
+      if ((m.teacherRatingStars === null || m.teacherRatingStars === undefined || m.teacherRatingStars === "") && lose.teacherRatingStars) m.teacherRatingStars = lose.teacherRatingStars;
+      if (lose.sessionDeducted && !m.sessionDeducted) m.sessionDeducted = true;
+      if (!m.studentId && lose.studentId) m.studentId = lose.studentId;
+      hit.s = m; hit.t = Math.max(t, hit.t);
+    });
+    return out.filter(x => {
+      const gone = Math.max(0, ...seatKeys(x.s).map(k => tms(tombs[k])));
+      return !(gone && gone >= x.t);
+    }).map(x => x.s);
+  }
+  function mergeClass(a, b) {
+    const out = mergeFields(a, b, { students: 1 });
+    const tombs = Object.assign({}, ftOf(a)._seatsRemoved || {});
+    Object.entries(ftOf(b)._seatsRemoved || {}).forEach(([k, v]) => { if (tms(v) > tms(tombs[k])) tombs[k] = v; });
+    out.students = mergeSeats(a, b, tombs);
+    if (Object.keys(tombs).length) out.fieldTimes._seatsRemoved = tombs;
+    // Status follows the merged seats (a seat added elsewhere reopens a
+    // "completed" class), except a cancellation.
+    if (out.status !== "cancelled" && out.students.length) {
+      out.status = out.students.every(s => s.attendance) ? "completed" : "scheduled";
+    }
+    return out;
+  }
+  // Two copies of one fixed-schedule session (same pattern + date): two
+  // teacher devices generated it, or an old random-id copy meets the new
+  // `${patternId}_${date}` one. Keep the oldest, fold the other's seats and
+  // fields in. Bookings for different students at different lessons in the
+  // same open slot are NOT merged (that's a real clash for the teacher).
+  function dedupePatternClasses(classes) {
+    const groups = {};
+    classes.forEach(c => {
+      if (!c || !c.patternId || !c.date || c.status === "cancelled") return;
+      const k = c.patternId + "|" + c.date;
+      (groups[k] = groups[k] || []).push(c);
+    });
+    const drop = new Set(), replace = {};
+    Object.values(groups).forEach(g => {
+      if (g.length < 2) return;
+      g.sort((x, y) => (x.createdAt || "").localeCompare(y.createdAt || "") || String(x.id).localeCompare(String(y.id)));
+      let keep = g[0];
+      g.slice(1).forEach(o => {
+        const shares = (o.students || []).some(s => (keep.students || []).some(k => sameSeat(k, s)));
+        const sameLesson = (!keep.level || !o.level || keep.level === o.level)
+          && (!keep.lessonNumber || !o.lessonNumber || Number(keep.lessonNumber) === Number(o.lessonNumber));
+        if (!shares && !sameLesson && (o.students || []).length && (keep.students || []).length) return;
+        const merged = mergeClass(keep, o);
+        merged.id = keep.id;
+        merged.createdAt = keep.createdAt || o.createdAt;
+        keep = merged;
+        drop.add(o.id);
+      });
+      replace[g[0].id] = keep;
+    });
+    if (!drop.size && !Object.keys(replace).length) return classes;
+    return classes.filter(c => !drop.has(c.id)).map(c => replace[c.id] || c);
   }
   function genId() {
     return "c_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -217,12 +392,12 @@
     // old list) starts fresh, and a removed student's data simply drops
     // with them.
     if (patch.students !== undefined) {
-      const bySlotKey = s => (s.studentId || "") + "|" + normName(s.studentName);
-      const oldByKey = {};
-      c.students.forEach(s => { oldByKey[bySlotKey(s)] = s; });
+      // Matched by id, else by name (sameSeat): an exact "id|name" key
+      // treated a seat saved without a studentId as a new student and
+      // wiped its attendance/grade on re-save.
+      const oldSeats = c.students.slice();
       c.students = patch.students.map(s => {
-        const key = (s.studentId || "") + "|" + normName(s.studentName);
-        const existing = oldByKey[key];
+        const existing = oldSeats.find(o => sameSeat(o, s));
         return existing || { studentId: s.studentId || null, studentName: s.studentName, attendance: null, grade: null, teacherRatingStars: null };
       });
       refreshStatus(c);
@@ -315,17 +490,89 @@
     slot.teacherRatingStars = n;
     c.updatedAt = new Date().toISOString();
     save(data);
+    // Student devices never push the schedule, so the rating used to stay
+    // on the phone and never reached the teacher. It now goes to the
+    // script's rateClass action (only the caller's own seat); offline or
+    // not-yet-deployed script -> queued and retried (retryPendingRatings).
+    // Teacher devices just sync normally.
+    if (isStudentOnlyDevice()) {
+      queueRating(classId, n);
+      retryPendingRatings().catch(() => {});
+    }
     return c;
   }
-  // Classes whose date has passed, weren't cancelled, and still have at
-  // least one student with no attendance marked yet — the teacher's
-  // "these need attention" list. A session doesn't silently vanish or
-  // auto-cancel once its time passes; it sits here until the teacher
-  // actually goes through it.
+  // ---- ratings waiting to reach the script ----
+  const PENDING_RATINGS_KEY = "lumio_pending_ratings";
+  function pendingRatings() {
+    try { const a = JSON.parse(safeGet(PENDING_RATINGS_KEY) || "[]"); return Array.isArray(a) ? a : []; } catch (e) { return []; }
+  }
+  function setPendingRatings(list) {
+    if (list.length) safeSet(PENDING_RATINGS_KEY, JSON.stringify(list));
+    else { try { localStorage.removeItem(PENDING_RATINGS_KEY); } catch (e) { delete memory[PENDING_RATINGS_KEY]; } }
+  }
+  function queueRating(classId, stars) {
+    setPendingRatings(pendingRatings().filter(r => r.classId !== classId).concat([{ classId, stars }]));
+  }
+  // The pulled schedule replaces a student's copy; keep showing a rating
+  // that hasn't been accepted yet so the rating card doesn't come back.
+  function applyPendingRatings(data) {
+    const me = global.LumioProfiles && LumioProfiles.getStudentAuth ? LumioProfiles.getStudentAuth() : null;
+    let myName = "";
+    try { myName = (global.Lumio && Lumio.user && Lumio.user() && Lumio.user().name) || ""; } catch (e) {}
+    pendingRatings().forEach(r => {
+      const c = data.classes.find(x => x.id === r.classId);
+      const slot = c && (c.students || []).find(s => (me && s.studentId === me.id) || (myName && nn(s.studentName) === nn(myName)));
+      if (slot && !slot.teacherRatingStars) slot.teacherRatingStars = r.stars;
+    });
+  }
+  let ratingRetryRunning = false;
+  async function retryPendingRatings() {
+    if (ratingRetryRunning) return { ok: true, sent: 0 };
+    const list = pendingRatings();
+    if (!list.length || !isStudentOnlyDevice()) return { ok: true, sent: 0 };
+    const cfg = getSyncConfig();
+    if (!cfg.enabled || !cfg.url) return { ok: false, reason: "not-configured" };
+    ratingRetryRunning = true;
+    let sent = 0;
+    try {
+      for (const r of list) {
+        let out = null;
+        try {
+          const res = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=rateClass" + LumioProfiles.authQuery(), {
+            method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({ classId: r.classId, stars: r.stars }),
+          });
+          out = await res.json();
+        } catch (e) { out = null; }
+        // Delivered, or refused for good (class gone / not this student's):
+        // drop it. Network trouble or an older script: keep for next time.
+        const final = out && (out.ok || /not found|isn't in|Rating must/i.test(out.error || ""));
+        if (final) {
+          sent += out.ok ? 1 : 0;
+          setPendingRatings(pendingRatings().filter(x => !(x.classId === r.classId && x.stars === r.stars)));
+        }
+      }
+    } finally { ratingRetryRunning = false; }
+    return { ok: pendingRatings().length === 0, sent };
+  }
+  // A class has STARTED once its start time has passed on the Riyadh
+  // clock, and ENDED once start + duration has. Every class date/time is
+  // Saudi wall time (see Lumio.tzNow in js/app.js).
+  function startMs(c) {
+    if (global.Lumio && typeof Lumio.tzToDate === "function") return Lumio.tzToDate(c.date, c.startTime || "00:00").getTime();
+    const [y, m, d] = String(c.date || "").split("-").map(Number);
+    const [h, mi] = String(c.startTime || "00:00").split(":").map(Number);
+    return Date.UTC(y, (m || 1) - 1, d || 1, (h || 0) - 3, mi || 0); // Riyadh = UTC+3, no DST
+  }
+  function hasStarted(c) { return !!(c && c.date) && startMs(c) <= Date.now(); }
+  function hasEnded(c) { return !!(c && c.date) && startMs(c) + (Number(c.durationMinutes) || 45) * 60000 <= Date.now(); }
+  // Classes that have STARTED, weren't cancelled, and still have at least
+  // one student with no attendance marked yet — the teacher's "these need
+  // attention" list. Used to compare dates only, so every class later
+  // today showed up here (and asked for attendance) from midnight on.
   function needsAttendance(filter) {
-    const today = todayStr();
     return listClasses(filter).filter(c =>
-      c.status !== "cancelled" && c.date <= today && !completionState(c).complete
+      c.status !== "cancelled" && hasStarted(c) && !completionState(c).complete
     );
   }
 
@@ -407,17 +654,23 @@
     }
     if (typeof rec.lessonNumber === "string" && /^\d+$/.test(rec.lessonNumber)) rec.lessonNumber = Number(rec.lessonNumber);
     if (typeof rec.durationMinutes === "string" && /^\d+$/.test(rec.durationMinutes)) rec.durationMinutes = Number(rec.durationMinutes);
+    // fieldTimes arrives as JSON text from the Sheet (or "" on old rows).
+    if (rec.fieldTimes !== undefined) {
+      const ft = ftOf(rec);
+      if (Object.keys(ft).length) rec.fieldTimes = ft; else delete rec.fieldTimes;
+    }
     return rec;
   }
-  function mergeById(localList, remoteList) {
+  // Per field / per seat since 3 Oct 2026 (see mergeFields, mergeClass):
+  // whole-record newest-wins lost one of two edits made on different
+  // devices to the same class (session notes vs attendance).
+  function mergeById(localList, remoteList, isClass) {
     const byId = {};
     localList.forEach(r => { byId[r.id] = r; });
     remoteList.forEach(r => {
       const local = byId[r.id];
       if (!local) { byId[r.id] = r; return; }
-      const localTime = local.updatedAt ? Date.parse(local.updatedAt) : 0;
-      const remoteTime = r.updatedAt ? Date.parse(r.updatedAt) : 0;
-      byId[r.id] = localTime > remoteTime ? local : r;
+      byId[r.id] = isClass ? mergeClass(r, local) : mergeFields(r, local); // the Sheet's copy wins exact ties
     });
     return Object.values(byId);
   }
@@ -431,28 +684,55 @@
       .finally(() => clearTimeout(timer));
   }
 
+  // Blocked dates: union by date (the newest addedAt keeps the label),
+  // minus any date whose removal is newer than its adding. Re-adding a
+  // removed holiday works because the new addedAt is newer than the
+  // tombstone. Plain-string entries from before addedAt existed count as
+  // added "long ago".
+  function blockedTombs(data, remoteDeleted) {
+    const t = {};
+    (data.deletedBlockedDates || []).forEach(x => { if (x && x.date && tms(x.deletedAt) >= tms(t[x.date])) t[x.date] = x.deletedAt || ""; });
+    (remoteDeleted || []).forEach(e => { if (e && e.type === "blockedDate" && e.id && tms(e.deletedAt) > tms(t[e.id])) t[e.id] = e.deletedAt; });
+    return t;
+  }
+  function mergeBlockedDates(localList, remoteList, tombs) {
+    const by = {};
+    const add = b => {
+      const e = typeof b === "string" ? { date: b, label: "" } : Object.assign({}, b);
+      if (!e || !e.date) return;
+      e.label = e.label || "";
+      const prev = by[e.date];
+      if (!prev || tms(e.addedAt) > tms(prev.addedAt)) by[e.date] = e;
+    };
+    (localList || []).forEach(add); (remoteList || []).forEach(add);
+    return Object.values(by).filter(e => !(e.date in tombs && tms(tombs[e.date]) >= tms(e.addedAt)));
+  }
+  function isStudentOnlyDevice() {
+    try {
+      return !!(global.LumioProfiles && LumioProfiles.getStudentAuth && LumioProfiles.getStudentAuth()
+        && !LumioProfiles.getTeacherAuth() && localStorage.getItem("lumio_teacher") !== "1");
+    } catch (e) { return false; }
+  }
+
   // opts.pullOnly: pull + merge + save only (student devices never push).
+  // A full (teacher) sync also runs generateUpcoming() between the pull and
+  // the push, so a fresh device generates fixed-schedule sessions from the
+  // shared data instead of from its own empty copy.
   async function syncNow(opts) {
     const pullOnly = !!(opts && opts.pullOnly);
     const cfg = getSyncConfig();
     if (!cfg.enabled || !cfg.url) return { ok: false, reason: "not-configured" };
-    const data = load();
+    let data;
     try {
       const res = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pullScheduleV2" + ((global.LumioProfiles && LumioProfiles.authQuery) ? LumioProfiles.authQuery() : ""));
       const remote = await res.json();
       // The script refused (signed out, wrong PIN): report it, never
       // treat it as "the schedule is empty".
       if (remote && remote.ok === false) return { ok: false, reason: remote.error || "refused" };
-      // A student device now receives only its own classes; drop the
-      // rest of what an older version cached here.
-      const studentOnly = !!(global.LumioProfiles && LumioProfiles.getStudentAuth && LumioProfiles.getStudentAuth()
-        && !LumioProfiles.getTeacherAuth() && localStorage.getItem("lumio_teacher") !== "1");
-      if (studentOnly && remote && Array.isArray(remote.classes)) {
-        const keep = new Set(remote.classes.map(c => c.id));
-        data.classes = data.classes.filter(c => keep.has(c.id));
-        const keepP = new Set((remote.patterns || []).map(p => p.id));
-        data.patterns = data.patterns.filter(p => keepP.has(p.id));
-      }
+      // Loaded only now, so an edit made while the pull was in flight is
+      // not overwritten by the save below.
+      data = load();
+      const studentOnly = isStudentOnlyDevice();
       if (remote && Array.isArray(remote.deletedIds)) {
         remote.deletedIds.forEach(e => {
           if (!e || !e.id) return;
@@ -460,28 +740,39 @@
           if (e.type === "pattern" && !data.deletedPatternIds.includes(e.id)) data.deletedPatternIds.push(e.id);
         });
       }
-      if (remote && Array.isArray(remote.classes)) {
-        remote.classes.forEach(normalizeSheetDates);
-        data.classes = mergeById(data.classes, remote.classes.filter(c => !data.deletedClassIds.includes(c.id)));
+      if (studentOnly) {
+        // A student device receives only its own classes (others as
+        // anonymous seats) and never edits the schedule except through the
+        // script (booking, cancel, rating), so the script's copy simply
+        // replaces what an older version cached here. Anonymous seats can't
+        // be merged seat by seat anyway.
+        if (remote && Array.isArray(remote.classes)) data.classes = remote.classes.map(normalizeSheetDates);
+        if (remote && Array.isArray(remote.patterns)) data.patterns = remote.patterns.map(normalizeSheetDates);
+        applyPendingRatings(data); // a rating still waiting to reach the script stays visible
+      } else {
+        if (remote && Array.isArray(remote.classes)) {
+          remote.classes.forEach(normalizeSheetDates);
+          data.classes = mergeById(data.classes, remote.classes.filter(c => !data.deletedClassIds.includes(c.id)), true);
+        }
+        if (remote && Array.isArray(remote.patterns)) {
+          remote.patterns.forEach(normalizeSheetDates);
+          data.patterns = mergeById(data.patterns, remote.patterns.filter(p => !data.deletedPatternIds.includes(p.id)));
+        }
       }
-      if (remote && Array.isArray(remote.patterns)) {
-        remote.patterns.forEach(normalizeSheetDates);
-        data.patterns = mergeById(data.patterns, remote.patterns.filter(p => !data.deletedPatternIds.includes(p.id)));
-      }
-      data.classes = data.classes.filter(c => !data.deletedClassIds.includes(c.id));
+      data.classes = dedupePatternClasses(data.classes.filter(c => !data.deletedClassIds.includes(c.id)));
       data.patterns = data.patterns.filter(p => !data.deletedPatternIds.includes(p.id));
-      // Blocked dates are a small, rarely-changed shared list -- simple
-      // union rather than per-record merge-by-id (plain date strings have
-      // no id/updatedAt to compare).
       if (remote && Array.isArray(remote.blockedDates)) {
-        const seen = new Set(data.blockedDates.map(b => typeof b === "string" ? b : b.date));
-        remote.blockedDates.forEach(b => {
-          const key = typeof b === "string" ? b : b.date;
-          if (!seen.has(key)) { data.blockedDates.push(b); seen.add(key); }
-        });
+        const tombs = blockedTombs(data, remote.deletedIds);
+        data.deletedBlockedDates = Object.keys(tombs).map(date => ({ date, deletedAt: tombs[date] }));
+        data.blockedDates = mergeBlockedDates(data.blockedDates, remote.blockedDates, tombs);
       }
-      save(data);
+      save(data, { noStamp: true }); // the Sheet's values, not a local edit
       if (pullOnly) return { ok: true, at: new Date().toISOString(), pullOnly: true };
+      // Fixed schedules: generate / apply holidays / renumber on the merged
+      // data, then push the result (two devices produce the same ids).
+      let generated = null;
+      if (!studentOnly) { try { generated = generateUpcoming(); } catch (e) { console.warn("Lumio: generateUpcoming failed", e); } }
+      data = load();
       const pushRes = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pushScheduleV2" + ((global.LumioProfiles && LumioProfiles.authQuery) ? LumioProfiles.authQuery() : ""), {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -490,13 +781,15 @@
           deletedIds: [
             ...data.deletedClassIds.map(id => ({ id, type: "class", deletedAt: new Date().toISOString() })),
             ...data.deletedPatternIds.map(id => ({ id, type: "pattern", deletedAt: new Date().toISOString() })),
+            // the real removal time: a later re-add must beat it
+            ...data.deletedBlockedDates.map(x => ({ id: x.date, type: "blockedDate", deletedAt: x.deletedAt })),
           ],
         }),
       });
       let pushed = null;
       try { pushed = await pushRes.json(); } catch (e) { pushed = null; }
       if (!pushed || pushed.ok === false) return { ok: false, reason: (pushed && pushed.error) || "push-failed" };
-      return { ok: true, at: new Date().toISOString() };
+      return { ok: true, at: new Date().toISOString(), generated };
     } catch (e) {
       return { ok: false, reason: e && e.name === "AbortError" ? "timeout" : "network", error: e && e.message };
     }
@@ -597,7 +890,7 @@
   function teacherStats(teacherId) {
     const all = listClasses({ teacherId }).filter(c => c.status !== "cancelled");
     const today = todayStr();
-    const past = all.filter(c => c.date <= today);
+    const past = all.filter(hasStarted); // a class later today hasn't happened yet
     const ym = today.slice(0, 7);
     const classesThisMonth = all.filter(c => (c.date || "").slice(0, 7) === ym && c.status === "completed").length;
     const fullyMarked = past.filter(c => completionState(c).complete).length;
@@ -619,7 +912,8 @@
     const data = load();
     let count = 0;
     data.classes.forEach(c => {
-      if (c.teacherId === fromTeacherId && c.date >= fromDate && c.date <= toDate && c.status === "scheduled") {
+      // hasStarted: a class earlier today already happened with its real teacher
+      if (c.teacherId === fromTeacherId && c.date >= fromDate && c.date <= toDate && c.status === "scheduled" && !hasStarted(c)) {
         c.teacherId = toTeacherId;
         c.teacherName = toTeacherName || c.teacherName;
         c.updatedAt = new Date().toISOString();
@@ -726,7 +1020,8 @@
     p.updatedAt = new Date().toISOString();
     let cancelledCount = 0;
     data.classes.forEach(c => {
-      if (c.patternId === id && c.date >= from && c.status === "scheduled") {
+      // a session that already started today happened: not cancelled
+      if (c.patternId === id && c.date >= from && c.status === "scheduled" && !hasStarted(c)) {
         c.status = "cancelled";
         c.updatedAt = new Date().toISOString();
         cancelledCount++;
@@ -743,26 +1038,46 @@
   }
 
   // ---- blocked dates (holidays / days the generator should skip) ----
+  // Entries are { date, label, addedAt } (old ones may be bare strings).
+  const blockedKey = b => (typeof b === "string" ? b : (b && b.date));
   function listBlockedDates() {
-    return load().blockedDates.slice().sort();
+    // Sorted by date: plain .sort() never ordered the {date,label} objects.
+    return load().blockedDates.slice().sort((x, y) => String(blockedKey(x)).localeCompare(String(blockedKey(y))));
   }
+  // Adding a holiday cancels the fixed-schedule sessions already generated
+  // for that date (none marked yet); generateUpcoming() skips it from now
+  // on. Returns the sorted list (as before) with .cancelled = how many
+  // sessions were called off.
   function addBlockedDate(date, label) {
     if (!date) throw new Error("Pick a date to block.");
     const data = load();
-    if (!data.blockedDates.some(b => (typeof b === "string" ? b : b.date) === date)) {
-      data.blockedDates.push(label ? { date, label } : date);
+    if (!data.blockedDates.some(b => blockedKey(b) === date)) {
+      data.blockedDates.push({ date, label: label || "", addedAt: new Date().toISOString() });
       save(data);
     }
-    return listBlockedDates();
+    const r = generateUpcoming();
+    const list = listBlockedDates();
+    list.cancelled = r.cancelled;
+    return list;
   }
+  // Removing one leaves a tombstone (shared as DeletedIds type
+  // "blockedDate") so the Sheet's copy can't bring it back, puts back the
+  // sessions that holiday had cancelled and renumbers the lessons after
+  // it. Returns the sorted list with .reinstated / .created.
   function removeBlockedDate(date) {
     const data = load();
-    data.blockedDates = data.blockedDates.filter(b => (typeof b === "string" ? b : b.date) !== date);
+    data.blockedDates = data.blockedDates.filter(b => blockedKey(b) !== date);
+    data.deletedBlockedDates = data.deletedBlockedDates.filter(x => x.date !== date)
+      .concat([{ date, deletedAt: new Date().toISOString() }]);
     save(data);
-    return listBlockedDates();
+    const r = generateUpcoming();
+    const list = listBlockedDates();
+    list.reinstated = r.reinstated;
+    list.created = r.created;
+    return list;
   }
   function isDateBlocked(date) {
-    return load().blockedDates.some(b => (typeof b === "string" ? b : b.date) === date);
+    return load().blockedDates.some(b => blockedKey(b) === date);
   }
 
   // How many active fixed weekly slots a student currently has — the
@@ -787,10 +1102,21 @@
     return addDaysStr(fromDateStr, (dayOfWeek - dow + 7) % 7);
   }
 
+  // Generated sessions get a deterministic id, so two teacher devices
+  // generating the same pattern produce the SAME class instead of two
+  // (old random ids stay readable; dedupePatternClasses folds them in).
+  // Their updatedAt is a fixed long-ago time: a device that generated a
+  // session before its first sync must never out-rank the copy the Sheet
+  // already has (attendance, notes, lesson number) on any field.
+  const GENERATED_AT = "2000-01-01T00:00:00.000Z";
+  function patternClassId(patternId, date) { return `${patternId}_${date}`; }
+  const unmarked = c => !(c.students || []).some(s => s.attendance);
+
   // Materializes real class rows for every active pattern, `weeks` weeks
   // ahead from today (default 4) — call this on dashboard load and it's
   // safe to call as often as you like, since it never creates a
-  // duplicate for a date it's already generated.
+  // duplicate for a date it's already generated. LumioSchedule.syncNow()
+  // also runs it on teacher devices right after merging the Sheet's data.
   //
   // Subscription gate: every student in the pattern must currently be
   // `subscribed` (per js/lumio-profiles.js) for that week's session to be
@@ -801,6 +1127,15 @@
   // already-generated future sessions on their own (that stays an
   // explicit "cancel this and all future" action) — it only stops NEW
   // ones from being created while they're unsubscribed.
+  //
+  // It also keeps generated sessions consistent with the shared data:
+  //  - holidays: a not-yet-started, unmarked session on a blocked date is
+  //    cancelled (cancelReason "holiday"); one whose holiday was removed
+  //    is put back;
+  //  - lesson numbers: Nth non-cancelled session = lessonStart + N - 1,
+  //    recomputed for sessions that haven't started/been marked, so a
+  //    removed holiday or a session generated late never duplicates one;
+  //  - duplicates of one pattern+date are folded together.
   function generateUpcoming(weeks) {
     weeks = weeks || 4;
     const data = load();
@@ -808,35 +1143,49 @@
     const horizon = addWeeks(today, weeks);
     const created = [];
     const skippedUnsubscribed = [];
+    let cancelled = 0, reinstated = 0, renumbered = 0;
+    const blocked = new Set(data.blockedDates.map(blockedKey));
+    const legacy = {};
+    data.patterns.forEach(p => { if (isLegacyPattern(p)) legacy[p.id] = p; });
+
+    const before = data.classes.length;
+    data.classes = dedupePatternClasses(data.classes);
+    const deduped = before - data.classes.length;
+
+    data.classes.forEach(c => {
+      if (!c.patternId || !legacy[c.patternId] || hasStarted(c) || !unmarked(c)) return;
+      if (blocked.has(c.date) && c.status === "scheduled") {
+        c.status = "cancelled"; c.cancelReason = "holiday"; c.updatedAt = new Date().toISOString(); cancelled++;
+      } else if (!blocked.has(c.date) && c.status === "cancelled" && c.cancelReason === "holiday") {
+        c.status = "scheduled"; c.cancelReason = ""; c.updatedAt = new Date().toISOString(); reinstated++;
+      }
+    });
 
     data.patterns.forEach(p => {
       if (!p.active || !isLegacyPattern(p)) return; // availability slots materialize on first booking, not here
       let d = nextDateForDayOfWeek(p.startDate > today ? p.startDate : today, p.dayOfWeek);
       while (d <= horizon) {
+        const id = patternClassId(p.id, d);
         const inRange = d >= p.startDate && (!p.endDate || d < p.endDate);
-        const alreadyExists = data.classes.some(c => c.patternId === p.id && c.date === d);
-        const blocked = isDateBlocked(d);
-        if (inRange && !alreadyExists && !blocked) {
+        // A cancelled session stays as "skip this date"; a REMOVED one
+        // (tombstone) must not come straight back either.
+        const alreadyExists = data.classes.some(c => c.patternId === p.id && c.date === d) || data.deletedClassIds.includes(id);
+        if (inRange && !alreadyExists && !blocked.has(d) && !isPast(d, p.startTime)) {
           const allSubscribed = !global.LumioProfiles || p.students.every(s => {
             const full = s.studentId ? global.LumioProfiles.getStudent(s.studentId) : global.LumioProfiles.findByName(s.studentName);
             return full ? !!full.subscribed : true; // unknown/guest students don't block generation
           });
           if (allSubscribed) {
-            // Lesson numbers count the sessions this pattern actually
-            // produced before this date -- not calendar weeks -- so a
-            // start date that isn't on the pattern's weekday, a holiday or
-            // a skipped week never leaves a gap (e.g. "Lesson 2" first).
-            const priorSessions = data.classes.filter(c => c.patternId === p.id && c.date < d && c.status !== "cancelled").length;
             const record = {
-              id: genId(),
+              id,
               teacherId: p.teacherId, teacherName: p.teacherName,
               date: d, startTime: p.startTime, durationMinutes: p.durationMinutes,
               level: p.level, cohort: p.cohort,
-              lessonNumber: p.lessonStart ? Number(p.lessonStart) + priorSessions : null,
+              lessonNumber: null, // set by the renumbering pass below
               meetingLink: p.meetingLink || "", notes: p.notes || "", sessionNotes: "",
               status: "scheduled", patternId: p.id,
               students: p.students.map(s => ({ studentId: s.studentId || null, studentName: s.studentName, attendance: null, grade: null, teacherRatingStars: null })),
-              createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+              createdAt: new Date().toISOString(), updatedAt: GENERATED_AT,
             };
             data.classes.push(record);
             created.push(record);
@@ -848,8 +1197,59 @@
       }
     });
 
-    if (created.length) save(data);
-    return { created: created.length, skippedUnsubscribed };
+    // Lesson numbers count the sessions this pattern actually holds before
+    // each date -- not calendar weeks -- so a start date that isn't on the
+    // pattern's weekday, a holiday or a skipped week never leaves a gap,
+    // and a holiday removed later never produces two "Lesson 3"s.
+    Object.values(legacy).forEach(p => {
+      if (!p.lessonStart) return;
+      const mine = data.classes.filter(c => c.patternId === p.id)
+        .sort((x, y) => (x.date + x.startTime).localeCompare(y.date + y.startTime));
+      let n = 0;
+      mine.forEach(c => {
+        if (c.status === "cancelled") return;
+        const want = Number(p.lessonStart) + n;
+        n++;
+        if (Number(c.lessonNumber) === want) return;
+        if (c.lessonNumber && (hasStarted(c) || !unmarked(c))) return; // what was taught stays on record
+        c.lessonNumber = want;
+        if (!created.includes(c)) { c.updatedAt = new Date().toISOString(); renumbered++; }
+      });
+    });
+
+    if (created.length || cancelled || reinstated || renumbered || deduped) save(data);
+    return { created: created.length, skippedUnsubscribed, cancelled, reinstated, renumbered, deduped };
+  }
+
+  // A deleted student leaves every class that hasn't started yet (one left
+  // empty is cancelled) and every old-style fixed schedule; classes that
+  // already happened keep them for attendance history.
+  function removeStudentFromFuture(studentId, studentName) {
+    const data = load();
+    const me = { studentId: studentId || null, studentName: studentName || "" };
+    const isMe = s => sameSeat(s, me) || (studentName && nn(s.studentName) === nn(studentName));
+    let removed = 0, cancelledEmpty = 0, patterns = 0;
+    data.classes.forEach(c => {
+      if (c.status !== "scheduled" || hasStarted(c)) return;
+      const n = (c.students || []).length;
+      c.students = (c.students || []).filter(s => !isMe(s));
+      if (c.students.length === n) return;
+      removed++;
+      if (!c.students.length) { c.status = "cancelled"; cancelledEmpty++; }
+      else refreshStatus(c);
+      c.updatedAt = new Date().toISOString();
+    });
+    data.patterns.forEach(p => {
+      if (!isLegacyPattern(p) || !p.students.some(isMe)) return;
+      p.students = p.students.filter(s => !isMe(s));
+      // An old-style pattern with nobody left would turn into an open
+      // teacher slot (see isLegacyPattern) -- end it instead.
+      if (!p.students.length) { p.active = false; p.endDate = todayStr(); }
+      p.updatedAt = new Date().toISOString();
+      patterns++;
+    });
+    if (removed || patterns) save(data);
+    return { removed, cancelled: cancelledEmpty, patterns };
   }
 
 
@@ -1102,12 +1502,12 @@
   // under a script lock (two students tapping the same seat at once). The
   // local rules run first (instant feedback); the server's answer wins.
   function snapshot() { return JSON.stringify(load()); }
-  function restore(snap) { try { save(JSON.parse(snap)); } catch (e) {} }
+  function restore(snap) { try { save(JSON.parse(snap), { noStamp: true }); } catch (e) {} } // exact rollback
   function replaceClass(cls) {
     const data = load();
     const i = data.classes.findIndex(c => c.id === cls.id);
     if (i >= 0) data.classes[i] = cls; else data.classes.push(cls);
-    save(data);
+    save(data, { noStamp: true }); // the script's copy (already stamped there)
   }
   async function bookSlotRemote(args) {
     const snap = snapshot();
@@ -1244,6 +1644,14 @@
     // fixed schedules
     listPatterns, getPattern, addPattern, updatePattern, cancelPatternFromDate, removePattern,
     listBlockedDates, addBlockedDate, removeBlockedDate, isDateBlocked,
-    fixedScheduleCountForStudent, generateUpcoming,
+    fixedScheduleCountForStudent, generateUpcoming, patternClassId,
+    // 3 Oct 2026: Riyadh start/end checks, deleted-student cleanup, rating retry
+    hasStarted, hasEnded, removeStudentFromFuture, retryPendingRatings,
   };
+  // Ratings that couldn't reach the script are sent again on the next page
+  // load and whenever the connection comes back.
+  if (typeof window !== "undefined" && window.addEventListener) {
+    window.addEventListener("online", () => { retryPendingRatings().catch(() => {}); });
+    setTimeout(() => { retryPendingRatings().catch(() => {}); }, 3000);
+  }
 })(window);

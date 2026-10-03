@@ -115,19 +115,41 @@ const Lumio = (() => {
   const LUMIO_API_KEY = "504bc50951590970a9faf630";
   const syncUrl = () => {
     try { const c = window.LumioProfiles && LumioProfiles.getSyncConfig(); if (c && c.url) return c.url; } catch (e) {}
+    // Pages that don't load lumio-profiles.js (homework.html, lesson.html)
+    // still honour a saved Sync Settings URL.
+    try { const c = JSON.parse(localStorage.getItem("lumio_sync_cfg_v1") || "null"); if (c && c.url) return c.url; } catch (e) {}
     return SYNC_URL;
+  };
+  // Same sign-in the profiles module sends (LumioProfiles.authQuery), read
+  // straight from storage when that module isn't on the page: homework.html
+  // and lesson.html pushed with no credentials, which the script refuses,
+  // so homework done there never reached the Sheet.
+  const authQuery = () => {
+    if (window.LumioProfiles && LumioProfiles.authQuery) return LumioProfiles.authQuery();
+    const pairs = [["lumio_teacher_auth", "tid", "th"], ["lumio_student_auth", "sid", "sh"]];
+    for (const [k, a, b] of pairs) {
+      try {
+        const v = JSON.parse(localStorage.getItem(k) || "null");
+        if (v && v.id && v.pinHash) return `&${a}=${encodeURIComponent(v.id)}&${b}=${encodeURIComponent(v.pinHash)}`;
+      } catch (e) {}
+    }
+    return "";
   };
   const syncFetch = (action, body) => {
     const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), 20000);
     // authQuery: who this device is -- the script only accepts a student's
     // own records from a student device (see js/lumio-profiles.js).
-    const auth = (window.LumioProfiles && LumioProfiles.authQuery) ? LumioProfiles.authQuery() : "";
+    const auth = authQuery();
     return fetch(`${syncUrl()}?key=${LUMIO_API_KEY}&action=${action}${auth}`, body
       ? { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(body), signal: ctrl.signal }
       : { signal: ctrl.signal }).finally(() => clearTimeout(t)).then(r => r.json())
       .then(j => { if (j && j.ok === false) throw new Error(j.error || "refused"); return j; });
   };
   const stripDrawing = (rec) => { const r = Object.assign({}, rec); delete r.drawingDataUrl; return r; };
+  // Homework record fields beyond stars/score/said that travel through the
+  // Sheet's Homework tab (HOMEWORK_COLUMNS in the Apps Script).
+  const HW_EXTRA_FIELDS = ["skillType", "skillCorrect", "skillTotal", "quizCorrect", "quizTotal",
+    "spellingCorrect", "spellingTotal", "recorded", "recordedTotal"];
   // Push one student's progress + homework (or everyone's when name is null).
   const pushProgressAndHomework = async (name) => {
     const pick = (all) => name ? (all[name] ? { [name]: all[name] } : {}) : all;
@@ -139,9 +161,48 @@ const Lumio = (() => {
     try {
       await syncFetch("pushProgress", { progress: pick(progressAll()) });
       await syncFetch("pushHomework", { homework: hw });
+      markPushPending(name, false);
       return { ok: true };
-    } catch (e) { return { ok: false, error: e && e.message }; }
+    } catch (e) {
+      // Offline or refused: remember who still needs pushing and try again
+      // on the next page load / when the connection returns. The Sheet
+      // merges by student+level+lesson (best result wins), so a repeat
+      // push is harmless.
+      markPushPending(name, true);
+      return { ok: false, error: e && e.message };
+    }
   };
+  const PENDING_PUSH_KEY = "lumio_pending_progress_push";
+  const pendingPush = () => get(PENDING_PUSH_KEY, null) || { all: false, names: [] };
+  const markPushPending = (name, pending) => {
+    try {
+      const p = pendingPush();
+      if (name === null || name === undefined) p.all = !!pending;
+      if (name) p.names = (p.names || []).filter(n => n !== name);
+      if (pending && name) p.names.push(name);
+      if (!pending && (name === null || name === undefined)) p.names = []; // an everyone-push covers each name
+      if (!p.all && !(p.names || []).length) localStorage.removeItem(PENDING_PUSH_KEY);
+      else set(PENDING_PUSH_KEY, p);
+    } catch (e) {}
+  };
+  let retryingPush = false;
+  const retryPendingPush = async () => {
+    const p = pendingPush();
+    if (retryingPush || (!p.all && !(p.names || []).length)) return { ok: true, retried: 0 };
+    if (!authQuery()) return { ok: false, reason: "signed-out" }; // the script would refuse it anyway
+    retryingPush = true;
+    try {
+      if (p.all) return await pushProgressAndHomework(null);
+      let ok = true;
+      for (const n of p.names) { const r = await pushProgressAndHomework(n); ok = ok && r.ok; }
+      return { ok };
+    } finally { retryingPush = false; }
+  };
+  if (typeof window !== "undefined" && window.addEventListener) {
+    window.addEventListener("online", () => { retryPendingPush().catch(() => {}); });
+    // After the page (and lumio-profiles.js, if it loads) has settled.
+    window.addEventListener("load", () => setTimeout(() => { retryPendingPush().catch(() => {}); }, 2000));
+  }
   // Pull everyone's (or one student's) records and merge: higher stars win,
   // then the newer date. Returns how many local records changed.
   const pullProgressAndHomework = async (name) => {
@@ -166,9 +227,22 @@ const Lumio = (() => {
         hw[row.studentName] = hw[row.studentName] || {}; hw[row.studentName][row.level] = hw[row.studentName][row.level] || {};
         const prev = hw[row.studentName][row.level][row.lesson];
         const inc = { stars: Number(row.stars) || 0, score: Number(row.score) || 0, total: Number(row.total) || 0, said: Number(row.said) || 0, saidTotal: Number(row.saidTotal) || 0, hasDrawing: String(row.hasDrawing) === "true" || row.hasDrawing === true, date: String(row.date || "") };
+        // The per-skill breakdown report.html reads (Reading = quiz, Writing
+        // = spelling) and the skill/recording counts. Only taken when the
+        // Sheet actually has them: rows from before these columns existed
+        // must not turn a real local value into 0.
+        HW_EXTRA_FIELDS.forEach(k => {
+          const v = row[k];
+          if (v === undefined || v === null || v === "") return;
+          inc[k] = k === "skillType" ? String(v) : (Number(v) || 0);
+        });
         const prevStars = prev && Number.isFinite(Number(prev.stars)) ? Number(prev.stars) : -1;
         if (!prev || inc.stars > prevStars || (inc.stars === prevStars && inc.date > String(prev.date || ""))) {
           hw[row.studentName][row.level][row.lesson] = Object.assign({}, prev || {}, inc); changed++;
+        } else if (HW_EXTRA_FIELDS.some(k => inc[k] !== undefined && prev[k] === undefined) && inc.stars === prevStars && inc.date === String(prev.date || "")) {
+          // Same result, but this device's copy predates the breakdown.
+          HW_EXTRA_FIELDS.forEach(k => { if (inc[k] !== undefined && prev[k] === undefined) prev[k] = inc[k]; });
+          changed++;
         }
       });
       set("lumio_homework", hw);
@@ -592,7 +666,7 @@ const Lumio = (() => {
            lastReportDateFor, logReportSent,
            speak, speakPhonicsSound, beep, confetti, toast, shuffle, qs, letterTile,
            COUNTRY_CODES, combinePhone, splitPhone,
-           pushProgressAndHomework, pullProgressAndHomework,
+           pushProgressAndHomework, pullProgressAndHomework, retryPendingPush,
            lessonCountFor, attendedSetFor, lessonDone, currentLesson, lessonsDoneCount, levelComplete, isTeacherSession,
            TEST_PASS_PCT, testBand, levelTestsAll, levelTestFor, saveLevelTest,
            TZ, TZ_LABEL, TZ_LABEL_AR, TZ_OFFSET_MIN, tzNow, tzToDate, tzAddDays, tzDayOfWeek,

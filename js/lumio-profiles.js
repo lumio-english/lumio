@@ -247,12 +247,56 @@
     // older copy is still sitting on the shared Sheet.
     if (!Array.isArray(data.deletedStudentIds)) { data.deletedStudentIds = []; needsSave = true; }
     if (!Array.isArray(data.deletedTeacherIds)) { data.deletedTeacherIds = []; needsSave = true; }
+    // Reward catalog items removed here (same idea): without it the
+    // union-by-id pull put a removed reward straight back.
+    if (!Array.isArray(data.deletedRewardIds)) { data.deletedRewardIds = []; needsSave = true; }
 
-    if (needsSave) save(data);
+    // Migrations/normalisation are not edits: never stamp them as newer
+    // than what the Sheet has (see stampChanges).
+    if (needsSave) save(data, { noStamp: true });
     return data;
   }
-  function save(data) {
-    data.updatedAt = new Date().toISOString();
+  // ---- field-level change times (3 Oct 2026) ----
+  // Every record carries fieldTimes = { field: ISO time it last changed,
+  // _base: the record's updatedAt before tracking started }. Two devices
+  // (or a teacher device and the script's pushStudentPatch_) editing
+  // DIFFERENT fields of the same student no longer overwrite each other:
+  // the merge picks each field from whichever side changed it last (see
+  // mergeFields). save() stamps the fields that actually changed by
+  // diffing against what was stored, so every edit path -- updateStudent,
+  // addRewardPoints, redeem*, messages, referrals, deletion -- is covered
+  // without each function having to remember. Sync/merge/migration saves
+  // pass { noStamp: true }: they adopt other devices' times, not new edits.
+  const STAMP_SKIP = { id: 1, updatedAt: 1, fieldTimes: 1, createdAt: 1 };
+  function stampChanges(prev, data, now) {
+    ["students", "teachers"].forEach(listKey => {
+      const before = {};
+      ((prev && prev[listKey]) || []).forEach(r => { if (r && r.id) before[r.id] = r; });
+      (data[listKey] || []).forEach(r => {
+        const old = r && before[r.id];
+        if (!old) return; // brand-new record: its createdAt/updatedAt says it all
+        if (JSON.stringify(r) === JSON.stringify(old)) return; // cheap path: untouched record
+        const changed = Object.keys(Object.assign({}, old, r))
+          .filter(k => !STAMP_SKIP[k] && JSON.stringify(r[k]) !== JSON.stringify(old[k]));
+        if (!changed.length && r.updatedAt === old.updatedAt) return;
+        const ft = (r.fieldTimes && typeof r.fieldTimes === "object") ? r.fieldTimes : {};
+        // _base keeps untouched fields at their old time, so bumping
+        // updatedAt never makes the whole record look newer.
+        if (!ft._base) ft._base = old.updatedAt || r.createdAt || "";
+        changed.forEach(k => { ft[k] = now; });
+        r.fieldTimes = ft;
+        r.updatedAt = now;
+      });
+    });
+  }
+  function save(data, opts) {
+    const now = new Date().toISOString();
+    if (!(opts && opts.noStamp)) {
+      let prev = null;
+      try { prev = JSON.parse(safeGet(ROSTER_KEY) || "null"); } catch (e) { prev = null; }
+      stampChanges(prev, data, now);
+    }
+    data.updatedAt = now;
     safeSet(ROSTER_KEY, JSON.stringify(data));
     return data;
   }
@@ -414,8 +458,14 @@
         // Bump updatedAt on every class that changed: without it the
         // Sheet's copy (same timestamp, old name) won the next merge and
         // the rename was undone.
+        // The seat's own updatedAt is what the per-seat merge compares
+        // (lumio-schedule.js mergeSeats), so the new name wins there too.
         const fix = list => (list || []).forEach(c => (c.students || []).forEach(st => {
-          if (st.studentId === id || st.studentName === oldName) { st.studentName = newName; c.updatedAt = now; touched = true; }
+          if (st.studentId === id || st.studentName === oldName) {
+            if (!c.fieldTimes || typeof c.fieldTimes !== "object") c.fieldTimes = {};
+            if (!c.fieldTimes._base) c.fieldTimes._base = c.updatedAt || "";
+            st.studentName = newName; st.updatedAt = now; c.updatedAt = now; touched = true;
+          }
         }));
         fix(sched.classes); fix(sched.patterns);
         if (touched) safeSet("lumio_schedule_v2", JSON.stringify(sched));
@@ -728,6 +778,7 @@
   function removeRewardCatalogItem(id) {
     const data = load();
     data.rewardCatalog = (data.rewardCatalog || []).filter(r => r.id !== id);
+    if (!data.deletedRewardIds.includes(id)) data.deletedRewardIds.push(id);
     save(data);
   }
   function redeemCatalogItem(studentId, itemId) {
@@ -962,6 +1013,13 @@
   }
   function removeStudent(id) {
     const data = load();
+    const gone = data.students.find(s => s.id === id);
+    // A deleted student must not keep a seat in classes that haven't
+    // started (it blocked the seat and kept regenerating from a fixed
+    // schedule); classes already held keep them for the record.
+    if (gone && global.LumioSchedule && typeof global.LumioSchedule.removeStudentFromFuture === "function") {
+      try { global.LumioSchedule.removeStudentFromFuture(gone.id, gone.name); } catch (e) { console.warn("Lumio: seat cleanup failed", e); }
+    }
     data.students = data.students.filter(s => s.id !== id);
     // Without this, the next syncNow() pulls this student back from the
     // Sheet (mergeById is deliberately additive — see its comment) and
@@ -998,7 +1056,7 @@
           : [Object.assign({}, merged, { notes: [] })];
         if (Array.isArray(out.teachers)) data.teachers = mergeById(data.teachers, out.teachers);
         if (Array.isArray(out.rewardCatalog)) data.rewardCatalog = out.rewardCatalog.map(r => ({ ...r, cost: Number(r.cost) || 0 }));
-        save(data);
+        save(data, { noStamp: true });
         setStudentAuth(me.id, pinHash);
         return data.students.find(x => x.id === me.id);
       }
@@ -1278,10 +1336,12 @@
 
   function stripPin(record) {
     const copy = Object.assign({}, record);
-    // `pin` now DOES sync (Eslam's call): teachers need to see and share a
-    // student's current PIN from any device, not just the one that set it.
-    // The Sheet is the teacher's own private spreadsheet; pinHash is still
-    // what login verification uses.
+    // The plaintext `pin` stays on the device that set it: the Roster and
+    // Teachers tabs deliberately have NO pin column (the script would drop
+    // it anyway), so it is not sent at all. Only pinHash syncs, and that is
+    // what every login check uses. Another teacher device cannot read the
+    // PIN back; it can only set a new one.
+    delete copy.pin;
     // Sheets/Apps Script rows are flat key/value, so array/object fields
     // would otherwise get mangled on the way through -- serialize each to
     // a wire-safe string, same idea as everywhere else here that keeps
@@ -1309,8 +1369,18 @@
     });
     return changed;
   }
+  // fieldTimes travels as JSON text in the Sheet.
+  function parseFieldTimes(rec) {
+    if (!rec || rec.fieldTimes === undefined) return rec;
+    if (typeof rec.fieldTimes === "string") {
+      try { rec.fieldTimes = rec.fieldTimes ? JSON.parse(rec.fieldTimes) : null; } catch (e) { rec.fieldTimes = null; }
+    }
+    if (!rec.fieldTimes || typeof rec.fieldTimes !== "object") delete rec.fieldTimes;
+    return rec;
+  }
   function parseSyncedStudent(s) {
     if (!s) return s;
+    parseFieldTimes(s);
     coerceNumbers(s);
     if (typeof s.tags === "string") s.tags = s.tags.split(",").map(t => t.trim()).filter(Boolean);
     else if (!Array.isArray(s.tags)) s.tags = [];
@@ -1364,12 +1434,13 @@
   // just because one device's local copy happened to be empty (e.g. the
   // very first sync from a brand-new device).
   //
-  // Conflict resolution uses each record's `updatedAt` timestamp: whichever
-  // side was edited more recently wins. This matters specifically for a
-  // just-changed PIN — without this, syncing shortly after an edit (before
-  // that edit had been pushed anywhere) would silently revert it back to
-  // whatever was already on the Sheet, since the old code always preferred
-  // "remote" on any mismatch regardless of which side was actually newer.
+  // Conflict resolution is PER FIELD since 3 Oct 2026 (see stampChanges
+  // and mergeFields): each field comes from whichever side changed it last,
+  // falling back to the record's updatedAt for rows written before
+  // fieldTimes existed. Whole-record newest-wins used to let a teacher
+  // device that edited a phone number silently undo a redemption or avatar
+  // change the student had made meanwhile, and two teacher devices editing
+  // different fields of one student lost one of the edits.
   // The script leaves pinHash (and a student's CRM notes) out of what it
   // sends to anyone but a signed-in teacher. A missing field there means
   // "not shown to you", never "cleared", so the local value is kept.
@@ -1384,12 +1455,49 @@
       return out;
     });
   }
+  // ---- per-field merge (same rules as mergeFields_ in the Apps Script) ----
+  function ftOf(rec) {
+    let ft = rec && rec.fieldTimes;
+    if (typeof ft === "string") { try { ft = ft ? JSON.parse(ft) : null; } catch (e) { ft = null; } }
+    return ft && typeof ft === "object" ? ft : {};
+  }
+  function tms(v) { const n = v ? Date.parse(v) : NaN; return isNaN(n) ? 0 : n; }
+  // When a field has no time of its own it is as old as the record's
+  // _base (or, for a row that predates fieldTimes, its updatedAt).
+  function fieldTime(rec, ft, k) { return tms(ft[k]) || tms(ft._base) || tms(rec.updatedAt); }
+  function baseTime(rec, ft) { return tms(ft._base) || tms(rec.updatedAt); }
+  // a wins ties (callers pass the Sheet's copy as a). A field one side
+  // doesn't carry at all is "not known there", never "cleared".
+  function mergeFields(a, b, skip) {
+    const fa = ftOf(a), fb = ftOf(b), out = {}, ft = {};
+    const base = Math.max(baseTime(a, fa), baseTime(b, fb));
+    Object.keys(Object.assign({}, a, b)).forEach(k => {
+      if (k === "fieldTimes" || k === "updatedAt" || (skip && skip[k])) return;
+      const va = a[k], vb = b[k];
+      let t;
+      if (vb === undefined) { out[k] = va; t = fieldTime(a, fa, k); }
+      else if (va === undefined) { out[k] = vb; t = fieldTime(b, fb, k); }
+      else {
+        const ta = fieldTime(a, fa, k), tb = fieldTime(b, fb, k);
+        if (JSON.stringify(va) === JSON.stringify(vb)) { out[k] = va; t = Math.max(ta, tb); }
+        else if (tb > ta) { out[k] = vb; t = tb; }
+        else { out[k] = va; t = ta; }
+      }
+      if (t && t !== base) ft[k] = new Date(t).toISOString();
+    });
+    if (base) ft._base = new Date(base).toISOString();
+    out.updatedAt = tms(b.updatedAt) > tms(a.updatedAt) ? b.updatedAt : a.updatedAt;
+    out.fieldTimes = ft;
+    return out;
+  }
   function mergeById(localList, remoteList) {
     const byId = {};
     localList.forEach(r => { byId[r.id] = Object.assign({}, r); });
     remoteList.forEach(r => {
       const local = byId[r.id];
       if (!local) { byId[r.id] = r; return; }
+      // Remote (the Sheet) is passed first so it wins exact ties.
+      const chosen = mergeFields(r, local);
       // A student's login ID is the credential they actually type in --
       // it must never change once issued. If the remote copy is missing
       // it (an older Sheet that predates the loginCode column, or a row
@@ -1397,62 +1505,35 @@
       // rather than letting the blank overwrite it -- otherwise load()'s
       // migration sees an empty loginCode and mints a brand-new random
       // one, silently changing the ID out from under the student.
-      const keepIdentity = (chosen) => {
-        if (!chosen.loginCode && local.loginCode) chosen.loginCode = local.loginCode;
-        return chosen;
-      };
-      const localTime = local.updatedAt ? Date.parse(local.updatedAt) : 0;
-      const remoteTime = r.updatedAt ? Date.parse(r.updatedAt) : 0;
+      if (!chosen.loginCode && local.loginCode) chosen.loginCode = local.loginCode;
       // Messages are written by the teacher's device and marked read on
-      // the student's -- two devices editing the same record. Plain
-      // newest-updatedAt-wins would drop whichever side lost: a new
-      // message from the teacher, or a read-mark from the student. So
-      // regardless of which copy wins below, the inbox is the union of
-      // both, by message id, with "read" sticky once either side set it.
-      const unionMessages = (a, b) => {
+      // the student's -- two devices editing the same record. Whatever
+      // the field times say, the inbox is the union of both, by message
+      // id, with "read" sticky once either side set it.
+      const unionMessages = (x, y) => {
         const byMsgId = {};
-        (Array.isArray(a) ? a : []).concat(Array.isArray(b) ? b : []).forEach(m => {
+        (Array.isArray(x) ? x : []).concat(Array.isArray(y) ? y : []).forEach(m => {
           if (!m || !m.id) return;
           const prev = byMsgId[m.id];
           byMsgId[m.id] = prev ? Object.assign({}, prev, m, { read: !!(prev.read || m.read) }) : m;
         });
-        return Object.values(byMsgId).sort((x, y) => Date.parse(x.date || 0) - Date.parse(y.date || 0));
+        return Object.values(byMsgId).sort((p, q) => Date.parse(p.date || 0) - Date.parse(q.date || 0));
       };
-      const mergedMessages = unionMessages(local.messages, r.messages);
-      let chosen;
-      if (localTime > remoteTime) {
-        // this device's edit is newer than what's on the Sheet — keep it,
-        // and it'll get pushed up right after this merge step runs.
-        chosen = local;
-      } else if (local.pin && local.pinHash && local.pinHash === r.pinHash) {
-        // remote is newer or tied, but this device still knows the
-        // matching plaintext PIN — keep that for local reveal/print.
-        chosen = keepIdentity(Object.assign({}, r, { pin: local.pin }));
-      } else {
-        chosen = keepIdentity(Object.assign({}, r));
-      }
       // mergeById also merges teacher records, which have no inbox --
       // only attach when at least one side actually carries messages.
-      if (Array.isArray(local.messages) || Array.isArray(r.messages)) chosen.messages = mergedMessages;
-      // Keep a plaintext pin from either side as long as it matches the
-      // hash that actually wins -- lets a second teacher device show it.
-      if (!chosen.pin) {
-        if (r.pin && r.pinHash === chosen.pinHash) chosen.pin = String(r.pin);
-        else if (local.pin && local.pinHash === chosen.pinHash) chosen.pin = String(local.pin);
-      }
-      // Referrals are only ever edited on the teacher's side, so instead
-      // of an additive union (which would resurrect a removed referral
-      // from the other device's stale copy, exactly the old
-      // deleted-student bug) the side that last EDITED referrals wins
-      // outright -- tracked by referralsUpdatedAt, bumped only by
-      // addReferral/updateReferralStatus/removeReferral. A student device
-      // marking messages read bumps updatedAt but never referralsUpdatedAt,
-      // so its stale referral copy can no longer overwrite the teacher's.
+      if (Array.isArray(local.messages) || Array.isArray(r.messages)) chosen.messages = unionMessages(local.messages, r.messages);
+      // The plaintext pin never leaves this device (see stripPin): keep it
+      // as long as it still matches the hash that won.
+      if (local.pin && local.pinHash && local.pinHash === chosen.pinHash) chosen.pin = String(local.pin);
+      else if (!(r.pin && r.pinHash === chosen.pinHash)) delete chosen.pin;
+      // Referrals are only ever edited on the teacher's side: the side that
+      // last EDITED them wins outright (referralsUpdatedAt, else the field
+      // time), never a union that would resurrect a removed referral.
       // rewardedAt stays sticky by id as a last line of defence against a
       // subscription reward ever being granted twice.
       if (Array.isArray(local.referrals) || Array.isArray(r.referrals)) {
-        const lt = local.referralsUpdatedAt ? Date.parse(local.referralsUpdatedAt) : 0;
-        const rt = r.referralsUpdatedAt ? Date.parse(r.referralsUpdatedAt) : 0;
+        const lt = tms(local.referralsUpdatedAt) || fieldTime(local, ftOf(local), "referrals");
+        const rt = tms(r.referralsUpdatedAt) || fieldTime(r, ftOf(r), "referrals");
         const winner = lt >= rt ? local : r;
         const other = winner === local ? r : local;
         const otherById = {};
@@ -1533,12 +1614,15 @@
     // Only a signed-in teacher may write the roster once the script checks.
     if (caps.auth && !getTeacherAuth()) pullOnly = true;
     if (caps.auth) adoptLegacyStudentAuth();
-    const data = load();
+    let data;
     try {
       // Pull + merge first, so a brand-new device can never push an empty
       // local roster over whatever's already shared.
       const res = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pullRoster" + authQuery());
       const remote = await res.json();
+      // Read local data only now: an edit made while the pull was in
+      // flight used to be overwritten by the merge result saved below.
+      data = load();
       if (remote && remote.ok === false) {
         // The script refused: wrong/old PIN, or this student was deleted.
         const reason = remote.error || "refused";
@@ -1570,7 +1654,9 @@
           if (!entry || !entry.id) return;
           if (entry.type === "teacher") {
             if (!data.deletedTeacherIds.includes(entry.id)) data.deletedTeacherIds.push(entry.id);
-          } else {
+          } else if (entry.type === "reward") {
+            if (!data.deletedRewardIds.includes(entry.id)) data.deletedRewardIds.push(entry.id);
+          } else if (!entry.type || entry.type === "student") {
             if (!data.deletedStudentIds.includes(entry.id)) data.deletedStudentIds.push(entry.id);
           }
         });
@@ -1616,10 +1702,11 @@
       // barely ever change.
       if (remote && Array.isArray(remote.rewardCatalog)) {
         const seen = new Set(data.rewardCatalog.map(r => r.id));
-        remote.rewardCatalog.forEach(r => { if (r && !seen.has(r.id)) { data.rewardCatalog.push({ ...r, cost: Number(r.cost) || 0 }); seen.add(r.id); } });
+        remote.rewardCatalog.forEach(r => { if (r && !seen.has(r.id) && !data.deletedRewardIds.includes(r.id)) { data.rewardCatalog.push({ ...r, cost: Number(r.cost) || 0 }); seen.add(r.id); } });
       }
+      data.rewardCatalog = data.rewardCatalog.filter(r => r && !data.deletedRewardIds.includes(r.id));
       await backfillMissingHashes(data);
-      save(data);
+      save(data, { noStamp: true }); // adopting the Sheet's values, not a local edit
       if (pullOnly) return { ok: true, at: new Date().toISOString(), pullOnly: true };
 
       const pushRes = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=pushRoster" + authQuery(), {
@@ -1638,6 +1725,7 @@
           deletedIds: [
             ...data.deletedStudentIds.map(id => ({ id, type: "student", deletedAt: new Date().toISOString() })),
             ...data.deletedTeacherIds.map(id => ({ id, type: "teacher", deletedAt: new Date().toISOString() })),
+            ...data.deletedRewardIds.map(id => ({ id, type: "reward", deletedAt: new Date().toISOString() })),
           ],
         }),
       });
@@ -1684,17 +1772,64 @@
         const fresh = load();
         const mine = fresh.students.find(x => x.id === studentId);
         if (mine) {
-          ["rewardPoints", "bonusHours", "sessionsRemaining", "redemptions", "messages", "pendingDeletion", "deletionConfirmed", "updatedAt"].forEach(k => {
-            if (out.student[k] !== undefined) mine[k] = out.student[k];
+          const sft = ftOf(out.student), mft = ftOf(mine);
+          ["rewardPoints", "bonusHours", "sessionsRemaining", "redemptions", "messages", "pendingDeletion", "deletionConfirmed", "avatar"].forEach(k => {
+            if (out.student[k] === undefined) return;
+            mine[k] = out.student[k];
+            if (tms(sft[k]) > tms(mft[k])) mft[k] = sft[k];
           });
+          if (!mft._base) mft._base = sft._base || mine.updatedAt || "";
+          mine.fieldTimes = mft;
+          if (tms(out.student.updatedAt) > tms(mine.updatedAt)) mine.updatedAt = out.student.updatedAt;
           ["rewardPoints", "bonusHours", "sessionsRemaining"].forEach(k => { mine[k] = Number(mine[k]) || 0; });
-          save(fresh);
+          save(fresh, { noStamp: true }); // the Sheet's values, not a new edit
         }
       }
+      // Offline / refused: remember it and send again on the next page
+      // load or when the connection comes back (see retryPendingPatches).
+      // A student the Sheet no longer has is not worth retrying.
+      markPatchPending(studentId, !(out && out.ok) && !(out && /not found|deleted/i.test(out.error || "")));
       return out || { ok: false };
     } catch (e) {
+      markPatchPending(studentId, true);
       return { ok: false, reason: e && e.name === "AbortError" ? "timeout" : "network", error: e && e.message };
     }
+  }
+  // ---- offline retry for a student's own changes (3 Oct 2026) ----
+  // pushStudentPatch_ on the script is idempotent (avatar replaced,
+  // messages unioned, a redemption counted once by its date), so sending
+  // the same patch twice is harmless.
+  const PENDING_PATCH_KEY = "lumio_pending_student_patch";
+  function pendingPatchIds() {
+    try { const a = JSON.parse(safeGet(PENDING_PATCH_KEY) || "[]"); return Array.isArray(a) ? a : []; } catch (e) { return []; }
+  }
+  function markPatchPending(id, pending) {
+    const ids = pendingPatchIds().filter(x => x !== id);
+    if (pending) ids.push(id);
+    if (ids.length) safeSet(PENDING_PATCH_KEY, JSON.stringify(ids));
+    else { try { localStorage.removeItem(PENDING_PATCH_KEY); } catch (e) { delete memory[PENDING_PATCH_KEY]; } }
+  }
+  let retryingPatches = false;
+  async function retryPendingPatches() {
+    if (retryingPatches) return { ok: true, retried: 0 };
+    const ids = pendingPatchIds();
+    if (!ids.length) return { ok: true, retried: 0 };
+    retryingPatches = true;
+    let done = 0;
+    try {
+      for (const id of ids) {
+        if (!load().students.some(s => s.id === id)) { markPatchPending(id, false); continue; }
+        const r = await pushStudentPatch(id);
+        if (r && r.ok) done++;
+      }
+    } finally { retryingPatches = false; }
+    return { ok: pendingPatchIds().length === 0, retried: done };
+  }
+  if (typeof window !== "undefined" && window.addEventListener) {
+    window.addEventListener("online", () => { retryPendingPatches().catch(() => {}); });
+    // Shortly after the page settles, so it never competes with the
+    // page's own first sync.
+    setTimeout(() => { retryPendingPatches().catch(() => {}); }, 2500);
   }
 
   global.LumioProfiles = {
@@ -1713,7 +1848,7 @@
     addTeacher, updateTeacher, removeTeacher, verifyTeacherLogin, ensureDefaultTeacher,
     getCurrentTeacherId, setCurrentTeacherId, getCurrentTeacher, clearCurrentTeacher, isCurrentTeacherOwner,
     getTeacherName, setTeacherName,
-    getSyncConfig, configureSync, syncNow, pushStudentPatch,
+    getSyncConfig, configureSync, syncNow, pushStudentPatch, retryPendingPatches,
     authQuery, serverCaps, postAction, getTeacherAuth, getStudentAuth, setTeacherAuth, clearTeacherAuth, clearStudentAuth, hashPin,
   };
 })(window);
