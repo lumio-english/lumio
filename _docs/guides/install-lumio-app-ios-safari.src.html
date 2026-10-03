@@ -1,0 +1,144 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><style>
+@font-face{font-family:'Baloo 2';src:url('FONTS/baloo-2-latin-800-normal.woff2') format('woff2');font-weight:800}
+@font-face{font-family:'Baloo 2';src:url('FONTS/baloo-2-latin-700-normal.woff2') format('woff2');font-weight:700}
+@font-face{font-family:'Nunito';src:url('FONTS/nunito-latin-700-normal.woff2') format('woff2');font-weight:700}
+@font-face{font-family:'Nunito';src:url('FONTS/nunito-latin-800-normal.woff2') format('woff2');font-weight:800}
+@font-face{font-family:'Cairo';src:url('FONTS/cairo-arabic-700-normal.woff2') format('woff2');font-weight:700}
+@font-face{font-family:'Cairo';src:url('FONTS/cairo-arabic-900-normal.woff2') format('woff2');font-weight:900}
+:root{--or:#F97316;--sun:#FFC93C;--teal:#0D9488;--cocoa:#43301F;--cream:#FFF8EC;--soft:#8A7160;--line:#F0E6D6}
+*{box-sizing:border-box;margin:0}
+body{width:1080px;background:linear-gradient(170deg,#FFF8EC,#FFF1DA 60%,#FFE9C9);font-family:'Nunito',sans-serif;color:var(--cocoa);padding:0 0 56px}
+.ar{font-family:'Cairo',sans-serif;direction:rtl}
+header{padding:54px 64px 30px;display:flex;align-items:center;gap:24px}
+header img.logo{height:120px}
+header h1{font-family:'Baloo 2';font-size:52px;line-height:1.05}
+header h1 span{color:var(--or)}
+header .sub{font-size:24px;color:var(--soft);font-weight:700;margin-top:6px}
+header .sub.ar{font-size:26px;margin-top:2px}
+.pill{display:inline-flex;align-items:center;gap:10px;background:#fff;border:3px solid var(--or);color:var(--cocoa);border-radius:999px;padding:12px 22px;font-weight:800;font-size:24px;margin:0 64px 14px}
+.pill b{color:var(--or)}
+.steps{padding:16px 64px 0;display:flex;flex-direction:column;gap:30px}
+.step{display:grid;grid-template-columns:300px 1fr;gap:34px;align-items:center;background:#fff;border-radius:34px;padding:30px 34px;box-shadow:0 10px 30px rgba(67,48,31,.08);position:relative}
+.step.wide{grid-template-columns:470px 1fr;gap:28px}
+.num{position:absolute;left:-10px;top:-14px;width:68px;height:68px;border-radius:50%;background:var(--or);color:#fff;font-family:'Baloo 2';font-size:38px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(249,115,22,.4)}
+.t{display:flex;flex-direction:column;gap:10px}
+.t .en{font-size:30px;font-weight:800;line-height:1.25}
+.t .ar{font-size:32px;font-weight:900;line-height:1.5;color:#5A4030}
+.t .en small,.t .ar small{display:block;font-size:21px;font-weight:700;color:var(--soft);margin-top:4px;line-height:1.4}
+.t .ar small{font-size:23px}
+.step.wide .t .en{font-size:27px}.step.wide .t .ar{font-size:29px}
+.key{display:inline-block;background:#FFF1E0;border:2px solid #F9C89A;border-radius:10px;padding:2px 10px;font-weight:800;color:#C2410C}
+/* phone / tablet / desktop frames */
+.phone{width:300px;height:560px;border-radius:40px;background:#1C1610;padding:12px;position:relative;box-shadow:0 14px 30px rgba(0,0,0,.25)}
+.phone.ios{background:#2B2B2E}
+.tablet{width:300px;height:420px;border-radius:26px;background:#2B2B2E;padding:14px;position:relative;box-shadow:0 14px 30px rgba(0,0,0,.25)}
+.screen{width:100%;height:100%;border-radius:30px;overflow:hidden;background:#fff;position:relative;font-size:14px}
+.tablet .screen{border-radius:14px}
+.desk{width:470px;position:relative}
+.desk .frame{width:100%;height:320px;border-radius:14px;background:#fff;overflow:hidden;box-shadow:0 14px 30px rgba(0,0,0,.22);border:4px solid #2B2B2E;position:relative;font-size:13px}
+.desk .stand{width:120px;height:18px;background:#2B2B2E;margin:0 auto;border-radius:0 0 8px 8px}
+.desk .base{width:220px;height:8px;background:#2B2B2E;margin:0 auto;border-radius:8px}
+.tabs{height:34px;background:#DEE1E6;display:flex;align-items:flex-end;padding:0 10px;gap:6px}
+.tabs .tab{background:#fff;border-radius:10px 10px 0 0;padding:6px 14px;font-weight:700;color:#202124;display:flex;align-items:center;gap:8px;font-size:12px}
+.tabs .tab img{width:14px;height:14px}
+.bar{height:40px;background:#fff;display:flex;align-items:center;gap:10px;padding:0 12px;border-bottom:1px solid #E5E7EB;color:#5F6368;font-weight:800}
+.bar .nav{display:flex;gap:10px;font-size:16px}
+.bar .url{flex:1;height:28px;border-radius:999px;background:#F1F3F4;display:flex;align-items:center;gap:8px;padding:0 12px;font-size:12px;color:#202124;font-weight:700;position:relative}
+.bar .url .inst{margin-left:auto;width:22px;height:22px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;color:#1A73E8;border:1px solid #DADCE0}
+.bar .dots{font-size:20px;color:#3C4043;width:30px;text-align:center;position:relative}
+.chrome{height:62px;background:#fff;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;gap:8px;padding:10px 12px}
+.url{flex:1;height:38px;border-radius:999px;background:#F1F3F4;display:flex;align-items:center;gap:8px;padding:0 12px;font-size:13px;color:#202124;font-weight:700;white-space:nowrap;overflow:hidden}
+.url .lock{width:12px;height:12px;border:2px solid #5F6368;border-radius:3px;border-top-width:3px}
+.dots{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:#3C4043;position:relative}
+.hl{outline:4px solid var(--or);outline-offset:3px;border-radius:50%;box-shadow:0 0 0 10px rgba(249,115,22,.22)}
+.hlbox{outline:4px solid var(--or);outline-offset:-4px;border-radius:12px;box-shadow:0 0 0 8px rgba(249,115,22,.22)}
+.shot{width:100%;display:block}
+.menu{position:absolute;top:10px;right:10px;width:210px;background:#fff;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.28);padding:8px 0;font-size:14px;color:#202124;font-weight:700;z-index:3}
+.menu div{padding:11px 16px;display:flex;align-items:center;gap:12px}
+.menu div i{width:18px;height:18px;border-radius:4px;background:#DADCE0;display:inline-block}
+.menu div.on{background:#FFF1E0;color:#C2410C;margin:4px 8px;border-radius:10px}
+.menu div.on i{background:var(--or)}
+.menu.desk{top:44px;right:8px;width:230px;font-size:12px}
+.menu.desk div{padding:8px 14px}
+.menu.sub{right:236px;top:130px;width:200px}
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:2}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:22px 22px 0 0;padding:20px 18px 22px;font-size:14px;color:#202124;z-index:3}
+.sheet .app{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.sheet .app img{width:52px;height:52px;border-radius:12px}
+.sheet .app b{display:block;font-size:16px}
+.sheet .app span{color:#5F6368;font-size:12px}
+.sheet .btns{display:flex;justify-content:flex-end;gap:10px}
+.sheet .btns div{padding:9px 16px;border-radius:999px;font-weight:800}
+.sheet .btns .c{color:#1A73E8}
+.sheet .btns .i{background:#1A73E8;color:#fff}
+/* iOS */
+.iosbar{position:absolute;left:0;right:0;bottom:0;height:86px;background:rgba(249,249,249,.96);border-top:1px solid #D1D1D6;z-index:3;padding:0 10px}
+.iosbar .addr{margin:8px 6px 0;height:36px;border-radius:12px;background:#E9E9EB;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#1C1C1E;gap:6px}
+.iosbar .row{display:flex;justify-content:space-around;align-items:center;height:40px;color:#0A84FF;font-size:20px}
+.iosbar .row span{width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;position:relative}
+.iostop{height:44px;background:rgba(249,249,249,.96);border-bottom:1px solid #D1D1D6;display:flex;align-items:center;gap:8px;padding:0 10px;color:#0A84FF;font-size:16px;z-index:3;position:relative}
+.iostop .addr{flex:1;height:30px;border-radius:10px;background:#E9E9EB;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#1C1C1E;gap:6px}
+.iostop span{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:50%;position:relative}
+.ios-sheet{position:absolute;left:0;right:0;bottom:0;background:#F2F2F7;border-radius:18px 18px 0 0;padding:14px 0 0;z-index:3;font-size:13px;color:#1C1C1E}
+.ios-sheet .hdr{display:flex;align-items:center;gap:10px;padding:0 14px 12px;border-bottom:1px solid #D1D1D6}
+.ios-sheet .hdr img{width:40px;height:40px;border-radius:9px}
+.ios-sheet .hdr b{display:block}
+.ios-sheet .hdr span{color:#6E6E73;font-size:11px}
+.ios-sheet .apps{display:flex;gap:14px;padding:12px 14px;border-bottom:1px solid #D1D1D6}
+.ios-sheet .apps div{width:48px;height:48px;border-radius:12px;background:#D1D1D6}
+.ios-sheet .list{background:#fff;margin:10px 12px 0;border-radius:12px}
+.ios-sheet .list div{padding:11px 14px;border-bottom:1px solid #E5E5EA;display:flex;align-items:center;justify-content:space-between;font-weight:600}
+.ios-sheet .list div:last-child{border-bottom:none}
+.ios-sheet .list div.on{background:#FFF1E0;color:#C2410C;border-radius:12px;font-weight:800}
+.ios-sheet .list i{width:18px;height:18px;border-radius:5px;background:#D1D1D6;display:inline-block}
+.ios-add{position:absolute;inset:0;background:#fff;z-index:3;font-size:13px;color:#1C1C1E}
+.ios-add .top{display:flex;justify-content:space-between;padding:14px 14px;font-weight:600;color:#0A84FF;border-bottom:1px solid #E5E5EA}
+.ios-add .top b{color:#1C1C1E}
+.ios-add .top .add{font-weight:800;padding:2px 10px}
+.ios-add .body{display:flex;gap:12px;padding:16px 14px;align-items:center}
+.ios-add .body img{width:58px;height:58px;border-radius:13px}
+.ios-add .body input{border:none;border-bottom:1px solid #D1D1D6;font-size:15px;font-weight:700;width:100%;padding:4px 0;font-family:inherit}
+.ios-add .body span{display:block;font-size:11px;color:#6E6E73;margin-top:4px}
+.ios-add p{padding:0 14px;color:#6E6E73;font-size:11px;line-height:1.4}
+.home{height:100%;background:linear-gradient(160deg,#5B6B9A,#8FA3C8 60%,#D9C6B0);padding:28px 18px;display:grid;grid-template-columns:repeat(4,1fr);gap:18px 10px;align-content:start}
+.home.ios{background:linear-gradient(160deg,#1E3A8A,#7C3AED 55%,#F472B6)}
+.home.wide{grid-template-columns:repeat(6,1fr);padding:22px 16px}
+.home .ic{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:10px;color:#fff;font-weight:800;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+.home .ic div{width:48px;height:48px;border-radius:13px;background:rgba(255,255,255,.35)}
+.home.wide .ic div{width:40px;height:40px}
+.home .ic img{width:52px;height:52px;border-radius:14px;background:#fff}
+.home.wide .ic img{width:44px;height:44px}
+.home .ic.lu{transform:scale(1.18)}
+.desktop{height:100%;background:linear-gradient(160deg,#0F3460,#16537E 55%,#5FA8D3);position:relative}
+.desktop .icons{position:absolute;left:18px;top:16px;display:grid;grid-template-columns:repeat(2,70px);gap:14px}
+.desktop .ic{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:#fff;font-weight:800;text-shadow:0 1px 3px rgba(0,0,0,.5)}
+.desktop .ic div{width:38px;height:38px;border-radius:8px;background:rgba(255,255,255,.35)}
+.desktop .ic img{width:44px;height:44px;border-radius:10px;background:#fff}
+.desktop .taskbar{position:absolute;left:0;right:0;bottom:0;height:34px;background:rgba(20,20,30,.85);display:flex;align-items:center;justify-content:center;gap:12px}
+.desktop .taskbar div{width:22px;height:22px;border-radius:5px;background:rgba(255,255,255,.3)}
+.desktop .taskbar img{width:24px;height:24px;border-radius:6px;background:#fff}
+.app-win{position:absolute;left:170px;top:22px;right:16px;bottom:44px;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,.4)}
+.app-win .title{height:30px;background:#FFF1E0;display:flex;align-items:center;gap:8px;padding:0 10px;font-size:11px;font-weight:800;color:#43301F}
+.app-win .title img{width:16px;height:16px;border-radius:4px}
+.app-win .title .wc{margin-left:auto;display:flex;gap:10px;color:#5F6368}
+.statusbar{height:24px;background:#fff;display:flex;justify-content:space-between;padding:4px 16px;font-size:11px;font-weight:800;color:#202124}
+.tip{margin:34px 64px 0;background:var(--cocoa);color:#fff;border-radius:28px;padding:28px 34px;display:grid;grid-template-columns:1fr 150px;gap:24px;align-items:center}
+.tip .en{font-size:24px;font-weight:800;line-height:1.35}
+.tip .ar{font-size:26px;font-weight:900;line-height:1.5;margin-top:10px;color:#FFE4C4}
+.tip .en span{color:var(--sun)}
+.tip img{width:150px;border-radius:16px;background:#fff;padding:6px}
+footer{margin:26px 64px 0;text-align:center;color:var(--soft);font-weight:800;font-size:22px}
+footer b{color:var(--or)}
+</style></head><body>
+<header><img class="logo" src="LOGO"><div><h1>Put <span>Lumio</span> on your iPhone or iPad</h1><div class="sub">Install the student platform as an app — iPhone · iPad · Safari</div><div class="sub ar">ثبّتوا منصة الطالب كتطبيق — آيفون · آيباد · Safari</div></div></header>
+<div class="pill">🔗 <b>lumio-english.github.io/lumio</b> &nbsp;·&nbsp; or scan the code at the bottom</div>
+<div class="steps"><div class="step"><div class="num">1</div><div class="phone ios"><div class="screen"><div class="statusbar"><span>9:41</span><span>▮▮▮ 📶 🔋</span></div><img class="shot" src="SHOT_PHONE"><div class="iosbar"><div class="addr">🔒 lumio-english.github.io</div><div class="row"><span>‹</span><span>›</span><span class="">⎙</span><span>📖</span><span>⧉</span></div></div></div></div>
+<div class="t"><div class="en">Open the Lumio link in <span class="key">Safari</span><small>Type <b>lumio-english.github.io/lumio</b> in the address bar, or tap the link we sent you on WhatsApp. On iPhone and iPad this only works from <b>Safari</b> — not from Chrome and not inside WhatsApp.</small></div><div class="ar">افتحوا رابط Lumio في متصفح <span class="key">Safari</span><small>اكتبوا الرابط في شريط العنوان أو اضغطوا على الرابط المرسل على واتساب. على الآيفون والآيباد لا تعمل الخطوة إلا من <b>Safari</b> — ليس من كروم ولا من داخل واتساب.</small></div></div></div><div class="step"><div class="num">2</div><div class="phone ios"><div class="screen"><div class="statusbar"><span>9:41</span><span>▮▮▮ 📶 🔋</span></div><img class="shot" src="SHOT_PHONE"><div class="iosbar"><div class="addr">🔒 lumio-english.github.io</div><div class="row"><span>‹</span><span>›</span><span class="hl">⎙</span><span>📖</span><span>⧉</span></div></div></div></div>
+<div class="t"><div class="en">Tap the Share button <span class="key">⎙</span><small>iPhone: the square with an arrow at the bottom of the screen. iPad: the same button at the top right, next to the address bar.</small></div><div class="ar">اضغطوا زر المشاركة <span class="key">⎙</span><small>آيفون: المربع الذي يخرج منه سهم في أسفل الشاشة. آيباد: الزر نفسه أعلى اليمين بجانب شريط العنوان.</small></div></div></div><div class="step"><div class="num">3</div><div class="phone ios"><div class="screen"><div class="statusbar"><span>9:41</span><span>▮▮▮ 📶 🔋</span></div><img class="shot" src="SHOT_PHONE" style="opacity:.5"><div class="dim"></div><div class="ios-sheet"><div class="hdr"><img src="ICON"><div><b>Lumio English</b><span>lumio-english.github.io</span></div></div><div class="apps"><div></div><div></div><div></div><div></div></div><div class="list"><div>Copy <i></i></div><div>Add to Reading List <i></i></div><div>Add Bookmark <i></i></div><div class="on hlbox">Add to Home Screen <i style="background:#F97316"></i></div><div>Find on Page <i></i></div></div></div></div></div>
+<div class="t"><div class="en">Scroll down and tap <span class="key">Add to Home Screen</span><small>The list is long — swipe up inside the menu until you see it.</small></div><div class="ar">انزلوا للأسفل واختاروا <span class="key">إضافة إلى الشاشة الرئيسية</span><small>القائمة طويلة — اسحبوا للأعلى داخل القائمة حتى تظهر.</small></div></div></div><div class="step"><div class="num">4</div><div class="phone ios"><div class="screen"><div class="statusbar"><span>9:41</span><span>▮▮▮ 📶 🔋</span></div><div class="ios-add"><div class="top"><span>Cancel</span><b>Add to Home Screen</b><span class="add hlbox" style="border-radius:8px">Add</span></div><div class="body"><img src="ICON"><div><input value="Lumio"><span>https://lumio-english.github.io/lumio/</span></div></div><p>An icon will be added to your Home Screen so you can quickly access this website.</p></div></div></div>
+<div class="t"><div class="en">Tap <span class="key">Add</span> at the top right<small>You can leave the name as "Lumio". Nothing is downloaded from the App Store.</small></div><div class="ar">اضغطوا <span class="key">إضافة</span> أعلى اليمين<small>اتركوا الاسم "Lumio" كما هو. لا يتم تنزيل أي شيء من App Store.</small></div></div></div><div class="step"><div class="num">5</div><div class="phone ios"><div class="screen"><div class="home ios"><div class="ic"><div></div>Phone</div><div class="ic"><div></div>Messages</div><div class="ic"><div></div>Camera</div><div class="ic"><div></div>Photos</div><div class="ic"><div></div>WhatsApp</div><div class="ic lu"><img class="hlbox" src="ICON" style="border-radius:14px">Lumio</div><div class="ic"><div></div>YouTube</div><div class="ic"><div></div>Maps</div><div class="ic"><div></div>Clock</div><div class="ic"><div></div>Settings</div><div class="ic"><div></div>Calendar</div><div class="ic"><div></div>Safari</div></div></div></div>
+<div class="t"><div class="en">Done! Open <span class="key">Lumio</span> from the Home Screen<small>It opens full-screen like any app. Log in once with the Student ID — the device remembers it. Works the same on iPad.</small></div><div class="ar">تم! افتحوا <span class="key">Lumio</span> من الشاشة الرئيسية<small>يفتح بملء الشاشة مثل أي تطبيق. سجّلوا الدخول مرة واحدة برقم الطالب وسيتذكره الجهاز. الطريقة نفسها على الآيباد.</small></div></div></div><div class="step"><div class="num">6</div><div class="tablet"><div class="screen"><div class="iostop"><span>‹</span><span>›</span><div class="addr">🔒 lumio-english.github.io</div><span class="hl">⎙</span><span>+</span></div><img class="shot" src="SHOT_IPAD"></div></div>
+<div class="t"><div class="en">On <span class="key">iPad</span> the Share button is at the top<small>Same steps: Safari → Share ⎙ (top right) → Add to Home Screen → Add.</small></div><div class="ar">على <span class="key">الآيباد</span> زر المشاركة في الأعلى<small>نفس الخطوات: Safari ← مشاركة ⎙ (أعلى اليمين) ← إضافة إلى الشاشة الرئيسية ← إضافة.</small></div></div></div></div>
+<div class="tip"><div><div class="en">🤖 <span>Android phone?</span> Open the link in <b>Chrome</b> → <b>⋮</b> → <b>Add to Home screen</b> → <b>Install</b>. (We have a separate guide for that.)</div><div class="ar">جوال أندرويد؟ افتحوا الرابط في <b>كروم</b> ← <b>⋮</b> ← <b>إضافة إلى الشاشة الرئيسية</b> ← <b>تثبيت</b>. (يوجد دليل منفصل لذلك.)</div></div><img src="QR"></div>
+<footer>Lumio English · <b>lumio-english.github.io/lumio</b> · Small Steps, Big Futures</footer>
+</body></html>
