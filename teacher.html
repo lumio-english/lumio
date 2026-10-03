@@ -4804,8 +4804,8 @@
         ? { classId: c.id, patternId: pat.id, date: c.date, time: c.startTime, duration: c.durationMinutes, teacherName: c.teacherName }
         : { classId: null, patternId: pat.id, date: prefill.date, time: prefill.time, duration: prefill.duration || pat.durationMinutes, teacherName: pat.teacherName };
       document.getElementById("classModalTitle").textContent = c ? "Students in this slot" : "Book students into this slot";
-      clsNotesInput.value = c ? (c.notes || "") : "";
-      document.getElementById("clsMeetingLink").value = c ? (c.meetingLink || "") : "";
+      clsNotesInput.value = c ? (c.notes || "") : (pat.notes || "");
+      document.getElementById("clsMeetingLink").value = c ? (c.meetingLink || "") : (pat.meetingLink || "");
       document.getElementById("clsSlotChecks").innerHTML = "";
       document.getElementById("clsSlotChecks").dataset.inited = "0";
       renderSlotChecks();
@@ -4893,7 +4893,23 @@
     const before = cls ? cls.students.slice() : [];
     const toAdd = slotStudentsPool().filter(s => pickedIds.has(s.id) && !before.some(b => b.studentId === s.id || String(b.studentName).trim().toLowerCase() === s.name.trim().toLowerCase()));
     const toRemove = before.filter(b => !(b.studentId ? pickedIds.has(b.studentId) : true));
-    if (!cls && !toAdd.length) { clsStudentError.textContent = "Tick at least one student."; return; }
+    if (!cls && !toAdd.length) {
+      // Nothing booked yet and no student ticked: the teacher is only
+      // setting the slot's meeting link / notes. Save them on the slot
+      // itself (every week of it), which is what "Save" means here.
+      const link = document.getElementById("clsMeetingLink").value.trim();
+      const notes = clsNotesInput.value.trim();
+      if (link || notes) {
+        LumioSchedule.updatePattern(ctx.patternId, { meetingLink: link, notes });
+        closeClassModal(); renderScheduleActive(); queueSync();
+        showToast(`Saved on this fixed slot — every class booked into it will use ${link ? "this link" : "these notes"}.`, "success");
+        return;
+      }
+      setClassModalTab("class");
+      clsStudentError.textContent = "Tick at least one student to book, or add a meeting link / notes to save on the slot.";
+      showToast("Tick at least one student, or add a link to save on the slot.", "error");
+      return;
+    }
     if (!(await confirmBookableStudents(toAdd, false))) return;
     const added = [], failed = [];
     for (const s of toAdd) {
@@ -4914,7 +4930,7 @@
       }
       toRemove.forEach(b => { const s = b.studentId ? LumioProfiles.getStudent(b.studentId) : LumioProfiles.findByName(b.studentName); if (s) LumioProfiles.addMessageOnce(s.id, `removed_${cls.id}`, { type: "class_cancelled", text: `❌ Your teacher removed you from the class on ${fmtClassWhen(fresh || cls)}. Book another time from your dashboard.`, meta: { classId: cls.id } }); });
     }
-    if (failed.length) { clsStudentError.textContent = failed.join(" · "); renderSlotChecks(); renderScheduleActive(); queueSync(); return; }
+    if (failed.length) { setClassModalTab("class"); clsStudentError.textContent = failed.join(" · "); showToast(failed[0], "error"); renderSlotChecks(); renderScheduleActive(); queueSync(); return; }
     closeClassModal(); renderScheduleActive(); queueSync();
     showToast(added.length ? `Booked ${added.join(", ")} into the slot (Lesson ${cls.lessonNumber}).` : "Slot updated.", "success");
   }
@@ -4922,7 +4938,7 @@
     if (!window.LumioSchedule || !window.LumioProfiles) { closeClassModal(); return; }
     if (clsSlotMode) { await saveSlotBooking(); return; }
     const picked = checkedStudents();
-    if (!picked.length) { clsStudentError.textContent = "Pick at least one student for this class."; return; }
+    if (!picked.length) { setClassModalTab("class"); clsStudentError.textContent = "Pick at least one student for this class."; showToast("Pick at least one student for this class.", "error"); return; }
     clsStudentError.textContent = "";
     if (!(await confirmBookableStudents(picked, !!editingClassId))) return;
     const combo = currentComboStudents();
