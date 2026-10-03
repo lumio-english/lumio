@@ -35,7 +35,8 @@ var ROSTER_COLUMNS = [
   "pointsLog", "redemptions", "notes",
   "messages", "pendingDeletion", "deletionConfirmed",
   "referrals", "referralsUpdatedAt",
-  "cohort"   // batch (join month); was missing, so every sync erased it
+  "cohort",  // batch (join month); was missing, so every sync erased it
+  "fieldTimes" // JSON {field: ISO time it last changed, _base}: per-field merge (3 Oct 2026)
 ];
 
 var REWARD_CATALOG_SHEET = "RewardCatalog";
@@ -48,24 +49,29 @@ var SCHEDULE_SHEET = "Schedule";
 var SCHEDULE_COLUMNS = [
   "id", "teacherId", "teacherName", "date", "startTime", "durationMinutes",
   "level", "cohort", "group", "lessonNumber", "meetingLink", "notes",
-  "sessionNotes", "status", "patternId", "studentsJson", "createdAt", "updatedAt"
+  "sessionNotes", "status", "patternId", "studentsJson", "createdAt", "updatedAt",
+  "fieldTimes",   // JSON, see mergeFields_ (+ _seatsRemoved: seat tombstones)
+  "cancelReason"  // "holiday" = cancelled by a blocked date; put back if it is removed
 ];
 
 var PATTERNS_SHEET = "SchedulePatterns";
 var PATTERNS_COLUMNS = [
   "id", "teacherId", "teacherName", "dayOfWeek", "startTime", "durationMinutes",
   "level", "cohort", "group", "notes", "meetingLink", "studentsJson",
-  "startDate", "endDate", "lessonStart", "active", "createdAt", "updatedAt", "extra"
+  "startDate", "endDate", "lessonStart", "active", "createdAt", "updatedAt", "extra",
+  "fieldTimes"
 ];
 
 var BLOCKED_DATES_SHEET = "BlockedDates";
-var BLOCKED_DATES_COLUMNS = ["date", "label"];
+var BLOCKED_DATES_COLUMNS = ["date", "label", "addedAt"];  // addedAt vs a "blockedDate" tombstone decides
 
 var PROGRESS_SHEET = "Progress";
 var PROGRESS_COLUMNS = ["studentName", "level", "lesson", "stars", "score", "total", "date"];
 // Interactive homework results (drawings stay on the student's device).
 var HOMEWORK_SHEET = "Homework";
-var HOMEWORK_COLUMNS = ["studentName", "level", "lesson", "stars", "score", "total", "said", "saidTotal", "hasDrawing", "date"];
+var HOMEWORK_COLUMNS = ["studentName", "level", "lesson", "stars", "score", "total", "said", "saidTotal", "hasDrawing", "date",
+  // per-skill breakdown homework.html saves and report.html reads (Reading = quiz, Writing = spelling)
+  "skillType", "skillCorrect", "skillTotal", "quizCorrect", "quizTotal", "spellingCorrect", "spellingTotal", "recorded", "recordedTotal"];
 
 var LEADS_SHEET = "Leads";
 var LEADS_COLUMNS = [
@@ -202,6 +208,195 @@ function jsonResponse_(obj) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
+// ---------- per-field merge (3 Oct 2026) ----------
+// Pushes used to REPLACE whole tabs (and the client kept whichever whole
+// record was newer), so a teacher device that edited a phone number undid
+// a redemption the student had made meanwhile, two teacher devices editing
+// one class (notes vs attendance) lost one edit, and a student registered
+// between a teacher's pull and push vanished. Now every Roster / Schedule /
+// SchedulePatterns row carries fieldTimes = { field: ISO time it last
+// changed, _base: the row's updatedAt before tracking started } and pushes
+// are MERGED into the Sheet field by field (newer field time wins; a field
+// without a time is as old as _base, or updatedAt for an old row). Class
+// seats merge one by one by their own updatedAt; a removed seat leaves
+// fieldTimes._seatsRemoved[key]. Rows go away only through DeletedIds.
+// The same rules live in js/lumio-profiles.js and js/lumio-schedule.js.
+function tms_(v) { if (!v) return 0; var n = Date.parse(v); return isNaN(n) ? 0 : n; }
+function iso_(n) { return n ? new Date(n).toISOString() : ""; }
+function ftOf_(rec) {
+  var ft = rec && rec.fieldTimes;
+  if (typeof ft === "string") { try { ft = ft ? JSON.parse(ft) : null; } catch (e) { ft = null; } }
+  return ft && typeof ft === "object" ? ft : {};
+}
+function fieldTime_(rec, ft, k) { return tms_(ft[k]) || tms_(ft._base) || tms_(rec.updatedAt); }
+function baseTime_(rec, ft) { return tms_(ft._base) || tms_(rec.updatedAt); }
+function valKey_(v) { if (v === null || v === undefined) return ""; return typeof v === "object" ? JSON.stringify(v) : String(v); }
+// a = the Sheet's row (wins exact ties), b = incoming. A field b does not
+// carry at all is "not known there", never "cleared".
+function mergeFields_(a, b, skip) {
+  var fa = ftOf_(a), fb = ftOf_(b), out = {}, ft = {}, keys = {};
+  var base = Math.max(baseTime_(a, fa), baseTime_(b, fb));
+  Object.keys(a).forEach(function (k) { keys[k] = 1; });
+  Object.keys(b).forEach(function (k) { keys[k] = 1; });
+  Object.keys(keys).forEach(function (k) {
+    if (k === "fieldTimes" || k === "updatedAt" || (skip && skip[k])) return;
+    var va = a[k], vb = b[k], t;
+    if (vb === undefined) { out[k] = va; t = fieldTime_(a, fa, k); }
+    else if (va === undefined) { out[k] = vb; t = fieldTime_(b, fb, k); }
+    else {
+      var ta = fieldTime_(a, fa, k), tb = fieldTime_(b, fb, k);
+      if (valKey_(va) === valKey_(vb)) { out[k] = va; t = Math.max(ta, tb); }
+      else if (tb > ta) { out[k] = vb; t = tb; }
+      else { out[k] = va; t = ta; }
+    }
+    if (t && t !== base) ft[k] = iso_(t);
+  });
+  if (base) ft._base = iso_(base);
+  out.updatedAt = tms_(b.updatedAt) > tms_(a.updatedAt) ? b.updatedAt : a.updatedAt;
+  out.fieldTimes = ft;
+  return out;
+}
+// Script-side edits stamp the fields they change (and keep the old
+// updatedAt as _base so the rest of the row doesn't look newer).
+function touch_(rec, keys, now) {
+  var ft = ftOf_(rec);
+  if (!ft._base) ft._base = rec.updatedAt || rec.createdAt || "";
+  (keys || []).forEach(function (k) { ft[k] = now; });
+  rec.fieldTimes = ft;
+  rec.updatedAt = now;
+  return rec;
+}
+function parseArr_(v) {
+  if (Array.isArray(v)) return v;
+  try { var a = JSON.parse(v || "[]"); return Array.isArray(a) ? a : []; } catch (e) { return []; }
+}
+function unionMessages_(x, y) {
+  var byId = {};
+  parseArr_(x).concat(parseArr_(y)).forEach(function (m) {
+    if (!m || !m.id) return;
+    var prev = byId[m.id];
+    if (!prev) { byId[m.id] = m; return; }
+    var c = {}; Object.keys(prev).forEach(function (k) { c[k] = prev[k]; }); Object.keys(m).forEach(function (k) { c[k] = m[k]; });
+    c.read = !!(prev.read || m.read);
+    byId[m.id] = c;
+  });
+  return Object.keys(byId).map(function (k) { return byId[k]; })
+    .sort(function (p, q) { return tms_(p.date) - tms_(q.date); });
+}
+function mergeStudentRow_(sheet, inc) {
+  var out = mergeFields_(sheet, inc);
+  // the inbox is always the union (teacher adds, student marks read)
+  out.messages = JSON.stringify(unionMessages_(sheet.messages, inc.messages));
+  if (!out.loginCode && sheet.loginCode) out.loginCode = sheet.loginCode;   // never changes once issued
+  if (!out.pinHash && sheet.pinHash) out.pinHash = sheet.pinHash;
+  // a referral reward is never granted twice
+  var other = {};
+  parseArr_(sheet.referrals).concat(parseArr_(inc.referrals)).forEach(function (r) { if (r && r.id && r.rewardedAt) other[r.id] = r.rewardedAt; });
+  var refs = parseArr_(out.referrals);
+  if (refs.length) out.referrals = JSON.stringify(refs.map(function (r) { if (r && r.id && !r.rewardedAt && other[r.id]) r.rewardedAt = other[r.id]; return r; }));
+  return out;
+}
+// Merges incoming rows into the Sheet's rows by id; ids in `gone` are dropped.
+function mergeRowsById_(sheetRows, incoming, gone, mergeOne) {
+  var byId = {}, order = [];
+  sheetRows.forEach(function (r) { if (r && r.id && !byId[r.id]) { byId[r.id] = r; order.push(r.id); } });
+  (incoming || []).forEach(function (r) {
+    if (!r || !r.id) return;
+    if (byId[r.id]) byId[r.id] = mergeOne(byId[r.id], r);
+    else { byId[r.id] = r; order.push(r.id); }
+  });
+  return order.filter(function (id) { return !gone[id]; }).map(function (id) { return byId[id]; });
+}
+function goneSet_(types) {
+  var g = {};
+  deletedIdsOfType_(types).forEach(function (d) { g[d.id] = true; });
+  return g;
+}
+
+// ---- class seats ----
+function normName_(v) { return String(v || "").trim().toLowerCase(); }
+function sameSeat_(x, y) {
+  if (!x || !y) return false;
+  if (x.studentId && y.studentId) return x.studentId === y.studentId;
+  return normName_(x.studentName) !== "" && normName_(x.studentName) === normName_(y.studentName);
+}
+function seatKeys_(s) {
+  var k = [];
+  if (s && s.studentId) k.push("id:" + s.studentId);
+  if (s && normName_(s.studentName)) k.push("n:" + normName_(s.studentName));
+  return k;
+}
+function tombSeat_(rec, seat, now) {
+  var ft = ftOf_(rec);
+  if (!ft._seatsRemoved || typeof ft._seatsRemoved !== "object") ft._seatsRemoved = {};
+  seatKeys_(seat).forEach(function (k) { ft._seatsRemoved[k] = now; });
+  rec.fieldTimes = ft;
+}
+function mergeSeats_(a, b, tombs) {
+  var seatT = function (cls, s) { return tms_(s && s.updatedAt) || fieldTime_(cls, ftOf_(cls), "students"); };
+  var out = [];
+  (a.students || []).forEach(function (s) { if (s) out.push({ s: s, t: seatT(a, s) }); });
+  (b.students || []).forEach(function (s) {
+    if (!s) return;
+    var t = seatT(b, s), hit = null;
+    for (var i = 0; i < out.length; i++) if (sameSeat_(out[i].s, s)) { hit = out[i]; break; }
+    if (!hit) { out.push({ s: s, t: t }); return; }
+    var win = t > hit.t ? s : hit.s, lose = win === s ? hit.s : s, m = {};
+    Object.keys(win).forEach(function (k) { m[k] = win[k]; });
+    if (!m.teacherRatingStars && lose.teacherRatingStars) m.teacherRatingStars = lose.teacherRatingStars;  // only ever set
+    if (lose.sessionDeducted && !m.sessionDeducted) m.sessionDeducted = true;
+    if (!m.studentId && lose.studentId) m.studentId = lose.studentId;
+    hit.s = m; hit.t = Math.max(t, hit.t);
+  });
+  return out.filter(function (x) {
+    var gone = 0;
+    seatKeys_(x.s).forEach(function (k) { gone = Math.max(gone, tms_(tombs[k])); });
+    return !(gone && gone >= x.t);
+  }).map(function (x) { return x.s; });
+}
+function mergeClass_(a, b) {
+  var out = mergeFields_(a, b, { students: 1 });
+  var tombs = {}, ta = ftOf_(a)._seatsRemoved || {}, tb = ftOf_(b)._seatsRemoved || {};
+  Object.keys(ta).forEach(function (k) { tombs[k] = ta[k]; });
+  Object.keys(tb).forEach(function (k) { if (tms_(tb[k]) > tms_(tombs[k])) tombs[k] = tb[k]; });
+  out.students = mergeSeats_(a, b, tombs);
+  if (Object.keys(tombs).length) out.fieldTimes._seatsRemoved = tombs;
+  if (out.status !== "cancelled" && out.students.length) {
+    out.status = out.students.every(function (s) { return s && s.attendance; }) ? "completed" : "scheduled";
+  }
+  return out;
+}
+// Two copies of one fixed-schedule session (same pattern + date, not
+// cancelled) -- two teacher devices generated it, or an old random-id copy
+// meets the new "<patternId>_<date>" one: keep the oldest, fold the other
+// in. Bookings for different students at different lessons in one open
+// slot are left alone (a real clash for the teacher to see).
+function dedupePatternClasses_(classes) {
+  var groups = {}, drop = {}, repl = {};
+  classes.forEach(function (c) {
+    if (!c || !c.patternId || !c.date || c.status === "cancelled") return;
+    var k = c.patternId + "|" + c.date;
+    (groups[k] = groups[k] || []).push(c);
+  });
+  Object.keys(groups).forEach(function (k) {
+    var g = groups[k];
+    if (g.length < 2) return;
+    g.sort(function (x, y) { return String(x.createdAt || "").localeCompare(String(y.createdAt || "")) || String(x.id).localeCompare(String(y.id)); });
+    var keep = g[0];
+    g.slice(1).forEach(function (o) {
+      var shares = (o.students || []).some(function (s) { return (keep.students || []).some(function (q) { return sameSeat_(q, s); }); });
+      var sameLesson = (!keep.level || !o.level || String(keep.level) === String(o.level))
+        && (!keep.lessonNumber || !o.lessonNumber || Number(keep.lessonNumber) === Number(o.lessonNumber));
+      if (!shares && !sameLesson && (o.students || []).length && (keep.students || []).length) return;
+      var m = mergeClass_(keep, o);
+      m.id = keep.id; m.createdAt = keep.createdAt || o.createdAt;
+      keep = m; drop[o.id] = true;
+    });
+    repl[g[0].id] = keep;
+  });
+  return classes.filter(function (c) { return !drop[c.id]; }).map(function (c) { return repl[c.id] || c; });
+}
+
 // ---------- roster ----------
 
 // Narrow write path for STUDENT devices. A student device never pushes the
@@ -218,14 +413,20 @@ function jsonResponse_(obj) {
 function pushStudentPatch_(body) {
   var patch = body && body.patch;
   if (!patch || !patch.id) return { ok: false, error: "missing patch.id" };
+  // Locked: a teacher's roster push merging at the same moment must not
+  // write back a copy read before this patch landed.
+  var lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try { return pushStudentPatchLocked_(patch); } finally { lock.releaseLock(); }
+}
+function pushStudentPatchLocked_(patch) {
   var rows = readRows_(ROSTER_SHEET, ROSTER_COLUMNS);
   var row = null;
   for (var i = 0; i < rows.length; i++) if (rows[i].id === patch.id) { row = rows[i]; break; }
   if (!row) return { ok: false, error: "student not found" };
   var parseArr = function (v) { try { var a = JSON.parse(v || "[]"); return Array.isArray(a) ? a : []; } catch (e) { return []; } };
-  var changed = false;
+  var changed = false, stamped = [];   // fields this patch changed get their own time (fieldTimes)
 
-  if (typeof patch.avatar === "string" && patch.avatar && patch.avatar !== row.avatar) { row.avatar = patch.avatar; changed = true; }
+  if (typeof patch.avatar === "string" && patch.avatar && patch.avatar !== row.avatar) { row.avatar = patch.avatar; changed = true; stamped.push("avatar"); }
 
   if (Array.isArray(patch.messages)) {
     var existing = parseArr(row.messages);
@@ -242,17 +443,17 @@ function pushStudentPatch_(body) {
       var merged = Object.keys(byId).map(function (k) { return byId[k]; });
       merged.sort(function (a, b) { return Date.parse(a.date || 0) - Date.parse(b.date || 0); });
       row.messages = JSON.stringify(merged);
-      changed = true;
+      changed = true; stamped.push("messages");
     }
   }
 
   if (patch.pendingDeletion !== undefined) {
     var pd = patch.pendingDeletion === true || patch.pendingDeletion === "true";
-    if (String(pd) !== String(row.pendingDeletion === true || row.pendingDeletion === "true")) { row.pendingDeletion = pd; changed = true; }
+    if (String(pd) !== String(row.pendingDeletion === true || row.pendingDeletion === "true")) { row.pendingDeletion = pd; changed = true; stamped.push("pendingDeletion"); }
   }
   if (patch.deletionConfirmed !== undefined) {
     var dc = patch.deletionConfirmed === true || patch.deletionConfirmed === "true";
-    if (String(dc) !== String(row.deletionConfirmed === true || row.deletionConfirmed === "true")) { row.deletionConfirmed = dc; changed = true; }
+    if (String(dc) !== String(row.deletionConfirmed === true || row.deletionConfirmed === "true")) { row.deletionConfirmed = dc; changed = true; stamped.push("deletionConfirmed"); }
   }
 
   if (Array.isArray(patch.redemptions)) {
@@ -280,12 +481,12 @@ function pushStudentPatch_(body) {
       row.rewardPoints = points;
       row.bonusHours = bonus;
       row.sessionsRemaining = sessions;
-      changed = true;
+      changed = true; stamped.push("redemptions", "rewardPoints", "bonusHours", "sessionsRemaining");
     }
   }
 
   if (changed) {
-    row.updatedAt = new Date().toISOString();
+    touch_(row, stamped, new Date().toISOString());
     writeRows_(ROSTER_SHEET, ROSTER_COLUMNS, rows);
   }
   return { ok: true, changed: changed, student: row };
@@ -307,10 +508,20 @@ function mergeDeletedIds_(incoming) {
   var seen = {};
   existing.forEach(function (r) { if (r && r.id) seen[r.id] = true; });
   var added = 0;
+  var byId = {};
+  existing.forEach(function (r) { if (r && r.id) byId[r.id] = r; });
   incoming.forEach(function (r) {
-    if (!r || !r.id || seen[r.id]) return;
+    if (!r || !r.id) return;
+    // A holiday can be removed, added again and removed again: its
+    // tombstone keeps the LATEST removal time (compared with addedAt).
+    if (seen[r.id]) {
+      var have = byId[r.id];
+      if (r.type === "blockedDate" && have && tms_(r.deletedAt) > tms_(have.deletedAt)) { have.deletedAt = r.deletedAt; added++; }
+      return;
+    }
     seen[r.id] = true;
-    existing.push({ id: r.id, type: r.type || "student", deletedAt: r.deletedAt || new Date().toISOString() });
+    var row = { id: r.id, type: r.type || "student", deletedAt: r.deletedAt || new Date().toISOString() };
+    existing.push(row); byId[r.id] = row;
     added++;
   });
   if (added) writeRows_(DELETED_IDS_SHEET, DELETED_IDS_COLUMNS, existing);
@@ -321,7 +532,7 @@ function pullRoster_() {
     students: readRows_(ROSTER_SHEET, ROSTER_COLUMNS),
     teachers: readRows_(TEACHERS_SHEET, TEACHERS_COLUMNS),
     rewardCatalog: readRows_(REWARD_CATALOG_SHEET, REWARD_CATALOG_COLUMNS),
-    deletedIds: deletedIdsOfType_(["student", "teacher"]),
+    deletedIds: deletedIdsOfType_(["student", "teacher", "reward"]),
   };
 }
 
@@ -354,8 +565,8 @@ function applyRenames_(renames) {
       rows.forEach(function (r) {
         var seats; try { seats = JSON.parse(r.studentsJson || "[]"); } catch (e) { return; }
         var hit = false;
-        seats.forEach(function (st) { if (st && ((rn.id && st.studentId === rn.id) || st.studentName === rn.from)) { st.studentName = rn.to; hit = true; } });
-        if (hit) { r.studentsJson = JSON.stringify(seats); r.updatedAt = now; changed = true; }
+        seats.forEach(function (st) { if (st && ((rn.id && st.studentId === rn.id) || st.studentName === rn.from)) { st.studentName = rn.to; st.updatedAt = now; hit = true; } });
+        if (hit) { r.studentsJson = JSON.stringify(seats); touch_(r, t[0] === PATTERNS_SHEET ? ["students"] : [], now); changed = true; }
       });
       if (changed) { writeRows_(t[0], t[1], rows); done++; }
     });
@@ -363,13 +574,32 @@ function applyRenames_(renames) {
   return done;
 }
 
+// MERGES into the Sheet (see mergeFields_) instead of replacing the tabs:
+// a student who registered, or redeemed points, between this device's pull
+// and its push is no longer erased. Removal only through DeletedIds.
 function pushRoster_(body) {
-  if (Array.isArray(body.students)) writeRows_(ROSTER_SHEET, ROSTER_COLUMNS, keepPinHashes_(body.students, ROSTER_SHEET, ROSTER_COLUMNS));
-  if (Array.isArray(body.teachers)) writeRows_(TEACHERS_SHEET, TEACHERS_COLUMNS, keepPinHashes_(body.teachers, TEACHERS_SHEET, TEACHERS_COLUMNS));
-  if (Array.isArray(body.rewardCatalog)) writeRows_(REWARD_CATALOG_SHEET, REWARD_CATALOG_COLUMNS, body.rewardCatalog);
-  mergeDeletedIds_(body.deletedIds);
-  var renamed = applyRenames_(body.renames);
-  return { ok: true, renamed: renamed };
+  var lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    mergeDeletedIds_(body.deletedIds);
+    if (Array.isArray(body.students)) {
+      writeRows_(ROSTER_SHEET, ROSTER_COLUMNS, mergeRowsById_(readRows_(ROSTER_SHEET, ROSTER_COLUMNS),
+        keepPinHashes_(body.students, ROSTER_SHEET, ROSTER_COLUMNS), goneSet_(["student"]), mergeStudentRow_));
+    }
+    if (Array.isArray(body.teachers)) {
+      writeRows_(TEACHERS_SHEET, TEACHERS_COLUMNS, mergeRowsById_(readRows_(TEACHERS_SHEET, TEACHERS_COLUMNS),
+        keepPinHashes_(body.teachers, TEACHERS_SHEET, TEACHERS_COLUMNS), goneSet_(["teacher"]), function (a, b) {
+          var m = mergeFields_(a, b);
+          if (!m.pinHash && a.pinHash) m.pinHash = a.pinHash;
+          return m;
+        }));
+    }
+    if (Array.isArray(body.rewardCatalog)) {
+      writeRows_(REWARD_CATALOG_SHEET, REWARD_CATALOG_COLUMNS, mergeRowsById_(readRows_(REWARD_CATALOG_SHEET, REWARD_CATALOG_COLUMNS),
+        body.rewardCatalog, goneSet_(["reward"]), function (a, b) { return b; }));
+    }
+    var renamed = applyRenames_(body.renames);
+    return { ok: true, renamed: renamed, merged: true };
+  } finally { lock.releaseLock(); }
 }
 
 // ---------- schedule (V2) ----------
@@ -385,29 +615,55 @@ function rowToClass_(row) {
   var c = {};
   SCHEDULE_COLUMNS.forEach(function (col) { if (col !== "studentsJson") c[col] = row[col]; });
   try { c.students = JSON.parse(row.studentsJson || "[]"); } catch (e) { c.students = []; }
+  var ft = ftOf_(row);
+  if (Object.keys(ft).length) c.fieldTimes = ft; else delete c.fieldTimes;
   return c;
+}
+// Blocked dates still in force: newest addedAt per date, minus any date
+// whose "blockedDate" tombstone is at least as new.
+function liveBlockedDates_(rows, tombRows) {
+  var by = {}, tomb = {};
+  (tombRows || []).forEach(function (d) { if (tms_(d.deletedAt) >= tms_(tomb[d.id])) tomb[d.id] = d.deletedAt || ""; });
+  (rows || []).forEach(function (b) {
+    var e = typeof b === "string" ? { date: b, label: "", addedAt: "" } : { date: b && b.date, label: (b && b.label) || "", addedAt: (b && b.addedAt) || "" };
+    if (!e.date) return;
+    if (!by[e.date] || tms_(e.addedAt) > tms_(by[e.date].addedAt)) by[e.date] = e;
+  });
+  return Object.keys(by).map(function (k) { return by[k]; })
+    .filter(function (e) { return !(e.date in tomb && tms_(tomb[e.date]) >= tms_(e.addedAt)); });
 }
 
 function pullScheduleV2_() {
   return {
     classes: readRows_(SCHEDULE_SHEET, SCHEDULE_COLUMNS).map(rowToClass_),
     patterns: readRows_(PATTERNS_SHEET, PATTERNS_COLUMNS).map(rowToPattern_),
-    blockedDates: readRows_(BLOCKED_DATES_SHEET, BLOCKED_DATES_COLUMNS),
-    deletedIds: deletedIdsOfType_(["class", "pattern"]),
+    blockedDates: liveBlockedDates_(readRows_(BLOCKED_DATES_SHEET, BLOCKED_DATES_COLUMNS), deletedIdsOfType_(["blockedDate"])),
+    deletedIds: deletedIdsOfType_(["class", "pattern", "blockedDate"]),
   };
 }
 
+// Merged into the Sheet like the roster (classes per field + per seat,
+// patterns per field, blocked dates by addedAt vs tombstone); duplicate
+// copies of one fixed-schedule session are folded together.
 function pushScheduleV2_(body) {
-  if (Array.isArray(body.classes)) writeRows_(SCHEDULE_SHEET, SCHEDULE_COLUMNS, body.classes.map(classToRow_));
-  if (Array.isArray(body.patterns)) writeRows_(PATTERNS_SHEET, PATTERNS_COLUMNS, body.patterns.map(patternToRow_));
-  if (Array.isArray(body.blockedDates)) {
-    var rows = body.blockedDates.map(function (b) {
-      return typeof b === "string" ? { date: b, label: "" } : { date: b.date, label: b.label || "" };
-    });
-    writeRows_(BLOCKED_DATES_SHEET, BLOCKED_DATES_COLUMNS, rows);
-  }
-  mergeDeletedIds_(body.deletedIds);
-  return { ok: true };
+  var lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    mergeDeletedIds_(body.deletedIds);
+    if (Array.isArray(body.classes)) {
+      var merged = mergeRowsById_(readRows_(SCHEDULE_SHEET, SCHEDULE_COLUMNS).map(rowToClass_), body.classes,
+        goneSet_(["class"]), mergeClass_);
+      writeRows_(SCHEDULE_SHEET, SCHEDULE_COLUMNS, dedupePatternClasses_(merged).map(classToRow_));
+    }
+    if (Array.isArray(body.patterns)) {
+      writeRows_(PATTERNS_SHEET, PATTERNS_COLUMNS, mergeRowsById_(readRows_(PATTERNS_SHEET, PATTERNS_COLUMNS).map(rowToPattern_),
+        body.patterns, goneSet_(["pattern"]), function (a, b) { return mergeFields_(a, b); }).map(patternToRow_));
+    }
+    if (Array.isArray(body.blockedDates)) {
+      writeRows_(BLOCKED_DATES_SHEET, BLOCKED_DATES_COLUMNS, liveBlockedDates_(
+        readRows_(BLOCKED_DATES_SHEET, BLOCKED_DATES_COLUMNS).concat(body.blockedDates), deletedIdsOfType_(["blockedDate"])));
+    }
+    return { ok: true, merged: true };
+  } finally { lock.releaseLock(); }
 }
 
 function patternToRow_(p) {
@@ -423,6 +679,8 @@ function rowToPattern_(row) {
   try { p.students = JSON.parse(row.studentsJson || "[]"); } catch (e) { p.students = []; }
   p.active = row.active === true || row.active === "true" || row.active === 1;
   p.extra = row.extra === true || row.extra === "true" || row.extra === 1;
+  var ft = ftOf_(row);
+  if (Object.keys(ft).length) p.fieldTimes = ft; else delete p.fieldTimes;
   return p;
 }
 
@@ -456,13 +714,14 @@ function bookSlot_(body) {
       if (already) return { ok: true, cls: existing };
       if (existing.lessonNumber && (String(existing.level) !== String(cls.level) || Number(existing.lessonNumber) !== Number(cls.lessonNumber))) return { ok: false, error: "That class is for a different lesson." };
       if (existing.students.length >= max) return { ok: false, error: "That class is full (" + max + "/" + max + ")." };
-      if (!existing.lessonNumber) { existing.level = cls.level; existing.lessonNumber = cls.lessonNumber; existing.durationMinutes = cls.durationMinutes; }
-      existing.students.push({ studentId: student.studentId || null, studentName: student.studentName, attendance: null, grade: null, teacherRatingStars: null });
-      existing.updatedAt = nowIso;
+      var locks = [];
+      if (!existing.lessonNumber) { existing.level = cls.level; existing.lessonNumber = cls.lessonNumber; existing.durationMinutes = cls.durationMinutes; locks = ["level", "lessonNumber", "durationMinutes"]; }
+      existing.students.push({ studentId: student.studentId || null, studentName: student.studentName, attendance: null, grade: null, teacherRatingStars: null, updatedAt: nowIso });
+      touch_(existing, locks, nowIso);
       writeRows_(SCHEDULE_SHEET, SCHEDULE_COLUMNS, rows.map(classToRow_));
       return { ok: true, cls: existing };
     }
-    cls.students = [{ studentId: student.studentId || null, studentName: student.studentName, attendance: null, grade: null, teacherRatingStars: null }];
+    cls.students = [{ studentId: student.studentId || null, studentName: student.studentName, attendance: null, grade: null, teacherRatingStars: null, updatedAt: nowIso }];
     cls.status = "scheduled";
     cls.createdAt = cls.createdAt || nowIso; cls.updatedAt = nowIso;
     rows.push(cls);
@@ -487,22 +746,58 @@ function cancelSlot_(body) {
     var start = new Date(c.date + "T" + c.startTime + ":00+03:00"); // Riyadh has no DST
     var minsToStart = (start.getTime() - Date.now()) / 60000;
     if (minsToStart < minBefore) return { ok: false, error: "Classes can be cancelled up to " + minBefore + " minutes before they start." };
+    var nowIso = new Date().toISOString();
     var before = c.students.length;
-    c.students = c.students.filter(function (s) { return normStudent_(s.studentName) !== normStudent_(studentName); });
+    c.students = c.students.filter(function (s) {
+      var me = normStudent_(s.studentName) === normStudent_(studentName);
+      if (me) tombSeat_(c, s, nowIso);   // so a teacher device's older copy can't put the seat back
+      return !me;
+    });
     if (c.students.length === before) return { ok: false, error: "That student isn't in this class." };
     if (!c.students.length) c.status = "cancelled";
-    c.updatedAt = new Date().toISOString();
+    touch_(c, c.students.length ? [] : ["status"], nowIso);
     // Lessons are booked in sequence: dropping lesson N drops this
     // student's later bookings in the same level too.
     var n = Number(c.lessonNumber) || 0;
     if (n) rows.forEach(function (x) {
       if (x.id === c.id || x.status !== "scheduled" || String(x.level) !== String(c.level) || !(Number(x.lessonNumber) > n)) return;
       var b = x.students.length;
-      x.students = x.students.filter(function (s) { return normStudent_(s.studentName) !== normStudent_(studentName); });
+      x.students = x.students.filter(function (s) {
+        var me = normStudent_(s.studentName) === normStudent_(studentName);
+        if (me) tombSeat_(x, s, nowIso);
+        return !me;
+      });
       if (x.students.length === b) return;
       if (!x.students.length) x.status = "cancelled";
-      x.updatedAt = new Date().toISOString();
+      touch_(x, x.students.length ? [] : ["status"], nowIso);
     });
+    writeRows_(SCHEDULE_SHEET, SCHEDULE_COLUMNS, rows.map(classToRow_));
+    return { ok: true, cls: c };
+  } finally { lock.releaseLock(); }
+}
+
+// A student's star rating (1-5) of the teacher for one class they were
+// in. Student devices never push the schedule, so ratings used to stay on
+// the phone. Sets ONLY the caller's own seat (+ that seat's updatedAt, so
+// the per-seat merge keeps it against a teacher device's older copy).
+function rateClass_(body, who) {
+  var classId = body && body.classId, n = Number(body && body.stars);
+  if (!classId) return { ok: false, error: "missing classId" };
+  if (!(n >= 1 && n <= 5 && Math.floor(n) === n)) return { ok: false, error: "Rating must be an integer from 1 to 5." };
+  var lock = LockService.getScriptLock(); lock.waitLock(15000);
+  try {
+    var rows = readRows_(SCHEDULE_SHEET, SCHEDULE_COLUMNS).map(rowToClass_);
+    var c = null;
+    for (var i = 0; i < rows.length; i++) if (rows[i].id === classId) { c = rows[i]; break; }
+    if (!c) return { ok: false, error: "Class not found." };
+    var sid = who.studentId, sname = who.studentName, seat = null;
+    (c.students || []).forEach(function (s) {
+      if (seat || !s) return;
+      if ((sid && s.studentId === sid) || (sname && normStudent_(s.studentName) === normStudent_(sname))) seat = s;
+    });
+    if (!seat) return { ok: false, error: "That student isn't in this class." };
+    seat.teacherRatingStars = n;
+    seat.updatedAt = new Date().toISOString();
     writeRows_(SCHEDULE_SHEET, SCHEDULE_COLUMNS, rows.map(classToRow_));
     return { ok: true, cls: c };
   } finally { lock.releaseLock(); }
@@ -544,6 +839,15 @@ function mergeRecordRows_(sheet, columns, incoming) {
     var better = !prev || num(r.stars) > num(prev.stars)
       || (num(r.stars) === num(prev.stars) && String(r.date || "") > String(prev.date || ""));
     if (better) { byKey[k] = r; changed++; }
+    else if (prev && num(r.stars) === num(prev.stars) && String(r.date || "") === String(prev.date || "")) {
+      // Same result, but the row predates a column (e.g. the homework
+      // skill breakdown added 3 Oct 2026): fill the blanks in.
+      var filled = false;
+      columns.forEach(function (col) {
+        if ((prev[col] === "" || prev[col] === undefined) && r[col] !== "" && r[col] !== undefined && r[col] !== null) { prev[col] = r[col]; filled = true; }
+      });
+      if (filled) changed++;
+    }
   });
   if (changed) writeRows_(sheet, columns, Object.keys(byKey).map(function (k) { return byKey[k]; }));
   return changed;
@@ -571,10 +875,19 @@ function pullLeads_() {
   return { leads: readRows_(LEADS_SHEET, LEADS_COLUMNS), deletedIds: deletedIdsOfType_(["lead"]) };
 }
 
+// Merged by id (newer updatedAt wins), never replaced: a lead a parent
+// submitted (addLead_) between a teacher device's pull and push used to
+// be erased by that push. Removal only through DeletedIds.
 function pushLeads_(body) {
-  if (Array.isArray(body.leads)) writeRows_(LEADS_SHEET, LEADS_COLUMNS, body.leads);
-  mergeDeletedIds_(body.deletedIds);
-  return { ok: true };
+  var lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    mergeDeletedIds_(body.deletedIds);
+    if (Array.isArray(body.leads)) {
+      writeRows_(LEADS_SHEET, LEADS_COLUMNS, mergeRowsById_(readRows_(LEADS_SHEET, LEADS_COLUMNS), body.leads, goneSet_(["lead"]),
+        function (a, b) { return tms_(b.updatedAt) > tms_(a.updatedAt) ? b : a; }));
+    }
+    return { ok: true };
+  } finally { lock.releaseLock(); }
 }
 
 // ---------- pro dashboard admins ----------
@@ -648,6 +961,7 @@ function autoGenerateZoomLinks() {
   var linkCol = SCHEDULE_COLUMNS.indexOf("meetingLink") + 1;
   var statusCol = SCHEDULE_COLUMNS.indexOf("status") + 1;
   var updatedCol = SCHEDULE_COLUMNS.indexOf("updatedAt") + 1;
+  var ftCol = SCHEDULE_COLUMNS.indexOf("fieldTimes") + 1;
   var values = sheet.getRange(2, 1, lastRow - 1, SCHEDULE_COLUMNS.length).getValues();
   var now = new Date();
   var twoHoursOut = new Date(now.getTime() + 2 * 60 * 60 * 1000);
@@ -666,8 +980,13 @@ function autoGenerateZoomLinks() {
     try {
       var joinUrl = createZoomMeeting_(accessToken, hostEmail, topic, startDate, durationMinutes);
       if (joinUrl) {
+        var stampedAt = new Date().toISOString();
+        // the link gets its own field time, or a teacher device's older
+        // copy (meetingLink "") would win the per-field merge
+        var ft = touch_({ fieldTimes: row[ftCol - 1], updatedAt: row[updatedCol - 1] }, ["meetingLink"], stampedAt).fieldTimes;
         sheet.getRange(i + 2, linkCol).setValue(joinUrl);
-        sheet.getRange(i + 2, updatedCol).setValue(new Date().toISOString());
+        sheet.getRange(i + 2, ftCol).setValue(JSON.stringify(ft));
+        sheet.getRange(i + 2, updatedCol).setValue(stampedAt);
       }
     } catch (err) {
       Logger.log("Zoom auto-link: failed for class " + row[idCol - 1] + ": " + err);
@@ -887,7 +1206,7 @@ function placementUpdate_(body) {
     var lv = String(body.level || "");
     if (lv && /^(pre-a|level[1-6])$/.test(lv)) s.level = lv;
     if (body.age !== undefined && body.age !== "" && isFinite(Number(body.age))) s.age = Number(body.age);
-    s.updatedAt = new Date().toISOString();
+    touch_(s, ["level", "age"], new Date().toISOString());
     writeRows_(ROSTER_SHEET, ROSTER_COLUMNS, rows);
     return { ok: true };
   } finally { lock.releaseLock(); }
@@ -935,6 +1254,7 @@ function seatFor_(x, me) {
 function studentClassView_(c, me) {
   var copy = {};
   Object.keys(c).forEach(function (k) { copy[k] = c[k]; });
+  delete copy.fieldTimes;   // its seat tombstones name other children; student devices don't merge
   if (inClass_(c, me)) {
     copy.students = (c.students || []).map(function (x) {
       if (!x) return x;
@@ -986,7 +1306,7 @@ function doGet(e) {
     if (!keyOk_(e)) return jsonResponse_({ ok: false, error: "unauthorized" });
     var action = (e && e.parameter) ? e.parameter.action : null;
     // Lets a page tell this version apart from older deployments.
-    if (action === "version") return jsonResponse_({ ok: true, version: 7, auth: true });
+    if (action === "version") return jsonResponse_({ ok: true, version: 8, auth: true, merge: true });
     var who = whoIs_(e);
     if (who.error) return denied_(who);
     if (who.role === "student") {
@@ -1055,6 +1375,11 @@ function doPost(e) {
         if (cancelled && cancelled.cls) cancelled.cls = studentClassView_(cancelled.cls, me);
         return jsonResponse_(cancelled);
       }
+      if (action === "rateClass") {
+        var rated = rateClass_(body, { studentId: me.id, studentName: me.name });
+        if (rated && rated.cls) rated.cls = studentClassView_(rated.cls, me);
+        return jsonResponse_(rated);
+      }
       if (action === "pushProgress") return jsonResponse_(pushProgress_({ progress: ownTree_(body.progress, me) }));
       if (action === "pushHomework") return jsonResponse_(pushHomework_({ homework: ownTree_(body.homework, me) }));
       return denied_({});
@@ -1065,6 +1390,7 @@ function doPost(e) {
     if (action === "pushScheduleV2") return jsonResponse_(pushScheduleV2_(body));
     if (action === "bookSlot") return jsonResponse_(bookSlot_(body));
     if (action === "cancelSlot") return jsonResponse_(cancelSlot_(body));
+    if (action === "rateClass") return jsonResponse_(rateClass_(body, { studentId: body.studentId, studentName: body.studentName }));
     if (action === "pushProgress") return jsonResponse_(pushProgress_(body));
     if (action === "pushHomework") return jsonResponse_(pushHomework_(body));
     if (action === "pushLeads") return jsonResponse_(pushLeads_(body));
