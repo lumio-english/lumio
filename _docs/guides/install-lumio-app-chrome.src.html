@@ -1,0 +1,119 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<style>
+@font-face{font-family:'Baloo 2';src:url('FONTS/baloo-2-latin-800-normal.woff2') format('woff2');font-weight:800}
+@font-face{font-family:'Baloo 2';src:url('FONTS/baloo-2-latin-700-normal.woff2') format('woff2');font-weight:700}
+@font-face{font-family:'Nunito';src:url('FONTS/nunito-latin-700-normal.woff2') format('woff2');font-weight:700}
+@font-face{font-family:'Nunito';src:url('FONTS/nunito-latin-800-normal.woff2') format('woff2');font-weight:800}
+@font-face{font-family:'Cairo';src:url('FONTS/cairo-arabic-700-normal.woff2') format('woff2');font-weight:700}
+@font-face{font-family:'Cairo';src:url('FONTS/cairo-arabic-900-normal.woff2') format('woff2');font-weight:900}
+:root{--or:#F97316;--sun:#FFC93C;--teal:#0D9488;--cocoa:#43301F;--cream:#FFF8EC;--soft:#8A7160;--line:#F0E6D6}
+*{box-sizing:border-box;margin:0}
+body{width:1080px;background:linear-gradient(170deg,#FFF8EC,#FFF1DA 60%,#FFE9C9);font-family:'Nunito',sans-serif;color:var(--cocoa);padding:0 0 56px}
+.ar{font-family:'Cairo',sans-serif;direction:rtl}
+header{padding:54px 64px 30px;display:flex;align-items:center;gap:24px}
+header img.logo{height:120px}
+header h1{font-family:'Baloo 2';font-size:52px;line-height:1.05}
+header h1 span{color:var(--or)}
+header .sub{font-size:24px;color:var(--soft);font-weight:700;margin-top:6px}
+header .sub.ar{font-size:26px;margin-top:2px}
+.pill{display:inline-flex;align-items:center;gap:10px;background:#fff;border:3px solid var(--or);color:var(--cocoa);border-radius:999px;padding:12px 22px;font-weight:800;font-size:24px;margin:0 64px 14px}
+.pill b{color:var(--or)}
+.steps{padding:16px 64px 0;display:flex;flex-direction:column;gap:30px}
+.step{display:grid;grid-template-columns:300px 1fr;gap:34px;align-items:center;background:#fff;border-radius:34px;padding:30px 34px;box-shadow:0 10px 30px rgba(67,48,31,.08);position:relative}
+.num{position:absolute;left:-10px;top:-14px;width:68px;height:68px;border-radius:50%;background:var(--or);color:#fff;font-family:'Baloo 2';font-size:38px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(249,115,22,.4)}
+.t{display:flex;flex-direction:column;gap:10px}
+.t .en{font-size:30px;font-weight:800;line-height:1.25}
+.t .ar{font-size:32px;font-weight:900;line-height:1.5;color:#5A4030}
+.t .en small,.t .ar small{display:block;font-size:21px;font-weight:700;color:var(--soft);margin-top:4px;line-height:1.4}
+.t .ar small{font-size:23px}
+.key{display:inline-block;background:#FFF1E0;border:2px solid #F9C89A;border-radius:10px;padding:2px 10px;font-weight:800;color:#C2410C}
+/* phone mockup */
+.phone{width:300px;height:560px;border-radius:40px;background:#1C1610;padding:12px;position:relative;box-shadow:0 14px 30px rgba(0,0,0,.25)}
+.screen{width:100%;height:100%;border-radius:30px;overflow:hidden;background:#fff;position:relative;font-size:14px}
+.chrome{height:62px;background:#fff;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;gap:8px;padding:10px 12px}
+.url{flex:1;height:38px;border-radius:999px;background:#F1F3F4;display:flex;align-items:center;gap:8px;padding:0 12px;font-size:13px;color:#202124;font-weight:700;white-space:nowrap;overflow:hidden}
+.url .lock{width:12px;height:12px;border:2px solid #5F6368;border-radius:3px;border-top-width:3px}
+.dots{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:#3C4043;position:relative}
+.hl{outline:4px solid var(--or);outline-offset:3px;border-radius:50%;box-shadow:0 0 0 10px rgba(249,115,22,.22)}
+.hlbox{outline:4px solid var(--or);outline-offset:-4px;border-radius:12px;box-shadow:0 0 0 8px rgba(249,115,22,.22)}
+.shot{width:100%;display:block}
+.menu{position:absolute;top:10px;right:10px;width:210px;background:#fff;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.28);padding:8px 0;font-size:14px;color:#202124;font-weight:700}
+.menu div{padding:11px 16px;display:flex;align-items:center;gap:12px}
+.menu div i{width:18px;height:18px;border-radius:4px;background:#DADCE0;display:inline-block}
+.menu div.on{background:#FFF1E0;color:#C2410C;margin:4px 8px;border-radius:10px}
+.menu div.on i{background:var(--or)}
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:22px 22px 0 0;padding:20px 18px 22px;font-size:14px;color:#202124}
+.sheet .app{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.sheet .app img{width:52px;height:52px;border-radius:12px}
+.sheet .app b{display:block;font-size:16px}
+.sheet .app span{color:#5F6368;font-size:12px}
+.sheet .btns{display:flex;justify-content:flex-end;gap:10px}
+.sheet .btns div{padding:9px 16px;border-radius:999px;font-weight:800}
+.sheet .btns .c{color:#1A73E8}
+.sheet .btns .i{background:#1A73E8;color:#fff}
+.home{height:100%;background:linear-gradient(160deg,#5B6B9A,#8FA3C8 60%,#D9C6B0);padding:28px 18px;display:grid;grid-template-columns:repeat(4,1fr);gap:18px 10px;align-content:start}
+.home .ic{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:10px;color:#fff;font-weight:800;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+.home .ic div{width:48px;height:48px;border-radius:13px;background:rgba(255,255,255,.35)}
+.home .ic img{width:52px;height:52px;border-radius:14px;background:#fff}
+.home .ic.lu{transform:scale(1.18)}
+.statusbar{height:24px;background:#fff;display:flex;justify-content:space-between;padding:4px 16px;font-size:11px;font-weight:800;color:#202124}
+.tip{margin:34px 64px 0;background:var(--cocoa);color:#fff;border-radius:28px;padding:28px 34px;display:grid;grid-template-columns:1fr 150px;gap:24px;align-items:center}
+.tip .en{font-size:24px;font-weight:800;line-height:1.35}
+.tip .ar{font-size:26px;font-weight:900;line-height:1.5;margin-top:10px;color:#FFE4C4}
+.tip .en span{color:var(--sun)}
+.tip img{width:150px;border-radius:16px;background:#fff;padding:6px}
+footer{margin:26px 64px 0;text-align:center;color:var(--soft);font-weight:800;font-size:22px}
+footer b{color:var(--or)}
+</style></head><body>
+<header>
+  <img class="logo" src="LOGO">
+  <div><h1>Put <span>Lumio</span> on your phone</h1><div class="sub">Install the student platform as an app — Android · Chrome · 1 minute</div><div class="sub ar">ثبّتوا منصة الطالب كتطبيق — أندرويد · كروم · دقيقة واحدة فقط</div></div>
+</header>
+<div class="pill">🔗 <b>lumio-english.github.io/lumio</b> &nbsp;·&nbsp; or scan the code at the bottom</div>
+
+<div class="steps">
+  <div class="step"><div class="num">1</div>
+    <div class="phone"><div class="screen"><div class="statusbar"><span>9:41</span><span>▮▮▮ 📶 🔋</span></div><div class="chrome"><div class="url hlbox"><span class="lock"></span>lumio-english.github.io/lumio</div><div class="dots">⋮</div></div><img class="shot" src="SHOT" style="margin-top:-2px"></div></div>
+    <div class="t"><div class="en">Open the Lumio link in <span class="key">Chrome</span><small>Type <b>lumio-english.github.io/lumio</b> in the address bar, or tap the link we sent you on WhatsApp. Make sure it opens in Chrome, not inside WhatsApp.</small></div>
+    <div class="ar">افتحوا رابط Lumio في متصفح <span class="key">كروم</span><small>اكتبوا الرابط في شريط العنوان أو اضغطوا على الرابط المرسل على واتساب — وتأكدوا أنه يفتح في كروم وليس داخل واتساب.</small></div></div>
+  </div>
+
+  <div class="step"><div class="num">2</div>
+    <div class="phone"><div class="screen"><div class="statusbar"><span>9:41</span><span>▮▮▮ 📶 🔋</span></div><div class="chrome"><div class="url"><span class="lock"></span>lumio-english.github.io/lumio</div><div class="dots hl">⋮</div></div><img class="shot" src="SHOT" style="margin-top:-2px"></div></div>
+    <div class="t"><div class="en">Tap the three dots <span class="key">⋮</span> at the top right<small>This opens the Chrome menu.</small></div>
+    <div class="ar">اضغطوا على النقاط الثلاث <span class="key">⋮</span> أعلى اليمين<small>تفتح قائمة كروم.</small></div></div>
+  </div>
+
+  <div class="step"><div class="num">3</div>
+    <div class="phone"><div class="screen"><div class="statusbar"><span>9:41</span><span>▮▮▮ 📶 🔋</span></div><div class="chrome"><div class="url"><span class="lock"></span>lumio-english.github.io/lumio</div><div class="dots">⋮</div></div><img class="shot" src="SHOT" style="margin-top:-2px;opacity:.5">
+      <div class="menu"><div><i></i>New tab</div><div><i></i>History</div><div><i></i>Downloads</div><div><i></i>Bookmarks</div><div><i></i>Share…</div><div><i></i>Find in page</div><div class="on"><i></i>Add to Home screen</div><div><i></i>Desktop site</div><div><i></i>Settings</div></div></div></div>
+    <div class="t"><div class="en">Tap <span class="key">Add to Home screen</span><small>On some phones it says <b>Install app</b> instead — it's the same thing.</small></div>
+    <div class="ar">اختاروا <span class="key">إضافة إلى الشاشة الرئيسية</span><small>في بعض الأجهزة تظهر باسم <b>تثبيت التطبيق</b> — وهي نفس الخطوة.</small></div></div>
+  </div>
+
+  <div class="step"><div class="num">4</div>
+    <div class="phone"><div class="screen"><div class="statusbar"><span>9:41</span><span>▮▮▮ 📶 🔋</span></div><div class="chrome"><div class="url"><span class="lock"></span>lumio-english.github.io/lumio</div><div class="dots">⋮</div></div><img class="shot" src="SHOT" style="margin-top:-2px"><div class="dim"></div>
+      <div class="sheet"><div class="app"><img src="ICON"><div><b>Lumio English</b><span>lumio-english.github.io</span></div></div><div class="btns"><div class="c">Cancel</div><div class="i hlbox" style="border-radius:999px">Install</div></div></div></div></div>
+    <div class="t"><div class="en">Tap <span class="key">Install</span><small>Chrome adds Lumio to your home screen in a second. Nothing is downloaded from the Play Store.</small></div>
+    <div class="ar">اضغطوا <span class="key">تثبيت</span><small>يضيف كروم أيقونة Lumio إلى الشاشة الرئيسية فوراً — بدون متجر Google Play.</small></div></div>
+  </div>
+
+  <div class="step"><div class="num">5</div>
+    <div class="phone"><div class="screen"><div class="home">
+      <div class="ic"><div></div>Phone</div><div class="ic"><div></div>Messages</div><div class="ic"><div></div>Camera</div><div class="ic"><div></div>Gallery</div>
+      <div class="ic"><div></div>WhatsApp</div><div class="ic lu"><img class="hlbox" src="ICON" style="border-radius:14px">Lumio</div><div class="ic"><div></div>YouTube</div><div class="ic"><div></div>Maps</div>
+      <div class="ic"><div></div>Clock</div><div class="ic"><div></div>Settings</div><div class="ic"><div></div>Calendar</div><div class="ic"><div></div>Chrome</div>
+    </div></div></div>
+    <div class="t"><div class="en">Done! Open <span class="key">Lumio</span> from the home screen<small>It opens full-screen like any app. Log in once with the Student ID — the phone remembers it. Every class, homework and the booking page are inside.</small></div>
+    <div class="ar">تم! افتحوا <span class="key">Lumio</span> من الشاشة الرئيسية<small>يفتح بملء الشاشة مثل أي تطبيق. سجّلوا الدخول مرة واحدة برقم الطالب وسيتذكره الجوال. الحصص والواجبات وحجز المواعيد كلها بداخله.</small></div></div>
+  </div>
+</div>
+
+<div class="tip">
+  <div><div class="en">📱 <span>iPhone?</span> Open the link in <b>Safari</b> → tap the Share button <b>⎙</b> at the bottom → <b>Add to Home Screen</b> → <b>Add</b>.</div>
+  <div class="ar">آيفون؟ افتحوا الرابط في <b>Safari</b> ← اضغطوا زر المشاركة <b>⎙</b> في الأسفل ← <b>إضافة إلى الشاشة الرئيسية</b> ← <b>إضافة</b>.</div></div>
+  <img src="QR">
+</div>
+<footer>Lumio English · <b>lumio-english.github.io/lumio</b> · Small Steps, Big Futures</footer>
+</body></html>

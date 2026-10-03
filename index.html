@@ -6,6 +6,12 @@
 <link rel="icon" type="image/png" sizes="32x32" href="assets/logo/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="assets/logo/favicon-16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/logo/favicon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#F97316">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lumio">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lumio English — Small Steps · Big Futures</title>
 <meta name="description" content="A complete English course for Arabic-speaking children and teens, ages 4-15. 7 levels, 140+ lessons, real teachers, printable worksheets, and full Arabic support in every word.">
@@ -186,6 +192,7 @@ html[dir="rtl"] .lang-toggle{right:auto;left:14px}
 .lang-toggle button.active{background:var(--orange);color:#fff}
 @media (max-width:480px){.lang-toggle{top:10px}.lang-toggle button{padding:6px 12px;font-size:.75rem}}
 </style>
+<script>if("serviceWorker"in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script>
 </head>
 <body>
 

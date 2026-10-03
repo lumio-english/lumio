@@ -116,5 +116,9 @@ Full QA (3 testers, fake Sheet) found the issues below; fixed and verified again
 - Booking (main's 3h) under the new rules: a student may call `bookSlot`/`cancelSlot` only for themselves (the script fills in their id/name); their schedule pull holds their own classes in full and every other class as anonymous seats (no names/attendance/grades/notes/links, ratings kept as bare stars) plus all open teacher slots, so seat counts, open slots and teacher ratings still work. Teacher photos are in the public teacher list.
 - DEPLOY: paste `_docs/AppsScript-Code.live-patched.gs` (= AppsScript-Code.gs) -> Manage deployments -> New version (same URL). After that every teacher signs in once more with their personal PIN.
 
+## 3i. Installable app + parent install guide (3 Oct 2026)
+- `manifest.webmanifest` (name Lumio English, start_url student.html, standalone, orange theme, 192/512 icons) + `sw.js` (network-only, caches the two icons; exists so Chrome offers "Install app" and opens full-screen). Every page with the apple-touch-icon line now links the manifest + theme-color/mobile-web-app metas; index/login/student register the SW. No page caching on purpose — version bumps keep working.
+- Parent guide: `_docs/guides/install-lumio-app-chrome.png` (1080-wide bilingual poster, 5 Chrome/Android steps + iPhone/Safari tip + website QR) and `.mp4` (1080×1920, 7 slides × 4 s) rendered from `install-lumio-app-chrome.src.html` (placeholders FONTS/ LOGO SHOT ICON QR inlined by the scratchpad script; SHOT = login.html at 390 px). Regenerate after a login-page redesign.
+
 ## 4. Working style
 Verify in a browser before claiming done; check files before writing prompts; never duplicate; fix in templates not per slide; say plainly what was NOT done; ask one specific question when ambiguous.
