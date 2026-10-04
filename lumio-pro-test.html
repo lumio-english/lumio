@@ -1529,20 +1529,22 @@ function calcScore(){
   // 10 A2 and 16 B1/B2 questions, so knowing A1 gives ~16 and knowing A2
   // ~24. Bands are in correct answers out of SCORED_TOTAL (36) and scale
   // if the total changes.
-  //   0-12 Pre-A · 13-15 L1 · 16-18 L2 · 19-21 L3 · 22-24 L4 · 25-27 L5 · 28+ L6
-  // 32+ is reported as "above Level 6" (rawLevel 7) but placed in Level 6.
-  const BANDS = [13, 16, 19, 22, 25, 28];            // lowest score for Level 1..6
+  //   0-12 Pre-A · 13-15 L1 · 16-18 L2 · 19-21 L3 · 22-24 L4 · 25-27 L5
+  //   28-30 L6 · 31-32 L7 · 33-34 L8 · 35-36 L9
+  // Levels 7-9 are planned (B1). Until they are built, MAX_LUMIO_LEVEL caps
+  // the placement at 6 and a higher score is reported as "above Level 6".
+  // When they open: raise MAX_LUMIO_LEVEL and add their names below.
+  const BANDS = [13, 16, 19, 22, 25, 28, 31, 33, 35]; // lowest score for Level 1..9
   const scaled = total * 36 / SCORED_TOTAL;
   let level = 0;
   BANDS.forEach((min, i) => { if (scaled >= min) level = i + 1; });
-  if (scaled >= 32) level = 7;
 
   return { total, listenScore, readScore, writeScore, gramScore, level: Math.min(level, MAX_LUMIO_LEVEL), rawLevel: level, pct };
 }
 // Lumio has seven built levels (Pre-A = 0 .. Level 6). The test's own
 // scale runs to 9 for B1+, so a strong teen is told honestly that they
 // scored above Level 6 but is placed in Level 6, the highest we teach.
-const MAX_LUMIO_LEVEL = 6;
+const MAX_LUMIO_LEVEL = 6;   // raise to 9 when Levels 7-9 are built (and add their names below)
 const LUMIO_LEVEL_NAMES = ['Pre-A · First Words','Level 1 · About Me','Level 2 · My World','Level 3 · Everyday Life','Level 4 · Smart Choices','Level 5 · Telling My Story','Level 6 · Looking Ahead'];
 
 const LEVEL_INFO=[
@@ -1592,7 +1594,7 @@ const LUMIO_SYNC_URL = 'https://script.google.com/macros/s/AKfycbxlKY07coAR_Uj6U
 // needs a real, built level), not at the scoring/display layer where
 // the honest number still belongs.
 function mapProTestLevelToLumioId(n) {
-  const clamped = Math.min(n, 6);
+  const clamped = Math.min(n, MAX_LUMIO_LEVEL);
   return clamped === 0 ? 'pre-a' : 'level' + clamped;
 }
 async function pushResultAsLumioLead(fullData, levelNum) {
@@ -1754,7 +1756,7 @@ function showResult(){
     level:'Level '+level,
     levelNum:level,
     rawLevelNum:rawLevel,
-    cefr:info.cefr+' — '+info.name+(aboveTop?' (scored above Level 6)':'')
+    cefr:info.cefr+' — '+info.name+(aboveTop?' (scored above Level '+MAX_LUMIO_LEVEL+')':'')
   });
   // Keep the age on the student's own record too (it was only ever on the lead).
   if (registeredStudent && !registeredStudent.remote && window.LumioProfiles && age) {
@@ -1787,7 +1789,7 @@ function showResult(){
   document.getElementById('level-badge-big').style.background=info.color;
   document.getElementById('level-name-big').textContent=LUMIO_LEVEL_NAMES[level]+' ('+info.cefr+')';
   document.getElementById('level-desc-big').textContent=aboveTop
-    ? 'You scored above our highest level, so you start in Level 6 — our most advanced course. ' + info.desc
+    ? 'You scored above our highest level, so you start in Level '+MAX_LUMIO_LEVEL+' — our most advanced course. ' + info.desc
     : info.desc;
 
   // Tips

@@ -1204,7 +1204,7 @@ function placementUpdate_(body) {
     var s = findByPhone_(rows, body.phone);
     if (!s || String(s.approved) !== "false") return { ok: false, error: "not_allowed" };
     var lv = String(body.level || "");
-    if (lv && /^(pre-a|level[1-6])$/.test(lv)) s.level = lv;
+    if (lv && /^(pre-a|level[1-9])$/.test(lv)) s.level = lv;
     if (body.age !== undefined && body.age !== "" && isFinite(Number(body.age))) s.age = Number(body.age);
     touch_(s, ["level", "age"], new Date().toISOString());
     writeRows_(ROSTER_SHEET, ROSTER_COLUMNS, rows);
@@ -1223,7 +1223,7 @@ function addLead_(body) {
     rows.push({
       id: id, name: cleanText_(l.name, 60), phone: String(l.phone || "").replace(/\D/g, "").slice(0, 16),
       age: isFinite(Number(l.age)) && l.age !== null && l.age !== "" ? Number(l.age) : "",
-      suggestedLevel: /^(pre-a|level[1-6])$/.test(String(l.suggestedLevel || "")) ? l.suggestedLevel : "",
+      suggestedLevel: /^(pre-a|level[1-9])$/.test(String(l.suggestedLevel || "")) ? l.suggestedLevel : "",
       testScore: isFinite(Number(l.testScore)) ? Number(l.testScore) : "", testTotal: isFinite(Number(l.testTotal)) ? Number(l.testTotal) : "",
       status: "new", notes: cleanText_(l.notes, 500), createdAt: now, updatedAt: now,
     });
