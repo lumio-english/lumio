@@ -861,6 +861,18 @@
     save(data);
     return s.messages[s.messages.length - 1];
   }
+  // Edit an existing message in place (e.g. a re-saved evaluation).
+  function updateMessage(studentId, msgId, patch) {
+    const data = load();
+    const s = data.students.find(x => x.id === studentId);
+    if (!s || !Array.isArray(s.messages)) return null;
+    const m = s.messages.find(x => x && x.id === msgId);
+    if (!m) return null;
+    Object.assign(m, patch || {});
+    s.updatedAt = new Date().toISOString();
+    save(data);
+    return m;
+  }
   // Only adds if no message with this dedupeKey already exists -- for
   // things like "class in 1 hour" reminders and "lesson N is ready"
   // alerts that get re-evaluated on every dashboard load and must not
@@ -2175,7 +2187,7 @@
     addRewardPoints, redeemReward, pointsThisMonthForStudent,
     listRewardCatalog, addRewardCatalogItem, removeRewardCatalogItem, redeemCatalogItem,
     addNote, listNotes,
-    addMessage, addMessageOnce, listMessages, unreadMessageCount, markMessagesRead,
+    addMessage, addMessageOnce, updateMessage, listMessages, unreadMessageCount, markMessagesRead,
     isStudentActive, requestAccountDeletion, confirmAccountDeletion, declineAccountDeletion,
     currencyForCountry,
     setInstallments, buildInstallmentPlan, markInstallmentPaid, installmentBalanceDelta, installmentsDue, sendDueInstallmentReminders, installmentSummary, installmentMessage, fmtMoney, INSTALLMENT_REMIND_DAYS,

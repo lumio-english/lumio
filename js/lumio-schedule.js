@@ -463,8 +463,10 @@
     return c;
   }
   // Teacher's letter grade for one student in this session.
-  function gradeStudent(classId, studentRef, grade) {
-    if (grade !== null && VALID_GRADES.indexOf(grade) === -1) {
+  // Teacher's evaluation of one student for one session: a letter grade
+  // and an optional comment (`comment` undefined = leave it as it is).
+  function gradeStudent(classId, studentRef, grade, comment) {
+    if (grade !== null && grade !== undefined && VALID_GRADES.indexOf(grade) === -1) {
       throw new Error("Grade must be one of: " + VALID_GRADES.join(", ") + " (or null to clear it).");
     }
     const data = load();
@@ -472,10 +474,18 @@
     if (!c) throw new Error("Class not found.");
     const slot = findStudentSlot(c, typeof studentRef === "string" ? { studentName: studentRef } : studentRef);
     if (!slot) throw new Error("That student isn't booked into this class.");
-    slot.grade = grade;
+    if (grade !== undefined) slot.grade = grade;
+    if (comment !== undefined) slot.gradeComment = String(comment || "").trim().slice(0, 600);
+    if (slot.grade || slot.gradeComment) slot.gradedAt = new Date().toISOString();
     c.updatedAt = new Date().toISOString();
     save(data);
     return c;
+  }
+  // Classes that ENDED, weren't cancelled, and still have a present
+  // student without a grade -- the teacher's "evaluate now" list.
+  function needsEvaluation(filter) {
+    return listClasses(filter).filter(c => c.status !== "cancelled" && hasEnded(c)
+      && c.students.some(s => s.attendance === "present" && !s.grade));
   }
   // A student's star rating (1-5) of the teacher, for this one session --
   // called from the student side, not the teacher side.
@@ -840,7 +850,7 @@
     const out = [];
     listClasses({ studentName, level }).forEach(c => {
       const slot = findStudentSlot(c, { studentName });
-      if (slot && slot.grade) out.push({ classId: c.id, date: c.date, lessonNumber: c.lessonNumber, grade: slot.grade });
+      if (slot && (slot.grade || slot.gradeComment)) out.push({ classId: c.id, date: c.date, lessonNumber: c.lessonNumber, grade: slot.grade || null, comment: slot.gradeComment || "", teacherName: c.teacherName || "", gradedAt: slot.gradedAt || null });
     });
     return out;
   }
@@ -1717,7 +1727,7 @@
     addAvailability, setWeeklyAvailability, availabilityForTeacher, availabilityStatus, studentBookingState, bookingsInWeek, openSlots,
     bookStudentIntoSlot, cancelBooking, joinGate,
     addClass, updateClass, removeClass, cancelClass,
-    markAttendance, gradeStudent, rateTeacher, completionState,
+    markAttendance, gradeStudent, needsEvaluation, rateTeacher, completionState,
     needsAttendance, attendanceStatsForStudent, gradesForStudent, teacherRatingsGiven, teacherAverageRating,
     attendanceStreakForStudent, teacherStats, reassignTeacherForRange,
     attendedLessonNumbers, classForLesson,
