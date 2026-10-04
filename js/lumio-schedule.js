@@ -914,6 +914,8 @@
     data.classes.forEach(c => {
       // hasStarted: a class earlier today already happened with its real teacher
       if (c.teacherId === fromTeacherId && c.date >= fromDate && c.date <= toDate && c.status === "scheduled" && !hasStarted(c)) {
+        const oldDefault = teacherDefaultLink(fromTeacherId);
+        if (!c.meetingLink || (oldDefault && c.meetingLink === oldDefault)) c.meetingLink = teacherDefaultLink(toTeacherId) || "";
         c.teacherId = toTeacherId;
         c.teacherName = toTeacherName || c.teacherName;
         c.updatedAt = new Date().toISOString();
@@ -1308,6 +1310,24 @@
     if (s < hmToMin(WORK.start) || e > hmToMin(WORK.end)) return `Fixed slots must start at or after ${WORK.start} and end by ${WORK.end} (Saudi time).`;
     return null;
   }
+  // A teacher's classroom link (or a slot's link) changed: booked classes
+  // that still carry the OLD link (or none) take the new one. Classes
+  // keep a copy because students only ever see the link of their own
+  // classes (the public teacher list never includes it).
+  function relinkFutureClasses({ teacherId, patternId, oldLinks, newLink } = {}) {
+    const data = load(); const olds = (oldLinks || []).filter(Boolean); let n = 0;
+    data.classes.forEach(c => {
+      if (c.status !== "scheduled" || hasStarted(c)) return;
+      if (teacherId && c.teacherId !== teacherId) return;
+      if (patternId && c.patternId !== patternId) return;
+      if (c.meetingLink && !olds.includes(c.meetingLink)) return;
+      const next = newLink || (c.patternId && (getPattern(c.patternId) || {}).meetingLink) || teacherDefaultLink(c.teacherId) || "";
+      if (c.meetingLink === next) return;
+      c.meetingLink = next; c.updatedAt = new Date().toISOString(); n++;
+    });
+    if (n) save(data);
+    return n;
+  }
   // Teacher availability slot (the new kind of pattern).
   function addAvailability({ teacherId, teacherName, dayOfWeek, startTime, durationMinutes, meetingLink, notes, startDate, extra } = {}) {
     if (!teacherId) throw new Error("Pick a teacher.");
@@ -1359,8 +1379,12 @@
     const now = nowTz();
     const attended = attendedLessonNumbers(studentName, level);
     const maxAttended = attended.size ? Math.max(...attended) : 0;
-    const future = listClasses({ studentName, status: "scheduled" }).filter(c => c.level === level && stillRunning(c, now));
-    const maxBooked = future.reduce((m, c) => Math.max(m, Number(c.lessonNumber) || 0), 0);
+    const booked = listClasses({ studentName, status: "scheduled" }).filter(c => c.level === level);
+    const future = booked.filter(c => stillRunning(c, now));
+    // Every still-"scheduled" booking counts, including one that already
+    // happened but has no attendance yet -- otherwise that lesson could be
+    // booked a second time before the teacher marks it.
+    const maxBooked = booked.reduce((m, c) => Math.max(m, Number(c.lessonNumber) || 0), 0);
     const N = (global.Lumio && Lumio.lessonCountFor) ? Lumio.lessonCountFor(level) : 20;
     const nextLesson = Math.max(maxAttended, maxBooked) + 1;
     return { nextLesson: nextLesson > N ? null : nextLesson, maxAttended, maxBooked, futureCount: future.length, levelDone: nextLesson > N };
@@ -1369,7 +1393,39 @@
   function weekKey(d) { return addDaysStr(d, -dowOf(d)); }
   function bookingsInWeek(studentName, d) {
     const wk = weekKey(d);
-    return listClasses({ studentName, status: "scheduled" }).filter(c => weekKey(c.date) === wk).length;
+    return listClasses({ studentName }).filter(c => c.status !== "cancelled" && weekKey(c.date) === wk).length;
+  }
+  // Sessions already promised to booked classes that haven't been marked
+  // yet (a session is deducted when the teacher marks the student present).
+  function pendingBookings(studentName) {
+    const n = normName(studentName);
+    return listClasses({ studentName, status: "scheduled" }).filter(c => {
+      const slot = c.students.find(s => normName(s.studentName) === n);
+      return slot && !slot.attendance;
+    }).length;
+  }
+  function freeSessions(full, studentName) {
+    return (Number(full && full.sessionsRemaining) || 0) - pendingBookings(studentName);
+  }
+  // Latest start (ms) of the student's booked lessons in this level: new
+  // bookings must come after it, so lessons stay in date order.
+  function latestBookedStart(studentName, level) {
+    return listClasses({ studentName, status: "scheduled" }).filter(c => c.level === level)
+      .reduce((m, c) => Math.max(m, startMs(c)), 0);
+  }
+  const rangeOf = (date, hm, dur) => { const s = startMs({ date, startTime: hm }); return [s, s + (Number(dur) || 60) * 60000]; };
+  const overlaps = (a, b) => a[0] < b[1] && b[0] < a[1];
+  // Does the student already have a class overlapping this time?
+  function studentBusy(studentName, date, hm, dur, exceptId) {
+    const r = rangeOf(date, hm, dur);
+    return listClasses({ studentName, status: "scheduled" }).some(c => c.id !== exceptId && overlaps(r, rangeOf(c.date, c.startTime, c.durationMinutes || 45)));
+  }
+  // Is the teacher already teaching a different class overlapping this time
+  // (e.g. a 90-minute Big Review running into the next hour's slot)?
+  function teacherBusy(teacherId, date, hm, dur, exceptId) {
+    const r = rangeOf(date, hm, dur);
+    return load().classes.some(c => c.teacherId === teacherId && c.date === date && c.status !== "cancelled" && c.id !== exceptId
+      && overlaps(r, rangeOf(c.date, c.startTime, c.durationMinutes || 45)));
   }
   function isPast(date, startTime, now) {
     now = now || nowTz();
@@ -1385,16 +1441,19 @@
     const horizon = addDaysStr(today, days || BOOK_HORIZON_DAYS);
     const teacherName = id => { const t = global.LumioProfiles && global.LumioProfiles.listTeachers ? global.LumioProfiles.listTeachers().find(x => x.id === id) : null; return t ? t.name : ""; };
     const out = [];
-    const mine = listClasses({ studentName, status: "scheduled" });
-    const busy = (d, hm) => mine.some(c => c.date === d && c.startTime === hm);
+    const dur = lessonDuration(level, lesson);
+    const after = latestBookedStart(studentName, level);
+    const busy = (d, hm, du, exceptId) => startMs({ date: d, startTime: hm }) <= after || studentBusy(studentName, d, hm, du || dur, exceptId);
     for (let d = today; d <= horizon; d = addDaysStr(d, 1)) {
       if (isDateBlocked(d)) continue;
       const dow = dowOf(d);
       data.patterns.forEach(p => {
         if (!p.active || isLegacyPattern(p) || Number(p.dayOfWeek) !== dow) return;
         if (d < p.startDate || (p.endDate && d >= p.endDate)) return;
-        if (isPast(d, p.startTime, now) || busy(d, p.startTime)) return;
+        if (isPast(d, p.startTime, now)) return;
         const cls = data.classes.find(c => c.patternId === p.id && c.date === d && c.status !== "cancelled");
+        if (busy(d, p.startTime, cls ? cls.durationMinutes : dur, cls && cls.id)) return;
+        if (!cls && teacherBusy(p.teacherId, d, p.startTime, dur)) return;
         if (!cls) {
           out.push({ kind: "new", date: d, startTime: p.startTime, durationMinutes: lessonDuration(level, lesson), patternId: p.id,
                      teacherId: p.teacherId, teacherName: p.teacherName || teacherName(p.teacherId), seats: MAX_PER_CLASS, taken: 0 });
@@ -1408,7 +1467,7 @@
       data.classes.forEach(c => {
         if (c.patternId || c.date !== d || c.status !== "scheduled") return;
         if (c.level !== level || Number(c.lessonNumber) !== Number(lesson) || c.students.length >= MAX_PER_CLASS) return;
-        if (isPast(d, c.startTime, now) || busy(d, c.startTime)) return;
+        if (isPast(d, c.startTime, now) || busy(d, c.startTime, c.durationMinutes, c.id)) return;
         if (c.students.some(s => normName(s.studentName) === normName(studentName))) return;
         out.push({ kind: "join", date: d, startTime: c.startTime, durationMinutes: c.durationMinutes, classId: c.id, patternId: null,
                    teacherId: c.teacherId, teacherName: c.teacherName || teacherName(c.teacherId), seats: MAX_PER_CLASS, taken: c.students.length, manual: true });
@@ -1437,11 +1496,14 @@
     if (isPast(slotDate, slotTime, now)) throw new Error("That time has already passed.");
     if (isDateBlocked(slotDate)) throw new Error("That date is blocked (holiday / day off).");
     if (pat && !isLegacyPattern(pat) && (slotDate < pat.startDate || (pat.endDate && slotDate >= pat.endDate) || Number(pat.dayOfWeek) !== dowOf(slotDate))) throw new Error("That slot isn't available on that date.");
-    if (listClasses({ studentName, status: "scheduled" }).some(c => c.date === slotDate && c.startTime === slotTime)) throw new Error("The student already has a class at that time.");
+    const slotDur = cls ? (cls.durationMinutes || lessonDuration(level, lesson)) : lessonDuration(level, lesson);
+    if (studentBusy(studentName, slotDate, slotTime, slotDur, cls && cls.id)) throw new Error("The student already has a class at that time.");
+    if (startMs({ date: slotDate, startTime: slotTime }) <= latestBookedStart(studentName, level)) throw new Error(`Lesson ${lesson} must come after the lessons already booked — pick a later time.`);
+    if (!cls && teacherBusy(pat.teacherId, slotDate, slotTime, slotDur)) throw new Error("The teacher is still teaching another class then (the class before runs longer).");
     if (!override) {
       const full = global.LumioProfiles ? (studentId ? global.LumioProfiles.getStudent(studentId) : global.LumioProfiles.findByName(studentName)) : null;
       if (full && !full.subscribed) throw new Error("This student isn't subscribed yet.");
-      if (full && !(Number(full.sessionsRemaining) > 0)) throw new Error("No sessions left on this student's package.");
+      if (full && !(freeSessions(full, studentName) > 0)) throw new Error(Number(full.sessionsRemaining) > 0 ? "Every session left on the package is already booked." : "No sessions left on this student's package.");
       if (bookingsInWeek(studentName, slotDate) >= MAX_PER_WEEK) throw new Error(`Maximum ${MAX_PER_WEEK} classes per week.`);
     }
     if (cls) {
@@ -1489,6 +1551,7 @@
     const cascaded = [];
     if (n) data.classes.forEach(x => {
       if (x.id === c.id || x.status !== "scheduled" || x.level !== c.level || !(Number(x.lessonNumber) > n)) return;
+      if (!byTeacher && startMs(x) - Date.now() < CANCEL_MIN_BEFORE * 60000) return;
       const b = x.students.length;
       x.students = x.students.filter(s => normName(s.studentName) !== normName(studentName));
       if (x.students.length === b) return;
@@ -1542,7 +1605,7 @@
         if (out && /Unknown action/i.test(out.error || "")) throw new Error("Online booking isn't switched on yet — please tell your teacher (the booking server needs its update).");
         throw new Error((out && out.error) || "The server refused that booking.");
       }
-      if (out.cls) { normalizeSheetDates(out.cls); replaceClass(out.cls); return out.cls; }
+      if (out.cls) { normalizeSheetDates(out.cls); if (out.cls.id !== cls.id) restore(snap); replaceClass(out.cls); return out.cls; }
       return cls;
     } catch (e) {
       if (e && /server refused|different lesson|full|cancelled|already|switched on/i.test(e.message || "")) throw e;
@@ -1592,7 +1655,7 @@
       const today = todayStr();
       const horizon = addDaysStr(today, days || BOOK_HORIZON_DAYS);
       const full = global.LumioProfiles ? (studentId ? global.LumioProfiles.getStudent(studentId) : global.LumioProfiles.findByName(studentName)) : null;
-      let sessionsLeft = full ? Number(full.sessionsRemaining) || 0 : 99;
+      let sessionsLeft = full ? freeSessions(full, studentName) : 99;
       for (let d = today; d <= horizon; d = addDaysStr(d, 1)) {
         const dow = dowOf(d);
         (picks || []).filter(pk => Number(pk.dayOfWeek) === dow).sort((a, b) => hmToMin(a.startTime) - hmToMin(b.startTime)).forEach(pk => {
@@ -1617,15 +1680,18 @@
   }
   async function bookWeeklyRemote({ studentName, studentId, level, picks, days } = {}) {
     const plan = weeklyPlanPreview({ studentName, studentId, level, picks, days });
-    const results = [];
+    const results = []; let stopped = false;
     for (const item of plan) {
+      // Later items were planned as "the next lesson after this one"; once one
+      // fails their lesson numbers are wrong, so stop and let the student re-plan.
+      if (stopped && item.ok) { results.push(Object.assign({}, item, { ok: false, reason: "Not booked — the booking before it failed. Open the planner again to book the rest." })); continue; }
       if (!item.ok) { results.push(item); continue; }
       try {
         const cls = await bookSlotRemote({ studentName, studentId, level, lesson: item.lesson, patternId: item.patternId, date: item.date });
         results.push(Object.assign({}, item, { ok: true, classId: cls.id }));
       } catch (e) {
         results.push(Object.assign({}, item, { ok: false, reason: e.message }));
-        if (/switched on|reach the booking server/i.test(e.message || "")) break; // no point continuing offline
+        stopped = true;
       }
     }
     return results;
@@ -1644,7 +1710,7 @@
 
   global.LumioSchedule = {
     listClasses, getClass,
-    bookSlotRemote, cancelBookingRemote, laterBookings,
+    bookSlotRemote, cancelBookingRemote, laterBookings, relinkFutureClasses, pendingBookings, freeSessions,
     weeklySlotOptions, weeklyPlanPreview, bookWeeklyRemote, fixedPlanFor, saveFixedPlan,
     // booking model
     WORK, MAX_PER_CLASS, MAX_PER_WEEK, CANCEL_MIN_BEFORE, lessonDuration, inWorkingHours, isPast, isLegacyPattern, meetingLinkFor, teacherDefaultLink,

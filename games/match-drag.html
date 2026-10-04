@@ -80,7 +80,9 @@ const num = parseInt(Lumio.qs("n") || "1", 10);
 // own defaults) instead of the lesson they actually launched this game
 // from -- matches the fix already applied to every other game here.
 const source = Lumio.qs("from");
-const backHref = source === "lesson" ? "../student.html" : `../present.html?level=${level}&n=${num}`;
+const backHref = source === "lesson" ? "../student.html" : source === "trial" ? `../present-trial.html?level=${level}` : `../present.html?level=${level}&n=${num}`;
+// From a trial deck the game opened in its own tab: Exit just closes it (the trial is still open in the first tab).
+if (source === "trial") ["exitBtn", "backBtn"].forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener("click", e => { e.preventDefault(); try { window.close(); } catch (x) {} setTimeout(() => { location.href = backHref; }, 250); }); });
 document.getElementById("exitBtn").href = backHref;
 document.getElementById("backBtn").href = backHref;
 const lesson = window.LUMIO_LESSONS?.[level]?.[num];

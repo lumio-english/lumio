@@ -269,6 +269,17 @@
   .td-due-row{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:10px 12px;border:1px solid var(--td-border);border-radius:12px;margin-bottom:8px;background:#fff}
   .td-due-row .amt{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.1rem;color:var(--td-ink)}
   .td-due-row .when{font-size:.72rem;font-weight:800;padding:3px 9px;border-radius:999px;display:inline-block}
+  @media (max-width:600px){
+    .td-due-row{grid-template-columns:auto 1fr;gap:6px 10px}
+    .td-due-row > div:last-child{grid-column:1 / -1;justify-content:stretch !important}
+    .td-due-row > div:last-child > *{flex:1;text-align:center}
+    .td-inst-gen{grid-template-columns:1fr 1fr 1fr}
+    .td-inst-gen #instFirst{grid-column:span 3}
+    .td-inst-gen #instEvery{grid-column:span 2}
+    .td-inst-row{grid-template-columns:1fr 1fr auto}
+    .td-inst-row input[data-k="dueDate"]{grid-column:2 / 4}
+    .td-inst-row .paid{grid-column:1}
+  }
   .td-due-row .when.over{background:var(--td-coral-soft);color:var(--td-coral)}.td-due-row .when.today{background:#FFF1D6;color:#B45309}.td-due-row .when.soon{background:var(--td-teal-soft);color:var(--td-teal)}
   .td-ref-row{display:grid;grid-template-columns:1.3fr 1fr 150px 110px auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--td-border);border-radius:12px;margin-bottom:8px;font-size:.84rem;background:#fff}
   .td-ref-row .nm{font-weight:800}
@@ -778,6 +789,16 @@
      the fragile arrangement that kept hiding the Save button. */
   .td-modal-box-wide{max-width:760px}
   .td-modal-box h3{margin:0 0 16px;font-size:1.05rem}
+  /* 4 Oct 2026 (owner): pop-ups never grow taller than the screen. Each box
+     is capped at the viewport height, centred, and scrolls inside; its
+     action row (Save / Cancel ...) is pinned to the bottom of the box so
+     it can never be scrolled out of reach. */
+  .td-overlay{display:flex;align-items:center;justify-content:center;overflow:hidden;padding:16px}
+  .td-overlay > .td-modal-box{max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow-y:auto;overscroll-behavior:contain;flex-shrink:0;margin:0}
+  .td-overlay > .td-modal-box > .td-modal-actions{position:sticky;bottom:-24px;margin:18px -24px -24px;padding:14px 24px 18px;background:var(--td-surface);border-top:1px solid var(--td-border);z-index:5}
+  .td-overlay > .td-modal-box[style*="padding:0"] > .td-modal-actions{bottom:0;margin:0}
+  .td-overlay > .td-modal-box > .td-modal-actions.td-sm-footer{max-width:none}
+  @media (max-width:600px){ .td-overlay{padding:8px} .td-overlay > .td-modal-box{max-height:calc(100dvh - 16px)} }
   .td-field{margin-bottom:12px}
   .td-field label{display:block;font-weight:700;font-size:.8rem;margin-bottom:5px;color:var(--td-ink-soft)}
   .td-field input[type=text], .td-field input[type=number], .td-field input[type=tel],
@@ -873,7 +894,7 @@
   .td-field-row{display:flex;gap:10px}
   .td-field-row .td-field{flex:1;margin-bottom:12px}
   .td-field-row.three .td-field{flex:1}
-  @media (max-width:520px){.td-field-row{flex-direction:column;gap:0}.td-field-row.three{flex-direction:row}}
+  @media (max-width:520px){.td-field-row{flex-direction:column;gap:0}.td-field-row.three{flex-direction:row;flex-wrap:wrap;column-gap:10px}.td-field-row.three .td-field{flex:1 1 90px}}
   .td-sm-toggle{display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:14px;width:fit-content}
   .td-sm-toggle input{position:absolute;opacity:0;width:0;height:0}
   .td-sm-toggle .track{
@@ -1678,10 +1699,10 @@
           <span class="lbl">Currently subscribed</span>
         </label>
         <div class="td-field-row three">
-          <div class="td-field">
+          <div class="td-field" style="flex:2 1 170px">
             <label for="stuAmountPaid">Amount paid</label>
             <div style="display:flex;gap:6px">
-              <input type="number" id="stuAmountPaid" min="0" step="0.01" placeholder="0" style="flex:1">
+              <input type="number" id="stuAmountPaid" min="0" step="0.01" placeholder="0" style="flex:1;min-width:70px">
               <select id="stuCurrency" style="flex:0 0 82px" title="Follows the student's country automatically">
                 <option value="EGP">EGP</option>
                 <option value="KWD">KWD</option>
@@ -1767,7 +1788,7 @@
   <div class="td-modal-box" style="max-width:520px">
     <h3 id="recordingsTitle">Recordings</h3>
     <p class="sub" style="margin:-6px 0 14px;font-size:.78rem">From the "Say It" step of interactive homework — same browser/device as the student only.</p>
-    <div id="recordingsList" style="max-height:420px;overflow-y:auto"></div>
+    <div id="recordingsList"></div>
     <div class="td-modal-actions">
       <button class="td-btn" id="recordingsClose">Close</button>
     </div>
@@ -1979,7 +2000,7 @@
   <div class="td-modal-box td-modal-box-wide">
     <h3>💳 Installments due</h3>
     <p class="sub" style="margin-top:-4px" id="dueSub"></p>
-    <div id="dueList" style="max-height:420px;overflow-y:auto"></div>
+    <div id="dueList"></div>
     <div class="td-modal-actions"><button class="td-btn" id="dueSnooze" type="button">Remind me tomorrow</button><button class="td-btn td-btn-primary" id="dueClose" type="button">Done</button></div>
   </div>
 </div>
@@ -3931,6 +3952,10 @@
       try {
         if (editingTeacherId) {
           const tpatch = { name, avatar: selectedTeacherAvatar, isOwner: isOwnerVal, photoDataUrl: tchPhoto, meetingLink: document.getElementById("tchMeetingLink").value.trim() };
+          const oldTeacherLink = (LumioProfiles.getTeacher(editingTeacherId) || {}).meetingLink || "";
+          if (oldTeacherLink !== tpatch.meetingLink && window.LumioSchedule && LumioSchedule.relinkFutureClasses) {
+            try { LumioSchedule.relinkFutureClasses({ teacherId: editingTeacherId, oldLinks: [oldTeacherLink], newLink: tpatch.meetingLink }); } catch (eL) {}
+          }
           if (pinVal !== undefined) tpatch.pin = pinVal;
           await LumioProfiles.updateTeacher(editingTeacherId, tpatch);
         } else {
@@ -4195,9 +4220,9 @@
 
   function mondayOf(d) {
     const x = new Date(d); x.setHours(0, 0, 0, 0);
-    const day = x.getDay(); // 0=Sun..6=Sat
-    const diff = day === 0 ? -6 : 1 - day;
-    x.setDate(x.getDate() + diff);
+    // The Saudi working week starts on Sunday (classes Sun–Thu), so the
+    // week view does too -- a Monday start showed LAST week every Sunday.
+    x.setDate(x.getDate() - x.getDay());
     return x;
   }
   function toDateStr(d) {
@@ -4258,7 +4283,7 @@
     const totalRows = ((CAL_END_HOUR - CAL_START_HOUR) * 60) / CAL_ROW_MIN;
     const gridHeightPx = totalRows * CAL_ROW_PX;
     const todayStr = LumioSchedule.todayStr();
-    const dow = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    const dow = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
     let html = `<div class="td-cal-corner"></div>`;
     days.forEach((d, i) => {
@@ -4894,9 +4919,20 @@
     const scope = scheduleScope.value;
     const activeTeacherId = LumioProfiles.getCurrentTeacherId();
     let students = LumioProfiles.listStudents();
-    if (scope === "mine" && activeTeacherId) students = students.filter(s => s.teacherId === activeTeacherId);
+    if (scope === "mine" && activeTeacherId) {
+      // Students book any teacher, so whoever is already in this slot's
+      // class stays in the list (and stays ticked) even if they belong to
+      // another teacher's roster -- otherwise Save treated them as unticked
+      // and removed them (and their later lessons).
+      const cls = clsSlotCtx && clsSlotCtx.classId ? LumioSchedule.getClass(clsSlotCtx.classId) : null;
+      const inIds = new Set(), inNames = new Set();
+      (cls ? cls.students : []).forEach(b => { if (b.studentId) inIds.add(b.studentId); inNames.add(String(b.studentName).trim().toLowerCase()); });
+      students = students.filter(s => s.teacherId === activeTeacherId || inIds.has(s.id) || inNames.has(String(s.name).trim().toLowerCase()));
+    }
     return students.sort((a, b) => a.name.localeCompare(b.name));
   }
+  // Roster record behind a seat in a class (by id, else by name).
+  function seatStudent(b) { return b.studentId ? LumioProfiles.getStudent(b.studentId) : LumioProfiles.findByName(b.studentName); }
   function renderSlotChecks() {
     const wrap = document.getElementById("clsSlotChecks");
     const ctx = clsSlotCtx;
@@ -4905,7 +4941,7 @@
     const inClassNames = new Set((cls ? cls.students : []).map(s => String(s.studentName).trim().toLowerCase()));
     const inited = wrap.dataset.inited === "1";
     const checkedIds = new Set(Array.from(wrap.querySelectorAll("input:checked")).map(i => i.value));
-    if (!inited) inClass.forEach(id => checkedIds.add(id));
+    if (!inited) { inClass.forEach(id => checkedIds.add(id)); (cls ? cls.students : []).forEach(b => { const st = seatStudent(b); if (st) checkedIds.add(st.id); }); }
     wrap.dataset.inited = "1";
     const pool = slotStudentsPool();
     // lock = the class's lesson, else the first checked student's next lesson
@@ -5044,17 +5080,26 @@
     let cls = ctx.classId ? LumioSchedule.getClass(ctx.classId) : null;
     const before = cls ? cls.students.slice() : [];
     const toAdd = slotStudentsPool().filter(s => pickedIds.has(s.id) && !before.some(b => b.studentId === s.id || String(b.studentName).trim().toLowerCase() === s.name.trim().toLowerCase()));
-    const toRemove = before.filter(b => !(b.studentId ? pickedIds.has(b.studentId) : true));
+    // Only seats whose checkbox is shown AND unticked are removed; a seat
+    // that isn't in the list (unknown name) is never touched.
+    const toRemove = before.filter(b => {
+      const st = seatStudent(b); if (!st) return false;
+      const box = Array.from(wrap.querySelectorAll("input[type=checkbox]")).find(i => i.value === st.id);
+      return !!box && !box.checked;
+    });
     if (!cls && !toAdd.length) {
       // Nothing booked yet and no student ticked: the teacher is only
       // setting the slot's meeting link / notes. Save them on the slot
       // itself (every week of it), which is what "Save" means here.
       const link = document.getElementById("clsMeetingLink").value.trim();
       const notes = clsNotesInput.value.trim();
-      if (link || notes) {
+      const pat = LumioSchedule.getPattern(ctx.patternId) || {};
+      if (link || notes || pat.meetingLink || pat.notes) {
+        const oldLink = pat.meetingLink || "";
         LumioSchedule.updatePattern(ctx.patternId, { meetingLink: link, notes });
+        const moved = link !== oldLink ? LumioSchedule.relinkFutureClasses({ patternId: ctx.patternId, oldLinks: [oldLink, LumioProfiles.getTeacher(pat.teacherId) ? LumioProfiles.getTeacher(pat.teacherId).meetingLink : ""], newLink: link }) : 0;
         closeClassModal(); renderScheduleActive(); queueSync();
-        showToast(`Saved on this fixed slot — every class booked into it will use ${link ? "this link" : "these notes"}.`, "success");
+        showToast(link || notes ? `Saved on this fixed slot — new bookings use ${link ? "this link" : "these notes"}${moved ? ` (and ${moved} booked class${moved === 1 ? "" : "es"} updated)` : ""}.` : "Link and notes cleared from this slot.", "success");
         return;
       }
       setClassModalTab("class");
@@ -5497,7 +5542,8 @@
       }
     } catch (e2) { /* progress sync is best-effort; roster/schedule already reported below */ }
     try { renderServerBanner(); } catch (e4) {}
-    try { runInstallmentReminders(); showDuePopup(false); } catch (e5) {}
+    // only with a fresh roster: an offline device must not remind about a part already paid elsewhere
+    if (rosterRes && rosterRes.ok) { try { runInstallmentReminders(); showDuePopup(false); } catch (e5) {} }
     // Referrals follow the (freshly pulled) roster: a referred student who
     // was subscribed on another device credits the referrer here, now.
     try {
@@ -6003,7 +6049,7 @@
     if (!el || !window.LumioProfiles) return;
     const missing = LumioProfiles.serverMissingFields();
     if (!missing.length) { el.style.display = "none"; return; }
-    const pretty = { photoDataUrl: "teacher photos", meetingLink: "classroom (Teams) links" };
+    const pretty = { photoDataUrl: "teacher photos", meetingLink: "classroom (Teams) links", installments: "installment plans", referrals: "referrals" };
     el.style.display = "";
     el.innerHTML = `⚠️ <b>The Google Sheet script needs updating.</b> It doesn't store ${missing.map(k => pretty[k] || k).join(" and ")} yet, so those changes stay on this device only and don't reach students or other teachers. ${IS_OWNER ? `Paste <code>_docs/AppsScript-Code.live-patched.gs</code> into the Apps Script project, Deploy → Manage deployments → New version, then run <code>repairSheetTypes</code> once. Student self-booking needs the same update.` : "Ask the owner to redeploy it."}`;
   }
@@ -6199,7 +6245,7 @@
       instBadge();
     } catch (e) { console.warn("installment reminders", e); }
   }
-  try { runInstallmentReminders(); } catch (e) {}
+  // Reminders run only after the first sync (see performFullSync): a device holding yesterday's copy must not stamp and push a stale plan.
   window.showDuePopup = showDuePopup; // also reachable from the Renewals tab button / console
 
   function renderRenewalsList() {

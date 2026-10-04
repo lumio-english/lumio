@@ -553,6 +553,13 @@
     align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto;
   }
   .mp-overlay.show{display:flex}
+  /* 4 Oct 2026 (owner): the card is capped at the screen height; the coloured
+     header and ✕ stay put and only the body scrolls. */
+  .mp-overlay{align-items:center;overflow:hidden;padding:16px}
+  .mp-overlay > .mp-card{max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);display:flex;flex-direction:column;margin:0}
+  .mp-overlay > .mp-card > .mp-banner{flex-shrink:0}
+  .mp-overlay > .mp-card > .mp-body{overflow-y:auto;overscroll-behavior:contain;flex:1 1 auto;min-height:0}
+  .sd-modal-overlay > .sd-modal{max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow-y:auto;overscroll-behavior:contain}
   .mp-card{
     background:#fff;border-radius:24px;max-width:420px;width:100%;margin:auto 0;
     box-shadow:0 24px 60px rgba(0,0,0,.3);position:relative;overflow:hidden;
@@ -1740,7 +1747,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
       setState("locked", "🔒", `${meta.name} level test`, `Opens the moment all ${total} lessons are done — then your certificate.`, `Locked — ${total - done} lesson${total - done === 1 ? "" : "s"} to go`, `${done}/${total} lessons done (prep + class + homework)`);
       ltLink.onclick = e => { e.preventDefault(); showToast(`Finish all ${total} lessons first — ${total - done} to go!`, "🔒"); };
     } else {
-      ltLink.href = `level-test.html?level=${level}`; ltLink.removeAttribute("aria-disabled"); ltLink.onclick = null;
+      ltLink.href = `level-test.html?level=${level}${done < total ? "&preview=1" : ""}`; ltLink.removeAttribute("aria-disabled"); ltLink.onclick = null;
       if (lt && lt.pct >= Lumio.TEST_PASS_PCT) {
         ltLink.classList.add("passed");
         setState("passed", "🏅", `Level test passed · ${lt.pct}%`, `${lt.band} — your certificate is ready.`, "Try again for a higher score", `Best ${lt.score}/${lt.total} on ${lt.date}${lt.attempts > 1 ? ` · ${lt.attempts} attempts` : ""}`);
