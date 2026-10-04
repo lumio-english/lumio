@@ -2,6 +2,12 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<script>
+// Language before first paint: the page defaults to Arabic (as before) and remembers the
+// visitor's choice in localStorage "lumio_lang", shared with the rest of the site.
+(function () { var l = 'ar'; try { l = localStorage.getItem('lumio_lang') === 'en' ? 'en' : 'ar'; } catch (e) {}
+  document.documentElement.lang = l; document.documentElement.dir = l === 'ar' ? 'rtl' : 'ltr'; })();
+</script>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/logo/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="assets/logo/favicon-16.png">
@@ -32,1731 +38,242 @@
 <meta name="twitter:title" content="Lumio English — Let's learn English the fun way!">
 <meta name="twitter:description" content="A complete English course for Arabic-speaking children and teens, ages 4-15. 7 levels, 140+ lessons, full Arabic support.">
 <meta name="twitter:image" content="https://lumio-english.github.io/lumio/assets/marketing/og-share-card.jpg">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="css/brand.css">
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@500;600;700&family=Cairo:wght@500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Nunito:wght@500;600;700;800&family=Tajawal:wght@500;700;800&display=swap" rel="stylesheet">
 <script>
-(function() {
-  // Single source of truth for cache-busting every shared script on
-  // every page. Previously each <script> tag carried its own manually-
-  // maintained "?v=XXXXXXXX" query string, which had to be bumped by
-  // hand across every HTML file on every single edit to any shared
-  // script -- forgotten three separate times in one session, each time
-  // leaving a real, already-committed fix invisible to already-open
-  // browsers with no way to tell anything had changed. This fetches
-  // js/version.json FRESH (cache: no-store equivalent, via a random
-  // query string on this one tiny file only) and uses whatever it says
-  // as the version for every script below -- so the only thing that
-  // ever needs to change, for any future fix to any shared script, is
-  // the single value inside js/version.json. No HTML file ever needs
-  // hand-editing again.
-  var v = "20260918a"; // fallback only, used if version.json can't be reached (e.g. offline)
+(function () {
+  // Same cache-busting loader as every page: js/version.json is the single version for shared files.
+  var v = "20261004f";
   try {
     var xhr = new XMLHttpRequest();
     xhr.open("GET", "js/version.json?_=" + Date.now(), false);
     xhr.send(null);
-    if (xhr.status === 200) {
-      var parsed = JSON.parse(xhr.responseText);
-      if (parsed && parsed.v) v = parsed.v;
-    }
+    if (xhr.status === 200) { var p = JSON.parse(xhr.responseText); if (p && p.v) v = p.v; }
   } catch (e) {}
-  document.write('<script src="js/app.js?v=' + v + '"><' + '/script>');
+  window.LUMIO_V = v;
+  document.write('<link rel="stylesheet" href="css/site.css?v=' + v + '">');
 })();
 </script>
-<style>
-  body{opacity:1}
-  .lp-reveal{opacity:0;transform:translateY(14px);animation:lpReveal .55s cubic-bezier(.22,1,.36,1) forwards}
-  @keyframes lpReveal{to{opacity:1;transform:translateY(0)}}
-  @media (prefers-reduced-motion: reduce){.lp-reveal{opacity:1;transform:none;animation:none}}
-  .reveal-io{opacity:0;transform:translateY(16px);transition:opacity .55s cubic-bezier(.22,1,.36,1),transform .55s cubic-bezier(.22,1,.36,1)}
-  .reveal-io.in-view{opacity:1;transform:none}
-  @media (prefers-reduced-motion: reduce){.reveal-io{opacity:1;transform:none;transition:none}}
-  .btn{transition:transform .16s cubic-bezier(.22,1,.36,1),box-shadow .16s ease,filter .16s ease}
-  .btn:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(0,0,0,.12)}
-  .btn:active{transform:translateY(0) scale(.96);box-shadow:0 3px 8px rgba(0,0,0,.1)}
-  .btn:focus-visible{outline:3px solid rgba(255,138,61,.45);outline-offset:2px}
-  .cf-card:focus-visible{outline:3px solid rgba(255,138,61,.45);outline-offset:3px}
-
-/* ===== Contact Us (top pill) ===== */
-.btn-contact-top{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:999px;
-  background:#25D366;color:#fff;font-weight:800;font-size:.88rem;text-decoration:none;margin-right:10px;
-  box-shadow:0 4px 12px rgba(37,211,102,.35);transition:transform .15s ease,box-shadow .15s ease}
-.btn-contact-top:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(37,211,102,.45)}
-
-/* ===== Floating WhatsApp button (bottom) ===== */
-.whatsapp-fab{position:fixed;right:20px;bottom:20px;z-index:220;display:flex;align-items:center;gap:9px;
-  background:#25D366;color:#fff;padding:14px;border-radius:999px;text-decoration:none;
-  box-shadow:0 8px 22px rgba(37,211,102,.45);animation:waPulse 2.6s ease-in-out infinite}
-.whatsapp-fab-label{font-weight:800;font-size:.92rem;max-width:0;overflow:hidden;white-space:nowrap;transition:max-width .25s ease}
-.whatsapp-fab:hover .whatsapp-fab-label{max-width:140px;padding-right:2px}
-.whatsapp-fab:hover{animation-play-state:paused}
-@keyframes waPulse{0%,100%{box-shadow:0 8px 22px rgba(37,211,102,.45)}50%{box-shadow:0 8px 22px rgba(37,211,102,.75),0 0 0 8px rgba(37,211,102,.12)}}
-@media (max-width:640px){.btn-contact-top span{display:none}.btn-contact-top{padding:9px 11px}}
-
-/* ===== Explore side tab ===== */
-.explore-tab{position:fixed;right:0;top:50%;transform:translateY(-50%) rotate(0deg);z-index:200;
-  display:flex;flex-direction:column;align-items:center;gap:2px;border:none;cursor:pointer;
-  background:linear-gradient(135deg,var(--orange),var(--orange-2));color:#fff;
-  padding:16px 10px;border-radius:16px 0 0 16px;box-shadow:-4px 6px 18px rgba(67,48,31,.25);
-  font-family:var(--font-display);transition:padding-right .18s ease}
-.explore-tab:hover{padding-right:16px}
-.explore-tab-icon{font-size:1.3rem;line-height:1}
-.explore-tab-label{writing-mode:vertical-rl;font-weight:800;font-size:.82rem;letter-spacing:1px;margin-top:2px}
-
-/* ===== Explore drawer ===== */
-.explore-overlay{position:fixed;inset:0;background:rgba(43,33,24,.42);z-index:210;backdrop-filter:blur(1px)}
-.explore-drawer{position:fixed;top:0;right:0;height:100%;width:380px;max-width:88vw;background:var(--paper);
-  z-index:211;box-shadow:-12px 0 36px rgba(67,48,31,.28);transform:translateX(100%);transition:transform .32s cubic-bezier(.2,.9,.3,1);
-  display:flex;flex-direction:column}
-.explore-drawer.open{transform:translateX(0)}
-.explore-drawer-head{display:flex;align-items:center;justify-content:space-between;padding:20px 20px 14px;
-  background:linear-gradient(120deg,var(--orange),var(--orange-2));color:#fff;flex-shrink:0}
-.explore-drawer-title{font-family:var(--font-display);font-weight:800;font-size:1.15rem}
-.explore-close{background:rgba(255,255,255,.22);border:none;color:#fff;width:32px;height:32px;border-radius:50%;
-  font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.explore-tabs{display:flex;flex-wrap:wrap;gap:6px;padding:14px 16px;border-bottom:1px solid var(--line);flex-shrink:0}
-.explore-tabbtn{border:none;background:var(--sun-soft);color:var(--cocoa);font-weight:800;font-size:.78rem;
-  padding:8px 12px;border-radius:999px;cursor:pointer;font-family:inherit}
-.explore-tabbtn.active{background:var(--orange);color:#fff}
-.explore-panels{flex:1;overflow-y:auto;padding:18px 20px 8px}
-.explore-panel{display:none}
-.explore-panel.active{display:block;animation:explFade .25s ease}
-@keyframes explFade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-.explore-level-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:.86rem;color:var(--cocoa)}
-.explore-level-row b{font-family:var(--font-display)}
-.explore-level-badge{flex-shrink:0;font-family:var(--font-display);font-weight:800;font-size:.76rem;
-  padding:5px 10px;border-radius:999px}
-.explore-step{padding:10px 0;border-bottom:1px solid var(--line);font-size:.86rem;color:var(--cocoa);line-height:1.55}
-.explore-step b{font-family:var(--font-display)}
-.explore-jump{display:inline-block;margin-top:14px;font-weight:800;font-size:.85rem;color:var(--orange);text-decoration:none}
-.explore-cefr{display:inline-block;background:var(--sun-soft);color:#7B3F1B;font-size:.65rem;font-weight:800;
-  padding:2px 8px;border-radius:999px;vertical-align:middle;margin-left:4px}
-.explore-microcopy{color:var(--muted);font-weight:700;font-size:.82rem;line-height:1.5;margin-top:10px}
-.explore-substep{display:inline-block;margin-top:2px;color:var(--muted);font-weight:600;font-size:.78rem;line-height:1.4}
-.explore-hub-table{width:100%;border-collapse:collapse;font-size:.82rem;margin:14px 0 4px}
-.explore-hub-table th{text-align:left;background:var(--sun-soft);color:var(--cocoa);padding:7px 10px;font-family:var(--font-display);font-size:.7rem}
-.explore-hub-table td{padding:7px 10px;border-bottom:1px solid var(--line);color:var(--cocoa)}
-.explore-hub-all{color:var(--teal);font-weight:800;font-size:.72rem}
-.explore-cta{flex-shrink:0;margin:14px 20px 20px;text-align:center;padding:13px;border-radius:999px;
-  background:var(--cocoa);color:#fff;font-weight:800;text-decoration:none;font-family:var(--font-display)}
-@media (max-width:640px){.explore-tab{padding:12px 8px}.explore-tab-label{font-size:.74rem}}
-
-/* ===== Sticky in-page sub-nav ===== */
-html{scroll-behavior:smooth}
-.lp-subnav{position:sticky;top:79px;z-index:49;display:flex;justify-content:center;gap:6px;
-  padding:9px 16px;background:rgba(255,251,245,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-  border-bottom:1px solid var(--line);flex-wrap:wrap}
-.lp-subnav a{font-family:var(--font-display);font-weight:800;font-size:.82rem;color:var(--muted);
-  text-decoration:none;padding:6px 14px;border-radius:999px;transition:background .15s ease,color .15s ease}
-.lp-subnav a:hover{background:var(--sun-soft);color:var(--cocoa)}
-.lp-subnav a.active{background:var(--orange);color:#fff}
-.lp-subnav-cta{background:var(--orange) !important;color:#fff !important;margin-left:4px}
-.lp-subnav-cta:hover{background:var(--orange-2) !important;color:#fff !important}
-@media (max-width:640px){.lp-subnav{gap:4px;padding:8px 10px}.lp-subnav a{padding:5px 10px;font-size:.76rem}}
-
-/* ===== Bilingual (Arabic-first) support ===== */
-html[dir="rtl"] {
-  --font-display: 'El Messiri', 'Cairo', sans-serif;
-  --font-body: 'Cairo', 'Segoe UI', sans-serif;
-}
-html[dir="rtl"] body { font-family: var(--font-body); }
-html[dir="rtl"] .lp-subnav, html[dir="rtl"] .explore-tabbtn, html[dir="rtl"] .lp-cur-btn { font-family: var(--font-display); }
-
-/* Elements whose meaning depends on physical left/right (icons, arrows,
-   floating buttons, RTL-mirrored layouts) get explicit flips rather than
-   relying on logical properties everywhere, since this page predates dir
-   support and uses physical left/right throughout. */
-html[dir="rtl"] .explore-tab { right: auto; left: 0; border-radius: 0 16px 16px 0; box-shadow: 4px 6px 18px rgba(67,48,31,.25) }
-html[dir="rtl"] .explore-drawer { right: auto; left: 0; box-shadow: 12px 0 36px rgba(67,48,31,.28); transform: translateX(-100%); }
-html[dir="rtl"] .explore-drawer.open { transform: translateX(0); }
-html[dir="rtl"] .whatsapp-fab { right: auto; left: 20px; }
-html[dir="rtl"] .trial-popup-close, html[dir="rtl"] .explore-close { right: auto; left: 16px; }
-html[dir="rtl"] .lp-announce-close { right: auto; left: 14px; }
-html[dir="rtl"] .btn-contact-top { margin-right: 0; margin-left: 10px; }
-html[dir="rtl"] .pt-opt { text-align: right; }
-html[dir="rtl"] .lp-price-list li, html[dir="rtl"] .qc-tips li, html[dir="rtl"] .explore-level-row,
-html[dir="rtl"] .lp-community-list li { text-align: right; }
-html[dir="rtl"] .lp-price-list li::before, html[dir="rtl"] .qc-tips li::before { left: auto; right: 0; }
-html[dir="rtl"] .lp-hub-table th, html[dir="rtl"] .lp-hub-table td,
-html[dir="rtl"] .explore-hub-table th, html[dir="rtl"] .explore-hub-table td { text-align: right; }
-html[dir="rtl"] .lp-price-symbol { margin-right: 0; margin-left: 4px; }
-
-/* ===== Language toggle tab (fixed top margin) ===== */
-.lang-toggle{position:fixed;top:14px;right:14px;z-index:260;display:flex;background:#fff;border-radius:999px;
-  padding:3px;box-shadow:0 6px 18px rgba(67,48,31,.22);border:1px solid var(--line)}
-html[dir="rtl"] .lang-toggle{right:auto;left:14px}
-.lang-toggle button{border:none;background:transparent;font-family:'Cairo','Baloo 2',sans-serif;font-weight:800;
-  font-size:.8rem;padding:7px 16px;border-radius:999px;cursor:pointer;color:var(--muted);transition:all .15s ease}
-.lang-toggle button.active{background:var(--orange);color:#fff}
-@media (max-width:480px){.lang-toggle{top:10px}.lang-toggle button{padding:6px 12px;font-size:.75rem}}
-</style>
 <script>if("serviceWorker"in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script>
 </head>
 <body>
+<a class="skip" href="#main" data-i18n="skip">Skip to content</a>
 
-<div class="lang-toggle" role="tablist" aria-label="Language">
-  <button id="langArBtn" class="active" data-lang="ar">العربية</button>
-  <button id="langEnBtn" data-lang="en">English</button>
-</div>
-
-<div class="lp-announce" id="lpAnnounce">
-  <span data-i18n-html="announce">🎉 New here? <a href="#startfree">Free placement test</a> and a <a href="#startfree">free trial class</a> — no card, no commitment.</span>
-  <button class="lp-announce-close" id="lpAnnounceClose" aria-label="Dismiss">✕</button>
-</div>
-
-<header class="topbar">
-  <img class="logo-mini" src="assets/logo/lumio-logo.png" alt="Lumio English logo">
-  <div class="brand" data-i18n-html="brand">Lumio <span>English</span></div>
-  <div class="spacer"></div>
-  <a class="btn-contact-top" href="https://wa.me/201124882493" target="_blank" rel="noopener" aria-label="Contact us on WhatsApp">
-    <svg viewBox="0 0 32 32" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M16.004 3C9.383 3 4 8.373 4 14.99c0 2.2.6 4.28 1.65 6.06L4 29l8.15-1.6a12.9 12.9 0 0 0 3.85.6h.004C22.62 28 28 22.63 28 16.01 28 9.39 22.62 3 16.004 3zm0 23.16c-1.28 0-2.53-.24-3.7-.72l-.27-.11-4.84.95.95-4.72-.13-.29a10.06 10.06 0 0 1-1.55-5.31c0-5.58 4.55-10.12 10.15-10.12 5.6 0 10.15 4.54 10.15 10.12 0 5.58-4.55 10.1-10.16 10.1zm5.56-7.56c-.3-.15-1.78-.88-2.06-.98-.28-.1-.48-.15-.68.15-.2.3-.78.98-.96 1.18-.18.2-.35.22-.65.07-.3-.15-1.28-.47-2.44-1.5-.9-.8-1.51-1.79-1.69-2.09-.18-.3-.02-.46.13-.61.14-.14.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.68-1.64-.93-2.24-.24-.58-.49-.5-.68-.51h-.58c-.2 0-.53.08-.8.38-.28.3-1.05 1.03-1.05 2.5s1.08 2.9 1.23 3.1c.15.2 2.12 3.23 5.13 4.53.72.31 1.28.5 1.72.64.72.23 1.38.2 1.9.12.58-.09 1.78-.73 2.03-1.43.25-.7.25-1.3.18-1.43-.07-.13-.27-.2-.57-.35z"/></svg>
-    <span data-i18n="contact_us">Contact Us</span>
-  </a>
-  <a class="btn btn-sun" href="login.html" data-i18n="start_learning">Start learning</a>
+<header class="nav" id="nav">
+  <div class="wrap navin">
+    <a class="brand" href="#top"><img src="assets/site/lumi-mark.png" alt="" width="36" height="36"><b data-i18n-html="brand">Lumio <i>English</i></b></a>
+    <nav class="links" aria-label="Sections">
+      <a href="#story" data-i18n="nav.how">How it works</a><a href="#levels" data-i18n="nav.levels">Levels</a><a href="#hub" data-i18n="nav.hub">English Hub</a><a href="#games" data-i18n="nav.games">Games</a><a href="#stories" data-i18n="nav.stories">Stories</a><a href="#pricing" data-i18n="nav.pricing">Pricing</a><a href="#faq" data-i18n="nav.faq">FAQ</a>
+    </nav>
+    <div class="navr"><button type="button" class="lang" id="langBtn" data-i18n="nav.lang" data-i18n-label="nav.langLabel">العربية</button><a class="btn btn-p" href="login.html" data-i18n="nav.login">Log in</a></div>
+  </div>
 </header>
 
-<nav class="lp-subnav" aria-label="Page sections">
-  <a href="#curriculum" data-i18n="nav.levels">Levels</a>
-  <a href="#howworks" data-i18n="nav.how">How it works</a>
-  <a href="#friendsSection" data-i18n="nav.friends">Friends</a>
-  <a href="#pricing" data-i18n="nav.pricing">Pricing</a>
-  <a href="#demo" data-i18n="nav.demo">See it in action</a>
-  <a href="#parentbook" data-i18n="nav.handbook">Parent Handbook</a>
-  <a href="#faq" data-i18n="nav.faq">FAQ</a>
-  <a href="#startfree" class="lp-subnav-cta" data-i18n="nav.startfree">Start Free</a>
-</nav>
-
-<!-- ============ Explore side tab + drawer ============ -->
-<button id="exploreTab" class="explore-tab" aria-label="Explore Lumio English" aria-expanded="false">
-  <span class="explore-tab-icon">🧭</span>
-  <span class="explore-tab-label" data-i18n="explore_label">Explore</span>
-</button>
-<div id="exploreOverlay" class="explore-overlay" hidden></div>
-<aside id="exploreDrawer" class="explore-drawer" aria-hidden="true">
-  <div class="explore-drawer-head">
-    <div class="explore-drawer-title" data-i18n="ed.title">Explore Lumio English</div>
-    <button id="exploreClose" class="explore-close" aria-label="Close">✕</button>
-  </div>
-  <div class="explore-tabs" role="tablist">
-    <button class="explore-tabbtn active" data-panel="levels" role="tab" aria-selected="true" data-i18n="ed.tab_levels">📚 Levels</button>
-    <button class="explore-tabbtn" data-panel="how" role="tab" aria-selected="false" data-i18n="ed.tab_how">🧩 How it works</button>
-    <button class="explore-tabbtn" data-panel="why" role="tab" aria-selected="false" data-i18n="ed.tab_why">⭐ Why Lumio</button>
-    <button class="explore-tabbtn" data-panel="hub" role="tab" aria-selected="false" data-i18n="ed.tab_hub">📖 The Hub</button>
-    <button class="explore-tabbtn" data-panel="games" role="tab" aria-selected="false" data-i18n="ed.tab_games">🎮 Bonus games</button>
-    <button class="explore-tabbtn" data-panel="pricing" role="tab" aria-selected="false" data-i18n="ed.tab_pricing">💳 Pricing</button>
-    <button class="explore-tabbtn" data-panel="faq" role="tab" aria-selected="false" data-i18n="ed.tab_faq">❓ FAQ</button>
-  </div>
-  <div class="explore-panels">
-    <div class="explore-panel active" data-panel="levels">
-      <div class="explore-level-row"><span class="explore-level-badge" style="background:#FFE8D1;color:#C2410C">Pre-A</span><div data-i18n-html="ed.lvl0"><b>First Words</b> <span class="explore-cefr">CEFR Pre-A1</span><br>Ages 4–6 · 20 lessons · Hello, colors, family, animals</div></div>
-      <div class="explore-level-row"><span class="explore-level-badge" style="background:#DBEAFE;color:#1D4ED8">L1</span><div data-i18n-html="ed.lvl1"><b>About Me</b> <span class="explore-cefr">CEFR Pre-A1</span><br>Ages 6–8 · 20 lessons · My house, my things, likes &amp; dislikes</div></div>
-      <div class="explore-level-row"><span class="explore-level-badge" style="background:#F0FDFA;color:#0F766E">L2</span><div data-i18n-html="ed.lvl2"><b>My World</b> <span class="explore-cefr">CEFR Pre-A1</span><br>Ages 8–10 · 20 lessons · Family, classroom, daily routines</div></div>
-      <div class="explore-level-row"><span class="explore-level-badge" style="background:#F5F3FF;color:#6D28D9">L3</span><div data-i18n-html="ed.lvl3"><b>Everyday Life</b> <span class="explore-cefr">CEFR A1</span><br>Ages 10–12 · 20 lessons · Friends, school, real conversations, real grammar begins</div></div>
-      <div class="explore-level-row"><span class="explore-level-badge" style="background:#EEF2FF;color:#4338CA">L4</span><div data-i18n-html="ed.lvl4"><b>Smart Choices</b> <span class="explore-cefr">CEFR A1</span><br>Ages 11–13 · 20 lessons · Routines, money, advice, decisions</div></div>
-      <div class="explore-level-row"><span class="explore-level-badge" style="background:#FDF2F8;color:#BE185D">L5</span><div data-i18n-html="ed.lvl5"><b>Telling My Story</b> <span class="explore-cefr">CEFR A2</span><br>Ages 12–14 · 20 lessons · Past tense, storytelling, trips</div></div>
-      <div class="explore-level-row"><span class="explore-level-badge" style="background:#F5F3FF;color:#6D28D9">L6</span><div data-i18n-html="ed.lvl6"><b>Looking Ahead</b> <span class="explore-cefr">CEFR A2</span><br>Ages 13–15 · 20 lessons · Future plans, debates, culture</div></div>
-      <p class="explore-microcopy" data-i18n="ed.lvl_note">140 lessons total, one continuous path — every level builds on real, internationally-recognized CEFR standards, not an in-house scale.</p>
-      <a class="explore-jump" href="#curriculum" data-i18n="ed.jump_curriculum">See the full curriculum ↓</a>
-    </div>
-    <div class="explore-panel" data-panel="how">
-      <div class="explore-step" data-i18n-html="ed.how1"><b>1. New Words</b> — every word shown with a picture, Arabic translation, and real audio.</div>
-      <div class="explore-step" data-i18n-html="ed.how2"><b>2. Listen &amp; Practice</b> — matching and listening games for every word.</div>
-      <div class="explore-step" data-i18n-html="ed.how3"><b>3. Grammar Focus</b> — one clear grammar point per lesson, from Level 3 onward.</div>
-      <div class="explore-step" data-i18n-html="ed.how4"><b>4. Quiz &amp; Spelling</b> — a short quiz confirms it stuck, with instant feedback.</div>
-      <div class="explore-step" data-i18n-html="ed.how5"><b>5. Homework</b> — a printable worksheet, flashcards and writing practice for every lesson.</div>
-      <a class="explore-jump" href="#howworks" data-i18n="ed.jump_how">See it in action ↓</a>
-    </div>
-
-    <div class="explore-panel" data-panel="why">
-      <div class="explore-step" data-i18n-html="ed.why1"><b>🕌 Arabic-first, not translated in</b><br>Every word, every instruction, every rule — built bilingual from day one, not bolted on afterward.</div>
-      <div class="explore-step" data-i18n-html="ed.why2"><b>🔡 Spelling has real rules</b><br>Not just memorizing letters — the actual rules behind how English words are built, taught step by step.</div>
-      <div class="explore-step" data-i18n-html="ed.why3"><b>🗣️ Homework uses real sentences</b><br>Every practice sentence is grounded in what a word actually means — not a random word list to memorize.</div>
-      <div class="explore-step" data-i18n-html="ed.why4"><b>📄 Real worksheets and flashcards</b><br>A printable homework page and flashcard set for every single lesson, for the moments a screen isn't the right tool.</div>
-      <div class="explore-step" data-i18n-html="ed.why5"><b>👥 A real, live-taught community</b><br>Grouped with peers at the same level, guided by a dedicated teacher, with a supervisor on hand for anything else — never a solo app.</div>
-      <a class="explore-jump" href="#pricing" data-i18n="ed.jump_pricing_included">See what's included in every plan ↓</a>
-    </div>
-
-    <div class="explore-panel" data-panel="hub">
-      <p class="explore-microcopy" style="margin-top:0" data-i18n="ed.hub_intro">Beyond the 20 structured lessons, every level unlocks its own free-browsing Hub — searchable, and open anytime, not just during lesson time.</p>
-      <table class="explore-hub-table">
-        <tr><th data-i18n="pr.hub_col1">Hub section</th><th data-i18n="pr.hub_col2">Available at</th></tr>
-        <tr><td data-i18n="ed.hub_vocab">📔 Vocabulary</td><td>Pre-A → L6 <span class="explore-hub-all" data-i18n="ed.hub_all">all levels</span></td></tr>
-        <tr><td data-i18n="ed.hub_idioms">💡 Idioms</td><td>Pre-A → L6 <span class="explore-hub-all" data-i18n="ed.hub_all">all levels</span></td></tr>
-        <tr><td data-i18n-html="ed.hub_writing">✍️ Writing &amp; Speaking</td><td>Pre-A → L6 <span class="explore-hub-all" data-i18n="ed.hub_all">all levels</span></td></tr>
-        <tr><td data-i18n="ed.hub_spelling">🔡 Spelling</td><td>Pre-A</td></tr>
-        <tr><td data-i18n="ed.hub_phonics">🔤 Phonics</td><td data-i18n="pr.hub_levels12">Levels 1–2</td></tr>
-        <tr><td data-i18n="ed.hub_grammar">📐 Grammar</td><td data-i18n="pr.hub_levels36">Levels 3–6</td></tr>
-      </table>
-      <a class="explore-jump" href="#demo" data-i18n="ed.jump_hub_demo">Watch the Hub in action ↓</a>
-    </div>
-
-    <div class="explore-panel" data-panel="games">
-      <div class="explore-step" data-i18n-html="ed.game0"><b>Pre-A</b> — Lumi's Pocket <br><span class="explore-substep">A gentle picture-and-sound matching game — no reading required yet.</span></div>
-      <div class="explore-step" data-i18n-html="ed.game1"><b>Level 1</b> — Treehouse Builder <br><span class="explore-substep">Answer correctly to build up a treehouse, piece by piece.</span></div>
-      <div class="explore-step" data-i18n-html="ed.game2"><b>Level 2</b> — Twelve Months Calendar <br><span class="explore-substep">A full-year picture calendar that fills in as vocabulary grows.</span></div>
-      <div class="explore-step" data-i18n-html="ed.game3"><b>Level 3</b> — Crew Chat <br><span class="explore-substep">A group-chat-style game — reply to friends and type words letter by letter.</span></div>
-      <div class="explore-step" data-i18n-html="ed.game4"><b>Level 4</b> — Squad Budget <br><span class="explore-substep">Make spending decisions in English as a team.</span></div>
-      <div class="explore-step" data-i18n-html="ed.game5"><b>Level 5</b> — Story Detective <br><span class="explore-substep">Piece together what happened, using real past-tense clues.</span></div>
-      <div class="explore-step" data-i18n-html="ed.game6"><b>Level 6</b> — Crystal Ball <br><span class="explore-substep">Make predictions and read your own English "fortune."</span></div>
-      <p class="explore-microcopy" data-i18n="ed.games_note">A new bonus game unlocks after every lesson your child finishes — see one played for real in "See it in action."</p>
-    </div>
-    <div class="explore-panel" data-panel="pricing">
-      <div class="explore-step" data-i18n-html="ed.price1"><b>Single level</b> — 730 SAR (~$195) &middot; 2 months &middot; 20 sessions</div>
-      <div class="explore-step" data-i18n-html="ed.price2"><b>3-level bundle</b> — 1,949.99 SAR (~$520) &middot; 6 months &middot; save 11%</div>
-      <div class="explore-step" data-i18n-html="ed.price3"><b>6-level bundle</b> — 3,499.99 SAR (~$933) &middot; full year &middot; save 20%</div>
-      <p class="explore-microcopy" data-i18n="ed.price_note">Every plan includes full English Hub access, peer grouping by level, a teacher, and a supervisor. Prices also shown in USD, AED, KWD, OMR and QAR.</p>
-      <a class="explore-jump" href="#pricing" data-i18n-html="ed.jump_pricing">See full pricing &amp; currencies ↓</a>
-    </div>
-    <div class="explore-panel" data-panel="faq">
-      <div class="explore-step" data-i18n-html="ed.faq1"><b>Is it really in Arabic and English?</b><br>Yes — every word and every instruction has Arabic support.</div>
-      <div class="explore-step" data-i18n-html="ed.faq2"><b>Does my child need a teacher?</b><br>Every lesson pairs self-study with a real live class, plus a supervisor for anything else.</div>
-      <div class="explore-step" data-i18n-html="ed.faq3"><b>Can we learn offline too?</b><br>Yes — every lesson has printable worksheets and flashcards.</div>
-      <div class="explore-step" data-i18n-html="ed.faq4"><b>Can we try before paying anything?</b><br>Yes — a free placement test and a free trial class, both with zero commitment.</div>
-      <a class="explore-jump" href="#faq" data-i18n="ed.jump_faq">See all questions ↓</a>
-    </div>
-  </div>
-  <a class="explore-cta" href="login.html" data-i18n="ed.start_now">Start learning now →</a>
-</aside>
-
-<!-- ============ Floating WhatsApp button (bottom) ============ -->
-<!-- ============ Trial-class interest popup ============ -->
-<div id="trialOverlay" class="explore-overlay" hidden></div>
-<div id="trialPopup" class="trial-popup" role="dialog" aria-modal="true" aria-hidden="true">
-  <button id="trialPopupClose" class="explore-close trial-popup-close" aria-label="Close">✕</button>
-  <div class="trial-popup-icon">🎓</div>
-  <div class="trial-popup-ages" id="tpAges"></div>
-  <h3 id="tpName"></h3>
-  <p class="trial-popup-blurb" id="tpBlurb"></p>
-  <div class="trial-popup-highlights">
-    <div data-i18n-html="tp.not_alone"><b>👥 Not alone</b> &mdash; your child joins other students already at this same level.</div>
-    <div data-i18n-html="tp.real_fun"><b>🎮 Real fun</b> &mdash; the trial includes games, challenges, and little gifts from the teachers.</div>
-  </div>
-  <p class="trial-popup-cta-text" data-i18n="tp.cta_text">Message us on WhatsApp and we'll book your free trial class at this level.</p>
-  <a id="tpWhatsapp" class="btn btn-primary btn-big trial-popup-cta" href="#" target="_blank" rel="noopener">
-    <svg viewBox="0 0 32 32" width="18" height="18" fill="currentColor" aria-hidden="true" style="margin-right:8px;vertical-align:-3px"><path d="M16.004 3C9.383 3 4 8.373 4 14.99c0 2.2.6 4.28 1.65 6.06L4 29l8.15-1.6a12.9 12.9 0 0 0 3.85.6h.004C22.62 28 28 22.63 28 16.01 28 9.39 22.62 3 16.004 3zm0 23.16c-1.28 0-2.53-.24-3.7-.72l-.27-.11-4.84.95.95-4.72-.13-.29a10.06 10.06 0 0 1-1.55-5.31c0-5.58 4.55-10.12 10.15-10.12 5.6 0 10.15 4.54 10.15 10.12 0 5.58-4.55 10.1-10.16 10.1zm5.56-7.56c-.3-.15-1.78-.88-2.06-.98-.28-.1-.48-.15-.68.15-.2.3-.78.98-.96 1.18-.18.2-.35.22-.65.07-.3-.15-1.28-.47-2.44-1.5-.9-.8-1.51-1.79-1.69-2.09-.18-.3-.02-.46.13-.61.14-.14.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.68-1.64-.93-2.24-.24-.58-.49-.5-.68-.51h-.58c-.2 0-.53.08-.8.38-.28.3-1.05 1.03-1.05 2.5s1.08 2.9 1.23 3.1c.15.2 2.12 3.23 5.13 4.53.72.31 1.28.5 1.72.64.72.23 1.38.2 1.9.12.58-.09 1.78-.73 2.03-1.43.25-.7.25-1.3.18-1.43-.07-.13-.27-.2-.57-.35z"/></svg>
-    <span data-i18n="tp.book_btn">Book my free trial on WhatsApp</span>
-  </a>
-</div>
-
-<!-- ============ Character bio popup ============ -->
-<div id="charOverlay" class="explore-overlay" hidden></div>
-<div id="charPopup" class="char-popup" role="dialog" aria-modal="true" aria-hidden="true">
-  <button id="charPopupClose" class="explore-close char-popup-close" aria-label="Close">✕</button>
-  <div class="char-popup-imgwrap"><img id="cpImg" src="" alt=""></div>
-  <h3 id="cpName"></h3>
-  <p class="char-popup-bio" id="cpBio"></p>
-</div>
-
-<a class="whatsapp-fab" href="https://wa.me/201124882493" target="_blank" rel="noopener" aria-label="Contact us on WhatsApp">
-  <svg viewBox="0 0 32 32" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M16.004 3C9.383 3 4 8.373 4 14.99c0 2.2.6 4.28 1.65 6.06L4 29l8.15-1.6a12.9 12.9 0 0 0 3.85.6h.004C22.62 28 28 22.63 28 16.01 28 9.39 22.62 3 16.004 3zm0 23.16c-1.28 0-2.53-.24-3.7-.72l-.27-.11-4.84.95.95-4.72-.13-.29a10.06 10.06 0 0 1-1.55-5.31c0-5.58 4.55-10.12 10.15-10.12 5.6 0 10.15 4.54 10.15 10.12 0 5.58-4.55 10.1-10.16 10.1zm5.56-7.56c-.3-.15-1.78-.88-2.06-.98-.28-.1-.48-.15-.68.15-.2.3-.78.98-.96 1.18-.18.2-.35.22-.65.07-.3-.15-1.28-.47-2.44-1.5-.9-.8-1.51-1.79-1.69-2.09-.18-.3-.02-.46.13-.61.14-.14.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.68-1.64-.93-2.24-.24-.58-.49-.5-.68-.51h-.58c-.2 0-.53.08-.8.38-.28.3-1.05 1.03-1.05 2.5s1.08 2.9 1.23 3.1c.15.2 2.12 3.23 5.13 4.53.72.31 1.28.5 1.72.64.72.23 1.38.2 1.9.12.58-.09 1.78-.73 2.03-1.43.25-.7.25-1.3.18-1.43-.07-.13-.27-.2-.57-.35z"/></svg>
-  <span class="whatsapp-fab-label" data-i18n="wa_chat">Chat with us</span>
-</a>
-
-<main class="wrap">
-
-  <section class="hero">
-    <div>
-      <h1 class="lp-reveal" style="animation-delay:.05s" data-i18n-html="hero.h1">Let's learn English <span class="hl">the fun way!</span></h1>
-      <p class="lead lp-reveal" style="animation-delay:.18s" data-i18n="hero.lead">Join Lumi on a journey of games, songs and stories — made for young learners, with Arabic support every step of the way.</p>
-      <div class="row lp-reveal" style="animation-delay:.3s">
-        <a class="btn btn-primary btn-big" href="login.html" data-i18n="hero.cta">I'm a student</a>
-      </div>
-      <a class="lp-hero-free-link lp-reveal" style="animation-delay:.36s" href="#startfree" data-i18n="hero.free_link">New here? Take the free placement test or trial class →</a>
-      <div class="lp-hear-demo lp-reveal" style="animation-delay:.42s">
-        <p class="lp-hear-label" data-i18n="hero.hear_label">👆 Tap a word — hear it for yourself</p>
-        <div class="lp-hear-cards">
-          <button class="lp-hear-card" data-word="hello" data-ar="مرحبا">
-            <span class="lp-hear-emoji">👋</span><span>hello</span><span class="lp-hear-ar">مرحبا</span>
-          </button>
-          <button class="lp-hear-card" data-word="apple" data-ar="تفاحة">
-            <span class="lp-hear-emoji">🍎</span><span>apple</span><span class="lp-hear-ar">تفاحة</span>
-          </button>
-          <button class="lp-hear-card" data-word="star" data-ar="نجمة">
-            <span class="lp-hear-emoji">⭐</span><span>star</span><span class="lp-hear-ar">نجمة</span>
-          </button>
-          <button class="lp-hear-card" data-word="book" data-ar="كتاب">
-            <span class="lp-hear-emoji">📖</span><span>book</span><span class="lp-hear-ar">كتاب</span>
-          </button>
+<main id="main">
+  <section class="hero" id="top">
+    <canvas id="world" data-i18n-label="hero.world" aria-label="Floating English and Arabic letter tiles. Tap a tile to see its word."></canvas>
+    <div class="veil"></div>
+    <img class="lumi" id="heroLumi" src="assets/site/lumi-hero.png" alt="">
+    <div class="tiletip" id="tiletip"></div>
+    <div class="wrap">
+      <div class="copy" id="heroCopy">
+        <span class="kicker h-in" data-i18n="hero.eyebrow">English for Arabic-speaking children · ages 4–15</span>
+        <h1><span class="line"><span data-i18n="hero.h1a">Let's learn English</span></span><span class="line"><span><em data-i18n="hero.h1b">the fun way.</em></span></span></h1>
+        <p class="lead h-in" data-i18n="hero.lead">Live classes with real teachers, an app your child actually wants to open, and Arabic support in every single lesson.</p>
+        <div class="ctas h-in">
+          <a class="btn btn-p magnet" href="quick-check.html"><span data-i18n="hero.ctaTest">Free placement test</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="btn btn-g magnet" href="login.html" data-i18n="hero.ctaStudent">I'm a student</a>
         </div>
       </div>
     </div>
-    <div class="hero-visual lp-reveal" style="animation-delay:.15s">
-      <span class="float-chip a" data-i18n="hero.chip_a">★ 3-star lessons</span>
-      <span class="float-chip b" data-i18n-html="hero.chip_b">Listen &amp; speak</span>
-      <img class="hero-art" src="assets/story/characters/lumi-teen-welcome-hero.png" alt="Lumi waving with a book">
+    <div class="meta">
+      <div class="wrap">
+        <div class="hstats h-in">
+          <div><b data-count="7">7</b><span data-i18n="stat.levels">levels</span></div>
+          <div><b data-count="140">140</b><span data-i18n="stat.lessons">live lessons</span></div>
+          <div><b data-count="123">123</b><span data-i18n="stat.pages">story pages</span></div>
+          <div><b data-count="25">25</b><span data-i18n="stat.songs">original songs</span></div>
+        </div>
+        <div class="hint h-in"><i></i><span data-i18n="hero.hint">Scroll, or tap a letter tile</span></div>
+      </div>
     </div>
   </section>
 
-  <section class="feature-grid">
-    <div class="card reveal-io"><span class="emoji-badge"><img src="assets/logo/lumio-logo.png" alt="" style="height:26px;width:auto;object-fit:contain"></span><h3 data-i18n="feat1.h">Learn by playing</h3><p data-i18n="feat1.p">Matching, listening and spelling games in every lesson.</p></div>
-    <div class="card reveal-io"><span class="emoji-badge"><img src="assets/logo/lumio-logo.png" alt="" style="height:26px;width:auto;object-fit:contain"></span><h3 data-i18n-html="feat2.h">Listen &amp; speak</h3><p data-i18n="feat2.p">Every word is spoken aloud so you learn real pronunciation.</p></div>
-    <div class="card reveal-io"><span class="emoji-badge"><img src="assets/logo/lumio-logo.png" alt="" style="height:26px;width:auto;object-fit:contain"></span><h3 data-i18n="feat3.h">Earn stars</h3><p data-i18n="feat3.p">Collect 3 stars in every lesson and climb the level map.</p></div>
-    <div class="card reveal-io"><span class="emoji-badge"><img src="assets/logo/lumio-logo.png" alt="" style="height:26px;width:auto;object-fit:contain"></span><h3 data-i18n="feat4.h">Arabic + English</h3><p class="ar" data-i18n="feat4.p">كل كلمة معها الترجمة العربية لتفهم بسهولة.</p></div>
-  </section>
-
-  <div class="lp-wave-top" aria-hidden="true">
-    <svg viewBox="0 0 1200 40" preserveAspectRatio="none"><path d="M0,20 C300,45 900,-5 1200,20 L1200,40 L0,40 Z" fill="#FFF3D6"></path></svg>
-  </div>
-  <div class="lp-band">
-    <section class="lp-trust">
-      <div class="lp-trust-item reveal-io"><div class="lp-trust-num">7</div><div class="lp-trust-label" data-i18n="trust1">Levels, start to finish</div></div>
-      <div class="lp-trust-item reveal-io"><div class="lp-trust-num">140+</div><div class="lp-trust-label" data-i18n="trust2">Lessons already built</div></div>
-      <div class="lp-trust-item reveal-io"><div class="lp-trust-num">4–15</div><div class="lp-trust-label" data-i18n="trust3">Ages, one clear path</div></div>
-      <div class="lp-trust-item reveal-io"><div class="lp-trust-num">100%</div><div class="lp-trust-label" data-i18n="trust4">Arabic support, every word</div></div>
-    </section>
-
-    <section class="lp-startfree" id="startfree">
-      <div class="lp-startfree-inner">
-        <h2 class="center mb reveal-io" data-i18n="sf.h2">Start with zero risk — both are free</h2>
-        <p class="center lp-startfree-intro reveal-io" data-i18n="sf.intro">No card, no commitment. Find the right level, then see a real class, before you decide anything.</p>
-        <div class="lp-startfree-grid">
-          <div class="lp-startfree-card reveal-io">
-            <div class="lp-startfree-badge" data-i18n="sf.badge_free">100% Free</div>
-            <div class="lp-startfree-icon">🎯</div>
-            <h3 data-i18n="sf.test_h">Free Placement Test</h3>
-            <p data-i18n="sf.test_p">10 quick questions with real feedback on the spot — what your child already knows, and a couple of tips on what to practice next. No signup required to see the result.</p>
-            <a class="btn btn-primary btn-big lp-startfree-cta" href="quick-check.html" data-i18n="sf.test_cta">Take the free test →</a>
-            <div class="lp-startfree-note" data-i18n="sf.test_note">Takes about 5 minutes</div>
-          </div>
-          <div class="lp-startfree-card lp-startfree-featured reveal-io">
-            <div class="lp-startfree-badge" data-i18n="sf.badge_free">100% Free</div>
-            <div class="lp-startfree-icon">🎓</div>
-            <h3 data-i18n="sf.trial_h">Free Trial Class</h3>
-            <p data-i18n="sf.trial_p">Pick the level that fits your child's age and jump straight into a real, live-style trial class — the same format as an actual Lumio lesson.</p>
-            <div class="lp-trial-picker">
-              <button class="lp-trial-level" data-level="pre-a" data-name="Pre-A &middot; First Words" data-ages="Ages 4&ndash;6" data-blurb="Hello, colors, family, and animals &mdash; a young child's very first English words." data-name-ar="المستوى التمهيدي &middot; الكلمات الأولى" data-ages-ar="الأعمار 4-6" data-blurb-ar="التحية، الألوان، العائلة، والحيوانات &mdash; أولى كلمات طفلك باللغة الإنجليزية.">Pre-A <span>4–6</span></button>
-              <button class="lp-trial-level" data-level="level1" data-name="Level 1 &middot; About Me" data-ages="Ages 6&ndash;8" data-blurb="My house, my things, likes and dislikes &mdash; simple sentences about a child's own world." data-name-ar="المستوى الأول &middot; عني أنا" data-ages-ar="الأعمار 6-8" data-blurb-ar="منزلي، أغراضي، ما أحبه وما لا أحبه &mdash; جمل بسيطة عن عالم الطفل الخاص.">L1 <span>6–8</span></button>
-              <button class="lp-trial-level" data-level="level2" data-name="Level 2 &middot; My World" data-ages="Ages 8&ndash;10" data-blurb="Family, classroom, and daily routines &mdash; the first real conversations." data-name-ar="المستوى الثاني &middot; عالمي" data-ages-ar="الأعمار 8-10" data-blurb-ar="العائلة، الفصل الدراسي، والروتين اليومي &mdash; أولى المحادثات الحقيقية.">L2 <span>8–10</span></button>
-              <button class="lp-trial-level" data-level="level3" data-name="Level 3 &middot; Everyday Life" data-ages="Ages 10&ndash;12" data-blurb="Friends, school, and real conversations &mdash; grammar starts doing real work." data-name-ar="المستوى الثالث &middot; الحياة اليومية" data-ages-ar="الأعمار 10-12" data-blurb-ar="الأصدقاء، المدرسة، والمحادثات الحقيقية &mdash; القواعد تبدأ بالعمل بشكل حقيقي.">L3 <span>10–12</span></button>
-              <button class="lp-trial-level" data-level="level4" data-name="Level 4 &middot; Smart Choices" data-ages="Ages 11&ndash;13" data-blurb="Routines, money, advice, and decisions &mdash; longer, more confident sentences." data-name-ar="المستوى الرابع &middot; قرارات ذكية" data-ages-ar="الأعمار 11-13" data-blurb-ar="الروتين، المال، النصائح، والقرارات &mdash; جمل أطول وأكثر ثقة.">L4 <span>11–13</span></button>
-              <button class="lp-trial-level" data-level="level5" data-name="Level 5 &middot; Telling My Story" data-ages="Ages 12&ndash;14" data-blurb="Past tense and storytelling &mdash; trips, memories, and what happened." data-name-ar="المستوى الخامس &middot; أروي قصتي" data-ages-ar="الأعمار 12-14" data-blurb-ar="الماضي وسرد القصص &mdash; الرحلات، الذكريات، وما حدث.">L5 <span>12–14</span></button>
-              <button class="lp-trial-level" data-level="level6" data-name="Level 6 &middot; Looking Ahead" data-ages="Ages 13&ndash;15" data-blurb="Future plans, debates, and culture &mdash; confident, independent conversation." data-name-ar="المستوى السادس &middot; نحو المستقبل" data-ages-ar="الأعمار 13-15" data-blurb-ar="خطط المستقبل، النقاشات، والثقافة &mdash; محادثة واثقة ومستقلة.">L6 <span>13–15</span></button>
+  <section class="story" id="story">
+    <div class="wrap head">
+      <span class="kicker" data-i18n="how.kicker">How it works</span>
+      <h2 data-i18n="how.h2">One lesson, four moments.</h2>
+      <p data-i18n="how.p">Every Lumio lesson follows the same rhythm, so your child always knows what comes next.</p>
+    </div>
+    <div class="stage" id="stage">
+      <div class="progress" aria-hidden="true"><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i></div>
+      <article class="scene"><div class="wrap">
+        <div class="txt"><div class="n">01</div><h3 data-i18n="s1.h">Prepare in the app</h3><p data-i18n="s1.p"></p><div class="chips"><span data-i18n="s1.c1"></span><span data-i18n="s1.c2"></span><span data-i18n="s1.c3"></span></div></div>
+        <div class="device"><div class="bar"><i></i><i></i><i></i></div><img src="assets/site/shot-lesson.jpg" data-i18n-alt="s1.alt" alt="A Lumio lesson in the app" loading="lazy"></div>
+      </div></article>
+      <article class="scene"><div class="wrap">
+        <div class="txt"><div class="n">02</div><h3 data-i18n="s2.h">Live class on Teams</h3><p data-i18n="s2.p"></p><div class="chips"><span data-i18n="s2.c1"></span><span data-i18n="s2.c2"></span><span data-i18n="s2.c3"></span></div></div>
+        <div class="device"><div class="bar"><i></i><i></i><i></i></div><div class="zoom"><img src="assets/site/shot-lesson.jpg" data-i18n-alt="s2.alt" alt="The lesson shared on screen in a live class" loading="lazy"><div class="ppl"><div class="live"><span data-i18n="s2.teacher">Teacher</span><img src="assets/site/lumi-teach-board.png" alt="" loading="lazy"></div><div><span>Sara</span><img src="assets/site/sara-wave.png" alt="" loading="lazy"></div><div><span>Ziad</span><img src="assets/site/ziad-wave.png" alt="" loading="lazy"></div><div><span>Noor</span><img src="assets/site/noor-wave.png" alt="" loading="lazy"></div></div></div></div>
+      </div></article>
+      <article class="scene"><div class="wrap">
+        <div class="txt"><div class="n">03</div><h3 data-i18n="s3.h">Practise at home</h3><p data-i18n="s3.p"></p><div class="chips"><span data-i18n="s3.c1"></span><span data-i18n="s3.c2"></span><span data-i18n="s3.c3"></span></div></div>
+        <div class="device"><div class="bar"><i></i><i></i><i></i></div><img src="assets/site/shot-homework.jpg" data-i18n-alt="s3.alt" alt="Lumio homework" loading="lazy"></div>
+      </div></article>
+      <article class="scene"><div class="wrap">
+        <div class="txt"><div class="n">04</div><h3 data-i18n="s4.h">Grow on the map</h3><p data-i18n="s4.p"></p><div class="chips"><span data-i18n="s4.c1"></span><span data-i18n="s4.c2"></span><span data-i18n="s4.c3"></span></div></div>
+        <div class="device"><div class="bar"><i></i><i></i><i></i></div>
+          <div class="dash" id="dash" role="img" data-i18n-label="db.aria" aria-label="">
+            <div class="db-top">
+              <div class="db-av"><img src="assets/site/lumi-mark.png" alt=""></div>
+              <div class="db-hi"><b data-i18n="db.hi">Hi, Lina!</b><span data-i18n="db.level">Level 2 · The Twelve Months Club</span></div>
+              <div class="db-chips"><span class="db-chip"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c1 3.5 5 5.6 5 10.5A5 5 0 0 1 12 22a5 5 0 0 1-5-5.2c0-2.3 1.2-3.8 2.4-5 .2 1.4.9 2.4 2 2.9C11 11.3 10.6 6 12 2z"/></svg><span><span data-i18n="db.streakA"></span><span id="dbStreak">5</span><span data-i18n="db.streakB">-day streak</span></span></span><span class="db-chip"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z"/></svg><span id="dbStars">120</span></span></div>
             </div>
-            <div class="lp-startfree-note" data-i18n="sf.trial_note">Tap your child's age group to start</div>
+            <div class="db-body">
+              <div class="db-map"><div class="lbl"><span data-i18n="db.map">Adventure map</span> · <b data-i18n="db.lv">Level 2</b></div><svg id="dbMap" viewBox="0 -24 400 312" preserveAspectRatio="xMidYMid meet"></svg>
+                <div class="db-toast" id="dbToast"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/></svg></i><span data-i18n="db.toast">Story part 2 unlocked!</span></div></div>
+              <div class="db-side">
+                <div class="db-card db-ring"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="none" stroke="#FFE0C7" stroke-width="5"/><circle id="dbRing" cx="20" cy="20" r="16" fill="none" stroke="#F97316" stroke-width="5" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="55"/></svg><div><div class="pct"><span id="dbPct">45</span>%</div><span id="dbLes"></span></div></div>
+                <div class="db-card db-next"><small data-i18n="db.next">Next live class</small><b data-i18n="db.when">Tue · 5:00 PM</b><span class="join"><i></i><span data-i18n="db.join">Join class</span></span></div>
+                <div class="db-card"><small data-i18n="db.unl">Unlocked</small><div class="db-unl"><div id="dbStory"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/></svg><span data-i18n="db.story">Story 2</span></div><div class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="11" rx="5"/><path d="M7 11v3M5.5 12.5h3"/><circle cx="16" cy="11.5" r="1" fill="currentColor"/><circle cx="18" cy="13.5" r="1" fill="currentColor"/></svg><span data-i18n="db.game">Game</span></div><div class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg><span data-i18n="db.songs">Songs</span></div></div></div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
-
-    <section class="mt lp-how" id="howworks">
-      <h2 class="center mb" data-i18n="how.h2">How a Lumio lesson works</h2>
-      <p class="center cf-sub" data-i18n="how.sub">The same four steps, every single lesson.</p>
-      <div class="lp-steps">
-        <div class="lp-step reveal-io">
-          <div class="lp-step-num">1</div>
-          <h3 data-i18n="how1.h">Prepare</h3>
-          <p data-i18n="how1.p">Meet the new words and sounds in the app before class, so your child walks in ready, not cold.</p>
-        </div>
-        <div class="lp-step-connector" aria-hidden="true"></div>
-        <div class="lp-step reveal-io">
-          <div class="lp-step-num">2</div>
-          <h3 data-i18n="how2.h">Live class on Teams</h3>
-          <p data-i18n="how2.p">A real teacher, live, guiding the lesson your child already previewed.</p>
-        </div>
-        <div class="lp-step-connector" aria-hidden="true"></div>
-        <div class="lp-step reveal-io">
-          <div class="lp-step-num">3</div>
-          <h3 data-i18n="how3.h">Practice at home</h3>
-          <p data-i18n="how3.p">Homework that uses real sentences, not just word lists — spelling, speaking, and short quizzes.</p>
-        </div>
-        <div class="lp-step-connector" aria-hidden="true"></div>
-        <div class="lp-step reveal-io">
-          <div class="lp-step-num">4</div>
-          <h3 data-i18n="how4.h">Grow on the map</h3>
-          <p data-i18n="how4.p">Each finished lesson lights up the Adventure Map, unlocking games, stories, and the next step.</p>
-        </div>
-      </div>
+      </div></article>
+    </div>
   </section>
+
+  <section class="mapsec" id="levels">
+    <div class="wrap">
+      <div class="sechead c"><span class="kicker" data-i18n="lv.kicker">The path</span><h2 data-i18n="lv.h2"></h2><p data-i18n="lv.p"></p></div>
+      <div class="mapwrap" id="mapwrap"><svg class="road" id="road" aria-hidden="true"></svg><div id="nodes"></div></div>
+    </div>
+  </section>
+
+  <section class="hub" id="hub">
+    <div class="wrap">
+      <div class="sechead"><span class="kicker" data-i18n="hub.kicker">The English Hub</span><h2 data-i18n="hub.h2"></h2><p data-i18n="hub.p"></p></div>
+      <div class="hubgrid">
+        <div class="hubdev" id="hubdev"><video poster="assets/site/shot-hub.jpg" muted loop playsinline preload="none" data-i18n-label="hub.video" aria-label="A real screen recording of the English Hub"><source src="assets/marketing/demo-hub.webm" type="video/webm"><source src="assets/marketing/demo-hub.mp4" type="video/mp4"></video><div class="float"><b>7</b><span data-i18n="hub.float">Hub sections</span></div></div>
+        <div class="hublist" id="hublist"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="games" id="games">
+    <div class="wrap"><div class="sechead"><span class="kicker" data-i18n="games.kicker">Games</span><h2 data-i18n="games.h2"></h2><p data-i18n="games.p"></p></div></div>
+    <div class="gscroll" id="gscroll"><div class="gtrack" id="gtrack"></div></div>
+    <div class="wrap gmore"><span data-i18n-html="games.more1"></span><span data-i18n-html="games.more2"></span></div>
+  </section>
+
+  <section class="stories" id="stories">
+    <div class="wrap">
+      <div class="sechead"><span class="kicker" data-i18n="st.kicker">Stories</span><h2 data-i18n="st.h2"></h2><p data-i18n="st.p"></p></div>
+      <div class="sgrid">
+        <div>
+          <div class="sframe" id="sframe"><img id="sImg" src="assets/site/story-pre-a.jpg" alt="" loading="lazy"><span class="pages" id="sPages"></span><div class="cap"><small id="sLevel"></small><h3 id="sTitle"></h3></div></div>
+          <div class="parts" id="sParts"></div>
+          <div class="sfeat"><span data-i18n="st.f1"></span><span data-i18n="st.f2"></span><span data-i18n="st.f3"></span></div>
+        </div>
+        <div class="stabs" id="stabs"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="free" id="free">
+    <div class="wrap">
+      <div class="sechead"><span class="kicker" data-i18n="free.kicker">Start free</span><h2 data-i18n="free.h2"></h2></div>
+      <div class="freegrid">
+        <a class="fcard a" href="quick-check.html"><span class="tag" data-i18n="free.tag"></span><h3 data-i18n="free.test.h"></h3><p data-i18n="free.test.p"></p><span class="go"><i><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></i><span data-i18n="free.test.go"></span></span><img src="assets/site/lumi-hero.png" alt="" loading="lazy"></a>
+        <a class="fcard b" href="#trial" id="openTrial"><span class="tag" data-i18n="free.tag"></span><h3 data-i18n="free.trial.h"></h3><p data-i18n="free.trial.p"></p><span class="go"><i><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></i><span data-i18n="free.trial.go"></span></span><img src="assets/site/lumi-celebrate.png" alt="" loading="lazy"></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="crew" id="crew">
+    <div class="wrap">
+      <div class="sechead"><span class="kicker" data-i18n="crew.kicker">The Lumio crew</span><h2 data-i18n="crew.h2"></h2><p data-i18n="crew.p"></p></div>
+      <div class="spot">
+        <div class="portrait" id="portrait"><img id="pImg" src="assets/site/lumi-hero.png" alt=""><div class="say" id="pSay"></div></div>
+        <div class="bio">
+          <div class="role" id="bRole"></div>
+          <p id="bText"></p>
+          <div class="langs"><button type="button" id="bEn">English</button><button type="button" id="bAr">العربية</button></div>
+          <div class="thumbs" id="thumbs" role="tablist" data-i18n-label="crew.tabs" aria-label="Characters"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pricing" id="pricing">
+    <div class="wrap">
+      <div class="sechead c"><span class="kicker" data-i18n="pr.kicker">Pricing</span><h2 data-i18n="pr.h2"></h2><p data-i18n="pr.intro"></p></div>
+      <p class="freehint" data-i18n-html="pr.freehint"></p>
+      <div class="curs" id="curs" role="group" data-i18n-label="pr.cur" aria-label="Choose currency"></div>
+      <div class="plans" id="plans"></div>
+      <p class="prnote" data-i18n="pr.note"></p>
+    </div>
+  </section>
+
+  <section class="handbook" id="handbook">
+    <div class="wrap hbgrid">
+      <div class="hbcover"><img src="assets/marketing/parent-handbook-cover.jpg" data-i18n-alt="pb.alt" alt="The cover of the Lumio Parent Handbook" loading="lazy"><span data-i18n="pb.badge">13 pages</span></div>
+      <div>
+        <div class="sechead"><span class="kicker" data-i18n="pb.kicker"></span><h2 data-i18n="pb.h2"></h2><p data-i18n="pb.p"></p></div>
+        <ul class="hblist"><li data-i18n-html="pb.li1"></li><li data-i18n-html="pb.li2"></li><li data-i18n-html="pb.li3"></li><li data-i18n-html="pb.li4"></li><li data-i18n-html="pb.li5"></li></ul>
+        <div class="hbctas"><a class="btn btn-p" href="downloads/Lumio_Parent_Handbook_AR.pdf" download data-i18n="pb.download">Download the Handbook</a><a class="btn btn-g" id="pbWaLink" href="https://wa.me/201124882493" target="_blank" rel="noopener" data-i18n="pb.wa">Send it to me on WhatsApp</a></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="faqsec" id="faq">
+    <div class="wrap faqgrid">
+      <div class="faqside"><div class="sechead"><span class="kicker" data-i18n="faq.kicker">FAQ</span><h2 data-i18n="faq.h2"></h2><p data-i18n="faq.p"></p></div>
+        <a class="ask" href="https://wa.me/201124882493" target="_blank" rel="noopener"><img src="assets/site/hamad-wave.png" alt="" loading="lazy"><div><b data-i18n="faq.ask">Ask us on WhatsApp</b><span data-i18n="faq.askSub"></span></div></a>
+      </div>
+      <div id="faqs"></div>
+    </div>
+  </section>
+
+  <section class="final">
+    <canvas id="finalFx" aria-hidden="true"></canvas>
+    <div class="wrap">
+      <span class="kicker" data-i18n="final.kicker">Ready?</span>
+      <h2 id="finalH" data-i18n-html="final.h2">Start your child's <em>adventure</em> today.</h2>
+      <div class="row"><a class="btn btn-p magnet" href="quick-check.html" data-i18n="final.test">Free placement test</a><a class="btn btn-g magnet" href="#trial" data-trial data-i18n="final.trial">Book a free trial class</a></div>
+      <footer><span data-i18n="foot.copy">© 2026 Lumio English · Small steps, big futures</span><span style="display:flex;gap:22px;flex-wrap:wrap"><a href="#handbook" data-i18n="foot.hb">Parent Handbook</a><a href="guides.html" data-i18n="foot.guides">Guides</a><a href="https://wa.me/201124882493" target="_blank" rel="noopener" data-i18n="foot.wa">WhatsApp</a></span></footer>
+    </div>
+  </section>
+</main>
+
+<div class="tdlg" id="trial" role="dialog" aria-modal="true" aria-labelledby="trialH">
+  <div class="tbox">
+    <button type="button" class="tclose" id="trialClose" data-i18n-label="trial.close" aria-label="Close">×</button>
+    <h3 id="trialH" data-i18n="trial.h">Book a free trial class</h3>
+    <p data-i18n="trial.p"></p>
+    <div class="tlevels" id="tlevels"></div>
+    <div class="tpick" id="tpick">
+      <div class="pts"><span data-i18n-html="trial.p1"></span><span data-i18n-html="trial.p2"></span></div>
+      <a class="btn btn-p" id="trialBook" href="https://wa.me/201124882493" target="_blank" rel="noopener" data-i18n="trial.book">Book my free trial on WhatsApp</a>
+    </div>
   </div>
-  <div class="lp-wave-bottom" aria-hidden="true">
-    <svg viewBox="0 0 1200 40" preserveAspectRatio="none"><path d="M0,20 C300,-5 900,45 1200,20 L1200,0 L0,0 Z" fill="#FFF3D6"></path></svg>
-  </div>
+</div>
 
-  <section class="mt cf-section" id="friendsSection">
-    <h2 class="center mb" data-i18n="friends.h2">Meet your learning friends</h2>
-    <p class="center cf-sub" data-i18n="friends.sub">Tap a friend to say hi! 👋</p>
-    <div class="char-strip cf-strip">
-      <figure class="cf-card" data-en="Yay! Let's learn together!" data-ar="هيا نتعلم معًا!" data-bio="lumi">
-        <div class="cf-bubble" aria-hidden="true"></div>
-        <div class="cf-imgwrap">
-          <img src="assets/story/characters/lumi-welcome-hero.png" alt="Lumi waving hello">
-          <span class="cf-sparkle a">✨</span><span class="cf-sparkle b">⭐</span><span class="cf-sparkle c">✨</span>
-        </div>
-        <figcaption data-i18n="name.lumi">Lumi</figcaption>
-      </figure>
-      <figure class="cf-card" data-en="Ready for today's lesson?" data-ar="هل أنت مستعد لدرس اليوم؟" data-bio="sara">
-        <div class="cf-bubble" aria-hidden="true"></div>
-        <div class="cf-imgwrap">
-          <img src="assets/story/characters/sara-welcome-hero.png" alt="Sara waving hello">
-          <span class="cf-sparkle a">✨</span><span class="cf-sparkle b">⭐</span><span class="cf-sparkle c">✨</span>
-        </div>
-        <figcaption data-i18n="name.sara">Sara</figcaption>
-      </figure>
-      <figure class="cf-card" data-en="I love learning new words!" data-ar="أحب تعلم كلمات جديدة!" data-bio="noor">
-        <div class="cf-bubble" aria-hidden="true"></div>
-        <div class="cf-imgwrap">
-          <img src="assets/story/characters/noor-welcome-hero.png" alt="Noor waving hello">
-          <span class="cf-sparkle a">✨</span><span class="cf-sparkle b">⭐</span><span class="cf-sparkle c">✨</span>
-        </div>
-        <figcaption data-i18n="name.noor">Noor</figcaption>
-      </figure>
-      <figure class="cf-card" data-en="Welcome, my friend!" data-ar="أهلا وسهلا يا صديقي!" data-bio="hamad">
-        <div class="cf-bubble" aria-hidden="true"></div>
-        <div class="cf-imgwrap">
-          <img src="assets/story/characters/hamad-welcome-hero.png" alt="Hamad waving hello">
-          <span class="cf-sparkle a">✨</span><span class="cf-sparkle b">⭐</span><span class="cf-sparkle c">✨</span>
-        </div>
-        <figcaption data-i18n="name.hamad">Hamad</figcaption>
-      </figure>
-      <figure class="cf-card" data-en="Let's play a game and learn!" data-ar="هيا نلعب ونتعلم!" data-bio="ziad">
-        <div class="cf-bubble" aria-hidden="true"></div>
-        <div class="cf-imgwrap">
-          <img src="assets/story/characters/ziad-welcome-hero.png" alt="Ziad waving hello">
-          <span class="cf-sparkle a">✨</span><span class="cf-sparkle b">⭐</span><span class="cf-sparkle c">✨</span>
-        </div>
-        <figcaption data-i18n="name.ziad">Ziad</figcaption>
-      </figure>
-      <figure class="cf-card" data-en="Let's read a story together!" data-ar="هيا نقرأ قصة معًا!" data-bio="omar">
-        <div class="cf-bubble" aria-hidden="true"></div>
-        <div class="cf-imgwrap">
-          <img src="assets/story/characters/omar-welcome-hero.png" alt="Omar waving hello">
-          <span class="cf-sparkle a">✨</span><span class="cf-sparkle b">⭐</span><span class="cf-sparkle c">✨</span>
-        </div>
-        <figcaption data-i18n="name.omar">Omar</figcaption>
-      </figure>
-    </div>
-  </section>
-
-  <section class="mt lp-curriculum" id="curriculum">
-    <h2 class="center mb" data-i18n="curr.h2">The path, level by level</h2>
-    <p class="center cf-sub" data-i18n="curr.sub">Every level already has real lessons behind it — nothing here is a placeholder.</p>
-    <div class="lp-trail">
-      <div class="lp-trail-guide">
-        <img src="assets/story/characters/lumi-trail-guide.png" alt="Lumi leading the way">
-        <span class="lp-trail-guide-bubble" data-i18n="curr.guide">Follow me! 🐣</span>
-      </div>
-      <div class="lp-trail-line" aria-hidden="true"></div>
-      <div class="lp-trail-stop">
-        <div class="lp-trail-dot" style="background:#F97316">Pre-A</div>
-        <div class="lp-trail-card reveal-io">
-          <h3 data-i18n="lvl0.h">First Words</h3>
-          <p class="lp-level-meta" data-i18n="lvl0.meta">Ages 4–6 · CEFR Pre-A1</p>
-          <p data-i18n="lvl0.p">The alphabet, first sounds, and the very first spoken words — built for a child who's never studied English before.</p>
-        </div>
-      </div>
-      <div class="lp-trail-stop">
-        <div class="lp-trail-dot" style="background:#0D9488">1</div>
-        <div class="lp-trail-card reveal-io">
-          <h3 data-i18n="lvl1.h">About Me</h3>
-          <p class="lp-level-meta" data-i18n="lvl1.meta">Ages 6–8 · CEFR Pre-A1</p>
-          <p data-i18n="lvl1.p">Simple sentences about family, feelings, and daily routines — the first real conversations.</p>
-        </div>
-      </div>
-      <div class="lp-trail-stop">
-        <div class="lp-trail-dot" style="background:#DC2626">2</div>
-        <div class="lp-trail-card reveal-io">
-          <h3 data-i18n="lvl2.h">My World</h3>
-          <p class="lp-level-meta" data-i18n="lvl2.meta">Ages 8–10 · CEFR Pre-A1</p>
-          <p data-i18n="lvl2.p">School, home, and everyday objects — describing the world right around them.</p>
-        </div>
-      </div>
-      <div class="lp-trail-stop">
-        <div class="lp-trail-dot" style="background:#6D28D9">3</div>
-        <div class="lp-trail-card reveal-io">
-          <h3 data-i18n="lvl3.h">Everyday Life</h3>
-          <p class="lp-level-meta" data-i18n="lvl3.meta">Ages 10–12 · CEFR A1</p>
-          <p data-i18n="lvl3.p">Real-life situations — shopping, plans, opinions — with grammar that starts doing real work.</p>
-        </div>
-      </div>
-      <div class="lp-trail-stop">
-        <div class="lp-trail-dot" style="background:#1D4ED8">4</div>
-        <div class="lp-trail-card reveal-io">
-          <h3 data-i18n="lvl4.h">Smart Choices</h3>
-          <p class="lp-level-meta" data-i18n="lvl4.meta">Ages 11–13 · CEFR A1</p>
-          <p data-i18n="lvl4.p">Making plans, giving reasons, and talking through decisions in longer, more confident sentences.</p>
-        </div>
-      </div>
-      <div class="lp-trail-stop">
-        <div class="lp-trail-dot" style="background:#15803D">5</div>
-        <div class="lp-trail-card reveal-io">
-          <h3 data-i18n="lvl5.h">Telling My Story</h3>
-          <p class="lp-level-meta" data-i18n="lvl5.meta">Ages 12–14 · CEFR A2</p>
-          <p data-i18n="lvl5.p">Narrating experiences and opinions — the shift from answering questions to telling a story.</p>
-        </div>
-      </div>
-      <div class="lp-trail-stop">
-        <div class="lp-trail-dot" style="background:#BE185D">6</div>
-        <div class="lp-trail-card reveal-io">
-          <h3 data-i18n="lvl6.h">Looking Ahead</h3>
-          <p class="lp-level-meta" data-i18n="lvl6.meta">Ages 13–15 · CEFR A2</p>
-          <p data-i18n="lvl6.p">The final stretch — future plans, bigger ideas, and real confidence speaking English.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="mt lp-different">
-    <h2 class="center mb" data-i18n="diff.h2">What makes Lumio different</h2>
-    <div class="lp-diff-grid">
-      <div class="lp-diff-card reveal-io">
-        <h3 data-i18n="diff1.h">🕌 Arabic-first, not translated in</h3>
-        <p data-i18n="diff1.p">Every word, every instruction, every rule — built bilingual from day one, not bolted on afterward.</p>
-      </div>
-      <div class="lp-diff-card reveal-io">
-        <h3 data-i18n="diff2.h">🔡 Spelling has real rules</h3>
-        <p data-i18n="diff2.p">Not just memorizing letters — the actual rules behind how English words are built, taught step by step.</p>
-      </div>
-      <div class="lp-diff-card reveal-io">
-        <h3 data-i18n="diff3.h">🗣️ Homework uses real sentences</h3>
-        <p data-i18n="diff3.p">Every practice sentence is grounded in what a word actually means — not a random word list to memorize.</p>
-      </div>
-      <div class="lp-diff-card reveal-io">
-        <h3 data-i18n="diff4.h">📄 Worksheets and flashcards you can print</h3>
-        <p data-i18n="diff4.p">A real printable homework page and flashcard set for every lesson, for the moments a screen isn't the right tool.</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="mt lp-preview">
-    <div class="lp-preview-text reveal-io">
-      <h2 data-i18n="prev.h2">This is what a real lesson looks like</h2>
-      <p data-i18n="prev.p">Not a mockup, not a design sketch — a real screenshot from an actual Lumio lesson, exactly as a student sees it.</p>
-    </div>
-    <div class="lp-preview-frame reveal-io">
-      <div class="lp-preview-bar"><span></span><span></span><span></span></div>
-      <img src="assets/marketing/real-lesson-screenshot.png" alt="A real Lumio lesson slide, showing the word hello with its Arabic translation, audio button and letter tiles">
-    </div>
-  </section>
-
-  <section class="mt lp-demo" id="demo">
-    <h2 class="center mb reveal-io" data-i18n="demo.h2">See the Hub and bonus games in action</h2>
-    <p class="center lp-demo-intro reveal-io" data-i18n="demo.intro">Two real screen recordings, not mockups — this is exactly what your child taps, hears, and plays.</p>
-    <div class="lp-demo-grid">
-      <div class="lp-demo-card reveal-io">
-        <div class="lp-preview-frame lp-demo-frame">
-          <div class="lp-preview-bar"><span></span><span></span><span></span></div>
-          <video controls playsinline muted preload="metadata" poster="assets/marketing/demo-hub-poster.jpg">
-            <source src="assets/marketing/demo-hub.webm" type="video/webm">
-            <source src="assets/marketing/demo-hub.mp4" type="video/mp4">
-          </video>
-        </div>
-        <h3 data-i18n="demo1.h">Inside the English Hub</h3>
-        <p data-i18n="demo1.p">Browsing real vocabulary and idiom cards — pictures, audio, and Arabic side by side.</p>
-      </div>
-      <div class="lp-demo-card reveal-io">
-        <div class="lp-preview-frame lp-demo-frame">
-          <div class="lp-preview-bar"><span></span><span></span><span></span></div>
-          <video controls playsinline muted preload="metadata" poster="assets/marketing/demo-game-poster.jpg">
-            <source src="assets/marketing/demo-game.webm" type="video/webm">
-            <source src="assets/marketing/demo-game.mp4" type="video/mp4">
-          </video>
-        </div>
-        <h3 data-i18n="demo2.h">A real bonus game</h3>
-        <p data-i18n="demo2.p">Every level unlocks its own game — this is Crew Chat, Level 3's game, played round by round.</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="mt lp-offline">
-    <h2 class="center mb" data-i18n="off.h2">Real writing practice. Real flashcards. Off the screen.</h2>
-    <p class="center lp-offline-intro" data-i18n="off.intro">Every single lesson, at every level, comes with two things you can print and hold: a homework sheet and a set of flashcards. Neither is an afterthought — both are written specifically for the age and stage your child is actually at.</p>
-    <div class="lp-offline-grid">
-      <div class="lp-offline-card reveal-io">
-        <div class="lp-preview-frame lp-offline-frame">
-          <img src="assets/marketing/worksheet-sample.png" alt="A real Lumio homework sheet for Pre-A Lesson 1, with word tracing lines and a drawing box">
-        </div>
-        <h3 data-i18n="off1.h">Writing exercises</h3>
-        <p data-i18n-html="off1.p1"><b>Who they're for:</b> every level, but the task grows with your child. Pre-A and the early levels trace and copy each word by hand, building letter formation and muscle memory before reading is even required. From Level 3 onward, the task becomes writing full original sentences in that day's grammar pattern — putting the rule to use, not just recognizing it.</p>
-        <p data-i18n-html="off1.p2"><b>Why it matters:</b> screen recognition and handwriting are different skills, and only one of them is practiced by tapping an answer. A short, guided writing task each lesson builds the one that a multiple-choice quiz can't.</p>
-      </div>
-      <div class="lp-offline-card reveal-io">
-        <div class="lp-preview-frame lp-offline-frame">
-          <img src="assets/marketing/flashcard-sample.png" alt="A real Lumio flashcard sheet for Pre-A Lesson 1, with a picture and word on the front">
-        </div>
-        <h3 data-i18n="off2.h">Flashcards</h3>
-        <p data-i18n-html="off2.p1"><b>Who they're for:</b> every level, and every parent — including parents who don't speak English themselves. Each card shows the picture and English word on one side and the Arabic translation on the other, so quizzing at home never requires knowing the answer in advance.</p>
-        <p data-i18n-html="off2.p2"><b>Why it matters:</b> spaced, repeated recall away from a screen is one of the most reliable ways vocabulary actually sticks. A five-minute flip-through before bed does real work that a single lesson session can't do alone.</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="mt lp-parentbook" id="parentbook">
-    <div class="lp-parentbook-inner">
-      <div class="lp-parentbook-cover reveal-io">
-        <img src="assets/marketing/parent-handbook-cover.jpg" alt="Cover of the Lumio English Parent Handbook, in Arabic">
-      </div>
-      <div class="lp-parentbook-text reveal-io">
-        <div class="lp-parentbook-eyebrow" data-i18n-html="pb.eyebrow">Free download &middot; written fully in Arabic</div>
-        <h2 data-i18n="pb.h2">The Parent Handbook</h2>
-        <p data-i18n="pb.p">A 13-page guide written directly for you, not your child — everything you'd want to know before and after saying yes, in one place instead of scattered across a chat.</p>
-        <ul class="lp-parentbook-list">
-          <li data-i18n-html="pb.li1"><b>Chapter 1-2 &middot;</b> How the story begins, the free placement test, and the free trial class</li>
-          <li data-i18n-html="pb.li2"><b>Chapter 3 &middot;</b> The learning cycle — what a real lesson looks like, step by step</li>
-          <li data-i18n-html="pb.li3"><b>Chapter 4 &middot;</b> How to track your child's real progress, and the English Hub</li>
-          <li data-i18n-html="pb.li4"><b>Chapter 5 &middot;</b> Homework and practice — what to expect at home</li>
-          <li data-i18n-html="pb.li5"><b>Chapter 6-7 &middot;</b> The full 7-level journey, and how certificates work</li>
-        </ul>
-        <div class="lp-parentbook-ctas">
-          <a class="btn btn-primary btn-big" href="downloads/Lumio_Parent_Handbook_AR.pdf" download data-i18n="pb.download">⬇ Download the Handbook</a>
-          <a class="btn btn-outline btn-big" id="pbWaLink" href="https://wa.me/201124882493?text=Hi%21%20Could%20you%20send%20me%20the%20Parent%20Handbook%20PDF%2C%20please%3F" target="_blank" rel="noopener" data-i18n="pb.whatsapp">Send it to me on WhatsApp</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="mt lp-pricing" id="pricing">
-    <h2 class="center mb reveal-io" data-i18n="pr.h2">Simple pricing, real value</h2>
-    <p class="center lp-pricing-intro reveal-io" data-i18n-html="pr.intro">One level = 2 months &middot; 20 live sessions &middot; full access to that level's English Hub. Save more the longer you commit.</p>
-    <p class="center lp-pricing-freehint reveal-io" data-i18n-html="pr.freehint">Not sure which level fits? <a href="quick-check.html">Take the free English check</a> or <a href="#startfree">try a free trial class</a> first.</p>
-
-    <div class="lp-currency-switch reveal-io" role="tablist" aria-label="Choose currency">
-      <button class="lp-cur-btn active" data-cur="SAR">SAR</button>
-      <button class="lp-cur-btn" data-cur="USD">USD</button>
-      <button class="lp-cur-btn" data-cur="AED">AED</button>
-      <button class="lp-cur-btn" data-cur="KWD">KWD</button>
-      <button class="lp-cur-btn" data-cur="OMR">OMR</button>
-      <button class="lp-cur-btn" data-cur="QAR">QAR</button>
-    </div>
-
-    <div class="lp-pricing-grid">
-      <div class="lp-price-card reveal-io">
-        <div class="lp-price-name" data-i18n="pr.single_name">Single Level</div>
-        <div class="lp-price-sub" data-i18n-html="pr.single_sub">2 months &middot; 20 sessions</div>
-        <div class="lp-price-amount" data-sar="730.00" data-usd="194.67" data-aed="714.91" data-kwd="59.96" data-omr="74.85" data-qar="708.59">
-          <span class="lp-price-symbol">SAR</span><span class="lp-price-num">730.00</span>
-        </div>
-        <div class="lp-price-per" data-i18n="pr.per_level">per level</div>
-        <ul class="lp-price-list">
-          <li data-i18n="pr.li_single1">1 full level, start to finish</li>
-          <li data-i18n="pr.li_single2">Full English Hub access for that level</li>
-          <li data-i18n="pr.li_peers">Grouped with peers at your level</li>
-          <li data-i18n="pr.li_support">Teacher + supervisor support</li>
-        </ul>
-        <a class="btn btn-outline lp-price-cta" href="login.html" data-i18n="pr.get_started">Get started</a>
-      </div>
-
-      <div class="lp-price-card lp-price-featured reveal-io">
-        <div class="lp-price-badges">
-          <div class="lp-price-badge" data-i18n="pr.badge_popular">Most popular</div>
-          <div class="lp-price-badge lp-price-badge-alt" data-i18n="pr.badge_best">Best value</div>
-        </div>
-        <div class="lp-price-name" data-i18n="pr.b6_name">6-Level Bundle</div>
-        <div class="lp-price-sub" data-i18n-html="pr.b6_sub">Full year &middot; 120 sessions</div>
-        <div class="lp-price-amount" data-sar="3499.99" data-usd="933.33" data-aed="3427.66" data-kwd="287.47" data-omr="358.87" data-qar="3397.32">
-          <span class="lp-price-symbol">SAR</span><span class="lp-price-num">3,499.99</span>
-        </div>
-        <div class="lp-price-per" data-i18n-html="pr.b6_per">~<span class="lp-perlevel" data-sar="583.33" data-usd="155.56" data-aed="571.28" data-kwd="47.91" data-omr="59.81" data-qar="566.22"><span class="lp-price-symbol">SAR</span> <span class="lp-price-num">583.33</span></span> per level &middot; <b>save 20%</b></div>
-        <ul class="lp-price-list">
-          <li data-i18n="pr.li_b6_1">6 full levels — nearly the whole path</li>
-          <li data-i18n="pr.li_full_hub">Full English Hub access, every level included</li>
-          <li data-i18n="pr.li_peers">Grouped with peers at your level</li>
-          <li data-i18n="pr.li_support">Teacher + supervisor support</li>
-        </ul>
-        <a class="btn btn-primary lp-price-cta" href="login.html" data-i18n="pr.get_started">Get started</a>
-      </div>
-
-      <div class="lp-price-card reveal-io">
-        <div class="lp-price-name" data-i18n="pr.b3_name">3-Level Bundle</div>
-        <div class="lp-price-sub" data-i18n-html="pr.b3_sub">6 months &middot; 60 sessions</div>
-        <div class="lp-price-amount" data-sar="1949.99" data-usd="520.00" data-aed="1909.69" data-kwd="160.16" data-omr="199.94" data-qar="1892.79">
-          <span class="lp-price-symbol">SAR</span><span class="lp-price-num">1,949.99</span>
-        </div>
-        <div class="lp-price-per" data-i18n-html="pr.b3_per">~<span class="lp-perlevel" data-sar="650.00" data-usd="173.33" data-aed="636.56" data-kwd="53.39" data-omr="66.65" data-qar="630.93"><span class="lp-price-symbol">SAR</span> <span class="lp-price-num">650.00</span></span> per level &middot; <b>save 11%</b></div>
-        <ul class="lp-price-list">
-          <li data-i18n="pr.li_b3_1">3 full levels, back to back</li>
-          <li data-i18n="pr.li_full_hub">Full English Hub access, every level included</li>
-          <li data-i18n="pr.li_peers">Grouped with peers at your level</li>
-          <li data-i18n="pr.li_support">Teacher + supervisor support</li>
-        </ul>
-        <a class="btn btn-outline lp-price-cta" href="login.html" data-i18n="pr.get_started">Get started</a>
-      </div>
-    </div>
-    <p class="center lp-pricing-note reveal-io" data-i18n="pr.note">Prices shown for reference. SAR, AED, OMR and QAR are all pegged to the US dollar and stay stable; KWD is a floating rate and may shift slightly over time.</p>
-
-    <div class="lp-included reveal-io">
-      <h3 class="center" data-i18n="pr.included_h3">What's inside every plan</h3>
-
-      <div class="lp-included-grid">
-        <div class="lp-included-col">
-          <h4 data-i18n="pr.hub_h4">📚 The English Hub, by level</h4>
-          <p class="lp-included-sub" data-i18n="pr.hub_sub">Every level unlocks its own free-browsing Hub — organized, searchable, and available anytime, not just during lessons.</p>
-          <table class="lp-hub-table">
-            <tr><th data-i18n="pr.hub_col1">Hub section</th><th data-i18n="pr.hub_col2">Available at</th></tr>
-            <tr><td data-i18n="pr.hub_vocab">Vocabulary</td><td>Pre-A → Level 6 <span class="lp-hub-all" data-i18n="pr.hub_all">(every level)</span></td></tr>
-            <tr><td data-i18n="pr.hub_idioms">Idioms</td><td>Pre-A → Level 6 <span class="lp-hub-all" data-i18n="pr.hub_all">(every level)</span></td></tr>
-            <tr><td data-i18n-html="pr.hub_writing">Writing &amp; Speaking</td><td>Pre-A → Level 6 <span class="lp-hub-all" data-i18n="pr.hub_all">(every level)</span></td></tr>
-            <tr><td data-i18n="pr.hub_spelling">Spelling</td><td>Pre-A</td></tr>
-            <tr><td data-i18n="pr.hub_phonics">Phonics</td><td data-i18n="pr.hub_levels12">Levels 1–2</td></tr>
-            <tr><td data-i18n="pr.hub_grammar">Grammar</td><td data-i18n="pr.hub_levels36">Levels 3–6</td></tr>
-          </table>
-        </div>
-
-        <div class="lp-included-col">
-          <h4 data-i18n="pr.community_h4">🤝 A real community, not a solo app</h4>
-          <p class="lp-included-sub" data-i18n="pr.community_sub">Learning a language works better with people. Every student gets:</p>
-          <ul class="lp-community-list">
-            <li data-i18n-html="pr.comm1"><b>Grouped with peers at the same level</b> — your child learns alongside classmates who are genuinely at the same stage, not a mismatched group.</li>
-            <li data-i18n-html="pr.comm2"><b>A dedicated teacher</b> — leads every live class and tracks real progress lesson by lesson.</li>
-            <li data-i18n-html="pr.comm3"><b>A supervisor on hand</b> — answers questions, helps with anything technical, and keeps the group running smoothly between classes.</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="mt lp-faq" id="faq">
-    <h2 class="center mb" data-i18n="faq.h2">Questions parents ask</h2>
-    <div class="lp-faq-list">
-      <details class="lp-faq-item reveal-io">
-        <summary data-i18n="faq1.q">What age is Lumio actually for?</summary>
-        <p data-i18n="faq1.a">From 4 all the way to 15 — the curriculum spans 7 levels, each built for a specific age range, from a child's very first English words through confident, independent conversation.</p>
-      </details>
-      <details class="lp-faq-item reveal-io">
-        <summary data-i18n="faq2.q">Is there a real teacher, or is this just an app?</summary>
-        <p data-i18n="faq2.a">Both. Your child prepares in the app, then joins a real, live class with their teacher on Microsoft Teams — the app isn't a replacement for the teacher, it's what makes that class time count.</p>
-      </details>
-      <details class="lp-faq-item reveal-io">
-        <summary data-i18n="faq3.q">My child has never studied English. Where do they start?</summary>
-        <p data-i18n-html="faq3.a"><a href="lumio-pro-test.html">Take the free placement test</a> — it's quick, and it places your child at the right level automatically based on their real score, whether that's their very first English words or something further along.</p>
-      </details>
-      <details class="lp-faq-item reveal-io">
-        <summary data-i18n="faq4.q">Can we try a class before paying anything?</summary>
-        <p data-i18n-html="faq4.a">Yes — <a href="#startfree">pick your child's age group</a> and join a free trial class right now, in the same format as a real Lumio lesson. No card, no signup required to try it.</p>
-      </details>
-      <details class="lp-faq-item reveal-io">
-        <summary data-i18n="faq5.q">Is the Arabic support just a translation button?</summary>
-        <p data-i18n="faq5.a">No — Arabic is built into every lesson from the start: every word, every instruction, every spelling rule has its Arabic alongside it, not a toggle bolted on afterward.</p>
-      </details>
-      <details class="lp-faq-item reveal-io">
-        <summary data-i18n="faq6.q">What happens after class ends?</summary>
-        <p data-i18n="faq6.a">Homework, right away — real sentences to practice, words to spell, and a quick quiz, all tied to exactly what was covered in that day's class.</p>
-      </details>
-    </div>
-  </section>
-
-  <style>
-    .cf-sub{color:var(--cocoa-soft,#8A7160);font-weight:700;margin-top:-6px}
-    .cf-strip{display:flex;flex-wrap:wrap;gap:22px;justify-content:center;perspective:900px}
-    .cf-card{
-      position:relative;background:#fff;border-radius:22px;padding:18px 16px 14px;
-      box-shadow:0 6px 18px rgba(0,0,0,.07);cursor:pointer;text-align:center;list-style:none;
-      width:160px;margin:0;border:1px solid rgba(0,0,0,.03);
-      opacity:0;transform:translateY(26px) scale(.94);
-      transition:transform .45s cubic-bezier(.22,1.4,.4,1), box-shadow .25s, opacity .45s;
-    }
-    .cf-section.cf-in .cf-card{opacity:1;transform:translateY(0) scale(1)}
-    .cf-section.cf-in .cf-card:nth-child(1){transition-delay:.05s}
-    .cf-section.cf-in .cf-card:nth-child(2){transition-delay:.16s}
-    .cf-section.cf-in .cf-card:nth-child(3){transition-delay:.27s}
-    .cf-section.cf-in .cf-card:nth-child(4){transition-delay:.38s}
-    .cf-card:hover{box-shadow:0 16px 30px rgba(0,0,0,.14);transform:translateY(-6px) scale(1.06) rotate(-2deg)}
-    .cf-card:nth-child(even):hover{transform:translateY(-6px) scale(1.06) rotate(2deg)}
-
-    .cf-imgwrap{position:relative;animation:cfFloat 3.4s ease-in-out infinite}
-    .cf-card:nth-child(2) .cf-imgwrap{animation-delay:.3s}
-    .cf-card:nth-child(3) .cf-imgwrap{animation-delay:.6s}
-    .cf-card:nth-child(4) .cf-imgwrap{animation-delay:.9s}
-    .cf-imgwrap{width:130px;height:190px;display:flex;align-items:flex-end;justify-content:center;margin:0 auto}.cf-imgwrap img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block;pointer-events:none;user-select:none}
-    @keyframes cfFloat{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-9px) rotate(-1.5deg)}}
-
-    .cf-imgwrap.cf-pop img{animation:cfPop .55s ease}
-    @keyframes cfPop{
-      0%{transform:scale(1) rotate(0deg)}
-      30%{transform:scale(1.22) rotate(-8deg)}
-      55%{transform:scale(.92) rotate(6deg)}
-      75%{transform:scale(1.08) rotate(-3deg)}
-      100%{transform:scale(1) rotate(0deg)}
-    }
-
-    .cf-sparkle{position:absolute;font-size:1rem;opacity:0;animation:cfTwinkle 2.6s ease-in-out infinite}
-    .cf-sparkle.a{top:-4px;left:2px;animation-delay:.2s}
-    .cf-sparkle.b{top:8px;right:-6px;font-size:.8rem;animation-delay:1.1s}
-    .cf-sparkle.c{bottom:14px;left:-8px;font-size:.75rem;animation-delay:1.8s}
-    @keyframes cfTwinkle{
-      0%,100%{opacity:0;transform:scale(.5) rotate(0deg)}
-      50%{opacity:1;transform:scale(1.1) rotate(20deg)}
-    }
-
-    .cf-card figcaption{font-weight:800;margin-top:8px;font-family:var(--font-display,'Baloo 2',sans-serif)}
-
-    .cf-bubble{
-      position:absolute;left:50%;bottom:100%;transform:translate(-50%,8px) scale(.85);
-      margin-bottom:10px;min-width:170px;max-width:220px;background:#fff;border-radius:16px;
-      padding:10px 14px;font-weight:800;font-size:.82rem;line-height:1.35;color:var(--cocoa,#5C4433);
-      box-shadow:0 10px 24px rgba(0,0,0,.16);opacity:0;pointer-events:none;
-      transition:opacity .2s, transform .2s;z-index:5;
-    }
-    .cf-bubble::after{
-      content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);
-      border:8px solid transparent;border-top-color:#fff;
-    }
-    .cf-bubble .ar{display:block;color:var(--cocoa-soft,#8A7160);font-weight:700;margin-top:4px;direction:rtl}
-    .cf-card.cf-talking .cf-bubble{opacity:1;transform:translate(-50%,0) scale(1);pointer-events:auto}
-
-    /* ---------- Hero "hear it yourself" tappable word cards ---------- */
-    .lp-hear-demo{margin-top:28px}
-    .lp-hear-label{font-weight:800;color:var(--cocoa-soft,#8A7160);font-size:.85rem;margin:0 0 10px}
-    .lp-hear-cards{display:flex;flex-wrap:wrap;gap:10px}
-    .lp-hear-card{
-      display:flex;flex-direction:column;align-items:center;gap:2px;background:#fff;border:2px solid var(--line);
-      border-radius:16px;padding:12px 16px;cursor:pointer;font-family:inherit;font-weight:800;color:var(--cocoa);
-      transition:transform .15s cubic-bezier(.22,1,.36,1),border-color .15s ease,box-shadow .15s ease;
-    }
-    .lp-hear-card:hover{transform:translateY(-3px);border-color:var(--orange);box-shadow:0 8px 18px rgba(249,115,22,.15)}
-    .lp-hear-card:active{transform:translateY(-1px) scale(.96)}
-    .lp-hear-card.playing{border-color:var(--teal);background:var(--teal-soft)}
-    .lp-hear-emoji{font-size:1.4rem}
-    .lp-hear-ar{font-size:.78rem;color:var(--cocoa-soft,#8A7160);font-weight:700}
-
-    /* ---------- Trust bar: plain numbers, no cards, no shadows ---------- */
-    .lp-wave-top, .lp-wave-bottom{display:block;line-height:0}
-    .lp-wave-top svg, .lp-wave-bottom svg{width:100%;height:32px;display:block}
-    .lp-band{background:#FFF3D6}
-    .lp-trust{
-      display:flex;justify-content:center;flex-wrap:wrap;gap:0;margin:0;padding:36px 0 44px;
-    }
-    .lp-trust-item{
-      flex:1;min-width:150px;text-align:center;padding:0 24px;
-      border-left:1px solid rgba(67,48,31,.12);
-    }
-    .lp-trust-item:first-child{border-left:none}
-    .lp-trust-num{font-family:var(--font-display,'Baloo 2',sans-serif);font-weight:800;font-size:2.2rem;color:var(--cocoa)}
-    .lp-trust-label{font-weight:700;color:var(--cocoa-soft,#8A7160);font-size:.88rem;margin-top:2px}
-
-    /* ---------- How It Works: a real sequence, numbered on purpose ---------- */
-    .lp-steps{display:flex;align-items:flex-start;gap:0;margin-top:32px;max-width:1000px;margin-left:auto;margin-right:auto}
-    .lp-step{flex:1;text-align:center;padding:0 14px}
-    .lp-step-num{
-      width:40px;height:40px;border-radius:50%;background:var(--orange);color:#fff;
-      display:flex;align-items:center;justify-content:center;font-family:var(--font-display,'Baloo 2',sans-serif);
-      font-weight:800;font-size:1.2rem;margin:0 auto 14px;
-    }
-    .lp-step h3{margin:0 0 6px;font-size:1.05rem}
-    .lp-step p{color:var(--cocoa-soft,#8A7160);font-size:.88rem;line-height:1.5;margin:0}
-    .lp-step-connector{flex:0 0 40px;height:2px;background:var(--line);margin-top:20px}
-    @media (max-width:820px){
-      .lp-steps{flex-direction:column;gap:24px}
-      .lp-step-connector{display:none}
-    }
-
-    /* ---------- Curriculum: a winding trail, not a card grid ---------- */
-    .lp-trail-guide{display:flex;flex-direction:column;align-items:center;margin-bottom:12px;position:relative;z-index:2}
-    .lp-trail-guide img{width:130px;height:auto;filter:drop-shadow(0 8px 14px rgba(67,48,31,.18))}
-    .lp-trail-guide-bubble{
-      background:#fff;border:2px solid var(--orange);color:var(--cocoa);font-weight:800;font-size:.9rem;
-      padding:6px 16px;border-radius:999px;margin-top:-6px;box-shadow:0 4px 10px rgba(67,48,31,.1);
-    }
-    .lp-trail{position:relative;max-width:820px;margin:40px auto 0;padding-left:0}
-    .lp-trail-line{
-      position:absolute;left:50%;top:6px;bottom:6px;width:3px;transform:translateX(-50%);
-      background:repeating-linear-gradient(to bottom,var(--line) 0,var(--line) 8px,transparent 8px,transparent 16px);
-    }
-    .lp-trail-stop{position:relative;display:flex;align-items:center;gap:28px;margin-bottom:36px}
-    .lp-trail-stop:nth-child(even){flex-direction:row-reverse}
-    .lp-trail-dot{
-      flex-shrink:0;width:64px;height:64px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;
-      font-family:var(--font-display,'Baloo 2',sans-serif);font-weight:800;font-size:.95rem;position:relative;z-index:2;
-      box-shadow:0 6px 16px rgba(0,0,0,.18);border:4px solid var(--paper);
-    }
-    .lp-trail-card{
-      flex:1;background:var(--card);border-radius:16px;padding:18px 22px;border:1px solid var(--line);
-      transition:transform .18s cubic-bezier(.22,1,.36,1),box-shadow .18s ease;
-    }
-    .lp-trail-card:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(67,48,31,.08)}
-    .lp-trail-card h3{margin:0 0 2px;font-size:1.1rem}
-    .lp-level-meta{font-weight:700;color:var(--cocoa-soft,#8A7160);font-size:.82rem;margin:0 0 8px}
-    .lp-trail-card > p:last-child{font-size:.88rem;line-height:1.5;margin:0}
-    @media (max-width:680px){
-      .lp-trail-line{left:32px}
-      .lp-trail-stop, .lp-trail-stop:nth-child(even){flex-direction:row;gap:18px}
-      .lp-trail-dot{width:52px;height:52px;font-size:.8rem}
-    }
-
-    /* ---------- What Makes Different: quieter, text-led, no boxes ---------- */
-    .lp-diff-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:28px;margin-top:32px}
-    .lp-diff-card h3{font-size:1.05rem;margin:0 0 6px}
-    .lp-diff-card p{color:var(--cocoa-soft,#8A7160);font-size:.92rem;line-height:1.6;margin:0}
-
-    /* ---------- Real lesson preview: a browser-style frame, real screenshot ---------- */
-    .lp-preview{display:grid;grid-template-columns:1fr 1.4fr;gap:40px;align-items:center;max-width:1000px;margin-left:auto;margin-right:auto}
-    .lp-preview-text h2{margin:0 0 10px;font-size:1.6rem}
-    .lp-preview-text p{color:var(--cocoa-soft,#8A7160);line-height:1.6;margin:0}
-    .lp-preview-frame{
-      background:#2B2118;border-radius:16px;padding:8px;box-shadow:0 20px 44px rgba(43,33,24,.28);
-    }
-    .lp-preview-bar{display:flex;gap:6px;padding:4px 8px 10px}
-    .lp-preview-bar span{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.25)}
-    .lp-preview-frame img{width:100%;display:block;border-radius:8px}
-    @media (max-width:820px){
-      .lp-preview{grid-template-columns:1fr;text-align:center}
-    }
-
-    /* ---------- Hub & bonus-game demo videos ---------- */
-    .lp-demo-intro{color:var(--muted);font-weight:700;max-width:560px;margin:0 auto 32px}
-    .lp-demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;max-width:1000px;margin:0 auto}
-    .lp-demo-card{text-align:center}
-    .lp-demo-frame video{width:100%;display:block;border-radius:8px;background:#000}
-    .lp-demo-card h3{font-family:var(--font-display);font-size:1.1rem;margin:16px 0 6px;color:var(--cocoa)}
-    .lp-demo-card p{color:var(--cocoa-soft,#8A7160);font-size:.9rem;line-height:1.55;margin:0}
-    @media (max-width:820px){.lp-demo-grid{grid-template-columns:1fr}}
-
-    /* ---------- Writing exercises & flashcards: two-up, same frame style as the lesson preview ---------- */
-    .lp-offline-intro{max-width:640px;margin:14px auto 0;color:var(--cocoa-soft,#8A7160);line-height:1.6}
-    .lp-offline-grid{display:grid;grid-template-columns:1fr 1fr;gap:36px;max-width:1000px;margin:36px auto 0}
-    .lp-offline-card h3{font-size:1.2rem;margin:18px 0 8px}
-    .lp-offline-card p{color:var(--cocoa-soft,#8A7160);line-height:1.6;margin:0 0 10px;font-size:.94rem}
-    .lp-offline-frame{padding:8px}
-    .lp-offline-frame img{width:100%;display:block;border-radius:8px}
-    @media (max-width:820px){
-      .lp-offline-grid{grid-template-columns:1fr}
-    }
-
-    .lp-faq-list{max-width:720px;margin:28px auto 0}
-    .lp-faq-item{
-      background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin-bottom:10px;
-    }
-    .lp-faq-item summary{font-weight:800;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center}
-    .lp-faq-item summary::-webkit-details-marker{display:none}
-    .lp-faq-item summary::after{content:"+";font-size:1.3rem;color:var(--orange);font-weight:400;flex-shrink:0;margin-left:12px}
-    .lp-faq-item[open] summary::after{content:"–"}
-    .lp-faq-item p{color:var(--cocoa-soft,#8A7160);font-size:.92rem;line-height:1.6;margin:12px 0 0}
-  
-  /* ===== Pricing ===== */
-  .lp-pricing-intro{color:var(--muted);font-weight:700;max-width:640px;margin:0 auto 10px}
-  .lp-pricing-freehint{color:#7B3F1B;font-weight:700;font-size:.9rem;max-width:560px;margin:0 auto 28px}
-  .lp-pricing-freehint a{color:var(--orange);text-decoration:underline;font-weight:800}
-  .lp-currency-switch{display:flex;justify-content:center;gap:6px;margin-bottom:32px}
-  .lp-cur-btn{border:2px solid var(--line);background:#fff;color:var(--muted);font-family:var(--font-display);
-    font-weight:800;font-size:.85rem;padding:8px 18px;border-radius:999px;cursor:pointer;transition:all .15s ease}
-  .lp-cur-btn:hover{border-color:var(--orange)}
-  .lp-cur-btn.active{background:var(--orange);border-color:var(--orange);color:#fff}
-  .lp-pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;max-width:1080px;margin:0 auto}
-  .lp-price-card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:30px 26px;text-align:center;
-    box-shadow:var(--sh-md);position:relative;display:flex;flex-direction:column}
-  .lp-price-featured{border:2px solid var(--orange);transform:scale(1.03);box-shadow:var(--sh-lg)}
-  .lp-price-badges{position:absolute;top:-13px;left:50%;transform:translateX(-50%);display:flex;gap:8px;white-space:nowrap}
-  .lp-price-badge{background:var(--orange);color:#fff;
-    font-family:var(--font-display);font-weight:800;font-size:.72rem;padding:5px 16px;border-radius:999px;letter-spacing:.3px}
-  .lp-price-badge-alt{background:var(--teal)}
-  @media (max-width:400px){.lp-price-badges{flex-direction:column;align-items:center;gap:5px;top:-24px}}
-  .lp-price-name{font-family:var(--font-display);font-weight:800;font-size:1.2rem;color:var(--cocoa);margin-top:6px}
-  .lp-price-sub{color:var(--muted);font-weight:700;font-size:.82rem;margin:4px 0 18px}
-  .lp-price-amount{font-family:var(--font-display);font-weight:800;color:var(--orange);line-height:1}
-  .lp-price-symbol{font-size:1rem;margin-right:4px;vertical-align:middle}
-  .lp-price-num{font-size:2.1rem;vertical-align:middle}
-  /* The per-level figure inside bundle cards shares .lp-price-symbol/.lp-price-num
-     with the big headline price above it, but should read as a small aside, not
-     a second giant price. */
-  .lp-perlevel .lp-price-symbol{font-size:.82rem;margin-right:2px}
-  .lp-perlevel .lp-price-num{font-size:.95rem;font-weight:800}
-  .lp-price-per{color:var(--muted);font-weight:700;font-size:.85rem;margin:8px 0 20px}
-  .lp-price-per b{color:var(--teal)}
-  .lp-price-list{list-style:none;padding:0;margin:0 0 22px;text-align:left;flex:1}
-  .lp-price-list li{padding:7px 0 7px 26px;position:relative;font-size:.88rem;color:var(--cocoa);border-bottom:1px solid var(--line)}
-  .lp-price-list li:last-child{border-bottom:none}
-  .lp-price-list li::before{content:"✓";position:absolute;left:0;color:var(--teal);font-weight:800}
-  .lp-price-cta{width:100%;justify-content:center}
-  .lp-pricing-note{color:var(--muted);font-size:.8rem;font-weight:600;max-width:620px;margin:24px auto 0}
-  .lp-included{max-width:1080px;margin:52px auto 0}
-  .lp-included h3{font-family:var(--font-display);font-size:1.3rem;margin-bottom:8px}
-  .lp-included-grid{display:grid;grid-template-columns:1fr 1fr;gap:36px;margin-top:24px}
-  .lp-included-sub{color:var(--muted);font-size:.88rem;line-height:1.6;margin-bottom:16px}
-  .lp-hub-table{width:100%;border-collapse:collapse;font-size:.86rem}
-  .lp-hub-table th{text-align:left;background:var(--sun-soft);color:var(--cocoa);padding:9px 12px;font-family:var(--font-display);font-size:.78rem}
-  .lp-hub-table td{padding:9px 12px;border-bottom:1px solid var(--line);color:var(--cocoa)}
-  .lp-hub-table tr:first-child td{font-weight:800}
-  .lp-hub-all{color:var(--teal);font-weight:700;font-size:.8rem}
-  .lp-community-list{list-style:none;padding:0;margin:0}
-  .lp-community-list li{padding:12px 0 12px 30px;position:relative;font-size:.9rem;color:var(--cocoa);line-height:1.55;border-bottom:1px solid var(--line)}
-  .lp-community-list li:last-child{border-bottom:none}
-  .lp-community-list li::before{content:"👥";position:absolute;left:0;top:11px;font-size:1rem}
-  .lp-community-list li:nth-child(2)::before{content:"🧑‍🏫"}
-  .lp-community-list li:nth-child(3)::before{content:"🛟"}
-  @media (max-width:760px){.lp-price-featured{transform:none}.lp-included-grid{grid-template-columns:1fr}}
-
-  /* ===== Start Free (placement test + trial class) ===== */
-  .lp-startfree{background:linear-gradient(135deg,#FFF3D6,#FFE8D1);padding:56px 24px;margin:56px 0}
-  .lp-startfree-inner{max-width:1000px;margin:0 auto}
-  .lp-startfree-intro{color:#7B3F1B;font-weight:700;max-width:560px;margin:0 auto 36px}
-  .lp-startfree-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}
-  .lp-startfree-card{background:#fff;border-radius:24px;padding:34px 30px;text-align:center;box-shadow:var(--sh-md);position:relative}
-  .lp-startfree-featured{border:2px solid var(--orange);box-shadow:var(--sh-lg)}
-  .lp-startfree-badge{position:absolute;top:18px;right:18px;background:var(--teal);color:#fff;font-family:var(--font-display);
-    font-weight:800;font-size:.7rem;padding:5px 12px;border-radius:999px;letter-spacing:.3px}
-  .lp-startfree-icon{font-size:2.6rem;margin-bottom:6px}
-  .lp-startfree-card h3{font-family:var(--font-display);font-size:1.35rem;color:var(--cocoa);margin:4px 0 12px}
-  .lp-startfree-card p{color:var(--cocoa-soft,#8A7160);font-size:.94rem;line-height:1.6;margin:0 0 22px;min-height:70px}
-  .lp-startfree-cta{width:100%;justify-content:center}
-  .lp-startfree-note{color:var(--muted);font-weight:700;font-size:.8rem;margin-top:14px}
-  .lp-trial-picker{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-  .lp-trial-level{border:2px solid var(--line);background:#FFFBF5;border-radius:14px;padding:10px 6px;cursor:pointer;
-    font-family:var(--font-display);font-weight:800;font-size:.9rem;color:var(--cocoa);transition:all .15s ease}
-  .lp-trial-level span{display:block;font-family:var(--font-body,inherit);font-weight:700;font-size:.68rem;color:var(--muted);margin-top:2px}
-  .lp-trial-level:hover{border-color:var(--orange);background:var(--sun-soft);transform:translateY(-2px)}
-  @media (max-width:760px){
-    .lp-startfree-grid{grid-template-columns:1fr}
-    .lp-trial-picker{grid-template-columns:repeat(4,1fr)}
-    /* 6 currency buttons in one flex row don't fit a phone width --
-       the last one (often the active/highlighted one) was getting
-       clipped right at the page edge instead of wrapping. Let it wrap
-       into two centered rows of 3, with slightly tighter padding so
-       it still reads as one compact control rather than a long list. */
-    .lp-currency-switch{flex-wrap:wrap;row-gap:8px;padding:0 12px}
-    .lp-cur-btn{padding:7px 14px;font-size:.8rem}
-  }
-
-  .lp-hero-free-link{display:inline-block;margin-top:14px;font-family:var(--font-display);font-weight:800;
-    font-size:.92rem;color:var(--orange);text-decoration:none;border-bottom:2px solid transparent;transition:border-color .15s ease}
-  .lp-hero-free-link:hover{border-color:var(--orange)}
-
-  /* ===== Top announcement bar ===== */
-  .lp-announce{background:#43301F;color:#fff;text-align:center;padding:10px 16px;font-size:.85rem;font-weight:700;
-    display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;position:relative}
-  .lp-announce a{color:#FFC53D;text-decoration:underline;font-weight:800}
-  .lp-announce-close{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;
-    color:rgba(255,255,255,.7);font-size:1rem;cursor:pointer;line-height:1;padding:4px}
-  .lp-announce-close:hover{color:#fff}
-  @media (max-width:640px){.lp-announce{font-size:.78rem;padding:9px 40px}}
-
-  /* ===== Trial-class interest popup ===== */
-  .trial-popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.94);width:440px;max-width:90vw;
-    max-height:88vh;overflow-y:auto;background:var(--paper);border-radius:26px;box-shadow:0 30px 70px rgba(43,33,24,.35);
-    z-index:230;padding:38px 30px 30px;text-align:center;opacity:0;visibility:hidden;pointer-events:none;
-    transition:opacity .22s ease,transform .22s ease,visibility .22s}
-  .trial-popup.open{opacity:1;visibility:visible;transform:translate(-50%,-50%) scale(1);pointer-events:auto}
-  .trial-popup-close{position:absolute;top:16px;right:16px;background:var(--sun-soft);color:var(--cocoa)}
-  .trial-popup-icon{font-size:2.4rem;margin-bottom:8px}
-  .trial-popup-ages{display:inline-block;background:var(--sun-soft);color:#C2410C;font-family:var(--font-display);
-    font-weight:800;font-size:.78rem;padding:5px 14px;border-radius:999px;margin-bottom:10px}
-  .trial-popup h3{font-family:var(--font-display);font-size:1.3rem;color:var(--cocoa);margin:0 0 10px}
-  .trial-popup-blurb{color:var(--cocoa-soft,#8A7160);font-size:.92rem;line-height:1.55;margin:0 0 20px}
-  .trial-popup-highlights{background:#FFF3D6;border-radius:16px;padding:16px 18px;text-align:left;margin-bottom:18px}
-  .trial-popup-highlights div{font-size:.86rem;color:#43301F;line-height:1.5}
-  .trial-popup-highlights div:first-child{margin-bottom:10px}
-  .trial-popup-cta-text{color:var(--muted);font-weight:700;font-size:.85rem;margin:0 0 14px}
-  .trial-popup-cta{width:100%;justify-content:center;background:#25D366 !important;border-color:#25D366 !important}
-  @media (max-width:480px){.trial-popup{padding:30px 20px 24px}}
-
-  /* ===== Parent Handbook ===== */
-  .lp-parentbook{background:linear-gradient(135deg,#FCE7F3,#FBCFE8);padding:52px 24px;margin:56px 0;border-radius:0}
-  .lp-parentbook-inner{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:260px 1fr;gap:44px;align-items:center}
-  .lp-parentbook-cover img{width:100%;border-radius:16px;box-shadow:0 20px 44px rgba(190,24,93,.28);display:block}
-  .lp-parentbook-eyebrow{display:inline-block;background:#fff;color:#BE185D;font-family:var(--font-display);font-weight:800;
-    font-size:.75rem;padding:5px 14px;border-radius:999px;margin-bottom:12px}
-  .lp-parentbook-text h2{font-size:1.7rem;margin:0 0 10px;color:var(--cocoa)}
-  .lp-parentbook-text > p{color:#8A4560;font-weight:700;font-size:.94rem;line-height:1.6;margin:0 0 18px;max-width:520px}
-  .lp-parentbook-list{list-style:none;padding:0;margin:0 0 24px}
-  .lp-parentbook-list li{padding:7px 0;font-size:.88rem;color:var(--cocoa);border-bottom:1px solid rgba(190,24,93,.15)}
-  .lp-parentbook-list li:last-child{border-bottom:none}
-  .lp-parentbook-ctas{display:flex;gap:12px;flex-wrap:wrap}
-  @media (max-width:760px){
-    .lp-parentbook-inner{grid-template-columns:1fr;text-align:center}
-    .lp-parentbook-cover{max-width:200px;margin:0 auto}
-    .lp-parentbook-text > p{margin-left:auto;margin-right:auto}
-    .lp-parentbook-list{text-align:left}
-    .lp-parentbook-ctas{justify-content:center}
-  }
-
-  /* ===== Character bio popup ===== */
-  .char-popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.94);width:460px;max-width:90vw;
-    max-height:88vh;overflow-y:auto;background:var(--paper);border-radius:26px;box-shadow:0 30px 70px rgba(43,33,24,.35);
-    z-index:230;padding:34px 30px 30px;text-align:center;opacity:0;visibility:hidden;pointer-events:none;
-    transition:opacity .22s ease,transform .22s ease,visibility .22s}
-  .char-popup.open{opacity:1;visibility:visible;transform:translate(-50%,-50%) scale(1);pointer-events:auto}
-  .char-popup-close{position:absolute;top:16px;right:16px;background:var(--sun-soft);color:var(--cocoa)}
-  .char-popup-imgwrap{width:170px;height:230px;margin:0 auto 14px;display:flex;align-items:flex-end;justify-content:center}
-  .char-popup-imgwrap img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block}
-  .char-popup h3{font-family:var(--font-display);font-size:1.35rem;color:var(--cocoa);margin:0 0 12px}
-  .char-popup-bio{color:var(--cocoa-soft,#8A7160);font-size:.95rem;line-height:1.65;margin:0}
-  html[dir="rtl"] .char-popup-close{right:auto;left:16px}
-  @media (max-width:480px){.char-popup{padding:26px 20px 22px}.char-popup-imgwrap{width:140px;height:190px}}
-</style>
-
-  <script>
-window.LUMIO_I18N = {
-  "announce": { en: "New here? Free placement test and a free trial class — no card, no commitment.", ar: "جديد هنا؟ اختبار تحديد مستوى مجاني وحصة تجريبية مجانية — بدون بطاقة وبدون أي التزام." },
-  "nav.levels": { en: "Levels", ar: "المستويات" },
-  "nav.how": { en: "How it works", ar: "كيف تعمل المنصة" },
-  "nav.friends": { en: "Friends", ar: "الأصدقاء" },
-  "nav.pricing": { en: "Pricing", ar: "الأسعار" },
-  "nav.demo": { en: "See it in action", ar: "شاهدها في العمل" },
-  "nav.handbook": { en: "Parent Handbook", ar: "دليل أولياء الأمور" },
-  "nav.faq": { en: "FAQ", ar: "الأسئلة الشائعة" },
-  "nav.startfree": { en: "Start Free", ar: "ابدأ مجاناً" },
-  "contact_us": { en: "Contact Us", ar: "تواصل معنا" },
-  "start_learning": { en: "Start learning", ar: "ابدأ التعلم" },
-  "brand": { en: "Lumio <span>English</span>", ar: "لوميو <span>إنجلش</span>" },
-  "hero.h1": { en: "Let's learn English <span class=\"hl\">the fun way!</span>", ar: "لنتعلّم الإنجليزية <span class=\"hl\">بطريقة ممتعة!</span>" },
-  "hero.lead": { en: "Join Lumi on a journey of games, songs and stories — made for young learners, with Arabic support every step of the way.", ar: "انضم إلى لومي في رحلة مليئة بالألعاب والأغاني والقصص — مصممة خصيصاً للمتعلمين الصغار، مع دعم كامل باللغة العربية في كل خطوة." },
-  "hero.cta": { en: "I'm a student", ar: "أنا طالب" },
-  "hero.free_link": { en: "New here? Take the free placement test or trial class →", ar: "جديد هنا؟ جرّب اختبار تحديد المستوى أو الحصة التجريبية المجانية ←" },
-  "hero.hear_label": { en: "👆 Tap a word — hear it for yourself", ar: "👆 اضغط على الكلمة لتسمعها بنفسك" },
-  "hero.chip_a": { en: "★ 3-star lessons", ar: "★ دروس بثلاث نجوم" },
-  "hero.chip_b": { en: "Listen &amp; speak", ar: "استمع وتحدث" },
-  "feat1.h": { en: "Learn by playing", ar: "التعلّم عن طريق اللعب" },
-  "feat1.p": { en: "Matching, listening and spelling games in every lesson.", ar: "ألعاب مطابقة واستماع وإملاء في كل درس." },
-  "feat2.h": { en: "Listen &amp; speak", ar: "استمع وتحدّث" },
-  "feat2.p": { en: "Every word is spoken aloud so you learn real pronunciation.", ar: "يُنطق كل كلمة بصوت حقيقي لتتعلّم النطق الصحيح." },
-  "feat3.h": { en: "Earn stars", ar: "اجمع النجوم" },
-  "feat3.p": { en: "Collect 3 stars in every lesson and climb the level map.", ar: "احصل على 3 نجوم في كل درس وتقدّم في خريطة المستوى." },
-  "feat4.h": { en: "Arabic + English", ar: "عربي + English" },
-  "feat4.p": { en: "Every word comes with its Arabic translation, so it's easy to understand.", ar: "كل كلمة معها ترجمتها العربية لتفهمها بسهولة." },
-  "trust1": { en: "Levels, start to finish", ar: "مستويات من البداية للنهاية" },
-  "trust2": { en: "Lessons already built", ar: "درس جاهز بالفعل" },
-  "trust3": { en: "Ages, one clear path", ar: "الأعمار، بمسار واحد واضح" },
-  "trust4": { en: "Arabic support, every word", ar: "دعم عربي في كل كلمة" },
-  "sf.h2": { en: "Start with zero risk — both are free", ar: "ابدأ بدون أي مخاطرة — كلاهما مجاني" },
-  "sf.intro": { en: "No card, no commitment. Find the right level, then see a real class, before you decide anything.", ar: "بدون بطاقة، وبدون أي التزام. اكتشف المستوى المناسب، ثم شاهد حصة حقيقية، قبل أن تقرر أي شيء." },
-  "sf.badge_free": { en: "100% Free", ar: "مجاني 100%" },
-  "sf.test_h": { en: "Free Placement Test", ar: "اختبار تحديد المستوى المجاني" },
-  "sf.test_p": { en: "10 quick questions with real feedback on the spot — what your child already knows, and a couple of tips on what to practice next. No signup required to see the result.", ar: "10 أسئلة سريعة مع نتيجة فورية حقيقية — ما يعرفه طفلك بالفعل، وبعض النصائح لما يجب التدرب عليه بعد ذلك. بدون تسجيل لرؤية النتيجة." },
-  "sf.test_cta": { en: "Take the free test →", ar: "ابدأ الاختبار المجاني ←" },
-  "sf.test_note": { en: "Takes about 5 minutes", ar: "يستغرق حوالي 5 دقائق" },
-  "sf.trial_h": { en: "Free Trial Class", ar: "حصة تجريبية مجانية" },
-  "sf.trial_p": { en: "Pick the level that fits your child's age and jump straight into a real, live-style trial class — the same format as an actual Lumio lesson.", ar: "اختر المستوى المناسب لعمر طفلك وابدأ مباشرة في حصة تجريبية حقيقية بنفس أسلوب الحصة المباشرة — بنفس صيغة درس Lumio الفعلي." },
-  "sf.trial_note": { en: "Tap your child's age group to start", ar: "اضغط على الفئة العمرية لطفلك للبدء" },
-  "how.h2": { en: "How a Lumio lesson works", ar: "كيف يعمل درس Lumio" },
-  "how.sub": { en: "The same four steps, every single lesson.", ar: "نفس الخطوات الأربع، في كل درس." },
-  "how1.h": { en: "Prepare", ar: "التحضير" },
-  "how1.p": { en: "Meet the new words and sounds in the app before class, so your child walks in ready, not cold.", ar: "يتعرّف طفلك على الكلمات والأصوات الجديدة في التطبيق قبل الحصة، ليدخلها وهو مستعد تماماً." },
-  "how2.h": { en: "Live class on Teams", ar: "حصة مباشرة عبر Microsoft Teams" },
-  "how2.p": { en: "A real teacher, live, guiding the lesson your child already previewed.", ar: "معلم حقيقي، مباشرةً، يشرح الدرس الذي اطّلع عليه طفلك مسبقاً." },
-  "how3.h": { en: "Practice at home", ar: "التدريب في المنزل" },
-  "how3.p": { en: "Homework that uses real sentences, not just word lists — spelling, speaking, and short quizzes.", ar: "واجب منزلي بجمل حقيقية، وليس مجرد قوائم كلمات — إملاء، تحدث، واختبارات قصيرة." },
-  "how4.h": { en: "Grow on the map", ar: "التقدّم على الخريطة" },
-  "how4.p": { en: "Each finished lesson lights up the Adventure Map, unlocking games, stories, and the next step.", ar: "كل درس يُكمله طفلك يُضيء خريطة المغامرة، ويفتح الألعاب والقصص والخطوة التالية." },
-  "friends.h2": { en: "Meet your learning friends", ar: "تعرّف على أصدقاء التعلّم" },
-  "friends.sub": { en: "Tap a friend to say hi! 👋", ar: "اضغط على أحد الأصدقاء لتحيته! 👋" },
-  "name.lumi": { en: "Lumi", ar: "لومي" },
-  "name.sara": { en: "Sara", ar: "سارة" },
-  "name.noor": { en: "Noor", ar: "نور" },
-  "name.omar": { en: "Omar", ar: "عمر" },
-  "name.ziad": { en: "Ziad", ar: "زياد" },
-  "name.hamad": { en: "Hamad", ar: "حمد" },
-  "curr.h2": { en: "The path, level by level", ar: "المسار، مستوى بمستوى" },
-  "curr.sub": { en: "Every level already has real lessons behind it — nothing here is a placeholder.", ar: "كل مستوى يحتوي على دروس حقيقية جاهزة بالفعل — لا شيء هنا مجرد نموذج مبدئي." },
-  "curr.guide": { en: "Follow me! 🐣", ar: "اتبعني! 🐣" },
-  "lvl0.h": { en: "First Words", ar: "الكلمات الأولى" },
-  "lvl0.meta": { en: "Ages 4–6 · CEFR Pre-A1", ar: "الأعمار 4-6 · المستوى Pre-A1" },
-  "lvl0.p": { en: "The alphabet, first sounds, and the very first spoken words — built for a child who's never studied English before.", ar: "الحروف الأبجدية، الأصوات الأولى، وأولى الكلمات المنطوقة — مصمم لطفل لم يدرس الإنجليزية من قبل." },
-  "lvl1.h": { en: "About Me", ar: "عني أنا" },
-  "lvl1.meta": { en: "Ages 6–8 · CEFR Pre-A1", ar: "الأعمار 6-8 · المستوى Pre-A1" },
-  "lvl1.p": { en: "Simple sentences about family, feelings, and daily routines — the first real conversations.", ar: "جمل بسيطة عن العائلة، المشاعر، والروتين اليومي — أولى المحادثات الحقيقية." },
-  "lvl2.h": { en: "My World", ar: "عالمي" },
-  "lvl2.meta": { en: "Ages 8–10 · CEFR Pre-A1", ar: "الأعمار 8-10 · المستوى Pre-A1" },
-  "lvl2.p": { en: "School, home, and everyday objects — describing the world right around them.", ar: "المدرسة، المنزل، والأشياء اليومية — وصف العالم من حولهم." },
-  "lvl3.h": { en: "Everyday Life", ar: "الحياة اليومية" },
-  "lvl3.meta": { en: "Ages 10–12 · CEFR A1", ar: "الأعمار 10-12 · المستوى A1" },
-  "lvl3.p": { en: "Real-life situations — shopping, plans, opinions — with grammar that starts doing real work.", ar: "مواقف من الحياة الواقعية — التسوق، الخطط، الآراء — مع قواعد تبدأ بالعمل بشكل حقيقي." },
-  "lvl4.h": { en: "Smart Choices", ar: "قرارات ذكية" },
-  "lvl4.meta": { en: "Ages 11–13 · CEFR A1", ar: "الأعمار 11-13 · المستوى A1" },
-  "lvl4.p": { en: "Making plans, giving reasons, and talking through decisions in longer, more confident sentences.", ar: "وضع الخطط، إعطاء الأسباب، ومناقشة القرارات بجمل أطول وأكثر ثقة." },
-  "lvl5.h": { en: "Telling My Story", ar: "أروي قصتي" },
-  "lvl5.meta": { en: "Ages 12–14 · CEFR A2", ar: "الأعمار 12-14 · المستوى A2" },
-  "lvl5.p": { en: "Narrating experiences and opinions — the shift from answering questions to telling a story.", ar: "سرد التجارب والآراء — الانتقال من الإجابة على الأسئلة إلى رواية قصة." },
-  "lvl6.h": { en: "Looking Ahead", ar: "نحو المستقبل" },
-  "lvl6.meta": { en: "Ages 13–15 · CEFR A2", ar: "الأعمار 13-15 · المستوى A2" },
-  "lvl6.p": { en: "The final stretch — future plans, bigger ideas, and real confidence speaking English.", ar: "المرحلة الأخيرة — خطط المستقبل، أفكار أكبر، وثقة حقيقية في التحدث بالإنجليزية." },
-  "diff.h2": { en: "What makes Lumio different", ar: "ما الذي يميّز Lumio" },
-  "diff1.h": { en: "🕌 Arabic-first, not translated in", ar: "🕌 عربي بالأساس، وليس مترجماً لاحقاً" },
-  "diff1.p": { en: "Every word, every instruction, every rule — built bilingual from day one, not bolted on afterward.", ar: "كل كلمة، كل تعليمة، كل قاعدة — مبنية بلغتين منذ اليوم الأول، وليست مُضافة لاحقاً." },
-  "diff2.h": { en: "🔡 Spelling has real rules", ar: "🔡 الإملاء له قواعد حقيقية" },
-  "diff2.p": { en: "Not just memorizing letters — the actual rules behind how English words are built, taught step by step.", ar: "ليس مجرد حفظ للحروف — بل القواعد الحقيقية وراء بناء الكلمات الإنجليزية، تُدرَّس خطوة بخطوة." },
-  "diff3.h": { en: "🗣️ Homework uses real sentences", ar: "🗣️ الواجبات تستخدم جملاً حقيقية" },
-  "diff3.p": { en: "Every practice sentence is grounded in what a word actually means — not a random word list to memorize.", ar: "كل جملة تدريب مبنية على المعنى الحقيقي للكلمة — وليست قائمة كلمات عشوائية للحفظ." },
-  "diff4.h": { en: "📄 Worksheets and flashcards you can print", ar: "📄 أوراق عمل وبطاقات تعليمية قابلة للطباعة" },
-  "diff4.p": { en: "A real printable homework page and flashcard set for every lesson, for the moments a screen isn't the right tool.", ar: "ورقة واجب حقيقية قابلة للطباعة وبطاقات تعليمية لكل درس، للحظات التي لا تكون فيها الشاشة الخيار الأنسب." },
-  "prev.h2": { en: "This is what a real lesson looks like", ar: "هكذا يبدو الدرس الحقيقي" },
-  "prev.p": { en: "Not a mockup, not a design sketch — a real screenshot from an actual Lumio lesson, exactly as a student sees it.", ar: "ليست صورة تخيلية أو تصميماً أولياً — بل لقطة شاشة حقيقية من درس Lumio فعلي، تماماً كما يراها الطالب." },
-  "demo.h2": { en: "See the Hub and bonus games in action", ar: "شاهد المكتبة التعليمية والألعاب الإضافية أثناء الاستخدام" },
-  "demo.intro": { en: "Two real screen recordings, not mockups — this is exactly what your child taps, hears, and plays.", ar: "تسجيلا شاشة حقيقيان، وليسا نماذج تخيلية — هذا بالضبط ما يضغط عليه طفلك ويسمعه ويلعبه." },
-  "demo1.h": { en: "Inside the English Hub", ar: "داخل المكتبة التعليمية" },
-  "demo1.p": { en: "Browsing real vocabulary and idiom cards — pictures, audio, and Arabic side by side.", ar: "تصفّح بطاقات مفردات وتعبيرات حقيقية — صور، صوت، وترجمة عربية جنباً إلى جنب." },
-  "demo2.h": { en: "A real bonus game", ar: "لعبة إضافية حقيقية" },
-  "demo2.p": { en: "Every level unlocks its own game — this is Crew Chat, Level 3's game, played round by round.", ar: "كل مستوى يفتح لعبته الخاصة — هذه لعبة Crew Chat، لعبة المستوى الثالث، تُلعب جولة بجولة." },
-  "off.h2": { en: "Real writing practice. Real flashcards. Off the screen.", ar: "تدريب كتابة حقيقي. بطاقات تعليمية حقيقية. بعيداً عن الشاشة." },
-  "off.intro": { en: "Every single lesson, at every level, comes with two things you can print and hold: a homework sheet and a set of flashcards. Neither is an afterthought — both are written specifically for the age and stage your child is actually at.", ar: "كل درس، في كل مستوى، يأتي مع شيئين يمكنك طباعتهما وحملهما: ورقة واجب وبطاقات تعليمية. لا شيء منهما مجرد إضافة عابرة — كلاهما مكتوب خصيصاً لعمر طفلك ومرحلته الفعلية." },
-  "off1.h": { en: "Writing exercises", ar: "تدريبات الكتابة" },
-  "off1.p1": { en: "<b>Who they're for:</b> every level, but the task grows with your child. Pre-A and the early levels trace and copy each word by hand, building letter formation and muscle memory before reading is even required. From Level 3 onward, the task becomes writing full original sentences in that day's grammar pattern — putting the rule to use, not just recognizing it.", ar: "<b>لمن هي:</b> لكل المستويات، لكن المهمة تتطور مع طفلك. المستوى التمهيدي والمستويات الأولى تتضمن تتبع ونسخ كل كلمة باليد، لبناء شكل الحروف والذاكرة العضلية قبل أن تصبح القراءة مطلوبة أصلاً. من المستوى الثالث فصاعداً، تتحول المهمة إلى كتابة جمل كاملة وأصلية باستخدام قاعدة اليوم — لتطبيق القاعدة، لا مجرد التعرف عليها." },
-  "off1.p2": { en: "<b>Why it matters:</b> screen recognition and handwriting are different skills, and only one of them is practiced by tapping an answer. A short, guided writing task each lesson builds the one that a multiple-choice quiz can't.", ar: "<b>لماذا يهم هذا:</b> التعرف عبر الشاشة والكتابة اليدوية مهارتان مختلفتان، والضغط على إجابة يُدرّب واحدة منهما فقط. مهمة كتابة قصيرة وموجّهة في كل درس تبني المهارة التي لا يستطيع اختبار الاختيار من متعدد بناءها." },
-  "off2.h": { en: "Flashcards", ar: "البطاقات التعليمية" },
-  "off2.p1": { en: "<b>Who they're for:</b> every level, and every parent — including parents who don't speak English themselves. Each card shows the picture and English word on one side and the Arabic translation on the other, so quizzing at home never requires knowing the answer in advance.", ar: "<b>لمن هي:</b> لكل المستويات، ولكل الأهالي — بمن فيهم الأهالي الذين لا يتحدثون الإنجليزية بأنفسهم. كل بطاقة تعرض الصورة والكلمة الإنجليزية على وجه، والترجمة العربية على الوجه الآخر، بحيث لا تحتاج لمعرفة الإجابة مسبقاً لتسميع طفلك في المنزل." },
-  "off2.p2": { en: "<b>Why it matters:</b> spaced, repeated recall away from a screen is one of the most reliable ways vocabulary actually sticks. A five-minute flip-through before bed does real work that a single lesson session can't do alone.", ar: "<b>لماذا يهم هذا:</b> التكرار المتباعد بعيداً عن الشاشة هو من أكثر الطرق فعالية لترسيخ المفردات فعلياً. خمس دقائق من التصفح قبل النوم تقوم بعمل حقيقي لا يستطيع درس واحد وحده تحقيقه." },
-  "pb.eyebrow": { en: "Free download &middot; written fully in Arabic", ar: "تحميل مجاني &middot; مكتوب بالكامل باللغة العربية" },
-  "pb.h2": { en: "The Parent Handbook", ar: "دليل أولياء الأمور" },
-  "pb.p": { en: "A 13-page guide written directly for you, not your child — everything you'd want to know before and after saying yes, in one place instead of scattered across a chat.", ar: "دليل من 13 صفحة، مكتوب مباشرة لك أنت، وليس لطفلك — كل ما تريد معرفته قبل الموافقة وبعدها، في مكان واحد بدلاً من متفرقاً عبر المحادثات." },
-  "pb.li1": { en: "<b>Chapter 1-2 &middot;</b> How the story begins, the free placement test, and the free trial class", ar: "<b>الفصل 1-2 &middot;</b> كيف تبدأ القصة، واختبار المستوى المجاني، والحصة التجريبية المجانية" },
-  "pb.li2": { en: "<b>Chapter 3 &middot;</b> The learning cycle — what a real lesson looks like, step by step", ar: "<b>الفصل 3 &middot;</b> دورة التعلّم — كيف يبدو الدرس الحقيقي، خطوة بخطوة" },
-  "pb.li3": { en: "<b>Chapter 4 &middot;</b> How to track your child's real progress, and the English Hub", ar: "<b>الفصل 4 &middot;</b> كيف تتابع تقدّم طفلك الحقيقي ومكتبة الإنجليزية" },
-  "pb.li4": { en: "<b>Chapter 5 &middot;</b> Homework and practice — what to expect at home", ar: "<b>الفصل 5 &middot;</b> الواجبات والتدريب — ما الذي تتوقعه في المنزل" },
-  "pb.li5": { en: "<b>Chapter 6-7 &middot;</b> The full 7-level journey, and how certificates work", ar: "<b>الفصل 6-7 &middot;</b> رحلة المستويات السبعة كاملة، وكيف تعمل الشهادات" },
-  "pb.download": { en: "⬇ Download the Handbook", ar: "⬇ تحميل الدليل" },
-  "pb.whatsapp": { en: "Send it to me on WhatsApp", ar: "أرسله لي عبر واتساب" },
-  "pr.h2": { en: "Simple pricing, real value", ar: "أسعار بسيطة، وقيمة حقيقية" },
-  "pr.intro": { en: "One level = 2 months &middot; 20 live sessions &middot; full access to that level's English Hub. Save more the longer you commit.", ar: "المستوى الواحد = شهران &middot; 20 حصة مباشرة &middot; وصول كامل لمكتبة ذلك المستوى. وفّر أكثر كلما التزمت لفترة أطول." },
-  "pr.freehint": { en: "Not sure which level fits? <a href=\"quick-check.html\">Take the free English check</a> or <a href=\"#startfree\">try a free trial class</a> first.", ar: "لست متأكداً من المستوى المناسب؟ <a href=\"quick-check.html\">جرّب الاختبار السريع المجاني</a> أو <a href=\"#startfree\">جرّب حصة تجريبية مجانية</a> أولاً." },
-  "pr.single_name": { en: "Single Level", ar: "مستوى واحد" },
-  "pr.single_sub": { en: "2 months &middot; 20 sessions", ar: "شهران &middot; 20 حصة" },
-  "pr.per_level": { en: "per level", ar: "لكل مستوى" },
-  "pr.li_single1": { en: "1 full level, start to finish", ar: "مستوى كامل، من البداية للنهاية" },
-  "pr.li_single2": { en: "Full English Hub access for that level", ar: "وصول كامل لمكتبة ذلك المستوى" },
-  "pr.li_peers": { en: "Grouped with peers at your level", ar: "ضمن مجموعة من زملاء بنفس مستواك" },
-  "pr.li_support": { en: "Teacher + supervisor support", ar: "دعم من معلم ومشرف" },
-  "pr.get_started": { en: "Get started", ar: "ابدأ الآن" },
-  "pr.badge_popular": { en: "Most popular", ar: "الأكثر طلباً" },
-  "pr.badge_best": { en: "Best value", ar: "الأفضل قيمة" },
-  "pr.b6_name": { en: "6-Level Bundle", ar: "باقة 6 مستويات" },
-  "pr.b6_sub": { en: "Full year &middot; 120 sessions", ar: "سنة كاملة &middot; 120 حصة" },
-  "pr.b6_per": { en: "~<span class=\"lp-perlevel\" data-sar=\"583.33\" data-usd=\"155.56\" data-aed=\"571.28\" data-kwd=\"47.91\" data-omr=\"59.81\" data-qar=\"566.22\"><span class=\"lp-price-symbol\">SAR</span> <span class=\"lp-price-num\">583.33</span></span> per level &middot; <b>save 20%</b>", ar: "~<span class=\"lp-perlevel\" data-sar=\"583.33\" data-usd=\"155.56\" data-aed=\"571.28\" data-kwd=\"47.91\" data-omr=\"59.81\" data-qar=\"566.22\"><span class=\"lp-price-symbol\">SAR</span> <span class=\"lp-price-num\">583.33</span></span> لكل مستوى &middot; <b>وفّر 20%</b>" },
-  "pr.li_b6_1": { en: "6 full levels — nearly the whole path", ar: "6 مستويات كاملة — تقريباً المسار بأكمله" },
-  "pr.li_full_hub": { en: "Full English Hub access, every level included", ar: "وصول كامل للمكتبة، بكل المستويات" },
-  "pr.b3_name": { en: "3-Level Bundle", ar: "باقة 3 مستويات" },
-  "pr.b3_sub": { en: "6 months &middot; 60 sessions", ar: "6 أشهر &middot; 60 حصة" },
-  "pr.b3_per": { en: "~<span class=\"lp-perlevel\" data-sar=\"650.00\" data-usd=\"173.33\" data-aed=\"636.56\" data-kwd=\"53.39\" data-omr=\"66.65\" data-qar=\"630.93\"><span class=\"lp-price-symbol\">SAR</span> <span class=\"lp-price-num\">650.00</span></span> per level &middot; <b>save 11%</b>", ar: "~<span class=\"lp-perlevel\" data-sar=\"650.00\" data-usd=\"173.33\" data-aed=\"636.56\" data-kwd=\"53.39\" data-omr=\"66.65\" data-qar=\"630.93\"><span class=\"lp-price-symbol\">SAR</span> <span class=\"lp-price-num\">650.00</span></span> لكل مستوى &middot; <b>وفّر 11%</b>" },
-  "pr.li_b3_1": { en: "3 full levels, back to back", ar: "3 مستويات كاملة، متتالية" },
-  "pr.note": { en: "Prices shown for reference. SAR, AED, OMR and QAR are all pegged to the US dollar and stay stable; KWD is a floating rate and may shift slightly over time.", ar: "الأسعار للاطلاع فقط. الريال السعودي والدرهم الإماراتي والريال العماني والريال القطري كلها مربوطة بالدولار الأمريكي وتبقى ثابتة؛ أما الدينار الكويتي فسعره متغيّر وقد يتبدّل قليلاً بمرور الوقت." },
-  "pr.included_h3": { en: "What's inside every plan", ar: "ماذا يتضمن كل اشتراك" },
-  "pr.hub_h4": { en: "📚 The English Hub, by level", ar: "📚 المكتبة التعليمية، حسب المستوى" },
-  "pr.hub_sub": { en: "Every level unlocks its own free-browsing Hub — organized, searchable, and available anytime, not just during lessons.", ar: "كل مستوى يفتح مكتبته الخاصة للتصفح الحر — منظمة، قابلة للبحث، ومتاحة في أي وقت، وليس فقط أثناء الدروس." },
-  "pr.hub_col1": { en: "Hub section", ar: "قسم المكتبة" },
-  "pr.hub_col2": { en: "Available at", ar: "متاح في" },
-  "pr.hub_vocab": { en: "Vocabulary", ar: "المفردات" },
-  "pr.hub_idioms": { en: "Idioms", ar: "التعبيرات" },
-  "pr.hub_writing": { en: "Writing &amp; Speaking", ar: "الكتابة والتحدث" },
-  "pr.hub_spelling": { en: "Spelling", ar: "الإملاء" },
-  "pr.hub_phonics": { en: "Phonics", ar: "الصوتيات" },
-  "pr.hub_grammar": { en: "Grammar", ar: "القواعد" },
-  "pr.hub_all": { en: "(every level)", ar: "(كل المستويات)" },
-  "pr.hub_levels12": { en: "Levels 1–2", ar: "المستويان 1-2" },
-  "pr.hub_levels36": { en: "Levels 3–6", ar: "المستويات 3-6" },
-  "pr.community_h4": { en: "🤝 A real community, not a solo app", ar: "🤝 مجتمع حقيقي، وليس تطبيقاً فردياً" },
-  "pr.community_sub": { en: "Learning a language works better with people. Every student gets:", ar: "تعلّم اللغة ينجح أكثر مع الآخرين. كل طالب يحصل على:" },
-  "pr.comm1": { en: "<b>Grouped with peers at the same level</b> — your child learns alongside classmates who are genuinely at the same stage, not a mismatched group.", ar: "<b>مجموعة من زملاء بنفس المستوى</b> — يتعلّم طفلك جنباً إلى جنب مع زملاء في نفس مرحلته فعلياً، وليس مجموعة غير متجانسة." },
-  "pr.comm2": { en: "<b>A dedicated teacher</b> — leads every live class and tracks real progress lesson by lesson.", ar: "<b>معلم مخصص</b> — يقود كل حصة مباشرة ويتابع التقدّم الحقيقي درساً بدرس." },
-  "pr.comm3": { en: "<b>A supervisor on hand</b> — answers questions, helps with anything technical, and keeps the group running smoothly between classes.", ar: "<b>مشرف متواجد دائماً</b> — يجيب على الأسئلة، يساعد في أي أمر تقني، ويحافظ على انسيابية المجموعة بين الحصص." },
-  "faq.h2": { en: "Questions parents ask", ar: "أسئلة يطرحها الأهالي" },
-  "faq1.q": { en: "What age is Lumio actually for?", ar: "لأي عمر مناسب Lumio فعلياً؟" },
-  "faq1.a": { en: "From 4 all the way to 15 — the curriculum spans 7 levels, each built for a specific age range, from a child's very first English words through confident, independent conversation.", ar: "من عمر 4 حتى 15 عاماً — يمتد المنهج عبر 7 مستويات، كل منها مصمم لفئة عمرية محددة، بدءاً من أولى كلمات الطفل بالإنجليزية وصولاً إلى محادثة واثقة ومستقلة." },
-  "faq2.q": { en: "Is there a real teacher, or is this just an app?", ar: "هل يوجد معلم حقيقي، أم أنه مجرد تطبيق؟" },
-  "faq2.a": { en: "Both. Your child prepares in the app, then joins a real, live class with their teacher on Microsoft Teams — the app isn't a replacement for the teacher, it's what makes that class time count.", ar: "كلاهما. يحضّر طفلك في التطبيق، ثم ينضم إلى حصة حقيقية مباشرة مع معلمه عبر Microsoft Teams — التطبيق ليس بديلاً عن المعلم، بل هو ما يجعل وقت تلك الحصة ذا قيمة حقيقية." },
-  "faq3.q": { en: "My child has never studied English. Where do they start?", ar: "طفلي لم يدرس الإنجليزية من قبل. من أين يبدأ؟" },
-  "faq3.a": { en: "<a href=\"lumio-pro-test.html\">Take the free placement test</a> — it's quick, and it places your child at the right level automatically based on their real score, whether that's their very first English words or something further along.", ar: "<a href=\"lumio-pro-test.html\">جرّب اختبار تحديد المستوى المجاني</a> — إنه سريع، ويضع طفلك في المستوى المناسب تلقائياً بناءً على نتيجته الحقيقية، سواء كانت أولى كلماته بالإنجليزية أو مستوى أكثر تقدماً." },
-  "faq4.q": { en: "Can we try a class before paying anything?", ar: "هل يمكننا تجربة حصة قبل دفع أي شيء؟" },
-  "faq4.a": { en: "Yes — <a href=\"#startfree\">pick your child's age group</a> and join a free trial class right now, in the same format as a real Lumio lesson. No card, no signup required to try it.", ar: "نعم — <a href=\"#startfree\">اختر الفئة العمرية لطفلك</a> وانضم إلى حصة تجريبية مجانية الآن، بنفس صيغة درس Lumio الحقيقي. بدون بطاقة، وبدون تسجيل لتجربتها." },
-  "faq5.q": { en: "Is the Arabic support just a translation button?", ar: "هل الدعم العربي مجرد زر ترجمة؟" },
-  "faq5.a": { en: "No — Arabic is built into every lesson from the start: every word, every instruction, every spelling rule has its Arabic alongside it, not a toggle bolted on afterward.", ar: "لا — اللغة العربية جزء أساسي من كل درس منذ البداية: كل كلمة، كل تعليمة، كل قاعدة إملائية لها ترجمتها العربية بجانبها، وليست خياراً مُضافاً لاحقاً." },
-  "faq6.q": { en: "What happens after class ends?", ar: "ماذا يحدث بعد انتهاء الحصة؟" },
-  "faq6.a": { en: "Homework, right away — real sentences to practice, words to spell, and a quick quiz, all tied to exactly what was covered in that day's class.", ar: "واجب منزلي، فوراً — جمل حقيقية للتدرب عليها، كلمات لتهجئتها، واختبار سريع، كلها مرتبطة تماماً بما تم تغطيته في حصة ذلك اليوم." },
-  "cta.h2": { en: "Ready to start your adventure?", ar: "هل أنت مستعد لبدء مغامرتك؟" },
-  "cta.p": { en: "Pre-A level is open now — 20 fun lessons from \"Hello!\" to your first big review.", ar: "المستوى التمهيدي متاح الآن — 20 درساً ممتعاً من \"Hello!\" إلى أول مراجعة كبرى." },
-  "cta.btn": { en: "Let's go!", ar: "هيا بنا!" },
-  "ed.title": { en: "Explore Lumio English", ar: "استكشف Lumio English" },
-  "ed.tab_levels": { en: "📚 Levels", ar: "📚 المستويات" },
-  "ed.tab_how": { en: "🧩 How it works", ar: "🧩 كيف تعمل" },
-  "ed.tab_why": { en: "⭐ Why Lumio", ar: "⭐ لماذا Lumio" },
-  "ed.tab_hub": { en: "📖 The Hub", ar: "📖 المكتبة" },
-  "ed.tab_games": { en: "🎮 Bonus games", ar: "🎮 الألعاب الإضافية" },
-  "ed.tab_pricing": { en: "💳 Pricing", ar: "💳 الأسعار" },
-  "ed.tab_faq": { en: "❓ FAQ", ar: "❓ الأسئلة الشائعة" },
-  "ed.lvl0": { en: "<b>First Words</b> <span class=\"explore-cefr\">CEFR Pre-A1</span><br>Ages 4–6 · 20 lessons · Hello, colors, family, animals", ar: "<b>الكلمات الأولى</b> <span class=\"explore-cefr\">Pre-A1</span><br>الأعمار 4-6 · 20 درساً · التحية، الألوان، العائلة، الحيوانات" },
-  "ed.lvl1": { en: "<b>About Me</b> <span class=\"explore-cefr\">CEFR Pre-A1</span><br>Ages 6–8 · 20 lessons · My house, my things, likes &amp; dislikes", ar: "<b>عني أنا</b> <span class=\"explore-cefr\">Pre-A1</span><br>الأعمار 6-8 · 20 درساً · منزلي، أغراضي، ما أحبه وما لا أحبه" },
-  "ed.lvl2": { en: "<b>My World</b> <span class=\"explore-cefr\">CEFR Pre-A1</span><br>Ages 8–10 · 20 lessons · Family, classroom, daily routines", ar: "<b>عالمي</b> <span class=\"explore-cefr\">Pre-A1</span><br>الأعمار 8-10 · 20 درساً · العائلة، الفصل الدراسي، الروتين اليومي" },
-  "ed.lvl3": { en: "<b>Everyday Life</b> <span class=\"explore-cefr\">CEFR A1</span><br>Ages 10–12 · 20 lessons · Friends, school, real conversations, real grammar begins", ar: "<b>الحياة اليومية</b> <span class=\"explore-cefr\">A1</span><br>الأعمار 10-12 · 20 درساً · الأصدقاء، المدرسة، محادثات حقيقية، وبداية القواعد الفعلية" },
-  "ed.lvl4": { en: "<b>Smart Choices</b> <span class=\"explore-cefr\">CEFR A1</span><br>Ages 11–13 · 20 lessons · Routines, money, advice, decisions", ar: "<b>قرارات ذكية</b> <span class=\"explore-cefr\">A1</span><br>الأعمار 11-13 · 20 درساً · الروتين، المال، النصائح، القرارات" },
-  "ed.lvl5": { en: "<b>Telling My Story</b> <span class=\"explore-cefr\">CEFR A2</span><br>Ages 12–14 · 20 lessons · Past tense, storytelling, trips", ar: "<b>أروي قصتي</b> <span class=\"explore-cefr\">A2</span><br>الأعمار 12-14 · 20 درساً · الماضي، سرد القصص، الرحلات" },
-  "ed.lvl6": { en: "<b>Looking Ahead</b> <span class=\"explore-cefr\">CEFR A2</span><br>Ages 13–15 · 20 lessons · Future plans, debates, culture", ar: "<b>نحو المستقبل</b> <span class=\"explore-cefr\">A2</span><br>الأعمار 13-15 · 20 درساً · خطط المستقبل، النقاشات، الثقافة" },
-  "ed.lvl_note": { en: "140 lessons total, one continuous path — every level builds on real, internationally-recognized CEFR standards, not an in-house scale.", ar: "140 درساً في مسار واحد متصل — كل مستوى مبني على معايير CEFR الدولية المعتمدة، وليس مقياساً داخلياً خاصاً." },
-  "ed.jump_curriculum": { en: "See the full curriculum ↓", ar: "شاهد المنهج كاملاً ↓" },
-  "ed.how1": { en: "<b>1. New Words</b> — every word shown with a picture, Arabic translation, and real audio.", ar: "<b>1. كلمات جديدة</b> — كل كلمة تُعرض بصورة، وترجمة عربية، وصوت حقيقي." },
-  "ed.how2": { en: "<b>2. Listen &amp; Practice</b> — matching and listening games for every word.", ar: "<b>2. استماع وتدريب</b> — ألعاب مطابقة واستماع لكل كلمة." },
-  "ed.how3": { en: "<b>3. Grammar Focus</b> — one clear grammar point per lesson, from Level 3 onward.", ar: "<b>3. التركيز على القواعد</b> — قاعدة واحدة واضحة في كل درس، من المستوى الثالث فصاعداً." },
-  "ed.how4": { en: "<b>4. Quiz &amp; Spelling</b> — a short quiz confirms it stuck, with instant feedback.", ar: "<b>4. اختبار وإملاء</b> — اختبار قصير يؤكد ترسيخ المعلومة، مع نتيجة فورية." },
-  "ed.how5": { en: "<b>5. Homework</b> — a printable worksheet, flashcards and writing practice for every lesson.", ar: "<b>5. الواجب المنزلي</b> — ورقة عمل قابلة للطباعة، بطاقات تعليمية، وتدريب كتابة لكل درس." },
-  "ed.jump_how": { en: "See it in action ↓", ar: "شاهدها في العمل ↓" },
-  "ed.why1": { en: "<b>🕌 Arabic-first, not translated in</b><br>Every word, every instruction, every rule — built bilingual from day one, not bolted on afterward.", ar: "<b>🕌 عربي بالأساس، وليس مترجماً لاحقاً</b><br>كل كلمة، كل تعليمة، كل قاعدة — مبنية بلغتين منذ اليوم الأول." },
-  "ed.why2": { en: "<b>🔡 Spelling has real rules</b><br>Not just memorizing letters — the actual rules behind how English words are built, taught step by step.", ar: "<b>🔡 الإملاء له قواعد حقيقية</b><br>ليس مجرد حفظ للحروف — بل القواعد الحقيقية وراء بناء الكلمات، تُدرَّس خطوة بخطوة." },
-  "ed.why3": { en: "<b>🗣️ Homework uses real sentences</b><br>Every practice sentence is grounded in what a word actually means — not a random word list to memorize.", ar: "<b>🗣️ الواجبات تستخدم جملاً حقيقية</b><br>كل جملة تدريب مبنية على المعنى الحقيقي للكلمة، وليست قائمة عشوائية للحفظ." },
-  "ed.why4": { en: "<b>📄 Real worksheets and flashcards</b><br>A printable homework page and flashcard set for every single lesson, for the moments a screen isn't the right tool.", ar: "<b>📄 أوراق عمل وبطاقات حقيقية</b><br>ورقة واجب قابلة للطباعة وبطاقات تعليمية لكل درس، للحظات التي لا تناسبها الشاشة." },
-  "ed.why5": { en: "<b>👥 A real, live-taught community</b><br>Grouped with peers at the same level, guided by a dedicated teacher, with a supervisor on hand for anything else — never a solo app.", ar: "<b>👥 مجتمع حقيقي بتدريس مباشر</b><br>مجموعة من زملاء بنفس المستوى، بإشراف معلم مخصص، ومشرف متواجد لأي أمر آخر — وليس تطبيقاً فردياً أبداً." },
-  "ed.jump_pricing_included": { en: "See what's included in every plan ↓", ar: "شاهد ما يتضمنه كل اشتراك ↓" },
-  "ed.hub_intro": { en: "Beyond the 20 structured lessons, every level unlocks its own free-browsing Hub — searchable, and open anytime, not just during lesson time.", ar: "بالإضافة إلى الدروس العشرين المنظمة، كل مستوى يفتح مكتبته الخاصة للتصفح الحر — قابلة للبحث، ومتاحة في أي وقت." },
-  "ed.hub_vocab": { en: "📔 Vocabulary", ar: "📔 المفردات" },
-  "ed.hub_idioms": { en: "💡 Idioms", ar: "💡 التعبيرات" },
-  "ed.hub_writing": { en: "✍️ Writing &amp; Speaking", ar: "✍️ الكتابة والتحدث" },
-  "ed.hub_spelling": { en: "🔡 Spelling", ar: "🔡 الإملاء" },
-  "ed.hub_phonics": { en: "🔤 Phonics", ar: "🔤 الصوتيات" },
-  "ed.hub_grammar": { en: "📐 Grammar", ar: "📐 القواعد" },
-  "ed.hub_all": { en: "all levels", ar: "كل المستويات" },
-  "ed.jump_hub_demo": { en: "Watch the Hub in action ↓", ar: "شاهد المكتبة في العمل ↓" },
-  "ed.game0": { en: "<b>Pre-A</b> — Lumi's Pocket <br><span class=\"explore-substep\">A gentle picture-and-sound matching game — no reading required yet.</span>", ar: "<b>المستوى التمهيدي</b> — جيب لومي <br><span class=\"explore-substep\">لعبة مطابقة صور وأصوات هادئة — لا تتطلب القراءة بعد.</span>" },
-  "ed.game1": { en: "<b>Level 1</b> — Treehouse Builder <br><span class=\"explore-substep\">Answer correctly to build up a treehouse, piece by piece.</span>", ar: "<b>المستوى 1</b> — بناء بيت الشجرة <br><span class=\"explore-substep\">أجب بشكل صحيح لتبني بيت الشجرة، قطعة بقطعة.</span>" },
-  "ed.game2": { en: "<b>Level 2</b> — Twelve Months Calendar <br><span class=\"explore-substep\">A full-year picture calendar that fills in as vocabulary grows.</span>", ar: "<b>المستوى 2</b> — تقويم الأشهر الاثني عشر <br><span class=\"explore-substep\">تقويم مصور لسنة كاملة يمتلئ كلما نمت المفردات.</span>" },
-  "ed.game3": { en: "<b>Level 3</b> — Crew Chat <br><span class=\"explore-substep\">A group-chat-style game — reply to friends and type words letter by letter.</span>", ar: "<b>المستوى 3</b> — محادثة الأصدقاء <br><span class=\"explore-substep\">لعبة على شكل محادثة جماعية — رد على الأصدقاء واكتب الكلمات حرفاً بحرف.</span>" },
-  "ed.game4": { en: "<b>Level 4</b> — Squad Budget <br><span class=\"explore-substep\">Make spending decisions in English as a team.</span>", ar: "<b>المستوى 4</b> — ميزانية الفريق <br><span class=\"explore-substep\">اتخذ قرارات إنفاق بالإنجليزية كفريق واحد.</span>" },
-  "ed.game5": { en: "<b>Level 5</b> — Story Detective <br><span class=\"explore-substep\">Piece together what happened, using real past-tense clues.</span>", ar: "<b>المستوى 5</b> — محقق القصص <br><span class=\"explore-substep\">اجمع أجزاء ما حدث، باستخدام أدلة حقيقية بصيغة الماضي.</span>" },
-  "ed.game6": { en: "<b>Level 6</b> — Crystal Ball <br><span class=\"explore-substep\">Make predictions and read your own English \"fortune.\"</span>", ar: "<b>المستوى 6</b> — الكرة البلورية <br><span class=\"explore-substep\">توقّع المستقبل واقرأ \"حظك\" الخاص بالإنجليزية.</span>" },
-  "ed.games_note": { en: "A new bonus game unlocks after every lesson your child finishes — see one played for real in \"See it in action.\"", ar: "لعبة إضافية جديدة تُفتح بعد كل درس ينهيه طفلك — شاهد إحداها أثناء اللعب الفعلي في قسم \"شاهدها في العمل\"." },
-  "ed.price1": { en: "<b>Single level</b> — 730 SAR (~$195) &middot; 2 months &middot; 20 sessions", ar: "<b>مستوى واحد</b> — 730 ريال سعودي (~195$) &middot; شهران &middot; 20 حصة" },
-  "ed.price2": { en: "<b>3-level bundle</b> — 1,949.99 SAR (~$520) &middot; 6 months &middot; save 11%", ar: "<b>باقة 3 مستويات</b> — 1,949.99 ريال سعودي (~520$) &middot; 6 أشهر &middot; وفّر 11%" },
-  "ed.price3": { en: "<b>6-level bundle</b> — 3,499.99 SAR (~$933) &middot; full year &middot; save 20%", ar: "<b>باقة 6 مستويات</b> — 3,499.99 ريال سعودي (~933$) &middot; سنة كاملة &middot; وفّر 20%" },
-  "ed.price_note": { en: "Every plan includes full English Hub access, peer grouping by level, a teacher, and a supervisor. Prices also shown in USD, AED, KWD, OMR and QAR.", ar: "كل اشتراك يشمل وصولاً كاملاً للمكتبة، مجموعة زملاء حسب المستوى، معلم، ومشرف. الأسعار متاحة أيضاً بالدولار والدرهم والدينار الكويتي والريال العماني والقطري." },
-  "ed.jump_pricing": { en: "See full pricing &amp; currencies ↓", ar: "شاهد الأسعار كاملة والعملات ↓" },
-  "ed.faq1": { en: "<b>Is it really in Arabic and English?</b><br>Yes — every word and every instruction has Arabic support.", ar: "<b>هل هو فعلاً بالعربية والإنجليزية؟</b><br>نعم — كل كلمة وكل تعليمة لها دعم عربي." },
-  "ed.faq2": { en: "<b>Does my child need a teacher?</b><br>Every lesson pairs self-study with a real live class, plus a supervisor for anything else.", ar: "<b>هل يحتاج طفلي إلى معلم؟</b><br>كل درس يجمع بين الدراسة الذاتية وحصة مباشرة حقيقية، بالإضافة إلى مشرف لأي أمر آخر." },
-  "ed.faq3": { en: "<b>Can we learn offline too?</b><br>Yes — every lesson has printable worksheets and flashcards.", ar: "<b>هل يمكننا التعلّم دون اتصال أيضاً؟</b><br>نعم — كل درس له أوراق عمل وبطاقات تعليمية قابلة للطباعة." },
-  "ed.faq4": { en: "<b>Can we try before paying anything?</b><br>Yes — a free placement test and a free trial class, both with zero commitment.", ar: "<b>هل يمكننا التجربة قبل الدفع؟</b><br>نعم — اختبار تحديد مستوى مجاني وحصة تجريبية مجانية، بدون أي التزام." },
-  "ed.jump_faq": { en: "See all questions ↓", ar: "شاهد كل الأسئلة ↓" },
-  "ed.start_now": { en: "Start learning now →", ar: "ابدأ التعلّم الآن ←" },
-  "tp.not_alone": { en: "<b>👥 Not alone</b> &mdash; your child joins other students already at this same level.", ar: "<b>👥 لست وحدك</b> &mdash; ينضم طفلك إلى طلاب آخرين موجودين بالفعل في نفس هذا المستوى." },
-  "tp.real_fun": { en: "<b>🎮 Real fun</b> &mdash; the trial includes games, challenges, and little gifts from the teachers.", ar: "<b>🎮 متعة حقيقية</b> &mdash; تتضمن الحصة التجريبية ألعاباً وتحديات وهدايا صغيرة من المعلمين." },
-  "tp.cta_text": { en: "Message us on WhatsApp and we'll book your free trial class at this level.", ar: "راسلنا عبر واتساب وسنحجز لك الحصة التجريبية المجانية في هذا المستوى." },
-  "tp.book_btn": { en: "Book my free trial on WhatsApp", ar: "احجز حصتي التجريبية عبر واتساب" },
-  "bio.lumi.name": { en: "Lumi \u00b7 The Explorer", ar: "لومي \u00b7 المستكشف" },
-  "bio.lumi.text": { en: "Lumi set out from Egypt to explore the world \u2014 and quickly discovered that English was the key to reaching it. He travelled through the Gulf, the one part of the world he could still explore in his own language, and made it his mission to help every Arabic-speaking child learn English the same way: one curious step at a time.",
-    ar: "انطلق لومي من مصر لاستكشاف العالم \u2014 واكتشف سريعاً أن اللغة الإنجليزية هي مفتاح الوصول إليه. سافر عبر منطقة الخليج، المكان الوحيد الذي استطاع استكشافه بلغته العربية، وجعل مهمته مساعدة كل طفل يتحدث العربية على تعلم الإنجليزية بنفس الطريقة: خطوة فضولية بعد أخرى." },
-  "bio.sara.name": { en: "Sara \u00b7 The Spark of Color", ar: "سارة \u00b7 بريق الألوان" },
-  "bio.sara.text": { en: "Sara is bright, warm, and always dressed in color \u2014 she's the face of everything joyful about learning with Lumio. Her charm and vibrant style are the platform itself: colorful, welcoming, and full of life, so every lesson feels like something to look forward to.",
-    ar: "سارة مشرقة ودافئة، وترتدي الألوان دائماً \u2014 إنها الوجه المبهج لكل ما هو ممتع في التعلم مع Lumio. سحرها وأسلوبها النابض بالحياة يعكسان المنصة نفسها: ملونة، ترحيبية، ومليئة بالحياة، فتجعل كل درس شيئاً يُنتظر بشوق." },
-  "bio.noor.name": { en: "Noor \u00b7 The Steady Hand", ar: "نور \u00b7 اليد الثابتة" },
-  "bio.noor.text": { en: "Noor has worn her hijab since she was four years old, and carries a wisdom and calm beyond her years. She's the one who looks after every detail \u2014 the progress reports, the worksheets, the flashcards, the writing pages \u2014 the same papers a parent holds and signs at home.",
-    ar: "ترتدي نور الحجاب منذ كانت في الرابعة من عمرها، وتحمل حكمة وهدوءاً يفوقان سنها. هي من تهتم بكل تفصيلة \u2014 تقارير التقدم، أوراق العمل، البطاقات التعليمية، صفحات الكتابة \u2014 نفس الأوراق التي يحملها ويوقعها ولي الأمر في المنزل." },
-  "bio.omar.name": { en: "Omar \u00b7 The Platform Itself", ar: "عمر \u00b7 المنصة ذاتها" },
-  "bio.omar.text": { en: "Omar wears his thobe with pride in who he is, dresses with Ziad's easy urban style, carries Noor's calm, and is always as put-together as Sara. He doesn't stand for just one thing \u2014 he stands for Lumio itself, the platform that brings every one of these qualities together in one place.",
-    ar: "يرتدي عمر ثوبه بفخر بهويته، ويرتدي بأسلوب زياد الحضري السهل، ويحمل هدوء نور، وأنيق دائماً مثل سارة. لا يمثل شيئاً واحداً فقط \u2014 بل يمثل Lumio نفسها، المنصة التي تجمع كل هذه الصفات في مكان واحد." },
-  "bio.ziad.name": { en: "Ziad \u00b7 The Player", ar: "زياد \u00b7 اللاعب" },
-  "bio.ziad.text": { en: "Ziad is a gamer through and through \u2014 it shows in how he dresses and how he moves. He represents everything playful about Lumio: the bonus games, the game-based challenges, and the simple idea that learning sticks best when it's fun.",
-    ar: "زياد لاعب ألعاب بكل معنى الكلمة \u2014 يظهر ذلك في طريقة لبسه وحركته. يمثل كل ما هو ممتع في Lumio: الألعاب الإضافية، التحديات القائمة على اللعب، والفكرة البسيطة بأن التعلم يترسخ بشكل أفضل عندما يكون ممتعاً." },
-  "bio.hamad.name": { en: "Hamad \u00b7 The Voice in Arabic", ar: "حمد \u00b7 الصوت بالعربية" },
-  "bio.hamad.text": { en: "Hamad wears his thobe and ghutra with quiet pride. He represents the genuine Arabic support built into every part of Lumio \u2014 real Arabic-speaking teachers, and a curriculum that speaks a child's own language, every step of the way.",
-    ar: "يرتدي حمد ثوبه وغترته بفخر هادئ. يمثل الدعم العربي الحقيقي المدمج في كل جزء من Lumio \u2014 معلمون عرب حقيقيون، ومنهج يتحدث بلغة الطفل نفسها في كل خطوة." },
-  "explore_label": { en: "Explore", ar: "استكشف" },
-  "wa_chat": { en: "Chat with us", ar: "تواصل معنا" },
-};
-
-(function () {
-  // ===== Bilingual (Arabic-first) engine =====
-  // Applies the dictionary above to every [data-i18n]/[data-i18n-html]
-  // element, flips <html dir/lang>, and remembers the choice.
-  function applyLanguage(lang) {
-    var dict = window.LUMIO_I18N;
-    document.documentElement.lang = lang;
-    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
-    window.__lumioLang = lang;
-
-    document.querySelectorAll("[data-i18n]").forEach(function (el) {
-      var entry = dict[el.dataset.i18n];
-      if (entry && entry[lang] !== undefined) el.textContent = entry[lang];
-    });
-    document.querySelectorAll("[data-i18n-html]").forEach(function (el) {
-      var entry = dict[el.dataset.i18nHtml];
-      if (entry && entry[lang] !== undefined) el.innerHTML = entry[lang];
-    });
-
-    var arBtn = document.getElementById("langArBtn"), enBtn = document.getElementById("langEnBtn");
-    if (arBtn && enBtn) {
-      arBtn.classList.toggle("active", lang === "ar");
-      enBtn.classList.toggle("active", lang === "en");
-    }
-
-    var pbWa = document.getElementById("pbWaLink");
-    if (pbWa) {
-      var msg = lang === "ar"
-        ? "مرحباً! هل يمكنكم إرسال ملف دليل أولياء الأمور من فضلكم؟"
-        : "Hi! Could you send me the Parent Handbook PDF, please?";
-      pbWa.href = "https://wa.me/201124882493?text=" + encodeURIComponent(msg);
-    }
-
-    try { localStorage.setItem("lumio_lang", lang); } catch (e) {}
-  }
-
-  var savedLang = "ar";
-  try { savedLang = localStorage.getItem("lumio_lang") || "ar"; } catch (e) {}
-  applyLanguage(savedLang);
-
-  var langArBtnEl = document.getElementById("langArBtn"), langEnBtnEl = document.getElementById("langEnBtn");
-  if (langArBtnEl) langArBtnEl.addEventListener("click", function () { applyLanguage("ar"); });
-  if (langEnBtnEl) langEnBtnEl.addEventListener("click", function () { applyLanguage("en"); });
-
-  // Hero "hear it yourself" word cards -- real audio, the same
-    // Lumio.speak() every lesson already uses, not a mock.
-    document.querySelectorAll(".lp-hear-card").forEach(function (card) {
-      card.addEventListener("click", function () {
-        if (typeof Lumio === "undefined" || !Lumio.speak) return;
-        Lumio.speak(card.dataset.word);
-        document.querySelectorAll(".lp-hear-card").forEach(function (c) { c.classList.remove("playing"); });
-        card.classList.add("playing");
-        setTimeout(function () { card.classList.remove("playing"); }, 900);
-      });
-    });
-
-    // Dismissible top announcement bar -- remembered across visits.
-    (function () {
-      var bar = document.getElementById("lpAnnounce");
-      var closeBtn = document.getElementById("lpAnnounceClose");
-      if (!bar || !closeBtn) return;
-      try {
-        if (localStorage.getItem("lumio_announce_dismissed") === "1") { bar.style.display = "none"; return; }
-      } catch (e) {}
-      closeBtn.addEventListener("click", function () {
-        bar.style.display = "none";
-        try { localStorage.setItem("lumio_announce_dismissed", "1"); } catch (e) {}
-      });
-    })();
-
-    // Trial level-picker: no longer launches present-trial.html directly.
-    // Tapping a level now shows a quick, encouraging overview of that level
-    // and hands the visitor to WhatsApp to actually book the trial with a
-    // real teacher -- trial classes are staffed, scheduled sessions with
-    // other students at that level, not something to self-serve alone.
-    (function () {
-      var overlay = document.getElementById("trialOverlay");
-      var popup = document.getElementById("trialPopup");
-      var closeBtn = document.getElementById("trialPopupClose");
-      if (!popup) return;
-
-      function openTrialPopup(btn) {
-        var lang = window.__lumioLang || "ar";
-        var name = lang === "ar" ? btn.dataset.nameAr : btn.dataset.name;
-        var ages = lang === "ar" ? btn.dataset.agesAr : btn.dataset.ages;
-        var blurb = lang === "ar" ? btn.dataset.blurbAr : btn.dataset.blurb;
-        document.getElementById("tpAges").textContent = ages;
-        document.getElementById("tpName").textContent = name;
-        document.getElementById("tpBlurb").textContent = blurb;
-        // The WhatsApp message always uses the English name/ages, regardless of
-        // page language, so whoever answers on the business side reads a
-        // consistent level name every time.
-        var msg = lang === "ar"
-          ? "مرحباً! أرغب في حجز حصة تجريبية مجانية لمستوى " + btn.dataset.name + " (" + btn.dataset.ages + ")."
-          : "Hi! I'd like to book a free trial class for " + btn.dataset.name + " (" + btn.dataset.ages + ").";
-        document.getElementById("tpWhatsapp").href = "https://wa.me/201124882493?text=" + encodeURIComponent(msg);
-        overlay.hidden = false;
-        popup.classList.add("open");
-        popup.setAttribute("aria-hidden", "false");
-        document.body.style.overflow = "hidden";
-      }
-      function closeTrialPopup() {
-        popup.classList.remove("open");
-        popup.setAttribute("aria-hidden", "true");
-        overlay.hidden = true;
-        document.body.style.overflow = "";
-      }
-      document.querySelectorAll(".lp-trial-level").forEach(function (btn) {
-        btn.addEventListener("click", function () { openTrialPopup(btn); });
-      });
-      closeBtn.addEventListener("click", closeTrialPopup);
-      overlay.addEventListener("click", closeTrialPopup);
-      document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeTrialPopup(); });
-    })();
-
-    // Pricing currency switcher: swap every .lp-price-amount's displayed
-    // number + symbol together when a currency pill is tapped.
-    var curBtns = document.querySelectorAll(".lp-cur-btn");
-    // .lp-perlevel (the "~X per level" figure inside bundle cards) uses the
-    // exact same .lp-price-symbol/.lp-price-num children, so one shared
-    // loop updates both the headline price and the per-level figure.
-    var priceAmounts = document.querySelectorAll(".lp-price-amount, .lp-perlevel");
-    var curSymbols = { SAR: "SAR", USD: "$", AED: "AED", KWD: "KD", OMR: "OMR", QAR: "QAR" };
-    curBtns.forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        var cur = btn.dataset.cur;
-        curBtns.forEach(function (b) { b.classList.remove("active"); });
-        btn.classList.add("active");
-        priceAmounts.forEach(function (el) {
-          var val = el.dataset[cur.toLowerCase()];
-          if (!val) return;
-          var num = parseFloat(val).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-          el.querySelector(".lp-price-num").textContent = num;
-          el.querySelector(".lp-price-symbol").textContent = curSymbols[cur];
-        });
-      });
-    });
-
-    // Highlight the matching sub-nav link as each section scrolls into view.
-    var subnavLinks = document.querySelectorAll(".lp-subnav a");
-    var navTargets = Array.prototype.map.call(subnavLinks, function (a) {
-      return document.getElementById(a.getAttribute("href").slice(1));
-    }).filter(Boolean);
-    if (navTargets.length && "IntersectionObserver" in window) {
-      var navIo = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          var link = document.querySelector('.lp-subnav a[href="#' + entry.target.id + '"]');
-          if (!link) return;
-          if (entry.isIntersecting) {
-            subnavLinks.forEach(function (a) { a.classList.remove("active"); });
-            link.classList.add("active");
-          }
-        });
-      }, { rootMargin: "-45% 0px -50% 0px" });
-      navTargets.forEach(function (t) { navIo.observe(t); });
-    }
-
-    // Scroll-in entrance for every card-like element below the hero, with a
-    // small per-item stagger so a row reveals left-to-right rather than
-    // popping in all at once. Falls back to instantly visible if
-    // IntersectionObserver isn't available.
-    var revealEls = document.querySelectorAll(".reveal-io");
-    if ("IntersectionObserver" in window) {
-      var revealIo = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          if (!entry.isIntersecting) return;
-          entry.target.classList.add("in-view");
-          revealIo.unobserve(entry.target);
-        });
-      }, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
-      revealEls.forEach(function (el, i) {
-        el.style.transitionDelay = (Math.min(i % 4, 4) * 0.08) + "s";
-        revealIo.observe(el);
-      });
-    } else {
-      revealEls.forEach(function (el) { el.classList.add("in-view"); });
-    }
-
-    // Scroll-in entrance for the character strip (progressive enhancement).
-    var section = document.getElementById("friendsSection");
-    if (section) {
-      if ("IntersectionObserver" in window) {
-        var io = new IntersectionObserver(function (entries) {
-          entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-              section.classList.add("cf-in");
-              io.disconnect();
-            }
-          });
-        }, { threshold: 0.25 });
-        io.observe(section);
-      } else {
-        section.classList.add("cf-in");
-      }
-    }
-
-    // Click-for-greeting speech bubbles + a little bounce pop.
-    var cards = document.querySelectorAll(".cf-card");
-    var hideTimer = null;
-    // Character bio popup: opens alongside the speech-bubble reaction on
-    // the same click, showing who this character is and what they
-    // represent. Uses the existing welcome-hero art for now; swap
-    // CHAR_POSTERS to a dedicated poster image per character once those
-    // are ready, no other change needed.
-    var CHAR_POSTERS = {
-      lumi: "assets/story/characters/lumi-welcome-hero.png",
-      sara: "assets/story/characters/sara-welcome-hero.png",
-      noor: "assets/story/characters/noor-welcome-hero.png",
-      omar: "assets/story/characters/omar-welcome-hero.png",
-      ziad: "assets/story/characters/ziad-welcome-hero.png",
-      hamad: "assets/story/characters/hamad-welcome-hero.png",
-    };
-    var charOverlay = document.getElementById("charOverlay");
-    var charPopup = document.getElementById("charPopup");
-    var charPopupClose = document.getElementById("charPopupClose");
-    function openCharPopup(key) {
-      var lang = window.__lumioLang || "ar";
-      var nameEntry = window.LUMIO_I18N["bio." + key + ".name"];
-      var bioEntry = window.LUMIO_I18N["bio." + key + ".text"];
-      if (!nameEntry || !charPopup) return;
-      document.getElementById("cpImg").src = CHAR_POSTERS[key] || "";
-      document.getElementById("cpName").textContent = nameEntry[lang];
-      document.getElementById("cpBio").textContent = bioEntry[lang];
-      charOverlay.hidden = false;
-      charPopup.classList.add("open");
-      charPopup.setAttribute("aria-hidden", "false");
-      document.body.style.overflow = "hidden";
-    }
-    function closeCharPopup() {
-      charPopup.classList.remove("open");
-      charPopup.setAttribute("aria-hidden", "true");
-      charOverlay.hidden = true;
-      document.body.style.overflow = "";
-    }
-    if (charPopupClose) {
-      charPopupClose.addEventListener("click", closeCharPopup);
-      charOverlay.addEventListener("click", closeCharPopup);
-      document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeCharPopup(); });
-    }
-
-    cards.forEach(function (card) {
-      card.addEventListener("click", function () {
-        var wasTalking = card.classList.contains("cf-talking");
-        cards.forEach(function (c) { c.classList.remove("cf-talking"); });
-        clearTimeout(hideTimer);
-        if (wasTalking) return; // tapping the same one again just closes it
-
-        var bubble = card.querySelector(".cf-bubble");
-        bubble.innerHTML = card.dataset.en + '<span class="ar">' + card.dataset.ar + "</span>";
-        card.classList.add("cf-talking");
-
-        var imgwrap = card.querySelector(".cf-imgwrap");
-        imgwrap.classList.remove("cf-pop");
-        void imgwrap.offsetWidth; // restart animation
-        imgwrap.classList.add("cf-pop");
-
-        hideTimer = setTimeout(function () { card.classList.remove("cf-talking"); }, 3000);
-
-        if (card.dataset.bio) openCharPopup(card.dataset.bio);
-      });
-    });
-    document.addEventListener("click", function (e) {
-      if (!e.target.closest(".cf-card")) {
-        cards.forEach(function (c) { c.classList.remove("cf-talking"); });
-      }
-    });
-  })();
-  </script>
-
-  <section class="card card-sun center mt mb">
-    <h2 data-i18n="cta.h2">Ready to start your adventure?</h2>
-    <p class="mt mb" style="font-weight:700" data-i18n="cta.p">Pre-A level is open now — 20 fun lessons from "Hello!" to your first big review.</p>
-    <a class="btn btn-primary btn-big" href="login.html" data-i18n="cta.btn">Let's go!</a>
-  </section>
+<a class="wafab" href="https://wa.me/201124882493" target="_blank" rel="noopener" data-i18n-label="wa.aria" aria-label="Chat with us on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3zM12 21.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.7 1 1-3.6-.2-.4C2.7 15.6 2.2 13.8 2.2 12 2.2 6.6 6.6 2.2 12 2.2c2.6 0 5.1 1 6.9 2.9 1.8 1.8 2.9 4.3 2.9 6.9 0 5.4-4.4 9.8-9.8 9.8zm8.3-18.1C18.1 1.5 15.1.2 12 .2 5.5.2.2 5.5.2 12c0 2.1.5 4.1 1.6 5.9L.1 24l6.3-1.7c1.7.9 3.7 1.4 5.6 1.4 6.5 0 11.8-5.3 11.8-11.8 0-3.1-1.2-6.1-3.5-8.3z"/></svg></a>
 
 <script>
 (function () {
-  var tab = document.getElementById("exploreTab");
-  var drawer = document.getElementById("exploreDrawer");
-  var overlay = document.getElementById("exploreOverlay");
-  var closeBtn = document.getElementById("exploreClose");
-  if (!tab || !drawer) return;
-
-  function openDrawer() {
-    drawer.classList.add("open");
-    drawer.setAttribute("aria-hidden", "false");
-    overlay.hidden = false;
-    tab.setAttribute("aria-expanded", "true");
-    document.body.style.overflow = "hidden";
-  }
-  function closeDrawer() {
-    drawer.classList.remove("open");
-    drawer.setAttribute("aria-hidden", "true");
-    overlay.hidden = true;
-    tab.setAttribute("aria-expanded", "false");
-    document.body.style.overflow = "";
-  }
-  tab.addEventListener("click", openDrawer);
-  closeBtn.addEventListener("click", closeDrawer);
-  overlay.addEventListener("click", closeDrawer);
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeDrawer(); });
-
-  // Tabs inside the drawer
-  var tabbtns = drawer.querySelectorAll(".explore-tabbtn");
-  var panels = drawer.querySelectorAll(".explore-panel");
-  tabbtns.forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      tabbtns.forEach(function (b) { b.classList.remove("active"); b.setAttribute("aria-selected", "false"); });
-      panels.forEach(function (p) { p.classList.remove("active"); });
-      btn.classList.add("active"); btn.setAttribute("aria-selected", "true");
-      var target = drawer.querySelector('.explore-panel[data-panel="' + btn.dataset.panel + '"]');
-      if (target) target.classList.add("active");
-    });
+  // Shared scripts, versioned by js/version.json. Animation libraries are self-hosted in vendor/:
+  // if any of them fails to load, the page still works (every section has a no-motion state).
+  var v = window.LUMIO_V || "20261004f";
+  ['vendor/three-r128.min.js', 'vendor/gsap-3.12.5.min.js', 'vendor/ScrollTrigger-3.12.5.min.js'].forEach(function (src) {
+    document.write('<script src="' + src + '"><' + '/script>');
   });
-
-  // A jump link inside the drawer should close it before the browser scrolls
-  drawer.querySelectorAll(".explore-jump, .explore-cta").forEach(function (a) {
-    a.addEventListener("click", closeDrawer);
-  });
+  document.write('<script src="js/site-i18n.js?v=' + v + '"><' + '/script>');
+  document.write('<script src="js/site.js?v=' + v + '"><' + '/script>');
 })();
 </script>
-
-</main>
 </body>
 </html>
