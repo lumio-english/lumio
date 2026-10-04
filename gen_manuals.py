@@ -191,7 +191,7 @@ def build_level(lvl, cfg, data, story, game):
     pages.append(f'''<div class="page">{bar("How this level is taught")}<div class="content">
   <div class="steps">
     <div class="step"><div class="n o1">1</div><div><h3>Prepare in the app</h3><p>Before each live class, your child meets the lesson's new words, sounds and sentences on their own, so they arrive ready.</p></div></div>
-    <div class="step"><div class="n o2">2</div><div><h3>Live class on Zoom</h3><p>A real teacher leads the same lesson in a small group of up to four students at this level, with a supervisor on hand.</p></div></div>
+    <div class="step"><div class="n o2">2</div><div><h3>Live class on Microsoft Teams</h3><p>A real teacher leads the same lesson in a small group of up to four students at this level, with a supervisor on hand.</p></div></div>
     <div class="step"><div class="n o3">3</div><div><h3>Homework</h3><p>Spelling, drawing{" or writing" if teen else ""}, Say It and a short quiz, all tied to that lesson; plus a printable worksheet, writing sheet and flashcards.</p></div></div>
     <div class="step"><div class="n o4">4</div><div><h3>Grow on the map</h3><p>Every finished lesson lights up the next step on the adventure map and unlocks that lesson's bonus game.</p></div></div>
   </div>

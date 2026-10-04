@@ -116,7 +116,7 @@ def capture():
             ids = pg.evaluate("""async () => {
               await new Promise(r => { const s = document.createElement('script'); s.src = 'js/lumio-schedule.js'; s.onload = r; document.head.appendChild(s); });
               const L = LumioSchedule, P = LumioProfiles;
-              const sara = await P.addTeacher({name:'Ms. Sara', avatar:'🌸', pin:'1111', isOwner:true, meetingLink:'https://teams.microsoft.com/l/meetup-join/lumio-demo'});
+              const sara = await P.addTeacher({name:'Ms. Sara', avatar:'🌸', pin:'1111', meetingLink:'https://teams.microsoft.com/l/meetup-join/lumio-demo'});
               const omar = await P.addTeacher({name:'Mr. Omar', avatar:'🧑‍🏫', pin:'2222', meetingLink:'https://teams.microsoft.com/l/meetup-join/lumio-demo2'});
               L.setWeeklyAvailability({teacherId:sara.id, teacherName:sara.name, startTimes:['14:00','15:00','16:00','17:00'], durationMinutes:60});
               L.setWeeklyAvailability({teacherId:omar.id, teacherName:omar.name, startTimes:['16:00','18:00','19:00','12:00'], durationMinutes:60});
