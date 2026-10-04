@@ -592,10 +592,15 @@ function mergeDeletedIds_(incoming) {
   if (added) writeRows_(DELETED_IDS_SHEET, DELETED_IDS_COLUMNS, existing);
 }
 
-function pullRoster_() {
+// Security (v11): a PIN hash is the credential the script checks (tid/th, sid/sh), so a pull never
+// hands out anyone else's: students come without pinHash, teachers only with the caller's own.
+// Devices keep their local hash (keepHidden in js/lumio-profiles.js) and keepPinHashes_ keeps
+// the Sheet's when a push leaves it out.
+function pullRoster_(who) {
+  var me = who && who.teacher ? who.teacher.id : "";
   return {
-    students: readRows_(ROSTER_SHEET, ROSTER_COLUMNS),
-    teachers: readRows_(TEACHERS_SHEET, TEACHERS_COLUMNS),
+    students: readRows_(ROSTER_SHEET, ROSTER_COLUMNS).map(function (s) { var o = Object.assign({}, s); delete o.pinHash; return o; }),
+    teachers: readRows_(TEACHERS_SHEET, TEACHERS_COLUMNS).map(function (t) { var o = Object.assign({}, t); if (!(who && who.open) && o.id !== me) delete o.pinHash; return o; }),
     rewardCatalog: readRows_(REWARD_CATALOG_SHEET, REWARD_CATALOG_COLUMNS),
     deletedIds: deletedIdsOfType_(["student", "teacher", "reward"]),
   };
@@ -652,11 +657,18 @@ function mainOwnerOf_(teachers) {
   return owners[0] || teachers[0] || null;
 }
 function isOwnerVal_(v) { return v === true || v === "true"; }
+function callerIsOwner_(who) { return !!(who && (who.open || (who.teacher && isOwnerVal_(who.teacher.isOwner)))); }
 function pushRoster_(body, who) {
   var lock = LockService.getScriptLock(); lock.waitLock(20000);
   try {
     var mainNow = mainOwnerOf_(readRows_(TEACHERS_SHEET, TEACHERS_COLUMNS));
     if (mainNow && Array.isArray(body.deletedIds)) body.deletedIds = body.deletedIds.filter(function (d) { return !(d && d.id === mainNow.id); });   // the main owner's account can't be deleted
+    // Deletions (v11): owners may delete anything (except the main owner); a regular teacher only
+    // their own students -- never a teacher, and never another teacher's student.
+    if (!callerIsOwner_(who) && Array.isArray(body.deletedIds)) {
+      var mineIds = {}; readRows_(ROSTER_SHEET, ROSTER_COLUMNS).forEach(function (r) { if (who.teacher && r.teacherId === who.teacher.id) mineIds[r.id] = true; });
+      body.deletedIds = body.deletedIds.filter(function (d) { return d && (d.type || "student") === "student" && mineIds[d.id]; });
+    }
     mergeDeletedIds_(body.deletedIds);
     if (Array.isArray(body.students)) {
       writeRows_(ROSTER_SHEET, ROSTER_COLUMNS, mergeRowsById_(readRows_(ROSTER_SHEET, ROSTER_COLUMNS),
@@ -671,11 +683,16 @@ function pushRoster_(body, who) {
           if (!m.pinHash && a.pinHash) m.pinHash = a.pinHash;
           if (!callerIsMain) m.isOwner = a.isOwner;                        // only the main owner changes owner access
           if (main && a.id === main.id) m.isOwner = true;                  // the main owner always stays an owner
+          // v11: only the main owner edits the main owner's record (name, PIN, link...); a regular
+          // teacher edits only their own record -- so nobody can reset someone else's PIN
+          if (!callerIsMain && main && a.id === main.id && !(who && who.teacher && who.teacher.id === a.id)) return a;
+          if (!callerIsOwner_(who) && !(who && who.teacher && who.teacher.id === a.id)) return a;
           return m;
         });
       if (!callerIsMain) {
         var known = {}; sheetTeachers.forEach(function (t) { known[t.id] = true; });
         merged.forEach(function (t) { if (!known[t.id]) t.isOwner = false; });   // new teachers from others start as plain teachers
+        if (!callerIsOwner_(who)) merged = merged.filter(function (t) { return known[t.id]; });   // only owners add teachers
       }
       writeRows_(TEACHERS_SHEET, TEACHERS_COLUMNS, merged);
     }
@@ -1452,6 +1469,19 @@ function ownTree_(tree, me) { var out = {}; if (tree && tree[me.name]) out[me.na
 // js/lumio-profiles.js and friends). While the property is NOT set the
 // check is skipped, so deploying this version can never lock the site
 // out; set the property right after deploying to turn the lock on.
+// [max requests, per seconds] for the public actions, counted across the whole site
+var PUBLIC_LIMITS_ = {
+  teacherLogin: [120, 600], studentLogin: [300, 600], checkPhone: [60, 600], registerStudent: [30, 600],
+  placementUpdate: [60, 600], addLead: [40, 600], pushProTestResult: [40, 600], writingFeedback: [60, 600]
+};
+function throttleOk_(name, max, windowS) {
+  try {
+    var c = CacheService.getScriptCache(), slot = Math.floor(Date.now() / 1000 / windowS), k = "rl_" + name + "_" + slot;
+    var n = Number(c.get(k) || 0) + 1;
+    c.put(k, String(n), windowS + 60);
+    return n <= max;
+  } catch (e) { return true; }   // never block real users because the cache hiccuped
+}
 function keyOk_(e) {
   var want = PropertiesService.getScriptProperties().getProperty("LUMIO_API_KEY");
   if (!want) return true;
@@ -1466,7 +1496,7 @@ function doGet(e) {
     if (!keyOk_(e)) return jsonResponse_({ ok: false, error: "unauthorized" });
     var action = (e && e.parameter) ? e.parameter.action : null;
     // Lets a page tell this version apart from older deployments.
-    if (action === "version") return jsonResponse_({ ok: true, version: 10, auth: true, merge: true, studentPhoto: true, mainOwner: true });
+    if (action === "version") return jsonResponse_({ ok: true, version: 11, auth: true, merge: true, studentPhoto: true, mainOwner: true, hardened: true });
     var who = whoIs_(e);
     if (who.error) return denied_(who);
     if (who.role === "student") {
@@ -1483,12 +1513,12 @@ function doGet(e) {
       if (action) return denied_(who);
       return jsonResponse_({ ok: true, message: "Lumio sync backend is running." });
     }
-    if (action === "pullRoster") return jsonResponse_(pullRoster_());
+    if (action === "pullRoster") return jsonResponse_(pullRoster_(who));
     if (action === "pullScheduleV2") return jsonResponse_(pullScheduleV2_());
     if (action === "pullProgress") return jsonResponse_(pullProgress_());
     if (action === "pullHomework") return jsonResponse_(pullHomework_());
     if (action === "pullLeads") return jsonResponse_(pullLeads_());
-    if (action === "pullProAdmins") return jsonResponse_(pullProAdmins_());
+    if (action === "pullProAdmins") return callerIsOwner_(who) ? jsonResponse_(pullProAdmins_()) : denied_({});
     if (action === "pullProTestResults") return jsonResponse_(pullProTestResults_());
     return jsonResponse_({ ok: true, message: "Lumio sync backend is running." });
   } catch (err) {
@@ -1502,7 +1532,10 @@ function doPost(e) {
     var action = (e && e.parameter) ? e.parameter.action : null;
     var body = {};
     if (e && e.postData && e.postData.contents) body = JSON.parse(e.postData.contents);
-    // Public actions: the logins and the placement test.
+    // Public actions: the logins and the placement test. v11: each has a site-wide rate limit
+    // (Apps Script can't see IP addresses), generous for real use, tight enough to stop a script.
+    var lim = PUBLIC_LIMITS_[action];
+    if (lim && !throttleOk_(action, lim[0], lim[1])) return jsonResponse_({ ok: false, error: "busy", message: "Too many requests right now. Please wait a few minutes and try again." });
     if (action === "teacherLogin") return jsonResponse_(teacherLogin_(body));
     if (action === "studentLogin") return jsonResponse_(studentLogin_(body));
     if (action === "checkPhone") return jsonResponse_(checkPhone_(body));
@@ -1554,8 +1587,8 @@ function doPost(e) {
     if (action === "pushProgress") return jsonResponse_(pushProgress_(body));
     if (action === "pushHomework") return jsonResponse_(pushHomework_(body));
     if (action === "pushLeads") return jsonResponse_(pushLeads_(body));
-    if (action === "pushProAdmins") return jsonResponse_(pushProAdmins_(body));
-    if (action === "clearProTestResults") return jsonResponse_(clearProTestResults_());
+    if (action === "pushProAdmins") return callerIsOwner_(who) ? jsonResponse_(pushProAdmins_(body)) : denied_({});
+    if (action === "clearProTestResults") return callerIsOwner_(who) ? jsonResponse_(clearProTestResults_()) : denied_({});
     return jsonResponse_({ ok: false, error: "Unknown action: " + action });
   } catch (err) {
     return jsonResponse_({ ok: false, error: String(err) });

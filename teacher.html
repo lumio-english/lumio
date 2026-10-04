@@ -3357,9 +3357,9 @@
 
   // Stored phones are bare digits with the country code prepended (see
   // combinePhone in js/app.js / lumio-pro-test.html — e.g. Egypt
-  // "01155167475" is saved as "201155167475"). Shown raw that's unreadable,
+  // "01000000000" is saved as "201000000000"). Shown raw that's unreadable,
   // so split off the country code (matching Lumio.COUNTRY_CODES the same
-  // way Lumio.splitPhone does) and render it as "+20 1155167475".
+  // way Lumio.splitPhone does) and render it as "+20 1000000000".
   function formatPhoneDisplay(phone) {
     const digits = String(phone || "").replace(/\D/g, "");
     if (!digits) return "—";

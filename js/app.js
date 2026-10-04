@@ -500,11 +500,14 @@ const Lumio = (() => {
      A missing file is simply skipped (beep() then falls back to its built-in tone), so effects can be
      added one at a time. "lumio_sound" = "off" mutes effects and music, never the spoken words. */
   const SFX_VOL = { correct: .55, wrong: .45, star: .55, complete: .6 };
+  // Which files are actually in assets/sfx/. Add a name here when its file is added (e.g. "correct",
+  // "music-games"), so pages never ask the server for files that aren't there yet.
+  const SFX_FILES = [];
   const sfxCache = {}, sfxMissing = {};
   const soundOn = () => { try { return localStorage.getItem("lumio_sound") !== "off"; } catch (e) { return true; } };
   // which effect files exist: checked once per page (4 tiny requests); until known, beep() uses its tone
   const sfxHave = {};
-  Object.keys(SFX_VOL).forEach(n => { try { fetch(`${ASSET_ROOT}assets/sfx/${n}.mp3`, { method: "HEAD" }).then(r => { sfxHave[n] = r.ok; }).catch(() => {}); } catch (e) {} });
+  Object.keys(SFX_VOL).forEach(n => { sfxHave[n] = SFX_FILES.indexOf(n) !== -1; });
   const sfx = (name, opts) => {
     if (!soundOn() || sfxMissing[name] || !sfxHave[name]) return false;
     try {
@@ -535,9 +538,8 @@ const Lumio = (() => {
   const autoMusic = () => {
     const path = location.pathname;
     const track = /\/games\//.test(path) ? "games" : /story\.html$/.test(path) ? "story" : "";
-    if (!track) return;
-    // only show the toggle once we know the music file exists
-    fetch(`${ASSET_ROOT}assets/sfx/music-${track}.mp3`, { method: "HEAD" }).then(r => {
+    if (!track || SFX_FILES.indexOf("music-" + track) === -1) return;   // no music file yet: no toggle, no request
+    Promise.resolve({ ok: true }).then(r => {
       if (!r.ok) return;
       const b = document.createElement("button");
       b.id = "lumioSoundBtn"; b.type = "button";

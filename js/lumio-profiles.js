@@ -381,7 +381,7 @@
     const students = load().students;
     // Stored/synced phone values are supposed to be strings, but a Google
     // Sheets round-trip hands back any purely-numeric cell as a JS Number
-    // (e.g. "201155167475" comes back as 201155167475), and that broke
+    // (e.g. "201000000000" comes back as 201000000000), and that broke
     // EVERY login attempt system-wide the moment any one student on the
     // roster had a numeric phone -- .find() throws on the first record it
     // touches, not just the one being looked up. String(...) everywhere a
@@ -391,8 +391,8 @@
 
     // Stored numbers are digits-only with the country code prepended and NO
     // leading zero on the local part (see combinePhone in js/app.js and
-    // lumio-pro-test.html — e.g. Egypt "01155167475" is saved as
-    // "201155167475"). login.html, though, is just a plain text field with
+    // lumio-pro-test.html — e.g. Egypt "01000000000" is saved as
+    // "201000000000"). login.html, though, is just a plain text field with
     // no country picker, so a student who registered by picking a country
     // and typing their local number will very naturally log back in by
     // typing that same *local* number alone, without the country code —
@@ -1739,7 +1739,7 @@
     s.deletionConfirmed = toBool(s.deletionConfirmed, false);
     if (!s.currency) s.currency = "KWD";
     // Google Sheets hands back any cell that looks purely numeric as a JS
-    // Number rather than a string -- phone ("201155167475") and loginCode
+    // Number rather than a string -- phone ("201000000000") and loginCode
     // ("482913") both look numeric to Sheets. Left as numbers, every
     // string method called on them elsewhere (findByPhone's .trim(),
     // findByLoginCode's comparison, the roster card's phone formatting,

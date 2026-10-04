@@ -5,8 +5,12 @@
  * since that project's own UrlFetchApp authorization works fine and there
  * was no real need to keep a second project and a second URL just for this
  * one feature. Kept here only for history -- use AppsScript-Code.gs instead.
+ * Security (4 Oct 2026): if this old project is still deployed, its URL is public and has no
+ * key; either redeploy it with this file (rate-limited) or, once GROQ_API_KEY is set in the main
+ * project, archive this deployment (Deploy -> Manage deployments -> Archive).
  */
 
+/**
  *
  * A separate, minimal Apps Script project used ONLY for the
  * professional dashboard's "Get Feedback" button. Kept isolated from
@@ -40,6 +44,9 @@ function doPost(e) {
     var body = {};
     if (e && e.postData && e.postData.contents) body = JSON.parse(e.postData.contents);
     var action = (e && e.parameter) ? e.parameter.action : null;
+    // Rate limit (4 Oct 2026): this endpoint is public, so cap it site-wide to stop anyone using
+    // the Groq key as a free AI service. 60 requests per 10 minutes is plenty for real classes.
+    if (action === "writingFeedback" && !throttleOk_("writingFeedback", 60, 600)) return jsonResponse_({ ok: false, error: "Too many requests right now. Please wait a few minutes and try again." });
     if (action === "writingFeedback") return jsonResponse_(writingFeedback_(body));
     return jsonResponse_({ ok: false, error: "Unknown action: " + action });
   } catch (err) {
@@ -49,6 +56,15 @@ function doPost(e) {
 
 function doGet(e) {
   return jsonResponse_({ ok: true, message: "Lumio AI feedback backend is running. POST ?action=writingFeedback." });
+}
+
+function throttleOk_(name, max, windowS) {
+  try {
+    var c = CacheService.getScriptCache(), slot = Math.floor(Date.now() / 1000 / windowS), k = "rl_" + name + "_" + slot;
+    var n = Number(c.get(k) || 0) + 1;
+    c.put(k, String(n), windowS + 60);
+    return n <= max;
+  } catch (e) { return true; }
 }
 
 function jsonResponse_(obj) {

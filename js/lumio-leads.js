@@ -161,7 +161,7 @@
         // Same bug class already fixed in js/lumio-profiles.js's
         // parseSyncedStudent: Google Sheets hands back any purely-
         // numeric cell as a JS Number, not a string. A lead's phone
-        // number ("201155167475") looks numeric to Sheets, so it can
+        // number ("201000000000") looks numeric to Sheets, so it can
         // come back as a Number here -- and every string method called
         // on a lead's phone elsewhere (LumioProfiles.findByPhone's
         // .trim(), used to show a linked account next to a lead in the
