@@ -836,10 +836,11 @@
   // Internal: appends to an already-loaded student object. Callers that
   // hold `data` save it themselves; addMessage() below is the public,
   // load-and-save version.
-  function pushMessage_(s, type, text, meta) {
+  function pushMessage_(s, type, text, meta, fixedId) {
     if (!Array.isArray(s.messages)) s.messages = [];
+    if (fixedId && s.messages.some(m => m && m.id === fixedId)) return;
     s.messages.push({
-      id: "m_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+      id: fixedId || ("m_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7)),
       type: type,
       text: text,
       meta: meta || null,
@@ -1164,7 +1165,7 @@
     pushMessage_(s, "payment",
       `✅ تم استلام قسط بقيمة ${fmtMoney(i.amount, cur)}${addAr}. الحصص المتبقية: ${Number(s.sessionsRemaining) || 0} · إجمالي المدفوع: ${fmtMoney(s.amountPaid, cur)}. شكراً لكم!\n`
       + `Payment of ${fmtMoney(i.amount, cur)} received.${addEn} Sessions left: ${Number(s.sessionsRemaining) || 0} · Total paid: ${fmtMoney(s.amountPaid, cur)}. Thank you!`,
-      { installmentId: i.id, sessionsAdded: t.sessions, amountAdded: t.amount });
+      { installmentId: i.id, sessionsAdded: t.sessions, amountAdded: t.amount }, `paid_${i.id}_${String(i.paidAt).slice(0, 19)}`);
   }
   // opts.balancesInForm: the teacher modal already moved "Sessions left" /
   // "Amount paid" on screen (and saved them), so only record what's applied.
@@ -1173,6 +1174,8 @@
     const s = data.students.find(x => x.id === studentId);
     if (!s) throw new Error("Student not found.");
     const prev = Array.isArray(s.installments) ? s.installments : [];
+    const prevById = {}; prev.forEach(i => { if (i && i.id) prevById[i.id] = i; });
+    const nowIso = new Date().toISOString();
     const next = (list || []).filter(i => i && i.dueDate && Number(i.amount) > 0).map(i => Object.assign({}, i, {
       id: i.id || ("i_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)),
       amount: Number(i.amount), currency: i.currency || s.currency || "", dueDate: String(i.dueDate).slice(0, 10),
@@ -1181,6 +1184,20 @@
       paidAt: i.paidAt || null, note: i.note || "", remindedAt: i.remindedAt || null, remindedDueAt: i.remindedDueAt || null,
       applied: i.applied || null,
     })).sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+    next.forEach(i => {
+      const o = prevById[i.id];
+      const key = x => JSON.stringify([Number(x.amount), x.dueDate, Number(x.sessions) || 0, x.credit === undefined ? null : x.credit, !!x.paidAt]);
+      if (!o || key(o) !== key(i)) i.editedAt = nowIso;
+      // a new date (or amount) is a new reminder cycle
+      if (o && (o.dueDate !== i.dueDate || Number(o.amount) !== Number(i.amount))) {
+        ["remindedAt", "remindedDueAt", "smsUpcomingAt", "smsDueAt", "smsAt", "smsForDue"].forEach(k => { i[k] = null; });
+      }
+    });
+    // ids removed here are remembered so a merge with an older copy can't bring them back
+    const keptIds = new Set(next.map(i => i.id));
+    const removed = (Array.isArray(s.installmentsRemoved) ? s.installmentsRemoved : []).slice();
+    prev.forEach(i => { if (i && i.id && !keptIds.has(i.id) && !removed.includes(i.id)) removed.push(i.id); });
+    if (removed.length) s.installmentsRemoved = removed.slice(-200);
     if (!(opts && opts.balancesInForm)) applyBalance_(s, installmentBalanceDelta(prev, next));
     const wasPaid = new Set(prev.filter(i => i.paidAt).map(i => i.id));
     next.forEach(i => {
@@ -1239,11 +1256,11 @@
       const daysLeft = daysBetween(today, i.dueDate);
       if (daysLeft <= INSTALLMENT_REMIND_DAYS && daysLeft > 0 && !i.remindedAt) {
         const m = installmentMessage(s, i, daysLeft);
-        pushMessage_(s, "payment_due", `💳 ${m.ar}\n${m.en}`, { installmentId: i.id, amount: i.amount, dueDate: i.dueDate });
+        pushMessage_(s, "payment_due", `💳 ${m.ar}\n${m.en}`, { installmentId: i.id, amount: i.amount, dueDate: i.dueDate }, `due_${i.id}_up_${i.dueDate}`);
         i.remindedAt = new Date().toISOString(); sent.push({ student: s.name, stage: "upcoming", daysLeft });
       } else if (daysLeft <= 0 && !i.remindedDueAt) {
         const m = installmentMessage(s, i, daysLeft);
-        pushMessage_(s, "payment_due", `💳 ${m.ar}\n${m.en}`, { installmentId: i.id, amount: i.amount, dueDate: i.dueDate });
+        pushMessage_(s, "payment_due", `💳 ${m.ar}\n${m.en}`, { installmentId: i.id, amount: i.amount, dueDate: i.dueDate }, `due_${i.id}_due_${i.dueDate}`);
         i.remindedDueAt = new Date().toISOString(); sent.push({ student: s.name, stage: daysLeft === 0 ? "due" : "overdue", daysLeft });
       }
     }));
@@ -1512,12 +1529,18 @@
   // redeploying (see _docs/HANDOFF.md) -- edits to those fields only live
   // on this device until then.
   const SERVER_TEACHER_FIELDS = ["photoDataUrl", "meetingLink"];
+  const SERVER_ROSTER_FIELDS = ["installments", "installmentsRemoved", "referrals"];
   function serverMissingFields() {
+    const out = [];
     try {
       const keys = JSON.parse(safeGet("lumio_server_teacher_keys") || "null");
-      if (!Array.isArray(keys) || !keys.length) return [];
-      return SERVER_TEACHER_FIELDS.filter(k => !keys.includes(k));
-    } catch (e) { return []; }
+      if (Array.isArray(keys) && keys.length) SERVER_TEACHER_FIELDS.forEach(k => { if (!keys.includes(k)) out.push(k); });
+    } catch (e) {}
+    try {
+      const keys = JSON.parse(safeGet("lumio_server_roster_keys") || "null");
+      if (Array.isArray(keys) && keys.length) SERVER_ROSTER_FIELDS.forEach(k => { if (!keys.includes(k)) out.push(k); });
+    } catch (e) {}
+    return out;
   }
   function getSyncConfig() {
     try {
@@ -1619,6 +1642,7 @@
     if (Array.isArray(copy.messages)) copy.messages = JSON.stringify(copy.messages);
     if (Array.isArray(copy.referrals)) copy.referrals = JSON.stringify(copy.referrals);
     if (Array.isArray(copy.installments)) copy.installments = JSON.stringify(copy.installments);
+    if (Array.isArray(copy.installmentsRemoved)) copy.installmentsRemoved = JSON.stringify(copy.installmentsRemoved);
     return copy;
   }
   // The Sheet stores every cell as text (writeRows_ formats the range as
@@ -1651,7 +1675,13 @@
     coerceNumbers(s);
     if (typeof s.tags === "string") s.tags = s.tags.split(",").map(t => t.trim()).filter(Boolean);
     else if (!Array.isArray(s.tags)) s.tags = [];
-    ["pointsLog", "redemptions", "notes", "messages", "referrals", "installments"].forEach(k => {
+    // A column the Sheet doesn't have yet (Apps Script not redeployed)
+    // arrives as undefined: leave it undefined so the merge treats it as
+    // "not known there" and keeps this device's copy. Turning it into []
+    // here used to WIPE e.g. a new installment plan on the next sync,
+    // because the pushed fieldTimes stamp made the empty list look newer.
+    ["pointsLog", "redemptions", "notes", "messages", "referrals", "installments", "installmentsRemoved"].forEach(k => {
+      if (s[k] === undefined) return;
       if (typeof s[k] === "string") { try { s[k] = JSON.parse(s[k] || "[]"); } catch (e) { s[k] = []; } }
       else if (!Array.isArray(s[k])) s[k] = [];
     });
@@ -1811,9 +1841,39 @@
         });
         chosen.referralsUpdatedAt = winner.referralsUpdatedAt || chosen.referralsUpdatedAt || "";
       }
+      if (Array.isArray(local.installments) || Array.isArray(r.installments)) {
+        const m = mergeInstallmentLists(r, local);
+        chosen.installments = m.list; if (m.removed.length) chosen.installmentsRemoved = m.removed;
+      }
       byId[r.id] = chosen;
     });
     return Object.values(byId);
+  }
+  // Installments merge PER PART (by id), not as one blob: each part comes
+  // from whichever side edited it last (editedAt), reminder/SMS stamps for
+  // the same due date are kept from either side, and parts removed on
+  // either side stay removed. (As one blob, a teacher device that only
+  // stamped a reminder could revert a "Paid" made on another device.)
+  const INST_STAMPS = ["remindedAt", "remindedDueAt", "smsUpcomingAt", "smsDueAt", "smsAt", "smsForDue"];
+  function mergeInstallmentLists(a, b) {
+    const removed = Array.from(new Set([].concat(Array.isArray(a.installmentsRemoved) ? a.installmentsRemoved : [], Array.isArray(b.installmentsRemoved) ? b.installmentsRemoved : [])));
+    const gone = new Set(removed), byId = {};
+    // An older Sheet script keeps the plan but not the removed-ids list: a
+    // part only this device has was then most likely deleted elsewhere --
+    // keep it only if it was edited here after the Sheet's copy changed.
+    const remoteIds = new Set((Array.isArray(a.installments) ? a.installments : []).map(i => i && i.id));
+    const noTombs = a.installmentsRemoved === undefined && Array.isArray(a.installments);
+    const remoteT = noTombs ? fieldTime(a, ftOf(a), "installments") : 0;
+    [a, b].forEach((side, idx) => (Array.isArray(side.installments) ? side.installments : []).forEach(i => {
+      if (!i || !i.id || gone.has(i.id)) return;
+      if (idx === 1 && noTombs && !remoteIds.has(i.id) && !(tms(i.editedAt) > remoteT)) return;
+      const cur = byId[i.id];
+      if (!cur) { byId[i.id] = Object.assign({}, i); return; }
+      const win = tms(i.editedAt) > tms(cur.editedAt) ? Object.assign({}, i) : cur, lose = win === cur ? i : cur;
+      if (win.dueDate === lose.dueDate) INST_STAMPS.forEach(k => { if (!win[k] && lose[k]) win[k] = lose[k]; });
+      byId[i.id] = win;
+    }));
+    return { list: Object.values(byId).sort((x, y) => String(x.dueDate).localeCompare(String(y.dueDate))), removed };
   }
   // Collapses teacher name collisions after a merge — specifically the
   // "brand-new device auto-seeded its own placeholder before syncing"
@@ -1953,6 +2013,9 @@
       // (fields it doesn't know are dropped on every push).
       if (remote && Array.isArray(remote.teachers) && remote.teachers.length) {
         try { safeSet("lumio_server_teacher_keys", JSON.stringify(Object.keys(remote.teachers[0]))); } catch (e) {}
+      }
+      if (remote && Array.isArray(remote.students) && remote.students.length && getTeacherAuth()) {
+        try { safeSet("lumio_server_roster_keys", JSON.stringify(Object.keys(remote.students.reduce((a, r) => Object.assign(a, r), {})))); } catch (e) {}
       }
       if (remote && Array.isArray(remote.teachers) && remote.teachers.length) {
         const incomingTeachers = remote.teachers.filter(t => !data.deletedTeacherIds.includes(t.id));

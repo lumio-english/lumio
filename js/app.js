@@ -614,12 +614,15 @@ const Lumio = (() => {
   // The date/time it is right now on the Riyadh clock.
   const tzNow = (at) => {
     const d = at ? new Date(at) : new Date();
-    const r = new Date(d.getTime() + (TZ_OFFSET_MIN + d.getTimezoneOffset()) * 60000);
+    // Shift the instant by Riyadh's fixed offset and read it with UTC
+    // getters: independent of the device zone (and of its DST changes,
+    // which made the old local-getter version an hour off around them).
+    const r = new Date(d.getTime() + TZ_OFFSET_MIN * 60000);
     return {
-      date: `${r.getFullYear()}-${pad2(r.getMonth() + 1)}-${pad2(r.getDate())}`,
-      hm: `${pad2(r.getHours())}:${pad2(r.getMinutes())}`,
-      dow: r.getDay(),
-      minutes: r.getHours() * 60 + r.getMinutes(),
+      date: `${r.getUTCFullYear()}-${pad2(r.getUTCMonth() + 1)}-${pad2(r.getUTCDate())}`,
+      hm: `${pad2(r.getUTCHours())}:${pad2(r.getUTCMinutes())}`,
+      dow: r.getUTCDay(),
+      minutes: r.getUTCHours() * 60 + r.getUTCMinutes(),
     };
   };
   // The real instant (a Date) for a Riyadh wall-clock date + "HH:MM".

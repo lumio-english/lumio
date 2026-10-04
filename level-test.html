@@ -62,6 +62,7 @@
   .lt-lock{text-align:center;padding:30px 10px}.lt-lock .ic{font-size:3rem}
   body.theme-teen .lt-card h1, body.theme-teen .lt-q h2, body.theme-teen .lt-q .ar{color:var(--lumio-cocoa)}
   body.theme-teen .lt-card{color:var(--lumio-ink)}
+  body.theme-teen .lt-list h3, body.theme-teen #prevResult h3{color:var(--lumio-cocoa,#43301F)}
 </style>
 </head>
 <body>
@@ -122,7 +123,7 @@
 })();
 </script>
 <script>
-(() => {
+(async () => {
   const qs = k => new URLSearchParams(location.search).get(k);
   const preview = qs("preview") === "1" && Lumio.isTeacherSession();   // teacher: always open, never saved
   const u = preview ? { name: "Teacher preview", level: qs("level") || "pre-a" } : Lumio.requireUser();
@@ -155,7 +156,9 @@
 
   // ---- build the question set from the level's own lessons ----
   const slug = w => String(w).toLowerCase().replace(/'/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-  const imgOf = w => `assets/vocab/${(w.image || slug(w.en) + ".png")}`;
+  // Same file naming as lesson.js / homework: `image` is a slug, ".png" added.
+  const imgOf = w => `assets/vocab/${w.image ? (/\.(png|jpe?g|webp)$/i.test(w.image) ? w.image : slug(w.image) + ".png") : slug(w.en) + ".png"}`;
+  const imgOk = w => new Promise(res => { const im = new Image(); im.onload = () => res(true); im.onerror = () => res(false); im.src = imgOf(w); setTimeout(() => res(false), 6000); });
   const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
   const pool = []; lessons.forEach(ls => (ls.vocab || []).forEach(w => { if (w.en && w.ar) pool.push(Object.assign({ lesson: ls.number }, w)); }));
   const byEn = {}; pool.forEach(w => { byEn[w.en] = byEn[w.en] || w; });
@@ -169,8 +172,17 @@
   const picked = shuffle(uniq);
   const qset = []; let cursor = 0;
   const take = (n, pred) => { const out = []; while (out.length < n && cursor < picked.length) { const w = picked[cursor++]; if (!pred || pred(w)) out.push(w); } return out; };
-  take(PLAN.picture).forEach(w => qset.push({ kind: "picture", w, options: shuffle([w, ...distractors(w, 3)]) }));
-  take(PLAN.arabic).forEach(w => qset.push({ kind: "arabic", w, options: shuffle([w, ...distractors(w, 3)]) }));
+  // Picture questions only for words whose picture really exists (some
+  // teen words have none yet): check a batch of candidates, keep the
+  // ones that load; the rest stay in the pool for the other question kinds.
+  const picCands = picked.slice(0, Math.min(picked.length, PLAN.picture * 3));
+  const picOk = await Promise.all(picCands.map(imgOk));
+  const picWords = picCands.filter((w, k) => picOk[k]).slice(0, PLAN.picture);
+  const picSet = new Set(picWords.map(w => w.en));
+  picked.sort((x, y) => (picSet.has(y.en) ? 1 : 0) - (picSet.has(x.en) ? 1 : 0));   // picture words first, in their shuffled order
+  cursor = picWords.length;
+  picWords.forEach(w => qset.push({ kind: "picture", w, options: shuffle([w, ...distractors(w, 3)]) }));
+  take(PLAN.arabic + (PLAN.picture - picWords.length)).forEach(w => qset.push({ kind: "arabic", w, options: shuffle([w, ...distractors(w, 3)]) }));
   take(PLAN.sentence, w => w.example && new RegExp("\\b" + w.en.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b", "i").test(w.example))
     .forEach(w => qset.push({ kind: "sentence", w, options: shuffle([w, ...distractors(w, 3)]) }));
   take(PLAN.listen).forEach(w => qset.push({ kind: "listen", w, options: shuffle([w, ...distractors(w, 3)]) }));

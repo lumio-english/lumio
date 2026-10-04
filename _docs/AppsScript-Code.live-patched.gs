@@ -35,7 +35,8 @@ var ROSTER_COLUMNS = [
   "pointsLog", "redemptions", "notes",
   "messages", "pendingDeletion", "deletionConfirmed",
   "referrals", "referralsUpdatedAt",
-  "installments", // JSON [{id, amount, currency, dueDate, paidAt, remindedAt, remindedDueAt, smsAt}] (4 Oct 2026)
+  "installments", // JSON [{id, amount, currency, dueDate, sessions, credit, paidAt, applied, editedAt, remindedAt, remindedDueAt, smsUpcomingAt, smsDueAt, smsAt}] (4 Oct 2026)
+  "installmentsRemoved", // JSON [id] -- parts deleted on some device, so an older copy can't bring them back
   "cohort",  // batch (join month); was missing, so every sync erased it
   "fieldTimes" // JSON {field: ISO time it last changed, _base}: per-field merge (3 Oct 2026)
 ];
@@ -295,7 +296,31 @@ function mergeStudentRow_(sheet, inc) {
   parseArr_(sheet.referrals).concat(parseArr_(inc.referrals)).forEach(function (r) { if (r && r.id && r.rewardedAt) other[r.id] = r.rewardedAt; });
   var refs = parseArr_(out.referrals);
   if (refs.length) out.referrals = JSON.stringify(refs.map(function (r) { if (r && r.id && !r.rewardedAt && other[r.id]) r.rewardedAt = other[r.id]; return r; }));
+  // installments merge per part (same rules as mergeInstallmentLists in js/lumio-profiles.js)
+  if (sheet.installments || inc.installments) {
+    var m = mergeInstallments_(sheet, inc);
+    out.installments = JSON.stringify(m.list);
+    if (m.removed.length) out.installmentsRemoved = JSON.stringify(m.removed);
+  }
   return out;
+}
+var INST_STAMPS_ = ["remindedAt", "remindedDueAt", "smsUpcomingAt", "smsDueAt", "smsAt", "smsForDue"];
+function mergeInstallments_(a, b) {
+  var removed = [], gone = {};
+  parseArr_(a.installmentsRemoved).concat(parseArr_(b.installmentsRemoved)).forEach(function (id) { if (id && !gone[id]) { gone[id] = true; removed.push(id); } });
+  var byId = {}, order = [];
+  [a, b].forEach(function (side) {
+    parseArr_(side.installments).forEach(function (i) {
+      if (!i || !i.id || gone[i.id]) return;
+      var cur = byId[i.id];
+      if (!cur) { byId[i.id] = i; order.push(i.id); return; }
+      var win = tms_(i.editedAt) > tms_(cur.editedAt) ? i : cur, lose = win === cur ? i : cur;
+      if (win.dueDate === lose.dueDate) INST_STAMPS_.forEach(function (k) { if (!win[k] && lose[k]) win[k] = lose[k]; });
+      byId[i.id] = win;
+    });
+  });
+  var list = order.map(function (id) { return byId[id]; }).sort(function (x, y) { return String(x.dueDate).localeCompare(String(y.dueDate)); });
+  return { list: list, removed: removed };
 }
 // Merges incoming rows into the Sheet's rows by id; ids in `gone` are dropped.
 function mergeRowsById_(sheetRows, incoming, gone, mergeOne) {
@@ -1055,6 +1080,12 @@ function sendSms_(to, text) {
   return { ok: false, error: "no provider", dryRun: true };
 }
 function sendInstallmentReminders() {
+  // Same lock as every roster write, so a teacher's push landing mid-run
+  // isn't overwritten by this job's write-back.
+  var lock = LockService.getScriptLock(); lock.waitLock(30000);
+  try { return sendInstallmentRemindersLocked_(); } finally { lock.releaseLock(); }
+}
+function sendInstallmentRemindersLocked_() {
   var rows = readRows_(ROSTER_SHEET, ROSTER_COLUMNS);
   var today = Utilities.formatDate(new Date(), PLATFORM_TZ, "yyyy-MM-dd");
   var t0 = Date.UTC(+today.slice(0, 4), +today.slice(5, 7) - 1, +today.slice(8, 10));
@@ -1062,6 +1093,7 @@ function sendInstallmentReminders() {
   rows.forEach(function (r) {
     var list; try { list = JSON.parse(r.installments || "[]"); } catch (e) { list = []; }
     if (!Array.isArray(list) || !list.length) return;
+    if (String(r.subscribed).toLowerCase() === "false" || String(r.pendingDeletion).toLowerCase() === "true") return;
     var touched = false;
     list.forEach(function (i) {
       if (!i || i.paidAt || !i.dueDate) return;
@@ -1070,12 +1102,15 @@ function sendInstallmentReminders() {
       var stage = daysLeft > 0 && daysLeft <= INSTALLMENT_REMIND_DAYS ? "upcoming" : daysLeft <= 0 ? "due" : "";
       if (!stage) return;
       var key = stage === "upcoming" ? "smsUpcomingAt" : "smsDueAt";
-      if (i[key]) return; // already texted for this stage
+      if (i[key] && (!i.smsForDue || i.smsForDue === i.dueDate)) return; // already texted for this stage of this due date
       var res = sendSms_(r.phone, installmentSms_(r.name, i, daysLeft));
-      if (res.ok) { i[key] = new Date().toISOString(); i.smsAt = i[key]; touched = true; sentCount++; }
+      if (res.ok) {
+        if (i.smsForDue && i.smsForDue !== i.dueDate) { i.smsUpcomingAt = null; i.smsDueAt = null; }
+        i[key] = new Date().toISOString(); i.smsAt = i[key]; i.smsForDue = i.dueDate; touched = true; sentCount++;
+      }
       else Logger.log("Installment SMS not sent for " + r.name + ": " + res.error);
     });
-    if (touched) { r.installments = JSON.stringify(list); r.updatedAt = new Date().toISOString(); changed = true; }
+    if (touched) { r.installments = JSON.stringify(list); touch_(r, ["installments"], new Date().toISOString()); changed = true; }
   });
   if (changed) writeRows_(ROSTER_SHEET, ROSTER_COLUMNS, rows);
   Logger.log("Installment reminders: " + sentCount + " SMS sent.");
