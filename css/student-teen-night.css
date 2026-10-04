@@ -1,0 +1,143 @@
+/* Lumio English — teen mode "Night + orange" (Levels 3–6).
+   Loaded after css/student-2026.css. Everything is scoped to body.theme-teen-light, which student.html
+   sets for Level 3 and up, so the kids' light theme is untouched. Midnight navy page, dark glass cards,
+   white text and glowing orange accents; the Lumio icons sit on light chips so they keep their colours. */
+body.theme-teen-light{
+  --n-bg:#0B1226; --n-bg2:#111C38; --n-card:rgba(20,30,62,.78); --n-card2:#16224A; --n-line:#26355F; --n-line2:#33447A;
+  --n-ink:#F3F5FF; --n-soft:#C3CCEB; --n-mut:#8E9AC4; --n-o:#F97316; --n-o2:#FB923C; --n-glow:0 0 0 1px rgba(249,115,22,.35),0 18px 40px -22px rgba(249,115,22,.55);
+  --s-ink:#F3F5FF; --s-soft:#C3CCEB; --s-mut:#8E9AC4; --sd-cocoa:#F3F5FF; --sd-cocoa-soft:#8E9AC4;
+  background:radial-gradient(900px 520px at 85% -10%,rgba(249,115,22,.22),transparent 60%),radial-gradient(800px 600px at -10% 40%,rgba(59,92,180,.28),transparent 60%),linear-gradient(180deg,#0B1226,#0E1730 60%,#0B1226)!important;
+  background-attachment:fixed!important;color:var(--n-ink);color-scheme:dark
+}
+/* faint star field */
+body.theme-teen-light::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:.55;
+  background-image:radial-gradient(1.4px 1.4px at 12% 18%,#fff,transparent),radial-gradient(1px 1px at 32% 72%,#fff,transparent),radial-gradient(1.2px 1.2px at 58% 28%,#FFD9BA,transparent),radial-gradient(1px 1px at 76% 62%,#fff,transparent),radial-gradient(1.4px 1.4px at 90% 12%,#fff,transparent),radial-gradient(1px 1px at 44% 46%,#C3CCEB,transparent),radial-gradient(1.2px 1.2px at 6% 88%,#fff,transparent),radial-gradient(1px 1px at 66% 92%,#FFD9BA,transparent);
+  background-size:520px 520px}
+
+/* top bar */
+body.theme-teen-light .sd-topbar{background:rgba(11,18,38,.82)!important;border-bottom:1px solid var(--n-line)!important;box-shadow:0 10px 30px -20px rgba(0,0,0,.8)}
+body.theme-teen-light .sd-brand{color:var(--n-ink)!important}
+body.theme-teen-light .sd-topbar button:not(.sd-avatar-btn),body.theme-teen-light .sd-topbar a.sd-pill,body.theme-teen-light .sd-topbar .pg-launch-btn{background:rgba(255,255,255,.06)!important;border:1px solid var(--n-line2)!important;color:var(--n-ink)!important}
+body.theme-teen-light .sd-topbar .sd-logout{background:transparent!important}
+body.theme-teen-light .sd-streak{background:rgba(249,115,22,.14)!important;color:#FFD9BA!important;border:1px solid rgba(249,115,22,.4)}
+body.theme-teen-light .s26-mic{color:var(--n-o2)}
+body.theme-teen-light .sd-avatar-btn{background:var(--n-card2)!important;border:1px solid var(--n-line2)!important}
+@media (max-width:760px){
+  body.theme-teen-light .s26-menubtn{background:rgba(255,255,255,.06);border-color:var(--n-line2);color:var(--n-ink)}
+  body.theme-teen-light .sd-topbar.open .s26-menubtn{background:var(--n-o);border-color:var(--n-o);color:#fff}
+  body.theme-teen-light .sd-topbar.open .pg-launch-btn:not([style*="display:none"]):not([style*="display: none"]),body.theme-teen-light .sd-topbar.open .sd-logout{background:var(--n-card2)!important;color:var(--n-ink)!important}
+  body.theme-teen-light .sd-topbar.open .s26-mic{background:rgba(255,255,255,.92)}
+  body.theme-teen-light .sd-topbar.open .sd-logout{color:#FCA5A5!important}
+}
+
+/* welcome card: midnight glass with an orange glow instead of a solid orange slab */
+body.theme-teen-light .s26-hello{background:linear-gradient(135deg,#1A2752 0%,#111C38 55%,#2A1A22 100%);border:1px solid var(--n-line2);box-shadow:var(--n-glow)}
+body.theme-teen-light .s26-hello::before{background:radial-gradient(circle,rgba(249,115,22,.45),rgba(249,115,22,0) 65%)}
+body.theme-teen-light .s26-kicker{color:var(--n-o2)}
+body.theme-teen-light .s26-lead{color:var(--n-soft)}
+body.theme-teen-light .s26-btn.p{background:linear-gradient(135deg,#FB923C,#F97316);color:#fff;box-shadow:0 10px 24px -10px rgba(249,115,22,.9)}
+body.theme-teen-light .s26-btn.g{border-color:var(--n-line2);color:var(--n-ink)}
+body.theme-teen-light .s26-ring circle:first-child{stroke:rgba(255,255,255,.12)}
+body.theme-teen-light .s26-ring span{color:var(--n-mut)}
+body.theme-teen-light .s26-next{background:rgba(255,255,255,.05);border-color:var(--n-line2)}
+body.theme-teen-light .s26-next .lbl{color:var(--n-o2)}
+body.theme-teen-light .s26-count div{background:var(--n-card2);color:var(--n-ink);border:1px solid var(--n-line2)}
+body.theme-teen-light .s26-count small{color:var(--n-mut)}
+body.theme-teen-light .s26-tiles span{background:rgba(20,30,62,.9);color:var(--n-o2);box-shadow:0 0 0 1px var(--n-line2),0 10px 20px -10px rgba(0,0,0,.6)}
+
+/* section headings */
+body.theme-teen-light .s26-sech h2,body.theme-teen-light .s26-subhead,body.theme-teen-light .sd-section-title h3,body.theme-teen-light .sd-section-title h2{color:var(--n-ink)!important}
+body.theme-teen-light .s26-sech p{color:var(--n-mut)}
+body.theme-teen-light .s26-ic.lm{background:rgba(255,255,255,.95)!important;border-color:transparent;box-shadow:0 0 0 1px rgba(249,115,22,.4),0 0 22px -4px rgba(249,115,22,.55)!important}
+
+/* every card: dark glass */
+body.theme-teen-light .sd-hero-card,body.theme-teen-light .sd-stat-card,body.theme-teen-light .sd-level-card,body.theme-teen-light .sd-schedule-card,
+body.theme-teen-light .sd-path-card,body.theme-teen-light .sd-test-card,body.theme-teen-light .sd-badge,body.theme-teen-light .sd-buddy-card,body.theme-teen-light .sd-game-wide{
+  background:var(--n-card)!important;border:1px solid var(--n-line)!important;color:var(--n-ink)!important;backdrop-filter:blur(10px);box-shadow:0 18px 40px -28px rgba(0,0,0,.9)!important}
+body.theme-teen-light .sd-hero-card::before,body.theme-teen-light .sd-stat-card::before,body.theme-teen-light .sd-badge::before,body.theme-teen-light .sd-level-card::before,body.theme-teen-light .sd-path-card::before,body.theme-teen-light .sd-schedule-card::before{display:none!important}
+body.theme-teen-light .sd-hero-card{border-color:var(--n-line2)!important;box-shadow:var(--n-glow)!important}
+body.theme-teen-light .sd-hero-eyebrow{color:var(--n-o2)!important}
+body.theme-teen-light .sd-hero-title,body.theme-teen-light .sd-stat-card b,body.theme-teen-light .sd-level-card h2,body.theme-teen-light .sd-level-card h3,body.theme-teen-light .sd-level-title,body.theme-teen-light .sd-test-title,body.theme-teen-light .sd-badge .t,body.theme-teen-light .sd-buddy-card .name{color:var(--n-ink)!important}
+body.theme-teen-light .sd-hero-sub,body.theme-teen-light .sd-stat-card span,body.theme-teen-light .sd-level-sub,body.theme-teen-light .sd-test-sub,body.theme-teen-light .sd-test-meta,body.theme-teen-light .sd-badge .d,body.theme-teen-light .sd-hint,body.theme-teen-light .sd-empty-note{color:var(--n-soft)!important}
+body.theme-teen-light .sd-level-card *,body.theme-teen-light .sd-test-card *:not(.sd-test-link):not(.sd-test-link *){color:inherit}
+body.theme-teen-light .sd-level-count,body.theme-teen-light .s26-lname{color:var(--n-o2)!important}
+body.theme-teen-light .s26-lname .ar{color:var(--n-mut)}
+body.theme-teen-light .sd-progressbar{background:rgba(255,255,255,.08)!important}
+body.theme-teen-light .sd-progressbar > div{background:linear-gradient(90deg,#FB923C,#F97316)!important;box-shadow:0 0 14px rgba(249,115,22,.7)!important}
+
+/* lesson steps + tools */
+body.theme-teen-light .s26-steps li{background:rgba(255,255,255,.04);border-color:var(--n-line)}
+body.theme-teen-light .s26-steps b{color:var(--n-ink)}
+body.theme-teen-light .s26-steps small{color:var(--n-mut)}
+body.theme-teen-light .s26-steps li.now{background:rgba(249,115,22,.1);border-color:var(--n-o);box-shadow:0 0 24px -8px rgba(249,115,22,.6)}
+body.theme-teen-light .s26-steps li.now small{color:var(--n-o2)}
+body.theme-teen-light #missionBtn{box-shadow:0 14px 34px -12px rgba(249,115,22,.9)!important}
+body.theme-teen-light .s26-toolhead{color:var(--n-mut)}
+body.theme-teen-light a.s26-tool{background:rgba(255,255,255,.04)!important;border-color:var(--n-line)!important;color:var(--n-ink)!important}
+body.theme-teen-light a.s26-tool:hover{border-color:var(--n-o)!important;box-shadow:0 0 24px -8px rgba(249,115,22,.6)!important}
+body.theme-teen-light a.s26-tool small{color:var(--n-mut)}
+body.theme-teen-light a.s26-tool .ic,body.theme-teen-light a.s26-tool:first-child .ic,body.theme-teen-light .sd-stat-icon.s26-sicon,body.theme-teen-light .sd-stat-icon.s26-sicon0{background:rgba(255,255,255,.95)!important}
+body.theme-teen-light .sd-hero-btn:not(#missionBtn){background:rgba(255,255,255,.06)!important;color:var(--n-ink)!important;border-color:var(--n-line2)!important}
+
+/* story, game, hub */
+body.theme-teen-light .sd-story-banner{background:linear-gradient(120deg,#1A2752 0%,#2A1A22 100%)!important;border:1px solid var(--n-line2);box-shadow:var(--n-glow)!important}
+body.theme-teen-light .sd-story-btn,body.theme-teen-light .sd-hubb-btn{background:linear-gradient(135deg,#FB923C,#F97316)!important;color:#fff!important}
+body.theme-teen-light .sd-story-stop{background:rgba(255,255,255,.08)!important;color:var(--n-soft)!important}
+body.theme-teen-light .sd-story-stop.done{background:var(--n-o)!important;color:#fff!important}
+body.theme-teen-light .sd-game-wide,body.theme-teen-light .sd-game-wide *:not(.sd-game-wide-play){color:var(--n-ink)!important}
+body.theme-teen-light #gameWideSub{color:var(--n-soft)!important}
+body.theme-teen-light .sd-game-wide-icon.lm{background:rgba(255,255,255,.95);border-radius:22px;padding:6px}
+body.theme-teen-light .sd-hubb{background:var(--n-card)!important;border:1px solid var(--n-line)!important;color:var(--n-ink)!important}
+body.theme-teen-light .sd-hubb:hover{border-color:var(--n-o)!important;box-shadow:0 0 26px -10px rgba(249,115,22,.7)}
+body.theme-teen-light .sd-hubb-title{color:var(--n-ink)!important}
+body.theme-teen-light .sd-hubb-sub{color:var(--n-soft)!important}
+body.theme-teen-light .sd-hubb.locked{background:rgba(255,255,255,.03)!important;border:1px dashed var(--n-line2)!important}
+body.theme-teen-light .sd-hubb.locked,body.theme-teen-light .sd-hubb.locked *{color:var(--n-mut)!important}
+body.theme-teen-light .sd-hubb.locked .sd-hubb-btn{background:transparent!important;border:1px solid var(--n-line2)}
+body.theme-teen-light .sd-hubb-icon.lm,body.theme-teen-light .sd-story-icon.lm{background:rgba(255,255,255,.95)!important}
+
+/* level test + certificate */
+body.theme-teen-light .sd-test-link{background:linear-gradient(135deg,#FB923C,#F97316)!important;color:#fff!important}
+body.theme-teen-light .sd-test-link.locked{background:rgba(255,255,255,.06)!important;color:var(--n-mut)!important}
+body.theme-teen-light .sd-test-badge{background:rgba(255,255,255,.08)!important;color:var(--n-ink)!important}
+body.theme-teen-light .sd-test-facts > *{background:rgba(255,255,255,.05)!important;color:var(--n-soft)!important;border-color:var(--n-line)!important}
+
+/* classes + booking */
+body.theme-teen-light .sd-schedule-card *{border-color:var(--n-line)}
+body.theme-teen-light .sd-schedule-card [style*="color"]:not(a):not(button){color:var(--n-soft)!important}
+body.theme-teen-light .sd-sessions-pill{background:rgba(249,115,22,.15)!important;color:#FFD9BA!important}
+body.theme-teen-light .sd-day{background:rgba(255,255,255,.05)!important;color:var(--n-ink)!important;border-color:var(--n-line)!important}
+body.theme-teen-light .sd-day.active,body.theme-teen-light .sd-day.today,body.theme-teen-light .sd-day.picked{background:rgba(249,115,22,.16)!important;border-color:var(--n-o)!important}
+body.theme-teen-light .sd-day.active .dw,body.theme-teen-light .sd-day.active .dn{color:#FFD9BA!important}
+
+/* badges */
+body.theme-teen-light .sd-badge.earned{background:linear-gradient(180deg,rgba(249,115,22,.16),var(--n-card))!important;border-color:var(--n-o)!important;box-shadow:0 0 26px -10px rgba(249,115,22,.6)!important}
+body.theme-teen-light .sd-badge:not(.earned) .ic.lm{opacity:.32}
+
+/* classic list map, when shown */
+body.theme-teen-light .node.locked{background:rgba(255,255,255,.04)!important;color:var(--n-mut)!important;box-shadow:inset 0 0 0 2px var(--n-line2)!important}
+body.theme-teen-light .node.current{background:var(--n-bg)!important;color:#FFD9BA!important}
+body.theme-teen-light .node.awaiting{background:rgba(249,115,22,.14)!important;color:#FFD9BA!important}
+body.theme-teen-light .s26-maptoggle{background:rgba(11,18,38,.85);border-color:var(--n-line2);color:var(--n-ink)}
+body.theme-teen-light .s26-maptip{background:#fff;color:#0B1226}
+body.theme-teen-light .s26-maptip a{color:var(--n-o)}
+
+/* booking, rating, rewards */
+body.theme-teen-light .sd-book-tabs{background:rgba(255,255,255,.06)!important}
+body.theme-teen-light .sd-book-tabs button{background:transparent!important;color:var(--n-mut)!important}
+body.theme-teen-light .sd-book-tabs button.active{background:rgba(249,115,22,.18)!important;color:#fff!important;box-shadow:inset 0 0 0 1px rgba(249,115,22,.5)!important}
+body.theme-teen-light .sd-book button:not(.sd-book-tabs button):not([class*=play]):not(.sd-day){background:rgba(255,255,255,.05);color:var(--n-ink);border-color:var(--n-line)}
+body.theme-teen-light .sd-teacher,body.theme-teen-light .sd-slot{background:rgba(255,255,255,.05)!important;border-color:var(--n-line)!important;color:var(--n-ink)!important}
+body.theme-teen-light .sd-slot .seats{background:rgba(255,255,255,.08)!important;color:var(--n-soft)!important}
+body.theme-teen-light .sd-rate-card{background:var(--n-card)!important;border:1px solid var(--n-line)!important;color:var(--n-ink)!important}
+body.theme-teen-light .sd-rw-stat{background:rgba(255,255,255,.05)!important;border:1px solid var(--n-line)!important;color:var(--n-ink)!important}
+body.theme-teen-light .sd-rw-stat b{color:#FFD9BA!important}
+body.theme-teen-light .sd-rw-stat span{color:var(--n-mut)!important}
+body.theme-teen-light #rwRedeemBtn:disabled{background:rgba(255,255,255,.06)!important;color:var(--n-mut)!important}
+body.theme-teen-light .sd-trail-icon{background:rgba(255,255,255,.1)!important;color:var(--n-soft)!important}
+body.theme-teen-light .sd-buddy-bubble{background:#fff!important;color:#0B1226!important}
+body.theme-teen-light .sd-buddy-card{border-color:var(--n-line)!important}
+
+/* pop-up windows stay light and readable: hand them the light palette back */
+body.theme-teen-light .sd-modal,body.theme-teen-light .mp-card,body.theme-teen-light .pg-tour-overlay{
+  --s-ink:#111; --s-soft:#4A4A4A; --s-mut:#767676; --sd-cocoa:#111; --sd-cocoa-soft:#767676; color:#111; color-scheme:light}

@@ -279,7 +279,7 @@ header.nav.light{background:rgba(251,247,240,.86);backdrop-filter:blur(14px);col
 .bio .langs button.on{background:var(--cream);color:var(--night);border-color:var(--cream)}
 .thumbs{display:flex;gap:12px;margin-top:36px;flex-wrap:wrap}
 .thumbs button{position:relative;width:74px;height:74px;border-radius:22px;border:0;padding:0;cursor:pointer;background:#1C1C1C;overflow:hidden}
-.thumbs button img{position:absolute;left:50%;bottom:-18%;width:96%;transform:translateX(-50%)}
+.thumbs button img{position:absolute;left:0;right:0;bottom:4px;margin-inline:auto;height:calc(100% - 8px);width:auto;max-width:calc(100% - 8px);object-fit:contain;object-position:50% 100%}
 .thumbs button.on{outline:3px solid var(--sun);outline-offset:3px}
 .thumbs button .t{position:absolute;left:0;bottom:0;height:3px;background:var(--sun);width:0}
 @media (max-width:860px){.spot{grid-template-columns:1fr}.portrait{max-width:440px}}

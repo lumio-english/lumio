@@ -173,13 +173,17 @@
   🧪 Teacher preview — this is a test run. Nothing you do here is saved to any student's real homework record.
 </div>
 <div class="hw-wrap" id="hwWrap">
-  <div class="hw-hero">
-    <p class="hw-hero-eyebrow" id="hwLevelLabel">Loading…</p>
-    <h1 class="hw-hero-title" id="hwTitle"></h1>
-    <p class="hw-hero-sub">Let's practice what you learned in class! 🌟</p>
-  </div>
-  <div class="hw-steps" id="hwSteps"></div>
-  <div id="hwSections"></div>
+  <aside class="hw-rail">
+    <div class="hw-hero">
+      <p class="hw-hero-eyebrow" id="hwLevelLabel">Loading…</p>
+      <h1 class="hw-hero-title" id="hwTitle"></h1>
+      <p class="hw-hero-sub">Let's practice what you learned in class! 🌟</p>
+      <div class="hw-prog" id="hwProg" hidden><div class="hw-prog-bar"><i id="hwProgBar"></i></div><span id="hwProgText"></span></div>
+      <img class="hw-buddy" id="hwBuddy" src="assets/story/characters/lumi-welcome-hero.png" alt="" onerror="this.remove()">
+    </div>
+    <div class="hw-steps" id="hwSteps"></div>
+  </aside>
+  <main class="hw-main" id="hwSections"></main>
 </div>
 
 <script>
@@ -210,6 +214,9 @@
   document.write('<script src="js/app.js?v=' + v + '"><' + '/script>');
   document.write('<script src="js/lumio-schedule.js?v=' + v + '"><' + '/script>');
   document.write('<script src="js/lessons-data.js?v=' + v + '"><' + '/script>');
+  document.write('<script src="js/lumio-icons.js?v=' + v + '"><' + '/script>');
+  document.write('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap"><link rel="stylesheet" href="css/homework-2026.css?v=' + v + '">');
+  document.write('<script src="js/lumio-emoji.js?v=' + v + '"><' + '/script>');
 })();
 </script>
 <script>
@@ -226,6 +233,7 @@ const level = qs("level") || (user && user.level) || "pre-a";
 // Same teen theme as lesson.html/student.html for level3-6.
 if (["level3", "level4", "level5", "level6"].includes(level)) {
   document.body.classList.add("theme-teen");
+  const bud = document.getElementById("hwBuddy"); if (bud) bud.src = "assets/story/characters/lumi-teen-welcome-hero.png";
 }
 const num = parseInt(qs("n") || "1", 10);
 const nn = String(num).padStart(2, "0");
@@ -273,16 +281,27 @@ let skillData = null; // the matched unit/topic object
 function esc(s) { return (s == null ? "" : String(s)).replace(/&/g, "&amp;").replace(/"/g, "&quot;"); }
 
 const STEP_ICONS = { spelling: "✏️", draw: "🎨", sayit: "🎤", conversation: "💬", skill: "🧩", quiz: "❓" };
+const STEP_LM = { spelling: "pencil", draw: "write", sayit: "mic", conversation: "speech", skill: "puzzle", quiz: "question" };
+const STEP_HINT = { spelling: "Type the words", draw: "Draw a picture", sayit: "Listen and say", conversation: "Talk it through", skill: "Practise the skill", quiz: "Pick the word" };
+const lmIcon = (name, fb) => (window.LumioIcons && LumioIcons.svg(name)) || fb;
 function renderSteps() {
   document.getElementById("hwSteps").innerHTML = STEPS.map((s, i) => {
     const cls = i < currentStep ? "done" : (i === currentStep ? "active" : "");
-    const icon = i < currentStep ? "✓" : (STEP_ICONS[s.key] || (i + 1));
-    return `<div class="hw-step ${cls}">
+    const icon = i < currentStep ? lmIcon("check", "✓") : lmIcon(STEP_LM[s.key], STEP_ICONS[s.key] || (i + 1));
+    return `<div class="hw-step ${cls}"${i === currentStep ? ' aria-current="step"' : ""}>
       <div class="hw-step-line"></div>
       <div class="hw-step-dot">${icon}</div>
-      <div class="hw-step-label">${esc(s.label)}</div>
+      <div class="hw-step-label">${esc(s.label)}<small>${esc(STEP_HINT[s.key] || "")}</small></div>
     </div>`;
   }).join("");
+  // progress in the hero: "Step 2 of 5", or "All done" after submitting
+  const prog = document.getElementById("hwProg");
+  if (prog && STEPS.length) {
+    prog.hidden = false;
+    const k = Math.min(currentStep, STEPS.length);
+    document.getElementById("hwProgBar").style.width = Math.round((k / STEPS.length) * 100) + "%";
+    document.getElementById("hwProgText").textContent = k >= STEPS.length ? "All done!" : `Step ${k + 1} of ${STEPS.length}`;
+  }
 }
 function goToStep(i) {
   currentStep = i;

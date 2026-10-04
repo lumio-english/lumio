@@ -1072,7 +1072,7 @@
   // 2026 look (white + orange), versioned like every shared file via js/version.json.
   var v = "20261004f";
   try { var x = new XMLHttpRequest(); x.open("GET", "js/version.json?_=" + Date.now(), false); x.send(null); if (x.status === 200) { var p = JSON.parse(x.responseText); if (p && p.v) v = p.v; } } catch (e) {}
-  document.write('<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/student-2026.css?v=' + v + '">');
+  document.write('<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/student-2026.css?v=' + v + '"><link rel="stylesheet" href="css/student-teen-night.css?v=' + v + '">');
 })();
 </script>
 <script>if("serviceWorker"in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script>
@@ -4269,6 +4269,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
   document.write('<script src="js/student-mission.js?v=' + v + '"><' + '/script>');
   document.write('<script src="js/student-motion.js?v=' + v + '"><' + '/script>');
   document.write('<script src="js/student-map3d.js?v=' + v + '"><' + '/script>');
+  document.write('<script src="js/lumio-emoji.js?v=' + v + '"><' + '/script>');
 })();
 </script>
 </body>

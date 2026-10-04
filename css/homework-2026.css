@@ -1,0 +1,135 @@
+/* Lumio English — homework page, 2026 look. Loaded after homework.html's own <style>, so it only restyles.
+   Layout: on wide screens a sticky rail on the left (lesson, progress, the steps as a vertical list) and
+   the activity card on the right; on phones the rail stacks on top and the steps become a row of chips.
+   Teens (body.theme-teen, Levels 3–6) get the "Night + orange" look used on the student page. */
+:root{--h-o:#F97316;--h-od:#C2410C;--h-peach:#FFF6EF;--h-peach2:#FFEBDB;--h-line:#F1E4DA;--h-ink:#111;--h-soft:#4A4A4A;--h-mut:#767676;
+  --h-display:'Bricolage Grotesque','Baloo 2','Segoe UI',system-ui,sans-serif}
+body{background:radial-gradient(900px 500px at 90% -10%,rgba(255,217,186,.7),transparent 60%),#FFFBF7;color:var(--h-ink)}
+
+/* top bar */
+.hw-top{background:rgba(255,255,255,.88);border-bottom:1px solid var(--h-line);box-shadow:0 8px 24px -20px rgba(194,65,12,.5);padding:10px 22px}
+.hw-top .brand{font-family:var(--h-display);color:var(--h-ink)}
+.hw-top .brand span{color:var(--h-o)}
+.hw-top a{background:var(--h-peach);border:1px solid #F3DCCB;color:var(--h-ink);box-shadow:none}
+.hw-top a:hover{border-color:var(--h-o)}
+.hw-preview-banner{background:#111}
+
+/* layout */
+.hw-wrap{max-width:1120px;padding:28px 22px;display:grid;grid-template-columns:320px minmax(0,1fr);gap:26px;align-items:start}
+.hw-rail{position:sticky;top:84px;display:flex;flex-direction:column;gap:16px}
+.hw-main{min-width:0}
+
+/* hero */
+.hw-hero{text-align:start;margin:0;padding:24px 22px 22px;border-radius:26px;background:linear-gradient(140deg,#FB923C 0%,#F97316 45%,#C2410C 100%);box-shadow:0 24px 50px -30px rgba(194,65,12,.85);min-height:210px}
+.hw-hero::after{right:-60px;top:-80px;bottom:auto;width:240px;height:240px;background:radial-gradient(circle,rgba(255,255,255,.3),rgba(255,255,255,0) 65%)}
+.hw-hero-eyebrow{font-size:11.5px;letter-spacing:.14em;color:#FFE3CC;opacity:1;max-width:72%}
+.hw-hero-title{font-family:var(--h-display);font-weight:800;font-size:clamp(24px,2.4vw,30px);line-height:1.08;letter-spacing:-.02em;margin:8px 0 6px;max-width:74%}
+.hw-hero-sub{font-size:14px;max-width:70%}
+.hw-buddy{position:absolute;right:-6px;bottom:-8px;width:104px;z-index:1;filter:drop-shadow(0 14px 18px rgba(80,20,0,.35));animation:hwBob 3.4s ease-in-out infinite;pointer-events:none}
+@keyframes hwBob{50%{transform:translateY(-8px)}}
+.hw-prog{position:relative;z-index:1;margin-top:16px;max-width:70%}
+.hw-prog-bar{height:8px;border-radius:99px;background:rgba(255,255,255,.28);overflow:hidden}
+.hw-prog-bar i{display:block;height:100%;width:0;background:#fff;border-radius:99px;transition:width .5s cubic-bezier(.22,1,.36,1)}
+.hw-prog span{display:block;margin-top:6px;font-size:12.5px;font-weight:800;color:#fff}
+
+/* steps: vertical list in the rail */
+.hw-steps{flex-direction:column;align-items:stretch;justify-content:flex-start;gap:6px;margin:0;background:#fff;border:1px solid var(--h-line);border-radius:22px;padding:10px;box-shadow:0 14px 30px -26px rgba(194,65,12,.5)}
+.hw-step{flex-direction:row;align-items:center;gap:12px;max-width:none;padding:8px 10px;border-radius:16px}
+.hw-step-line{display:none}
+.hw-step-dot{width:42px;height:42px;border:0;border-radius:14px;background:var(--h-peach);box-shadow:none;padding:4px;flex-shrink:0;font-size:1.1rem}
+.hw-step-dot .lm-ico{width:100%;height:100%}
+.hw-step-label{text-align:start;font-size:14.5px;color:var(--h-ink);display:flex;flex-direction:column;line-height:1.2}
+.hw-step-label small{font-size:12px;font-weight:700;color:var(--h-mut)}
+.hw-step:not(.active):not(.done) .hw-step-dot .lm-ico{filter:grayscale(1);opacity:.5}
+.hw-step.active{background:var(--h-peach);box-shadow:inset 0 0 0 2px var(--h-o)}
+.hw-step.active .hw-step-dot{background:#fff;transform:none;box-shadow:0 8px 16px -10px rgba(194,65,12,.8)}
+.hw-step.active .hw-step-dot .lm-ico{animation:hwHop 2.4s ease-in-out infinite}
+@keyframes hwHop{0%,70%,100%{transform:none}80%{transform:translateY(-4px)}90%{transform:none}}
+.hw-step.active .hw-step-label{color:var(--h-od)}
+.hw-step.done .hw-step-dot{background:#fff}
+.hw-step.done .hw-step-label{color:var(--h-ink)}
+.hw-step.done .hw-step-label small{color:var(--h-od)}
+
+/* activity card */
+.hw-card{border-radius:26px;border:1px solid var(--h-line);box-shadow:0 20px 44px -34px rgba(194,65,12,.6);padding:26px 26px 22px;animation:hwIn .45s cubic-bezier(.22,1,.36,1) both}
+@keyframes hwIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.hw-card h2{font-family:var(--h-display);font-weight:800;font-size:clamp(22px,2.4vw,28px);letter-spacing:-.02em;gap:12px;margin-bottom:6px}
+.hw-card h2 .lm-inl{width:48px;height:48px;padding:5px;border-radius:15px;background:var(--h-peach);vertical-align:middle;flex-shrink:0;box-shadow:inset 0 0 0 1px #F3DCCB}
+.hw-card .hw-sub{font-size:14.5px;color:var(--h-soft);margin-bottom:16px;line-height:1.5}
+.hw-word-row{gap:12px;padding:12px;margin:0 -12px;border-bottom:1px solid #F5ECE3;border-radius:16px;transition:background .2s}
+.hw-word-row:hover{background:#FFFAF5}
+.hw-word-img{width:68px;height:68px;border-radius:16px;background:var(--h-peach);border:1px solid #F7E6D8}
+.hw-word-ar{color:var(--h-od);font-size:1.05rem}
+.hw-input{border:2px solid #EFE2D6;border-radius:14px;background:#FFFCF9;transition:border-color .2s,box-shadow .2s}
+.hw-input:focus{outline:none;border-color:var(--h-o);box-shadow:0 0 0 4px rgba(249,115,22,.15);background:#fff}
+.hw-check-btn{border:2px solid #111;color:#111;box-shadow:none}
+.hw-check-btn:hover{box-shadow:0 8px 16px -8px rgba(0,0,0,.35)}
+.hw-check-btn:focus-visible{outline-color:rgba(249,115,22,.45)}
+.hw-check-btn.correct{background:#16A34A;border-color:#16A34A}
+.hw-listen-btn{width:44px;height:44px;border-radius:14px;background:var(--h-peach);display:inline-grid;place-items:center}
+.hw-listen-btn .lm-inl{width:30px;height:30px;background:none;box-shadow:none;padding:0}
+.hw-rec-btn{border-color:var(--h-o);color:var(--h-od);box-shadow:none}
+.hw-rec-btn.recording{background:var(--h-o);color:#fff}
+.hw-btn{background:linear-gradient(135deg,#FB923C,#F97316 55%,#EA580C);box-shadow:0 12px 24px -12px rgba(194,65,12,.8);padding:13px 24px;font-size:15px}
+.hw-btn.ghost{background:#fff;color:var(--h-ink);border:1px solid var(--h-line);box-shadow:none}
+.hw-footer-nav{margin-top:18px;padding-top:16px;border-top:1px dashed #F1E4DA;gap:10px}
+.hw-say-row{padding:10px 12px;margin:0 -12px;border-radius:16px}
+.hw-say-row:hover{background:#FFFAF5}
+.hw-say-row input[type=checkbox]{accent-color:var(--h-o)}
+.hw-quiz-q{background:#FFFAF5;border:1px solid #F5ECE3;border-radius:20px;padding:14px}
+.hw-quiz-opt{border:2px solid #EFE2D6;border-radius:14px;padding:13px}
+.hw-quiz-opt:hover{border-color:var(--h-o)}
+.hw-quiz-opt.selected-correct{border-color:#16A34A}
+.hw-parent-box{background:#FFF6EF;border:1px solid #F3DCCB;border-inline-start:4px solid var(--h-o);border-radius:16px;margin-top:14px}
+.hw-parent-box b{color:var(--h-od)}
+canvas{border:2px dashed #F3C9A8}
+.hw-swatch.active{box-shadow:0 0 0 3px var(--h-o)}
+.hw-done-screen .stars{color:var(--h-o)}
+.hw-done-screen .stars .lm-inl{width:48px;height:48px;margin:0 4px}
+.hw-done-screen > div:first-child .lm-inl,.hw-card[style*="text-align:center"] > div:first-child .lm-inl{width:72px;height:72px}
+
+/* phones and narrow tablets: rail on top, steps as a scrollable row */
+@media (max-width:900px){
+  .hw-wrap{grid-template-columns:minmax(0,1fr);gap:14px;padding:16px 14px 30px}
+  .hw-rail{position:static}
+  .hw-hero{min-height:0;padding:20px 18px}
+  .hw-buddy{width:84px}
+  .hw-steps{flex-direction:row;overflow-x:auto;scrollbar-width:none;padding:8px;gap:6px}
+  .hw-steps::-webkit-scrollbar{display:none}
+  .hw-step{flex:0 0 auto;padding:6px 12px 6px 6px;gap:8px}
+  .hw-step-dot{width:34px;height:34px;border-radius:11px;padding:3px}
+  .hw-step-label{font-size:13.5px}
+  .hw-step-label small{display:none}
+  .hw-card{padding:20px 16px 18px;border-radius:22px}
+  .hw-card h2 .lm-inl{width:40px;height:40px}
+  .hw-word-row{margin:0 -8px;padding:10px 8px}
+  .hw-quiz-opts{grid-template-columns:1fr 1fr}
+  .hw-footer-nav .hw-btn{flex:1}
+}
+@media (max-width:420px){.hw-top .brand{display:none}.hw-quiz-opts{grid-template-columns:minmax(0,1fr)}}
+@media (prefers-reduced-motion:reduce){.hw-buddy,.hw-step.active .hw-step-dot .lm-ico,.hw-card{animation:none}}
+
+/* ===== teens: Night + orange ===== */
+body.theme-teen{background:radial-gradient(900px 520px at 85% -10%,rgba(249,115,22,.22),transparent 60%),radial-gradient(800px 600px at -10% 40%,rgba(59,92,180,.28),transparent 60%),#0B1226;background-attachment:fixed;color:#F3F5FF}
+body.theme-teen .hw-top{background:rgba(11,18,38,.85);border-bottom:1px solid #26355F}
+body.theme-teen .hw-top .brand{color:#F3F5FF}
+body.theme-teen .hw-top a{background:rgba(255,255,255,.06);border-color:#33447A;color:#F3F5FF}
+body.theme-teen .hw-hero{background:linear-gradient(135deg,#1A2752 0%,#111C38 55%,#2A1A22 100%);border:1px solid #33447A;box-shadow:0 0 0 1px rgba(249,115,22,.3),0 22px 44px -24px rgba(249,115,22,.5)}
+body.theme-teen .hw-hero::after{background:radial-gradient(circle,rgba(249,115,22,.45),rgba(249,115,22,0) 65%)}
+body.theme-teen .hw-hero-eyebrow{color:#FB923C}
+body.theme-teen .hw-prog-bar{background:rgba(255,255,255,.1)}
+body.theme-teen .hw-prog-bar i{background:linear-gradient(90deg,#FB923C,#F97316);box-shadow:0 0 12px rgba(249,115,22,.8)}
+body.theme-teen .hw-steps{background:rgba(20,30,62,.78);border-color:#26355F;box-shadow:none}
+body.theme-teen .hw-step-label{color:#F3F5FF}
+body.theme-teen .hw-step-label small{color:#8E9AC4}
+body.theme-teen .hw-step-dot{background:rgba(255,255,255,.92)}
+body.theme-teen .hw-step.active{background:rgba(249,115,22,.12)}
+body.theme-teen .hw-step.active .hw-step-label{color:#FFD9BA}
+body.theme-teen .hw-step.done .hw-step-label small{color:#FB923C}
+body.theme-teen .hw-card{border-color:#33447A;box-shadow:0 0 0 1px rgba(249,115,22,.18),0 24px 50px -30px rgba(0,0,0,.9)}
+body.theme-teen .hw-step-label,body.theme-teen .hw-step.done .hw-step-label{color:#F3F5FF}
+body.theme-teen .hw-card{color:var(--h-ink)}
+@media (max-width:900px){
+  .hw-word-row .hw-input{flex:1 1 calc(100% - 96px)}
+  .hw-word-img{width:56px;height:56px}
+}

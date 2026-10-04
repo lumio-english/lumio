@@ -136,7 +136,7 @@ body.theme-teen-light .sd-hero-title,body.theme-teen-light .sd-brand,body.theme-
 .sd-day.active .dw,.sd-day.active .dn{color:#C2410C!important}
 
 /* ===== 3D adventure map ===== */
-.s26-map3d{position:relative;border-radius:26px;overflow:hidden;background:radial-gradient(120% 90% at 50% 0%,#FFE3CC 0%,#FFF6EF 55%,#FFFBF7 100%);border:1px solid #F1E4DA;box-shadow:0 24px 50px -36px rgba(194,65,12,.6);aspect-ratio:16/9;max-height:560px;width:100%}
+.s26-map3d{position:relative;border-radius:26px;overflow:hidden;background:radial-gradient(120% 90% at 50% 0%,#FFE3CC 0%,#F8DCC6 60%,#F4CDB0 100%);border:1px solid #F1E4DA;box-shadow:0 24px 50px -36px rgba(194,65,12,.6);aspect-ratio:16/9;max-height:560px;width:100%}
 .s26-map3d canvas{display:block;width:100%;height:100%;cursor:grab;touch-action:pan-y}
 .s26-map3d canvas:active{cursor:grabbing}
 .s26-maptip{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);background:#111;color:#fff;border-radius:999px;padding:9px 16px;font-weight:800;font-size:14.5px;white-space:nowrap;opacity:0;transition:opacity .25s;pointer-events:none;max-width:calc(100% - 32px);overflow:hidden;text-overflow:ellipsis}
@@ -270,3 +270,5 @@ a.s26-tool .ic .lm-ico{width:40px;height:40px}
 @media (prefers-reduced-motion:reduce){.s26-steps li.now .dot .lm-ico{animation:none}}
 .s26-ic.lm .lm-ico,.s26-ic.lm svg{width:100%!important;height:100%!important}
 .sd-hubb-btn img,.sd-hero-btn-logo{display:none!important}
+.s26-map3d.night{background:radial-gradient(120% 90% at 50% 0%,#24345F 0%,#111C38 50%,#0B1226 100%);border-color:#24345F;box-shadow:0 24px 60px -30px rgba(249,115,22,.45)}
+.s26-map3d.night .s26-maplegend{background:rgba(11,18,38,.82);border-color:#2A3966;color:#E6ECFF}
