@@ -1522,19 +1522,20 @@ function calcScore(){
   const total = listenScore + readScore + gramScore;   // writing excluded
   const pct = total / SCORED_TOTAL;
 
-  // Map score to LEVEL_INFO index (0-9); the Lumio level shown and
-  // stored is capped at 6 below (highest built level).
-  let level;
-  if      (pct >= 0.90) level = 9;
-  else if (pct >= 0.80) level = 8;
-  else if (pct >= 0.70) level = 7;
-  else if (pct >= 0.60) level = 6;
-  else if (pct >= 0.50) level = 5;
-  else if (pct >= 0.40) level = 4;
-  else if (pct >= 0.30) level = 3;
-  else if (pct >= 0.20) level = 2;
-  else if (pct >= 0.10) level = 1;
-  else                  level = 0;
+  // Score -> Lumio level (4 Oct 2026, owner: the old 10%-steps placed
+  // children far too high, e.g. 18/36 -> Level 5). Bands are set on what
+  // a child at each stage actually scores on THIS test: every question
+  // has 4 choices, so pure guessing averages ~9/36; the test has 10 A1,
+  // 10 A2 and 16 B1/B2 questions, so knowing A1 gives ~16 and knowing A2
+  // ~24. Bands are in correct answers out of SCORED_TOTAL (36) and scale
+  // if the total changes.
+  //   0-12 Pre-A · 13-15 L1 · 16-18 L2 · 19-21 L3 · 22-24 L4 · 25-27 L5 · 28+ L6
+  // 32+ is reported as "above Level 6" (rawLevel 7) but placed in Level 6.
+  const BANDS = [13, 16, 19, 22, 25, 28];            // lowest score for Level 1..6
+  const scaled = total * 36 / SCORED_TOTAL;
+  let level = 0;
+  BANDS.forEach((min, i) => { if (scaled >= min) level = i + 1; });
+  if (scaled >= 32) level = 7;
 
   return { total, listenScore, readScore, writeScore, gramScore, level: Math.min(level, MAX_LUMIO_LEVEL), rawLevel: level, pct };
 }
