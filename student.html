@@ -1060,6 +1060,14 @@
   .sd-confetti-piece{position:fixed;top:-10px;border-radius:2px;pointer-events:none;z-index:200;animation:sdConfettiFall linear forwards}
   @keyframes sdConfettiFall{to{transform:translateY(110vh) rotate(540deg);opacity:.3}}
 </style>
+<script>
+(function () {
+  // 2026 look (white + orange), versioned like every shared file via js/version.json.
+  var v = "20261004f";
+  try { var x = new XMLHttpRequest(); x.open("GET", "js/version.json?_=" + Date.now(), false); x.send(null); if (x.status === 200) { var p = JSON.parse(x.responseText); if (p && p.v) v = p.v; } } catch (e) {}
+  document.write('<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/student-2026.css?v=' + v + '">');
+})();
+</script>
 <script>if("serviceWorker"in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script>
 </head>
 <body>
@@ -1647,11 +1655,11 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
   }
 
   const level = u.level || "pre-a";
-  // Same dark/Fredoka teen theme already applied to lesson.html for
-  // level3-6 -- see css/style.css's "TEEN THEME" block for the palette
-  // and rationale. Pre-a/level1/level2 are untouched.
+  // Teens (level3-6) get a more grown-up type on the same light orange/white
+  // palette (css/student-2026.css). The old dark "theme-teen" look is no longer
+  // switched on here (2026 redesign: no black backgrounds); lesson.html keeps its own.
   if (["level3", "level4", "level5", "level6"].includes(level)) {
-    document.body.classList.add("theme-teen");
+    document.body.classList.add("theme-teen-light");
   }
   const meta = (Lumio.LEVELS || []).find(l => l.id === level) || { name: "Pre-A", lessons: 20 };
   const progAll = Lumio.progressFor(u.name) || {};
@@ -4234,6 +4242,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
     }
   } catch (e) {}
   document.write('<script src="js/dashboard.js?v=' + v + '"><' + '/script>');
+  document.write('<script src="js/student-hero.js?v=' + v + '"><' + '/script>');
 })();
 </script>
 </body>

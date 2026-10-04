@@ -1,0 +1,107 @@
+/* Lumio English — student dashboard, 2026 look (white + orange, black only for text).
+   Loaded after student.html's own <style>, so it restyles without touching the page's structure or ids.
+   Teens (Level 3+) get body.theme-teen-light: the same light palette with a more grown-up type.
+   The old dark body.theme-teen rules stay in the file but are no longer switched on here. */
+:root{
+  --s-o:#F97316; --s-od:#C2410C; --s-peach:#FFF6EF; --s-peach2:#FFEBDB; --s-pl:#F3DCCB; --s-ink:#111; --s-soft:#4A4A4A; --s-mut:#767676;
+  --s-display:'Bricolage Grotesque','Baloo 2','Segoe UI',system-ui,sans-serif;
+  --sd-cocoa:#111; --sd-cocoa-soft:#767676; --sd-cream:#FFF6EF; --sd-teal:#F97316; --sd-teal-deep:#C2410C;
+}
+body{background:radial-gradient(1000px 520px at 85% -10%,rgba(255,217,186,.75),transparent 60%),radial-gradient(900px 520px at -10% 30%,rgba(255,235,219,.6),transparent 55%),#FFFBF7!important;color:var(--s-ink)}
+body.theme-teen-light h1,body.theme-teen-light h2,body.theme-teen-light h3,body.theme-teen-light .sd-display,
+body.theme-teen-light .sd-hero-title,body.theme-teen-light .sd-brand,body.theme-teen-light .sd-stat-card b{font-family:var(--s-display);letter-spacing:-.02em}
+
+/* top bar */
+.sd-topbar{background:rgba(255,255,255,.9)!important;backdrop-filter:blur(12px);border-bottom:1px solid #F1E4DA!important;box-shadow:0 8px 24px -20px rgba(194,65,12,.5)}
+.sd-brand{color:var(--s-ink)!important}
+.sd-brand span{color:var(--s-o)!important}
+.sd-topbar button:not(.sd-avatar-btn),.sd-topbar a.sd-pill,.sd-topbar .pg-launch-btn{background:var(--s-peach)!important;border:1px solid var(--s-pl)!important;color:var(--s-ink)!important;box-shadow:none!important}
+.sd-topbar .sd-logout{background:#fff!important}
+.sd-streak{background:var(--s-peach2)!important;color:var(--s-od)!important;border:1px solid var(--s-pl)}
+
+/* new welcome card (js/student-hero.js) */
+.s26-hello{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:26px;align-items:center;
+  background:linear-gradient(135deg,#F97316 0%,#C2410C 100%);color:#fff;border-radius:30px;padding:28px 30px;margin-bottom:18px;box-shadow:0 30px 60px -36px rgba(194,65,12,.8)}
+.s26-hello::before{content:"";position:absolute;right:-120px;top:-170px;width:460px;height:460px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.32),rgba(255,255,255,0) 65%);pointer-events:none}
+.s26-kicker{display:inline-flex;align-items:center;gap:10px;font-size:12.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#FFE3CC}
+.s26-kicker::before{content:"";width:24px;height:2px;background:currentColor;border-radius:2px}
+.s26-hello h1{font-family:var(--s-display);font-weight:800;font-size:clamp(28px,3.6vw,46px);line-height:1.05;letter-spacing:-.02em;margin:8px 0 0;color:#fff}
+.s26-lead{margin:10px 0 0;font-size:16px;line-height:1.55;font-weight:700;color:rgba(255,255,255,.92);max-width:36em}
+.s26-ctas{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.s26-btn{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:12px 20px;font:800 15px 'Nunito',sans-serif;text-decoration:none;cursor:pointer;border:0;transition:transform .15s}
+.s26-btn:hover{transform:translateY(-2px)}
+.s26-btn.p{background:#fff;color:var(--s-od)}
+.s26-btn.g{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.6)}
+.s26-ring{position:relative;width:140px;height:140px;flex-shrink:0}
+.s26-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.s26-ring .c{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.s26-ring b{font-family:var(--s-display);font-size:34px;line-height:1}
+.s26-ring span{font-size:12px;font-weight:800;color:rgba(255,255,255,.88);margin-top:4px;white-space:nowrap}
+.s26-buddy{width:140px;align-self:end;margin:-12px 0 -30px}
+.s26-buddy img{display:block;width:100%;filter:drop-shadow(0 20px 26px rgba(80,20,0,.35))}
+.s26-next{position:relative;grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);border-radius:20px;padding:12px 16px}
+.s26-next .lbl{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#FFE3CC}
+.s26-next .when{font-weight:800;font-size:15.5px}
+.s26-count{display:flex;gap:6px;margin-inline-start:auto}
+.s26-count div{background:#fff;color:var(--s-ink);border-radius:12px;padding:6px 10px;text-align:center;min-width:52px}
+.s26-count b{display:block;font-family:var(--s-display);font-size:20px;line-height:1;font-variant-numeric:tabular-nums}
+.s26-count small{font-size:10px;font-weight:800;color:var(--s-mut);text-transform:uppercase;letter-spacing:.08em}
+@media (max-width:760px){
+  .s26-hello{grid-template-columns:minmax(0,1fr) auto;padding:22px 18px;gap:14px;border-radius:24px}
+  .s26-buddy{display:none}
+  .s26-ring{width:92px;height:92px}.s26-ring b{font-size:24px}.s26-ring span{display:none}
+  .s26-ctas{grid-column:1/-1;margin-top:0}
+  .s26-count{margin-inline-start:0}
+}
+@media (prefers-reduced-motion:reduce){.s26-btn{transition:none}}
+
+/* today's mission */
+.sd-hero-card{background:#fff!important;color:var(--s-ink)!important;border:1px solid #F1E4DA;box-shadow:0 20px 40px -32px rgba(194,65,12,.6)!important}
+.sd-hero-card::after{background:rgba(249,115,22,.08)!important}
+.sd-hero-eyebrow{color:var(--s-od)!important;opacity:1!important}
+.sd-hero-title,.sd-hero-sub{color:var(--s-ink)!important}
+.sd-hero-sub{color:var(--s-soft)!important}
+.sd-hero-btn{background:var(--s-peach)!important;color:var(--s-ink)!important;border:1px solid var(--s-pl);box-shadow:none!important}
+.sd-hero-btn#missionBtn{background:var(--s-o)!important;color:#fff!important;border-color:var(--s-o)}
+.sd-stat-card{background:#fff!important;border:1px solid #F1E4DA;box-shadow:none!important}
+.sd-stat-card b{color:var(--s-ink)!important}
+.sd-stat-card span{color:var(--s-mut)!important}
+
+/* story banner + hub tiles: orange instead of dark brown */
+.sd-story-banner{background:linear-gradient(120deg,#EA580C 0%,#C2410C 100%)!important;box-shadow:0 24px 50px -34px rgba(194,65,12,.85)}
+.sd-story-stop.done{background:#fff!important;color:var(--s-od)!important}
+.sd-story-btn{background:#fff!important;color:var(--s-od)!important}
+.sd-hubb{background:linear-gradient(120deg,#F97316 0%,#C2410C 100%)!important}
+.sd-hubb-btn{background:#fff!important;color:var(--s-od)!important}
+.sd-hubb.locked{background:linear-gradient(120deg,#FDBA74 0%,#F59E6B 100%)!important}
+
+/* cards */
+.sd-level-card,.sd-schedule-card,.sd-path-card,.sd-test-card,.sd-badge,.sd-buddy-card,.sd-game-wide{background:#fff!important;border:1px solid #F1E4DA;box-shadow:0 14px 30px -26px rgba(194,65,12,.5)!important}
+.sd-level-card *,.sd-schedule-card,.sd-path-card h2,.sd-path-card h3,.sd-badge .t,.sd-buddy-card .name{color:inherit}
+.sd-progressbar{background:var(--s-peach2)!important}
+.sd-progressbar > div{background:linear-gradient(90deg,#FB923C,#F97316)!important;box-shadow:none!important}
+.sd-level-count{color:var(--s-od)!important}
+.sd-section-title h3,.sd-section-title h2{color:var(--s-ink)!important}
+.sd-next-class{background:linear-gradient(135deg,#F97316,#C2410C)!important}
+.sd-sessions-pill{background:var(--s-peach2)!important;color:var(--s-od)!important}
+.sd-day.active,.sd-day.picked{border-color:var(--s-o)!important}
+.sd-badge.earned{border-color:var(--s-o)!important;background:linear-gradient(180deg,#fff,#FFF3E8)!important}
+.sd-buddy-bubble{background:var(--s-ink)!important;color:#fff!important}
+.sd-test-link{background:linear-gradient(135deg,#F97316,#C2410C)!important}
+.sd-game-wide-play{background:var(--s-o)!important;color:#fff!important}
+
+/* adventure map nodes */
+.node.done{background:linear-gradient(135deg,#FB923C,#F97316)!important;color:#fff!important;box-shadow:0 12px 24px -12px rgba(194,65,12,.7),inset 0 0 0 3px rgba(255,255,255,.4)!important}
+.node.done .n-stars{color:#FFE3CC!important}
+.node.current{background:#fff!important;color:var(--s-od)!important;box-shadow:0 0 0 3px var(--s-o),0 16px 30px -12px rgba(194,65,12,.6)!important}
+.node.current::after{border-color:rgba(249,115,22,.45)!important}
+.node.locked{background:#FFF8F2!important;color:#C9B2A0!important;box-shadow:inset 0 0 0 2px #F3E3D6!important}
+.node.awaiting{background:var(--s-peach2)!important;color:var(--s-od)!important;box-shadow:inset 0 0 0 3px rgba(249,115,22,.25)!important}
+.node.awaiting .n-wait-label{color:var(--s-od)!important}
+
+/* readability on the new light cards */
+.sd-game-wide,.sd-game-wide *:not(.sd-game-wide-play){color:#111!important}
+#gameWideSub{color:#4A4A4A!important}
+.sd-game-wide-icon{background:transparent!important;box-shadow:none!important}
+.sd-test-link.locked{background:#F4ECE4!important;color:#767676!important}
+.sd-game-wide-play:disabled,.sd-game-wide-play[disabled]{background:#F4ECE4!important;color:#767676!important;opacity:1!important}
