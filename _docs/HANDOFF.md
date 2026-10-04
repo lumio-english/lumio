@@ -193,5 +193,24 @@ Done by three parallel workers (sync layer / teacher UI / student UI), merged an
 - **teacher.html**: `css/teacher-2026.css` is a polish layer only (no behaviour change).
 - **Cache-busting:** the new CSS files are versioned through `js/version.json`, like the scripts.
 
+## 3r. Student page: friendlier layout, 3D map, Lumio icons (4 Oct 2026)
+- **Section order.** `student.html` main is regrouped into `<section class="s26-sec">` blocks: secToday, secMap, secUnlocked, secClasses, secHub, secRewards, secMore.
+  - Same blocks and ids as before, only moved.
+  - The payment banners and the welcome card insert before `#secToday`.
+- **`js/student-map3d.js`**
+  - Draws the level as a three.js path (`vendor/three-r128.min.js`, loaded only when the map comes into view).
+  - Its source of truth is the classic `#path .node` list from `dashboard.js`: state, stars, link and hint per lesson.
+  - Without WebGL it falls back to the classic grid; "Show as a list" (`body.s26-list`) switches to it on demand.
+- **`js/student-mission.js`** builds the "Today's lesson" card and the top menu:
+  - lesson name EN/AR from `LUMIO_LESSONS`
+  - prepare / class / homework steps from `LumioMapState`
+  - homework material tiles
+  - icon labels: emoji stripped from the page's own wording, so the page's label logic is unchanged
+  - Lumio icons on the section headers, Hub tiles, story, game and badges
+- **`js/lumio-icons.js`**: the Lumio icon set.
+  - Call `LumioIcons.svg(name)`; shared gradients sit in one hidden sprite.
+  - Badges map by title to `medal-*` icons.
+- **`js/student-motion.js`**: scroll reveals, count-ups, hover tilt (mouse only), floating tiles in the welcome card, the phone "Menu" button, and hiding sections that end up empty. All of it is off for reduced motion.
+
 ## 4. Working style
 Verify in a browser before claiming done; check files before writing prompts; never duplicate; fix in templates not per slide; say plainly what was NOT done; ask one specific question when ambiguous.
