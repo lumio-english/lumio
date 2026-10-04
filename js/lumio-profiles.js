@@ -235,6 +235,7 @@
       if (!Array.isArray(s.notes)) { s.notes = []; needsSave = true; }
       if (!Array.isArray(s.messages)) { s.messages = []; needsSave = true; }
       if (!Array.isArray(s.referrals)) { s.referrals = []; needsSave = true; }
+      if (!Array.isArray(s.installments)) { s.installments = []; needsSave = true; }
       // Currency follows country (see currencyForCountry). Fix up any
       // record saved before that rule existed.
       { const derived = currencyForCountry(s.country); if (derived && s.currency !== derived) { s.currency = derived; needsSave = true; } }
@@ -615,6 +616,8 @@
       // moment one reaches "subscribed", the referring student is
       // credited 5 free sessions, exactly once per referral (rewardedAt).
       referrals: [],
+      // Payment plan: [{id, amount, currency, dueDate (YYYY-MM-DD), paidAt, note, remindedAt}] -- see installments section
+      installments: [],
       createdAt: new Date().toISOString().slice(0, 10),
       updatedAt: new Date().toISOString(),
     };
@@ -1103,6 +1106,107 @@
       rewardPerSubscription: REFERRAL_REWARD_SESSIONS,
     };
   }
+  // ---------- installments (payment plan) ----------
+  // The teacher sets a plan on the student: a list of due amounts with
+  // dates. Reminders: the student's inbox gets an Arabic+English message
+  // 3 days before and on the due day (once each), the dashboard shows a
+  // banner, the teacher panel pops a "due today / overdue" list, and the
+  // Apps Script (when SMS credentials are set) texts the parent.
+  const INSTALLMENT_REMIND_DAYS = 3;
+  function todayRiyadh() {
+    try { if (typeof window !== "undefined" && window.Lumio && Lumio.tzNow) return Lumio.tzNow().date; } catch (e) {}
+    return new Date().toISOString().slice(0, 10);
+  }
+  function daysBetween(a, b) { return Math.round((Date.UTC(+b.slice(0, 4), +b.slice(5, 7) - 1, +b.slice(8, 10)) - Date.UTC(+a.slice(0, 4), +a.slice(5, 7) - 1, +a.slice(8, 10))) / 86400000); }
+  function fmtMoney(amount, currency) { const n = Number(amount) || 0; return `${n % 1 ? n.toFixed(2) : n} ${currency || ""}`.trim(); }
+  function fmtDateAr(d) { try { return new Date(d + "T00:00:00").toLocaleDateString("ar-EG", { weekday: "long", day: "numeric", month: "long" }); } catch (e) { return d; } }
+  function installmentMessage(s, inst, daysLeft) {
+    const amt = fmtMoney(inst.amount, inst.currency || s.currency);
+    const when = daysLeft > 0 ? `بعد ${daysLeft === 1 ? "يوم" : daysLeft === 2 ? "يومين" : daysLeft + " أيام"} (${fmtDateAr(inst.dueDate)})` : daysLeft === 0 ? `اليوم (${fmtDateAr(inst.dueDate)})` : `كان في ${fmtDateAr(inst.dueDate)}`;
+    const ar = `تذكير من Lumio English: قسط اشتراك ${s.name} بقيمة ${amt} مستحق ${when}. شكراً لكم 🌟`;
+    const en = `Lumio English reminder: ${s.name}'s installment of ${amt} is due ${daysLeft > 0 ? `in ${daysLeft} day${daysLeft === 1 ? "" : "s"} (${inst.dueDate})` : daysLeft === 0 ? `today (${inst.dueDate})` : `— it was due on ${inst.dueDate}`}.`;
+    return { ar, en };
+  }
+  function setInstallments(studentId, list) {
+    const data = load();
+    const s = data.students.find(x => x.id === studentId);
+    if (!s) throw new Error("Student not found.");
+    s.installments = (list || []).filter(i => i && i.dueDate && Number(i.amount) > 0).map(i => ({
+      id: i.id || ("i_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)),
+      amount: Number(i.amount), currency: i.currency || s.currency || "", dueDate: String(i.dueDate).slice(0, 10),
+      paidAt: i.paidAt || null, note: i.note || "", remindedAt: i.remindedAt || null, remindedDueAt: i.remindedDueAt || null,
+    })).sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+    s.updatedAt = new Date().toISOString();
+    save(data);
+    return s.installments;
+  }
+  // total, count, firstDate, everyMonths -> evenly split plan (last one takes the rounding)
+  function buildInstallmentPlan({ total, count, firstDate, everyMonths, currency } = {}) {
+    const n = Math.max(1, Number(count) || 1), T = Number(total) || 0, step = Math.max(1, Number(everyMonths) || 1);
+    const base = Math.floor((T / n) * 100) / 100;
+    const out = [];
+    const [y, m, d] = String(firstDate || todayRiyadh()).split("-").map(Number);
+    for (let k = 0; k < n; k++) {
+      const dt = new Date(Date.UTC(y, m - 1 + k * step, 1));
+      const lastDay = new Date(Date.UTC(dt.getUTCFullYear(), dt.getUTCMonth() + 1, 0)).getUTCDate();
+      const dd = new Date(Date.UTC(dt.getUTCFullYear(), dt.getUTCMonth(), Math.min(d, lastDay)));
+      out.push({ amount: k === n - 1 ? Math.round((T - base * (n - 1)) * 100) / 100 : base, currency, dueDate: dd.toISOString().slice(0, 10) });
+    }
+    return out;
+  }
+  function markInstallmentPaid(studentId, instId, paid) {
+    const data = load();
+    const s = data.students.find(x => x.id === studentId);
+    if (!s) throw new Error("Student not found.");
+    const i = (s.installments || []).find(x => x.id === instId);
+    if (!i) throw new Error("Installment not found.");
+    i.paidAt = paid === false ? null : new Date().toISOString();
+    if (i.paidAt) pushMessage_(s, "payment", `✅ تم استلام قسط بقيمة ${fmtMoney(i.amount, i.currency || s.currency)}. شكراً لكم! — Payment of ${fmtMoney(i.amount, i.currency || s.currency)} received, thank you.`, { installmentId: i.id });
+    s.updatedAt = new Date().toISOString();
+    save(data);
+    return i;
+  }
+  // Every unpaid installment across the roster with how many days are left
+  // (negative = overdue). `withinDays` limits to the coming window.
+  function installmentsDue({ withinDays } = {}) {
+    const today = todayRiyadh(); const out = [];
+    load().students.forEach(s => (s.installments || []).forEach(i => {
+      if (i.paidAt) return;
+      const daysLeft = daysBetween(today, i.dueDate);
+      if (withinDays !== undefined && daysLeft > withinDays) return;
+      out.push({ student: s, inst: i, daysLeft });
+    }));
+    return out.sort((a, b) => a.daysLeft - b.daysLeft);
+  }
+  // Drops the automatic reminders into students' inboxes: once at 3 days
+  // before, once on the due day (and once if already overdue when first
+  // seen). Returns what it sent so the caller can toast / sync.
+  function sendDueInstallmentReminders() {
+    const data = load(); const today = todayRiyadh(); const sent = [];
+    data.students.forEach(s => (s.installments || []).forEach(i => {
+      if (i.paidAt) return;
+      const daysLeft = daysBetween(today, i.dueDate);
+      if (daysLeft <= INSTALLMENT_REMIND_DAYS && daysLeft > 0 && !i.remindedAt) {
+        const m = installmentMessage(s, i, daysLeft);
+        pushMessage_(s, "payment_due", `💳 ${m.ar}\n${m.en}`, { installmentId: i.id, amount: i.amount, dueDate: i.dueDate });
+        i.remindedAt = new Date().toISOString(); sent.push({ student: s.name, stage: "upcoming", daysLeft });
+      } else if (daysLeft <= 0 && !i.remindedDueAt) {
+        const m = installmentMessage(s, i, daysLeft);
+        pushMessage_(s, "payment_due", `💳 ${m.ar}\n${m.en}`, { installmentId: i.id, amount: i.amount, dueDate: i.dueDate });
+        i.remindedDueAt = new Date().toISOString(); sent.push({ student: s.name, stage: daysLeft === 0 ? "due" : "overdue", daysLeft });
+      }
+    }));
+    if (sent.length) { data.students.forEach(s => { if ((s.installments || []).some(i => i.remindedAt || i.remindedDueAt)) s.updatedAt = new Date().toISOString(); }); save(data); }
+    return sent;
+  }
+  function installmentSummary(s) {
+    const list = s && Array.isArray(s.installments) ? s.installments : [];
+    const paid = list.filter(i => i.paidAt), unpaid = list.filter(i => !i.paidAt);
+    const sum = l => Math.round(l.reduce((a, i) => a + (Number(i.amount) || 0), 0) * 100) / 100;
+    const next = unpaid.slice().sort((a, b) => a.dueDate.localeCompare(b.dueDate))[0] || null;
+    return { count: list.length, paidCount: paid.length, paidTotal: sum(paid), dueTotal: sum(unpaid), total: sum(list), next, nextDays: next ? daysBetween(todayRiyadh(), next.dueDate) : null };
+  }
+
   async function assignStudent(studentId, teacherId) {
     return updateStudent(studentId, { teacherId });
   }
@@ -1461,6 +1565,7 @@
     if (Array.isArray(copy.notes)) copy.notes = JSON.stringify(copy.notes);
     if (Array.isArray(copy.messages)) copy.messages = JSON.stringify(copy.messages);
     if (Array.isArray(copy.referrals)) copy.referrals = JSON.stringify(copy.referrals);
+    if (Array.isArray(copy.installments)) copy.installments = JSON.stringify(copy.installments);
     return copy;
   }
   // The Sheet stores every cell as text (writeRows_ formats the range as
@@ -1493,7 +1598,7 @@
     coerceNumbers(s);
     if (typeof s.tags === "string") s.tags = s.tags.split(",").map(t => t.trim()).filter(Boolean);
     else if (!Array.isArray(s.tags)) s.tags = [];
-    ["pointsLog", "redemptions", "notes", "messages", "referrals"].forEach(k => {
+    ["pointsLog", "redemptions", "notes", "messages", "referrals", "installments"].forEach(k => {
       if (typeof s[k] === "string") { try { s[k] = JSON.parse(s[k] || "[]"); } catch (e) { s[k] = []; } }
       else if (!Array.isArray(s[k])) s[k] = [];
     });
@@ -1957,6 +2062,7 @@
     addMessage, addMessageOnce, listMessages, unreadMessageCount, markMessagesRead,
     isStudentActive, requestAccountDeletion, confirmAccountDeletion, declineAccountDeletion,
     currencyForCountry,
+    setInstallments, buildInstallmentPlan, markInstallmentPaid, installmentsDue, sendDueInstallmentReminders, installmentSummary, installmentMessage, fmtMoney, INSTALLMENT_REMIND_DAYS,
     addReferral, updateReferralStatus, removeReferral, listReferrals, referralStats,
     canRefer, referrerBlockReason, listAllReferrals, findReferralByLinked, autoReferralStatus, syncReferrals, referrableStudents, REFERRAL_STATUSES, REFERRAL_REWARD_SESSIONS,
     verifyStudentLogin, randomPin,

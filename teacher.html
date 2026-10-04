@@ -247,6 +247,21 @@
   .td-cal-avail{position:absolute;left:3px;right:3px;border:2px dashed var(--td-teal);border-radius:8px;background:rgba(0,0,0,0);color:var(--td-teal);font-size:.7rem;font-weight:800;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;z-index:1}
   .td-cal-avail:hover{background:var(--td-teal-soft)}
   .td-cal-avail.past{border-color:var(--td-border);color:var(--td-muted);opacity:.6}
+  .td-inst{margin-top:14px;border:1px solid var(--td-border);border-radius:12px;padding:12px}
+  .td-inst-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;font-size:.88rem}
+  .td-inst-gen{display:grid;grid-template-columns:1.2fr .7fr 1.2fr 1.2fr auto;gap:6px;margin-bottom:8px}
+  .td-inst-gen input,.td-inst-gen select{padding:7px 8px;border:1px solid var(--td-border);border-radius:8px;font-family:inherit;font-size:.82rem;min-width:0}
+  .td-inst-rows{display:flex;flex-direction:column;gap:5px}
+  .td-inst-row{display:grid;grid-template-columns:1fr 1.2fr auto auto;gap:6px;align-items:center}
+  .td-inst-row input{padding:6px 8px;border:1px solid var(--td-border);border-radius:8px;font-family:inherit;font-size:.82rem;min-width:0}
+  .td-inst-row .paid{display:flex;align-items:center;gap:5px;font-size:.76rem;font-weight:800;white-space:nowrap}
+  .td-inst-row.is-paid input{opacity:.55}
+  .td-inst-row .st{font-size:.68rem;font-weight:800;padding:2px 7px;border-radius:999px;background:#F3EEE4;color:var(--td-muted);white-space:nowrap}
+  .td-inst-row .st.due{background:#FFF1D6;color:#B45309}.td-inst-row .st.over{background:var(--td-coral-soft);color:var(--td-coral)}.td-inst-row .st.ok{background:var(--td-teal-soft);color:var(--td-teal)}
+  .td-due-row{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:10px 12px;border:1px solid var(--td-border);border-radius:12px;margin-bottom:8px;background:#fff}
+  .td-due-row .amt{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.1rem;color:var(--td-ink)}
+  .td-due-row .when{font-size:.72rem;font-weight:800;padding:3px 9px;border-radius:999px;display:inline-block}
+  .td-due-row .when.over{background:var(--td-coral-soft);color:var(--td-coral)}.td-due-row .when.today{background:#FFF1D6;color:#B45309}.td-due-row .when.soon{background:var(--td-teal-soft);color:var(--td-teal)}
   .td-ref-row{display:grid;grid-template-columns:1.3fr 1fr 150px 110px auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--td-border);border-radius:12px;margin-bottom:8px;font-size:.84rem;background:#fff}
   .td-ref-row .nm{font-weight:800}
   .td-ref-row .meta{font-size:.72rem;color:var(--td-muted);font-weight:600}
@@ -1318,6 +1333,16 @@
 
   <!-- ===== Renewals view ===== -->
   <div id="viewRenewals" style="display:none">
+    <div class="td-panel" style="margin-bottom:16px">
+      <div class="td-roster-head">
+        <h2 style="flex:1">💳 Installments</h2>
+        <button class="td-btn" type="button" onclick="showDuePopup(true)">🔔 Show today's pop-up</button>
+        <select class="td-select" id="instWindow"><option value="7">Due in the next 7 days + overdue</option><option value="30">Next 30 days + overdue</option><option value="9999">Everything unpaid</option></select>
+      </div>
+      <p class="sub" style="margin-top:4px">Payment plans set on each student's profile (Billing tab). Reminders go to the parent automatically; mark an installment paid here or on the profile.</p>
+      <div id="instDueList" class="mt"></div>
+      <div class="td-empty" id="instDueEmpty" style="display:none">No installments due in this window.</div>
+    </div>
     <div class="td-panel">
       <div class="td-roster-head">
         <h2 style="flex:1">Running low on sessions</h2>
@@ -1676,6 +1701,19 @@
             <input type="number" id="stuSessionsRemaining" min="0" step="1" placeholder="0">
           </div>
         </div>
+        <div class="td-inst" id="stuInstallmentsBox">
+          <div class="td-inst-head"><b>💳 Installment plan</b><span class="sub" id="stuInstSummary" style="font-size:.74rem"></span></div>
+          <div class="td-inst-gen">
+            <input type="number" id="instTotal" min="0" step="0.01" placeholder="Total">
+            <input type="number" id="instCount" min="1" step="1" value="3" placeholder="Parts" title="Number of installments">
+            <input type="date" id="instFirst" title="First due date">
+            <select id="instEvery" title="Interval"><option value="1">every month</option><option value="2">every 2 months</option><option value="3">every 3 months</option></select>
+            <button type="button" class="td-btn" id="instGenerate">Generate</button>
+          </div>
+          <div id="instRows" class="td-inst-rows"></div>
+          <button type="button" class="td-btn" id="instAddRow" style="margin-top:6px">+ Add an installment</button>
+          <p class="sub" style="font-size:.72rem;margin:8px 0 0">The parent gets an Arabic reminder in the student's inbox 3 days before each due date and on the day; you get a pop-up here. Mark each one paid when the money arrives.</p>
+        </div>
       </div>
 
       <div class="td-sm-panel" data-smpanel="login" style="display:none">
@@ -1915,6 +1953,16 @@
       <button class="td-btn" id="fsModalCancel">Close</button>
       <button class="td-btn td-btn-primary" id="fsModalSave">Add slot</button>
     </div>
+  </div>
+</div>
+
+<!-- ===== Installments due pop-up ===== -->
+<div class="td-overlay" id="dueOverlay">
+  <div class="td-modal-box td-modal-box-wide">
+    <h3>💳 Installments due</h3>
+    <p class="sub" style="margin-top:-4px" id="dueSub"></p>
+    <div id="dueList" style="max-height:420px;overflow-y:auto"></div>
+    <div class="td-modal-actions"><button class="td-btn" id="dueSnooze" type="button">Remind me tomorrow</button><button class="td-btn td-btn-primary" id="dueClose" type="button">Done</button></div>
   </div>
 </div>
 
@@ -2884,7 +2932,7 @@
     const wrap = document.getElementById("drawerMessages");
     if (!wrap || !window.LumioProfiles) return;
     const msgs = LumioProfiles.listMessages(p.id);
-    const ICONS = { teacher: "👩‍🏫", pin_changed: "🔑", phone_changed: "📱", level_changed: "📈", class_booked: "📅", class_reminder: "⏰", content_available: "✨", delete_request: "⚠️", delete_declined: "✅", referral: "🤝", referral_reward: "🎁", info: "💬" };
+    const ICONS = { teacher: "👩‍🏫", pin_changed: "🔑", phone_changed: "📱", level_changed: "📈", class_booked: "📅", class_reminder: "⏰", content_available: "✨", delete_request: "⚠️", delete_declined: "✅", referral: "🤝", referral_reward: "🎁", payment_due: "💳", payment: "✅", info: "💬" };
     const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
     const list = msgs.length ? msgs.map(m => `
       <div class="td-note-row" style="${m.read ? "" : "border-left:3px solid var(--td-indigo);padding-left:9px"}">
@@ -3428,8 +3476,57 @@
     });
   }
 
+  // ---- installment plan editor (inside the student modal) ----
+  let stuInstallments = [];
+  function instStatus(i) {
+    if (i.paidAt) return ["ok", "paid"];
+    const d = Math.round((Date.UTC(+i.dueDate.slice(0, 4), +i.dueDate.slice(5, 7) - 1, +i.dueDate.slice(8, 10)) - Date.UTC(+LumioSchedule.todayStr().slice(0, 4), +LumioSchedule.todayStr().slice(5, 7) - 1, +LumioSchedule.todayStr().slice(8, 10))) / 86400000);
+    if (d < 0) return ["over", `${-d} day${-d === 1 ? "" : "s"} overdue`];
+    if (d === 0) return ["due", "due today"];
+    if (d <= 3) return ["due", `in ${d} day${d === 1 ? "" : "s"}`];
+    return ["", `in ${d} days`];
+  }
+  function renderInstRows() {
+    const wrap = document.getElementById("instRows");
+    const cur = document.getElementById("stuCurrency").value;
+    wrap.innerHTML = "";
+    stuInstallments.forEach((i, idx) => {
+      const [cls, label] = i.dueDate ? instStatus(i) : ["", ""];
+      const row = document.createElement("div");
+      row.className = "td-inst-row" + (i.paidAt ? " is-paid" : "");
+      row.innerHTML = `<input type="number" min="0" step="0.01" value="${i.amount || ""}" placeholder="Amount (${escHtml(cur)})" data-k="amount">
+        <input type="date" value="${i.dueDate || ""}" data-k="dueDate">
+        <label class="paid"><input type="checkbox" ${i.paidAt ? "checked" : ""} data-k="paid"> Paid</label>
+        <span class="st ${cls}">${label}</span>
+        <button type="button" class="td-btn" data-k="del" style="padding:4px 8px" title="Remove">✕</button>`;
+      row.querySelector('[data-k="amount"]').oninput = e => { i.amount = Number(e.target.value); renderInstSummary(); };
+      row.querySelector('[data-k="dueDate"]').onchange = e => { i.dueDate = e.target.value; renderInstRows(); };
+      row.querySelector('[data-k="paid"]').onchange = e => { i.paidAt = e.target.checked ? new Date().toISOString() : null; renderInstRows(); };
+      row.querySelector('[data-k="del"]').onclick = () => { stuInstallments.splice(idx, 1); renderInstRows(); };
+      wrap.appendChild(row);
+    });
+    renderInstSummary();
+  }
+  function renderInstSummary() {
+    const cur = document.getElementById("stuCurrency").value;
+    const paid = stuInstallments.filter(i => i.paidAt).reduce((a, i) => a + (Number(i.amount) || 0), 0);
+    const total = stuInstallments.reduce((a, i) => a + (Number(i.amount) || 0), 0);
+    document.getElementById("stuInstSummary").textContent = stuInstallments.length ? `${stuInstallments.length} parts · ${LumioProfiles.fmtMoney(paid, cur)} paid of ${LumioProfiles.fmtMoney(total, cur)}` : "No plan — full payment";
+  }
+  document.getElementById("instGenerate").onclick = () => {
+    const total = Number(document.getElementById("instTotal").value);
+    if (!(total > 0)) { showToast("Enter the total amount first.", "error"); return; }
+    stuInstallments = LumioProfiles.buildInstallmentPlan({ total, count: document.getElementById("instCount").value, firstDate: document.getElementById("instFirst").value || LumioSchedule.todayStr(), everyMonths: document.getElementById("instEvery").value, currency: document.getElementById("stuCurrency").value });
+    renderInstRows();
+  };
+  document.getElementById("instAddRow").onclick = () => { stuInstallments.push({ amount: 0, dueDate: "", currency: document.getElementById("stuCurrency").value, paidAt: null }); renderInstRows(); };
+
   function openStudentModal(profile, prefill) {
     editingId = profile ? profile.id : null;
+    stuInstallments = profile && Array.isArray(profile.installments) ? profile.installments.map(i => Object.assign({}, i)) : [];
+    document.getElementById("instTotal").value = ""; document.getElementById("instCount").value = "3";
+    document.getElementById("instFirst").value = LumioSchedule.todayStr();
+    setTimeout(renderInstRows, 0);
     document.getElementById("studentModalTitle").textContent = profile ? "Edit student" : "Add student";
     document.getElementById("studentModalSub").textContent = profile ? `Update ${profile.name}'s profile and settings` : "A new student on your roster";
     stuNameInput.value = profile ? profile.name : (prefill && prefill.name) || "";
@@ -3548,11 +3645,18 @@
           sessionsRemaining: sessionsRemainingVal, approved: approvedVal,
         };
         if (pinVal !== undefined) payload.pin = pinVal;
+        let savedId = editingId;
         if (editingId) {
           await LumioProfiles.updateStudent(editingId, payload);
         } else {
-          await LumioProfiles.addStudent(payload);
+          savedId = (await LumioProfiles.addStudent(payload)).id;
         }
+        // installment plan (Billing tab) -- rows without a date or amount are dropped
+        try {
+          const before = JSON.stringify((LumioProfiles.getStudent(savedId) || {}).installments || []);
+          const after = LumioProfiles.setInstallments(savedId, stuInstallments.map(i => Object.assign({}, i, { currency: currencyVal })));
+          if (JSON.stringify(after) !== before) LumioProfiles.sendDueInstallmentReminders();
+        } catch (e2) { console.warn("installments", e2); }
         // Push this change out immediately rather than waiting for the
         // next periodic auto-sync (up to 5 minutes) or a manual "Sync
         // now" click -- a teacher editing a student expects it to show
@@ -5345,6 +5449,7 @@
       }
     } catch (e2) { /* progress sync is best-effort; roster/schedule already reported below */ }
     try { renderServerBanner(); } catch (e4) {}
+    try { runInstallmentReminders(); showDuePopup(false); } catch (e5) {}
     // Referrals follow the (freshly pulled) roster: a referred student who
     // was subscribed on another device credits the referrer here, now.
     try {
@@ -5425,6 +5530,8 @@
   // the shared backend.
   if (window.LumioProfiles && LumioProfiles.getSyncConfig().enabled) {
     performFullSync(true).catch(() => {});
+  } else {
+    setTimeout(() => { try { showDuePopup(false); } catch (e) {} }, 800);
   }
   setInterval(() => {
     if (document.hidden) return;
@@ -5830,7 +5937,7 @@
       document.getElementById("pageTitle").textContent = titles[view][0];
       document.getElementById("pageSub").textContent = titles[view][1];
       document.getElementById("sidebar").classList.remove("show");
-      if (view === "renewals") renderRenewalsList();
+      if (view === "renewals") { renderRenewalsList(); renderInstallmentsList(); }
       if (view === "referrals") { try { renderReferralsView(); } catch (e) { console.error(e); } }
       if (view === "insights") { renderLeaderboard(); renderCohortCompare(); }
       if (view === "schedule") { try { fsMinimumNudge(); } catch (e) {} }
@@ -5974,6 +6081,75 @@
   };
   try { refBadge(); } catch (e) {}
 
+  // ================= Installments (due list, pop-up, WhatsApp) =================
+  function instWaLink(s, inst, daysLeft) {
+    if (!s.phone) return "";
+    const m = LumioProfiles.installmentMessage(s, inst, daysLeft);
+    return `https://wa.me/${String(s.phone).replace(/\D/g, "")}?text=${encodeURIComponent(m.ar + "\n\n" + m.en)}`;
+  }
+  function dueRowHtml({ student: s, inst, daysLeft }) {
+    const cls = daysLeft < 0 ? "over" : daysLeft === 0 ? "today" : "soon";
+    const label = daysLeft < 0 ? `${-daysLeft} day${-daysLeft === 1 ? "" : "s"} overdue` : daysLeft === 0 ? "due today" : `in ${daysLeft} day${daysLeft === 1 ? "" : "s"}`;
+    const wa = instWaLink(s, inst, daysLeft);
+    const sum = LumioProfiles.installmentSummary(s);
+    const partNo = (s.installments || []).slice().sort((a, b) => a.dueDate.localeCompare(b.dueDate)).findIndex(x => x.id === inst.id) + 1;
+    return `<div class="td-due-row" data-sid="${s.id}" data-iid="${inst.id}">
+      <div class="amt">${LumioProfiles.fmtMoney(inst.amount, inst.currency || s.currency)}</div>
+      <div><div style="font-weight:800">${escHtml(s.avatar || "")} ${escHtml(s.name)} <span class="when ${cls}">${label}</span></div>
+        <div class="sub" style="font-size:.74rem">Due ${inst.dueDate} · part ${partNo} of ${sum.count}${s.phone ? " · " + escHtml(formatPhoneDisplay(s.phone)) : " · no phone"}${inst.remindedAt || inst.remindedDueAt ? " · reminder sent to inbox" : ""}${inst.smsAt ? " · SMS sent" : ""}</div></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">${wa ? `<a class="td-wa-btn" target="_blank" rel="noopener" href="${wa}">💬 WhatsApp (AR)</a>` : ""}<button type="button" class="td-btn td-btn-primary" data-act="paid" style="padding:6px 12px">✓ Paid</button></div>
+    </div>`;
+  }
+  function bindDueRows(root, after) {
+    root.querySelectorAll('[data-act="paid"]').forEach(b => b.onclick = async () => {
+      const row = b.closest(".td-due-row");
+      const s = LumioProfiles.getStudent(row.dataset.sid);
+      if (!(await confirmDialog(`Mark this installment as paid for ${s.name}?`, "Mark paid"))) return;
+      LumioProfiles.markInstallmentPaid(row.dataset.sid, row.dataset.iid, true);
+      queueSync(); showToast(`Installment marked paid — ${s.name} was told. ✓`, "success");
+      after();
+    });
+  }
+  function renderInstallmentsList() {
+    const list = document.getElementById("instDueList"), empty = document.getElementById("instDueEmpty");
+    if (!list || !window.LumioProfiles) return;
+    const win = Number(document.getElementById("instWindow").value);
+    const due = LumioProfiles.installmentsDue({ withinDays: win });
+    list.innerHTML = due.map(dueRowHtml).join("");
+    empty.style.display = due.length ? "none" : "block";
+    bindDueRows(list, () => { renderInstallmentsList(); instBadge(); });
+  }
+  document.getElementById("instWindow").addEventListener("change", renderInstallmentsList);
+  function instBadge() { try { renderRenewalsList(); } catch (e) {} }
+  // Pop-up: overdue + due today + next 3 days, once a day per device
+  // (snoozable), after the roster has synced so it reflects every device.
+  function showDuePopup(force) {
+    if (!window.LumioProfiles) return;
+    const key = "lumio_due_popup_" + LumioSchedule.todayStr();
+    if (!force && localStorage.getItem(key)) return;
+    const due = LumioProfiles.installmentsDue({ withinDays: 3 });
+    if (!due.length) return;
+    const ov = document.getElementById("dueOverlay");
+    const over = due.filter(x => x.daysLeft < 0).length, today = due.filter(x => x.daysLeft === 0).length, soon = due.length - over - today;
+    document.getElementById("dueSub").textContent = [over ? `${over} overdue` : "", today ? `${today} due today` : "", soon ? `${soon} due in the next 3 days` : ""].filter(Boolean).join(" · ") + ". Parents have the reminder in their inbox; tap WhatsApp to send it in Arabic too.";
+    const list = document.getElementById("dueList");
+    list.innerHTML = due.map(dueRowHtml).join("");
+    bindDueRows(list, () => { showDuePopup(true); renderInstallmentsList(); instBadge(); if (!LumioProfiles.installmentsDue({ withinDays: 3 }).length) ov.classList.remove("show"); });
+    ov.classList.add("show");
+    document.getElementById("dueClose").onclick = () => { ov.classList.remove("show"); localStorage.setItem(key, "1"); };
+    document.getElementById("dueSnooze").onclick = () => { ov.classList.remove("show"); localStorage.setItem(key, "1"); };
+  }
+  function runInstallmentReminders() {
+    if (!window.LumioProfiles) return;
+    try {
+      const sent = LumioProfiles.sendDueInstallmentReminders();
+      if (sent.length) { queueSync(); showToast(`${sent.length} payment reminder${sent.length === 1 ? "" : "s"} sent to parents' inboxes.`); }
+      instBadge();
+    } catch (e) { console.warn("installment reminders", e); }
+  }
+  try { runInstallmentReminders(); } catch (e) {}
+  window.showDuePopup = showDuePopup; // also reachable from the Renewals tab button / console
+
   function renderRenewalsList() {
     const list = document.getElementById("renewalsList");
     const empty = document.getElementById("renewalsEmpty");
@@ -6001,7 +6177,9 @@
       list.appendChild(row);
     });
     const badge = document.getElementById("renewalsNavBadge");
-    if (students.length) { badge.style.display = "inline-flex"; badge.textContent = students.length; }
+    const dueN = window.LumioProfiles ? LumioProfiles.installmentsDue({ withinDays: 3 }).length : 0;
+    const n = students.length + dueN;
+    if (n) { badge.style.display = "inline-flex"; badge.textContent = n; badge.title = `${students.length} low on sessions · ${dueN} installment${dueN === 1 ? "" : "s"} due`; }
     else badge.style.display = "none";
   }
   document.getElementById("renewalThreshold").addEventListener("change", renderRenewalsList);

@@ -2422,6 +2422,26 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
   })();
 
 
+  // ---------- installment due banner ----------
+  // The teacher's payment plan lives on the roster record (installments).
+  // Within 3 days of a due date (or overdue), the dashboard says so in
+  // Arabic + English with the amount, next to the inbox reminder.
+  (function renderInstallmentBanner() {
+    try {
+      if (!rosterProfile || !window.LumioProfiles || !LumioProfiles.installmentSummary) return;
+      const fresh = LumioProfiles.getStudent(rosterProfile.id) || rosterProfile;
+      const sum = LumioProfiles.installmentSummary(fresh);
+      if (!sum.next || sum.nextDays > LumioProfiles.INSTALLMENT_REMIND_DAYS) return;
+      const m = LumioProfiles.installmentMessage(fresh, sum.next, sum.nextDays);
+      const banner = document.createElement("div");
+      banner.id = "installmentBanner";
+      banner.style.cssText = `margin:0 auto 14px;max-width:1120px;padding:12px 16px;border-radius:14px;background:${sum.nextDays < 0 ? "#FEE2E2" : "#FFF7E0"};border:2px solid ${sum.nextDays < 0 ? "#EF4444" : "#F59E0B"};color:#7A3F0B;font-weight:800;display:flex;gap:10px;align-items:flex-start;line-height:1.5`;
+      banner.innerHTML = `<span style="font-size:1.3rem">💳</span><span><span dir="rtl" style="display:block">${m.ar}</span><span style="display:block;font-weight:700;font-size:.85rem;opacity:.85">${m.en}</span></span>`;
+      const anchor = document.querySelector(".sd-hero");
+      if (anchor) anchor.parentElement.insertBefore(banner, anchor); else document.body.prepend(banner);
+    } catch (e) { console.error("installment banner", e); }
+  })();
+
   // ---------- rewards (student can redeem their own points) ----------
   function renderRewardsCard() {
     const card = document.getElementById("rewardsCard");
@@ -2725,7 +2745,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
     const ICONS = {
       teacher: "👩‍🏫", pin_changed: "🔑", phone_changed: "📱", level_changed: "📈", class_booked: "📅",
       class_reminder: "⏰", content_available: "✨", delete_request: "⚠️", delete_declined: "✅",
-      referral: "🤝", referral_reward: "🎁", info: "💬",
+      referral: "🤝", referral_reward: "🎁", payment_due: "💳", payment: "✅", info: "💬",
     };
     const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
     const fmtWhen = iso => {

@@ -35,6 +35,7 @@ var ROSTER_COLUMNS = [
   "pointsLog", "redemptions", "notes",
   "messages", "pendingDeletion", "deletionConfirmed",
   "referrals", "referralsUpdatedAt",
+  "installments", // JSON [{id, amount, currency, dueDate, paidAt, remindedAt, remindedDueAt, smsAt}] (4 Oct 2026)
   "cohort",  // batch (join month); was missing, so every sync erased it
   "fieldTimes" // JSON {field: ISO time it last changed, _base}: per-field merge (3 Oct 2026)
 ];
@@ -1015,6 +1016,70 @@ function createZoomMeeting_(accessToken, hostEmail, topic, startDate, durationMi
   var body = JSON.parse(res.getContentText() || "{}");
   if (code >= 200 && code < 300 && body.join_url) return body.join_url;
   throw new Error("Zoom API error " + code + ": " + res.getContentText());
+}
+
+// ---------- Installment SMS reminders (automatic) ----------
+// Trigger: Triggers (clock icon) -> Add Trigger -> sendInstallmentReminders,
+// Time-driven, Day timer, 9am-10am. Reads the Roster tab, finds unpaid
+// installments due in 3 days or today (or overdue and never texted) and
+// sends ONE Arabic SMS per installment per stage to the student's phone.
+// Needs Script Properties SMS_PROVIDER=twilio, TWILIO_SID, TWILIO_TOKEN,
+// TWILIO_FROM (E.164, e.g. +1415...). Without them it only logs what it
+// would send, so it is safe to leave the trigger on.
+var INSTALLMENT_REMIND_DAYS = 3;
+function fmtMoney_(amount, currency) { var n = Number(amount) || 0; return (n % 1 ? n.toFixed(2) : String(n)) + (currency ? " " + currency : ""); }
+function fmtDateAr_(d) { try { return Utilities.formatDate(new Date(d + "T12:00:00+03:00"), PLATFORM_TZ, "d/M/yyyy"); } catch (e) { return d; } }
+function installmentSms_(name, inst, daysLeft) {
+  var amt = fmtMoney_(inst.amount, inst.currency);
+  var when = daysLeft > 0 ? ("بعد " + (daysLeft === 1 ? "يوم" : daysLeft === 2 ? "يومين" : daysLeft + " أيام") + " (" + fmtDateAr_(inst.dueDate) + ")")
+           : daysLeft === 0 ? ("اليوم (" + fmtDateAr_(inst.dueDate) + ")") : ("كان في " + fmtDateAr_(inst.dueDate));
+  return "تذكير من Lumio English: قسط اشتراك " + name + " بقيمة " + amt + " مستحق " + when + ". شكراً لكم";
+}
+function sendSms_(to, text) {
+  var props = PropertiesService.getScriptProperties();
+  var provider = props.getProperty("SMS_PROVIDER") || "";
+  var digits = String(to || "").replace(/\D/g, "");
+  if (!digits) return { ok: false, error: "no phone" };
+  var e164 = "+" + digits;
+  if (provider === "twilio") {
+    var sid = props.getProperty("TWILIO_SID"), token = props.getProperty("TWILIO_TOKEN"), from = props.getProperty("TWILIO_FROM");
+    if (!sid || !token || !from) return { ok: false, error: "twilio properties missing" };
+    var res = UrlFetchApp.fetch("https://api.twilio.com/2010-04-01/Accounts/" + sid + "/Messages.json", {
+      method: "post", payload: { To: e164, From: from, Body: text },
+      headers: { Authorization: "Basic " + Utilities.base64Encode(sid + ":" + token) }, muteHttpExceptions: true,
+    });
+    var code = res.getResponseCode();
+    return code >= 200 && code < 300 ? { ok: true } : { ok: false, error: "twilio " + code + ": " + res.getContentText().slice(0, 200) };
+  }
+  Logger.log("SMS (no provider configured) -> " + e164 + ": " + text);
+  return { ok: false, error: "no provider", dryRun: true };
+}
+function sendInstallmentReminders() {
+  var rows = readRows_(ROSTER_SHEET, ROSTER_COLUMNS);
+  var today = Utilities.formatDate(new Date(), PLATFORM_TZ, "yyyy-MM-dd");
+  var t0 = Date.UTC(+today.slice(0, 4), +today.slice(5, 7) - 1, +today.slice(8, 10));
+  var changed = false, sentCount = 0;
+  rows.forEach(function (r) {
+    var list; try { list = JSON.parse(r.installments || "[]"); } catch (e) { list = []; }
+    if (!Array.isArray(list) || !list.length) return;
+    var touched = false;
+    list.forEach(function (i) {
+      if (!i || i.paidAt || !i.dueDate) return;
+      var d = Date.UTC(+i.dueDate.slice(0, 4), +i.dueDate.slice(5, 7) - 1, +i.dueDate.slice(8, 10));
+      var daysLeft = Math.round((d - t0) / 86400000);
+      var stage = daysLeft > 0 && daysLeft <= INSTALLMENT_REMIND_DAYS ? "upcoming" : daysLeft <= 0 ? "due" : "";
+      if (!stage) return;
+      var key = stage === "upcoming" ? "smsUpcomingAt" : "smsDueAt";
+      if (i[key]) return; // already texted for this stage
+      var res = sendSms_(r.phone, installmentSms_(r.name, i, daysLeft));
+      if (res.ok) { i[key] = new Date().toISOString(); i.smsAt = i[key]; touched = true; sentCount++; }
+      else Logger.log("Installment SMS not sent for " + r.name + ": " + res.error);
+    });
+    if (touched) { r.installments = JSON.stringify(list); r.updatedAt = new Date().toISOString(); changed = true; }
+  });
+  if (changed) writeRows_(ROSTER_SHEET, ROSTER_COLUMNS, rows);
+  Logger.log("Installment reminders: " + sentCount + " SMS sent.");
+  return sentCount;
 }
 
 // ---------- AI writing feedback ----------
