@@ -172,6 +172,26 @@
   .td-badge.absent{background:var(--td-coral-soft);color:var(--td-coral)}
   .td-badge.noshow{background:var(--td-amber-soft);color:#B87A16}
   .td-badge.grade{background:var(--td-indigo-soft,var(--lumio-orange-soft));color:var(--td-indigo,var(--lumio-orange))}
+  /* Post-class evaluation panel (agenda row + Course Details popup) */
+  .td-eval{margin-top:10px;border:1px solid var(--td-border);border-radius:12px;background:#fff;padding:10px 12px}
+  .td-eval.pending{border-color:var(--td-amber,#F59E0B);background:var(--td-amber-soft,#FFF7E6)}
+  .td-eval-head{display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:800;font-size:.84rem;margin-bottom:8px}
+  .td-eval-head .sub{font-weight:700;font-size:.72rem;color:var(--td-muted)}
+  .td-eval-row{display:grid;grid-template-columns:minmax(90px,1fr) auto 2fr;gap:8px;align-items:start;padding:6px 0;border-top:1px dashed var(--td-border)}
+  .td-eval-row:first-of-type{border-top:0}
+  .td-eval-row .nm{font-weight:800;font-size:.84rem;padding-top:6px}
+  .td-eval-row .nm small{display:block;font-weight:700;font-size:.68rem;color:var(--td-muted)}
+  .td-eval-row select{border-radius:8px;border:1px solid var(--td-border);background:#fff;font-size:.8rem;font-weight:800;padding:6px 8px;min-width:76px}
+  .td-eval-row textarea{width:100%;min-height:38px;resize:vertical;border-radius:8px;border:1px solid var(--td-border);padding:6px 8px;font-family:inherit;font-size:.8rem}
+  .td-eval-row.saved select{border-color:var(--td-teal)}
+  .td-eval-row.absent{opacity:.55}
+  .td-eval-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:8px;align-items:center}
+  .td-eval-foot .hint{margin-right:auto;font-size:.72rem;font-weight:700;color:var(--td-muted)}
+  .td-cal-block.needs-eval{border-left-color:var(--td-amber,#F59E0B)}
+  .td-chip .td-count{display:inline-flex;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--td-coral);color:#fff;font-size:.68rem;align-items:center;justify-content:center;margin-left:4px}
+  @media (max-width:600px){ .td-eval-row{grid-template-columns:1fr auto} .td-eval-row textarea{grid-column:1 / -1} }
+  #courseDetailsBox .td-eval-row{grid-template-columns:1fr auto}
+  #courseDetailsBox .td-eval-row textarea{grid-column:1 / -1}
   .td-rec-share{
     flex-shrink:0;padding:6px 12px;border-radius:8px;border:1px solid var(--td-border);background:#fff;
     font-weight:700;font-size:.74rem;cursor:pointer;color:var(--td-ink-soft);white-space:nowrap;
@@ -1275,6 +1295,7 @@
           <button class="td-chip active" id="scheduleViewCalendar" type="button">📅 Calendar</button>
           <button class="td-chip" id="scheduleViewAgenda" type="button">☰ Agenda</button>
         </div>
+        <button class="td-btn" id="evalDueBtn" type="button" style="display:none;border-color:#F59E0B;background:#FFF7E6;color:#B45309">📝 To evaluate <b id="evalDueN"></b></button>
         <button class="td-btn" id="manageHolidaysBtn">🚫 Holidays</button>
         <button class="td-btn" id="bookFixedScheduleBtn">🔁 Fixed slots</button>
         <button class="td-btn td-btn-primary" id="bookClassBtn">+ Book a class</button>
@@ -1312,6 +1333,7 @@
             <button class="td-chip" data-range="today">Today</button>
             <button class="td-chip" data-range="week">This week</button>
             <button class="td-chip" data-range="needs-attendance">Needs attendance <span id="needsAttendanceCount" style="display:none"></span></button>
+            <button class="td-chip" data-range="needs-eval">📝 To evaluate <span id="needsEvalCount" class="td-count" style="display:none"></span></button>
             <button class="td-chip" data-range="past">Past</button>
             <button class="td-chip" data-range="all">All</button>
           </div>
@@ -2820,7 +2842,7 @@
         <div class="td-dp-field"><span class="ic">🎂</span><div><div class="lbl">Age</div><div class="val">${p.age != null ? escHtml(p.age) : "<i>Not set</i>"}</div></div></div>
         <div class="td-dp-field"><span class="ic">${p.gender === "F" ? "♀️" : "♂️"}</span><div><div class="lbl">Gender</div><div class="val">${p.gender === "M" ? "Male" : p.gender === "F" ? "Female" : "<i>Not set</i>"}</div></div></div>
         <div class="td-dp-field"><span class="ic">🎓</span><div><div class="lbl">Grade</div><div class="val">${p.grade ? escHtml(p.grade) : "<i>Not set</i>"}</div></div></div>
-        ${(() => { try { const GP={"A+":4.3,"A":4,"A-":3.7,"B+":3.3,"B":3,"B-":2.7,"C+":2.3,"C":2,"C-":1.7,"D":1,"F":0}; const gl=LumioSchedule.gradesForStudent(p.name,p.level||"pre-a"); const lt=Lumio.levelTestFor?Lumio.levelTestFor(p.name,p.level||"pre-a"):null;
+        ${(() => { try { const GP={"A+":4.3,"A":4,"A-":3.7,"B+":3.3,"B":3,"B-":2.7,"C+":2.3,"C":2,"C-":1.7,"D":1,"F":0}; const gl=LumioSchedule.gradesForStudent(p.name,p.level||"pre-a").filter(g=>g.grade); const lt=Lumio.levelTestFor?Lumio.levelTestFor(p.name,p.level||"pre-a"):null;
           let avg="—"; if(gl.length){const pc=gl.reduce((s,g)=>s+(GP[g.grade]||0),0)/gl.length/4.3*100; avg=Object.keys(GP).reduce((b,L)=>Math.abs(GP[L]/4.3*100-pc)<Math.abs(GP[b]/4.3*100-pc)?L:b,"A+")+` (${gl.length})`;}
           return `<div class="td-dp-field"><span class="ic">📊</span><div><div class="lbl">Teacher grade avg</div><div class="val">${avg}</div></div></div>
         <div class="td-dp-field"><span class="ic">📝</span><div><div class="lbl">Level test</div><div class="val">${lt?`${lt.pct}% · ${lt.band} · ${lt.date}`:"<i>Not taken</i>"}</div></div></div>`; } catch(e){ return ""; } })()}
@@ -3156,7 +3178,7 @@
       const attPct = attStats.total ? Math.round((attStats.present / attStats.total) * 100) : null;
       const grades = LumioSchedule.gradesForStudent(r.name, r.lvl);
       const gradesHtml = grades.length
-        ? grades.map(g => `Lesson ${g.lessonNumber || "–"}: ${escHtml(g.grade)}`).join(" · ")
+        ? grades.map(g => `Lesson ${g.lessonNumber || "–"}: ${escHtml(g.grade || "–")}${g.comment ? ` (“${escHtml(g.comment)}”)` : ""}`).join(" · ")
         : "No grades recorded yet.";
       extraSection = `
         <div class="pr-section">
@@ -4064,6 +4086,60 @@
     return { from: "0000-01-01", to: "9999-12-31" };
   }
 
+  // ===== Post-class evaluation: grade + optional comment per student =====
+  // Shown inside a class (agenda row and the Course Details popup) once the
+  // class has ENDED. One Save for the whole class; each student gets a
+  // message with their grade and the teacher's comment.
+  function evalPanelHtml(c) {
+    if (c.status === "cancelled" || !LumioSchedule.hasEnded(c) || !c.students.length) return "";
+    const pending = c.students.some(st => st.attendance === "present" && !st.grade);
+    const unmarked = c.students.filter(st => !st.attendance).length;
+    const rows = c.students.map(st => `
+      <div class="td-eval-row ${st.grade ? "saved" : ""} ${st.attendance && st.attendance !== "present" ? "absent" : ""}" data-sid="${escHtml(st.studentId || "")}" data-sname="${escHtml(st.studentName)}">
+        <div class="nm">${escHtml(st.studentName)}<small>${st.attendance === "present" ? "present" : st.attendance === "absent" ? "absent — no grade needed" : st.attendance === "no-show" ? "no-show — no grade needed" : "attendance not marked"}${st.gradedAt ? ` · graded ${String(st.gradedAt).slice(0, 10)}` : ""}</small></div>
+        <select data-k="grade" title="Grade"><option value="">Grade…</option>${LumioSchedule.VALID_GRADES.map(g => `<option value="${g}" ${st.grade === g ? "selected" : ""}>${g}</option>`).join("")}</select>
+        <textarea data-k="comment" placeholder="Comment for ${escHtml(st.studentName)} (optional) — the student and parent will see it" maxlength="600">${escHtml(st.gradeComment || "")}</textarea>
+      </div>`).join("");
+    return `<div class="td-eval ${pending ? "pending" : ""}" data-cid="${c.id}">
+      <div class="td-eval-head"><span>📝 Evaluate this class${pending ? ' <span class="td-badge noshow" style="margin-left:6px">to do</span>' : ' <span class="td-badge present" style="margin-left:6px">done</span>'}</span><span class="sub">${unmarked ? `${unmarked} attendance not marked yet` : "Grade each present student · comment optional"}</span></div>
+      ${rows}
+      <div class="td-eval-foot"><span class="hint">Students see their grade and your comment in My Profile + Messages.</span><button type="button" class="td-btn td-btn-primary" data-act="save-eval">Save evaluation</button></div>
+    </div>`;
+  }
+  function bindEvalPanel(root, c, after) {
+    const panel = root.querySelector(`.td-eval[data-cid="${c.id}"]`);
+    if (!panel) return;
+    panel.querySelector('[data-act="save-eval"]').onclick = () => {
+      let n = 0, notified = 0;
+      panel.querySelectorAll(".td-eval-row").forEach(r => {
+        const ref = r.dataset.sid ? { studentId: r.dataset.sid, studentName: r.dataset.sname } : { studentName: r.dataset.sname };
+        const grade = r.querySelector('[data-k="grade"]').value || null;
+        const comment = r.querySelector('[data-k="comment"]').value.trim();
+        const fresh = LumioSchedule.getClass(c.id);
+        const slot = fresh ? fresh.students.find(x => (ref.studentId && x.studentId === ref.studentId) || String(x.studentName).trim().toLowerCase() === ref.studentName.trim().toLowerCase()) : null;
+        if (!slot || ((slot.grade || null) === grade && (slot.gradeComment || "") === comment)) return;
+        LumioSchedule.gradeStudent(c.id, ref, grade, comment); n++;
+        if (grade || comment) { notifyStudentGraded(LumioSchedule.getClass(c.id), ref, grade, comment); notified++; }
+      });
+      if (!n) { showToast("Nothing changed.", "info"); return; }
+      queueSync();
+      showToast(`Evaluation saved for ${n} student${n === 1 ? "" : "s"}${notified ? " — they were told" : ""}. ✓`, "success");
+      if (after) after();
+    };
+  }
+  function notifyStudentGraded(c, ref, grade, comment) {
+    if (!c || !window.LumioProfiles) return;
+    const s = ref.studentId ? LumioProfiles.getStudent(ref.studentId) : LumioProfiles.findByName(ref.studentName);
+    if (!s) return;
+    const lesson = c.lessonNumber ? `Lesson ${c.lessonNumber}` : "your class";
+    const who = c.teacherName ? ` from ${c.teacherName}` : "";
+    const text = `⭐ ${lesson} evaluation${who}: ${grade ? `Grade ${grade}` : "no grade"}${comment ? `\n💬 "${comment}"` : ""}\nتقييم ${c.lessonNumber ? "الدرس " + c.lessonNumber : "الحصة"}: ${grade ? "الدرجة " + grade : ""}${comment ? " — ملاحظة المعلّم أعلاه" : ""}`;
+    // one message per class, replaced if the teacher edits the evaluation
+    const data = s.messages || [];
+    const old = data.find(m => m && m.meta && m.meta.dedupeKey === `graded_${c.id}`);
+    if (old) { LumioProfiles.updateMessage && LumioProfiles.updateMessage(s.id, old.id, { text, read: false, date: new Date().toISOString(), meta: Object.assign({}, old.meta, { grade, comment }) }); return; }
+    LumioProfiles.addMessageOnce(s.id, `graded_${c.id}`, { type: "grade", text, meta: { classId: c.id, lessonNumber: c.lessonNumber || null, grade, comment } });
+  }
   function attendanceBadge(att) {
     if (att === "present") return '<span class="td-badge present">✓ present</span>';
     if (att === "absent") return '<span class="td-badge absent">✕ absent</span>';
@@ -4082,6 +4158,12 @@
     const badge = document.getElementById("needsAttendanceCount");
     if (needs.length) { badge.style.display = "inline-flex"; badge.textContent = needs.length; }
     else { badge.style.display = "none"; }
+    let ev = LumioSchedule.needsEvaluation ? LumioSchedule.needsEvaluation({}) : [];
+    if (scope === "mine" && activeTeacherId) ev = ev.filter(c => c.teacherId === activeTeacherId);
+    const eb = document.getElementById("needsEvalCount");
+    if (eb) { eb.style.display = ev.length ? "inline-flex" : "none"; eb.textContent = ev.length; }
+    const btn = document.getElementById("evalDueBtn");
+    if (btn) { btn.style.display = ev.length ? "" : "none"; document.getElementById("evalDueN").textContent = ev.length; btn.title = `${ev.length} finished class${ev.length === 1 ? "" : "es"} with present students still to grade`; }
   }
 
   function renderSchedule() {
@@ -4091,6 +4173,8 @@
     let classes;
     if (scheduleRange === "needs-attendance") {
       classes = LumioSchedule.needsAttendance({}).filter(classHasStarted);
+    } else if (scheduleRange === "needs-eval") {
+      classes = LumioSchedule.needsEvaluation({}).slice().reverse();
     } else {
       const { from, to } = rangeToDates(scheduleRange);
       classes = LumioSchedule.listClasses({ from, to });
@@ -4134,10 +4218,6 @@
               <button type="button" class="att-present" data-act="present" title="Mark present">✓</button>
               <button type="button" class="att-absent" data-act="absent" title="Mark absent">✕</button>
               <button type="button" class="att-noshow" data-act="no-show" title="Mark no-show">⚠</button>
-              <select class="td-grade-select" title="Letter grade">
-                <option value="">Grade…</option>
-                ${LumioSchedule.VALID_GRADES.map(g => `<option value="${g}" ${s.grade === g ? "selected" : ""}>${g}</option>`).join("")}
-              </select>
             </span>` : ""}
         </div>`).join("");
       row.innerHTML = `
@@ -4150,6 +4230,7 @@
           <div class="meta">${escHtml(teacher ? teacher.name : (c.teacherName || "Unassigned"))}${c.lessonNumber ? " · Lesson " + c.lessonNumber : ""}${c.cohort ? " · " + escHtml(c.cohort) : ""}${c.notes ? " · " + escHtml(c.notes) : ""}</div>
           ${c.meetingLink ? `<div class="meta"><a href="${safeUrl(c.meetingLink)}" target="_blank" rel="noopener">🔗 Join meeting link</a></div>` : ""}
           ${c.status === "completed" ? `<textarea class="td-session-notes" placeholder="What did you cover this session? Any homework given?">${escHtml(c.sessionNotes || "")}</textarea>` : ""}
+          ${evalPanelHtml(c)}
         </div>
         <div class="td-class-acts">
           <button type="button" data-act="edit">Edit</button>
@@ -4180,15 +4261,8 @@
             showToast(`Marked ${sname} ${labels[val]}.`, val === "present" ? "success" : "error");
           };
         });
-        const gradeSel = studentRow.querySelector(".td-grade-select");
-        if (gradeSel) {
-          gradeSel.onchange = () => {
-            LumioSchedule.gradeStudent(c.id, ref, gradeSel.value || null);
-            queueSync();
-            showToast(gradeSel.value ? `Graded ${sname}: ${gradeSel.value}.` : `Cleared ${sname}'s grade.`, "success");
-          };
-        }
       });
+      bindEvalPanel(row, c, renderSchedule);
       row.querySelector('[data-act="edit"]').onclick = () => openClassModal(c);
       row.querySelector('[data-act="remove"]').onclick = async () => {
         const names = c.students.map(s => s.studentName).join(", ");
@@ -4269,6 +4343,7 @@
 
   function renderWeekView() {
     if (!window.LumioSchedule || !window.LumioProfiles) { calGrid.innerHTML = ""; return; }
+    try { updateNeedsAttendanceBadge(); } catch (e) {}
     const scope = scheduleScope.value;
     const activeTeacherId = LumioProfiles.getCurrentTeacherId();
     const days = [];
@@ -4341,13 +4416,13 @@
         const top = ((startMin - CAL_START_HOUR * 60) / CAL_ROW_MIN) * CAL_ROW_PX;
         const height = Math.max(((endMin - startMin) / CAL_ROW_MIN) * CAL_ROW_PX, 20);
         const statusClass = c.status === "cancelled" ? "status-cancelled" : (c.status === "completed" ? "status-completed" : "");
-        const attnClass = classNeedsAttention(c) ? "needs-attn" : "";
+        const attnClass = classNeedsAttention(c) ? "needs-attn" : (c.status !== "cancelled" && LumioSchedule.hasEnded(c) && c.students.some(s => s.attendance === "present" && !s.grade) ? "needs-eval" : "");
         const capacityWarn = c.status !== "cancelled" && (c.students.length < 2 || c.students.length > 4);
         const capClass = capacityWarn ? "capacity-warn" : "";
         const title = `English Club${c.level ? " · " + levelName(c.level) : ""}${c.lessonNumber ? " · Lesson " + c.lessonNumber : ""}${capacityWarn ? " — ⚠ group size outside 2–4" : ""}`;
         col += `<div class="td-cal-block ${statusClass} ${attnClass} ${capClass}" style="top:${top}px;height:${height}px" data-class-id="${c.id}" title="${escHtml(fmtTimeTz(c.date, c.startTime) + ' · ' + title + ' — ' + c.students.map(s=>s.studentName).join(', '))}">
           <div class="cb-title">${c.patternId ? "🔁 " : ""}${capacityWarn ? "⚠ " : ""}${fmtTime(c.startTime)}</div>
-          <div class="cb-meta">${c.students.length} student${c.students.length===1?"":"s"}${(() => { const marked = c.students.filter(s => s.attendance).length; return marked ? ` · ${marked}/${c.students.length} ✓` : ""; })()}</div>
+          <div class="cb-meta">${c.students.length} student${c.students.length===1?"":"s"}${(() => { const marked = c.students.filter(s => s.attendance).length; return marked ? ` · ${marked}/${c.students.length} ✓` : ""; })()}${c.status !== "cancelled" && LumioSchedule.hasEnded(c) && c.students.some(s => s.attendance === "present" && !s.grade) ? " · 📝 grade" : ""}</div>
           <div class="cb-meta cb-level">${escHtml(c.level ? levelName(c.level) : (c.notes || "Class"))}</div>
         </div>`;
       });
@@ -4440,6 +4515,13 @@
     renderSchedule();
   };
 
+  // "📝 To evaluate": straight to the list of finished classes still to grade.
+  document.getElementById("evalDueBtn").onclick = () => {
+    scheduleViewAgenda.click();
+    const chip = document.querySelector('#scheduleRangeChips .td-chip[data-range="needs-eval"]');
+    if (chip) chip.click();
+  };
+
   // ---- Course details modal (opened by clicking a calendar block) ----
   const courseDetailsOverlay = document.getElementById("courseDetailsOverlay");
   let cdClassId = null;
@@ -4465,6 +4547,7 @@
         <div class="av">${escHtml(initials(s.studentName))}</div>
         <span style="flex:1">${escHtml(s.studentName)}</span>
         ${attendanceBadge(s.attendance)}
+        ${s.grade ? `<span class="td-badge grade" title="${escHtml(s.gradeComment || "")}">${escHtml(s.grade)}${s.gradeComment ? " 💬" : ""}</span>` : ""}
         ${canMarkHere ? `
           <span class="td-student-acts">
             <button type="button" class="att-present" data-act="present" title="Mark present">✓</button>
@@ -4494,8 +4577,10 @@
         <div class="val" style="width:100%">
           <div class="lbl" style="margin-bottom:6px">${c.students.length} student${c.students.length === 1 ? "" : "s"} in class</div>
           <div class="td-cd-students">${studentsHtml}</div>
+          ${evalPanelHtml(c)}
         </div>
       </div>`;
+    bindEvalPanel(document.getElementById("cdBody"), c, () => { const f = LumioSchedule.getClass(c.id); if (f) openCourseDetails(f); renderScheduleActive(); });
     const patternActions = document.getElementById("cdPatternActions");
     // "Cancel series" only makes sense for the old student-based series;
     // a class booked into a teacher's fixed slot is a one-off — the slot

@@ -186,7 +186,8 @@
   // page is shown -- the letter itself is still what's displayed
   // per-session, this number is only for the summary figure.
   const GRADE_POINTS = { "A+": 4.3, "A": 4.0, "A-": 3.7, "B+": 3.3, "B": 3.0, "B-": 2.7, "C+": 2.3, "C": 2.0, "C-": 1.7, "D": 1.0, "F": 0.0 };
-  const grades = (window.LumioSchedule && LumioSchedule.gradesForStudent) ? LumioSchedule.gradesForStudent(student.name, student.level) : [];
+  const gradeEntries = (window.LumioSchedule && LumioSchedule.gradesForStudent) ? LumioSchedule.gradesForStudent(student.name, student.level) : [];
+  const grades = gradeEntries.filter(g => g.grade);
   const gradeAvgPct = grades.length
     ? Math.round((grades.reduce((s, g) => s + (GRADE_POINTS[g.grade] || 0), 0) / grades.length / 4.3) * 100)
     : null;
@@ -500,6 +501,10 @@
         <div class="label">Grades by session</div>
         <p class="en">${grades.slice().reverse().map(g => `Lesson ${g.lessonNumber || "?"} (${g.date}): <b>${esc(g.grade)}</b>`).join(" · ")}</p>
       </div>
+      ${gradeEntries.some(g => g.comment) ? `<div class="skill-text-block">
+        <div class="label">Teacher's comments · ملاحظات المعلّم</div>
+        ${gradeEntries.filter(g => g.comment).slice().reverse().map(g => `<p class="en"><b>Lesson ${g.lessonNumber || "?"}</b> (${g.date}${g.teacherName ? ", " + esc(g.teacherName) : ""}): ${esc(g.comment)}</p>`).join("")}
+      </div>` : ""}
       ${ratingsGiven.length ? `<div class="cohort-row">⭐ ${esc(student.name)} has rated ${ratingsGiven.length} class${ratingsGiven.length === 1 ? "" : "es"} with their teacher, averaging ${(ratingsGiven.reduce((s, r) => s + r.stars, 0) / ratingsGiven.length).toFixed(1)}/5 — a good sign of engagement, not a performance score.</div>` : ""}
     </div>` : ""}
 

@@ -601,6 +601,13 @@
   .mp-grade-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
   .mp-grade-chip{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--lumio-border,#EAE3D8);border-radius:999px;padding:3px 10px 3px 8px;font-size:.72rem;font-weight:800;color:var(--sd-cocoa-soft)}
   .mp-grade-chip b{font-family:'Baloo 2',sans-serif;font-size:.9rem;color:var(--lumio-teal)}
+  .mp-grade-comments{margin-top:10px;display:flex;flex-direction:column;gap:6px}
+  .mp-grade-note{background:#fff;border:1px solid var(--lumio-border,#EAE3D8);border-radius:12px;padding:8px 10px;font-size:.8rem;line-height:1.4}
+  .mp-grade-note b{display:block;font-size:.72rem;color:var(--lumio-teal);margin-bottom:2px}
+  .mp-grade-note span{display:block;color:var(--sd-cocoa);font-weight:700}
+  .mp-grade-note small{display:block;color:var(--sd-cocoa-soft);font-weight:700;font-size:.68rem;margin-top:3px}
+  body.theme-teen .mp-grade-note{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.14)}
+  body.theme-teen .mp-grade-note span{color:#fff}
   .mp-grade-chip.blue b{color:var(--lumio-blue)} .mp-grade-chip.purple b{color:#B45309} .mp-grade-chip.coral b{color:var(--lumio-coral)}
   body.theme-teen .mp-grades{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)}
   .mp-pay-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;font-weight:800;font-size:.88rem;color:var(--sd-cocoa)}
@@ -2793,7 +2800,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
     const ICONS = {
       teacher: "👩‍🏫", pin_changed: "🔑", phone_changed: "📱", level_changed: "📈", class_booked: "📅",
       class_reminder: "⏰", content_available: "✨", delete_request: "⚠️", delete_declined: "✅",
-      referral: "🤝", referral_reward: "🎁", payment_due: "💳", payment: "✅", info: "💬",
+      referral: "🤝", referral_reward: "🎁", payment_due: "💳", payment: "✅", grade: "⭐", info: "💬",
     };
     const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
     const fmtWhen = iso => {
@@ -2950,7 +2957,8 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
     function teacherGrades(p) {
       const list = (window.LumioSchedule && LumioSchedule.gradesForStudent) ? LumioSchedule.gradesForStudent(p.name, p.level || "pre-a") : [];
       list.sort((a, b) => (a.lessonNumber || 0) - (b.lessonNumber || 0) || String(a.date).localeCompare(String(b.date)));
-      const pct = list.length ? Math.round((list.reduce((t, g) => t + (GRADE_POINTS[g.grade] || 0), 0) / list.length / 4.3) * 100) : null;
+      const graded = list.filter(g => g.grade);
+      const pct = graded.length ? Math.round((graded.reduce((t, g) => t + (GRADE_POINTS[g.grade] || 0), 0) / graded.length / 4.3) * 100) : null;
       const avgLetter = pct === null ? null : Object.keys(GRADE_POINTS).reduce((best, L) =>
         Math.abs(GRADE_POINTS[L] / 4.3 * 100 - pct) < Math.abs(GRADE_POINTS[best] / 4.3 * 100 - pct) ? L : best, "A+");
       return { list, pct, avgLetter, latest: list.length ? list[list.length - 1] : null };
@@ -3017,10 +3025,11 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
       if (gradesEl) {
         gradesEl.innerHTML = tg.list.length ? `
           <div class="mp-grades-head">
-            <div class="mp-grade-avg ${gradeClass(tg.avgLetter)}"><b>${tg.avgLetter}</b><span>Average · ${tg.pct}%</span></div>
+            <div class="mp-grade-avg ${gradeClass(tg.avgLetter)}"><b>${tg.avgLetter || "–"}</b><span>${tg.pct === null ? "No grade yet" : `Average · ${tg.pct}%`}</span></div>
             <div class="mp-grades-sub">Your teacher's grade for each live class · تقييم المعلم لكل حصة</div>
           </div>
-          <div class="mp-grade-list">${tg.list.map(g => `<div class="mp-grade-chip ${gradeClass(g.grade)}" title="${g.date}"><span>L${g.lessonNumber || "–"}</span><b>${g.grade}</b></div>`).join("")}</div>`
+          <div class="mp-grade-list">${tg.list.map(g => `<div class="mp-grade-chip ${gradeClass(g.grade)}" title="${g.date}"><span>L${g.lessonNumber || "–"}</span><b>${g.grade || "–"}</b></div>`).join("")}</div>
+          ${tg.list.some(g => g.comment) ? `<div class="mp-grade-comments">${tg.list.filter(g => g.comment).slice(-6).reverse().map(g => `<div class="mp-grade-note"><b>L${g.lessonNumber || "–"}${g.grade ? " · " + g.grade : ""}</b><span>${esc(g.comment)}</span><small>${g.teacherName ? esc(g.teacherName) + " · " : ""}${g.date}</small></div>`).join("")}</div>` : ""}`
         : `<div class="mp-grades-sub">No teacher grades yet — your teacher grades each live class you attend.</div>`;
       }
     }
