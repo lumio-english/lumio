@@ -6215,6 +6215,16 @@
     const due = LumioProfiles.installmentsDue({ withinDays: win });
     list.innerHTML = due.map(dueRowHtml).join("");
     empty.style.display = due.length ? "none" : "block";
+    if (!due.length) {
+      // Say WHY it's empty: no plans at all, all paid, or plans that can't be stored yet.
+      const withPlan = LumioProfiles.listStudents().filter(st => Array.isArray(st.installments) && st.installments.length);
+      const unpaid = withPlan.reduce((n, st) => n + st.installments.filter(i => !i.paidAt).length, 0);
+      const missing = LumioProfiles.serverMissingFields().includes("installments");
+      empty.innerHTML = (withPlan.length
+        ? (unpaid ? "No installments due in this window." : `All installments are paid (${withPlan.length} student${withPlan.length === 1 ? "" : "s"} with a plan).`)
+        : "No student has an installment plan yet. Open a student → Edit → <b>Billing</b> tab → Installment plan → Generate (or + Add an installment) → Save.")
+        + (missing ? `<div style="margin-top:8px;color:var(--td-coral);font-weight:800">⚠️ The Google Sheet script hasn't been updated yet, so plans stay on this device only and don't reach students. Update it (see the banner at the top).</div>` : "");
+    }
     bindDueRows(list, () => { renderInstallmentsList(); instBadge(); });
   }
   document.getElementById("instWindow").addEventListener("change", renderInstallmentsList);

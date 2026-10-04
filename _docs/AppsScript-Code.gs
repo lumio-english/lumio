@@ -35,11 +35,24 @@ var ROSTER_COLUMNS = [
   "pointsLog", "redemptions", "notes",
   "messages", "pendingDeletion", "deletionConfirmed",
   "referrals", "referralsUpdatedAt",
-  "installments", // JSON [{id, amount, currency, dueDate, sessions, credit, paidAt, applied, editedAt, remindedAt, remindedDueAt, smsUpcomingAt, smsDueAt, smsAt}] (4 Oct 2026)
-  "installmentsRemoved", // JSON [id] -- parts deleted on some device, so an older copy can't bring them back
   "cohort",  // batch (join month); was missing, so every sync erased it
-  "fieldTimes" // JSON {field: ISO time it last changed, _base}: per-field merge (3 Oct 2026)
+  "fieldTimes", // JSON {field: ISO time it last changed, _base}: per-field merge (3 Oct 2026)
+  // NEW COLUMNS GO AT THE END ONLY (4 Oct 2026). Two earlier builds inserted
+  // installments (+ installmentsRemoved) before "cohort"; readRows_ below
+  // reads every tab by its header names, and recognises those two layouts.
+  "installments", // JSON [{id, amount, currency, dueDate, sessions, credit, paidAt, applied, editedAt, remindedAt, remindedDueAt, smsUpcomingAt, smsDueAt, smsAt, smsForDue}]
+  "installmentsRemoved" // JSON [id] -- parts deleted on some device, so an older copy can't bring them back
 ];
+// Roster layouts written by earlier builds whose header row may not say so
+// (they appended header cells by count, leaving duplicate names).
+var LEGACY_ROSTER_LAYOUTS_ = (function () {
+  var base = ROSTER_COLUMNS.slice(0, ROSTER_COLUMNS.indexOf("installments"));
+  var at = base.indexOf("cohort");
+  var withOne = base.slice(0, at).concat(["installments"], base.slice(at));
+  var withTwo = base.slice(0, at).concat(["installments", "installmentsRemoved"], base.slice(at));
+  var out = {}; out[base.length] = base; out[withOne.length] = withOne; out[withTwo.length] = withTwo;
+  return out;
+})();
 
 var REWARD_CATALOG_SHEET = "RewardCatalog";
 var REWARD_CATALOG_COLUMNS = ["id", "label", "cost"];
@@ -98,13 +111,23 @@ function getOrCreateSheet_(name, columns) {
     sheet.setFrozenRows(1);
     return sheet;
   }
-  var lastCol = sheet.getLastColumn();
-  var existingHeader = lastCol > 0 ? sheet.getRange(1, 1, 1, lastCol).getValues()[0] : [];
-  if (existingHeader.length < columns.length) {
-    sheet.getRange(1, existingHeader.length + 1, 1, columns.length - existingHeader.length)
-      .setValues([columns.slice(existingHeader.length)]);
-  }
+  // The header row is rewritten by writeRows_ (always exactly `columns`),
+  // so nothing is appended here: appending names by count used to leave a
+  // header that no longer described the data under it.
   return sheet;
+}
+// Which field each physical column holds. A clean header (unique names)
+// is trusted by name; a header with duplicates came from an older build,
+// whose layout is recognised by its width. Otherwise: `columns` in order.
+function physicalLayout_(sheet, name, columns) {
+  var lastCol = sheet.getLastColumn();
+  var header = lastCol > 0 ? sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(function (h) { return String(h || "").trim(); }) : [];
+  while (header.length && !header[header.length - 1]) header.pop();
+  var seen = {}, clean = header.length > 0;
+  header.forEach(function (h) { if (!h || seen[h]) clean = false; seen[h] = true; });
+  if (clean && header.indexOf("id") >= 0 || clean && header.indexOf(columns[0]) >= 0) return header;
+  if (name === ROSTER_SHEET && LEGACY_ROSTER_LAYOUTS_[header.length]) return LEGACY_ROSTER_LAYOUTS_[header.length];
+  return columns;
 }
 
 // ---- cell typing ----
@@ -150,21 +173,29 @@ function readRows_(name, columns) {
   var sheet = getOrCreateSheet_(name, columns);
   var lastRow = sheet.getLastRow();
   if (lastRow < 2) return [];
-  var values = sheet.getRange(2, 1, lastRow - 1, columns.length).getValues();
-  return values
+  var layout = physicalLayout_(sheet, name, columns);
+  var values = sheet.getRange(2, 1, lastRow - 1, layout.length).getValues();
+  var rows = values
     .filter(function (row) { return row.some(function (cell) { return cell !== "" && cell !== null; }); })
     .map(function (row) {
       var obj = {};
-      columns.forEach(function (col, i) { obj[col] = cellToString_(col, row[i]); });
+      columns.forEach(function (col) { var i = layout.indexOf(col); obj[col] = i >= 0 ? cellToString_(col, row[i]) : ""; });
       return obj;
     });
+  // Old layout on the sheet: rewrite it once in the current one, so every
+  // later read/write (and the positional cell updates) line up.
+  if (layout.join("|") !== columns.join("|")) writeRows_(name, columns, rows);
+  return rows;
 }
 
 function writeRows_(name, columns, rows) {
   var sheet = getOrCreateSheet_(name, columns);
-  var lastRow = sheet.getLastRow();
+  var lastRow = sheet.getLastRow(), lastCol = Math.max(sheet.getLastColumn(), columns.length);
+  var head = sheet.getRange(1, 1, 1, lastCol);
+  var want = columns.concat(new Array(lastCol - columns.length).fill(""));
+  if (head.getValues()[0].map(String).join("|") !== want.join("|")) { head.clearContent(); sheet.getRange(1, 1, 1, columns.length).setValues([columns]); }
   if (lastRow > 1) {
-    sheet.getRange(2, 1, lastRow - 1, columns.length).clearContent();
+    sheet.getRange(2, 1, lastRow - 1, lastCol).clearContent();
   }
   if (!rows.length) return;
   var values = rows.map(function (r) {
