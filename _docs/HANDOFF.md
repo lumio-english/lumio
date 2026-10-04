@@ -163,5 +163,25 @@ Done by three parallel workers (sync layer / teacher UI / student UI), merged an
 - `guide-free-test-and-trial` (for prospects, sent before they subscribe): lumio-pro-test.html → PIN → Student ID → 4 parts → result → new green "Book my free trial on WhatsApp" button on the result page (prefilled Arabic+English: name, age, level, score, Student ID → wa.me/201124882493) → our WhatsApp reply with day/time/Teams link → join on Teams → trial slides → subscribe and log in with the SAME ID+PIN. Captured by `capture_prospect()` (runs alone when only this key is passed); its QR points to lumio-pro-test.html; also ships as PDF. Homepage "Live class on Zoom" copy changed to Teams.
 - `guides.html` lists all guides + the 3 install guides; 📘 Guides button on the student dashboard, link under the PIN box on login.html. Re-run the builder after any change to the student pages.
 
+## 3p. 2026 redesign: home, login, student and teacher look (4 Oct 2026)
+- **Palette:** white + orange first, strong orange for highlight bands, black only for text (owner asked for less black).
+- **index.html** is new. Its pieces:
+  - Styles in `css/site.css`, motion in `js/site.js`.
+  - All copy, English and Arabic, in `js/site-i18n.js`. Change wording there, not in the HTML.
+  - Arabic is the default; the visitor's choice is stored in `localStorage.lumio_lang`, shared with login.
+  - Prices (6 currencies), the WhatsApp number (201124882493), the trial-booking message, the handbook and FAQ are the same as before.
+  - Old anchors (`#startfree`, `#curriculum`, `#howworks`, `#parentbook`, `#friendsSection`, `#demo`) still land on the right section; `#trial` opens the trial picker.
+  - three.js r128 and GSAP 3.12.5 are self-hosted in `vendor/`. Without WebGL, without GSAP, or with reduced motion, the page still shows everything.
+  - Images used only by the site are in `assets/site/`.
+- **login.html**: new look, EN/AR.
+  - The login logic and every id `js/auth.js` needs are unchanged.
+  - Messages go through `LG_T()`.
+- **student.html**:
+  - `css/student-2026.css` restyles the page.
+  - `js/student-hero.js` adds the welcome card (greeting, progress ring, Continue, next-class countdown). It is built only from `LumioMapState`, `#missionBtn` and `LumioSchedule.upcomingForStudent`.
+  - Teens now get `theme-teen-light`. The old dark `theme-teen` rules are still in the file but are not switched on here; `lesson.html` keeps its own theme.
+- **teacher.html**: `css/teacher-2026.css` is a polish layer only (no behaviour change).
+- **Cache-busting:** the new CSS files are versioned through `js/version.json`, like the scripts.
+
 ## 4. Working style
 Verify in a browser before claiming done; check files before writing prompts; never duplicate; fix in templates not per slide; say plainly what was NOT done; ask one specific question when ambiguous.
