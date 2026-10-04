@@ -1,0 +1,174 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><style>
+@font-face{font-family:'Baloo 2';src:url('FONTS/baloo-2-latin-800-normal.woff2') format('woff2');font-weight:800}
+@font-face{font-family:'Baloo 2';src:url('FONTS/baloo-2-latin-700-normal.woff2') format('woff2');font-weight:700}
+@font-face{font-family:'Nunito';src:url('FONTS/nunito-latin-700-normal.woff2') format('woff2');font-weight:700}
+@font-face{font-family:'Nunito';src:url('FONTS/nunito-latin-800-normal.woff2') format('woff2');font-weight:800}
+@font-face{font-family:'Cairo';src:url('FONTS/cairo-arabic-700-normal.woff2') format('woff2');font-weight:700}
+@font-face{font-family:'Cairo';src:url('FONTS/cairo-arabic-900-normal.woff2') format('woff2');font-weight:900}
+:root{--or:#F97316;--sun:#FFC93C;--teal:#0D9488;--cocoa:#43301F;--cream:#FFF8EC;--soft:#8A7160;--line:#F0E6D6}
+*{box-sizing:border-box;margin:0}
+body{width:1080px;background:linear-gradient(170deg,#FFF8EC,#FFF1DA 60%,#FFE9C9);font-family:'Nunito',sans-serif;color:var(--cocoa);padding:0 0 56px}
+.ar{font-family:'Cairo',sans-serif;direction:rtl}
+header{padding:54px 64px 30px;display:flex;align-items:center;gap:24px}
+header img.logo{height:120px}
+header h1{font-family:'Baloo 2';font-size:52px;line-height:1.05}
+header h1 span{color:var(--or)}
+header .sub{font-size:24px;color:var(--soft);font-weight:700;margin-top:6px}
+header .sub.ar{font-size:26px;margin-top:2px}
+.pill{display:inline-flex;align-items:center;gap:10px;background:#fff;border:3px solid var(--or);color:var(--cocoa);border-radius:999px;padding:12px 22px;font-weight:800;font-size:24px;margin:0 64px 14px}
+.pill b{color:var(--or)}
+.steps{padding:16px 64px 0;display:flex;flex-direction:column;gap:30px}
+.step{display:grid;grid-template-columns:300px 1fr;gap:34px;align-items:center;background:#fff;border-radius:34px;padding:30px 34px;box-shadow:0 10px 30px rgba(67,48,31,.08);position:relative}
+.step.wide{grid-template-columns:470px 1fr;gap:28px}
+.num{position:absolute;left:-10px;top:-14px;width:68px;height:68px;border-radius:50%;background:var(--or);color:#fff;font-family:'Baloo 2';font-size:38px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(249,115,22,.4)}
+.t{display:flex;flex-direction:column;gap:10px}
+.t .en{font-size:30px;font-weight:800;line-height:1.25}
+.t .ar{font-size:32px;font-weight:900;line-height:1.5;color:#5A4030}
+.t .en small,.t .ar small{display:block;font-size:21px;font-weight:700;color:var(--soft);margin-top:4px;line-height:1.4}
+.t .ar small{font-size:23px}
+.step.wide .t .en{font-size:27px}.step.wide .t .ar{font-size:29px}
+.key{display:inline-block;background:#FFF1E0;border:2px solid #F9C89A;border-radius:10px;padding:2px 10px;font-weight:800;color:#C2410C}
+/* phone / tablet / desktop frames */
+.phone{width:300px;height:560px;border-radius:40px;background:#1C1610;padding:12px;position:relative;box-shadow:0 14px 30px rgba(0,0,0,.25)}
+.phone.ios{background:#2B2B2E}
+.tablet{width:300px;height:420px;border-radius:26px;background:#2B2B2E;padding:14px;position:relative;box-shadow:0 14px 30px rgba(0,0,0,.25)}
+.screen{width:100%;height:100%;border-radius:30px;overflow:hidden;background:#fff;position:relative;font-size:14px}
+.tablet .screen{border-radius:14px}
+.desk{width:470px;position:relative}
+.desk .frame{width:100%;height:320px;border-radius:14px;background:#fff;overflow:hidden;box-shadow:0 14px 30px rgba(0,0,0,.22);border:4px solid #2B2B2E;position:relative;font-size:13px}
+.desk .stand{width:120px;height:18px;background:#2B2B2E;margin:0 auto;border-radius:0 0 8px 8px}
+.desk .base{width:220px;height:8px;background:#2B2B2E;margin:0 auto;border-radius:8px}
+.tabs{height:34px;background:#DEE1E6;display:flex;align-items:flex-end;padding:0 10px;gap:6px}
+.tabs .tab{background:#fff;border-radius:10px 10px 0 0;padding:6px 14px;font-weight:700;color:#202124;display:flex;align-items:center;gap:8px;font-size:12px}
+.tabs .tab img{width:14px;height:14px}
+.bar{height:40px;background:#fff;display:flex;align-items:center;gap:10px;padding:0 12px;border-bottom:1px solid #E5E7EB;color:#5F6368;font-weight:800}
+.bar .nav{display:flex;gap:10px;font-size:16px}
+.bar .url{flex:1;height:28px;border-radius:999px;background:#F1F3F4;display:flex;align-items:center;gap:8px;padding:0 12px;font-size:12px;color:#202124;font-weight:700;position:relative}
+.bar .url .inst{margin-left:auto;width:22px;height:22px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;color:#1A73E8;border:1px solid #DADCE0}
+.bar .dots{font-size:20px;color:#3C4043;width:30px;text-align:center;position:relative}
+.chrome{height:62px;background:#fff;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;gap:8px;padding:10px 12px}
+.url{flex:1;height:38px;border-radius:999px;background:#F1F3F4;display:flex;align-items:center;gap:8px;padding:0 12px;font-size:13px;color:#202124;font-weight:700;white-space:nowrap;overflow:hidden}
+.url .lock{width:12px;height:12px;border:2px solid #5F6368;border-radius:3px;border-top-width:3px}
+.dots{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:#3C4043;position:relative}
+.hl{outline:4px solid var(--or);outline-offset:3px;border-radius:50%;box-shadow:0 0 0 10px rgba(249,115,22,.22)}
+.hlbox{outline:4px solid var(--or);outline-offset:-4px;border-radius:12px;box-shadow:0 0 0 8px rgba(249,115,22,.22)}
+.shot{width:100%;display:block}
+.menu{position:absolute;top:10px;right:10px;width:210px;background:#fff;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.28);padding:8px 0;font-size:14px;color:#202124;font-weight:700;z-index:3}
+.menu div{padding:11px 16px;display:flex;align-items:center;gap:12px}
+.menu div i{width:18px;height:18px;border-radius:4px;background:#DADCE0;display:inline-block}
+.menu div.on{background:#FFF1E0;color:#C2410C;margin:4px 8px;border-radius:10px}
+.menu div.on i{background:var(--or)}
+.menu.desk{top:44px;right:8px;width:230px;font-size:12px}
+.menu.desk div{padding:8px 14px}
+.menu.sub{right:236px;top:130px;width:200px}
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:2}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:22px 22px 0 0;padding:20px 18px 22px;font-size:14px;color:#202124;z-index:3}
+.sheet .app{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.sheet .app img{width:52px;height:52px;border-radius:12px}
+.sheet .app b{display:block;font-size:16px}
+.sheet .app span{color:#5F6368;font-size:12px}
+.sheet .btns{display:flex;justify-content:flex-end;gap:10px}
+.sheet .btns div{padding:9px 16px;border-radius:999px;font-weight:800}
+.sheet .btns .c{color:#1A73E8}
+.sheet .btns .i{background:#1A73E8;color:#fff}
+/* iOS */
+.iosbar{position:absolute;left:0;right:0;bottom:0;height:86px;background:rgba(249,249,249,.96);border-top:1px solid #D1D1D6;z-index:3;padding:0 10px}
+.iosbar .addr{margin:8px 6px 0;height:36px;border-radius:12px;background:#E9E9EB;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#1C1C1E;gap:6px}
+.iosbar .row{display:flex;justify-content:space-around;align-items:center;height:40px;color:#0A84FF;font-size:20px}
+.iosbar .row span{width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;position:relative}
+.iostop{height:44px;background:rgba(249,249,249,.96);border-bottom:1px solid #D1D1D6;display:flex;align-items:center;gap:8px;padding:0 10px;color:#0A84FF;font-size:16px;z-index:3;position:relative}
+.iostop .addr{flex:1;height:30px;border-radius:10px;background:#E9E9EB;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#1C1C1E;gap:6px}
+.iostop span{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:50%;position:relative}
+.ios-sheet{position:absolute;left:0;right:0;bottom:0;background:#F2F2F7;border-radius:18px 18px 0 0;padding:14px 0 0;z-index:3;font-size:13px;color:#1C1C1E}
+.ios-sheet .hdr{display:flex;align-items:center;gap:10px;padding:0 14px 12px;border-bottom:1px solid #D1D1D6}
+.ios-sheet .hdr img{width:40px;height:40px;border-radius:9px}
+.ios-sheet .hdr b{display:block}
+.ios-sheet .hdr span{color:#6E6E73;font-size:11px}
+.ios-sheet .apps{display:flex;gap:14px;padding:12px 14px;border-bottom:1px solid #D1D1D6}
+.ios-sheet .apps div{width:48px;height:48px;border-radius:12px;background:#D1D1D6}
+.ios-sheet .list{background:#fff;margin:10px 12px 0;border-radius:12px}
+.ios-sheet .list div{padding:11px 14px;border-bottom:1px solid #E5E5EA;display:flex;align-items:center;justify-content:space-between;font-weight:600}
+.ios-sheet .list div:last-child{border-bottom:none}
+.ios-sheet .list div.on{background:#FFF1E0;color:#C2410C;border-radius:12px;font-weight:800}
+.ios-sheet .list i{width:18px;height:18px;border-radius:5px;background:#D1D1D6;display:inline-block}
+.ios-add{position:absolute;inset:0;background:#fff;z-index:3;font-size:13px;color:#1C1C1E}
+.ios-add .top{display:flex;justify-content:space-between;padding:14px 14px;font-weight:600;color:#0A84FF;border-bottom:1px solid #E5E5EA}
+.ios-add .top b{color:#1C1C1E}
+.ios-add .top .add{font-weight:800;padding:2px 10px}
+.ios-add .body{display:flex;gap:12px;padding:16px 14px;align-items:center}
+.ios-add .body img{width:58px;height:58px;border-radius:13px}
+.ios-add .body input{border:none;border-bottom:1px solid #D1D1D6;font-size:15px;font-weight:700;width:100%;padding:4px 0;font-family:inherit}
+.ios-add .body span{display:block;font-size:11px;color:#6E6E73;margin-top:4px}
+.ios-add p{padding:0 14px;color:#6E6E73;font-size:11px;line-height:1.4}
+.home{height:100%;background:linear-gradient(160deg,#5B6B9A,#8FA3C8 60%,#D9C6B0);padding:28px 18px;display:grid;grid-template-columns:repeat(4,1fr);gap:18px 10px;align-content:start}
+.home.ios{background:linear-gradient(160deg,#1E3A8A,#7C3AED 55%,#F472B6)}
+.home.wide{grid-template-columns:repeat(6,1fr);padding:22px 16px}
+.home .ic{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:10px;color:#fff;font-weight:800;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+.home .ic div{width:48px;height:48px;border-radius:13px;background:rgba(255,255,255,.35)}
+.home.wide .ic div{width:40px;height:40px}
+.home .ic img{width:52px;height:52px;border-radius:14px;background:#fff}
+.home.wide .ic img{width:44px;height:44px}
+.home .ic.lu{transform:scale(1.18)}
+.desktop{height:100%;background:linear-gradient(160deg,#0F3460,#16537E 55%,#5FA8D3);position:relative}
+.desktop .icons{position:absolute;left:18px;top:16px;display:grid;grid-template-columns:repeat(2,70px);gap:14px}
+.desktop .ic{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:#fff;font-weight:800;text-shadow:0 1px 3px rgba(0,0,0,.5)}
+.desktop .ic div{width:38px;height:38px;border-radius:8px;background:rgba(255,255,255,.35)}
+.desktop .ic img{width:44px;height:44px;border-radius:10px;background:#fff}
+.desktop .taskbar{position:absolute;left:0;right:0;bottom:0;height:34px;background:rgba(20,20,30,.85);display:flex;align-items:center;justify-content:center;gap:12px}
+.desktop .taskbar div{width:22px;height:22px;border-radius:5px;background:rgba(255,255,255,.3)}
+.desktop .taskbar img{width:24px;height:24px;border-radius:6px;background:#fff}
+.app-win{position:absolute;left:170px;top:22px;right:16px;bottom:44px;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,.4)}
+.app-win .title{height:30px;background:#FFF1E0;display:flex;align-items:center;gap:8px;padding:0 10px;font-size:11px;font-weight:800;color:#43301F}
+.app-win .title img{width:16px;height:16px;border-radius:4px}
+.app-win .title .wc{margin-left:auto;display:flex;gap:10px;color:#5F6368}
+.statusbar{height:24px;background:#fff;display:flex;justify-content:space-between;padding:4px 16px;font-size:11px;font-weight:800;color:#202124}
+.tip{margin:34px 64px 0;background:var(--cocoa);color:#fff;border-radius:28px;padding:28px 34px;display:grid;grid-template-columns:1fr 150px;gap:24px;align-items:center}
+.tip .en{font-size:24px;font-weight:800;line-height:1.35}
+.tip .ar{font-size:26px;font-weight:900;line-height:1.5;margin-top:10px;color:#FFE4C4}
+.tip .en span{color:var(--sun)}
+.tip img{width:150px;border-radius:16px;background:#fff;padding:6px}
+footer{margin:26px 64px 0;text-align:center;color:var(--soft);font-weight:800;font-size:22px}
+footer b{color:var(--or)}
+
+.step{grid-template-columns:360px 1fr}
+.step .phone{width:360px;height:676px}
+@media print{ .step,.gidx,.tip,header{break-inside:avoid} }
+.gref{display:inline-block;background:#43301F;color:#FFC93C;border-radius:999px;padding:3px 12px;font-size:17px;font-weight:800;margin:6px 6px 0 0;font-family:'Nunito',sans-serif;direction:ltr}
+.ar .gref{font-family:'Cairo',sans-serif}
+.shot{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+.cred{height:100%;background:#ECE5DD;display:flex;flex-direction:column}
+.cred .bar{background:#075E54;color:#fff;padding:14px 14px 12px;display:flex;align-items:center;gap:10px;font-weight:800;font-size:15px}
+.cred .bar img{width:34px;height:34px;border-radius:50%;background:#fff}
+.cred .bub{background:#fff;margin:16px 12px 0;border-radius:4px 14px 14px 14px;padding:12px 14px;font-size:14px;line-height:1.55;color:#202124;box-shadow:0 1px 1px rgba(0,0,0,.1)}
+.cred .bub .ar{direction:rtl;font-family:'Cairo',sans-serif;font-weight:700}
+.cred .k{display:flex;justify-content:space-between;background:#FFF3D6;border-radius:8px;padding:6px 10px;margin-top:6px;font-weight:800;direction:ltr}
+.cred .k b{color:#C2410C;letter-spacing:2px;font-size:17px}
+.gidx{margin:34px 64px 0;background:#fff;border-radius:28px;padding:26px 30px;box-shadow:0 10px 30px rgba(67,48,31,.08)}
+.gidx h3{font-family:'Baloo 2';font-size:30px;margin-bottom:4px}
+.gidx h3 span{color:var(--or)}
+.gidx .ar.h{font-size:24px;font-weight:900;color:#5A4030;margin-bottom:14px}
+.gidx .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.gidx .g{display:flex;align-items:center;gap:14px;border:2px solid var(--line);border-radius:18px;padding:12px 16px}
+.gidx .g .n{width:46px;height:46px;border-radius:50%;background:var(--or);color:#fff;font-family:'Baloo 2';font-weight:800;font-size:24px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.gidx .g .n.i{background:var(--teal);font-size:20px}
+.gidx .g b{display:block;font-size:21px}
+.gidx .g span{display:block;font-family:'Cairo',sans-serif;font-weight:700;font-size:19px;color:var(--soft);direction:rtl;text-align:left}
+</style></head><body>
+<header><img class="logo" src="LOGO"><div><h1>Welcome to <span>Lumio</span>!</h1><div class="sub">Start here · parents & students · from your ID & PIN to your first class</div><div class="sub ar">ابدأوا من هنا · لأولياء الأمور والطلاب · من رقم الطالب والرمز إلى أول حصة</div></div></header>
+<div class="pill">🔗 <b>lumio-english.github.io/lumio</b> &nbsp;·&nbsp; or scan the code at the bottom</div>
+<div class="steps"><div class="step"><div class="num">1</div><div class="phone ios"><div class="screen"><div class="cred"><div class="bar"><img src="ICON"><div>Lumio English<div style="font-size:11px;font-weight:600;opacity:.8">WhatsApp</div></div></div><div class="bub"><div class="ar">أهلاً بكم في Lumio English 🎉<br>تم تفعيل اشتراك يوسف. بيانات الدخول:</div><div class="k">Student ID <b>136625</b></div><div class="k">PIN <b>••••</b></div><div style="margin-top:8px;font-size:12.5px;color:#075E54;font-weight:800">lumio-english.github.io/lumio</div></div></div></div></div>
+<div class="t"><div class="en">You receive the <span class="key">Student ID</span> and <span class="key">PIN</span><small>We send them on WhatsApp as soon as the subscription is activated. Keep them safe — the ID never changes.</small></div><div class="ar">تصلكم <span class="key">رقم الطالب</span> و<span class="key">الرمز السري</span><small>نرسلها على واتساب فور تفعيل الاشتراك. احتفظوا بها — رقم الطالب لا يتغير.</small></div></div></div><div class="step"><div class="num">2</div><div class="phone ios"><div class="screen"><div class="home ios"><div class="ic"><div></div>Phone</div><div class="ic"><div></div>Messages</div><div class="ic"><div></div>Camera</div><div class="ic"><div></div>Photos</div><div class="ic"><div></div>WhatsApp</div><div class="ic lu"><img class="hlbox" src="ICON" style="border-radius:14px">Lumio</div><div class="ic"><div></div>YouTube</div><div class="ic"><div></div>Maps</div><div class="ic"><div></div>Clock</div><div class="ic"><div></div>Settings</div><div class="ic"><div></div>Calendar</div><div class="ic"><div></div>Safari</div></div></div></div>
+<div class="t"><div class="en">Open the site — or install it as an app<small>Go to <b>lumio-english.github.io/lumio</b> and tap Login. Installing it puts the Lumio icon on the phone, tablet or computer.<br><span class="gref">📱 Install: Android · iPhone/iPad · PC</span></small></div><div class="ar">افتحوا الموقع — أو ثبّتوه كتطبيق<small>ادخلوا إلى الرابط واضغطوا Login. التثبيت يضع أيقونة Lumio على الجوال أو التابلت أو الكمبيوتر.<br><span class="gref">📱 أدلة التثبيت: أندرويد · آيفون/آيباد · كمبيوتر</span></small></div></div></div><div class="step"><div class="num">3</div><div class="phone ios"><div class="screen"><img class="shot" src="SHOT:ob_login_id"></div></div>
+<div class="t"><div class="en">Current Learner → type the <span class="key">Student ID</span><small>Use the ID from the message (the parent's phone number works too).</small></div><div class="ar">Current Learner ← اكتبوا <span class="key">رقم الطالب</span><small>استخدموا الرقم المرسل في الرسالة (ويعمل رقم جوال ولي الأمر أيضاً).</small></div></div></div><div class="step"><div class="num">4</div><div class="phone ios"><div class="screen"><img class="shot" src="SHOT:ob_login_pin"></div></div>
+<div class="t"><div class="en">Enter the 4-digit <span class="key">PIN</span><small>The account opens. This device stays logged in — no need to type it every time.</small></div><div class="ar">أدخلوا <span class="key">الرمز السري</span> من ٤ أرقام<small>يُفتح الحساب ويبقى الجهاز مسجّلاً — لا حاجة لإدخاله كل مرة.</small></div></div></div><div class="step"><div class="num">5</div><div class="phone ios"><div class="screen"><img class="shot" src="SHOT:ob_tour"></div></div>
+<div class="t"><div class="en">First visit: a short Arabic tour opens<small>It walks parents through the real dashboard. Next to continue, Skip any time; reopen it from «دليل ولي الأمر».</small></div><div class="ar">أول زيارة: تُفتح جولة تعريفية بالعربية<small>تشرح لأولياء الأمور الصفحة الرئيسية الحقيقية. Next للمتابعة وSkip للتخطي، ويمكن فتحها لاحقاً من «دليل ولي الأمر».</small></div></div></div><div class="step"><div class="num">6</div><div class="phone ios"><div class="screen"><img class="shot" src="SHOT:ob_dash"></div></div>
+<div class="t"><div class="en">Today's mission = what to do now<small>Always start here. It moves on by itself: prep → book the class → homework → next lesson.</small></div><div class="ar">مهمة اليوم = ما يجب فعله الآن<small>ابدأوا من هنا دائماً. تنتقل تلقائياً: التحضير ← حجز الحصة ← الواجب ← الدرس التالي.</small></div></div></div><div class="step"><div class="num">7</div><div class="phone ios"><div class="screen"><img class="shot" src="SHOT:ob_trail"></div></div>
+<div class="t"><div class="en">Every lesson = <span class="key">Prep → Live class → Homework</span><small>The next lesson opens only when all three are done.<br><span class="gref">📘 Guide 1 · Lesson prep</span><span class="gref">📘 Guide 5 · Homework</span></small></div><div class="ar">كل درس = <span class="key">تحضير ← حصة مباشرة ← واجب</span><small>لا يُفتح الدرس التالي إلا بعد إنجاز الثلاثة.<br><span class="gref">📘 دليل 1 · تحضير الدرس</span><span class="gref">📘 دليل 5 · الواجب</span></small></div></div></div><div class="step"><div class="num">8</div><div class="phone ios"><div class="screen"><img class="shot" src="SHOT:book_1"></div></div>
+<div class="t"><div class="en">Book your classes<small>One class at a time, or a fixed weekly schedule that books lesson after lesson. Changed plans? Cancel up to 30 minutes before.<br><span class="gref">📘 Guide 2 · Book a class</span><span class="gref">📘 Guide 3 · Fixed weekly schedule</span><span class="gref">📘 Guide 4 · Cancel a class</span></small></div><div class="ar">احجزوا حصصكم<small>حصة واحدة في كل مرة، أو جدول أسبوعي ثابت يحجز درساً بعد درس. تغيّرت الخطط؟ ألغوا حتى ٣٠ دقيقة قبل الموعد.<br><span class="gref">📘 دليل 2 · حجز حصة</span><span class="gref">📘 دليل 3 · الجدول الأسبوعي الثابت</span><span class="gref">📘 دليل 4 · إلغاء حصة</span></small></div></div></div><div class="step"><div class="num">9</div><div class="phone ios"><div class="screen"><img class="shot" src="SHOT:ob_join"></div></div>
+<div class="t"><div class="en">On class day: <span class="key">Join on Teams</span><small>The class opens in Microsoft Teams (free; join as a guest with the student's name). Be ready 5 minutes early with headphones.</small></div><div class="ar">يوم الحصة: <span class="key">Join on Teams</span><small>تُفتح الحصة في Microsoft Teams (مجاناً؛ الدخول كضيف باسم الطالب). كونوا جاهزين قبل ٥ دقائق مع سماعات.</small></div></div></div><div class="step"><div class="num">10</div><div class="phone ios"><div class="screen"><img class="shot" src="SHOT:game_1"></div></div>
+<div class="t"><div class="en">After homework: the fun part<small>Bonus game, Lumi's story, songs and the English Hub — all on the dashboard.<br><span class="gref">📘 Guide 6 · Bonus game</span></small></div><div class="ar">بعد الواجب: وقت المتعة<small>لعبة المكافأة وقصة Lumi والأغاني وEnglish Hub — كلها في الصفحة الرئيسية.<br><span class="gref">📘 دليل 6 · لعبة المكافأة</span></small></div></div></div><div class="step"><div class="num">11</div><div class="phone ios"><div class="screen"><img class="shot" src="SHOT:ob_profile"></div></div>
+<div class="t"><div class="en">For parents: <span class="key">My Profile</span><small>Sessions left, payments, teacher grades, attendance and a downloadable performance report.</small></div><div class="ar">لأولياء الأمور: <span class="key">My Profile</span><small>الحصص المتبقية والمدفوعات ودرجات المعلّم والحضور وتقرير أداء قابل للتنزيل.</small></div></div></div><div class="step"><div class="num">12</div><div class="phone ios"><div class="screen"><img class="shot" src="SHOT:ob_messages"></div></div>
+<div class="t"><div class="en">For parents: <span class="key">Messages</span><small>Bookings, class reminders, payment due dates and teacher notes arrive here. Referrals: every friend who subscribes adds 5 free classes.</small></div><div class="ar">لأولياء الأمور: <span class="key">Messages</span><small>تصل هنا الحجوزات وتذكيرات الحصص ومواعيد الأقساط وملاحظات المعلّم. الإحالات: كل صديق يشترك يضيف ٥ حصص مجانية.</small></div></div></div></div>
+<div class="gidx"><h3>All the <span>Lumio guides</span></h3><div class="ar h">كل أدلة Lumio — اطلبوها من المعلّم أو افتحوها من صفحة الأدلة</div><div class="grid"><div class="g"><div class="n">1</div><div><b>Lesson prep</b><span>تحضير الدرس</span></div></div><div class="g"><div class="n">2</div><div><b>Book a class</b><span>حجز حصة</span></div></div><div class="g"><div class="n">3</div><div><b>Fixed weekly schedule</b><span>الجدول الأسبوعي الثابت</span></div></div><div class="g"><div class="n">4</div><div><b>Cancel a class</b><span>إلغاء حصة</span></div></div><div class="g"><div class="n">5</div><div><b>Homework</b><span>الواجب</span></div></div><div class="g"><div class="n">6</div><div><b>Bonus game</b><span>لعبة المكافأة</span></div></div><div class="g"><div class="n i">📱</div><div><b>Install on Android</b><span>التثبيت على أندرويد</span></div></div><div class="g"><div class="n i">🍏</div><div><b>Install on iPhone / iPad</b><span>التثبيت على آيفون وآيباد</span></div></div><div class="g"><div class="n i">💻</div><div><b>Install on a computer</b><span>التثبيت على الكمبيوتر</span></div></div></div><div style="margin-top:12px;font-weight:800;color:var(--soft);font-size:19px">Every guide: <b style="color:var(--or)">lumio-english.github.io/lumio/guides.html</b></div></div><div class="tip"><div><div class="en">💬 <span>Stuck at any step?</span> Every numbered guide is one tap away: <b>📘 Guides</b> on the dashboard (or scan this code). Still stuck? Message your teacher on WhatsApp.</div><div class="ar">واجهتم صعوبة؟ كل دليل مرقّم على بُعد ضغطة: زر <b>📘 Guides · الأدلة</b> في الصفحة الرئيسية (أو امسحوا الرمز). وإن احتجتم مساعدة راسلوا المعلّم على واتساب.</div></div><img src="QR"></div>
+<footer>Lumio English · <b>lumio-english.github.io/lumio</b> · Small Steps, Big Futures</footer>
+</body></html>
