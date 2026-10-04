@@ -171,7 +171,7 @@ Done by three parallel workers (sync layer / teacher UI / student UI), merged an
 - `guide-free-test-and-trial` (for prospects, sent before they subscribe): lumio-pro-test.html → PIN → Student ID → 4 parts → result → new green "Book my free trial on WhatsApp" button on the result page (prefilled Arabic+English: name, age, level, score, Student ID → wa.me/201124882493) → our WhatsApp reply with day/time/Teams link → join on Teams → trial slides → subscribe and log in with the SAME ID+PIN. Captured by `capture_prospect()` (runs alone when only this key is passed); its QR points to lumio-pro-test.html; also ships as PDF. Homepage "Live class on Zoom" copy changed to Teams.
 - `guides.html` lists all guides + the 3 install guides; 📘 Guides button on the student dashboard, link under the PIN box on login.html. Re-run the builder after any change to the student pages.
 
-## 3p. 2026 redesign: home, login, student and teacher look (4 Oct 2026)
+## 3q. 2026 redesign: home, login, student and teacher look (4 Oct 2026)
 - **Palette:** white + orange first, strong orange for highlight bands, black only for text (owner asked for less black).
 - **index.html** is new. Its pieces:
   - Styles in `css/site.css`, motion in `js/site.js`.
