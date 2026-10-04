@@ -102,6 +102,11 @@ def capture():
                 pg.screenshot(path=str(TMP / f"{name}.png"))
                 pg.evaluate(HL_JS, [None, 0])
 
+            def open_menu():
+                # phone layout folds the top-bar buttons into "Menu"
+                pg.evaluate("(() => { const m = document.querySelector('.s26-menubtn'); const bar = document.querySelector('.sd-topbar'); if (m && getComputedStyle(m).display !== 'none' && bar && !bar.classList.contains('open')) m.click(); })()")
+                pg.wait_for_timeout(350)
+
             def as_student(sid, name, level, tour=False):
                 pg.evaluate(f"""() => {{ localStorage.setItem('lumio_user', JSON.stringify({{name:'{name}',level:'{level}',t:Date.now()}}));
                     localStorage.setItem('lumio_student_id','{sid}');
@@ -149,11 +154,13 @@ def capture():
             go("student.html")
             snap("ob_dash", ".sd-hero-card")
             snap("ob_trail", "#scheduleTrail")
+            open_menu()
             snap("ob_profile_btn", "#myProfileBtn")
-            pg.click("#myProfileBtn"); pg.wait_for_timeout(700)
+            pg.evaluate("document.getElementById('myProfileBtn').click()"); pg.wait_for_timeout(700)
             snap("ob_profile")
-            go("student.html")
+            go("student.html"); open_menu()
             snap("ob_messages", "#messagesBtn")
+            go("student.html")
 
             # ---------------- 1 lesson prep (Yousef, lesson 1) ----------------
             snap("prep_1", "#missionBtn")

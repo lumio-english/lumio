@@ -57,17 +57,16 @@ def _draw_header(c, level_label, lesson, num, INK, ORANGE, TEAL, logo_path, cont
     y = TOP_START
     if logo_path:
         try:
-            c.drawImage(ImageReader(logo_path), MARGIN + 4, y - 34, width=34, height=34,
+            # full main logo, top-right corner
+            c.drawImage(ImageReader(logo_path), A4[0] - MARGIN - 92, TOP_START - 52, width=92, height=75,
                         mask="auto", preserveAspectRatio=True)
         except Exception:
             pass
     c.setFillColorRGB(*ORANGE)
     c.setFont("Helvetica-Bold", 10)
-    c.drawString(MARGIN + 48, y, f"{level_label} \u2022 Lesson {num}" + (" (continued)" if continued else ""))
+    c.drawString(MARGIN, y, f"{level_label} \u2022 Lesson {num}" + (" (continued)" if continued else ""))
     y -= 20
     c.setFillColorRGB(*INK)
-    c.setFont("Helvetica-Bold", 15)
-    c.drawString(MARGIN + 48, y, "Lumio English")
     y -= 30
     c.setFont("Helvetica-Bold", 19)
     c.drawString(MARGIN, y, lesson["title"])

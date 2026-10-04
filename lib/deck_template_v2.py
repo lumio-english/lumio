@@ -48,7 +48,7 @@ def bg_clean(): return _themed_wall() + ('' if CURRENT_LESSON_BG else WINDOW)
 
 def header(pagetitle, n, total):
     return f'''<div class="header">
-      <div class="brand"><img src="assets/logo/lumio-logo.png"><div class="name">Lumio<small>ENGLISH</small></div></div>
+      <div class="brand"><img src="assets/logo/lumio-logo.png" alt="Lumio English" style="height:70px"></div>
       <div class="pagetitle">{pagetitle}</div>
       <div class="counter">{n} / {total}</div>
     </div>'''
@@ -146,12 +146,7 @@ def slide_title(lesson, num_words):
       <div style="position:relative;display:flex;align-items:center;gap:18px;margin-bottom:10px">
         <div style="position:relative">
           
-          <img src="assets/logo/lumio-logo.png" style="position:relative;height:120px;width:auto;filter:drop-shadow(0 10px 18px rgba(67,48,31,.25))">
-        </div>
-        <div style="text-align:left">
-          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:3rem;color:#43301F;line-height:1">Lumio</div>
-          <div style="display:inline-block;margin-top:6px;background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;
-                      font-weight:800;font-size:.82rem;letter-spacing:3px;padding:4px 14px;border-radius:999px">ENGLISH</div>
+          <img src="assets/logo/lumio-logo.png" alt="Lumio English" style="position:relative;height:170px;width:auto;filter:drop-shadow(0 10px 18px rgba(67,48,31,.25))">
         </div>
       </div>
       <div style="width:100%;background:linear-gradient(90deg,rgba(127,207,196,0) 0%,#7FCFC4 20%,#7FCFC4 80%,rgba(127,207,196,0) 100%);
@@ -1153,9 +1148,7 @@ def slide_describing_time(image_rel_path, n, total):
     <div style="position:absolute;inset:0;background:linear-gradient(180deg, rgba(67,48,31,.72) 0%, rgba(67,48,31,.42) 14%, rgba(67,48,31,0) 28%)"></div>
     <div style="position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:22px 40px 0">
       <div style="display:flex;align-items:center;gap:10px">
-        <div style="width:30px;height:30px;border-radius:8px;background:#fff;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:3px">
-          <img src="assets/logo/lumio-logo.png" style="width:100%;height:100%;object-fit:contain"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#fff;font-size:1rem">Lumio <span style="font-weight:600;font-size:.7rem;opacity:.85">ENGLISH</span></div>
+        <div style="height:60px;padding:4px 10px;border-radius:14px;background:#fff;display:flex;align-items:center;box-shadow:0 4px 12px rgba(0,0,0,.18)"><img src="assets/logo/lumio-logo.png" alt="Lumio English" style="height:100%;width:auto;object-fit:contain"></div>
       </div>
       <div style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#fff;font-size:.95rem;background:rgba(255,255,255,.2);
                   border:1px solid rgba(255,255,255,.35);padding:6px 18px;border-radius:999px">Describing Time</div>

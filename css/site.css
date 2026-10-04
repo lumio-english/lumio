@@ -36,6 +36,8 @@ header.nav.light{background:rgba(251,247,240,.86);backdrop-filter:blur(14px);col
 .navin{display:flex;align-items:center;gap:18px;padding-block:14px}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
 .brand img{width:36px;height:36px;border-radius:10px;object-fit:cover}
+/* the full main logo (Lumi behind "Lumio English"), never cropped */
+.brand img.brand-logo{width:auto;height:72px;border-radius:0;object-fit:contain;filter:drop-shadow(0 2px 6px rgba(67,48,31,.12))}
 .brand b{font-family:var(--display);font-weight:800;font-size:21px;letter-spacing:-.02em}
 .brand b i{font-style:normal;color:var(--orange)}
 .links{display:flex;gap:26px;margin-inline:auto}
@@ -512,7 +514,7 @@ html[dir="rtl"] .wafab{right:auto;left:18px}
 .plan li svg{color:var(--orange)}
 /* --- QA fixes --- */
 .brand b{white-space:nowrap}
-@media (max-width:520px){.brand b{font-size:18px}.brand img{width:32px;height:32px}.navr .lang{padding:7px 11px}.nav .btn{padding:9px 14px;font-size:14px}}
+@media (max-width:520px){.brand b{font-size:18px}.brand img{width:32px;height:32px}.brand img.brand-logo{width:auto;height:56px}.navr .lang{padding:7px 11px}.nav .btn{padding:9px 14px;font-size:14px}}
 html[lang="ar"] h1,html[lang="ar"] h2,html[lang="ar"] h3{line-height:1.25}
 html[lang="ar"] .hero h1{font-size:clamp(38px,5.2vw,78px);line-height:1.2}
 html[lang="ar"] .hero h1 .line{padding-bottom:.12em}
