@@ -36,15 +36,17 @@
   // drop a leading emoji / symbol run from the page's own label, keep its words
   function clean(s) { return String(s || '').replace(/^[^\p{L}\p{N}]+/u, '').trim(); }
   function $(s) { return document.querySelector(s); }
+  // Lumio's own icon set (js/lumio-icons.js); the line icons above are the fallback
+  function ic(name, fallback) { return (window.LumioIcons && window.LumioIcons.svg(name)) || fallback || ''; }
 
   function missionIcon(label) {
     var l = label.toLowerCase();
-    if (/certificate/.test(l)) return I.trophy;
-    if (/retake/.test(l)) return I.retry;
-    if (/level test/.test(l)) return I.test;
-    if (/schedule|class/.test(l)) return I.cal;
-    if (/homework/.test(l)) return I.pencil;
-    return I.play;
+    if (/certificate/.test(l)) return ic('trophy', I.trophy);
+    if (/retake/.test(l)) return ic('retry', I.retry);
+    if (/level test/.test(l)) return ic('test', I.test);
+    if (/schedule|class/.test(l)) return ic('calendar', I.cal);
+    if (/homework/.test(l)) return ic('pencil', I.pencil);
+    return ic('play', I.play);
   }
 
   function mission() {
@@ -63,12 +65,12 @@
     // three steps of this lesson
     if (n && n <= (M.total || 20) && typeof M.isPrepDone === 'function') {
       var prep = !!M.isPrepDone(n), live = !!(M.isLiveDone && M.isLiveDone(n)), hw = !!(M.isHomeworkDone && M.isHomeworkDone(n));
-      var steps = [['Prepare', 'In the app', I.book, prep], ['Live class', 'On Teams', I.video, live], ['Homework', 'After class', I.pencil, hw]];
+      var steps = [['Prepare', 'In the app', ic('book', I.book), prep], ['Live class', 'On Teams', ic('video', I.video), live], ['Homework', 'After class', ic('pencil', I.pencil), hw]];
       var nowIdx = steps.findIndex(function (s) { return !s[3]; });
       var row = document.createElement('ol'); row.className = 's26-steps'; row.setAttribute('aria-label', 'Lesson ' + n + ' steps');
       row.innerHTML = steps.map(function (s, i) {
         var st = s[3] ? 'done' : i === nowIdx ? 'now' : 'later';
-        return '<li class="' + st + '"><span class="dot">' + (s[3] ? I.check : s[2]) + '</span><span class="t"><b>' + s[0] + '</b><small>' + (s[3] ? 'Done' : i === nowIdx ? 'Now · ' + s[1] : s[1]) + '</small></span></li>';
+        return '<li class="' + st + '"><span class="dot">' + (s[3] ? ic('check', I.check) : s[2]) + '</span><span class="t"><b>' + s[0] + '</b><small>' + (s[3] ? 'Done' : i === nowIdx ? 'Now · ' + s[1] : s[1]) + '</small></span></li>';
       }).join('');
       var sub = $('#missionSub'); (sub || title).insertAdjacentElement('afterend', row);
     }
@@ -78,7 +80,7 @@
     btn.querySelector('.lb').textContent = label;
     // homework materials as tiles
     var tools = document.createElement('div'); tools.className = 's26-tools';
-    [['homeworkBtn', I.pencil, 'In the app'], ['worksheetBtn', I.sheet, 'PDF to print'], ['writingBtn', I.write, 'PDF to print'], ['flashcardsBtn', I.cards, 'PDF to print']].forEach(function (t) {
+    [['homeworkBtn', ic('pencil', I.pencil), 'In the app'], ['worksheetBtn', ic('sheet', I.sheet), 'PDF to print'], ['writingBtn', ic('write', I.write), 'PDF to print'], ['flashcardsBtn', ic('cards', I.cards), 'PDF to print']].forEach(function (t) {
       var a = document.getElementById(t[0]); if (!a) return;
       var text = clean(a.textContent);
       a.innerHTML = '<span class="ic">' + t[1] + '</span><span class="tx"><b></b><small></small></span>';
@@ -93,23 +95,39 @@
   function stats() {
     var icons = document.querySelectorAll('.sd-side-stats .sd-stat-icon');
     var teen = /^level([3-9]|10)$/.test((window.LumioMapState || {}).level || '');
-    [teen ? I.bolt : I.star, I.check, I.grad].forEach(function (svg, i) { var el = icons[i]; if (el) { el.innerHTML = svg; el.removeAttribute('style'); el.classList.add('s26-sicon', 's26-sicon' + i); } });
+    [teen ? ic('bolt', I.bolt) : ic('star', I.star), ic('check', I.check), ic('grad', I.grad)].forEach(function (svg, i) { var el = icons[i]; if (el) { el.innerHTML = svg; el.removeAttribute('style'); el.classList.add('s26-sicon', 's26-sicon' + i); } });
   }
 
   function menu() {
-    var map = { myProfileBtn: I.user, messagesBtn: I.mail, guidesBtn: I.guide, referralsBtn: I.gift, parentGuideBtn: I.compass };
+    var map = { myProfileBtn: ic('user', I.user), messagesBtn: ic('mail', I.mail), guidesBtn: ic('guide', I.guide), referralsBtn: ic('gift', I.gift), parentGuideBtn: ic('compass', I.compass) };
     Object.keys(map).forEach(function (id) {
       var b = document.getElementById(id); if (!b || b.dataset.s26) return; b.dataset.s26 = '1';
       var tn = Array.prototype.find.call(b.childNodes, function (x) { return x.nodeType === 3 && x.textContent.trim(); });
       if (tn) tn.textContent = clean(tn.textContent);
       b.insertAdjacentHTML('afterbegin', '<span class="s26-mic">' + map[id] + '</span>');
     });
-    var out = $('.sd-logout'); if (out && !out.dataset.s26) { out.dataset.s26 = '1'; out.insertAdjacentHTML('afterbegin', '<span class="s26-mic">' + I.out + '</span>'); }
-    var fl = $('#streakChip .flame'); if (fl) fl.innerHTML = I.flame;
+    var out = $('.sd-logout'); if (out && !out.dataset.s26) { out.dataset.s26 = '1'; out.insertAdjacentHTML('afterbegin', '<span class="s26-mic">' + ic('logout', I.out) + '</span>'); }
+    var fl = $('#streakChip .flame'); if (fl) fl.innerHTML = ic('flame', I.flame);
+  }
+
+  function decorate() {
+    if (!window.LumioIcons) return;
+    var secs = { secToday: 'sun', secMap: 'map', secUnlocked: 'gift', secClasses: 'calendar', secHub: 'library', secRewards: 'trophy', secMore: 'dots' };
+    Object.keys(secs).forEach(function (id) { var el = document.querySelector('#' + id + ' .s26-ic'); if (el) { el.innerHTML = ic(secs[id]); el.classList.add('lm'); } });
+    var hub = { hubVocab: 'cards', hubGrammar: 'ruler', hubIdioms: 'bulb', hubPhonics: 'sound', hubSpelling: 'blocks', hubSongs: 'music', hubWriting: 'write' };
+    Object.keys(hub).forEach(function (id) { var el = document.querySelector('#' + id + ' .sd-hubb-icon'); if (el) { el.innerHTML = ic(hub[id]); el.classList.add('lm'); } });
+    document.querySelectorAll('#manualSection .sd-hubb-icon').forEach(function (el) { el.innerHTML = ic('guide'); el.classList.add('lm'); });
+    var si = $('.sd-story-icon'); if (si) { si.innerHTML = ic('story'); si.classList.add('lm'); }
+    var gi = $('#gameWideIcon'); if (gi) { gi.innerHTML = ic('pad'); gi.classList.add('lm'); }
+    var MED = { 'first step': 'medal-step', 'on a roll': 'medal-flame', 'star collector': 'medal-star', 'super star': 'medal-stars', 'perfectionist': 'medal-100', 'halfway there': 'medal-half', 'level up!': 'medal-up', 'dedicated': 'medal-target' };
+    document.querySelectorAll('#badgeGrid .sd-badge').forEach(function (b) {
+      var t = b.querySelector('.t'), i = b.querySelector('.ic'), name = t && MED[t.textContent.trim().toLowerCase()];
+      if (i && name) { i.innerHTML = ic(name); i.classList.add('lm'); }
+    });
   }
 
   var done = false;
-  function run() { if (done) return; done = true; try { mission(); stats(); menu(); } catch (e) { if (window.console) console.warn('Lumio mission card skipped:', e); } }
+  function run() { if (done) return; done = true; try { mission(); stats(); menu(); decorate(); } catch (e) { if (window.console) console.warn('Lumio mission card skipped:', e); } }
   if (window.LumioMapState) run();
   document.addEventListener('lumio-map-ready', run);
 })();

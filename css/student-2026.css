@@ -244,3 +244,29 @@ a.s26-tool small{font-size:12.5px;font-weight:700;color:var(--s-mut)}
 .sd-side-stats{justify-content:flex-start!important;gap:12px!important}
 .sd-side-stats .sd-stat-card{flex:0 0 auto!important;padding:16px 18px!important}
 @media (max-width:760px){.sd-topbar.open .sd-logout{order:99}}
+
+/* ===== Lumio icon set on the page ===== */
+.lm-ico{display:block;width:100%;height:100%}
+.s26-ic.lm{background:#fff!important;border:1px solid #F1E4DA;box-shadow:0 10px 20px -16px rgba(194,65,12,.6)!important;padding:4px}
+#missionBtn .ic{padding:4px}
+#missionBtn .ic .lm-ico{filter:drop-shadow(0 2px 2px rgba(194,65,12,.25))}
+.s26-steps .dot{width:40px!important;height:40px!important;border:0!important;background:transparent!important;box-shadow:none}
+.s26-steps .dot .lm-ico{width:40px;height:40px}
+.s26-steps li.later .dot{filter:grayscale(1);opacity:.45}
+.s26-steps li.now .dot{animation:none!important}
+.s26-steps li.now .dot .lm-ico{animation:s26Hop 2.4s ease-in-out infinite}
+@keyframes s26Hop{0%,70%,100%{transform:none}80%{transform:translateY(-5px)}90%{transform:translateY(0)}}
+a.s26-tool .ic,a.s26-tool:first-child .ic{background:#FFF6EF!important;padding:3px}
+a.s26-tool .ic .lm-ico{width:40px;height:40px}
+.sd-stat-icon.s26-sicon,.sd-stat-icon.s26-sicon0{background:#FFF6EF!important;padding:3px}
+.s26-mic .lm-ico{width:22px;height:22px}
+.s26-mic{width:22px;height:22px}
+.sd-hubb-icon.lm{background:#fff!important;padding:4px;width:50px!important;height:50px!important;border-radius:15px!important;box-shadow:0 8px 16px -10px rgba(80,20,0,.5)}
+.sd-hubb.locked .sd-hubb-icon.lm .lm-ico{filter:grayscale(1);opacity:.5}
+.sd-story-icon.lm{background:#fff!important;padding:5px}
+.sd-game-wide-icon.lm{width:72px;height:72px;margin:0 auto 6px;filter:none!important}
+.sd-badge .ic.lm{width:58px;height:58px;margin:0 auto 4px;font-size:0}
+.sd-badge:not(.earned) .ic.lm{filter:grayscale(1);opacity:.42}
+@media (prefers-reduced-motion:reduce){.s26-steps li.now .dot .lm-ico{animation:none}}
+.s26-ic.lm .lm-ico,.s26-ic.lm svg{width:100%!important;height:100%!important}
+.sd-hubb-btn img,.sd-hero-btn-logo{display:none!important}
