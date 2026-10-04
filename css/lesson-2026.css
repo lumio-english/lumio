@@ -1,0 +1,98 @@
+/* Lumio English — lesson prep page, 2026 layout (with js/lesson-2026.js). Loaded after css/style.css.
+   Wide screens: a sticky panel on the left (lesson, progress, activity list) and the activity on the right.
+   Phones: the panel stacks on top and the activities become a scrollable row.
+   Teens (body.theme-teen, Levels 3–6) get the "Night + orange" look used on the student page. */
+body.l26{--l-o:#F97316;--l-od:#C2410C;--l-peach:#FFF6EF;--l-line:#F1E4DA;--l-ink:#111;--l-mut:#767676;
+  --l-display:'Bricolage Grotesque','Baloo 2','Segoe UI',system-ui,sans-serif;
+  background:radial-gradient(900px 500px at 90% -10%,rgba(255,217,186,.7),transparent 60%),#FFFBF7}
+body.l26 .topbar{background:rgba(255,255,255,.9);border-bottom:1px solid var(--l-line);box-shadow:0 8px 24px -20px rgba(194,65,12,.5)}
+body.l26 .topbar .btn-ghost{background:var(--l-peach);border:1px solid #F3DCCB;border-radius:999px;color:var(--l-ink)}
+body.l26 #crumbs{font-family:var(--l-display);color:var(--l-ink);-webkit-text-fill-color:currentColor;background:none}
+body.l26 .progressbar{background:#FFEBDB}
+body.l26 .progressbar > div{background:linear-gradient(90deg,#FB923C,#F97316)}
+
+body.l26 main.wrap{max-width:1120px!important;display:grid;grid-template-columns:320px minmax(0,1fr);gap:26px;align-items:start;padding-top:26px}
+.l26-rail{position:sticky;top:84px;display:flex;flex-direction:column;gap:16px;min-width:0}
+body.l26 #stage{margin-top:0!important;min-width:0}
+
+.l26-hero{position:relative;overflow:hidden;border-radius:26px;padding:24px 22px 22px;min-height:220px;color:#fff;
+  background:linear-gradient(140deg,#FB923C 0%,#F97316 45%,#C2410C 100%);box-shadow:0 24px 50px -30px rgba(194,65,12,.85)}
+.l26-hero::after{content:"";position:absolute;right:-60px;top:-80px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.3),rgba(255,255,255,0) 65%);pointer-events:none}
+.l26-hero > *{position:relative;z-index:1}
+.l26-kicker{margin:0;font-size:11.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#FFE3CC;max-width:72%}
+.l26-title{margin:8px 0 2px;font-family:var(--l-display);font-weight:800;font-size:clamp(26px,2.6vw,32px);line-height:1.05;letter-spacing:-.02em;color:#fff!important;-webkit-text-fill-color:#fff;max-width:72%}
+.l26-ar{margin:0;font-family:Tajawal,Cairo,sans-serif;font-weight:700;font-size:17px;color:#FFE3CC;max-width:72%;text-align:start}
+.l26-sub{margin:10px 0 0;font-size:14px;font-weight:700;line-height:1.45;color:rgba(255,255,255,.92);max-width:70%}
+.l26-prog{margin-top:16px;max-width:70%}
+.l26-prog-bar{height:8px;border-radius:99px;background:rgba(255,255,255,.28);overflow:hidden}
+.l26-prog-bar i{display:block;height:100%;width:0;border-radius:99px;background:#fff;transition:width .5s cubic-bezier(.22,1,.36,1)}
+.l26-prog span{display:block;margin-top:6px;font-size:12.5px;font-weight:800}
+.l26-buddy{position:absolute!important;right:-6px;bottom:-8px;width:104px;filter:drop-shadow(0 14px 18px rgba(80,20,0,.35));animation:l26Bob 3.4s ease-in-out infinite;pointer-events:none}
+@keyframes l26Bob{50%{transform:translateY(-8px)}}
+
+.l26-steps{list-style:none;margin:0;padding:10px;display:flex;flex-direction:column;gap:6px;background:#fff;border:1px solid var(--l-line);border-radius:22px;box-shadow:0 14px 30px -26px rgba(194,65,12,.5)}
+.l26-steps li{display:flex;align-items:center;gap:12px;padding:8px 10px;border-radius:16px;min-width:0}
+.l26-dot{width:42px;height:42px;border-radius:14px;background:var(--l-peach);padding:4px;flex-shrink:0;display:grid;place-items:center}
+.l26-dot .lm-ico{width:100%;height:100%}
+.l26-steps li:not(.now):not(.done) .l26-dot .lm-ico{filter:grayscale(1);opacity:.5}
+.l26-tx{display:flex;flex-direction:column;min-width:0;line-height:1.2}
+.l26-tx b{font-size:14.5px;color:var(--l-ink)}
+.l26-tx small{font-size:12px;font-weight:700;color:var(--l-mut)}
+.l26-steps li.now{background:var(--l-peach);box-shadow:inset 0 0 0 2px var(--l-o)}
+.l26-steps li.now .l26-dot{background:#fff;box-shadow:0 8px 16px -10px rgba(194,65,12,.8)}
+.l26-steps li.now .l26-dot .lm-ico{animation:l26Hop 2.4s ease-in-out infinite}
+.l26-steps li.now b{color:var(--l-od)}
+.l26-steps li.done small{color:var(--l-od)}
+@keyframes l26Hop{0%,70%,100%{transform:none}80%{transform:translateY(-4px)}90%{transform:none}}
+
+/* the activity card */
+body.l26 #stage > .card{border-radius:26px;border:1px solid var(--l-line);box-shadow:0 20px 44px -34px rgba(194,65,12,.6);animation:l26In .45s cubic-bezier(.22,1,.36,1) both}
+@keyframes l26In{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+body.l26 #stage .chip-orange{background:#FFEBDB;color:var(--l-od)}
+body.l26 #stage h1,body.l26 #stage h2{font-family:var(--l-display);letter-spacing:-.02em}
+
+@media (max-width:900px){
+  body.l26 main.wrap{grid-template-columns:minmax(0,1fr);gap:14px;padding:16px 14px 30px}
+  .l26-rail{position:static}
+  .l26-hero{min-height:0;padding:20px 18px}
+  .l26-buddy{width:84px}
+  .l26-sub{display:none}
+  .l26-steps{flex-direction:row;overflow-x:auto;scrollbar-width:none;padding:8px}
+  .l26-steps::-webkit-scrollbar{display:none}
+  .l26-steps li{flex:0 0 auto;padding:6px 12px 6px 6px;gap:8px}
+  .l26-dot{width:34px;height:34px;border-radius:11px;padding:3px}
+  .l26-tx b{font-size:13.5px;white-space:nowrap}
+  .l26-tx small{display:none}
+}
+@media (prefers-reduced-motion:reduce){.l26-buddy,.l26-steps li.now .l26-dot .lm-ico,body.l26 #stage > .card{animation:none}}
+
+/* ===== teens: Night + orange ===== */
+body.l26.theme-teen{background:radial-gradient(900px 520px at 85% -10%,rgba(249,115,22,.22),transparent 60%),radial-gradient(800px 600px at -10% 40%,rgba(59,92,180,.28),transparent 60%),#0B1226;background-attachment:fixed}
+body.l26.theme-teen .topbar{background:rgba(11,18,38,.85);border-bottom:1px solid #26355F}
+body.l26.theme-teen .topbar .btn-ghost{background:rgba(255,255,255,.06);border-color:#33447A;color:#F3F5FF}
+body.l26.theme-teen #crumbs{color:#F3F5FF}
+body.l26.theme-teen .progressbar{background:rgba(255,255,255,.1)}
+body.l26.theme-teen .l26-hero{background:linear-gradient(135deg,#1A2752 0%,#111C38 55%,#2A1A22 100%);border:1px solid #33447A;box-shadow:0 0 0 1px rgba(249,115,22,.3),0 22px 44px -24px rgba(249,115,22,.5)}
+body.l26.theme-teen .l26-hero::after{background:radial-gradient(circle,rgba(249,115,22,.45),rgba(249,115,22,0) 65%)}
+body.l26.theme-teen .l26-kicker{color:#FB923C}
+body.l26.theme-teen .l26-ar{color:#C3CCEB}
+body.l26.theme-teen .l26-sub{color:#C3CCEB}
+body.l26.theme-teen .l26-prog-bar{background:rgba(255,255,255,.1)}
+body.l26.theme-teen .l26-prog-bar i{background:linear-gradient(90deg,#FB923C,#F97316);box-shadow:0 0 12px rgba(249,115,22,.8)}
+body.l26.theme-teen .l26-steps{background:rgba(20,30,62,.78);border-color:#26355F;box-shadow:none}
+body.l26.theme-teen .l26-tx b{color:#F3F5FF}
+body.l26.theme-teen .l26-tx small{color:#8E9AC4}
+body.l26.theme-teen .l26-dot{background:rgba(255,255,255,.92)}
+body.l26.theme-teen .l26-steps li.now{background:rgba(249,115,22,.12)}
+body.l26.theme-teen .l26-steps li.now b{color:#FFD9BA}
+body.l26.theme-teen .l26-steps li.done small{color:#FB923C}
+body.l26.theme-teen #stage > .card{border-color:#33447A;box-shadow:0 0 0 1px rgba(249,115,22,.18),0 24px 50px -30px rgba(0,0,0,.9)}
+/* QA: give the title the full width (the buddy sits low, beside the progress bar) */
+.l26-kicker,.l26-title,.l26-ar{max-width:none}
+.l26-ar{text-align:left}
+.l26-sub{max-width:64%}
+@media (max-width:900px){
+  body.l26 #crumbs{display:none}
+  body.l26 .topbar .btn-ghost{white-space:nowrap}
+  .l26-kicker,.l26-title,.l26-ar{max-width:74%}
+}

@@ -653,6 +653,7 @@
 
   function showResults() {
     barEl.style.width = "100%";
+    announce();
     const pct = total ? Math.round((score / total) * 100) : 100;
     const stars = pct >= 85 ? 3 : pct >= 60 ? 2 : 1;
     Lumio.saveResult(user.name, level, num, stars, score, total);
@@ -686,7 +687,10 @@
   }
 
   /* ---------- Router ---------- */
+  // Tells the page layout (js/lesson-2026.js) which activity is showing; it only draws the side panel.
+  const announce = () => { try { document.dispatchEvent(new CustomEvent("lumio-lesson-step", { detail: { i: stepIdx, types: steps.map(s => s.type), title: lesson.title, titleAr: lesson.titleAr || "", num, level } })); } catch (e) {} };
   function render(a) {
+    announce();
     switch (a.type) {
       case "vocab": return actVocab();
       case "listen-choose": return actListen(a);

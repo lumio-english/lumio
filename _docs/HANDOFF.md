@@ -222,5 +222,9 @@ Done by three parallel workers (sync layer / teacher UI / student UI), merged an
 - **Homework** (homework.html + css/homework-2026.css): same content and logic. On wide screens a sticky rail (lesson hero with a step progress bar and buddy, then the steps as a list with hints) sits beside the activity card; on phones the steps are a scrollable chip row. Teens get the night look.
 - **Home page**: crew thumbnails now fit the whole character; story scene 01 uses assets/site/shot-preview.jpg (the real word-preview step of Pre-A lesson 12); with reduced motion or no GSAP the story scenes stack as normal sections (html.s-still) instead of overlapping.
 
+- **Lesson prep page** (lesson.html): js/lesson-2026.js + css/lesson-2026.css add a side panel (lesson, English + Arabic title, progress, activity list with the current one highlighted). js/lesson.js only gained `announce()`, which fires `lumio-lesson-step` on every activity and on the results. Phones: panel on top, activities as a scrollable row. Teens get the night look.
+- **Images**: vocab, spelling, logo and story-character PNGs were shrunk (max 640 px, characters 900 px; 256-colour quantised with libimagequant via `pip install imagequant`), about 394 MB to 100 MB with the same file names. New full-size pictures should get the same treatment.
+- **Placement test result**: the free-trial WhatsApp box sits right under the level, and its heading names the level.
+
 ## 4. Working style
 Verify in a browser before claiming done; check files before writing prompts; never duplicate; fix in templates not per slide; say plainly what was NOT done; ask one specific question when ambiguous.
