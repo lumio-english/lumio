@@ -102,3 +102,23 @@ body{background:radial-gradient(900px 480px at 92% -12%,rgba(255,217,186,.55),tr
 #viewStudents .td-roster-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 #viewStudents .td-roster-head .td-select,.td-sl-tools .td-select{width:auto!important;flex:0 0 auto;max-width:100%}
 @media (max-width:620px){.td-sl-tools .td-select{flex:1 1 140px}#viewStudents .td-roster-head .td-btn{flex:1 1 auto}}
+
+/* ===== Leads: tidy card on every screen; stacked on phones (4 Oct 2026) ===== */
+.td-lead-row{background:#fff;border:1px solid #F1E4DA;border-radius:18px;padding:16px 18px;gap:16px;align-items:flex-start}
+.td-lead-info .who{font-size:16px;font-weight:800}
+.td-lead-info .who .td-badge,.td-lead-status{white-space:nowrap}
+.td-lead-info .meta{font-size:13.5px;line-height:1.5;overflow-wrap:anywhere}
+.td-lead-account{white-space:normal;line-height:1.45;border-radius:12px;padding:6px 10px;font-size:13px}
+.td-lead-score{border-radius:14px;padding:8px 14px;min-width:96px}
+.td-lead-score b{font-size:18px;font-variant-numeric:tabular-nums}
+.td-lead-acts{flex-direction:column;align-items:stretch;min-width:180px}
+.td-lead-acts > *{justify-content:center;text-align:center;white-space:nowrap}
+@media (max-width:760px){
+  .td-lead-row{flex-direction:column;align-items:stretch;gap:12px;padding:16px}
+  .td-lead-info,.td-lead-score,.td-lead-acts{width:100%;min-width:0}
+  .td-lead-score{display:flex;align-items:baseline;justify-content:space-between;text-align:start}
+  .td-lead-acts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .td-lead-acts > *{width:100%;padding:11px 10px!important;font-size:14px!important;border-radius:12px!important;white-space:normal}
+  .td-lead-acts .trial-link,.td-lead-acts [data-act="convert"],.td-lead-acts [data-act="approve"]{grid-column:1/-1}
+  .td-lead-notes{font-size:14px;min-height:44px}
+}

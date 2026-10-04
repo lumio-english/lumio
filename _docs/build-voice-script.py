@@ -2,7 +2,7 @@
 """
 Builds recording/voice-script.json: every line the platform speaks, once each, in teaching
 order (level by level, lesson by lesson, then that level's English Hub, games and slides).
-The recording studio (recording-studio.html) reads it. Each entry's "slug" is the exact
+It is the list of lines to voice (e.g. in Artlist). Each entry's "slug" is the exact
 file name Lumio.speak() looks for (assets/audio/<slug>.mp3), so a recording made in the
 studio replaces the old computer voice with no code change. Re-run after adding content:
   python3 _docs/build-voice-script.py
