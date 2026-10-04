@@ -215,5 +215,12 @@ Done by three parallel workers (sync layer / teacher UI / student UI), merged an
   - Badges map by title to `medal-*` icons.
 - **`js/student-motion.js`**: scroll reveals, count-ups, hover tilt (mouse only), floating tiles in the welcome card, the phone "Menu" button, and hiding sections that end up empty. All of it is off for reduced motion.
 
+## 3s. Map colours, teen night mode, icons for emoji, homework redesign (4 Oct 2026, version 20261004i)
+- **3D map** (js/student-map3d.js): two palettes from `pal()`. Kids get deeper warm colours (locked stones with a padlock top, darker road, ground tint). Teens (body.theme-teen-light) get midnight + glowing orange. Soft shadows, an orange trail along the road travelled, stones rising one by one then breathing in a wave, a ripple at the next lesson, a hopping buddy, bobbing chests, swaying trees and drifting sparkles. Renderer stays in linear output (sRGB output washed the colours out).
+- **Teen mode "Night + orange"**: css/student-teen-night.css, loaded after student-2026.css and scoped to body.theme-teen-light (Levels 3–6). Pop-ups (.sd-modal, .mp-card) get the light palette variables back so they stay light and readable.
+- **Emoji → Lumio icons**: js/lumio-emoji.js on student, homework and teacher pages. It swaps the interface emoji listed in MAP for LumioIcons (21 new small icons added to js/lumio-icons.js) and watches the page with a MutationObserver, so no page script was changed. Animal avatars, flags, word pictures and ★/✓/arrows are left alone on purpose; add an emoji to MAP to cover it.
+- **Homework** (homework.html + css/homework-2026.css): same content and logic. On wide screens a sticky rail (lesson hero with a step progress bar and buddy, then the steps as a list with hints) sits beside the activity card; on phones the steps are a scrollable chip row. Teens get the night look.
+- **Home page**: crew thumbnails now fit the whole character; story scene 01 uses assets/site/shot-preview.jpg (the real word-preview step of Pre-A lesson 12); with reduced motion or no GSAP the story scenes stack as normal sections (html.s-still) instead of overlapping.
+
 ## 4. Working style
 Verify in a browser before claiming done; check files before writing prompts; never duplicate; fix in templates not per slide; say plainly what was NOT done; ask one specific question when ambiguous.

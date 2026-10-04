@@ -333,7 +333,7 @@
     lit.setAttribute('stroke-dasharray', len); lit.setAttribute('stroke-dashoffset', len * (1 - dbm.pts[3].f));
   }
 
-  if (!G || !ST || reduce) { buildRoad(); buildDashMap(); window.addEventListener('resize', buildRoad); return; }
+  if (!G || !ST || reduce) { document.documentElement.classList.add("s-still"); buildRoad(); buildDashMap(); window.addEventListener('resize', buildRoad); return; }
   buildDashMap();
 
   /* ---------- HERO motion ---------- */
