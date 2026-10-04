@@ -122,3 +122,14 @@ body{background:radial-gradient(900px 480px at 92% -12%,rgba(255,217,186,.55),tr
   .td-lead-acts .trial-link,.td-lead-acts [data-act="convert"],.td-lead-acts [data-act="approve"]{grid-column:1/-1}
   .td-lead-notes{font-size:14px;min-height:44px}
 }
+
+/* ===== Team tab: same row style as Students ===== */
+.td-sl-head.td-sl-team,.td-sl-row.td-sl-team{grid-template-columns:minmax(200px,2fr) 80px 110px 80px 110px minmax(110px,1fr) 104px 96px}
+.td-sl-row .num{font-weight:800;font-size:15px;font-variant-numeric:tabular-nums}
+.td-sl-row .tag.you{background:#ECFDF3;color:#15803D}
+.td-sl-row a.link{color:#C2410C;font-weight:800;text-decoration:none}
+.td-sl-row a.link:hover{text-decoration:underline}
+@media (max-width:1180px){.td-sl-head.td-sl-team,.td-sl-row.td-sl-team{grid-template-columns:minmax(180px,2fr) 70px 96px 70px 96px minmax(100px,1fr) 96px 90px;gap:10px}}
+@media (max-width:980px){.td-sl-row.td-sl-team{grid-template-columns:1fr 1fr}}
+#viewTeam .td-roster-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+@media (max-width:620px){#viewTeam .td-roster-head .td-btn{flex:1 1 auto}}

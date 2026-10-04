@@ -1257,7 +1257,8 @@
       <div class="td-locked-note" id="teamLockedNote" style="display:none">
         👑 Only the platform owner can manage teacher accounts. Ask your owner to make changes here.
       </div>
-      <div class="td-roster-grid" id="teamGrid"></div>
+      <div class="td-sl-head td-sl-team" aria-hidden="true"><span>Teacher</span><span>Students</span><span>Classes this month</span><span>Rating</span><span>Marked on time</span><span>Classroom</span><span>PIN</span><span></span></div>
+      <div class="td-slist" id="teamGrid"></div>
     </div>
   </div>
 
@@ -2753,6 +2754,7 @@
   levelFilter.addEventListener("change", renderTable);
   if (IS_OWNER) document.getElementById("rosterScope").value = "all";
   document.getElementById("rosterScope").addEventListener("change", () => { renderTable(); renderRosterCards(); });
+  document.addEventListener("click", e => { if (!e.target.closest("#teamGrid details.more")) document.querySelectorAll("#teamGrid details.more[open]").forEach(d => { d.open = false; }); });
   ["rosterSearch", "rosterLevel", "rosterStatus"].forEach(id => document.getElementById(id).addEventListener(id === "rosterSearch" ? "input" : "change", () => renderRosterCards()));
   document.addEventListener("click", e => { if (!e.target.closest("#rosterGrid details.more")) document.querySelectorAll("#rosterGrid details.more[open]").forEach(d => { d.open = false; }); });
   document.querySelectorAll("#tbl th[data-sort]").forEach(th => {
@@ -3866,27 +3868,36 @@
       const pinKnown = !!t.pin;
       const stats = window.LumioSchedule ? LumioSchedule.teacherStats(t.id) : null;
       const card = document.createElement("div");
-      card.className = "td-roster-card";
+      card.className = "td-sl-row td-sl-team";
+      const isTeams = t.meetingLink && /teams\.microsoft|teams\.live/i.test(t.meetingLink);
       card.innerHTML = `
-        <div class="top">
+        <div class="who">
           <div class="av">${avatarHtml(t)}</div>
-          <div><div class="nm">${escHtml(t.name)}${t.isOwner ? ' <span class="td-owner-crown" title="Platform owner">👑</span>' : ""}${t.id === activeId ? ' <span class="td-badge teal">you</span>' : ""}</div><div><span class="lv">${studentCount} student${studentCount === 1 ? "" : "s"}</span></div></div>
+          <div class="who-tx">
+            <div class="nm">${escHtml(t.name)}</div>
+            <div class="tags">${t.isOwner ? '<span class="lv">Owner</span>' : '<span class="lv">Teacher</span>'}${t.id === activeId ? '<span class="tag you">You</span>' : ""}</div>
+          </div>
         </div>
-        ${stats ? `<div class="td-teacher-stats">
-          <div class="item"><b>${stats.classesThisMonth}</b><span>This month</span></div>
-          <div class="item"><b>${stats.rating ? stats.rating.average.toFixed(1) + "★" : "—"}</b><span>Rating</span></div>
-          <div class="item"><b>${stats.punctualityPct != null ? stats.punctualityPct + "%" : "—"}</b><span>Marked</span></div>
-        </div>` : ""}
-        <div class="pinrow" style="margin-bottom:4px"><span class="lbl">Classroom</span><span class="pinval" style="letter-spacing:0;font-size:.72rem;${t.meetingLink ? "" : "opacity:.6"}">${t.meetingLink ? (/teams\.microsoft|teams\.live/i.test(t.meetingLink) ? "🟣 Teams link set" : "🔗 link set") : "no link yet — edit to add"}</span></div>
-        <div class="pinrow"><span class="lbl">PIN</span>${pinKnown
-          ? `<span class="pinval" data-pin="${escHtml(t.pin)}">••••</span><button class="pintoggle" type="button">show</button>`
-          : `<span class="pinval" style="opacity:.6;letter-spacing:0;font-size:.72rem">set on another device</span>`}
-        </div>
-        ${IS_OWNER ? `<div class="acts">
-          <button type="button" data-act="edit">✎ Edit</button>
-          <button type="button" data-act="pin">🔑 New PIN</button>
-          <button type="button" class="danger" data-act="remove" style="grid-column:1 / -1">Remove teacher</button>
-        </div>` : ""}`;
+        <div class="cell" data-l="Students"><span class="num">${studentCount}</span></div>
+        <div class="cell" data-l="Classes this month"><span class="num">${stats ? stats.classesThisMonth : "—"}</span></div>
+        <div class="cell" data-l="Rating"><span class="num">${stats && stats.rating ? stats.rating.average.toFixed(1) + " ★" : '<span class="muted">—</span>'}</span></div>
+        <div class="cell" data-l="Marked on time"><span class="num">${stats && stats.punctualityPct != null ? stats.punctualityPct + "%" : '<span class="muted">—</span>'}</span></div>
+        <div class="cell" data-l="Classroom">${t.meetingLink ? `<a class="link" href="${escHtml(t.meetingLink)}" target="_blank" rel="noopener">${isTeams ? "Teams link" : "Meeting link"}</a>` : '<span class="muted">Not set</span>'}</div>
+        <div class="cell pinrow" data-l="PIN">${pinKnown
+          ? `<span class="pinval mono" data-pin="${escHtml(t.pin)}">••••</span><button class="pintoggle" type="button">show</button>`
+          : `<span class="pinval muted" title="This PIN was set on another device. Use New PIN to set one you can see.">Hidden</span>`}</div>
+        <div class="acts">${IS_OWNER ? `
+          <button type="button" class="primary" data-act="edit">Edit</button>
+          <details class="more">
+            <summary aria-label="More actions for ${escHtml(t.name)}">⋯</summary>
+            <div class="menu">
+              <button type="button" data-act="pin">New PIN</button>
+              <button type="button" class="danger" data-act="remove">Remove teacher</button>
+            </div>
+          </details>` : ""}
+        </div>`;
+      const more = card.querySelector(".more");
+      if (more) more.addEventListener("toggle", e => { if (e.target.open) document.querySelectorAll("#teamGrid details.more[open]").forEach(d => { if (d !== e.target) d.open = false; }); });
       const pinVal = card.querySelector(".pinrow .pinval");
       const pinToggle = card.querySelector(".pintoggle");
       if (pinToggle) {
