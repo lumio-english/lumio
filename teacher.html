@@ -6136,7 +6136,7 @@
     if (!el || !window.LumioProfiles) return;
     const missing = LumioProfiles.serverMissingFields();
     if (!missing.length) { el.style.display = "none"; return; }
-    const pretty = { photoDataUrl: "teacher photos", meetingLink: "classroom (Teams) links", installments: "installment plans", referrals: "referrals" };
+    const pretty = { photoDataUrl: "profile photos", meetingLink: "classroom (Teams) links", installments: "installment plans", referrals: "referrals" };
     el.style.display = "";
     el.innerHTML = `⚠️ <b>The Google Sheet script needs updating.</b> It doesn't store ${missing.map(k => pretty[k] || k).join(" and ")} yet, so those changes stay on this device only and don't reach students or other teachers. ${IS_OWNER ? `Paste <code>_docs/AppsScript-Code.live-patched.gs</code> into the Apps Script project, Deploy → Manage deployments → New version, then run <code>repairSheetTypes</code> once. Student self-booking needs the same update.` : "Ask the owner to redeploy it."}`;
   }

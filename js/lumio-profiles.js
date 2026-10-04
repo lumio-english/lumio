@@ -1541,7 +1541,7 @@
   // redeploying (see _docs/HANDOFF.md) -- edits to those fields only live
   // on this device until then.
   const SERVER_TEACHER_FIELDS = ["photoDataUrl", "meetingLink"];
-  const SERVER_ROSTER_FIELDS = ["installments", "installmentsRemoved", "referrals"];
+  const SERVER_ROSTER_FIELDS = ["installments", "installmentsRemoved", "referrals", "photoDataUrl"];
   function serverMissingFields() {
     const out = [];
     try {
@@ -2101,6 +2101,8 @@
     const patch = {
       id: s.id,
       avatar: s.avatar || "",
+      // the uploaded photo; only sent when it fits a Sheet cell (the script checks again)
+      ...(typeof s.photoDataUrl === "string" || s.photoDataUrl === null ? (String(s.photoDataUrl || "").length <= 48000 ? { photoDataUrl: s.photoDataUrl || "", photoAt: (ftOf(s).photoDataUrl) || "" } : {}) : {}),
       messages: (Array.isArray(s.messages) ? s.messages : []).map(m => ({ id: m.id, type: m.type, text: m.text, meta: m.meta || null, date: m.date, read: !!m.read })),
       pendingDeletion: !!s.pendingDeletion,
       deletionConfirmed: !!s.deletionConfirmed,
@@ -2121,7 +2123,7 @@
         const mine = fresh.students.find(x => x.id === studentId);
         if (mine) {
           const sft = ftOf(out.student), mft = ftOf(mine);
-          ["rewardPoints", "bonusHours", "sessionsRemaining", "redemptions", "messages", "pendingDeletion", "deletionConfirmed", "avatar"].forEach(k => {
+          ["rewardPoints", "bonusHours", "sessionsRemaining", "redemptions", "messages", "pendingDeletion", "deletionConfirmed", "avatar", "photoDataUrl"].forEach(k => {
             if (out.student[k] === undefined) return;
             mine[k] = out.student[k];
             if (tms(sft[k]) > tms(mft[k])) mft[k] = sft[k];

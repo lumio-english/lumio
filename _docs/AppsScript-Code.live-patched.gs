@@ -41,7 +41,8 @@ var ROSTER_COLUMNS = [
   // installments (+ installmentsRemoved) before "cohort"; readRows_ below
   // reads every tab by its header names, and recognises those two layouts.
   "installments", // JSON [{id, amount, currency, dueDate, sessions, credit, paidAt, applied, editedAt, remindedAt, remindedDueAt, smsUpcomingAt, smsDueAt, smsAt, smsForDue}]
-  "installmentsRemoved" // JSON [id] -- parts deleted on some device, so an older copy can't bring them back
+  "installmentsRemoved", // JSON [id] -- parts deleted on some device, so an older copy can't bring them back
+  "photoDataUrl"  // the student's uploaded profile photo (200 px JPEG data URL); was never stored, so it stayed on one device
 ];
 // Roster layouts written by earlier builds whose header row may not say so
 // (they appended header cells by count, leaving duplicate names).
@@ -202,6 +203,7 @@ function writeRows_(name, columns, rows) {
     return columns.map(function (col) {
       var v = r[col];
       if (v === undefined || v === null) return "";
+      if (col === "photoDataUrl" && String(v).length > PHOTO_MAX_CHARS_) return "";   // a Sheet cell holds 50,000 characters
       if (typeof v === "object") return JSON.stringify(v);
       return v;
     });
@@ -467,6 +469,8 @@ function dedupePatternClasses_(classes) {
 //   redemptions                -- union by date; a NEW redemption deducts
 //                                 its cost from rewardPoints and credits
 //                                 bonusHours/sessionsRemaining (hours field)
+var PHOTO_MAX_CHARS_ = 48000;
+function okPhoto_(v) { return v === "" || (typeof v === "string" && v.length <= PHOTO_MAX_CHARS_ && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(v)); }
 function pushStudentPatch_(body) {
   var patch = body && body.patch;
   if (!patch || !patch.id) return { ok: false, error: "missing patch.id" };
@@ -484,6 +488,10 @@ function pushStudentPatchLocked_(patch) {
   var changed = false, stamped = [];   // fields this patch changed get their own time (fieldTimes)
 
   if (typeof patch.avatar === "string" && patch.avatar && patch.avatar !== row.avatar) { row.avatar = patch.avatar; changed = true; stamped.push("avatar"); }
+  // the student's own profile photo ("" removes it)
+  // Only a change made after the Sheet's copy wins, so an older device can't wipe a newer photo.
+  var photoAt = Date.parse(patch.photoAt || "") || 0, sheetPhotoAt = Date.parse(ftOf_(row).photoDataUrl || "") || 0;
+  if (patch.photoDataUrl !== undefined && okPhoto_(patch.photoDataUrl) && photoAt > sheetPhotoAt && patch.photoDataUrl !== (row.photoDataUrl || "")) { row.photoDataUrl = patch.photoDataUrl; changed = true; stamped.push("photoDataUrl"); }
 
   if (Array.isArray(patch.messages)) {
     var existing = parseArr(row.messages);
@@ -1437,7 +1445,7 @@ function doGet(e) {
     if (!keyOk_(e)) return jsonResponse_({ ok: false, error: "unauthorized" });
     var action = (e && e.parameter) ? e.parameter.action : null;
     // Lets a page tell this version apart from older deployments.
-    if (action === "version") return jsonResponse_({ ok: true, version: 8, auth: true, merge: true });
+    if (action === "version") return jsonResponse_({ ok: true, version: 9, auth: true, merge: true, studentPhoto: true });
     var who = whoIs_(e);
     if (who.error) return denied_(who);
     if (who.role === "student") {

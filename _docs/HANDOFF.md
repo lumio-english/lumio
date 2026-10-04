@@ -226,5 +226,7 @@ Done by three parallel workers (sync layer / teacher UI / student UI), merged an
 - **Images**: vocab, spelling, logo and story-character PNGs were shrunk (max 640 px, characters 900 px; 256-colour quantised with libimagequant via `pip install imagequant`), about 394 MB to 100 MB with the same file names. New full-size pictures should get the same treatment.
 - **Placement test result**: the free-trial WhatsApp box sits right under the level, and its heading names the level.
 
+- **Apps Script v9** (4 Oct): the student's uploaded profile photo is now stored (`photoDataUrl`, last Roster column). Student devices send it through pushStudentPatch with `photoAt` (its field time); the script takes it only if it is newer than the Sheet's copy, is a data:image JPEG/PNG/WebP, and fits a cell (48,000 chars). `?action=version` returns 9 with `studentPhoto: true`. Until redeployed, the teacher's "script needs redeploying" notice lists "profile photos". Removed lumio-pro-dashboard's leftover `save_admin` post (plain-text agent password to an action the script never had).
+
 ## 4. Working style
 Verify in a browser before claiming done; check files before writing prompts; never duplicate; fix in templates not per slide; say plainly what was NOT done; ask one specific question when ambiguous.
