@@ -977,6 +977,14 @@
   .td-menu-btn{display:none}
   @media (max-width:760px){.td-menu-btn{display:inline-flex}}
 </style>
+<script>
+(function () {
+  // 2026 polish layer, versioned like every shared file via js/version.json.
+  var v = "20261004f";
+  try { var x = new XMLHttpRequest(); x.open("GET", "js/version.json?_=" + Date.now(), false); x.send(null); if (x.status === 200) { var p = JSON.parse(x.responseText); if (p && p.v) v = p.v; } } catch (e) {}
+  document.write('<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/teacher-2026.css?v=' + v + '">');
+})();
+</script>
 </head>
 <body>
 
