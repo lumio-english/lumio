@@ -249,10 +249,18 @@
   .td-cal-avail.past{border-color:var(--td-border);color:var(--td-muted);opacity:.6}
   .td-inst{margin-top:14px;border:1px solid var(--td-border);border-radius:12px;padding:12px}
   .td-inst-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;font-size:.88rem}
-  .td-inst-gen{display:grid;grid-template-columns:1.2fr .7fr 1.2fr 1.2fr auto;gap:6px;margin-bottom:8px}
+  .td-inst-gen{display:grid;grid-template-columns:1.1fr .9fr .6fr 1.2fr 1.2fr auto;gap:6px;margin-bottom:8px}
   .td-inst-gen input,.td-inst-gen select{padding:7px 8px;border:1px solid var(--td-border);border-radius:8px;font-family:inherit;font-size:.82rem;min-width:0}
   .td-inst-rows{display:flex;flex-direction:column;gap:5px}
-  .td-inst-row{display:grid;grid-template-columns:1fr 1.2fr auto auto;gap:6px;align-items:center}
+  .td-inst-row{display:grid;grid-template-columns:1fr 1.2fr auto auto auto;gap:6px;align-items:center;padding:6px;border:1px solid var(--td-border);border-radius:10px}
+  .td-inst-row .adds{grid-column:1 / -1;display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:.74rem;font-weight:800;color:var(--td-muted)}
+  .td-inst-row .adds input{width:74px}
+  .td-inst-row .adds input[data-k="credit"]{width:96px}
+  .td-inst-row.is-paid .adds input{opacity:1}
+  .td-inst-row .applied{color:var(--td-teal)}
+  .td-inst-effect{margin-top:8px;font-size:.78rem;font-weight:800;color:var(--td-teal);background:var(--td-teal-soft);border-radius:8px;padding:6px 10px;display:none}
+  .td-flash{animation:tdFlash 1.2s ease}
+  @keyframes tdFlash{0%{box-shadow:0 0 0 4px rgba(13,148,136,.45)}100%{box-shadow:0 0 0 0 rgba(13,148,136,0)}}
   .td-inst-row input{padding:6px 8px;border:1px solid var(--td-border);border-radius:8px;font-family:inherit;font-size:.82rem;min-width:0}
   .td-inst-row .paid{display:flex;align-items:center;gap:5px;font-size:.76rem;font-weight:800;white-space:nowrap}
   .td-inst-row.is-paid input{opacity:.55}
@@ -1705,6 +1713,7 @@
           <div class="td-inst-head"><b>💳 Installment plan</b><span class="sub" id="stuInstSummary" style="font-size:.74rem"></span></div>
           <div class="td-inst-gen">
             <input type="number" id="instTotal" min="0" step="0.01" placeholder="Total">
+            <input type="number" id="instSessions" min="0" step="1" placeholder="Sessions" title="Total sessions the whole plan buys — split across the parts (you can change each part)">
             <input type="number" id="instCount" min="1" step="1" value="3" placeholder="Parts" title="Number of installments">
             <input type="date" id="instFirst" title="First due date">
             <select id="instEvery" title="Interval"><option value="1">every month</option><option value="2">every 2 months</option><option value="3">every 3 months</option></select>
@@ -1712,7 +1721,8 @@
           </div>
           <div id="instRows" class="td-inst-rows"></div>
           <button type="button" class="td-btn" id="instAddRow" style="margin-top:6px">+ Add an installment</button>
-          <p class="sub" style="font-size:.72rem;margin:8px 0 0">The parent gets an Arabic reminder in the student's inbox 3 days before each due date and on the day; you get a pop-up here. Mark each one paid when the money arrives.</p>
+          <div class="td-inst-effect" id="instEffect"></div>
+          <p class="sub" style="font-size:.72rem;margin:8px 0 0"><b>When a part is marked Paid</b> it adds its sessions to <b>Sessions left</b> and its amount to <b>Amount paid</b> (you decide both per part — leave "adds to paid" blank to use the installment amount). Un-ticking Paid takes them back. The student sees the new balance and gets a message. The parent gets an Arabic reminder in the student's inbox 3 days before each due date and on the day; you get a pop-up here. Mark each one paid when the money arrives.</p>
         </div>
       </div>
 
@@ -3498,11 +3508,19 @@
         <input type="date" value="${i.dueDate || ""}" data-k="dueDate">
         <label class="paid"><input type="checkbox" ${i.paidAt ? "checked" : ""} data-k="paid"> Paid</label>
         <span class="st ${cls}">${label}</span>
-        <button type="button" class="td-btn" data-k="del" style="padding:4px 8px" title="Remove">✕</button>`;
-      row.querySelector('[data-k="amount"]').oninput = e => { i.amount = Number(e.target.value); renderInstSummary(); };
+        <button type="button" class="td-btn" data-k="del" style="padding:4px 8px" title="Remove">✕</button>
+        <div class="adds">When paid, adds <input type="number" min="0" step="1" value="${Number(i.sessions) || ""}" placeholder="0" data-k="sessions"> sessions ·
+          <input type="number" min="0" step="0.01" value="${i.credit === null || i.credit === undefined ? "" : i.credit}" placeholder="${i.amount || 0}" data-k="credit"> ${escHtml(cur)} to amount paid
+          ${i.paidAt && i.applied ? `<span class="applied">✓ added +${Number(i.applied.sessions) || 0} · +${LumioProfiles.fmtMoney(i.applied.amount, cur)}</span>` : ""}</div>`;
+      row.querySelector('[data-k="amount"]').oninput = e => { i.amount = Number(e.target.value); row.querySelector('[data-k="credit"]').placeholder = e.target.value || 0; renderInstSummary(); };
       row.querySelector('[data-k="dueDate"]').onchange = e => { i.dueDate = e.target.value; renderInstRows(); };
       row.querySelector('[data-k="paid"]').onchange = e => { i.paidAt = e.target.checked ? new Date().toISOString() : null; renderInstRows(); };
-      row.querySelector('[data-k="del"]').onclick = () => { stuInstallments.splice(idx, 1); renderInstRows(); };
+      row.querySelector('[data-k="sessions"]').oninput = e => { i.sessions = Math.max(0, Math.round(Number(e.target.value) || 0)); renderInstSummary(); };
+      row.querySelector('[data-k="credit"]').oninput = e => { i.credit = e.target.value === "" ? null : Number(e.target.value); renderInstSummary(); };
+      row.querySelector('[data-k="del"]').onclick = async () => {
+        if (i.paidAt && !(await confirmDialog(`This part is marked paid. Removing it also takes back the ${Number(i.sessions) || 0} session(s) and the amount it added. Remove it?`, "Remove"))) return;
+        stuInstallments.splice(idx, 1); renderInstRows();
+      };
       wrap.appendChild(row);
     });
     renderInstSummary();
@@ -3512,19 +3530,41 @@
     const paid = stuInstallments.filter(i => i.paidAt).reduce((a, i) => a + (Number(i.amount) || 0), 0);
     const total = stuInstallments.reduce((a, i) => a + (Number(i.amount) || 0), 0);
     document.getElementById("stuInstSummary").textContent = stuInstallments.length ? `${stuInstallments.length} parts · ${LumioProfiles.fmtMoney(paid, cur)} paid of ${LumioProfiles.fmtMoney(total, cur)}` : "No plan — full payment";
+    syncInstToForm();
+  }
+  // Paid parts move "Sessions left" and "Amount paid" on screen right away
+  // (only by the difference against what the saved plan already added), so
+  // what you see is what gets saved; manual edits to those fields are kept.
+  let instOriginal = [], instFormDelta = { sessions: 0, amount: 0 };
+  function syncInstToForm() {
+    const valid = stuInstallments.filter(i => i && i.dueDate && Number(i.amount) > 0);
+    const d = LumioProfiles.installmentBalanceDelta(instOriginal, valid);
+    const sEl = document.getElementById("stuSessionsRemaining"), aEl = document.getElementById("stuAmountPaid");
+    const ds = d.sessions - instFormDelta.sessions, da = Math.round((d.amount - instFormDelta.amount) * 100) / 100;
+    if (ds) { sEl.value = Math.max(0, (Number(sEl.value) || 0) + ds); sEl.classList.remove("td-flash"); void sEl.offsetWidth; sEl.classList.add("td-flash"); }
+    if (da) { aEl.value = Math.max(0, Math.round(((Number(aEl.value) || 0) + da) * 100) / 100); aEl.classList.remove("td-flash"); void aEl.offsetWidth; aEl.classList.add("td-flash"); }
+    instFormDelta = d;
+    const eff = document.getElementById("instEffect"), cur = document.getElementById("stuCurrency").value;
+    if (d.sessions || d.amount) {
+      const sg = n => (n > 0 ? "+" : "") + n;
+      eff.style.display = "block";
+      eff.textContent = `On save: ${sg(d.sessions)} session${Math.abs(d.sessions) === 1 ? "" : "s"} → Sessions left ${sEl.value} · ${sg(d.amount)} ${cur} → Amount paid ${aEl.value} ${cur}`;
+    } else eff.style.display = "none";
   }
   document.getElementById("instGenerate").onclick = () => {
     const total = Number(document.getElementById("instTotal").value);
     if (!(total > 0)) { showToast("Enter the total amount first.", "error"); return; }
-    stuInstallments = LumioProfiles.buildInstallmentPlan({ total, count: document.getElementById("instCount").value, firstDate: document.getElementById("instFirst").value || LumioSchedule.todayStr(), everyMonths: document.getElementById("instEvery").value, currency: document.getElementById("stuCurrency").value });
+    if (stuInstallments.some(i => i.paidAt) && !confirm("Generating a new plan replaces the current parts, including paid ones (their sessions and amount would be taken back). Continue?")) return;
+    stuInstallments = LumioProfiles.buildInstallmentPlan({ total, sessions: document.getElementById("instSessions").value, count: document.getElementById("instCount").value, firstDate: document.getElementById("instFirst").value || LumioSchedule.todayStr(), everyMonths: document.getElementById("instEvery").value, currency: document.getElementById("stuCurrency").value });
     renderInstRows();
   };
-  document.getElementById("instAddRow").onclick = () => { stuInstallments.push({ amount: 0, dueDate: "", currency: document.getElementById("stuCurrency").value, paidAt: null }); renderInstRows(); };
+  document.getElementById("instAddRow").onclick = () => { stuInstallments.push({ amount: 0, dueDate: "", currency: document.getElementById("stuCurrency").value, paidAt: null, sessions: 0, credit: null }); renderInstRows(); };
 
   function openStudentModal(profile, prefill) {
     editingId = profile ? profile.id : null;
     stuInstallments = profile && Array.isArray(profile.installments) ? profile.installments.map(i => Object.assign({}, i)) : [];
-    document.getElementById("instTotal").value = ""; document.getElementById("instCount").value = "3";
+    instOriginal = stuInstallments.map(i => Object.assign({}, i)); instFormDelta = { sessions: 0, amount: 0 };
+    document.getElementById("instTotal").value = ""; document.getElementById("instSessions").value = ""; document.getElementById("instCount").value = "3";
     document.getElementById("instFirst").value = LumioSchedule.todayStr();
     setTimeout(renderInstRows, 0);
     document.getElementById("studentModalTitle").textContent = profile ? "Edit student" : "Add student";
@@ -3654,7 +3694,7 @@
         // installment plan (Billing tab) -- rows without a date or amount are dropped
         try {
           const before = JSON.stringify((LumioProfiles.getStudent(savedId) || {}).installments || []);
-          const after = LumioProfiles.setInstallments(savedId, stuInstallments.map(i => Object.assign({}, i, { currency: currencyVal })));
+          const after = LumioProfiles.setInstallments(savedId, stuInstallments.map(i => Object.assign({}, i, { currency: currencyVal })), { balancesInForm: true });
           if (JSON.stringify(after) !== before) LumioProfiles.sendDueInstallmentReminders();
         } catch (e2) { console.warn("installments", e2); }
         // Push this change out immediately rather than waiting for the
@@ -6096,7 +6136,7 @@
     return `<div class="td-due-row" data-sid="${s.id}" data-iid="${inst.id}">
       <div class="amt">${LumioProfiles.fmtMoney(inst.amount, inst.currency || s.currency)}</div>
       <div><div style="font-weight:800">${escHtml(s.avatar || "")} ${escHtml(s.name)} <span class="when ${cls}">${label}</span></div>
-        <div class="sub" style="font-size:.74rem">Due ${inst.dueDate} · part ${partNo} of ${sum.count}${s.phone ? " · " + escHtml(formatPhoneDisplay(s.phone)) : " · no phone"}${inst.remindedAt || inst.remindedDueAt ? " · reminder sent to inbox" : ""}${inst.smsAt ? " · SMS sent" : ""}</div></div>
+        <div class="sub" style="font-size:.74rem">Due ${inst.dueDate} · part ${partNo} of ${sum.count}${Number(inst.sessions) ? ` · adds ${Number(inst.sessions)} session${Number(inst.sessions) === 1 ? "" : "s"}` : ""}${s.phone ? " · " + escHtml(formatPhoneDisplay(s.phone)) : " · no phone"}${inst.remindedAt || inst.remindedDueAt ? " · reminder sent to inbox" : ""}${inst.smsAt ? " · SMS sent" : ""}</div></div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">${wa ? `<a class="td-wa-btn" target="_blank" rel="noopener" href="${wa}">💬 WhatsApp (AR)</a>` : ""}<button type="button" class="td-btn td-btn-primary" data-act="paid" style="padding:6px 12px">✓ Paid</button></div>
     </div>`;
   }
@@ -6104,9 +6144,13 @@
     root.querySelectorAll('[data-act="paid"]').forEach(b => b.onclick = async () => {
       const row = b.closest(".td-due-row");
       const s = LumioProfiles.getStudent(row.dataset.sid);
-      if (!(await confirmDialog(`Mark this installment as paid for ${s.name}?`, "Mark paid"))) return;
+      const inst = (s.installments || []).find(x => x.id === row.dataset.iid) || {};
+      const credit = inst.credit === null || inst.credit === undefined ? inst.amount : inst.credit;
+      const adds = `This adds ${Number(inst.sessions) || 0} session(s) and ${LumioProfiles.fmtMoney(credit, inst.currency || s.currency)} to the amount paid (change that on the profile's Billing tab).`;
+      if (!(await confirmDialog(`Mark this installment as paid for ${s.name}? ${adds}`, "Mark paid"))) return;
       LumioProfiles.markInstallmentPaid(row.dataset.sid, row.dataset.iid, true);
-      queueSync(); showToast(`Installment marked paid — ${s.name} was told. ✓`, "success");
+      const after2 = LumioProfiles.getStudent(row.dataset.sid);
+      queueSync(); showToast(`Paid ✓ — ${s.name}: ${after2.sessionsRemaining || 0} sessions left · ${LumioProfiles.fmtMoney(after2.amountPaid, after2.currency)} paid. They were told.`, "success");
       after();
     });
   }

@@ -616,7 +616,7 @@
       // moment one reaches "subscribed", the referring student is
       // credited 5 free sessions, exactly once per referral (rewardedAt).
       referrals: [],
-      // Payment plan: [{id, amount, currency, dueDate (YYYY-MM-DD), paidAt, note, remindedAt}] -- see installments section
+      // Payment plan: [{id, amount, currency, dueDate (YYYY-MM-DD), sessions, credit, paidAt, applied, note, remindedAt}] -- see installments section
       installments: [],
       createdAt: new Date().toISOString().slice(0, 10),
       updatedAt: new Date().toISOString(),
@@ -1127,22 +1127,76 @@
     const en = `Lumio English reminder: ${s.name}'s installment of ${amt} is due ${daysLeft > 0 ? `in ${daysLeft} day${daysLeft === 1 ? "" : "s"} (${inst.dueDate})` : daysLeft === 0 ? `today (${inst.dueDate})` : `— it was due on ${inst.dueDate}`}.`;
     return { ar, en };
   }
-  function setInstallments(studentId, list) {
+  // What a PAID installment adds to the student's balance. The operations
+  // manager sets both per installment: `sessions` (classes added) and
+  // `credit` (added to "Amount paid"; blank = the installment amount).
+  // `applied` records exactly what was added, so un-ticking Paid, editing
+  // the numbers afterwards, or deleting the row adds/takes back only the
+  // difference -- balances never double-count.
+  function instTarget_(i) {
+    if (!i || !i.paidAt) return { sessions: 0, amount: 0 };
+    const credit = i.credit === null || i.credit === undefined || i.credit === "" ? Number(i.amount) || 0 : Number(i.credit) || 0;
+    return { sessions: Math.max(0, Math.round(Number(i.sessions) || 0)), amount: Math.round(credit * 100) / 100 };
+  }
+  function instApplied_(i) {
+    const a = i && i.applied;
+    // paid before this existed: its money was already entered by hand -- treat as counted
+    if (!a) return i && i.paidAt ? instTarget_(i) : { sessions: 0, amount: 0 };
+    return { sessions: Number(a.sessions) || 0, amount: Number(a.amount) || 0 };
+  }
+  // Balance change the plan `next` causes compared with what the stored
+  // plan `prev` already added (rows missing from `next` are taken back).
+  function installmentBalanceDelta(prev, next) {
+    const d = { sessions: 0, amount: 0 };
+    (prev || []).forEach(i => { const a = instApplied_(i); d.sessions -= a.sessions; d.amount -= a.amount; });
+    (next || []).forEach(i => { const t = instTarget_(i); d.sessions += t.sessions; d.amount += t.amount; });
+    d.amount = Math.round(d.amount * 100) / 100;
+    return d;
+  }
+  function applyBalance_(s, d) {
+    if (d.sessions) s.sessionsRemaining = Math.max(0, (Number(s.sessionsRemaining) || 0) + d.sessions);
+    if (d.amount) s.amountPaid = Math.max(0, Math.round(((Number(s.amountPaid) || 0) + d.amount) * 100) / 100);
+  }
+  function paidMessage_(s, i) {
+    const cur = i.currency || s.currency, t = instTarget_(i);
+    const addAr = t.sessions ? ` وأُضيفت ${t.sessions} ${t.sessions === 1 ? "حصة" : t.sessions === 2 ? "حصتان" : t.sessions <= 10 ? "حصص" : "حصة"} إلى رصيدكم` : "";
+    const addEn = t.sessions ? ` ${t.sessions} session${t.sessions === 1 ? "" : "s"} added to your balance.` : "";
+    pushMessage_(s, "payment",
+      `✅ تم استلام قسط بقيمة ${fmtMoney(i.amount, cur)}${addAr}. الحصص المتبقية: ${Number(s.sessionsRemaining) || 0} · إجمالي المدفوع: ${fmtMoney(s.amountPaid, cur)}. شكراً لكم!\n`
+      + `Payment of ${fmtMoney(i.amount, cur)} received.${addEn} Sessions left: ${Number(s.sessionsRemaining) || 0} · Total paid: ${fmtMoney(s.amountPaid, cur)}. Thank you!`,
+      { installmentId: i.id, sessionsAdded: t.sessions, amountAdded: t.amount });
+  }
+  // opts.balancesInForm: the teacher modal already moved "Sessions left" /
+  // "Amount paid" on screen (and saved them), so only record what's applied.
+  function setInstallments(studentId, list, opts) {
     const data = load();
     const s = data.students.find(x => x.id === studentId);
     if (!s) throw new Error("Student not found.");
-    s.installments = (list || []).filter(i => i && i.dueDate && Number(i.amount) > 0).map(i => ({
+    const prev = Array.isArray(s.installments) ? s.installments : [];
+    const next = (list || []).filter(i => i && i.dueDate && Number(i.amount) > 0).map(i => Object.assign({}, i, {
       id: i.id || ("i_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)),
       amount: Number(i.amount), currency: i.currency || s.currency || "", dueDate: String(i.dueDate).slice(0, 10),
+      sessions: Math.max(0, Math.round(Number(i.sessions) || 0)),
+      credit: i.credit === null || i.credit === undefined || i.credit === "" ? null : Number(i.credit),
       paidAt: i.paidAt || null, note: i.note || "", remindedAt: i.remindedAt || null, remindedDueAt: i.remindedDueAt || null,
+      applied: i.applied || null,
     })).sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+    if (!(opts && opts.balancesInForm)) applyBalance_(s, installmentBalanceDelta(prev, next));
+    const wasPaid = new Set(prev.filter(i => i.paidAt).map(i => i.id));
+    next.forEach(i => {
+      const t = instTarget_(i);
+      i.applied = i.paidAt ? { sessions: t.sessions, amount: t.amount, at: (i.applied && i.applied.at) || new Date().toISOString() } : null;
+    });
+    s.installments = next;
+    next.filter(i => i.paidAt && !wasPaid.has(i.id)).forEach(i => paidMessage_(s, i));
     s.updatedAt = new Date().toISOString();
     save(data);
     return s.installments;
   }
   // total, count, firstDate, everyMonths -> evenly split plan (last one takes the rounding)
-  function buildInstallmentPlan({ total, count, firstDate, everyMonths, currency } = {}) {
+  function buildInstallmentPlan({ total, count, firstDate, everyMonths, currency, sessions } = {}) {
     const n = Math.max(1, Number(count) || 1), T = Number(total) || 0, step = Math.max(1, Number(everyMonths) || 1);
+    const SS = Math.max(0, Math.round(Number(sessions) || 0)), sBase = Math.floor(SS / n), sExtra = SS - sBase * n;  // extra sessions go to the first parts
     const base = Math.floor((T / n) * 100) / 100;
     const out = [];
     const [y, m, d] = String(firstDate || todayRiyadh()).split("-").map(Number);
@@ -1150,21 +1204,18 @@
       const dt = new Date(Date.UTC(y, m - 1 + k * step, 1));
       const lastDay = new Date(Date.UTC(dt.getUTCFullYear(), dt.getUTCMonth() + 1, 0)).getUTCDate();
       const dd = new Date(Date.UTC(dt.getUTCFullYear(), dt.getUTCMonth(), Math.min(d, lastDay)));
-      out.push({ amount: k === n - 1 ? Math.round((T - base * (n - 1)) * 100) / 100 : base, currency, dueDate: dd.toISOString().slice(0, 10) });
+      out.push({ amount: k === n - 1 ? Math.round((T - base * (n - 1)) * 100) / 100 : base, currency, dueDate: dd.toISOString().slice(0, 10), sessions: sBase + (k < sExtra ? 1 : 0), credit: null });
     }
     return out;
   }
   function markInstallmentPaid(studentId, instId, paid) {
-    const data = load();
-    const s = data.students.find(x => x.id === studentId);
-    if (!s) throw new Error("Student not found.");
-    const i = (s.installments || []).find(x => x.id === instId);
+    const s0 = (load().students || []).find(x => x.id === studentId);
+    if (!s0) throw new Error("Student not found.");
+    const list = (s0.installments || []).map(x => Object.assign({}, x));
+    const i = list.find(x => x.id === instId);
     if (!i) throw new Error("Installment not found.");
-    i.paidAt = paid === false ? null : new Date().toISOString();
-    if (i.paidAt) pushMessage_(s, "payment", `✅ تم استلام قسط بقيمة ${fmtMoney(i.amount, i.currency || s.currency)}. شكراً لكم! — Payment of ${fmtMoney(i.amount, i.currency || s.currency)} received, thank you.`, { installmentId: i.id });
-    s.updatedAt = new Date().toISOString();
-    save(data);
-    return i;
+    i.paidAt = paid === false ? null : (i.paidAt || new Date().toISOString());
+    return setInstallments(studentId, list).find(x => x.id === instId);
   }
   // Every unpaid installment across the roster with how many days are left
   // (negative = overdue). `withinDays` limits to the coming window.
@@ -1204,7 +1255,9 @@
     const paid = list.filter(i => i.paidAt), unpaid = list.filter(i => !i.paidAt);
     const sum = l => Math.round(l.reduce((a, i) => a + (Number(i.amount) || 0), 0) * 100) / 100;
     const next = unpaid.slice().sort((a, b) => a.dueDate.localeCompare(b.dueDate))[0] || null;
-    return { count: list.length, paidCount: paid.length, paidTotal: sum(paid), dueTotal: sum(unpaid), total: sum(list), next, nextDays: next ? daysBetween(todayRiyadh(), next.dueDate) : null };
+    const sessionsAdded = paid.reduce((a, i) => a + (i.applied ? Number(i.applied.sessions) || 0 : 0), 0);
+    const sessionsPlanned = list.reduce((a, i) => a + (Number(i.sessions) || 0), 0);
+    return { count: list.length, paidCount: paid.length, paidTotal: sum(paid), dueTotal: sum(unpaid), total: sum(list), next, sessionsAdded, sessionsPlanned, nextDays: next ? daysBetween(todayRiyadh(), next.dueDate) : null };
   }
 
   async function assignStudent(studentId, teacherId) {
@@ -2062,7 +2115,7 @@
     addMessage, addMessageOnce, listMessages, unreadMessageCount, markMessagesRead,
     isStudentActive, requestAccountDeletion, confirmAccountDeletion, declineAccountDeletion,
     currencyForCountry,
-    setInstallments, buildInstallmentPlan, markInstallmentPaid, installmentsDue, sendDueInstallmentReminders, installmentSummary, installmentMessage, fmtMoney, INSTALLMENT_REMIND_DAYS,
+    setInstallments, buildInstallmentPlan, markInstallmentPaid, installmentBalanceDelta, installmentsDue, sendDueInstallmentReminders, installmentSummary, installmentMessage, fmtMoney, INSTALLMENT_REMIND_DAYS,
     addReferral, updateReferralStatus, removeReferral, listReferrals, referralStats,
     canRefer, referrerBlockReason, listAllReferrals, findReferralByLinked, autoReferralStatus, syncReferrals, referrableStudents, REFERRAL_STATUSES, REFERRAL_REWARD_SESSIONS,
     verifyStudentLogin, randomPin,

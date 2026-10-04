@@ -596,6 +596,22 @@
   .mp-grade-chip b{font-family:'Baloo 2',sans-serif;font-size:.9rem;color:var(--lumio-teal)}
   .mp-grade-chip.blue b{color:var(--lumio-blue)} .mp-grade-chip.purple b{color:#B45309} .mp-grade-chip.coral b{color:var(--lumio-coral)}
   body.theme-teen .mp-grades{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)}
+  .mp-pay-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;font-weight:800;font-size:.88rem;color:var(--sd-cocoa)}
+  .mp-pay-head span{font-size:.72rem;color:var(--lumio-teal,#0D9488)}
+  .mp-pay-row{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;padding:8px 0;border-top:1px dashed var(--lumio-border,#EAE3D8);font-size:.8rem}
+  .mp-pay-row:first-of-type{border-top:0}
+  .mp-pay-row .n{width:24px;height:24px;border-radius:50%;background:#F3EEE4;color:#8A7160;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:.72rem}
+  .mp-pay-row.paid .n{background:var(--lumio-teal,#0D9488);color:#fff}
+  .mp-pay-row b{display:block;color:var(--sd-cocoa)}
+  .mp-pay-row small{display:block;color:#8A7160;font-weight:700}
+  .mp-pay-row .st{font-weight:800;font-size:.7rem;padding:3px 8px;border-radius:999px;background:#F3EEE4;color:#8A7160;text-align:center}
+  .mp-pay-row.paid .st{background:var(--lumio-teal-soft,#E3F7F1);color:#0d6b5c}
+  .mp-pay-row.over .st{background:#FDECEC;color:#B8342E}
+  .mp-pay-row.soon .st{background:#FFF1D6;color:#B45309}
+  .mp-pay-ar{direction:rtl;font-family:'Cairo',sans-serif}
+  body.theme-teen .mp-pay-head,body.theme-teen .mp-pay-row b{color:#fff}
+  body.theme-teen .mp-pay-row small{color:var(--lumio-night-muted)}
+  body.theme-teen .mp-pay-row{border-color:rgba(255,255,255,.14)}
   body.theme-teen .mp-grade-chip{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.14);color:var(--lumio-night-muted)}
   body.theme-teen .mp-grades-sub{color:var(--lumio-night-muted)}
   .mp-subbanner{
@@ -1097,6 +1113,7 @@
       <div class="mp-fields" id="mpFields"></div>
       <div class="mp-subbanner" id="mpSubBanner"></div>
       <div class="mp-tiles" id="mpTiles"></div>
+      <div class="mp-grades" id="mpPayments" style="display:none"></div>
       <div class="mp-grades" id="mpLevelTest" style="display:none"></div>
       <div class="mp-grades" id="mpGrades"></div>
       <button class="mp-report-btn" id="mpReportBtn">📄 Download my performance report</button>
@@ -2935,6 +2952,29 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
         <div class="mp-tile ${(p.sessionsRemaining || 0) <= 3 ? "coral" : "teal"}"><span class="ic">🎟️</span><b>${p.sessionsRemaining || 0}</b><span>Sessions left</span></div>
         <div class="mp-tile teal"><span class="ic">🏆</span><b>${p.rewardPoints || 0}</b><span>Reward points</span></div>
       `;
+      // Payment plan: each paid part shows what it added to the balance.
+      const payEl = document.getElementById("mpPayments");
+      const plan = Array.isArray(p.installments) ? p.installments.slice().sort((a, b) => String(a.dueDate).localeCompare(String(b.dueDate))) : [];
+      if (payEl) {
+        payEl.style.display = plan.length ? "" : "none";
+        if (plan.length && window.LumioProfiles) {
+          const sum = LumioProfiles.installmentSummary(p), cur = p.currency || "";
+          const today = (Lumio.tzNow ? Lumio.tzNow().date : new Date().toISOString().slice(0, 10));
+          const days = d => Math.round((Date.parse(d + "T00:00:00Z") - Date.parse(today + "T00:00:00Z")) / 86400000);
+          payEl.innerHTML = `<div class="mp-pay-head">💳 Payment plan · خطة الدفع <span>${sum.paidCount}/${sum.count} paid · ${LumioProfiles.fmtMoney(sum.paidTotal, cur)} of ${LumioProfiles.fmtMoney(sum.total, cur)}${sum.sessionsAdded ? ` · +${sum.sessionsAdded} sessions` : ""}</span></div>`
+            + plan.map((i, k) => {
+              const amt = LumioProfiles.fmtMoney(i.amount, i.currency || cur);
+              const added = i.paidAt && i.applied && Number(i.applied.sessions) ? Number(i.applied.sessions) : 0;
+              const dl = i.paidAt ? null : days(i.dueDate);
+              const cls = i.paidAt ? "paid" : dl < 0 ? "over" : dl <= 3 ? "soon" : "";
+              const st = i.paidAt ? `✓ Paid${added ? ` · +${added} sessions` : ""}` : dl < 0 ? "Overdue · متأخر" : dl === 0 ? "Due today · اليوم" : `In ${dl} day${dl === 1 ? "" : "s"}`;
+              const sub = i.paidAt
+                ? `Paid ${String(i.paidAt).slice(0, 10)}${added ? ` · <span class="mp-pay-ar">أُضيفت ${added} حصص</span>` : ""}`
+                : `Due ${i.dueDate}${Number(i.sessions) ? ` · adds ${Number(i.sessions)} sessions · <span class="mp-pay-ar">يضيف ${Number(i.sessions)} حصص</span>` : ""}`;
+              return `<div class="mp-pay-row ${cls}"><div class="n">${k + 1}</div><div><b>${amt}</b><small>${sub}</small></div><div class="st">${st}</div></div>`;
+            }).join("");
+        }
+      }
       const tg = teacherGrades(p);
       const gradesEl = document.getElementById("mpGrades");
       const lt = Lumio.levelTestFor ? Lumio.levelTestFor(p.name, p.level || "pre-a") : null;
