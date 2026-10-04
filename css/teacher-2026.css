@@ -32,3 +32,73 @@ body{background:radial-gradient(900px 480px at 92% -12%,rgba(255,217,186,.55),tr
 /* student profile drawer tiles: one warm family; low sessions stays coral as a warning */
 .td-dp-tile.blue,.td-dp-tile.purple,.td-dp-tile.teal,.td-dp-tile.amber{background:var(--t-peach)!important;color:var(--t-od)!important;border:1px solid var(--t-pl)}
 .td-dp-tile.purple{background:#FFF1E6!important}
+
+/* ===== Students tab: one clean row per student (4 Oct 2026) =====
+   Desktop: a table-like list with a header row. Phones: each row becomes a compact card. */
+.td-sl-tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:16px}
+.td-sl-search{flex:1 1 240px;min-width:0;border:1px solid #F1E4DA;border-radius:12px;padding:10px 14px;font:700 14px 'Nunito',sans-serif;background:#fff;color:#111}
+.td-sl-search:focus{outline:none;border-color:#F97316;box-shadow:0 0 0 4px rgba(249,115,22,.15)}
+.td-sl-tools .td-select{min-width:0}
+.td-sl-count{margin-inline-start:auto;font-size:13px;font-weight:800;color:#767676;font-variant-numeric:tabular-nums}
+.td-sl-head,.td-sl-row{display:grid;grid-template-columns:minmax(220px,2.3fr) minmax(110px,1.1fr) 92px minmax(130px,1.2fr) 104px 74px 196px;gap:14px;align-items:center}
+.td-sl-head{margin-top:14px;padding:0 16px 8px;border-bottom:1px solid #F1E4DA;font-size:11.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8A7B70}
+.td-slist{display:flex;flex-direction:column}
+.td-sl-row{padding:12px 16px;border-bottom:1px solid #F5ECE3;transition:background .15s}
+.td-sl-row:hover{background:#FFFAF5}
+.td-sl-row.is-pending{background:linear-gradient(90deg,rgba(245,158,11,.07),transparent 40%)}
+.td-sl-row .who{display:flex;align-items:center;gap:12px;min-width:0}
+.td-sl-row .av{width:42px;height:42px;border-radius:50%;background:#FFF1E6;display:grid;place-items:center;font-size:22px;flex-shrink:0;overflow:hidden;box-shadow:inset 0 0 0 1px #F3DCCB}
+.td-sl-row .who-tx{min-width:0}
+.td-sl-row .nm{font-weight:800;font-size:15px;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.td-sl-row .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:3px}
+.td-sl-row .lv,.td-sl-row .tag{display:inline-block;font-size:11.5px;font-weight:800;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.td-sl-row .lv{background:#FFEBDB;color:#C2410C}
+.td-sl-row .tag.warn{background:#FEF3C7;color:#92400E}
+.td-sl-row .tag.bad{background:#FDECEC;color:#B42318}
+.td-sl-row .sub{font-size:12px;font-weight:700;color:#8A7B70;margin-top:3px}
+.td-sl-row .cell{min-width:0;font-size:14px;font-weight:700;color:#2B2B2B;display:flex;flex-direction:column;overflow-wrap:anywhere}
+.td-sl-row .cell small{font-size:12px;color:#8A7B70}
+.td-sl-row .mono{font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:13.5px;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.td-sl-row .muted{color:#A2948A;font-weight:700}
+.td-sl-row .pinrow{flex-direction:row;align-items:center;gap:8px}
+.td-sl-row .pinrow .pinval.mono{letter-spacing:.18em}
+.td-sl-row .pintoggle{border:1px solid #F1E4DA;background:#fff;border-radius:8px;padding:2px 8px;font:800 12px 'Nunito',sans-serif;color:#C2410C;cursor:pointer;text-transform:capitalize}
+.td-sl-row .sess{display:inline-grid;place-items:center;min-width:34px;height:28px;padding:0 8px;border-radius:9px;background:#ECFDF3;color:#15803D;font-weight:800;font-variant-numeric:tabular-nums;align-self:flex-start}
+.td-sl-row .sess.low{background:#FFF4E5;color:#B45309}
+.td-sl-row .sess.zero{background:#FDECEC;color:#B42318}
+.td-sl-row .acts{display:flex;gap:6px;align-items:center;justify-content:flex-end}
+.td-sl-row .acts > button,.td-sl-row .acts > a{border:1px solid #F1E4DA;background:#fff;color:#111;border-radius:10px;padding:7px 12px;font:800 13px 'Nunito',sans-serif;cursor:pointer;text-decoration:none;white-space:nowrap}
+.td-sl-row .acts > .primary{background:#F97316;border-color:#F97316;color:#fff}
+.td-sl-row .acts > .primary:hover{background:#EA580C}
+.td-sl-row .acts > .ghost:hover{border-color:#F97316;color:#C2410C}
+.td-sl-row .more{position:relative}
+.td-sl-row .more summary{list-style:none;width:34px;height:32px;display:grid;place-items:center;border:1px solid #F1E4DA;border-radius:10px;background:#fff;cursor:pointer;font-weight:800;color:#4A4A4A;user-select:none}
+.td-sl-row .more summary::-webkit-details-marker{display:none}
+.td-sl-row .more[open] summary{border-color:#F97316;color:#C2410C}
+.td-sl-row .menu{position:absolute;right:0;top:calc(100% + 6px);z-index:20;min-width:200px;background:#fff;border:1px solid #F1E4DA;border-radius:14px;box-shadow:0 18px 40px -16px rgba(80,40,10,.35);padding:6px;display:flex;flex-direction:column}
+.td-sl-row .menu button{border:0;background:none;text-align:start;padding:9px 12px;border-radius:10px;font:800 13.5px 'Nunito',sans-serif;color:#111;cursor:pointer}
+.td-sl-row .menu button:hover{background:#FFF6EF}
+.td-sl-row .menu .danger{color:#B42318;border-top:1px solid #F5ECE3;border-radius:0 0 10px 10px;margin-top:4px}
+.td-sl-row .menu .danger:hover{background:#FDECEC}
+.td-sl-none{padding:22px 16px;color:#767676;font-weight:700}
+/* medium screens: drop the phone column header spacing a little */
+@media (max-width:1180px){
+  .td-sl-head,.td-sl-row{grid-template-columns:minmax(200px,2fr) minmax(100px,1fr) 86px minmax(120px,1.1fr) 96px 64px 186px;gap:10px}
+}
+/* phones and narrow tablets: each student is a compact card */
+@media (max-width:980px){
+  .td-sl-head{display:none}
+  .td-slist{gap:10px;margin-top:12px}
+  .td-sl-row{grid-template-columns:1fr 1fr;gap:10px 14px;border:1px solid #F1E4DA;border-radius:18px;background:#fff;padding:14px}
+  .td-sl-row .who,.td-sl-row .acts{grid-column:1/-1}
+  .td-sl-row .cell::before{content:attr(data-l);font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8A7B70;margin-bottom:2px}
+  .td-sl-row .pinrow{flex-wrap:wrap}
+  .td-sl-row .pinrow::before{flex-basis:100%}
+  .td-sl-row .acts{justify-content:flex-start;padding-top:10px;border-top:1px solid #F5ECE3}
+  .td-sl-row .acts > .primary{flex:1;text-align:center}
+  .td-sl-row .menu{right:0}
+  .td-sl-count{width:100%;margin-inline-start:0}
+}
+#viewStudents .td-roster-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+#viewStudents .td-roster-head .td-select,.td-sl-tools .td-select{width:auto!important;flex:0 0 auto;max-width:100%}
+@media (max-width:620px){.td-sl-tools .td-select{flex:1 1 140px}#viewStudents .td-roster-head .td-btn{flex:1 1 auto}}

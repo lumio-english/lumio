@@ -1162,7 +1162,17 @@
         <button class="td-btn td-btn-primary" id="addStudentBtn">+ Add student</button>
       </div>
       <p class="sub" style="margin-top:4px">Add each student once — they'll pick their avatar and enter this PIN to log in from now on.</p>
-      <div class="td-roster-grid" id="rosterGrid"></div>
+      <div class="td-sl-tools" role="search">
+        <input type="search" id="rosterSearch" class="td-sl-search" placeholder="Search name, ID or phone" aria-label="Search students">
+        <select class="td-select" id="rosterLevel" aria-label="Level"><option value="">All levels</option></select>
+        <select class="td-select" id="rosterStatus" aria-label="Status">
+          <option value="">Any status</option><option value="active">Active</option><option value="pending">Pending approval</option>
+          <option value="low">3 sessions or fewer</option><option value="deletion">Deletion requested</option>
+        </select>
+        <span class="td-sl-count" id="rosterCount"></span>
+      </div>
+      <div class="td-sl-head" aria-hidden="true"><span>Student</span><span>Teacher</span><span>Login ID</span><span>Phone</span><span>PIN</span><span>Sessions</span><span></span></div>
+      <div class="td-slist" id="rosterGrid"></div>
       <div class="td-empty" id="rosterEmpty" style="display:none">No students yet — add your first one to get started.</div>
 
       <details style="margin-top:18px" id="syncDetails">
@@ -1484,6 +1494,11 @@
 
   <!-- ===== Materials view ===== -->
   <div id="viewMaterials" style="display:none">
+    <div class="td-panel" style="margin-bottom:16px">
+      <div class="td-panel-head"><h2>🎙️ Voice Studio</h2></div>
+      <p class="sub">Record a real voice for every word and sentence the platform speaks (lessons, prep, homework, English Hub, games). Each recording replaces the old computer voice for that line.</p>
+      <div class="row" style="gap:10px;flex-wrap:wrap"><a href="recording-studio.html" target="_blank" rel="noopener" class="td-btn td-btn-primary" style="text-decoration:none">▶ Open the Voice Studio</a></div>
+    </div>
     <div class="td-panel">
       <div class="td-panel-head"><h2>Teaching materials</h2><span class="td-badge teal" style="margin-left:8px" id="matBadge">Pre-A · 20 lessons</span></div>
       <p class="sub">"Present" opens the lesson full-screen as a live, interactive deck — audio, clickable quizzes, and quick links to games — perfect for Zoom/Meet screen share. Need the raw PowerPoint files? Grab them all at once on the left instead of one by one. Levels without slides yet link straight to the live online lesson instead.</p>
@@ -2743,6 +2758,8 @@
   levelFilter.addEventListener("change", renderTable);
   if (IS_OWNER) document.getElementById("rosterScope").value = "all";
   document.getElementById("rosterScope").addEventListener("change", () => { renderTable(); renderRosterCards(); });
+  ["rosterSearch", "rosterLevel", "rosterStatus"].forEach(id => document.getElementById(id).addEventListener(id === "rosterSearch" ? "input" : "change", () => renderRosterCards()));
+  document.addEventListener("click", e => { if (!e.target.closest("#rosterGrid details.more")) document.querySelectorAll("#rosterGrid details.more[open]").forEach(d => { d.open = false; }); });
   document.querySelectorAll("#tbl th[data-sort]").forEach(th => {
     th.addEventListener("click", () => {
       const key = th.dataset.sort;
@@ -3347,43 +3364,69 @@
     const activeTeacherId = LumioProfiles.getCurrentTeacherId();
     let roster = LumioProfiles.listStudents();
     if (scope === "mine" && activeTeacherId) roster = roster.filter(p => p.teacherId === activeTeacherId);
+    // filters (search, level, status) -- the toolbar above the list
+    const lvSel = document.getElementById("rosterLevel");
+    const lvOrder = id => { const i = LEVEL_NAMES_ALL.findIndex(l => l.id === id); return i < 0 ? 99 : i; };
+    const lvs = [...new Set(roster.map(p => p.level).filter(Boolean))].sort((a, b) => lvOrder(a) - lvOrder(b));
+    const lvWant = lvSel.value;
+    lvSel.innerHTML = '<option value="">All levels</option>' + lvs.map(l => `<option value="${escHtml(l)}"${l === lvWant ? " selected" : ""}>${escHtml(levelName(l))}</option>`).join("");
+    const q = (document.getElementById("rosterSearch").value || "").trim().toLowerCase().replace(/\s/g, "");
+    const st = document.getElementById("rosterStatus").value;
+    const total = roster.length;
+    roster = roster.filter(p => {
+      if (lvWant && p.level !== lvWant) return false;
+      if (st === "pending" && p.approved !== false) return false;
+      if (st === "active" && (p.approved === false || p.pendingDeletion)) return false;
+      if (st === "low" && !((Number(p.sessionsRemaining) || 0) <= 3)) return false;
+      if (st === "deletion" && !(p.pendingDeletion || p.deletionConfirmed)) return false;
+      if (q && ![p.name, p.loginCode, p.phone].some(v => String(v || "").toLowerCase().replace(/\s/g, "").includes(q))) return false;
+      return true;
+    }).sort((a, b) => String(a.name || "").localeCompare(String(b.name || "")));
+    document.getElementById("rosterCount").textContent = roster.length === total ? `${total} student${total === 1 ? "" : "s"}` : `${roster.length} of ${total}`;
     rosterGrid.innerHTML = "";
-    rosterEmpty.style.display = roster.length ? "none" : "block";
+    rosterEmpty.style.display = total ? "none" : "block";
+    if (total && !roster.length) rosterGrid.innerHTML = '<div class="td-sl-none">No students match these filters.</div>';
     roster.forEach(p => {
       const teacher = p.teacherId ? LumioProfiles.getTeacher(p.teacherId) : null;
       const teacherLabel = teacher ? teacher.name : "Unassigned";
       const pinKnown = !!p.pin;
       const hw = (typeof homeworkCounts !== "undefined" && homeworkCounts[p.name]) || null;
+      const left = Number(p.sessionsRemaining) || 0;
       const card = document.createElement("div");
-      card.className = "td-roster-card";
+      card.className = "td-sl-row" + (p.approved === false ? " is-pending" : "");
       card.innerHTML = `
-        <div class="top">
+        <div class="who">
           <div class="av">${avatarHtml(p)}</div>
-          <div>
+          <div class="who-tx">
             <div class="nm">${escHtml(p.name)}</div>
-            <div><span class="lv">${levelName(p.level)}</span>${p.approved === false ? ' <span class="td-pending-badge">⏳ Pending approval</span>' : ""}</div>
-            <div class="teacher-line">👩‍🏫 ${teacherLabel}</div>
-            ${p.cohort ? `<div class="group-line">${escHtml(p.cohort)}</div>` : ""}
+            <div class="tags"><span class="lv">${p.level ? escHtml(levelName(p.level)) : "No level"}</span>${p.approved === false ? '<span class="tag warn">Pending approval</span>' : ""}${p.pendingDeletion || p.deletionConfirmed ? '<span class="tag bad">Deletion requested</span>' : ""}</div>
+            ${hw ? `<div class="sub">${hw.count} homework${hw.count === 1 ? "" : "s"} · avg ${(hw.starsSum / hw.count).toFixed(1)}★</div>` : ""}
           </div>
         </div>
-        ${hw ? `<div class="hw-summary">📝 ${hw.count} homework${hw.count === 1 ? "" : "s"} done · avg ${(hw.starsSum / hw.count).toFixed(1)}★</div>` : ""}
-        <div class="pinrow"><span class="lbl">ID</span><span class="idval">${escHtml(p.loginCode || "—")}</span></div>
-        <div class="pinrow"><span class="lbl">Phone</span><span class="idval">${p.phone ? escHtml(formatPhoneDisplay(p.phone)) : "<i style=\"font-style:italic;opacity:.6\">Not set</i>"}</span></div>
-        <div class="pinrow"><span class="lbl">PIN</span>${pinKnown
-          ? `<span class="pinval" data-pin="${escHtml(p.pin)}">••••</span><button class="pintoggle" type="button">show</button>`
-          : `<span class="pinval" style="opacity:.6;letter-spacing:0;font-size:.68rem">set on another device — click "New PIN" to set one you can see</span>`}
-        </div>
+        <div class="cell" data-l="Teacher"><span class="${teacher ? "" : "muted"}">${escHtml(teacherLabel)}</span>${p.cohort ? `<small>${escHtml(p.cohort)}</small>` : ""}</div>
+        <div class="cell mono" data-l="Login ID">${escHtml(p.loginCode || "—")}</div>
+        <div class="cell mono" data-l="Phone">${p.phone ? escHtml(formatPhoneDisplay(p.phone)) : '<span class="muted">Not set</span>'}</div>
+        <div class="cell pinrow" data-l="PIN">${pinKnown
+          ? `<span class="pinval mono" data-pin="${escHtml(p.pin)}">••••</span><button class="pintoggle" type="button">show</button>`
+          : `<span class="pinval muted" title="This PIN was set on another device. Use New PIN in the ⋯ menu to set one you can see.">Hidden</span>`}</div>
+        <div class="cell" data-l="Sessions"><span class="sess ${left <= 0 ? "zero" : left <= 3 ? "low" : ""}">${left}</span></div>
         <div class="acts">
-          <button type="button" data-act="edit">✎ Edit</button>
-          <button type="button" data-act="pin">🔑 New PIN</button>
-          <button type="button" data-act="recordings" title="Recordings">🎙️ Audio</button>
-          <a data-act="report" style="text-decoration:none" title="Report">📋 Report</a>
-          <button type="button" class="danger" data-act="remove" style="grid-column:1 / -1">${
-            p.deletionConfirmed ? "✅ Student confirmed — Delete Account now"
-            : p.pendingDeletion ? "⏳ Deletion requested — awaiting student"
-            : "🗑 Delete Account"
-          }</button>
+          <button type="button" class="primary" data-act="edit">Edit</button>
+          <a data-act="report" class="ghost" title="Open report">Report</a>
+          <details class="more">
+            <summary aria-label="More actions for ${escHtml(p.name)}">⋯</summary>
+            <div class="menu">
+              <button type="button" data-act="pin">New PIN</button>
+              <button type="button" data-act="recordings">Audio recordings</button>
+              <button type="button" class="danger" data-act="remove">${
+                p.deletionConfirmed ? "Student confirmed: delete now"
+                : p.pendingDeletion ? "Deletion requested"
+                : "Delete account"
+              }</button>
+            </div>
+          </details>
         </div>`;
+      card.querySelector(".more").addEventListener("toggle", e => { if (e.target.open) document.querySelectorAll("#rosterGrid details.more[open]").forEach(d => { if (d !== e.target) d.open = false; }); });
       const pinVal = card.querySelector(".pinrow .pinval");
       const pinToggle = card.querySelector(".pintoggle");
       if (pinToggle) {

@@ -495,8 +495,64 @@ const Lumio = (() => {
     if (playResult && typeof playResult.catch === "function") playResult.catch(fallback);
   };
 
-  /* ---------- Sounds ---------- */
+  /* ---------- Sound effects + music (assets/sfx/, from Artlist) ----------
+     Every effect is one file in assets/sfx/<name>.mp3 (see _docs/sound-effects-list.md for the list).
+     A missing file is simply skipped (beep() then falls back to its built-in tone), so effects can be
+     added one at a time. "lumio_sound" = "off" mutes effects and music, never the spoken words. */
+  const SFX_VOL = { correct: .55, wrong: .45, star: .55, complete: .6 };
+  const sfxCache = {}, sfxMissing = {};
+  const soundOn = () => { try { return localStorage.getItem("lumio_sound") !== "off"; } catch (e) { return true; } };
+  // which effect files exist: checked once per page (4 tiny requests); until known, beep() uses its tone
+  const sfxHave = {};
+  Object.keys(SFX_VOL).forEach(n => { try { fetch(`${ASSET_ROOT}assets/sfx/${n}.mp3`, { method: "HEAD" }).then(r => { sfxHave[n] = r.ok; }).catch(() => {}); } catch (e) {} });
+  const sfx = (name, opts) => {
+    if (!soundOn() || sfxMissing[name] || !sfxHave[name]) return false;
+    try {
+      let base = sfxCache[name];
+      if (!base) { base = sfxCache[name] = new Audio(`${ASSET_ROOT}assets/sfx/${name}.mp3`); base.preload = "auto"; base.onerror = () => { sfxMissing[name] = true; }; }
+      if (base.error) { sfxMissing[name] = true; return false; }
+      const a = base.readyState >= 2 ? base.cloneNode() : base;   // clones let the same effect overlap
+      a.volume = Math.max(0, Math.min(1, (opts && opts.volume) || SFX_VOL[name] || .5));
+      const pr = a.play(); if (pr && pr.catch) pr.catch(() => {});
+      return true;
+    } catch (e) { return false; }
+  };
+  // background music for games and stories: starts after the first tap, loops, with a small toggle
+  let musicEl = null;
+  const music = (track) => {
+    if (!track) { if (musicEl) musicEl.pause(); return; }
+    if (!soundOn()) return;
+    if (!musicEl) { musicEl = new Audio(); musicEl.loop = true; musicEl.volume = .18; }
+    if (musicEl.dataset.track !== track) { musicEl.src = `${ASSET_ROOT}assets/sfx/music-${track}.mp3`; musicEl.dataset.track = track; }
+    const pr = musicEl.play(); if (pr && pr.catch) pr.catch(() => {});
+  };
+  const setSound = (on) => {
+    try { localStorage.setItem("lumio_sound", on ? "on" : "off"); } catch (e) {}
+    if (!on && musicEl) musicEl.pause();
+    if (on && musicEl && musicEl.dataset.track) music(musicEl.dataset.track);
+    const t = document.getElementById("lumioSoundBtn"); if (t) { t.setAttribute("aria-pressed", String(on)); t.title = on ? "Sounds on (tap to mute)" : "Sounds off (tap to turn on)"; t.textContent = on ? "🔊" : "🔈"; }
+  };
+  const autoMusic = () => {
+    const path = location.pathname;
+    const track = /\/games\//.test(path) ? "games" : /story\.html$/.test(path) ? "story" : "";
+    if (!track) return;
+    // only show the toggle once we know the music file exists
+    fetch(`${ASSET_ROOT}assets/sfx/music-${track}.mp3`, { method: "HEAD" }).then(r => {
+      if (!r.ok) return;
+      const b = document.createElement("button");
+      b.id = "lumioSoundBtn"; b.type = "button";
+      b.style.cssText = "position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:400;width:46px;height:46px;border-radius:50%;border:1px solid #F1E4DA;background:#fff;box-shadow:0 8px 20px -8px rgba(80,40,10,.4);font-size:20px;cursor:pointer";
+      b.onclick = () => setSound(!soundOn());
+      document.body.appendChild(b); setSound(soundOn());
+      const start = () => { document.removeEventListener("pointerdown", start, true); if (soundOn()) music(track); };
+      document.addEventListener("pointerdown", start, true);
+    }).catch(() => {});
+  };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", autoMusic); else autoMusic();
+
   const beep = (good = true) => {
+    if (sfx(good ? "correct" : "wrong")) return;
+    if (!soundOn()) return;
     try {
       const ctx = beep.ctx || (beep.ctx = new (window.AudioContext || window.webkitAudioContext)());
       const o = ctx.createOscillator(), g = ctx.createGain();
@@ -519,6 +575,7 @@ const Lumio = (() => {
 
   /* ---------- Confetti ---------- */
   const confetti = (n = 60) => {
+    sfx(n >= 70 ? "complete" : "star");   // lesson/homework finished vs. a single good answer
     const colors = ["#FFC53D", "#F97316", "#23B5A3", "#FF6B6B", "#7EC8F2"];
     for (let i = 0; i < n; i++) {
       const el = document.createElement("div");
@@ -667,7 +724,7 @@ const Lumio = (() => {
            progressAll, progressFor, saveResult, homeworkAll, homeworkFor, saveHomework,
            saveRecording, listRecordingsFor, listAllRecordings,
            lastReportDateFor, logReportSent,
-           speak, speakPhonicsSound, beep, confetti, toast, shuffle, qs, letterTile,
+           speak, speakPhonicsSound, beep, confetti, sfx, music, setSound, soundOn, toast, shuffle, qs, letterTile,
            COUNTRY_CODES, combinePhone, splitPhone,
            pushProgressAndHomework, pullProgressAndHomework, retryPendingPush,
            lessonCountFor, attendedSetFor, lessonDone, currentLesson, lessonsDoneCount, levelComplete, isTeacherSession,
