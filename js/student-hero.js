@@ -13,7 +13,7 @@
 
   function build() {
     if (built) return;
-    var L = window.Lumio, M = window.LumioMapState, hero = $('.sd-hero');
+    var L = window.Lumio, M = window.LumioMapState, hero = $('#secToday') || $('.sd-hero');
     if (!L || !M || !hero) return;
     built = true;
     try {

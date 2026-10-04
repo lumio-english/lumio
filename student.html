@@ -1167,7 +1167,11 @@
 
 <main class="sd-wrap">
 
+  <!-- 2026 layout: one page in the order a learner needs it. The blocks are the page's own
+       (same ids), only regrouped; the welcome card is added above "Today" by js/student-hero.js. -->
 
+  <section class="s26-sec" id="secToday">
+    <header class="s26-sech"><span class="s26-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="4"/></svg></span><div><h2>Today's lesson</h2><p>What to do next, and your homework for this lesson.</p></div></header>
   <!-- Hero: today's mission + quick stats -->
   <div class="sd-hero">
     <div class="sd-hero-card sd-fade-up">
@@ -1195,20 +1199,10 @@
       </div>
     </div>
   </div>
+  </section>
 
-  <!-- Lumi's Magic Map story banner -->
-  <div class="sd-story-banner sd-fade-up sd-anim-d2" id="storyBanner">
-    <div class="sd-story-banner-left">
-      <div class="sd-story-icon">📖</div>
-      <div>
-        <div class="sd-story-title">Lumi's Magic Map</div>
-        <div class="sd-story-sub" id="storySub">A four-part adventure story!</div>
-      </div>
-    </div>
-    <div class="sd-story-trail" id="storyTrail"></div>
-    <a class="sd-story-btn" id="storyPlayBtn" href="#">Play</a>
-  </div>
-
+  <section class="s26-sec" id="secMap">
+    <header class="s26-sech"><span class="s26-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg></span><div><h2>My adventure</h2><p>Every finished lesson lights the next step of your map.</p></div></header>
   <!-- Level progress -->
   <div class="sd-level-card sd-fade-up sd-anim-d2">
     <div class="sd-level-top">
@@ -1223,7 +1217,59 @@
     <div class="sd-progressbar"><div id="levelBar" style="width:0%"></div></div>
     <a class="sd-cert-link" href="certificates.html"><img class="sd-cert-link-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> My certificate</a>
   </div>
+  <div class="s26-map3d" id="map3d" hidden><canvas id="map3dCanvas" aria-label="3D adventure map of your lessons. Tap a lesson stone to open it."></canvas><div class="s26-maptip" id="map3dTip" role="status" aria-live="polite"></div><button type="button" class="s26-maptoggle" id="map3dToggle">Show as a list</button></div>
+  <!-- Adventure path -->
+  <div class="sd-path-card">
+    <div class="path" id="path"></div>
+  </div>
+  <!-- Level test (own window, after the map) -->
+  <h3 class="s26-subhead">Level test</h3>
+  <div class="sd-test-card" id="levelTestCard">
+    <div class="sd-test-top">
+      <div class="sd-test-badge" id="levelTestIcon">🔒</div>
+      <div class="sd-test-text">
+        <div class="sd-test-title" id="levelTestTitle">Level test</div>
+        <div class="sd-test-sub" id="levelTestSub">Unlocks after all 20 lessons</div>
+      </div>
+    </div>
+    <div class="sd-progressbar sd-test-bar"><div id="levelTestBar" style="width:0%"></div></div>
+    <div class="sd-test-meta" id="levelTestMeta"></div>
+    <div class="sd-test-facts">
+      <div><b>30</b><span>questions</span></div>
+      <div><b>70%</b><span>to pass</span></div>
+      <div><b>4</b><span>skills: words, Arabic→English, sentences, listening</span></div>
+    </div>
+    <a class="sd-cert-link sd-test-link locked" id="levelTestLink" href="#" aria-disabled="true"><span class="ic">🔒</span><span><b id="levelTestBtn">Locked</b></span></a>
+  </div>
+  </section>
 
+  <section class="s26-sec" id="secUnlocked">
+    <header class="s26-sech"><span class="s26-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8v13M3 12h18M12 8S10.5 3 7.5 4.5 9 8 12 8zm0 0s1.5-5 4.5-3.5S15 8 12 8z"/></svg></span><div><h2>Unlocked for you</h2><p>Your story and your level game open as you finish lessons.</p></div></header>
+  <div class="s26-duo">
+  <!-- Lumi's Magic Map story banner -->
+  <div class="sd-story-banner sd-fade-up sd-anim-d2" id="storyBanner">
+    <div class="sd-story-banner-left">
+      <div class="sd-story-icon">📖</div>
+      <div>
+        <div class="sd-story-title">Lumi's Magic Map</div>
+        <div class="sd-story-sub" id="storySub">A four-part adventure story!</div>
+      </div>
+    </div>
+    <div class="sd-story-trail" id="storyTrail"></div>
+    <a class="sd-story-btn" id="storyPlayBtn" href="#">Play</a>
+  </div>
+  <!-- Mini-game -->
+  <div class="sd-game-wide" id="gameWideCard">
+    <div class="sd-game-wide-icon" id="gameWideIcon"></div>
+    <h4 id="gameWideTitle"></h4>
+    <p id="gameWideSub"></p>
+    <button class="sd-game-wide-play" id="gameWidePlay">▶ Play</button>
+  </div>
+  </div>
+  </section>
+
+  <section class="s26-sec" id="secClasses">
+    <header class="s26-sech"><span class="s26-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span><div><h2>My classes</h2><p>Your next live class, booking, and rating your teacher.</p></div></header>
   <!-- My Schedule -->
   <div class="sd-section-title" id="scheduleCard">
     <h3>My schedule</h3>
@@ -1236,52 +1282,13 @@
     <div class="sd-empty-note" id="scheduleEmptyNote" style="display:none">No classes booked yet — book one below! 🙂</div>
     <div class="sd-book" id="bookingCard" style="display:none"></div>
   </div>
-
   <!-- Rate your class -- only appears when there's a real attended, unrated session to rate -->
   <div id="rateTeacherCard" style="display:none"></div>
+  </section>
 
-  <!-- My Rewards -->
-  <div class="sd-section-title"><h3>🏆 My rewards</h3></div>
-  <div class="sd-schedule-card" id="rewardsCard" style="display:none">
-    <div class="row" style="gap:12px;margin-bottom:12px">
-      <!-- Explicit dark text on these cream boxes: the teen theme swaps
-           the shared text variables to light purples for its dark page,
-           which made these numbers/labels vanish against the still-cream
-           box backgrounds. -->
-      <div class="sd-rw-stat" style="flex:1;background:#F7F3EA;border-radius:14px;padding:12px;text-align:center">
-        <b style="display:block;font-size:1.3rem;font-weight:800;color:#2A2118" id="rwPointsVal">0</b>
-        <span style="font-size:.7rem;font-weight:800;color:#6B5040;text-transform:uppercase">Points</span>
-      </div>
-      <div class="sd-rw-stat" style="flex:1;background:#F7F3EA;border-radius:14px;padding:12px;text-align:center">
-        <b style="display:block;font-size:1.3rem;font-weight:800;color:#2A2118" id="rwHoursVal">0</b>
-        <span style="font-size:.7rem;font-weight:800;color:#6B5040;text-transform:uppercase">Bonus hours</span>
-      </div>
-    </div>
-    <button class="sd-game-wide-play" id="rwRedeemBtn" style="width:100%">🎁 Redeem 50 points → +1 hour</button>
-    <p class="sd-hint" style="margin:8px 0 0;font-weight:700;color:var(--sd-cocoa);font-size:.8rem">Every 50 points you collect can be redeemed for 1 bonus class hour, added straight to your sessions left!</p>
-  </div>
-
-
-  <!-- Badges -->
-  <div class="sd-section-title"><h3>My badges</h3></div>
-  <div class="sd-badges" id="badgeGrid"></div>
-
-  <!-- Meet your study buddies -->
-  <div class="sd-section-title"><h3>Meet your study buddies</h3></div>
-  <p class="sd-hint" style="margin:-6px 0 12px;font-weight:700;color:var(--sd-cocoa-soft);font-size:.85rem">Tap a friend to say hi! 👋</p>
-  <div class="sd-buddies-grid" id="buddiesGrid"></div>
-
-  <!-- Mini-game -->
-  <div class="sd-section-title"><h3>🎮 Mini-Game</h3></div>
-  <div class="sd-game-wide" id="gameWideCard">
-    <div class="sd-game-wide-icon" id="gameWideIcon"></div>
-    <h4 id="gameWideTitle"></h4>
-    <p id="gameWideSub"></p>
-    <button class="sd-game-wide-play" id="gameWidePlay">▶ Play</button>
-  </div>
-
+  <section class="s26-sec" id="secHub">
+    <header class="s26-sech"><span class="s26-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 016.5 3H20v15H6.5A2.5 2.5 0 004 20.5z"/><path d="M4 20.5A2.5 2.5 0 006.5 23H20v-5"/></svg></span><div><h2>English Hub</h2><p>Words, idioms, songs and more, open any time.</p></div></header>
   <!-- English Hub -->
-  <div class="sd-section-title"><h3>🌐 English Hub</h3></div>
   <div class="sd-hub-banners">
     <button class="sd-hubb" id="hubVocab">
       <div class="sd-hubb-left">
@@ -1361,10 +1368,43 @@
       <span class="sd-hubb-btn"><img class="sd-hubb-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Open</span>
     </button>
   </div>
+  </section>
 
+  <section class="s26-sec" id="secRewards">
+    <header class="s26-sech"><span class="s26-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0V4z"/><path d="M17 5h3a3 3 0 01-3 4M7 5H4a3 3 0 003 4"/></svg></span><div><h2>My rewards</h2><p>Points, badges and your study buddies.</p></div></header>
+  <!-- My Rewards -->
+  <div class="sd-schedule-card" id="rewardsCard" style="display:none">
+    <div class="row" style="gap:12px;margin-bottom:12px">
+      <!-- Explicit dark text on these cream boxes: the teen theme swaps
+           the shared text variables to light purples for its dark page,
+           which made these numbers/labels vanish against the still-cream
+           box backgrounds. -->
+      <div class="sd-rw-stat" style="flex:1;background:#F7F3EA;border-radius:14px;padding:12px;text-align:center">
+        <b style="display:block;font-size:1.3rem;font-weight:800;color:#2A2118" id="rwPointsVal">0</b>
+        <span style="font-size:.7rem;font-weight:800;color:#6B5040;text-transform:uppercase">Points</span>
+      </div>
+      <div class="sd-rw-stat" style="flex:1;background:#F7F3EA;border-radius:14px;padding:12px;text-align:center">
+        <b style="display:block;font-size:1.3rem;font-weight:800;color:#2A2118" id="rwHoursVal">0</b>
+        <span style="font-size:.7rem;font-weight:800;color:#6B5040;text-transform:uppercase">Bonus hours</span>
+      </div>
+    </div>
+    <button class="sd-game-wide-play" id="rwRedeemBtn" style="width:100%">🎁 Redeem 50 points → +1 hour</button>
+    <p class="sd-hint" style="margin:8px 0 0;font-weight:700;color:var(--sd-cocoa);font-size:.8rem">Every 50 points you collect can be redeemed for 1 bonus class hour, added straight to your sessions left!</p>
+  </div>
+  <!-- Badges -->
+  <h3 class="s26-subhead">My badges</h3>
+  <div class="sd-badges" id="badgeGrid"></div>
+  <!-- Meet your study buddies -->
+  <h3 class="s26-subhead">Meet your study buddies</h3>
+  <p class="sd-hint" style="margin:-6px 0 12px;font-weight:700;color:var(--sd-cocoa-soft);font-size:.85rem">Tap a friend to say hi! 👋</p>
+  <div class="sd-buddies-grid" id="buddiesGrid"></div>
+  </section>
+
+  <section class="s26-sec" id="secMore">
+    <header class="s26-sech"><span class="s26-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></span><div><h2>More</h2><p>Your level manual.</p></div></header>
   <!-- My Level Manual -->
   <div id="manualSection">
-  <div class="sd-section-title"><h3>📘 My Level Manual</h3></div>
+  <h3 class="s26-subhead">My level manual</h3>
   <div class="sd-hub-banners">
     <a class="sd-hubb" id="manualBtn" href="#" download>
       <div class="sd-hubb-left">
@@ -1378,32 +1418,7 @@
     </a>
   </div>
   </div>
-
-  <!-- Adventure path -->
-  <div class="sd-section-title"><h3>Adventure map</h3></div>
-  <div class="sd-path-card">
-    <div class="path" id="path"></div>
-  </div>
-
-  <!-- Level test (own window, after the map) -->
-  <div class="sd-section-title"><h3>📝 Level test</h3></div>
-  <div class="sd-test-card" id="levelTestCard">
-    <div class="sd-test-top">
-      <div class="sd-test-badge" id="levelTestIcon">🔒</div>
-      <div class="sd-test-text">
-        <div class="sd-test-title" id="levelTestTitle">Level test</div>
-        <div class="sd-test-sub" id="levelTestSub">Unlocks after all 20 lessons</div>
-      </div>
-    </div>
-    <div class="sd-progressbar sd-test-bar"><div id="levelTestBar" style="width:0%"></div></div>
-    <div class="sd-test-meta" id="levelTestMeta"></div>
-    <div class="sd-test-facts">
-      <div><b>30</b><span>questions</span></div>
-      <div><b>70%</b><span>to pass</span></div>
-      <div><b>4</b><span>skills: words, Arabic→English, sentences, listening</span></div>
-    </div>
-    <a class="sd-cert-link sd-test-link locked" id="levelTestLink" href="#" aria-disabled="true"><span class="ic">🔒</span><span><b id="levelTestBtn">Locked</b></span></a>
-  </div>
+  </section>
 
 </main>
 
@@ -2443,7 +2458,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
     banner.innerHTML = lapsed
       ? `<span>⏸️</span><span>Your subscription is paused — your teacher will activate it after the next payment. Prep, songs and stories stay open. <span dir="rtl">اشتراككم متوقّف مؤقتاً — تواصلوا مع المعلّم لتجديده.</span></span>`
       : `<span>🎟️</span><span>No sessions left — ask your teacher to add more so your next class can be booked. <span dir="rtl">انتهت الحصص المتبقية — تواصلوا مع المعلّم لإضافة حصص جديدة.</span></span>`;
-    const anchor = document.querySelector(".sd-hero");
+    const anchor = document.querySelector("#secToday") || document.querySelector(".sd-hero");
     if (anchor) anchor.parentElement.insertBefore(banner, anchor); else document.body.prepend(banner);
   })();
 
@@ -2463,7 +2478,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
       banner.id = "installmentBanner";
       banner.style.cssText = `margin:0 auto 14px;max-width:1120px;padding:12px 16px;border-radius:14px;background:${sum.nextDays < 0 ? "#FEE2E2" : "#FFF7E0"};border:2px solid ${sum.nextDays < 0 ? "#EF4444" : "#F59E0B"};color:#7A3F0B;font-weight:800;display:flex;gap:10px;align-items:flex-start;line-height:1.5`;
       banner.innerHTML = `<span style="font-size:1.3rem">💳</span><span><span dir="rtl" style="display:block">${m.ar}</span><span style="display:block;font-weight:700;font-size:.85rem;opacity:.85">${m.en}</span></span>`;
-      const anchor = document.querySelector(".sd-hero");
+      const anchor = document.querySelector("#secToday") || document.querySelector(".sd-hero");
       if (anchor) anchor.parentElement.insertBefore(banner, anchor); else document.body.prepend(banner);
     } catch (e) { console.error("installment banner", e); }
   })();
@@ -4243,6 +4258,8 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
   } catch (e) {}
   document.write('<script src="js/dashboard.js?v=' + v + '"><' + '/script>');
   document.write('<script src="js/student-hero.js?v=' + v + '"><' + '/script>');
+  document.write('<script src="js/student-motion.js?v=' + v + '"><' + '/script>');
+  document.write('<script src="js/student-map3d.js?v=' + v + '"><' + '/script>');
 })();
 </script>
 </body>

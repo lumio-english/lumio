@@ -105,3 +105,80 @@ body.theme-teen-light .sd-hero-title,body.theme-teen-light .sd-brand,body.theme-
 .sd-game-wide-icon{background:transparent!important;box-shadow:none!important}
 .sd-test-link.locked{background:#F4ECE4!important;color:#767676!important}
 .sd-game-wide-play:disabled,.sd-game-wide-play[disabled]{background:#F4ECE4!important;color:#767676!important;opacity:1!important}
+
+/* ===== 2026 layout: grouped sections ===== */
+.s26-sec{display:flex;flex-direction:column;gap:14px;margin:34px 0 0}
+.s26-sec:first-of-type{margin-top:6px}
+.s26-sech{display:flex;align-items:center;gap:14px}
+.s26-ic{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,#FB923C,#F97316);color:#fff;flex-shrink:0;box-shadow:0 10px 20px -12px rgba(194,65,12,.8)}
+.s26-ic svg{width:22px;height:22px}
+.s26-sech h2{margin:0;font-family:var(--s-display);font-weight:800;font-size:clamp(22px,2.6vw,28px);letter-spacing:-.02em;color:var(--s-ink)}
+.s26-sech p{margin:2px 0 0;color:var(--s-mut);font-weight:700;font-size:14px}
+.s26-subhead{margin:10px 0 0;font-family:var(--s-display);font-weight:800;font-size:18px;color:var(--s-ink);letter-spacing:-.01em}
+.s26-sec .sd-section-title{margin:0}
+.s26-sec .sd-level-card,.s26-sec .sd-path-card,.s26-sec .sd-test-card,.s26-sec .sd-schedule-card,.s26-sec .sd-hero,.s26-sec .sd-story-banner,.s26-sec .sd-game-wide{margin:0!important}
+.s26-duo{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:14px;align-items:stretch}
+.s26-duo .sd-story-banner{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:14px;min-height:100%}
+@media (max-width:760px){.s26-duo{grid-template-columns:minmax(0,1fr)}}
+/* English Hub as compact tiles */
+#secHub .sd-hub-banners{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+#secHub .sd-hubb{margin:0!important;border-radius:20px!important;min-height:86px}
+/* locked hub tiles: readable dark text on a pale tile */
+.sd-hubb.locked{background:#FFF1E6!important;border:1px dashed #F3C9A8}
+.sd-hubb.locked,.sd-hubb.locked *{color:#7A5A44!important}
+.sd-hubb.locked .sd-hubb-icon{background:#fff!important}
+.sd-hubb.locked .sd-hubb-btn{background:#fff!important;color:#8A6A54!important;border:1px solid #F3C9A8}
+/* My Profile tiles in one warm family (low sessions keeps coral) */
+.mp-tile.blue,.mp-tile.purple,.mp-tile.teal{background:#FFF6EF!important;color:#C2410C!important;border:1px solid #F3DCCB}
+.mp-grade-avg,.mp-grade-avg.blue,.mp-grade-avg.purple{background:#FFEBDB!important;color:#C2410C!important}
+/* booking: picked/today day in orange, not teal */
+.sd-day.active,.sd-day.today{background:#FFF1E6!important}
+.sd-day.active .dw,.sd-day.active .dn{color:#C2410C!important}
+
+/* ===== 3D adventure map ===== */
+.s26-map3d{position:relative;border-radius:26px;overflow:hidden;background:radial-gradient(120% 90% at 50% 0%,#FFE3CC 0%,#FFF6EF 55%,#FFFBF7 100%);border:1px solid #F1E4DA;box-shadow:0 24px 50px -36px rgba(194,65,12,.6);aspect-ratio:16/9;max-height:560px;width:100%}
+.s26-map3d canvas{display:block;width:100%;height:100%;cursor:grab;touch-action:pan-y}
+.s26-map3d canvas:active{cursor:grabbing}
+.s26-maptip{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);background:#111;color:#fff;border-radius:999px;padding:9px 16px;font-weight:800;font-size:14.5px;white-space:nowrap;opacity:0;transition:opacity .25s;pointer-events:none;max-width:calc(100% - 32px);overflow:hidden;text-overflow:ellipsis}
+.s26-maptip.show{opacity:1}
+.s26-maptip a{color:#FFD9BA}
+.s26-maptoggle{position:absolute;top:12px;right:12px;border:1px solid #F1E4DA;background:rgba(255,255,255,.92);border-radius:999px;padding:7px 13px;font:800 13px 'Nunito',sans-serif;color:#111;cursor:pointer}
+.s26-maplegend{position:absolute;left:12px;top:12px;display:flex;gap:10px;background:rgba(255,255,255,.9);border:1px solid #F1E4DA;border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:800;color:#4A4A4A}
+.s26-maplegend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-inline-end:5px;vertical-align:-1px}
+body.s26-has3d .sd-path-card{display:none}
+body.s26-has3d.s26-list .sd-path-card{display:block}
+body.s26-has3d.s26-list .s26-map3d{aspect-ratio:auto;height:56px}
+body.s26-has3d.s26-list .s26-map3d canvas,body.s26-has3d.s26-list .s26-maplegend{display:none}
+@media (max-width:760px){.s26-map3d{aspect-ratio:4/5;max-height:520px}.s26-maplegend{display:none}}
+
+/* ===== motion ===== */
+.s26-reveal{opacity:0;transform:translateY(26px)}
+.s26-reveal.in{opacity:1;transform:none;transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
+.s26-tilt{transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s}
+.sd-badge.earned.s26-pop{animation:s26Pop .6s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes s26Pop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+.s26-tiles{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:inherit}
+.s26-tiles span{position:absolute;display:grid;place-items:center;border-radius:12px;font:800 20px var(--s-display);color:#C2410C;background:rgba(255,255,255,.92);box-shadow:0 10px 20px -10px rgba(80,20,0,.5);animation:s26Float 8s ease-in-out infinite}
+@keyframes s26Float{0%,100%{transform:translateY(0) rotate(var(--r,0deg))}50%{transform:translateY(-16px) rotate(calc(var(--r,0deg) + 10deg))}}
+.s26-hello > *{position:relative;z-index:1}
+.s26-buddy img{animation:s26Bob 3.2s ease-in-out infinite}
+@keyframes s26Bob{50%{transform:translateY(-10px)}}
+@media (prefers-reduced-motion:reduce){.s26-reveal{opacity:1;transform:none}.s26-tiles span,.s26-buddy img,.sd-badge.earned.s26-pop{animation:none}.s26-tilt{transition:none}}
+
+/* ===== phone: one tidy top bar ===== */
+.s26-menubtn{display:none}
+@media (max-width:760px){
+  .sd-topbar{flex-wrap:wrap}
+  .sd-topbar .pg-launch-btn,.sd-topbar .sd-logout{display:none!important}
+  .sd-topbar.open .pg-launch-btn:not([style*="display:none"]):not([style*="display: none"]),.sd-topbar.open .sd-logout{display:inline-flex!important}
+  .sd-topbar.open .s26-menubtn{background:#111;color:#fff;border-color:#111}
+  .s26-menubtn{display:inline-flex;align-items:center;gap:6px;border:1px solid #F3DCCB;background:#FFF6EF;border-radius:999px;padding:8px 13px;font:800 14px 'Nunito',sans-serif;color:#111;cursor:pointer}
+  .sd-topbar .sd-spacer{flex:1}
+}
+/* QA: welcome tiles stay out of the grid; hub tiles compact on every screen */
+.s26-hello > .s26-tiles{position:absolute;inset:0;z-index:0}
+#secHub .sd-hubb{flex-direction:row!important;align-items:center!important;text-align:start!important;gap:12px;padding:14px 16px!important}
+#secHub .sd-hubb-left{min-width:0;justify-content:flex-start!important}
+#secHub .sd-hubb-trail{display:none}
+#secHub .sd-hubb-btn{flex-shrink:0;padding:8px 14px!important}
+@media (max-width:760px){#secHub .sd-hub-banners{grid-template-columns:minmax(0,1fr)}#secHub .sd-hubb{min-height:0}}
