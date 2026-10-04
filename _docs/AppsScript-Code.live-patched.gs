@@ -642,21 +642,42 @@ function applyRenames_(renames) {
 // MERGES into the Sheet (see mergeFields_) instead of replacing the tabs:
 // a student who registered, or redeemed points, between this device's pull
 // and its push is no longer erased. Removal only through DeletedIds.
-function pushRoster_(body) {
+// The main owner ("Teacher Lumi", else the longest-standing owner) is the only one who may give or
+// take away owner access; nobody can take it from them (same rule as js/lumio-profiles.js).
+function mainOwnerOf_(teachers) {
+  var byName = teachers.filter(function (t) { return String(t.name || "").trim().toLowerCase() === "teacher lumi"; })[0];
+  if (byName) return byName;
+  var owners = teachers.filter(function (t) { return t.isOwner === true || t.isOwner === "true"; });
+  owners.sort(function (a, b) { return String(a.createdAt || "").localeCompare(String(b.createdAt || "")); });
+  return owners[0] || teachers[0] || null;
+}
+function isOwnerVal_(v) { return v === true || v === "true"; }
+function pushRoster_(body, who) {
   var lock = LockService.getScriptLock(); lock.waitLock(20000);
   try {
+    var mainNow = mainOwnerOf_(readRows_(TEACHERS_SHEET, TEACHERS_COLUMNS));
+    if (mainNow && Array.isArray(body.deletedIds)) body.deletedIds = body.deletedIds.filter(function (d) { return !(d && d.id === mainNow.id); });   // the main owner's account can't be deleted
     mergeDeletedIds_(body.deletedIds);
     if (Array.isArray(body.students)) {
       writeRows_(ROSTER_SHEET, ROSTER_COLUMNS, mergeRowsById_(readRows_(ROSTER_SHEET, ROSTER_COLUMNS),
         keepPinHashes_(body.students, ROSTER_SHEET, ROSTER_COLUMNS), goneSet_(["student"]), mergeStudentRow_));
     }
     if (Array.isArray(body.teachers)) {
-      writeRows_(TEACHERS_SHEET, TEACHERS_COLUMNS, mergeRowsById_(readRows_(TEACHERS_SHEET, TEACHERS_COLUMNS),
+      var sheetTeachers = readRows_(TEACHERS_SHEET, TEACHERS_COLUMNS), main = mainOwnerOf_(sheetTeachers);
+      var callerIsMain = !!(who && (who.open || (who.teacher && main && who.teacher.id === main.id)));
+      var merged = mergeRowsById_(sheetTeachers,
         keepPinHashes_(body.teachers, TEACHERS_SHEET, TEACHERS_COLUMNS), goneSet_(["teacher"]), function (a, b) {
           var m = mergeFields_(a, b);
           if (!m.pinHash && a.pinHash) m.pinHash = a.pinHash;
+          if (!callerIsMain) m.isOwner = a.isOwner;                        // only the main owner changes owner access
+          if (main && a.id === main.id) m.isOwner = true;                  // the main owner always stays an owner
           return m;
-        }));
+        });
+      if (!callerIsMain) {
+        var known = {}; sheetTeachers.forEach(function (t) { known[t.id] = true; });
+        merged.forEach(function (t) { if (!known[t.id]) t.isOwner = false; });   // new teachers from others start as plain teachers
+      }
+      writeRows_(TEACHERS_SHEET, TEACHERS_COLUMNS, merged);
     }
     if (Array.isArray(body.rewardCatalog)) {
       writeRows_(REWARD_CATALOG_SHEET, REWARD_CATALOG_COLUMNS, mergeRowsById_(readRows_(REWARD_CATALOG_SHEET, REWARD_CATALOG_COLUMNS),
@@ -1445,7 +1466,7 @@ function doGet(e) {
     if (!keyOk_(e)) return jsonResponse_({ ok: false, error: "unauthorized" });
     var action = (e && e.parameter) ? e.parameter.action : null;
     // Lets a page tell this version apart from older deployments.
-    if (action === "version") return jsonResponse_({ ok: true, version: 9, auth: true, merge: true, studentPhoto: true });
+    if (action === "version") return jsonResponse_({ ok: true, version: 10, auth: true, merge: true, studentPhoto: true, mainOwner: true });
     var who = whoIs_(e);
     if (who.error) return denied_(who);
     if (who.role === "student") {
@@ -1524,7 +1545,7 @@ function doPost(e) {
       return denied_({});
     }
     if (who.role !== "teacher") return denied_({});
-    if (action === "pushRoster") return jsonResponse_(pushRoster_(body));
+    if (action === "pushRoster") return jsonResponse_(pushRoster_(body, who));
     if (action === "pushStudentPatch") return jsonResponse_(pushStudentPatch_(body));
     if (action === "pushScheduleV2") return jsonResponse_(pushScheduleV2_(body));
     if (action === "bookSlot") return jsonResponse_(bookSlot_(body));

@@ -133,3 +133,50 @@ body{background:radial-gradient(900px 480px at 92% -12%,rgba(255,217,186,.55),tr
 @media (max-width:980px){.td-sl-row.td-sl-team{grid-template-columns:1fr 1fr}}
 #viewTeam .td-roster-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 @media (max-width:620px){#viewTeam .td-roster-head .td-btn{flex:1 1 auto}}
+
+/* ===== Add / Edit teacher window (4 Oct 2026): header preview, sections, fixed footer ===== */
+#teacherModalOverlay .td-modal-box.td-tm{width:min(560px,calc(100vw - 24px));max-height:calc(100dvh - 32px);padding:0;display:flex;flex-direction:column;overflow:hidden;border-radius:22px}
+.td-tm-head{display:flex;align-items:center;gap:14px;padding:18px 20px;background:linear-gradient(135deg,#FB923C 0%,#F97316 50%,#C2410C 100%);color:#fff;flex-shrink:0;position:relative}
+.td-tm-face{width:58px;height:58px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:30px;overflow:hidden;flex-shrink:0;box-shadow:0 0 0 3px rgba(255,255,255,.45),0 10px 20px -10px rgba(80,20,0,.6)}
+.td-tm-face .lm-inl{width:34px;height:34px}
+.td-tm-head-tx{min-width:0;flex:1}
+.td-tm-head h3{margin:0;font-family:'Bricolage Grotesque','Segoe UI',sans-serif;font-weight:800;font-size:20px;letter-spacing:-.01em;color:#fff}
+.td-tm-head p{margin:2px 0 0;font-size:13.5px;font-weight:700;color:#FFE3CC;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.td-tm-x{width:34px;height:34px;border-radius:50%;border:0;background:rgba(255,255,255,.2);color:#fff;font-weight:800;cursor:pointer;flex-shrink:0}
+.td-tm-x:hover{background:rgba(255,255,255,.32)}
+.td-tm-body{overflow-y:auto;overscroll-behavior:contain;padding:6px 20px 8px;flex:1;min-height:0}
+.td-tm-sec{padding:14px 0;border-bottom:1px solid #F5ECE3}
+.td-tm-sec:last-child{border-bottom:0}
+.td-tm-sec h4{margin:0 0 10px;font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#C2410C}
+#teacherModalOverlay .td-field{margin-bottom:12px}
+#teacherModalOverlay .td-field:last-child{margin-bottom:0}
+#teacherModalOverlay .td-field label{font-size:13.5px;font-weight:800;color:#111;display:block;margin-bottom:6px}
+#teacherModalOverlay input[type=text],#teacherModalOverlay input[type=url]{width:100%;border:1px solid #EFE2D6;border-radius:12px;padding:11px 13px;font:700 14.5px 'Nunito',sans-serif;background:#fff;color:#111}
+#teacherModalOverlay input[type=text]:focus,#teacherModalOverlay input[type=url]:focus{outline:none;border-color:#F97316;box-shadow:0 0 0 4px rgba(249,115,22,.15)}
+.td-tm-hint{display:block;margin:6px 0 0;font-size:12.5px;font-weight:700;color:#8A7B70}
+label .td-tm-hint{display:inline;margin:0 0 0 6px;font-weight:700}
+.td-tm-photo{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.td-tm-photo .td-tm-hint{flex-basis:100%;margin-top:2px}
+.td-tm-quiet{background:none!important;border-color:transparent!important;color:#B42318!important}
+#tchAvatarGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px}
+#tchAvatarGrid .td-avatar-opt{width:auto;height:44px;border-radius:12px;font-size:20px;padding:0;display:grid;place-items:center}
+#tchAvatarGrid .td-avatar-opt .lm-inl{width:24px;height:24px}
+#teacherModalOverlay .td-pin-field{display:flex;gap:8px}
+#teacherModalOverlay .td-pin-field input{flex:1;min-width:0;font-family:ui-monospace,Menlo,Consolas,monospace!important;letter-spacing:.2em}
+#teacherModalOverlay .td-pin-field input::placeholder{letter-spacing:0;font-family:'Nunito',sans-serif}
+.td-tm-switch{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid #F1E4DA;border-radius:14px;background:#FFFAF5;cursor:pointer;margin-top:4px}
+.td-tm-switch input{position:absolute;opacity:0;width:1px;height:1px}
+.td-tm-switch .sw{width:42px;height:24px;border-radius:99px;background:#E7D9CD;position:relative;flex-shrink:0;transition:background .2s}
+.td-tm-switch .sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s}
+.td-tm-switch input:checked + .sw{background:#F97316}
+.td-tm-switch input:checked + .sw::after{transform:translateX(18px)}
+.td-tm-switch input:focus-visible + .sw{outline:3px solid rgba(249,115,22,.45);outline-offset:2px}
+.td-tm-switch .tx{display:flex;flex-direction:column;line-height:1.3}
+.td-tm-switch .tx b{font-size:14px;color:#111}
+.td-tm-switch .tx small{font-size:12.5px;font-weight:700;color:#8A7B70}
+.td-tm-foot{flex-shrink:0;margin:0!important;padding:14px 20px;border-top:1px solid #F1E4DA;background:#fff;display:flex;gap:10px;justify-content:flex-end}
+.td-tm-foot .td-btn{min-width:110px;justify-content:center}
+@media (max-width:520px){.td-tm-foot .td-btn{flex:1}.td-tm-head{padding:16px}.td-tm-body{padding:4px 16px 8px}}
+@media (prefers-reduced-motion:reduce){.td-tm-switch .sw,.td-tm-switch .sw::after{transition:none}}
+.td-tm-switch.locked{cursor:not-allowed;opacity:.65}
+#tchOwnerLock[hidden]{display:none!important}

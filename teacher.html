@@ -1843,47 +1843,68 @@
 
 <!-- ===== Add / Edit teacher modal ===== -->
 <div class="td-overlay" id="teacherModalOverlay">
-  <div class="td-modal-box">
-    <h3 id="teacherModalTitle">Add teacher</h3>
-    <div class="td-field">
-      <label for="tchName">Name</label>
-      <input type="text" id="tchName" placeholder="e.g. Ms. Layla" maxlength="30">
-      <div class="td-field-error" id="tchNameError"></div>
+  <div class="td-modal-box td-tm" role="dialog" aria-modal="true" aria-labelledby="teacherModalTitle">
+    <div class="td-tm-head">
+      <div class="td-tm-face" id="tchPhotoPreview"></div>
+      <div class="td-tm-head-tx">
+        <h3 id="teacherModalTitle">Add teacher</h3>
+        <p><span id="tchHeadName">New teacher</span> · <span id="tchHeadRole">Teacher</span></p>
+      </div>
+      <button class="td-tm-x" id="teacherModalX" type="button" aria-label="Close">✕</button>
     </div>
-    <div class="td-field">
-      <label>Photo <span style="font-weight:600;color:var(--td-muted)">(students see it when they pick a teacher)</span></label>
-      <div style="display:flex;align-items:center;gap:12px">
-        <div id="tchPhotoPreview" style="width:72px;height:72px;border-radius:50%;background:var(--td-teal-soft);display:flex;align-items:center;justify-content:center;font-size:2rem;overflow:hidden;flex-shrink:0"></div>
-        <div style="display:flex;flex-direction:column;gap:6px">
-          <button class="td-btn" id="tchPhotoUpload" type="button">📷 Upload photo</button>
-          <button class="td-btn" id="tchPhotoRemove" type="button" style="display:none">✕ Remove photo</button>
-          <input type="file" id="tchPhotoFile" accept="image/*" style="display:none">
+
+    <div class="td-tm-body">
+      <section class="td-tm-sec">
+        <h4>Profile</h4>
+        <div class="td-field">
+          <label for="tchName">Name</label>
+          <input type="text" id="tchName" placeholder="e.g. Ms. Layla" maxlength="30">
+          <div class="td-field-error" id="tchNameError"></div>
         </div>
-      </div>
+        <div class="td-field">
+          <label>Photo</label>
+          <div class="td-tm-photo">
+            <button class="td-btn" id="tchPhotoUpload" type="button">Upload photo</button>
+            <button class="td-btn td-tm-quiet" id="tchPhotoRemove" type="button" style="display:none">Remove</button>
+            <input type="file" id="tchPhotoFile" accept="image/*" style="display:none">
+            <span class="td-tm-hint">Students see it when they pick a teacher.</span>
+          </div>
+        </div>
+        <div class="td-field">
+          <label>Avatar <span class="td-tm-hint">used when there's no photo</span></label>
+          <div class="td-avatar-grid" id="tchAvatarGrid"></div>
+        </div>
+      </section>
+
+      <section class="td-tm-sec">
+        <h4>Classroom</h4>
+        <div class="td-field">
+          <label for="tchMeetingLink">Classroom link</label>
+          <input type="url" id="tchMeetingLink" placeholder="https://teams.microsoft.com/l/meetup-join/…">
+          <p class="td-tm-hint">Teams, Zoom or Meet. Used for every class unless a slot or class has its own link.</p>
+        </div>
+      </section>
+
+      <section class="td-tm-sec">
+        <h4>Sign-in &amp; access</h4>
+        <div class="td-field">
+          <label for="tchPin">4-digit PIN</label>
+          <div class="td-pin-field">
+            <input type="text" id="tchPin" maxlength="4" inputmode="numeric" placeholder="1234">
+            <button class="td-btn" id="tchPinRandom" type="button">Random</button>
+          </div>
+        </div>
+        <label class="td-tm-switch" for="tchIsOwner">
+          <input type="checkbox" id="tchIsOwner">
+          <span class="sw" aria-hidden="true"></span>
+          <span class="tx"><b>Owner</b><small>Can manage all teachers, students and platform settings.</small></span>
+        </label>
+        <p class="td-tm-hint" id="tchOwnerLock" hidden>Only Teacher Lumi can give or remove owner access.</p>
+        <div class="td-field-error" id="tchOwnerError"></div>
+      </section>
     </div>
-    <div class="td-field">
-      <label>Avatar <span style="font-weight:600;color:var(--td-muted)">(used when there's no photo)</span></label>
-      <div class="td-avatar-grid" id="tchAvatarGrid"></div>
-    </div>
-    <div class="td-field">
-      <label for="tchMeetingLink">My classroom link <span style="font-weight:600;color:var(--td-muted)">(Teams / Zoom / Meet — used for every class unless a slot or class has its own)</span></label>
-      <input type="url" id="tchMeetingLink" placeholder="https://teams.microsoft.com/l/meetup-join/…">
-    </div>
-    <div class="td-field">
-      <label for="tchPin">4-digit PIN</label>
-      <div class="td-pin-field">
-        <input type="text" id="tchPin" maxlength="4" inputmode="numeric" placeholder="1234">
-        <button class="td-btn" id="tchPinRandom" type="button">🎲 Random</button>
-      </div>
-    </div>
-    <div class="td-field">
-      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:600;color:var(--td-ink-soft)">
-        <input type="checkbox" id="tchIsOwner" style="width:auto">
-        👑 Owner — can manage all teachers, students, and platform settings
-      </label>
-      <div class="td-field-error" id="tchOwnerError"></div>
-    </div>
-    <div class="td-modal-actions">
+
+    <div class="td-modal-actions td-tm-foot">
       <button class="td-btn" id="teacherModalCancel">Cancel</button>
       <button class="td-btn td-btn-primary" id="teacherModalSave">Save</button>
     </div>
@@ -3892,7 +3913,7 @@
             <summary aria-label="More actions for ${escHtml(t.name)}">⋯</summary>
             <div class="menu">
               <button type="button" data-act="pin">New PIN</button>
-              <button type="button" class="danger" data-act="remove">Remove teacher</button>
+              ${LumioProfiles.isMainOwner && LumioProfiles.isMainOwner(t.id) ? "" : '<button type="button" class="danger" data-act="remove">Remove teacher</button>'}
             </div>
           </details>` : ""}
         </div>`;
@@ -3917,7 +3938,7 @@
             queueSync(); // the new PIN hash must reach the Sheet before they can sign in elsewhere
           });
         };
-        card.querySelector('[data-act="remove"]').onclick = async () => {
+        if (card.querySelector('[data-act="remove"]')) card.querySelector('[data-act="remove"]').onclick = async () => {
           // removeTeacher() hands their students to the first remaining
           // teacher (it never leaves them unassigned) -- say exactly that.
           const heir = LumioProfiles.listTeachers().find(x => x.id !== t.id);
@@ -3952,19 +3973,36 @@
     tchNameInput.value = t ? t.name : "";
     tchPinInput.value = t ? (t.pin || "") : (window.LumioProfiles ? LumioProfiles.randomPin() : "1234");
     tchPinOriginal = tchPinInput.value;
-    tchPinInput.placeholder = (t && !t.pin) ? "•••• (set on another device — leave blank to keep)" : "1234";
+    tchPinInput.placeholder = (t && !t.pin) ? "Hidden · leave blank to keep" : "1234";
     selectedTeacherAvatar = t ? t.avatar : (window.LumioProfiles ? LumioProfiles.TEACHER_AVATARS[Math.floor(Math.random() * LumioProfiles.TEACHER_AVATARS.length)] : "🐥");
     tchNameError.textContent = "";
     document.getElementById("tchOwnerError").textContent = "";
     document.getElementById("tchIsOwner").checked = t ? !!t.isOwner : false;
+    // Owner access: only the main owner (Teacher Lumi) may change it, and never on their own account
+    const canOwn = LumioProfiles.canManageOwners ? LumioProfiles.canManageOwners() : IS_OWNER;
+    const lockedSelf = !!(t && LumioProfiles.isMainOwner && LumioProfiles.isMainOwner(t.id));
+    document.getElementById("tchIsOwner").disabled = !canOwn || lockedSelf;
+    document.querySelector(".td-tm-switch").classList.toggle("locked", !canOwn || lockedSelf);
+    const lockNote = document.getElementById("tchOwnerLock");
+    lockNote.hidden = canOwn && !lockedSelf;
+    lockNote.textContent = lockedSelf ? "Teacher Lumi is the main owner and always keeps owner access." : "Only Teacher Lumi can give or remove owner access.";
     tchPhoto = t ? (t.photoDataUrl || "") : "";
     document.getElementById("tchMeetingLink").value = t ? (t.meetingLink || "") : "";
     renderTchPhoto();
     renderTeacherAvatarGrid();
+    tchHeadUpdate();
     teacherModalOverlay.classList.add("show");
     tchNameInput.focus();
   }
   function closeTeacherModal() { teacherModalOverlay.classList.remove("show"); }
+  // live header in the teacher window: name and role as they are typed
+  function tchHeadUpdate() {
+    document.getElementById("tchHeadName").textContent = tchNameInput.value.trim() || "New teacher";
+    document.getElementById("tchHeadRole").textContent = document.getElementById("tchIsOwner").checked ? "Owner" : "Teacher";
+  }
+  tchNameInput.addEventListener("input", tchHeadUpdate);
+  document.getElementById("tchIsOwner").addEventListener("change", tchHeadUpdate);
+  document.getElementById("teacherModalX").addEventListener("click", () => closeTeacherModal());
   // Teacher photo: square-cropped 200px JPEG data URL on the teacher record
   // (`photoDataUrl`, synced through the Teachers tab) -- same approach as
   // student photos. Shown on the Team cards and in the student booking picker.

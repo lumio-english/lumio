@@ -1400,8 +1400,24 @@
     if (!n) return null;
     return load().teachers.find(t => t.name.trim().toLowerCase() === n) || null;
   }
+  // ---- the main owner (4 Oct 2026) ----
+  // Only the platform's main owner ("Teacher Lumi") may give or take away Owner access, and
+  // nobody can take it away from them or remove their account. Found by name; if that account
+  // was renamed, the longest-standing owner counts. The Apps Script applies the same rule.
+  function mainOwnerOf(teachers) {
+    const list = teachers || [];
+    const byName = list.find(t => String(t.name || "").trim().toLowerCase() === "teacher lumi");
+    if (byName) return byName;
+    const owners = list.filter(t => t.isOwner === true || t.isOwner === "true");
+    return owners.sort((a, b) => String(a.createdAt || "").localeCompare(String(b.createdAt || "")))[0] || list[0] || null;
+  }
+  function mainOwnerId() { const m = mainOwnerOf(load().teachers); return m ? m.id : ""; }
+  function isMainOwner(id) { return !!id && id === mainOwnerId(); }
+  function canManageOwners() { return isMainOwner(getCurrentTeacherId()); }
+
   async function addTeacher({ name, avatar, pin, isOwner, photoDataUrl, meetingLink } = {}) {
     const data = load();
+    if (isOwner && !canManageOwners()) throw new Error("Only Teacher Lumi can give owner access.");
     name = (name || "").trim();
     if (!name) throw new Error("A teacher needs a name.");
     if (findTeacherByName(name)) throw new Error(`"${name}" is already a teacher.`);
@@ -1441,6 +1457,10 @@
       t.pin = newPin;
       t.pinHash = await hashPin(newPin);
     }
+    if (patch.isOwner !== undefined && !!patch.isOwner !== !!t.isOwner) {
+      if (!canManageOwners()) throw new Error("Only Teacher Lumi can change owner access.");
+      if (!patch.isOwner && isMainOwner(t.id)) throw new Error("Teacher Lumi always keeps owner access.");
+    }
     if (patch.isOwner !== undefined) {
       const wouldRemoveLastOwner = t.isOwner && !patch.isOwner && data.teachers.filter(x => x.isOwner).length <= 1;
       if (wouldRemoveLastOwner) throw new Error("There must always be at least one owner.");
@@ -1454,6 +1474,7 @@
     const data = load();
     if (data.teachers.length <= 1) throw new Error("You need at least one teacher account.");
     const target = data.teachers.find(t => t.id === id);
+    if (target && isMainOwner(target.id)) throw new Error("Teacher Lumi's account can't be removed.");
     if (target && target.isOwner && data.teachers.filter(t => t.isOwner).length <= 1) {
       throw new Error("You can't remove the last owner. Make someone else an owner first.");
     }
@@ -2199,6 +2220,7 @@
     listTeachers, getTeacher, findTeacherByName,
     addTeacher, updateTeacher, removeTeacher, verifyTeacherLogin, ensureDefaultTeacher,
     getCurrentTeacherId, setCurrentTeacherId, getCurrentTeacher, clearCurrentTeacher, isCurrentTeacherOwner,
+    mainOwnerId, isMainOwner, canManageOwners,
     getTeacherName, setTeacherName,
     getSyncConfig, configureSync, syncNow, pushStudentPatch, retryPendingPatches, serverMissingFields,
     authQuery, serverCaps, postAction, getTeacherAuth, getStudentAuth, setTeacherAuth, clearTeacherAuth, clearStudentAuth, hashPin,
