@@ -15,7 +15,6 @@ A kid-friendly English learning platform with games, audio, stars, a level map a
 | Printable certificate (`certificates.html`) | ✅ |
 | Full 11-level curriculum map (`teacher-guide/curriculum-map.md`) | ✅ |
 | Your characters & logo wired in (`assets/`) | ✅ |
-| **20 Zoom-ready PowerPoint decks** (`powerpoints/pre-a/`) | ✅ |
 | Polished v2 design system (gradients, soft depth, refined type) | ✅ |
 
 Every lesson runs 5 activities automatically from its JSON:
@@ -97,7 +96,7 @@ v1 stores progress in each device's **localStorage**, so the teacher dashboard o
 
 ## 🖥️ Teaching live on Zoom / Google Meet
 
-Each lesson has a matching professional deck in `powerpoints/pre-a/` (≈22–28 slides):
+Each lesson has a matching live deck (open it from the teacher panel → Materials → ▶ Present):
 branded cover → class rules → today's plan → warm-up song → "New words!" divider
 → one slide per word (big visual, word, Arabic, "Say it" sentence, progress dots, character co-host)
 → "Let's practice!" divider → "Your turn!" question/answer rounds → quick quiz with A/B/C/D chat voting
