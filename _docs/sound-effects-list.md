@@ -22,4 +22,4 @@ Students can mute effects and music with the round speaker button on games and s
 
 ## How to deliver
 
-Send the files to Claude (or upload them into `assets/sfx/` on GitHub with these names). Claude checks the volume of each so they all sound equally loud, then publishes.
+Send the files to Claude (or upload them into `assets/sfx/` on GitHub with these names). Claude checks the volume of each so they all sound equally loud, then publishes: `python3 _docs/level-sfx.py <folder with the downloads>` trims the silence and masters every file to -16 LUFS (music loops are not trimmed or faded, so they stay seamless) and writes them to `assets/sfx/`.
