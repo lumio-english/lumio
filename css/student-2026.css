@@ -182,3 +182,65 @@ body.s26-has3d.s26-list .s26-map3d canvas,body.s26-has3d.s26-list .s26-maplegend
 #secHub .sd-hubb-trail{display:none}
 #secHub .sd-hubb-btn{flex-shrink:0;padding:8px 14px!important}
 @media (max-width:760px){#secHub .sd-hub-banners{grid-template-columns:minmax(0,1fr)}#secHub .sd-hubb{min-height:0}}
+
+/* ===== Today's lesson card (js/student-mission.js) ===== */
+.sd-hero-card{padding:26px 26px 24px!important;border-radius:26px!important}
+.sd-hero-card::after{display:none!important}
+.sd-hero-eyebrow{font-size:12px!important;letter-spacing:.14em!important}
+.sd-hero-title{font-family:var(--s-display)!important;font-size:clamp(30px,3.4vw,40px)!important;letter-spacing:-.02em;margin:4px 0 0!important;line-height:1.05}
+.s26-lname{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin-top:4px;font-weight:800;font-size:18px;color:var(--s-od)}
+.s26-lname .ar{font-family:Tajawal,sans-serif;font-weight:700;color:var(--s-mut);font-size:17px}
+.sd-hero-sub{margin:8px 0 0!important;font-size:15px!important}
+.s26-steps{list-style:none;margin:18px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;position:relative}
+.s26-steps li{position:relative;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:16px;background:#FFF8F2;border:1px solid #F3E3D6;min-width:0}
+.s26-steps .dot{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;flex-shrink:0;background:#fff;color:#C9B2A0;border:2px solid #F3DCCB}
+.s26-steps .dot svg{width:17px;height:17px}
+.s26-steps .t{display:flex;flex-direction:column;min-width:0;line-height:1.2}
+.s26-steps b{font-size:14px;color:#111}
+.s26-steps small{font-size:12px;font-weight:700;color:var(--s-mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.s26-steps li.done .dot{background:var(--s-o);border-color:var(--s-o);color:#fff}
+.s26-steps li.now{background:#fff;border-color:var(--s-o);box-shadow:0 10px 22px -16px rgba(194,65,12,.7)}
+.s26-steps li.now .dot{border-color:var(--s-o);color:var(--s-od);animation:s26Ring 2s ease-out infinite}
+.s26-steps li.now small{color:var(--s-od)}
+@keyframes s26Ring{0%{box-shadow:0 0 0 0 rgba(249,115,22,.45)}100%{box-shadow:0 0 0 10px rgba(249,115,22,0)}}
+#missionBtn{display:flex!important;align-items:center;gap:12px;width:100%;margin-top:18px!important;padding:8px 10px 8px 8px!important;border-radius:18px!important;background:linear-gradient(135deg,#FB923C,#F97316 55%,#EA580C)!important;color:#fff!important;font:800 18px 'Nunito',sans-serif!important;border:0!important;box-shadow:0 18px 30px -18px rgba(194,65,12,.9)!important;text-decoration:none}
+#missionBtn .ic{width:44px;height:44px;border-radius:14px;background:#fff;color:var(--s-o);display:grid;place-items:center;flex-shrink:0}
+#missionBtn .ic svg{width:22px;height:22px}
+#missionBtn .lb{flex:1;min-width:0}
+#missionBtn .ar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.18)}
+#missionBtn .ar svg{width:18px;height:18px;transition:transform .25s}
+#missionBtn:hover .ar svg{transform:translateX(4px)}
+.s26-toolhead{margin-top:20px;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--s-mut)}
+.s26-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+a.s26-tool{display:flex!important;align-items:center;gap:12px;margin:0!important;padding:12px!important;border-radius:16px!important;background:#fff!important;border:1px solid #F1E4DA!important;color:#111!important;text-decoration:none;box-shadow:none!important;transition:border-color .2s,transform .2s,box-shadow .2s;min-width:0}
+a.s26-tool:hover{border-color:var(--s-o)!important;transform:translateY(-2px);box-shadow:0 12px 24px -18px rgba(194,65,12,.7)!important}
+a.s26-tool .ic{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;flex-shrink:0;background:#FFF1E6;color:var(--s-od)}
+a.s26-tool:first-child .ic{background:var(--s-o);color:#fff}
+a.s26-tool .ic svg{width:21px;height:21px}
+a.s26-tool .tx{display:flex;flex-direction:column;min-width:0;line-height:1.25}
+a.s26-tool b{font-size:15px;font-weight:800}
+a.s26-tool small{font-size:12.5px;font-weight:700;color:var(--s-mut)}
+@media (max-width:520px){.s26-steps{grid-template-columns:minmax(0,1fr)}.s26-tools{grid-template-columns:minmax(0,1fr)}.sd-hero-card{padding:20px 18px!important}}
+@media (prefers-reduced-motion:reduce){.s26-steps li.now .dot{animation:none}}
+/* number cards */
+.sd-stat-icon.s26-sicon{width:48px!important;height:48px!important;border-radius:15px!important;display:grid!important;place-items:center;background:#FFF1E6!important;color:var(--s-od)!important;font-size:0}
+.sd-stat-icon.s26-sicon0{background:linear-gradient(135deg,#FB923C,#F97316)!important;color:#fff!important}
+.sd-stat-icon.s26-sicon svg{width:24px;height:24px}
+.sd-stat-card b{font-family:var(--s-display)!important;font-size:24px!important;letter-spacing:-.02em}
+/* top menu: icon + word */
+.s26-mic{display:inline-grid;place-items:center;width:18px;height:18px;margin-inline-end:7px;color:var(--s-od);vertical-align:-3px}
+.s26-mic svg{width:18px;height:18px}
+.sd-topbar .pg-launch-btn,.sd-topbar .sd-logout{display:inline-flex;align-items:center;font-weight:800!important;border-radius:999px!important}
+#streakChip .flame{display:inline-grid;width:18px;height:18px;color:var(--s-o)}
+#streakChip .flame svg{width:18px;height:18px}
+@media (max-width:760px){
+  .sd-topbar.open{row-gap:6px}
+  .sd-topbar.open .pg-launch-btn:not([style*="display:none"]):not([style*="display: none"]),.sd-topbar.open .sd-logout{flex:1 0 100%;justify-content:flex-start;border-radius:14px!important;padding:13px 14px!important;background:#fff!important;font-size:15px!important}
+  .sd-topbar.open .s26-mic{width:34px;height:34px;border-radius:10px;background:#FFF1E6;margin-inline-end:12px}
+  .sd-topbar.open .sd-logout{color:#B42318!important}
+  .sd-topbar.open .sd-logout .s26-mic{color:#B42318;background:#FDECEC}
+}
+.sd-hero{align-items:start!important}
+.sd-side-stats{justify-content:flex-start!important;gap:12px!important}
+.sd-side-stats .sd-stat-card{flex:0 0 auto!important;padding:16px 18px!important}
+@media (max-width:760px){.sd-topbar.open .sd-logout{order:99}}
