@@ -61,6 +61,9 @@
   </header>
   <a class="back" href="student.html" id="backLink">← My dashboard · لوحتي</a>
 
+  <h2>New to Lumio? <span class="ar">جديد على Lumio؟</span></h2>
+  <div class="grid" id="newGrid"></div>
+  <h2>Subscribed? Start here <span class="ar">مشتركون؟ ابدأوا من هنا</span></h2>
   <div class="grid" id="startGrid"></div>
   <h2>Every lesson, step by step <span class="ar">كل درس خطوة بخطوة</span></h2>
   <div class="grid" id="howGrid"></div>
@@ -74,6 +77,8 @@
   const G = "assets/guides/";
   const START = { key: "lumio-guide-0-start-here", n: "★", t: "Start here — your first day", ar: "ابدأوا من هنا — اليوم الأول",
     d: "From the Student ID & PIN to the first class: logging in, the dashboard, the learning routine, booking, joining on Teams, and what parents can see. Links every other guide.", pdf: true };
+  const NEW = { key: "lumio-guide-free-test-and-trial", n: "🎯", t: "Free level test & trial class", ar: "اختبار المستوى المجاني والحصة التجريبية",
+    d: "Take the placement test, book the free trial on WhatsApp, and join it on Teams — then subscribe with the same Student ID & PIN.", pdf: true };
   const HOW = [
     { key: "lumio-guide-1-lesson-prep", n: 1, t: "Lesson prep", ar: "تحضير الدرس", d: "New words, quick games, stars — before every class." },
     { key: "lumio-guide-2-book-a-class", n: 2, t: "Book a class", ar: "حجز حصة", d: "Day → time → teacher → book." },
@@ -96,6 +101,7 @@
         <div class="acts"><a href="${G}${g.key}.jpg" target="_blank" rel="noopener">🖼 Guide · الدليل</a><a class="v" href="${G}${g.key}.mp4" target="_blank" rel="noopener">▶ Video · فيديو</a>${g.pdf ? `<a class="p" href="${G}${g.key}.pdf" target="_blank" rel="noopener">📄 PDF</a>` : ""}</div>
       </div></div>`;
   }
+  document.getElementById("newGrid").innerHTML = card(NEW, "start");
   document.getElementById("startGrid").innerHTML = card(START, "start");
   document.getElementById("howGrid").innerHTML = HOW.map(g => card(g)).join("");
   document.getElementById("installGrid").innerHTML = INSTALL.map(g => card(g, "", "i")).join("");

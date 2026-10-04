@@ -207,6 +207,16 @@ body{font-family:'Nunito',sans-serif;background:var(--lumio-page-bg);background-
 .btn-print:hover{background:var(--lumio-border);}
 .btn-restart{background:var(--blue);color:#fff;}
 .btn-restart:hover{background:var(--blue-mid);}
+/* Next step after the result: book the free trial class on WhatsApp */
+.trial-next{margin:0 32px 18px;background:#FFF8EC;border:2px solid #F97316;border-radius:18px;padding:16px 18px;text-align:center}
+.trial-next h4{font-family:'Baloo 2',sans-serif;font-size:1.15rem;margin:0 0 2px;color:#43301F}
+.trial-next .ar{font-family:'Cairo',sans-serif;direction:rtl;font-weight:700;color:#8A7160;font-size:.95rem}
+.btn-trial-wa{display:flex;align-items:center;justify-content:center;gap:8px;margin:12px 0 10px;padding:15px 18px;border-radius:14px;background:#25D366;color:#fff;font-weight:800;font-size:1rem;text-decoration:none;box-shadow:0 6px 16px rgba(37,211,102,.35)}
+.btn-trial-wa:hover{background:#1EBE5A}
+.trial-next .keep{font-size:.82rem;font-weight:700;color:#8A7160;line-height:1.5}
+.trial-next .keep b{color:#C2410C;letter-spacing:1px}
+@media (max-width:600px){ .trial-next{margin:0 16px 16px} }
+@media print{ .trial-next{display:none} }
 
 /* LEVEL 0-9 SCALE */
 .level-scale{display:flex;gap:4px;margin-bottom:24px;}
@@ -558,6 +568,12 @@ body { overflow-x: hidden; -webkit-text-size-adjust: 100%; }
         <div class="tips-title">Study Tips For You</div>
         <div id="tips-list"></div>
       </div>
+    </div>
+    <div class="trial-next" id="trialNext">
+      <h4>🎓 Next: your free trial class</h4>
+      <div class="ar">الخطوة التالية: الحصة التجريبية المجانية</div>
+      <a class="btn-trial-wa" id="trialWa" href="https://wa.me/201124882493" target="_blank" rel="noopener">💬 Book my free trial on WhatsApp · احجز على واتساب</a>
+      <div class="keep" id="trialKeep"></div>
     </div>
     <div class="result-actions">
       <button class="btn-action btn-print" onclick="window.print()">Print Result</button>
@@ -1791,6 +1807,21 @@ function showResult(){
   document.getElementById('level-desc-big').textContent=aboveTop
     ? 'You scored above our highest level, so you start in Level '+MAX_LUMIO_LEVEL+' — our most advanced course. ' + info.desc
     : info.desc;
+
+  // Next step: book the free trial on WhatsApp, prefilled with the result
+  // (Arabic first, then English, so whoever answers sees name/level/ID).
+  try {
+    const lvl = LUMIO_LEVEL_NAMES[level];
+    const loginId = (registeredStudent && registeredStudent.loginCode) || '';
+    const msg = 'مرحباً! أنهينا اختبار تحديد المستوى ونرغب في حجز الحصة التجريبية المجانية.\n'
+      + 'الاسم: ' + studentName + (age ? ' · العمر: ' + age : '') + '\n'
+      + 'Level: ' + lvl + ' · Score: ' + total + '/' + SCORED_TOTAL + (loginId ? ' · Student ID: ' + loginId : '') + '\n\n'
+      + "Hi! We finished the placement test and would like to book the free trial class.";
+    document.getElementById('trialWa').href = 'https://wa.me/201124882493?text=' + encodeURIComponent(msg);
+    document.getElementById('trialKeep').innerHTML = (loginId ? 'Student ID <b>' + loginId + '</b> · ' : '')
+      + 'Keep your ID and PIN — after you subscribe they open your Lumio account.'
+      + '<div class="ar">احتفظوا برقم الطالب والرمز السري — بعد الاشتراك يفتحان حسابكم في Lumio.</div>';
+  } catch (e) {}
 
   // Tips
   const tips=TIPS[rawLevel]||TIPS[0];

@@ -5,6 +5,7 @@ MP4, same look as the install guides) from REAL screenshots of the site:
     1 lesson-prep      2 book-a-class     3 fixed-schedule
     4 cancel-a-class   5 homework         6 bonus-game
     0 onboarding       (start here — parent + student, links all the others)
+    free-test-and-trial (new families: placement test -> WhatsApp -> trial on Teams)
 
 Run from the repo root:   python3.12 _docs/guides/build_student_guides.py [keys...] [--no-capture]
 
@@ -270,6 +271,84 @@ def capture():
         srv.terminate()
 
 
+def capture_prospect():
+    """Guide 7 (new families): the placement test at phone size + two trial-class slides."""
+    from playwright.sync_api import sync_playwright
+    srv = subprocess.Popen([sys.executable, "-m", "http.server", "8799"], cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL); time.sleep(1.5)
+    BASE = "http://localhost:8799"
+    H = {"Access-Control-Allow-Origin": "*"}
+    try:
+        with sync_playwright() as p:
+            b = p.chromium.launch(executable_path="/opt/pw-browsers/chromium")
+            ctx = b.new_context(service_workers="block", viewport={"width": VW, "height": VH}, device_scale_factor=2)
+            pg = ctx.new_page(); errs = []; pg.on("pageerror", lambda e: errs.append(str(e)))
+            pg.route("**/script.google.com/**", lambda r, q: r.fulfill(status=200, content_type="application/json", headers=H, body='{"ok":false}'))
+
+            def snap(name, sel=None, idx=0, wait=350):
+                if sel is not None and not pg.evaluate(HL_JS, [sel, idx]): print(f"  ! {name}: {sel} not found")
+                pg.wait_for_timeout(wait); pg.screenshot(path=str(TMP / f"{name}.png")); pg.evaluate(HL_JS, [None, 0])
+
+            pg.goto(f"{BASE}/lumio-pro-test.html"); pg.wait_for_timeout(1500)
+            pg.evaluate("localStorage.clear()"); pg.reload(); pg.wait_for_timeout(1500)
+            pg.fill("#student-name", "Yousef"); pg.fill("#student-phone", "501234567"); pg.fill("#student-age", "8")
+            pg.select_option("#student-self-level", "beginner")
+            snap("pt_form", ".splash-input-group")
+            snap("pt_start", ".btn-start")
+            pg.click(".btn-start"); pg.wait_for_timeout(900)
+            for k in "25":
+                pg.click(f"#regPinPad button:text-is('{k}')"); pg.wait_for_timeout(120)
+            snap("pt_pin", "#regPinPad")
+            for k in "80" + "2580":
+                pg.click(f"#regPinPad button:text-is('{k}')"); pg.wait_for_timeout(120)
+            pg.wait_for_timeout(1500)
+            snap("pt_id", "#showIdCode")
+            (TMP / "prospect_id.txt").write_text(pg.inner_text("#showIdCode").strip())
+            pg.click("#page-showid .btn-start"); pg.wait_for_timeout(700)
+            snap("pt_section", ".btn-go")
+            pg.click(".btn-go"); pg.wait_for_timeout(600)
+            # show an easy (A1) question of each kind, like a young child's first ones
+            pg.evaluate("""() => { const i = Math.max(0, LISTENING_QS.findIndex(q => q.level === 'A1')); currentQ = i; renderQuestion(i); selectOption(i, LISTENING_QS[i].answer); }""")
+            pg.wait_for_timeout(300)
+            snap("pt_listen", ".btn-audio")
+            pg.evaluate("""() => { currentQ = WRITE_START + Math.max(0, WRITING_QS.findIndex(q => /^A1/.test(q.level))); sectionAnnounced = {listening:true,reading:true,writing:true,grammar:false}; renderQuestion(currentQ); }""")
+            pg.wait_for_timeout(400)
+            wi = pg.evaluate('currentQ')
+            prompt = pg.evaluate("WRITING_QS[currentQ - WRITE_START].text").lower()
+            ans = ("My favourite animal is a cat. It is small and white. It eats fish." if "animal" in prompt else
+                   "There are five people in my family. My dad likes football. My mum likes books." if "family" in prompt else
+                   "My name is Yousef. I am 8 years old. I like football.")
+            pg.fill(f"#write-{wi}", ans)
+            pg.evaluate(f"saveWriting({wi})")
+            snap("pt_write", ".writing-area")
+            # a believable Level 2 result: 17 of 36 right
+            pg.evaluate("""() => { let n = 0;
+              LISTENING_QS.forEach((q,i) => { if (n < 7) { answers[i] = q.answer; n++; } });
+              READING_QS.forEach((q,i) => { if (n < 13) { answers[READ_START+i] = q.answer; n++; } });
+              GRAMMAR_QS.forEach((q,i) => { if (n < 17) { answers[GRAMMAR_START+i] = q.answer; n++; } });
+              currentQ = TOTAL - 1; sectionAnnounced = {listening:true,reading:true,writing:true,grammar:true}; renderQuestion(currentQ); }""")
+            pg.wait_for_timeout(400)
+            snap("pt_finish", "#btn-next")
+            pg.evaluate("showResult()"); pg.wait_for_timeout(2200)
+            pg.evaluate("document.querySelectorAll('.confetti-piece').forEach(e => e.remove())")
+            snap("pt_result", ".level-display")
+            snap("pt_wa", "#trialWa")
+            (TMP / "prospect_wa.txt").write_text(pg.get_attribute("#trialWa", "href"))
+
+            # trial class slides (landscape, as the family sees them on the teacher's shared screen)
+            tp = ctx.new_page(); tp.set_viewport_size({"width": 1280, "height": 720})
+            tp.goto(f"{BASE}/present-trial.html?level=level1&names=Yousef,Lina,Sami"); tp.wait_for_timeout(2500)
+            tp.screenshot(path=str(TMP / "trial_s1.png"))
+            tp.keyboard.press("ArrowRight"); tp.wait_for_timeout(1800)
+            tp.screenshot(path=str(TMP / "trial_s2.png"))
+            for i in range(3, 47):
+                tp.keyboard.press("ArrowRight"); tp.wait_for_timeout(900)
+                tp.screenshot(path=str(TMP / f"trial_s{i}.png"))
+            print("prospect capture errors:", errs[:5])
+            b.close()
+    finally:
+        srv.terminate()
+
+
 
 # ------------------------------------------------------------------ posters
 EXTRA_CSS = """
@@ -286,6 +365,24 @@ EXTRA_CSS = """
 .cred .bub .ar{direction:rtl;font-family:'Cairo',sans-serif;font-weight:700}
 .cred .k{display:flex;justify-content:space-between;background:#FFF3D6;border-radius:8px;padding:6px 10px;margin-top:6px;font-weight:800;direction:ltr}
 .cred .k b{color:#C2410C;letter-spacing:2px;font-size:17px}
+.cred .bub.out{background:#DCF8C6;margin:16px 12px 0 46px;border-radius:14px 4px 14px 14px}
+.cred .bub.in2{margin-right:30px}
+.cred .tm{font-size:10.5px;color:#7a8a80;text-align:right;margin-top:4px}
+.cred .lnk{color:#0B6EC2;font-weight:800;word-break:break-all;direction:ltr;display:block}
+.cred .bub.small{font-size:12.6px;line-height:1.5;padding:10px 12px}
+.join{height:100%;background:#F5F5F7;display:flex;flex-direction:column;font-family:'Nunito',sans-serif}
+.join .top{background:#4B4F9C;color:#fff;padding:16px 16px 14px;font-weight:800;font-size:16px}
+.join .top small{display:block;font-weight:600;opacity:.85;font-size:12px}
+.join .pv{margin:18px 16px 0;height:190px;border-radius:14px;background:#2B2B33;display:flex;align-items:center;justify-content:center}
+.join .pv div{width:84px;height:84px;border-radius:50%;background:#F97316;color:#fff;font-family:'Baloo 2';font-weight:800;font-size:42px;display:flex;align-items:center;justify-content:center}
+.join .tg{display:flex;gap:10px;justify-content:center;margin:12px 0 0}
+.join .tg span{background:#fff;border:1px solid #ddd;border-radius:999px;padding:6px 14px;font-weight:800;font-size:13px}
+.join .lbl{margin:18px 18px 6px;font-weight:800;font-size:13px;color:#555}
+.join .in{margin:0 16px;background:#fff;border:2px solid #4B4F9C;border-radius:10px;padding:11px 12px;font-weight:800;font-size:16px}
+.join .go{margin:16px 16px 0;background:#4B4F9C;color:#fff;border-radius:10px;padding:13px;text-align:center;font-weight:800;font-size:16px;outline:5px solid #F97316;outline-offset:4px}
+.join .hand{text-align:center;font-size:40px;margin-top:6px}
+.tstack{width:360px;display:flex;flex-direction:column;gap:14px;justify-content:center}
+.tstack img{width:100%;border-radius:16px;box-shadow:0 8px 20px rgba(67,48,31,.18);border:4px solid #fff;display:block}
 .gidx{margin:34px 64px 0;background:#fff;border-radius:28px;padding:26px 30px;box-shadow:0 10px 30px rgba(67,48,31,.08)}
 .gidx h3{font-family:'Baloo 2';font-size:30px;margin-bottom:4px}
 .gidx h3 span{color:var(--or)}
@@ -314,8 +411,8 @@ S = B.step
 def steps(*rows):
     return "".join(S(i + 1, *r) for i, r in enumerate(rows))
 
-def credentials_art():
-    demo_id = (TMP / "demo_id.txt").read_text().strip() if (TMP / "demo_id.txt").exists() else "497444"
+def credentials_art(demo_id=None):
+    demo_id = demo_id or ((TMP / "demo_id.txt").read_text().strip() if (TMP / "demo_id.txt").exists() else "497444")
     return ('<div class="phone ios"><div class="screen"><div class="cred"><div class="bar"><img src="ICON"><div>Lumio English<div style="font-size:11px;font-weight:600;opacity:.8">WhatsApp</div></div></div>'
             '<div class="bub"><div class="ar">أهلاً بكم في Lumio English 🎉<br>تم تفعيل اشتراك يوسف. بيانات الدخول:</div>'
             f'<div class="k">Student ID <b>{demo_id}</b></div><div class="k">PIN <b>••••</b></div>'
@@ -323,6 +420,27 @@ def credentials_art():
 
 def install_art():
     return f'<div class="phone ios"><div class="screen">{B.home_icons("ios", labels=["Phone","Messages","Camera","Photos","WhatsApp","Lumio","YouTube","Maps","Clock","Settings","Calendar","Safari"])}</div></div>'
+
+def _pid():
+    f = TMP / "prospect_id.txt"
+    return f.read_text().strip() if f.exists() else "515126"
+
+def trial_chat_art():
+    pid = _pid()
+    return ('<div class="phone ios"><div class="screen"><div class="cred"><div class="bar"><img src="ICON"><div>Lumio English<div style="font-size:11px;font-weight:600;opacity:.8">WhatsApp</div></div></div>'
+            '<div class="bub out small"><div class="ar">مرحباً! أنهينا اختبار تحديد المستوى ونرغب في حجز الحصة التجريبية المجانية.<br>الاسم: Yousef · العمر: 8</div>'
+            f'<div style="direction:ltr">Level 2 · My World · Score 17/36 · Student ID {pid}</div><div class="tm">5:02 PM ✓✓</div></div>'
+            '<div class="bub in2 small"><div class="ar">أهلاً بكم! 🎉 تم حجز الحصة التجريبية المجانية ليوسف:<br><b>الأحد · ٥:٠٠ مساءً</b> بتوقيت السعودية — Level 2</div>'
+            '<div style="margin-top:6px">Join on Teams 👇</div><span class="lnk">teams.microsoft.com/l/meetup-join/…</span><div class="tm">5:06 PM</div></div>'
+            '</div></div></div>')
+
+def join_art():
+    return ('<div class="phone ios"><div class="screen"><div class="join"><div class="top">Microsoft Teams<small>Lumio English · Trial class</small></div>'
+            '<div class="pv"><div>Y</div></div><div class="tg"><span>🎥 Camera on</span><span>🎙 Mic on</span></div>'
+            '<div class="lbl">Type your name</div><div class="in">Yousef</div><div class="go">Join now</div><div class="hand">👆</div></div></div></div>')
+
+def trial_art():
+    return '<div class="tstack">' + "".join(f'<img src="SHOT:{n}">' for n in ("trial_s2", "trial_s21", "trial_s42")) + '</div>'
 
 def guides_index():
     cards = "".join(f'<div class="g"><div class="n">{n}</div><div><b>{en}</b><span>{ar}</span></div></div>' for n, (en, ar) in GUIDE_TITLES.items())
@@ -472,16 +590,51 @@ def guide_defs():
         tip_en='💬 <span>Stuck at any step?</span> Every numbered guide is one tap away: <b>📘 Guides</b> on the dashboard (or scan this code). Still stuck? Message your teacher on WhatsApp.',
         tip_ar='واجهتم صعوبة؟ كل دليل مرقّم على بُعد ضغطة: زر <b>📘 Guides · الأدلة</b> في الصفحة الرئيسية (أو امسحوا الرمز). وإن احتجتم مساعدة راسلوا المعلّم على واتساب.',
         index=True)
+    D["guide-free-test-and-trial"] = dict(
+        title='Free <span>level test</span> &amp; trial class', sub_en="For new families · find the right level, then try a real class — free, no commitment",
+        sub_ar="للعائلات الجديدة · اعرفوا المستوى المناسب ثم جرّبوا حصة حقيقية — مجاناً وبدون أي التزام",
+        qr_url=f"https://{SITE}/lumio-pro-test.html", pdf=True,
+        steps=steps(
+            (shot("pt_form"), 'Open the test → fill in the details', f"Go to <b>{SITE}/lumio-pro-test.html</b> (or scan the code below). Child's name, the parent's WhatsApp number (pick the country), age, and — optional — the current English level. Then tap <b>Start My Test</b>.",
+             'افتحوا الاختبار ← أدخلوا البيانات', "ادخلوا إلى الرابط (أو امسحوا الرمز في الأسفل). اسم الطفل، رقم واتساب ولي الأمر (اختاروا الدولة)، العمر، ومستوى الإنجليزية الحالي — اختياري. ثم اضغطوا <b>Start My Test</b>."),
+            (shot("pt_pin"), 'Create a 4-digit <span class="key">PIN</span>', "Pick 4 numbers, then type the same 4 again to confirm.",
+             'أنشئوا <span class="key">رمزاً سرياً</span> من ٤ أرقام', "اختاروا ٤ أرقام ثم اكتبوها مرة أخرى للتأكيد."),
+            (shot("pt_id"), 'Save your <span class="key">Student ID</span>', "Take a screenshot. The ID and PIN are yours to keep — after you subscribe, the same ID and PIN open the child's Lumio account.",
+             'احفظوا <span class="key">رقم الطالب</span>', "التقطوا صورة للشاشة. رقم الطالب والرمز السري لكم — بعد الاشتراك يفتحان حساب الطفل في Lumio بنفس البيانات."),
+            (shot("pt_section"), '4 parts: Listening · Reading · Writing · Grammar', "Each part starts with a short intro — tap <b>Let's Go!</b> About 30–40 minutes in all; the clock shows 45 minutes.",
+             '٤ أجزاء: استماع · قراءة · كتابة · قواعد', "كل جزء يبدأ بمقدمة قصيرة — اضغطوا <b>Let's Go!</b> حوالي ٣٠–٤٠ دقيقة، والمؤقت ٤٥ دقيقة."),
+            (shot("pt_listen"), 'Tap <span class="key">▶</span> to listen, then choose', "Listen as many times as needed, pick an answer, tap Next. Back goes to the previous question. Not sure? A guess is fine.",
+             'اضغطوا <span class="key">▶</span> للاستماع ثم اختاروا', "استمعوا أكثر من مرة إن احتجتم، اختاروا الإجابة ثم Next. وBack للسؤال السابق. غير متأكدين؟ لا بأس بالتخمين."),
+            (shot("pt_write"), 'Writing: a few sentences', "Write what you can. A teacher reads it; it doesn't change the automatic level.",
+             'الكتابة: بضع جمل', "اكتبوا ما تستطيعون. يقرأها المعلّم، ولا تغيّر المستوى التلقائي."),
+            (shot("pt_finish"), 'Last question → <span class="key">Finish Test</span>', "The result appears straight away.",
+             'السؤال الأخير ← <span class="key">Finish Test</span>', "تظهر النتيجة فوراً."),
+            (shot("pt_result"), 'Your <span class="key">Lumio level</span>', "The score out of 36 and the matching level, from Pre-A (first words) to Level 6 — with study tips. Screenshot or print it.",
+             '<span class="key">مستوى Lumio</span> الخاص بكم', "الدرجة من ٣٦ والمستوى المناسب، من Pre-A (الكلمات الأولى) إلى المستوى ٦ — مع نصائح للمذاكرة. التقطوا صورة أو اطبعوها."),
+            (shot("pt_wa"), 'Tap <span class="key">Book my free trial on WhatsApp</span>', "WhatsApp opens with the name, age, level and Student ID already written — just press Send.",
+             'اضغطوا <span class="key">احجز على واتساب</span>', "يفتح واتساب والرسالة جاهزة بالاسم والعمر والمستوى ورقم الطالب — فقط اضغطوا إرسال."),
+            (trial_chat_art(), 'We reply with the <span class="key">day, time &amp; Teams link</span>', "Tell us the days and times that suit you. The trial is a real class with up to 4 children at the same level (or one-to-one).",
+             'نردّ عليكم <span class="key">باليوم والوقت ورابط Teams</span>', "أخبرونا بالأيام والأوقات المناسبة. الحصة التجريبية حصة حقيقية مع حتى ٤ أطفال في نفس المستوى (أو فردية)."),
+            (join_art(), 'Trial day: tap the link → <span class="key">Join now</span>', "Install the free Microsoft Teams app on a phone or tablet (on a computer it opens in the browser). No account needed: type the child's name and join 5 minutes early, camera and mic on, headphones ready.",
+             'يوم الحصة: اضغطوا الرابط ← <span class="key">Join now</span>', "ثبّتوا تطبيق Microsoft Teams المجاني على الجوال أو التابلت (وعلى الكمبيوتر يفتح في المتصفح). لا حاجة لحساب: اكتبوا اسم الطفل وادخلوا قبل ٥ دقائق، الكاميرا والميكروفون مفعّلان، والسماعات جاهزة."),
+            (trial_art(), 'In the trial: friends, words, challenges, a game', "Meet Lumi and the characters, learn the level's words with pictures, answer team challenges, and try the level's own game. Parents are welcome to sit nearby.",
+             'في الحصة: شخصيات وكلمات وتحديات ولعبة', "يتعرّف الطفل على Lumi والشخصيات، ويتعلّم كلمات المستوى بالصور، ويشارك في تحديات الفريق، ويجرّب لعبة المستوى. يمكن لولي الأمر الجلوس بالقرب."),
+            (credentials_art(_pid()), 'Loved it? Subscribe on WhatsApp', "After the trial the teacher shares feedback. To join, reply on WhatsApp — once the subscription is active, log in with the same Student ID and PIN and follow the Start-here guide.<br><span class=\"gref\">★ Start here · your first day</span>",
+             'أعجبتكم؟ اشتركوا عبر واتساب', "بعد الحصة يرسل المعلّم ملاحظاته. للاشتراك ردّوا على واتساب — وبعد تفعيل الاشتراك ادخلوا بنفس رقم الطالب والرمز السري واتبعوا دليل «ابدأوا من هنا».<br><span class=\"gref\">★ ابدأوا من هنا · اليوم الأول</span>"),
+        ),
+        tip_en='📋 <span>Test-day tips:</span> a quiet room, headphones, a tablet or computer if you have one. Parents can explain instructions in Arabic, but let the child answer alone — the right level makes the classes fit. Scan to start the test.',
+        tip_ar='نصائح يوم الاختبار: غرفة هادئة، سماعات، وتابلت أو كمبيوتر إن وُجد. يمكن لولي الأمر شرح التعليمات بالعربية، لكن دعوا الطفل يجيب وحده — المستوى الصحيح يجعل الحصص مناسبة له. امسحوا الرمز لبدء الاختبار.')
     return D
 
 
-def build_qr():
+def build_qr(url=None, name="qr-guides.png"):
     import qrcode
-    img = qrcode.make(f"https://{SITE}/guides.html", box_size=10, border=2)
-    p = TMP / "qr-guides.png"; img.save(p); return p
+    img = qrcode.make(url or f"https://{SITE}/guides.html", box_size=10, border=2)
+    p = TMP / name; img.save(p); return p
 
 
 def render(key, cfg, qr):
+    if cfg.get("qr_url"): qr = build_qr(cfg["qr_url"], f"qr-{key}.png")
     from playwright.sync_api import sync_playwright
     from PIL import Image
     html = B.page(cfg["title"], cfg["sub_en"], cfg["sub_ar"], cfg["steps"], cfg["tip_en"], cfg["tip_ar"])
@@ -512,7 +665,7 @@ def render(key, cfg, qr):
         for i, el in enumerate(pg.query_selector_all(".step, .gidx, .tip")):
             bb = el.bounding_box(); f = TMP / f"{key}_f{i}.png"
             pg.screenshot(path=str(f), clip={"x": bb["x"] - 24, "y": bb["y"] - 24, "width": bb["width"] + 48, "height": bb["height"] + 32}); frames.append(f)
-        if cfg.get("index"):   # the onboarding guide also ships as a paged PDF for parents
+        if cfg.get("index") or cfg.get("pdf"):   # the onboarding guides also ship as a paged PDF for parents
             pg.emulate_media(media="print")
             pg.pdf(path=str(OUT / f"lumio-{key}.pdf"), width="1080px", height="1920px", print_background=True,
                    margin={"top": "30px", "bottom": "30px", "left": "0", "right": "0"})
@@ -550,7 +703,8 @@ def video(key, frames):
 if __name__ == "__main__":
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     if "--no-capture" not in sys.argv:
-        capture()
+        if args != ["guide-free-test-and-trial"]: capture()
+        if not args or "guide-free-test-and-trial" in args: capture_prospect()
     qr = build_qr()
     defs = guide_defs()
     for k in (args or list(defs)):
