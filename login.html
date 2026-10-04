@@ -1,7 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<script>
+(function () { var l = 'ar'; try { l = localStorage.getItem('lumio_lang') === 'en' ? 'en' : 'ar'; } catch (e) {}
+  document.documentElement.lang = l; document.documentElement.dir = l === 'ar' ? 'rtl' : 'ltr'; })();
+</script>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/logo/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="assets/logo/favicon-16.png">
@@ -15,70 +19,133 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Login — Lumio English</title>
 <link rel="stylesheet" href="css/brand.css">
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Nunito:wght@600;700;800&family=Tajawal:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
-  body{opacity:0;animation:pageFadeIn .45s ease forwards}
-  @keyframes pageFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-
-  .btn{transition:transform .16s cubic-bezier(.22,1,.36,1),box-shadow .16s ease}
-  .btn:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(0,0,0,.12)}
-  .btn:active{transform:translateY(0) scale(.96);box-shadow:0 3px 8px rgba(0,0,0,.1)}
-  .btn:focus-visible{outline:3px solid rgba(255,138,61,.45);outline-offset:2px}
-
-  .lg-pin-dots{display:flex;gap:10px;justify-content:center;margin:14px 0}
-  .lg-pin-dot{width:16px;height:16px;border-radius:50%;background:#ECE4D6;border:2px solid #DCD2BE;transition:transform .15s ease,background .15s ease}
-  .lg-pin-dot.filled{background:var(--orange,#FF8A3D);border-color:var(--orange,#FF8A3D);transform:scale(1.15)}
-  .lg-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:220px;margin:0 auto}
-  .lg-pad button{
-    padding:12px 0;border-radius:12px;border:1px solid var(--line,#eee);background:#fff;font-weight:800;
-    font-size:1.05rem;cursor:pointer;font-family:inherit;transition:transform .12s ease,background .12s ease,box-shadow .12s ease;
+  :root{--o:#F97316;--od:#C2410C;--peach:#FFF6EF;--peach2:#FFEBDB;--pl:#F3DCCB;--ink:#111;--soft:#4A4A4A;--mut:#767676;
+    --display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;--body:'Nunito','Segoe UI',system-ui,sans-serif;--ar:'Tajawal','Nunito',system-ui,sans-serif}
+  *{box-sizing:border-box}
+  html,body{margin:0;overflow-x:hidden}
+  body{min-height:100vh;font-family:var(--body);color:var(--ink);background:radial-gradient(110% 90% at 30% 35%,#FFD9BA 0%,#FFF1E6 45%,#FFFFFF 78%)}
+  html[lang="ar"] body,html[lang="ar"] button,html[lang="ar"] input{font-family:var(--ar)}
+  a{color:var(--od)}
+  button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--o);outline-offset:3px}
+  .lg-bar{max-width:1180px;margin:0 auto;padding:16px 24px;display:flex;align-items:center;gap:12px;position:relative;z-index:2}
+  .lg-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+  .lg-brand img{width:36px;height:36px}
+  .lg-brand b{font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.02em;white-space:nowrap}
+  html[lang="ar"] .lg-brand b{font-family:var(--ar)}
+  .lg-brand b i{font-style:normal;color:var(--o)}
+  .lg-lang{margin-inline-start:auto;border:1px solid #111;background:rgba(255,255,255,.7);border-radius:999px;padding:8px 14px;font:800 14px var(--ar);cursor:pointer;color:#111}
+  .lg-wrap{position:relative;max-width:1180px;margin:0 auto;padding:10px 24px 60px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,440px);gap:40px;align-items:center;min-height:calc(100vh - 70px)}
+  .lg-tiles{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+  .lg-tiles span{position:absolute;display:grid;place-items:center;border-radius:14px;font:800 26px var(--display);box-shadow:0 14px 26px -12px rgba(194,65,12,.45);animation:lgFloat 9s ease-in-out infinite}
+  @keyframes lgFloat{0%,100%{transform:translateY(0) rotate(var(--r,0deg))}50%{transform:translateY(-22px) rotate(calc(var(--r,0deg) + 8deg))}}
+  .lg-copy{position:relative;z-index:1}
+  .lg-kicker{display:inline-flex;align-items:center;gap:10px;font-size:12.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--od)}
+  html[lang="ar"] .lg-kicker{letter-spacing:.02em}
+  .lg-kicker::before{content:"";width:26px;height:2px;background:currentColor;border-radius:2px}
+  .lg-copy h1{font-family:var(--display);font-weight:800;font-size:clamp(42px,6vw,84px);line-height:.95;letter-spacing:-.03em;margin:14px 0 0}
+  html[lang="ar"] .lg-copy h1{font-family:var(--ar);letter-spacing:0;line-height:1.2;font-size:clamp(40px,5.4vw,74px)}
+  .lg-copy h1 em{font-style:normal;color:var(--o)}
+  .lg-copy .sub{font-size:clamp(20px,2.2vw,28px);font-weight:700;color:var(--soft);margin-top:10px}
+  .lg-lumi{position:relative;display:inline-block;margin-top:26px}
+  .lg-lumi img{width:clamp(120px,14vw,180px);display:block;filter:drop-shadow(0 26px 26px rgba(194,65,12,.3));animation:lgBob 3s ease-in-out infinite}
+  @keyframes lgBob{50%{transform:translateY(-10px)}}
+  .lg-bubble{position:absolute;inset-inline-start:100%;top:6px;margin-inline-start:8px;background:#fff;border-radius:18px 18px 18px 6px;padding:10px 14px;font-weight:800;font-size:15px;white-space:nowrap;box-shadow:0 10px 26px -12px rgba(194,65,12,.45)}
+  html[dir="rtl"] .lg-bubble{border-radius:18px 18px 6px 18px}
+  .lg-panel{position:relative;z-index:1;background:rgba(255,255,255,.92);backdrop-filter:blur(18px);border:1px solid var(--pl);border-radius:34px;padding:26px;box-shadow:0 50px 100px -50px rgba(194,65,12,.55)}
+  .lg-tabs{position:relative;display:flex;background:var(--peach2);border-radius:999px;padding:4px;margin-bottom:18px}
+  .lg-tab{flex:1;border:0;background:transparent;border-radius:999px;padding:11px 6px;font-weight:800;font-size:14px;color:var(--soft);cursor:pointer;transition:background .25s,color .25s}
+  .lg-tab.active{background:var(--o);color:#fff;box-shadow:0 8px 18px -10px rgba(194,65,12,.8)}
+  .lg-h{font-family:var(--display);font-weight:800;font-size:24px;margin:0;letter-spacing:-.02em}
+  html[lang="ar"] .lg-h{font-family:var(--ar);letter-spacing:0}
+  .lg-p{color:var(--mut);font-weight:700;margin:6px 0 0;line-height:1.5}
+  .lg-label{display:block;font-weight:800;font-size:13.5px;color:var(--soft);margin-top:16px}
+  .lg-id-input{width:100%;margin-top:8px;padding:15px 16px;border-radius:16px;border:1.5px solid #EADBD0;background:#fff;font:800 20px var(--body);letter-spacing:.1em;text-align:center;color:#111;direction:ltr;transition:border-color .2s}
+  .lg-id-input::placeholder{letter-spacing:.02em;font-size:16px;color:#B8A898;font-weight:700}
+  .lg-id-input:focus{outline:none;border-color:var(--o)}
+  .lg-pin-dots{display:flex;gap:16px;justify-content:center;margin:16px 0 4px;direction:ltr}
+  .lg-pin-dot{width:16px;height:16px;border-radius:50%;border:2px solid #E0CBBB;transition:transform .2s cubic-bezier(.3,1.6,.5,1),background .2s,border-color .2s}
+  .lg-pin-dot.filled{background:var(--o);border-color:var(--o);transform:scale(1.2);box-shadow:0 0 16px rgba(249,115,22,.55)}
+  .lg-pad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px;direction:ltr}
+  .lg-pad button{height:58px;border-radius:18px;border:1px solid var(--pl);background:var(--peach);font:800 23px var(--display);color:#111;cursor:pointer;transition:background .15s,transform .1s}
+  .lg-pad button:hover{background:var(--peach2)}
+  .lg-pad button:active{transform:scale(.94)}
+  .lg-pad button:disabled{opacity:.5;cursor:wait}
+  .lg-pin-error{min-height:20px;text-align:center;font-weight:800;font-size:13.5px;line-height:1.4;color:#E11D48;margin-top:8px}
+  .lg-pin-error.shake{animation:lgshake .35s}
+  @keyframes lgshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+  .lg-help{display:block;text-align:center;margin-top:14px;font-weight:800;font-size:14px;text-decoration:none}
+  .lg-new{display:flex;gap:14px;align-items:center;background:var(--peach);border:1px solid var(--pl);border-radius:22px;padding:14px;text-decoration:none;color:#111;margin-top:12px;transition:border-color .2s,transform .2s}
+  .lg-new:hover{border-color:var(--o);transform:translateY(-2px)}
+  .lg-new img{width:58px;height:58px;object-fit:contain;flex-shrink:0}
+  .lg-new b{display:block;font-family:var(--display);font-size:18px}
+  html[lang="ar"] .lg-new b{font-family:var(--ar)}
+  .lg-new span{font-size:13.5px;color:var(--mut);font-weight:700}
+  .lg-wipe{position:fixed;inset:0;z-index:50;background:linear-gradient(135deg,#F97316,#C2410C);color:#fff;display:grid;place-items:center;clip-path:circle(0% at 70% 50%);transition:clip-path .7s cubic-bezier(.7,0,.3,1);pointer-events:none}
+  .lg-wipe.on{clip-path:circle(150% at 70% 50%)}
+  .lg-wipe div{text-align:center}
+  .lg-wipe img{width:140px}
+  .lg-wipe b{display:block;font-family:var(--display);font-size:clamp(26px,4vw,40px);margin-top:8px}
+  html[lang="ar"] .lg-wipe b{font-family:var(--ar)}
+  @media (max-width:860px){
+    .lg-wrap{grid-template-columns:1fr;gap:18px;padding-top:0}
+    .lg-copy{text-align:center}
+    .lg-lumi{margin-top:14px}
+    .lg-bubble{inset-inline-start:72%;top:-6px}
   }
-  .lg-pad button:hover{box-shadow:0 4px 10px rgba(0,0,0,.08);transform:translateY(-1px)}
-  .lg-pad button:active{background:#FFF1E0;transform:translateY(0) scale(.94)}
-  .lg-pin-error{color:var(--coral,#FF6B6B);font-weight:800;font-size:.85rem;text-align:center;min-height:18px;line-height:1.35;margin-top:6px} /* min-height: 2-3 line messages grow the card instead of spilling out */
-  .lg-pin-error.shake{animation:lgshake .3s}
-  @keyframes lgshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-  .lg-tabs{display:flex;gap:8px;margin-bottom:20px;background:var(--cream,#FBF6EC);border-radius:14px;padding:5px}
-  .lg-tab{
-    flex:1;border:none;background:none;padding:11px 8px;border-radius:10px;font-weight:800;font-size:.92rem;
-    color:var(--cocoa-soft,#8A7160);cursor:pointer;font-family:inherit;transition:background .15s ease,color .15s ease,box-shadow .15s ease;
+  @media (max-width:520px){
+    .lg-tiles span{opacity:.35!important}
+    .lg-tiles span:nth-child(n+5){display:none}
+    .lg-copy h1{font-size:40px}
+    html[lang="ar"] .lg-copy h1{font-size:38px}
+    .lg-copy .sub{display:none}
+    .lg-lumi{margin-top:44px}
+    .lg-lumi img{width:92px}
+    .lg-bubble{left:50%;right:auto;top:auto;bottom:100%;margin:0 0 6px;transform:translateX(-50%);font-size:13.5px}
+    .lg-panel{padding:20px;border-radius:28px}
   }
-  .lg-tab.active{background:#fff;color:var(--cocoa,#43301F);box-shadow:0 3px 8px rgba(0,0,0,.08)}
-  .lg-id-input{
-    width:100%;box-sizing:border-box;padding:14px 16px;border-radius:14px;border:2px solid var(--line,#eee);
-    font-family:inherit;font-weight:700;font-size:1rem;margin:14px 0;text-align:center;transition:border-color .15s ease;
-  }
-  .lg-id-input:focus{outline:none;border-color:var(--orange,#FF8A3D)}
+  @media (prefers-reduced-motion:reduce){.lg-tiles span,.lg-lumi img{animation:none}.lg-wipe{transition:none}}
 </style>
 <script>if("serviceWorker"in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script>
 </head>
 <body>
+<div class="lg-tiles" aria-hidden="true" id="lgTiles"></div>
 
-<header class="topbar">
-  <a href="index.html"><img class="logo-mini" src="assets/logo/lumio-logo.png" alt="Lumio English logo" onerror="this.style.display='none'"></a>
-  <div class="brand">Lumio <span>English</span></div>
+<header class="lg-bar">
+  <a class="lg-brand" href="index.html"><img src="assets/site/lumi-mark.png" alt="" width="36" height="36"><b data-t="brand">Lumio <i>English</i></b></a>
+  <button type="button" class="lg-lang" id="lgLang">English</button>
 </header>
 
-<main class="wrap" style="max-width:560px">
+<main class="lg-wrap">
+  <div class="lg-copy">
+    <span class="lg-kicker" data-t="kicker">Student login</span>
+    <h1 data-t="h1">Welcome <em>back.</em></h1>
+    <div class="sub" data-t="sub">Ready for today's adventure?</div>
+    <div class="lg-lumi"><img src="assets/site/lumi-hero.png" alt=""><div class="lg-bubble" id="lgBubble" data-t="bubble">Ready for today?</div></div>
+  </div>
 
-  <div class="card" id="paneStudent">
-    <div class="lg-tabs">
-      <button class="lg-tab active" id="tabCurrentLearner" type="button">Current Learner</button>
-      <button class="lg-tab" id="tabNewStudent" type="button">New Student</button>
+  <div class="lg-panel" id="paneStudent">
+    <div class="lg-tabs" role="tablist">
+      <button class="lg-tab active" id="tabCurrentLearner" type="button" role="tab" data-t="tabCur">I have an account</button>
+      <button class="lg-tab" id="tabNewStudent" type="button" role="tab" data-t="tabNew">I'm new</button>
     </div>
 
     <!-- Current Learner: an existing account (paid & enrolled, or a
          "New Learner" who already registered during the placement test)
          logs in with their Student ID or phone number, plus their PIN. -->
     <div id="paneCurrentLearner">
-      <h2 class="center" style="margin-top:0">Welcome back!</h2>
-      <p class="center" style="font-weight:700;color:var(--cocoa-soft,#8A7160);margin-top:-6px">Enter your Student ID or phone number to log in.</p>
-      <input type="text" inputmode="numeric" class="lg-id-input" id="loginIdentifier" placeholder="Student ID or phone number" autocomplete="off">
+      <h2 class="lg-h" data-t="curH">Welcome back!</h2>
+      <p class="lg-p" data-t="curP">Enter your Student ID or phone number, then your 4-digit PIN.</p>
+      <label class="lg-label" for="loginIdentifier" data-t="idLabel">Student ID or phone number</label>
+      <input type="text" inputmode="numeric" class="lg-id-input" id="loginIdentifier" placeholder="e.g. 482913" autocomplete="off">
+      <span class="lg-label" data-t="pinLabel">Your 4-digit PIN</span>
       <div class="lg-pin-dots" id="pinDots"></div>
       <div class="lg-pad" id="pinPad"></div>
-      <div class="lg-pin-error" id="pinError"></div>
-      <a href="guides.html" style="display:block;text-align:center;margin-top:14px;font-weight:800;color:var(--lumio-orange,#F97316);text-decoration:none">📘 First time here? Step-by-step guides · <span dir="rtl">أول مرة؟ الأدلة خطوة بخطوة</span></a>
+      <div class="lg-pin-error" id="pinError" role="status" aria-live="polite"></div>
+      <a class="lg-help" href="guides.html" data-t="guides">First time here? Step-by-step guides</a>
     </div>
 
     <!-- New Student: hasn't registered yet. Registration itself happens
@@ -86,12 +153,10 @@
          Student ID), not on this page -- a genuinely new student needs a
          level before anything else here makes sense. -->
     <div id="paneNewStudent" style="display:none">
-      <h2 class="center" style="margin-top:0">New here? Let's find your level!</h2>
-      <p class="center" style="font-weight:700;color:var(--cocoa-soft,#8A7160)">
-        Take our free placement test — you'll register your phone number and create your PIN
-        as part of it, and get a Student ID to log in with from then on.
-      </p>
-      <a class="btn btn-teal" href="lumio-pro-test.html" style="width:100%;display:block;text-align:center;box-sizing:border-box;margin-top:10px">🎯 Take our free placement test</a>
+      <h2 class="lg-h" data-t="newH">New here? Let's find your level!</h2>
+      <p class="lg-p" data-t="newP">Take the free placement test: you'll register your phone number and create your PIN as part of it, and get a Student ID to log in with.</p>
+      <a class="lg-new" href="lumio-pro-test.html"><img src="assets/site/lumi-hero.png" alt=""><div><b data-t="newTest">Free placement test</b><span data-t="newTestP">Find your level and get your Student ID.</span></div></a>
+      <a class="lg-new" href="index.html#trial"><img src="assets/site/lumi-celebrate.png" alt=""><div><b data-t="newTrial">Free trial class</b><span data-t="newTrialP">See a real Lumio class before you join.</span></div></a>
     </div>
   </div>
 
@@ -116,8 +181,49 @@
       <button id="goTeacher"></button>
     </div>
   </div>
-
 </main>
+
+<div class="lg-wipe" id="lgWipe" aria-hidden="true"><div><img src="assets/site/lumi-celebrate.png" alt=""><b id="lgWipeText"></b></div></div>
+
+<script>
+// Login page copy (EN/AR). Shares "lumio_lang" with the home page; messages set by the
+// login script below go through LG_T() so errors appear in the visitor's language too.
+(function () {
+  var D = {
+    en: { brand: 'Lumio <i>English</i>', lang: 'العربية', kicker: 'Student login', h1: 'Welcome <em>back.</em>', sub: "Ready for today's adventure?", bubble: 'Ready for today?',
+      tabCur: 'I have an account', tabNew: "I'm new", curH: 'Welcome back!', curP: 'Enter your Student ID or phone number, then your 4-digit PIN.',
+      idLabel: 'Student ID or phone number', pinLabel: 'Your 4-digit PIN', guides: 'First time here? Step-by-step guides',
+      newH: "New here? Let's find your level!", newP: "Take the free placement test: you'll register your phone number and create your PIN as part of it, and get a Student ID to log in with.",
+      newTest: 'Free placement test', newTestP: 'Find your level and get your Student ID.', newTrial: 'Free trial class', newTrialP: 'See a real Lumio class before you join.',
+      placeholder: 'e.g. 482913', checking: 'Checking your account…', needId: 'Enter your Student ID or phone number first.',
+      noMatch: "That ID/phone and PIN don't match — try again.", pending: "Your account is pending your teacher's approval — please check back soon!",
+      wrong: 'Something went wrong — please try again.', offline: "Couldn't reach the Lumio server to load your account. Check your connection and reload, or ask your teacher.",
+      hi: 'Hi {name}! Opening your adventure…', almost: 'Almost there…', oops: 'Oops! Try again.', pin: 'PIN digit', locked: 'Too many wrong PINs — please wait 15 minutes and try again.' },
+    ar: { brand: 'لوميو <i>إنجلش</i>', lang: 'English', kicker: 'دخول الطالب', h1: 'أهلاً <em>بعودتك.</em>', sub: 'مستعد لمغامرة اليوم؟', bubble: 'مستعد لدرس اليوم؟',
+      tabCur: 'لدي حساب', tabNew: 'أنا جديد', curH: 'أهلاً بعودتك!', curP: 'اكتب رقم الطالب أو رقم الجوال، ثم الرمز السري المكوّن من 4 أرقام.',
+      idLabel: 'رقم الطالب أو رقم الجوال', pinLabel: 'الرمز السري (4 أرقام)', guides: 'أول مرة؟ الأدلة خطوة بخطوة',
+      newH: 'جديد هنا؟ لنعرف مستواك!', newP: 'خذ اختبار تحديد المستوى المجاني: ستسجّل رقم جوالك وتنشئ رمزك السري أثناءه، وتحصل على رقم طالب لتسجيل الدخول.',
+      newTest: 'اختبار تحديد المستوى المجاني', newTestP: 'اعرف مستواك واحصل على رقم الطالب.', newTrial: 'حصة تجريبية مجانية', newTrialP: 'شاهد حصة لوميو حقيقية قبل أن تنضم.',
+      placeholder: 'مثال: 482913', checking: 'جارٍ التحقق من حسابك…', needId: 'اكتب رقم الطالب أو رقم الجوال أولاً.',
+      noMatch: 'رقم الطالب/الجوال والرمز السري غير متطابقين — حاول مرة أخرى.', pending: 'حسابك بانتظار موافقة المعلم — يرجى المحاولة لاحقاً!',
+      wrong: 'حدث خطأ ما — يرجى المحاولة مرة أخرى.', offline: 'تعذّر الوصول إلى خادم لوميو لتحميل حسابك. تحقق من الاتصال وأعد تحميل الصفحة، أو اسأل معلمك.',
+      hi: 'أهلاً يا {name}! نفتح مغامرتك…', almost: 'اقتربت…', oops: 'أوه! حاول مرة أخرى.', pin: 'رقم من الرمز السري', locked: 'محاولات خاطئة كثيرة — يرجى الانتظار 15 دقيقة ثم المحاولة مرة أخرى.' }
+  };
+  var lang = document.documentElement.lang === 'en' ? 'en' : 'ar', T = D[lang];
+  window.LG_T = function (k) { return T[k] != null ? T[k] : D.en[k]; };
+  document.querySelectorAll('[data-t]').forEach(function (el) { var v = T[el.getAttribute('data-t')]; if (v != null) el.innerHTML = v; }); // trusted strings above
+  document.getElementById('loginIdentifier').placeholder = T.placeholder;
+  document.getElementById('lgLang').textContent = T.lang;
+  document.getElementById('lgLang').onclick = function () { try { localStorage.setItem('lumio_lang', lang === 'ar' ? 'en' : 'ar'); } catch (e) {} location.reload(); };
+  document.title = lang === 'ar' ? 'تسجيل الدخول — لوميو إنجلش' : 'Login — Lumio English';
+  // floating letter tiles (CSS only, decorative)
+  var tiles = [['A', '#fff', '#F97316'], ['ب', '#F97316', '#fff'], ['C', '#FFE3CC', '#C2410C'], ['M', '#fff', '#111'], ['ت', '#C2410C', '#fff'], ['R', '#fff', '#F97316'], ['G', '#F97316', '#fff'], ['ش', '#FFE3CC', '#C2410C']];
+  var pos = [[6, 18], [16, 72], [44, 8], [58, 86], [88, 14], [92, 62], [74, 40], [30, 92]];
+  var box = document.getElementById('lgTiles');
+  tiles.forEach(function (tl, i) { var s = document.createElement('span'), z = 44 + (i % 3) * 12; s.textContent = tl[0]; s.style.cssText = 'left:' + pos[i][0] + '%;top:' + pos[i][1] + '%;width:' + z + 'px;height:' + z + 'px;background:' + tl[1] + ';color:' + tl[2] + ';--r:' + ((i % 2 ? 1 : -1) * (8 + i * 3)) + 'deg;animation-delay:' + (-i * 1.3) + 's;opacity:.9'; box.appendChild(s); });
+})();
+</script>
+
 
 <script>
 (function() {
@@ -194,6 +300,7 @@
         if (k === "") { btn.style.visibility = "hidden"; pinPad.appendChild(btn); return; }
         btn.textContent = k;
         btn.type = "button";
+        btn.setAttribute("aria-label", k === "⌫" ? "Delete" : k);
         btn.onclick = () => {
           if (k === "⌫") { pinBuffer = pinBuffer.slice(0, -1); }
           else if (pinBuffer.length < 4) { pinBuffer += k; }
@@ -208,7 +315,7 @@
     async function tryLogin() {
       const identifier = idInput.value.trim();
       if (!identifier) {
-        pinError.textContent = "Enter your Student ID or phone number first.";
+        pinError.textContent = LG_T("needId");
         pinBuffer = ""; renderDots();
         return;
       }
@@ -223,16 +330,18 @@
         // thinking they mistyped something when the real answer is
         // "wait for your teacher."
         pinError.textContent = err && err.code === "pending_approval"
-          ? "Your account is pending your teacher's approval — please check back soon!"
-          : err && err.code === "locked" ? err.message
-          : "Something went wrong — please try again. (" + ((err && err.message) || "unknown error") + ")";
+          ? LG_T("pending")
+          : err && err.code === "locked" ? LG_T("locked")
+          : LG_T("wrong") + " (" + ((err && err.message) || "unknown error") + ")";
+        oops();
         pinError.classList.remove("shake"); void pinError.offsetWidth; pinError.classList.add("shake");
         pinBuffer = "";
         renderDots();
         return;
       }
       if (!ok) {
-        pinError.textContent = "That ID/phone and PIN don't match — try again.";
+        pinError.textContent = LG_T("noMatch");
+        oops();
         pinError.classList.remove("shake"); void pinError.offsetWidth; pinError.classList.add("shake");
         pinBuffer = "";
         renderDots();
@@ -252,14 +361,25 @@
       if (levelField && [...levelField.options].some(o => o.value === effectiveLevel)) {
         levelField.value = effectiveLevel;
       }
-      if (goBtn) goBtn.click();
+      // A short orange wipe with the student's name, then the real hand-off to js/auth.js.
+      const wipe = document.getElementById("lgWipe");
+      const still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (wipe && !still) {
+        document.getElementById("lgWipeText").textContent = LG_T("hi").replace("{name}", ok.name);
+        wipe.classList.add("on");
+        setTimeout(() => { if (goBtn) goBtn.click(); }, 750);
+      } else if (goBtn) goBtn.click();
+    }
+    function oops() {
+      const b = document.getElementById("lgBubble");
+      if (b) b.textContent = LG_T("oops");
     }
 
     idInput.addEventListener("keydown", e => { if (e.key === "Enter") pinPad.querySelector("button") && idInput.blur(); });
     renderPad();
     renderDots();
     showTab("current");
-    const PENDING_MSG = "Your account is pending your teacher's approval — please check back soon!";
+    const PENDING_MSG = LG_T("pending");
     const arrivedPending = new URLSearchParams(location.search).get("msg") === "pending";
     if (arrivedPending) pinError.textContent = PENDING_MSG;
 
@@ -276,8 +396,8 @@
     // after timeout we fall through to whatever is already cached locally.
     if (window.LumioProfiles) {
       const syncStatus = pinError;
-      syncStatus.style.color = "#8A7160";
-      syncStatus.textContent = "Checking your account\u2026";
+      syncStatus.style.color = "#767676";
+      syncStatus.textContent = LG_T("checking");
       pinPad.querySelectorAll("button").forEach(b => b.disabled = true);
       idInput.disabled = true;
 
@@ -298,7 +418,7 @@
           const haveRoster = LumioProfiles.listStudents().length > 0;
           if (res && !res.ok && !haveRoster) {
             syncStatus.style.color = "";
-            syncStatus.textContent = "Couldn't reach the Lumio server to load your account (" + (res.reason || "unknown") + "). Check your connection and reload, or ask your teacher.";
+            syncStatus.textContent = LG_T("offline") + " (" + (res.reason || "unknown") + ")";
           } else {
             syncStatus.style.color = "";
             // Keep the "pending approval" notice a student just arrived
