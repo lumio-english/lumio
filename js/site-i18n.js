@@ -55,7 +55,7 @@ window.LUMIO_SITE_I18N = {
 
     'free.kicker': 'Start free', 'free.h2': 'Start with zero risk. Both are free.',
     'free.tag': '100% free · no card',
-    'free.test.h': 'Free placement test', 'free.test.p': '10 quick questions with real feedback on the spot: what your child already knows, and what to practise next. About 5 minutes.',
+    'free.test.h': 'Free placement test', 'free.test.p': 'The full Lumio level test: listening, reading and writing questions that find the right level for your child, with the result straight away. About 8 minutes.',
     'free.test.go': 'Take the free test',
     'free.trial.h': 'Free trial class', 'free.trial.p': "Pick the level that fits your child's age and join a real trial class, the same format as an actual Lumio lesson.",
     'free.trial.go': 'Choose an age group',
@@ -71,7 +71,7 @@ window.LUMIO_SITE_I18N = {
 
     'pr.kicker': 'Pricing', 'pr.h2': 'Simple pricing, real value.',
     'pr.intro': "One level = 2 months · 20 live sessions · full access to that level's English Hub. Save more the longer you commit.",
-    'pr.freehint': 'Not sure which level fits? <a href="quick-check.html">Take the free English check</a> or <a href="#free">try a free trial class</a> first.',
+    'pr.freehint': 'Not sure which level fits? <a href="lumio-pro-test.html">Take the free placement test</a> or <a href="#free">try a free trial class</a> first.',
     'pr.cur': 'Choose currency', 'pr.get': 'Get started', 'pr.perlevel': 'per level', 'pr.save': 'save {n}%',
     'pr.note': 'Prices shown for reference. SAR, AED, OMR and QAR are all pegged to the US dollar and stay stable; KWD is a floating rate, so it may move slightly.',
 
@@ -197,7 +197,7 @@ window.LUMIO_SITE_I18N = {
 
     'free.kicker': 'ابدأ مجاناً', 'free.h2': 'ابدأ بدون أي مخاطرة. كلاهما مجاني.',
     'free.tag': 'مجاني 100% · بدون بطاقة',
-    'free.test.h': 'اختبار تحديد المستوى المجاني', 'free.test.p': '10 أسئلة سريعة مع نتيجة فورية حقيقية: ما يعرفه طفلك بالفعل، وما يحتاج للتدرب عليه بعد ذلك. حوالي 5 دقائق.',
+    'free.test.h': 'اختبار تحديد المستوى المجاني', 'free.test.p': 'اختبار لوميو الكامل لتحديد المستوى: أسئلة استماع وقراءة وكتابة تحدد المستوى المناسب لطفلك، مع النتيجة فوراً. حوالي 8 دقائق.',
     'free.test.go': 'ابدأ الاختبار المجاني',
     'free.trial.h': 'حصة تجريبية مجانية', 'free.trial.p': 'اختر المستوى المناسب لعمر طفلك وانضم إلى حصة تجريبية حقيقية، بنفس صيغة درس لوميو الفعلي.',
     'free.trial.go': 'اختر الفئة العمرية',
@@ -213,7 +213,7 @@ window.LUMIO_SITE_I18N = {
 
     'pr.kicker': 'الأسعار', 'pr.h2': 'أسعار بسيطة، وقيمة حقيقية.',
     'pr.intro': 'المستوى الواحد = شهران · 20 حصة مباشرة · وصول كامل لمكتبة ذلك المستوى. وفّر أكثر كلما التزمت لفترة أطول.',
-    'pr.freehint': 'لست متأكداً من المستوى المناسب؟ <a href="quick-check.html">جرّب الاختبار السريع المجاني</a> أو <a href="#free">احجز حصة تجريبية مجانية</a> أولاً.',
+    'pr.freehint': 'لست متأكداً من المستوى المناسب؟ <a href="lumio-pro-test.html">جرّب اختبار تحديد المستوى المجاني</a> أو <a href="#free">احجز حصة تجريبية مجانية</a> أولاً.',
     'pr.cur': 'اختر العملة', 'pr.get': 'ابدأ الآن', 'pr.perlevel': 'لكل مستوى', 'pr.save': 'وفّر {n}%',
     'pr.note': 'الأسعار للاطلاع فقط. الريال السعودي والدرهم الإماراتي والريال العماني والريال القطري مربوطة بالدولار الأمريكي وتبقى ثابتة؛ أما الدينار الكويتي فسعره متغير وقد يتحرك قليلاً.',
 
