@@ -502,7 +502,7 @@ const Lumio = (() => {
   const SFX_VOL = { correct: .55, wrong: .45, star: .55, complete: .6 };
   // Which files are actually in assets/sfx/. Add a name here when its file is added (e.g. "correct",
   // "music-games"), so pages never ask the server for files that aren't there yet.
-  const SFX_FILES = [];
+  const SFX_FILES = ["music-games", "music-story"];
   const sfxCache = {}, sfxMissing = {};
   const soundOn = () => { try { return localStorage.getItem("lumio_sound") !== "off"; } catch (e) { return true; } };
   // which effect files exist: checked once per page (4 tiny requests); until known, beep() uses its tone
