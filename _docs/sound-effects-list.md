@@ -1,6 +1,6 @@
 # Lumio sound effects and music: what to download from Artlist
 
-The site already plays these automatically once the files exist. Put each file in `assets/sfx/` with **exactly** the name below (lower case, `.mp3`). A missing file is simply skipped: the correct and wrong sounds then fall back to the old built-in beep, so you can add them one at a time.
+The site already plays these once the files exist **and their names are listed in `SFX_FILES` in `js/app.js`** (so pages never ask for files that are not there yet). Put each file in `assets/sfx/` with **exactly** the name below (lower case, `.mp3`). A missing file is simply skipped: the correct and wrong sounds then fall back to the old built-in beep, so you can add them one at a time.
 
 Students can mute effects and music with the round speaker button on games and stories. Muting never affects the spoken words.
 

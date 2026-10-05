@@ -81,8 +81,8 @@ body{font-family:Nunito,Cairo,sans-serif;color:var(--ink);background:#fff;font-s
 .page:last-child{page-break-after:auto}
 .bar{background:var(--grad);color:#fff;padding:20px 40px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 6px 18px rgba(249,115,22,.22)}
 .bar h1{font-family:'Baloo 2';font-size:20px;font-weight:800}
-.bar .brand{display:flex;align-items:center;gap:8px;background:#fff;border-radius:999px;padding:5px 12px 5px 6px;font-family:'Baloo 2';font-weight:800;font-size:12px;color:var(--cocoa)}
-.bar .brand img{height:30px;display:block}
+.bar .brand{display:flex;align-items:center;gap:8px;background:#fff;border-radius:14px;padding:4px 10px;font-family:'Baloo 2';font-weight:800;font-size:12px;color:var(--cocoa)}
+.bar .brand img{height:46px;width:auto;display:block}
 .content{padding:22px 40px 0}
 .card{background:#fff;border-radius:18px;padding:18px 22px;margin-bottom:13px;border:1px solid var(--border);box-shadow:0 2px 4px rgba(67,48,31,.04),0 8px 22px rgba(67,48,31,.06)}
 .card h2{font-family:'Baloo 2';font-size:16px;color:var(--orange-dark);margin-bottom:6px}
@@ -121,7 +121,7 @@ body{font-family:Nunito,Cairo,sans-serif;color:var(--ink);background:#fff;font-s
 .cover.teen{background:var(--night)}
 .cover .top{display:flex;justify-content:flex-start;padding:30px 40px 0}
 .cover .lock{background:#fff;border-radius:18px;padding:10px 16px;display:inline-block;box-shadow:0 12px 30px rgba(67,48,31,.18)}
-.cover .lock img{height:72px;display:block}
+.cover .lock img{height:110px;width:auto;display:block}
 .cover .badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);padding:6px 20px;border-radius:999px;font-family:'Baloo 2';font-weight:800;font-size:14px;margin-top:46px}
 .cover h1{font-family:'Baloo 2';font-size:40px;font-weight:800;line-height:1.2;margin:14px auto 6px;max-width:520px}
 .cover .sub{font-weight:700;font-size:14px;opacity:.95}
@@ -143,7 +143,7 @@ body{font-family:Nunito,Cairo,sans-serif;color:var(--ink);background:#fff;font-s
 
 
 def bar(title):
-    return f'<div class="bar"><h1>{E(title)}</h1><div class="brand"><img src="assets/lumio-logo.png" alt="">LUMIO ENGLISH</div></div>'
+    return f'<div class="bar"><h1>{E(title)}</h1><div class="brand"><img src="assets/lumio-logo.png" alt="Lumio English"></div></div>'
 
 
 def foot(lvl, cfg, n):
@@ -191,7 +191,7 @@ def build_level(lvl, cfg, data, story, game):
     pages.append(f'''<div class="page">{bar("How this level is taught")}<div class="content">
   <div class="steps">
     <div class="step"><div class="n o1">1</div><div><h3>Prepare in the app</h3><p>Before each live class, your child meets the lesson's new words, sounds and sentences on their own, so they arrive ready.</p></div></div>
-    <div class="step"><div class="n o2">2</div><div><h3>Live class on Zoom</h3><p>A real teacher leads the same lesson in a small group of up to four students at this level, with a supervisor on hand.</p></div></div>
+    <div class="step"><div class="n o2">2</div><div><h3>Live class on Microsoft Teams</h3><p>A real teacher leads the same lesson in a small group of up to four students at this level, with a supervisor on hand.</p></div></div>
     <div class="step"><div class="n o3">3</div><div><h3>Homework</h3><p>Spelling, drawing{" or writing" if teen else ""}, Say It and a short quiz, all tied to that lesson; plus a printable worksheet, writing sheet and flashcards.</p></div></div>
     <div class="step"><div class="n o4">4</div><div><h3>Grow on the map</h3><p>Every finished lesson lights up the next step on the adventure map and unlocks that lesson's bonus game.</p></div></div>
   </div>
@@ -244,7 +244,7 @@ def build_level(lvl, cfg, data, story, game):
   <div class="note" style="margin-top:13px">A new round of the game unlocks after every lesson your child finishes, using that lesson's own words &mdash; so it is always practice, never random.</div>
   </div>{foot(lvl, cfg, 11)}</div>''')
     # ---- back cover
-    pages.append(f'''<div class="page back"><div class="top"><div class="lock" style="background:#fff;border-radius:18px;padding:10px 16px;display:inline-block"><img src="assets/lumio-logo.png" alt="" style="height:64px;display:block"></div></div>
+    pages.append(f'''<div class="page back"><div class="top"><div class="lock" style="background:#fff;border-radius:18px;padding:10px 16px;display:inline-block"><img src="assets/lumio-logo.png" alt="Lumio English" style="height:96px;width:auto;display:block"></div></div>
   <h1>We're here with you every step</h1><div class="sub">Thank you for trusting Lumio English with your child's learning journey. We can't wait to see how far they'll go.</div>
   <img class="hero" src="assets/{cfg["cover_char"]}" alt="">
   <div class="contact"><div class="qr"><img src="assets/qr-website.png" alt=""></div><div><div class="k">Visit our website</div><div class="v">lumio-english.github.io/lumio</div><div class="h">Scan with your phone camera to open the site &mdash; the free placement test, the free trial class, every level's details and pricing.</div></div></div>

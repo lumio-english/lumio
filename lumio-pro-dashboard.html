@@ -400,6 +400,7 @@ const ADMINS = {
 };
 // Built-in agent / team-manager default passwords (hashed the same way),
 // used until the owner sets a default in Settings.
+const BUILT_IN_PASSWORDS_ON = false;   // see resolveLogin: retired 4 Oct 2026 (they were guessable)
 const DEFAULT_AGENT_PASS_HASH = 'b0f861237fe794fe67e8690e38fe9e83bbb0cce152be9a2735a8d003247f4f4f';
 const DEFAULT_GROUP_PASS_HASH = '591eff8fdc109c3000c9cd3af3a01fedc4680b325a55d8d1fb0a873855004e64';
 // SHA-256 hex. Web Crypto when available; a small pure-JS version
@@ -494,16 +495,23 @@ async function hashRosterPin(pin) {
 // every page load so a teacher added or removed on another device
 // takes effect here too, same as everything else that syncs.
 let LUMIO_TEACHERS_CACHE = [];
+let LOGIN_FAIL_REASON = '';   // why the last sign-in failed: name | pin | locked | busy | offline
 async function pullLumioTeachersForLogin() {
   if (!SCRIPT_URL) return;
   try {
-    const res = await fetch(SCRIPT_URL + '?key=' + LUMIO_API_KEY + '&action=pullRoster' + proAuth());
-    const data = await res.json();
+    let data = await fetch(SCRIPT_URL + '?key=' + LUMIO_API_KEY + '&action=pullRoster' + proAuth()).then(r => r.json());
+    // A saved sign-in that no longer matches (PIN changed elsewhere) gets refused -- and each refusal
+    // counts toward the 15-minute lockout. Forget it and fetch the public teacher list instead.
+    if (data && data.ok === false && proAuth()) {
+      try { localStorage.removeItem('lumio_teacher_auth'); } catch (e) {}
+      data = await fetch(SCRIPT_URL + '?key=' + LUMIO_API_KEY + '&action=pullRoster').then(r => r.json());
+    }
     if (data && Array.isArray(data.teachers)) LUMIO_TEACHERS_CACHE = data.teachers;
   } catch (e) { /* offline is fine — falls back to admin-only login below */ }
 }
 
 async function resolveLogin(user, pass) {
+  LOGIN_FAIL_REASON = '';
   const u = user.trim().toLowerCase();
   const p = pass.trim();
 
@@ -540,7 +548,11 @@ async function resolveLogin(user, pass) {
   // password wasn't working. The fixed default now always works as an
   // emergency fallback; a matching custom password (checked above) still
   // works too.
-  if (ADMINS[u] && await matchesBuiltIn(p, ADMINS[u])) {
+  // Security (4 Oct 2026): the built-in default passwords are retired. Their hashes are in this
+  // public page and were guessable, so anyone could sign in as Super Admin. Sign in with your
+  // Lumio teacher name + PIN (checked by the server; owners get full access), or with an admin
+  // password the owner set in Settings.
+  if (BUILT_IN_PASSWORDS_ON && ADMINS[u] && await matchesBuiltIn(p, ADMINS[u])) {
     const role = u === 'lumio_admin' ? 'super_admin' : 'admin';
     return { role, display: u === 'lumio_admin' ? 'Super Admin' : 'Admin', username: u, studentIds: null, groupKey: null };
   }
@@ -552,18 +564,23 @@ async function resolveLogin(user, pass) {
   // view-only, same tier a regular teacher gets in the main dashboard.
   const pinEntered = normalizeRosterPin(p);
   if (pinEntered) {
+    if (!LUMIO_TEACHERS_CACHE.length) await pullLumioTeachersForLogin();   // signed in before the list arrived
     const teacher = LUMIO_TEACHERS_CACHE.find(t => (t.name || '').trim().toLowerCase() === u);
+    if (!teacher) LOGIN_FAIL_REASON = LUMIO_TEACHERS_CACHE.length ? 'name' : 'offline';
     if (teacher) {
       const enteredPinHash = await hashRosterPin(pinEntered);
       // The teacher list the script gives a signed-out page has no PIN
       // hashes any more, so the script checks the PIN itself.
       let pinOk = !!teacher.pinHash && enteredPinHash === teacher.pinHash;
-      if (!teacher.pinHash) {
+      // A locally stored hash can be out of date (PIN changed on another device): when it does not
+      // match, let the server decide instead of refusing a PIN that may be right.
+      if (!pinOk) {
         try {
           const r = await fetch(SCRIPT_URL + '?key=' + LUMIO_API_KEY + '&action=teacherLogin', { method: 'POST',
             headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ id: teacher.id, pinHash: enteredPinHash }) });
           const j = await r.json();
           pinOk = !!(j && j.ok);
+          if (!pinOk) LOGIN_FAIL_REASON = j && j.error === 'locked' ? 'locked' : j && j.error === 'busy' ? 'busy' : 'pin';
         } catch (e) { pinOk = false; }
       }
       if (pinOk) {
@@ -579,7 +596,7 @@ async function resolveLogin(user, pass) {
   // ── Group login (team leader / sales manager) ──
   const grpEntry = GROUPS[u];
   const thisGrpPass = savedGroupPwds[u] || groupPass;
-  if (grpEntry && (thisGrpPass ? p === thisGrpPass : await matchesBuiltIn(p, DEFAULT_GROUP_PASS_HASH))) {
+  if (grpEntry && (thisGrpPass ? p === thisGrpPass : (BUILT_IN_PASSWORDS_ON && await matchesBuiltIn(p, DEFAULT_GROUP_PASS_HASH)))) {
     return {
       role: 'group_manager',
       display: grpEntry.display,
@@ -594,7 +611,7 @@ async function resolveLogin(user, pass) {
   // ── Agent login ──
   const entry         = AGENTS[u];
   const thisAgentPass = savedAgentPwds[u] || agentPass;
-  if (entry && (thisAgentPass ? p === thisAgentPass : await matchesBuiltIn(p, DEFAULT_AGENT_PASS_HASH))) {
+  if (entry && (thisAgentPass ? p === thisAgentPass : (BUILT_IN_PASSWORDS_ON && await matchesBuiltIn(p, DEFAULT_AGENT_PASS_HASH)))) {
     const rl = entry.r==='both'?'SS + LP':entry.r.toUpperCase();
     return { role: entry.r, display: entry.n, roleLabel: rl, username: u,
              studentIds: entry.i ? entry.i.split(',') : [], groupKey: null };
@@ -610,7 +627,13 @@ async function doLogin() {
   uEl.classList.remove('err'); pEl.classList.remove('err'); eEl.style.display='none';
   const acc = await resolveLogin(uEl.value, pEl.value);
   if (!acc) {
-    eEl.textContent = 'Not recognised. Teachers: use your name and PIN from the Team tab. Admin: use admin credentials.';
+    eEl.textContent = {
+      name: 'No teacher with that name. Type your name exactly as it appears in the Team tab of the teacher dashboard.',
+      pin: 'That PIN is not right for this teacher. Use the 4-digit PIN you use on the teacher sign-in page.',
+      locked: 'Too many wrong PINs. This account is locked for 15 minutes; please wait and try again.',
+      busy: 'The server is busy. Please wait a minute and try again.',
+      offline: 'Could not reach the Lumio server. Check your internet connection and try again.'
+    }[LOGIN_FAIL_REASON] || 'Not recognised. Sign in with your Lumio teacher name and 4-digit PIN.';
     eEl.style.display='block'; uEl.classList.add('err'); pEl.classList.add('err');
     pEl.value=''; pEl.focus(); return;
   }
@@ -943,12 +966,16 @@ async function runAI(si,wi,btn){
   try{
     // Route through the standalone Apps Script (keeps the Groq API key
     // secure, never sent to or stored in the browser)
-    const rs = await fetch(AI_FEEDBACK_URL + '?key=' + LUMIO_API_KEY + '&action=writingFeedback', {
+    // The main backend (SCRIPT_URL) is tried first: it is rate-limited and is where the feature
+    // now lives. The old standalone project is only a fallback while its Groq key is set up
+    // there and not yet in the main project (Script Properties -> GROQ_API_KEY).
+    const ask = url => fetch(url + '?key=' + LUMIO_API_KEY + '&action=writingFeedback', {
       method: 'POST',
       headers: {'Content-Type':'text/plain;charset=utf-8'},
       body: JSON.stringify({ prompt: w.prompt||'', answer: w.text||'', minWords: w.minWords||0 })
-    });
-    const d = await rs.json();
+    }).then(x => x.json());
+    let d = await ask(SCRIPT_URL).catch(() => null);
+    if ((!d || (!d.ok && /Groq API key|Unknown action/i.test(d.error || ''))) && AI_FEEDBACK_URL && AI_FEEDBACK_URL !== SCRIPT_URL) d = await ask(AI_FEEDBACK_URL);
     if(!d.ok) throw new Error(d.error||'API error');
     el.innerHTML = '<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 14px;font-size:.82rem;color:#374151;line-height:1.7;white-space:pre-wrap">'+h(d.feedback)+'</div>';
     aiN++; updStats(); btn.textContent='🔄 Re-run';
