@@ -102,6 +102,11 @@ def capture():
                 pg.screenshot(path=str(TMP / f"{name}.png"))
                 pg.evaluate(HL_JS, [None, 0])
 
+            def open_menu():
+                # phone layout folds the top-bar buttons into "Menu"
+                pg.evaluate("(() => { const m = document.querySelector('.s26-menubtn'); const bar = document.querySelector('.sd-topbar'); if (m && getComputedStyle(m).display !== 'none' && bar && !bar.classList.contains('open')) m.click(); })()")
+                pg.wait_for_timeout(350)
+
             def as_student(sid, name, level, tour=False):
                 pg.evaluate(f"""() => {{ localStorage.setItem('lumio_user', JSON.stringify({{name:'{name}',level:'{level}',t:Date.now()}}));
                     localStorage.setItem('lumio_student_id','{sid}');
@@ -116,7 +121,7 @@ def capture():
             ids = pg.evaluate("""async () => {
               await new Promise(r => { const s = document.createElement('script'); s.src = 'js/lumio-schedule.js'; s.onload = r; document.head.appendChild(s); });
               const L = LumioSchedule, P = LumioProfiles;
-              const sara = await P.addTeacher({name:'Ms. Sara', avatar:'🌸', pin:'1111', isOwner:true, meetingLink:'https://teams.microsoft.com/l/meetup-join/lumio-demo'});
+              const sara = await P.addTeacher({name:'Ms. Sara', avatar:'🌸', pin:'1111', meetingLink:'https://teams.microsoft.com/l/meetup-join/lumio-demo'});
               const omar = await P.addTeacher({name:'Mr. Omar', avatar:'🧑‍🏫', pin:'2222', meetingLink:'https://teams.microsoft.com/l/meetup-join/lumio-demo2'});
               L.setWeeklyAvailability({teacherId:sara.id, teacherName:sara.name, startTimes:['14:00','15:00','16:00','17:00'], durationMinutes:60});
               L.setWeeklyAvailability({teacherId:omar.id, teacherName:omar.name, startTimes:['16:00','18:00','19:00','12:00'], durationMinutes:60});
@@ -149,11 +154,13 @@ def capture():
             go("student.html")
             snap("ob_dash", ".sd-hero-card")
             snap("ob_trail", "#scheduleTrail")
+            open_menu()
             snap("ob_profile_btn", "#myProfileBtn")
-            pg.click("#myProfileBtn"); pg.wait_for_timeout(700)
+            pg.evaluate("document.getElementById('myProfileBtn').click()"); pg.wait_for_timeout(700)
             snap("ob_profile")
-            go("student.html")
+            go("student.html"); open_menu()
             snap("ob_messages", "#messagesBtn")
+            go("student.html")
 
             # ---------------- 1 lesson prep (Yousef, lesson 1) ----------------
             snap("prep_1", "#missionBtn")

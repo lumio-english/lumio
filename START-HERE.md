@@ -22,7 +22,6 @@ to know before you unzip it over your existing project:
 ## ❌ Not included (I never received these)
 - `assets/` — your logo, character art, vocab images
 - `lessons/` — the lesson JSON files
-- `powerpoints/` — your Zoom-ready decks
 - `css/style.css` — your stylesheet
 
 **Just copy these files into your existing project folder** (don't

@@ -246,7 +246,8 @@
     background:rgba(255,255,255,.75);backdrop-filter:blur(6px);
     border-bottom:3px solid rgba(255,255,255,.9);position:sticky;top:0;z-index:30;
   }
-  .sd-logo{height:44px;width:auto;border-radius:0}
+  .sd-logo{height:62px;width:auto;border-radius:0;object-fit:contain}
+  @media (max-width:520px){ .sd-logo{height:50px} }
   .sd-brand{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.2rem}
   .sd-brand span{color:var(--sd-orange-deep)}
   .sd-spacer{flex:1}
@@ -1088,7 +1089,6 @@
 
 <header class="sd-topbar">
   <img class="sd-logo" src="assets/logo/lumio-logo.png" alt="Lumio English logo" onerror="this.style.display='none'">
-  <div class="sd-brand">Lumio <span>English</span></div>
   <div class="sd-spacer"></div>
   <span id="helloChip" style="display:none"></span>
   <button class="pg-launch-btn" id="myProfileBtn" style="display:none">👤 My Profile</button>

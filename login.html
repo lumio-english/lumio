@@ -33,7 +33,7 @@
   button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--o);outline-offset:3px}
   .lg-bar{max-width:1180px;margin:0 auto;padding:16px 24px;display:flex;align-items:center;gap:12px;position:relative;z-index:2}
   .lg-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
-  .lg-brand img{width:36px;height:36px}
+  .lg-brand img{width:auto;height:76px;object-fit:contain}
   .lg-brand b{font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.02em;white-space:nowrap}
   html[lang="ar"] .lg-brand b{font-family:var(--ar)}
   .lg-brand b i{font-style:normal;color:var(--o)}
@@ -115,7 +115,7 @@
 <div class="lg-tiles" aria-hidden="true" id="lgTiles"></div>
 
 <header class="lg-bar">
-  <a class="lg-brand" href="index.html"><img src="assets/site/lumi-mark.png" alt="" width="36" height="36"><b data-t="brand">Lumio <i>English</i></b></a>
+  <a class="lg-brand" href="index.html"><img class="brand-logo" src="assets/logo/lumio-logo.png" alt="Lumio English"></a>
   <button type="button" class="lg-lang" id="lgLang">English</button>
 </header>
 

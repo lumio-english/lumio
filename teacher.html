@@ -104,7 +104,7 @@
     display:flex; flex-direction:column; padding:22px 16px; position:sticky; top:0; height:100vh;
   }
   .td-brand{display:flex;align-items:center;gap:10px;padding:0 8px 14px;border-bottom:1px solid var(--td-border-soft);margin-bottom:8px}
-  .td-brand img{height:40px;width:auto;border-radius:0}
+  .td-brand img{height:52px;width:auto;border-radius:0;object-fit:contain}
   .td-brand b{font-family:'Baloo 2',sans-serif;font-size:1.05rem;letter-spacing:.2px}
   .td-brand span{color:var(--td-indigo)}
   .td-teacher-tag{font-size:.74rem;font-weight:700;color:var(--td-muted);padding:0 8px 16px}
@@ -1497,13 +1497,8 @@
   <div id="viewMaterials" style="display:none">
     <div class="td-panel">
       <div class="td-panel-head"><h2>Teaching materials</h2><span class="td-badge teal" style="margin-left:8px" id="matBadge">Pre-A · 20 lessons</span></div>
-      <p class="sub">"Present" opens the lesson full-screen as a live, interactive deck — audio, clickable quizzes, and quick links to games — perfect for Zoom/Meet screen share. Need the raw PowerPoint files? Grab them all at once on the left instead of one by one. Levels without slides yet link straight to the live online lesson instead.</p>
+      <p class="sub">"Present" opens the lesson full-screen as a live, interactive deck — audio, clickable quizzes, and quick links to games — perfect for sharing your screen on Teams. Levels without slides yet link straight to the live online lesson instead.</p>
       <div class="td-mat-tools">
-        <a class="act pptx" id="downloadAllPptxBtn" href="downloads/pre-a-all-pptx.zip" download
-           style="white-space:nowrap;display:flex;align-items:center;gap:6px">
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
-          All PPTX (.zip)
-        </a>
         <select class="td-select" id="matLevelSelect" style="max-width:180px"></select>
         <div class="td-search" style="max-width:280px">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
@@ -5922,11 +5917,6 @@
   // reliable way to detect this from the client without a manifest,
   // so this needs updating by hand as more decks get produced.
   const LEVELS_WITH_SLIDES = ["pre-a", "level1", "level2", "level3", "level4", "level5", "level6"];
-  // Separate from the above: which of those levels also have a
-  // downloadable All-PPTX .zip in downloads/ (raw PowerPoint files
-  // for teaching without the website). A level can have the live
-  // "Present" deck ready before its PPTX export exists.
-  const LEVELS_WITH_PPTX_ZIP = ["pre-a", "level1"];
 
   let currentMatLevel = MATERIALS_LEVELS[0] || "pre-a";
   const matGrid = document.getElementById("matGrid");
@@ -5965,13 +5955,6 @@
     const hasSlides = LEVELS_WITH_SLIDES.includes(level);
     const meta = LEVEL_NAMES.find(l => l.id === level);
     matBadge.textContent = `${meta ? meta.name : level} · ${(meta && meta.lessons) || 20} lessons`;
-    const downloadAllBtn = document.getElementById("downloadAllPptxBtn");
-    if (LEVELS_WITH_PPTX_ZIP.includes(level)) {
-      downloadAllBtn.href = `downloads/${level}-all-pptx.zip`;
-      downloadAllBtn.style.display = "flex";
-    } else {
-      downloadAllBtn.style.display = "none";
-    }
     const token = ++matRenderToken; // guards against an older fetch resolving after a newer level switch
     matGrid.innerHTML = `<div class="td-empty">Loading…</div>`;
     const titles = await getLessonTitles(level);
@@ -6032,10 +6015,6 @@
       const n = i + 1;
       if (q && !title.toLowerCase().includes(q) && !("l" + String(n).padStart(2, "0")).includes(q)) return;
       const num = String(n).padStart(2, "0");
-      // The actual .pptx files on disk drop filesystem-unsafe characters
-      // from titles: trailing "!"/"?" and any "/" are removed (e.g.
-      // "Hello!" -> "Hello", "I am / You are" -> "I am  You are") —
-      // matching that here so the download link doesn't 404.
       const row = document.createElement("div");
       row.className = "td-mat-row";
       row.innerHTML = `<div class="td-mat-top"><div class="num">L${num}</div><b>${title}</b></div>

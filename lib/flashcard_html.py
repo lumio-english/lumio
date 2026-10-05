@@ -84,7 +84,7 @@ def build_flashcard_html(level, num, vocab, page="front"):
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     gap: 4mm; padding: 4mm; position: relative;
   }}
-  .card-logo {{ position: absolute; top: 2.5mm; right: 2.5mm; width: 8mm; height: 8mm; object-fit: contain; }}
+  .card-logo {{ position: absolute; top: 2mm; right: 2mm; width: 14mm; height: 11.4mm; object-fit: contain; }}
   .card img:not(.card-logo) {{ max-width: 70%; max-height: 60%; object-fit: contain; }}
   .card .fallback {{
     width: 26mm; height: 26mm; border-radius: 4mm; background: #FFF3D6; color: #F97316;
