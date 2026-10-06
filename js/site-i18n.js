@@ -7,7 +7,7 @@ window.LUMIO_SITE_I18N = {
     'meta.title': 'Lumio English — Small Steps · Big Futures',
     'skip': 'Skip to content',
     'brand': 'Lumio <i>English</i>',
-    'nav.how': 'How it works', 'nav.levels': 'Levels', 'nav.hub': 'English Hub', 'nav.games': 'Games', 'nav.stories': 'Stories',
+    'nav.how': 'How it works', 'nav.levels': 'Levels', 'nav.hub': 'English Hub', 'nav.writing': 'Writing', 'nav.games': 'Games', 'nav.stories': 'Stories',
     'nav.crew': 'The crew', 'nav.pricing': 'Pricing', 'nav.faq': 'FAQ', 'nav.login': 'Log in', 'nav.lang': 'العربية', 'nav.langLabel': 'اقرأ الصفحة بالعربية',
 
     'hero.eyebrow': 'English for Arabic-speaking children · ages 4–15',
@@ -40,6 +40,12 @@ window.LUMIO_SITE_I18N = {
     'hub.kicker': 'The English Hub', 'hub.h2': 'A library of English, open any time.',
     'hub.p': 'Every level unlocks its own Hub: organised, searchable and available any time, not only during lessons.',
     'hub.float': 'Hub sections', 'hub.video': 'A real screen recording of the English Hub',
+    'wr.kicker': 'Writing practice', 'wr.h2': 'Children write in English, not only speak it.',
+    'wr.p': 'Writing is part of every level: short answers to real questions, a writing sheet for each lesson and spelling in every homework, with Arabic help whenever it is needed.',
+    'wr.f1h': 'Write or say your answer', 'wr.f1p': 'Writing & Speaking prompts in the English Hub for every level. Type the answer (it is saved) or record it out loud, with the question in Arabic too.',
+    'wr.f2h': 'A writing sheet for every lesson', 'wr.f2p': 'Printable writing practice for all 20 lessons, from Pre-A to Level 3: trace, copy and write your own sentences on paper.',
+    'wr.f3h': 'Spelling in every homework', 'wr.f3p': 'Each homework asks the child to type the new words, so reading, listening and writing grow together, and parents see the results.',
+    'wr.demoLevel': 'Level 1 · About Me', 'wr.demoWrite': 'Write', 'wr.demoSpeak': 'Speak', 'wr.demoSave': 'Saved ✓', 'wr.demoSheet': 'Lesson writing sheet (PDF)',
     'hub.every': 'Every level',
 
     'games.kicker': 'Games', 'games.h2': 'A game for every level.',
@@ -109,7 +115,7 @@ window.LUMIO_SITE_I18N = {
     hub: [
       ['Vocabulary', 'Every word from the lessons, with pictures, sound and Arabic.', 'Every level'],
       ['Idioms', 'Everyday English expressions, explained simply.', 'Every level'],
-      ['Writing & Speaking', 'Model sentences to read, copy and say out loud.', 'Every level'],
+      ['Writing & Speaking', 'Questions to answer in writing or out loud, with Arabic help.', 'Every level'],
       ['Songs', 'Hello, theme, review and goodbye songs with lyrics.', 'Every level'],
       ['Spelling', 'Letters and first words, sound by sound.', 'Pre-A'],
       ['Phonics', 'The sounds behind the letters, with mouth pictures.', 'Levels 1–2'],
@@ -149,7 +155,7 @@ window.LUMIO_SITE_I18N = {
     'meta.title': 'لوميو إنجلش — خطوات صغيرة · مستقبل كبير',
     'skip': 'انتقل إلى المحتوى',
     'brand': 'لوميو <i>إنجلش</i>',
-    'nav.how': 'كيف تعمل', 'nav.levels': 'المستويات', 'nav.hub': 'المكتبة', 'nav.games': 'الألعاب', 'nav.stories': 'القصص',
+    'nav.how': 'كيف تعمل', 'nav.levels': 'المستويات', 'nav.hub': 'المكتبة', 'nav.writing': 'الكتابة', 'nav.games': 'الألعاب', 'nav.stories': 'القصص',
     'nav.crew': 'الأصدقاء', 'nav.pricing': 'الأسعار', 'nav.faq': 'الأسئلة', 'nav.login': 'تسجيل الدخول', 'nav.lang': 'English', 'nav.langLabel': 'Read this page in English',
 
     'hero.eyebrow': 'الإنجليزية لأطفالنا · من ٤ إلى ١٥ سنة',
@@ -182,6 +188,12 @@ window.LUMIO_SITE_I18N = {
     'hub.kicker': 'المكتبة التعليمية', 'hub.h2': 'مكتبة إنجليزية مفتوحة في أي وقت.',
     'hub.p': 'كل مستوى يفتح مكتبته الخاصة: منظمة، قابلة للبحث، ومتاحة في أي وقت، وليس فقط أثناء الدروس.',
     'hub.float': 'أقسام المكتبة', 'hub.video': 'تسجيل شاشة حقيقي للمكتبة التعليمية',
+    'wr.kicker': 'تدريب الكتابة', 'wr.h2': 'أطفالنا يكتبون بالإنجليزية، لا يتحدثون فقط.',
+    'wr.p': 'الكتابة جزء من كل مستوى: إجابات قصيرة على أسئلة حقيقية، وورقة كتابة لكل درس، وإملاء في كل واجب، مع مساعدة بالعربية عند الحاجة.',
+    'wr.f1h': 'اكتب إجابتك أو قلها', 'wr.f1p': 'أسئلة "الكتابة والتحدث" في المكتبة التعليمية لكل المستويات. يكتب الطفل إجابته (وتُحفظ) أو يسجلها بصوته، والسؤال مترجم للعربية أيضاً.',
+    'wr.f2h': 'ورقة كتابة لكل درس', 'wr.f2p': 'تدريب كتابة قابل للطباعة لكل الدروس العشرين، من المستوى التمهيدي حتى المستوى 3: تتبّع وانسخ واكتب جملك بنفسك على الورق.',
+    'wr.f3h': 'إملاء في كل واجب', 'wr.f3p': 'كل واجب يطلب من الطفل كتابة الكلمات الجديدة، فتنمو القراءة والاستماع والكتابة معاً، ويرى الأهل النتائج.',
+    'wr.demoLevel': 'المستوى 1 · عني أنا', 'wr.demoWrite': 'اكتب', 'wr.demoSpeak': 'تحدّث', 'wr.demoSave': 'تم الحفظ ✓', 'wr.demoSheet': 'ورقة كتابة الدرس (PDF)',
     'hub.every': 'كل المستويات',
 
     'games.kicker': 'الألعاب', 'games.h2': 'لعبة لكل مستوى.',
@@ -251,7 +263,7 @@ window.LUMIO_SITE_I18N = {
     hub: [
       ['المفردات', 'كل كلمة من الدروس، مع الصورة والصوت والعربية.', 'كل المستويات'],
       ['التعبيرات', 'تعبيرات إنجليزية يومية، مشروحة ببساطة.', 'كل المستويات'],
-      ['الكتابة والتحدث', 'جمل نموذجية للقراءة والنسخ والنطق بصوت عالٍ.', 'كل المستويات'],
+      ['الكتابة والتحدث', 'أسئلة يجيب عنها الطفل كتابةً أو بصوته، مع مساعدة بالعربية.', 'كل المستويات'],
       ['الأغاني', 'أغاني الترحيب والموضوع والمراجعة والوداع مع كلماتها.', 'كل المستويات'],
       ['الإملاء', 'الحروف والكلمات الأولى، صوتاً بصوت.', 'التمهيدي'],
       ['الصوتيات', 'الأصوات وراء الحروف، مع صور لحركة الفم.', 'المستويان 1–2'],

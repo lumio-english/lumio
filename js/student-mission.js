@@ -112,7 +112,7 @@
 
   function decorate() {
     if (!window.LumioIcons) return;
-    var secs = { secToday: 'sun', secMap: 'map', secUnlocked: 'gift', secClasses: 'calendar', secHub: 'library', secRewards: 'trophy', secMore: 'dots' };
+    var secs = { secToday: 'sun', secMap: 'map', secProgress: 'chart', secUnlocked: 'gift', secClasses: 'calendar', secHub: 'library', secRewards: 'trophy', secMore: 'dots' };
     Object.keys(secs).forEach(function (id) { var el = document.querySelector('#' + id + ' .s26-ic'); if (el) { el.innerHTML = ic(secs[id]); el.classList.add('lm'); } });
     var hub = { hubVocab: 'cards', hubGrammar: 'ruler', hubIdioms: 'bulb', hubPhonics: 'sound', hubSpelling: 'blocks', hubSongs: 'music', hubWriting: 'write' };
     Object.keys(hub).forEach(function (id) { var el = document.querySelector('#' + id + ' .sd-hubb-icon'); if (el) { el.innerHTML = ic(hub[id]); el.classList.add('lm'); } });

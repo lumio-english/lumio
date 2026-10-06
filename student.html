@@ -646,6 +646,7 @@
   .mp-tile.purple{background:#F1EBFE;color:#6B2FB8}
   .mp-tile.teal{background:#E3F7F1;color:#0d6b5c}
   .mp-tile.coral{background:#FDECEC;color:#B8342E}
+  .mp-progress-link{grid-column:1/-1;display:block;text-align:center;padding:10px;border-radius:12px;background:#FFF1E6;color:#C2410C;font-weight:800;font-size:.85rem;text-decoration:none}
   .mp-report-btn{
     width:100%;margin-top:16px;padding:13px;border-radius:14px;border:none;font-weight:800;font-size:.9rem;cursor:pointer;
     background:linear-gradient(135deg,var(--sd-orange),var(--sd-orange-deep));color:#fff;
@@ -961,6 +962,11 @@
   .sd-hours{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
   .sd-hour{border:2px solid #F0E9DA;border-radius:12px;padding:8px 4px;text-align:center;font-weight:800;font-size:.82rem;cursor:pointer;background:#fff;color:var(--sd-cocoa)}
   .sd-hour span{display:block;font-size:.64rem;font-weight:700;color:var(--sd-teal-deep)}
+  .sd-lesson-tag{display:inline-block;margin-right:4px;padding:1px 8px;border-radius:999px;background:#FFF1E6;color:#C2410C;font-size:.72rem;font-weight:800;vertical-align:1px}
+  .sd-hour em.yt{display:block;font-style:normal;font-size:.66rem;font-weight:800;color:#C2410C}
+  .sd-teacher .yt,.sd-pick .yt,.sd-yt-note .yt{color:#C2410C;font-weight:800}
+  .sd-yt-note{display:block;margin-top:4px;font-weight:700}
+  body.theme-teen .sd-hour em.yt,body.theme-teen .sd-teacher .yt,body.theme-teen .sd-pick .yt,body.theme-teen .sd-yt-note .yt{color:#FDBA74 !important}
   .sd-hour.closed{background:repeating-linear-gradient(135deg,#FAF6EE 0 6px,#F3EEE4 6px 8px);color:#B9AC9A;cursor:default}
   .sd-hour.closed span{color:#C9BFAE}
   .sd-hour.open:hover{border-color:var(--sd-teal)}
@@ -1255,6 +1261,11 @@
     </div>
     <a class="sd-cert-link sd-test-link locked" id="levelTestLink" href="#" aria-disabled="true"><span class="ic">🔒</span><span><b id="levelTestBtn">Locked</b></span></a>
   </div>
+  </section>
+
+  <section class="s26-sec" id="secProgress">
+    <header class="s26-sech"><span class="s26-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></span><div><h2>My progress</h2><p>Classes attended, your scores and every lesson you can go back to.</p></div></header>
+    <div class="spg" id="progressBody"></div>
   </section>
 
   <section class="s26-sec" id="secUnlocked">
@@ -1940,9 +1951,9 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
             <div class="sd-trail-label">${s.label}</div>
           </div>${connector}`;
       }).join("");
-      trailEl.innerHTML = `
+      trailEl.innerHTML = `<div class="sd-trail">
         <div class="sd-trail-title">Lesson ${current} progress</div>
-        <div class="sd-trail-row">${stepsHtml}</div>`;
+        <div class="sd-trail-row">${stepsHtml}</div></div>`;
     }
   } catch (e) {
     console.error("Lumio schedule trail render error:", e);
@@ -1972,6 +1983,22 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
   const teacherFace = t => t && /^data:image\//.test(String(t.photoDataUrl || "")) ? `<img src="${sdEsc(t.photoDataUrl)}" alt="">` : `<span>${sdEsc((t && t.avatar) || "🧑‍🏫")}</span>`;
   const starsOf = r => { const full = Math.floor(r), half = r - full >= 0.5; return "★".repeat(full) + (half ? "½" : "") + "☆".repeat(Math.max(0, 5 - full - (half ? 1 : 0))); };
   const ratingLine = id => { const r = LumioSchedule.teacherAverageRating(id); return r ? `<b>${starsOf(r.average)}</b> ${r.average.toFixed(1)} · ${r.count} rating${r.count === 1 ? "" : "s"}` : "New teacher · no ratings yet"; };
+  // The kid's own clock time for a Saudi class time, checked for THAT date
+  // (Egypt matches Saudi time in summer, not in winter). "" when it matches.
+  const yourTime = (dateStr, hm, short) => {
+    if (!dateStr || !Lumio.deviceDiffersFromTz(dateStr, hm)) return "";
+    const L = Lumio.localClassTime(dateStr, hm);
+    return short ? `${Lumio.fmt12(L.hm)}${L.sameDay ? "" : " " + L.day.split(",")[0]}` : `${Lumio.fmt12(L.hm)} your time${L.sameDay ? "" : " on " + L.day}`;
+  };
+  const nextDateOfDow = dow => { const t = LumioSchedule.todayStr(); return Lumio.tzAddDays(t, (dow - Lumio.tzDayOfWeek(t) + 7) % 7); };
+  // Working hours, widened to any hour a teacher actually offers.
+  const hourRange = (W, starts) => {
+    let [sh] = W.start.split(":").map(Number), [eh] = W.end.split(":").map(Number);
+    starts.forEach(t => { const hh = Number(String(t).split(":")[0]); if (hh < sh) sh = hh; if (hh + 1 > eh) eh = hh + 1; });
+    const out = []; for (let hh = sh; hh < eh; hh++) out.push(hh); return out;
+  };
+  const tzSub = () => Lumio.deviceDiffersFromTz(Lumio.tzAddDays(LumioSchedule.todayStr(), 30), "12:00") || Lumio.deviceDiffersFromTz()
+    ? ` <b class="sd-yt-note">Big times are Saudi time; <span class="yt">your own time</span> is under each one.</b>` : "";
   // ---- fixed weekly schedule (student picks day + time + teacher, up to 3 a week) ----
   function renderFixedMode(card, head, me, st, lessonLabel) {
     const W = LumioSchedule.WORK;
@@ -1979,31 +2006,32 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
     if (!fxPicks.length && saved && saved.picks) fxPicks = saved.picks.slice();
     const teacherOf = id => { try { return LumioProfiles.getTeacher(id) || null; } catch (e) { return null; } };
     const pickKey = pk => `${pk.dayOfWeek}|${pk.startTime}`;
-    const picksHtml = fxPicks.length ? fxPicks.map((pk, i) => { const t = teacherOf(pk.teacherId); return `<div class="sd-pick"><div class="face">${teacherFace(t)}</div><div><b>${FX_DAYS[pk.dayOfWeek]} · ${Lumio.fmt12(pk.startTime)}</b><small>${(t && t.name) || pk.teacherName || "Teacher"}</small></div><button type="button" data-unpick="${i}" aria-label="Remove">✕</button></div>`; }).join("")
+    const picksHtml = fxPicks.length ? fxPicks.map((pk, i) => { const t = teacherOf(pk.teacherId); return `<div class="sd-pick"><div class="face">${teacherFace(t)}</div><div><b>${FX_DAYS[pk.dayOfWeek]} · ${Lumio.fmt12(pk.startTime)}${yourTime(nextDateOfDow(pk.dayOfWeek), pk.startTime) ? ` <span class="yt">(${yourTime(nextDateOfDow(pk.dayOfWeek), pk.startTime)})</span>` : ""}</b><small>${(t && t.name) || pk.teacherName || "Teacher"}</small></div><button type="button" data-unpick="${i}" aria-label="Remove">✕</button></div>`; }).join("")
       : `<div class="sd-book-note">No weekly times yet — pick up to ${LumioSchedule.MAX_PER_WEEK} below. Each one becomes a class every week, lesson after lesson, for as long as your package lasts.</div>`;
     const canAdd = fxPicks.length < LumioSchedule.MAX_PER_WEEK;
     const dayHtml = W.days.map(d => `<div class="sd-day fx${fxDay === d ? " active" : ""}${fxPicks.some(p => p.dayOfWeek === d) ? " picked" : ""}" data-fxday="${d}"><div class="dw">${FX_DAYS[d].slice(0, 3)}</div><div class="dn">${fxPicks.filter(p => p.dayOfWeek === d).length ? "✓" : "·"}</div><div class="ct">every week</div></div>`).join("");
-    const [sh] = W.start.split(":").map(Number), [eh] = W.end.split(":").map(Number);
     const hourOf = t => Number(t.split(":")[0]);
     const dayPats = fxDay === null ? [] : LumioSchedule.weeklySlotOptions(fxDay);
+    const fxDate = fxDay === null ? null : nextDateOfDow(fxDay);
     const openHours = new Set(dayPats.map(p => hourOf(p.startTime)));
     if (fxHour !== null && !openHours.has(fxHour)) fxHour = null;
     let hourHtml = "";
-    for (let hh = sh; hh < eh; hh++) {
+    hourRange(W, dayPats.map(p => p.startTime)).forEach(hh => {
       const t = `${String(hh).padStart(2, "0")}:00`, open = openHours.has(hh), n = dayPats.filter(p => hourOf(p.startTime) === hh).length;
-      hourHtml += `<div class="sd-hour ${open ? "open" : "closed"}${fxHour === hh ? " active" : ""}" data-fxhour="${hh}">${Lumio.fmt12(t)}<span>${open ? `${n} teacher${n === 1 ? "" : "s"}` : "—"}</span></div>`;
-    }
+      const yt = fxDate ? yourTime(fxDate, t, true) : "";
+      hourHtml += `<div class="sd-hour ${open ? "open" : "closed"}${fxHour === hh ? " active" : ""}" data-fxhour="${hh}">${Lumio.fmt12(t)}${yt ? `<em class="yt">${yt}</em>` : ""}<span>${open ? `${n} teacher${n === 1 ? "" : "s"}` : "—"}</span></div>`;
+    });
     const hourPats = fxHour === null ? [] : dayPats.filter(p => hourOf(p.startTime) === fxHour);
     const teacherHtml = hourPats.map((p, i) => {
       const t = teacherOf(p.teacherId);
       const already = fxPicks.some(pk => pickKey(pk) === `${p.dayOfWeek}|${p.startTime}`);
-      return `<div class="sd-teacher"><div class="face">${teacherFace(t)}</div><div class="info"><div class="nm">${sdEsc(p.teacherName || (t && t.name) || "Teacher")}</div><div class="rt">${ratingLine(p.teacherId)}</div><div class="mt">Every ${FX_DAYS[p.dayOfWeek]} · ${Lumio.fmt12(p.startTime)} · ${p.durationMinutes} min</div></div><button type="button" class="sd-book-btn" data-fxadd="${i}" ${already || !canAdd ? "disabled" : ""}>${already ? "Added" : "Add"}</button></div>`;
+      return `<div class="sd-teacher"><div class="face">${teacherFace(t)}</div><div class="info"><div class="nm">${sdEsc(p.teacherName || (t && t.name) || "Teacher")}</div><div class="rt">${ratingLine(p.teacherId)}</div><div class="mt">Every ${FX_DAYS[p.dayOfWeek]} · ${Lumio.fmt12(p.startTime)} · ${p.durationMinutes} min${yourTime(nextDateOfDow(p.dayOfWeek), p.startTime) ? ` · <span class="yt">${yourTime(nextDateOfDow(p.dayOfWeek), p.startTime)}</span>` : ""}</div></div><button type="button" class="sd-book-btn" data-fxadd="${i}" ${already || !canAdd ? "disabled" : ""}>${already ? "Added" : "Add"}</button></div>`;
     }).join("");
-    card.innerHTML = head + `<div class="sd-book-sub">Choose a weekly time (Saudi time) and a teacher — up to ${LumioSchedule.MAX_PER_WEEK} a week. We book your next lessons into those times in order, following the same rules: up to 4 classmates at the same lesson, only your package's sessions, and you can still cancel any single class 30 min before.</div>
+    card.innerHTML = head + `<div class="sd-book-sub">Choose a weekly time (Saudi time) and a teacher — up to ${LumioSchedule.MAX_PER_WEEK} a week. We book your next lessons into those times in order, following the same rules: up to 4 classmates at the same lesson, only your package's sessions, and you can still cancel any single class 30 min before.${tzSub()}</div>
       <div class="sd-step">🔁 My weekly times (${fxPicks.length}/${LumioSchedule.MAX_PER_WEEK})</div><div class="sd-picks">${picksHtml}</div>
       ${fxPicks.length ? `<div class="sd-fx-actions"><button type="button" class="sd-book-btn" id="fxBookBtn">Preview &amp; book my weeks</button>${saved ? `<button type="button" class="sd-cancel-link" id="fxClearBtn">Remove fixed schedule</button>` : ""}</div>` : ""}
       ${canAdd ? `<div class="sd-step">1 · Day</div><div class="sd-days week fx">${dayHtml}</div>
-      ${fxDay !== null ? `<div class="sd-step">2 · Time (working hours ${Lumio.fmt12(W.start)} – ${Lumio.fmt12(W.end)})</div><div class="sd-hours">${hourHtml}</div>` : ""}
+      ${fxDay !== null ? `<div class="sd-step">2 · Time (Saudi time)</div><div class="sd-hours">${hourHtml}</div>` : ""}
       ${fxHour !== null ? `<div class="sd-step">3 · Teacher</div><div class="sd-teachers">${teacherHtml}</div>` : ""}` : `<div class="sd-step muted">That's the maximum of ${LumioSchedule.MAX_PER_WEEK} a week — remove one to change it.</div>`}`;
     card.querySelectorAll("[data-fxday]").forEach(el => el.addEventListener("click", () => { fxDay = Number(el.dataset.fxday); fxHour = null; renderBooking(); }));
     card.querySelectorAll(".sd-hour.open[data-fxhour]").forEach(el => el.addEventListener("click", () => { fxHour = Number(el.dataset.fxhour); renderBooking(); }));
@@ -2029,7 +2057,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
         LumioSchedule.saveFixedPlan(u.name, fxPicks);
         return askBooking("Nothing to book yet", skipped.length ? `${skipped[0].reason} — your weekly times are saved and we'll offer the next weeks as they open.` : "Everything in the next three weeks is already booked. Your weekly times are saved.", "OK");
       }
-      const body = okItems.map(x => `✓ ${fmtD(x.date)} ${Lumio.fmt12(x.startTime)} — Lesson ${x.lesson}${x.kind === "join" ? ` (join ${x.taken})` : ""}`).join("\n")
+      const body = okItems.map(x => `✓ ${fmtD(x.date)} ${Lumio.fmtClassTime(x.date, x.startTime)} — Lesson ${x.lesson}${x.kind === "join" ? ` (join ${x.taken})` : ""}`).join("\n")
         + (skipped.length ? `\n\nSkipped: ` + skipped.map(x => `${fmtD(x.date)} ${Lumio.fmt12(x.startTime)} — ${x.reason}`).join("; ") : "");
       if (!(await askBooking(`Book ${okItems.length} class${okItems.length === 1 ? "" : "es"} for the next 3 weeks?`, body, "Yes, book them ✓"))) return;
       bookBtn.disabled = true; bookBtn.textContent = "Booking…";
@@ -2116,18 +2144,17 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
 
     // Working-hours grid for the selected day: one cell per hour, open
     // only where at least one teacher's slot starts in that hour.
-    const [sh] = W.start.split(":").map(Number), [eh] = W.end.split(":").map(Number);
     const daySlots = bookingDay ? (byDay[bookingDay] || []) : [];
     const hourOf = t => Number(t.split(":")[0]);
-    const hours = [];
-    for (let hh = sh; hh < eh; hh++) hours.push(hh);
+    const hours = hourRange(W, daySlots.map(s => s.startTime));
     const openHours = new Set(daySlots.map(s => hourOf(s.startTime)));
     if (bookingHour === null || !openHours.has(bookingHour)) bookingHour = null;
     const hourHtml = bookingDay ? hours.map(hh => {
       const open = openHours.has(hh);
       const t = `${String(hh).padStart(2, "0")}:00`;
       const n = daySlots.filter(s => hourOf(s.startTime) === hh).length;
-      return `<div class="sd-hour ${open ? "open" : "closed"}${bookingHour === hh ? " active" : ""}" data-hour="${hh}">${Lumio.fmt12(t)}${open ? `<span>${n} teacher${n === 1 ? "" : "s"}</span>` : "<span>—</span>"}</div>`;
+      const yt = yourTime(bookingDay, t, true);
+      return `<div class="sd-hour ${open ? "open" : "closed"}${bookingHour === hh ? " active" : ""}" data-hour="${hh}">${Lumio.fmt12(t)}${yt ? `<em class="yt">${yt}</em>` : ""}${open ? `<span>${n} teacher${n === 1 ? "" : "s"}</span>` : "<span>—</span>"}</div>`;
     }).join("") : "";
 
     const capHit = bookingDay ? LumioSchedule.bookingsInWeek(u.name, bookingDay) >= LumioSchedule.MAX_PER_WEEK : false;
@@ -2143,18 +2170,18 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
         <div class="info">
           <div class="nm">${sdEsc(s.teacherName || (t && t.name) || "Teacher")}</div>
           <div class="rt">${rating ? `<b>${stars(rating.average)}</b> ${rating.average.toFixed(1)} · ${rating.count} rating${rating.count === 1 ? "" : "s"}` : "New teacher · no ratings yet"}</div>
-          <div class="mt">${Lumio.fmt12(s.startTime)} · ${s.durationMinutes} min${Lumio.deviceDiffersFromTz() ? " · " + Lumio.fmtClassTime(s.date, s.startTime).split(" (").slice(1).map(x => "(" + x).join("") : ""}</div>
+          <div class="mt">${Lumio.fmt12(s.startTime)} Saudi · ${s.durationMinutes} min${yourTime(s.date, s.startTime) ? ` · <span class="yt">${yourTime(s.date, s.startTime)}</span>` : ""}</div>
           <div class="kind ${s.kind}">${s.kind === "join" ? `Join · ${s.taken} classmate${s.taken === 1 ? "" : "s"} at ${lessonLabel}` : `New ${lessonLabel} class · you'd be first`} <span class="seats">${s.taken}/${s.seats}</span></div>
         </div>
         <button type="button" class="sd-book-btn" data-slot="${i}" ${capHit ? "disabled" : ""}>Book</button>
       </div>`;
     }).join("");
 
-    card.innerHTML = head + tabs + `<div class="sd-book-sub">Pick a day, then a time (Saudi time), then your teacher. Up to ${LumioSchedule.MAX_PER_CLASS} students share a class at the same lesson · max ${LumioSchedule.MAX_PER_WEEK} a week · cancel up to ${LumioSchedule.CANCEL_MIN_BEFORE} min before.</div>
+    card.innerHTML = head + tabs + `<div class="sd-book-sub">Pick a day, then a time (Saudi time), then your teacher. Up to ${LumioSchedule.MAX_PER_CLASS} students share a class at the same lesson · max ${LumioSchedule.MAX_PER_WEEK} a week · cancel up to ${LumioSchedule.CANCEL_MIN_BEFORE} min before.${tzSub()}</div>
       <div class="sd-week-nav"><button type="button" data-wk="-1" ${bookingWeek === 0 ? "disabled" : ""}>‹</button><span>${monthLabel}${bookingWeek === 0 ? " · this week" : bookingWeek === 1 ? " · next week" : ""}</span><button type="button" data-wk="1" ${bookingWeek === maxWeek ? "disabled" : ""}>›</button></div>
       <div class="sd-days week">${dayHtml}</div>
-      ${bookingDay ? `<div class="sd-step">⏰ Working hours ${Lumio.fmt12(W.start)} – ${Lumio.fmt12(W.end)} · ${daySlots.length ? "tap an open time" : "no open times this day"}</div><div class="sd-hours">${hourHtml}</div>` : `<div class="sd-book-note" style="margin-top:10px">Lessons run Sunday to Thursday — pick a working day.</div>`}
-      ${bookingHour !== null ? `<div class="sd-step">🧑‍🏫 Teachers free at ${Lumio.fmt12(String(bookingHour).padStart(2, "0") + ":00")}</div><div class="sd-teachers">${teacherHtml}</div>` : (daySlots.length ? `<div class="sd-step muted">Choose a time to see which teachers are free.</div>` : "")}
+      ${bookingDay ? `<div class="sd-step">⏰ Times in Saudi time · ${daySlots.length ? "tap an open time" : "no open times this day"}</div><div class="sd-hours">${hourHtml}</div>` : `<div class="sd-book-note" style="margin-top:10px">Lessons run Sunday to Thursday — pick a working day.</div>`}
+      ${bookingHour !== null ? `<div class="sd-step">🧑‍🏫 Teachers free at ${Lumio.fmtClassTime(bookingDay, String(bookingHour).padStart(2, "0") + ":00")}</div><div class="sd-teachers">${teacherHtml}</div>` : (daySlots.length ? `<div class="sd-step muted">Choose a time to see which teachers are free.</div>` : "")}
       ${capHit ? `<div class="sd-week-cap">You already have ${LumioSchedule.MAX_PER_WEEK} classes that week — pick another week.</div>` : ""}`;
 
     bindTabs();
@@ -2214,7 +2241,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
             <div class="ic">🎥</div>
             <div>
               <div class="when">${fmtSchedDay(next.date)} at ${fmtSchedTime(next.startTime, next.date)}</div>
-              <div class="sub">Next class with ${sdEsc(next.teacherName || "your teacher")} · ${next.durationMinutes} min${next.students && next.students.length > 1 ? ` · with ${next.students.length - 1} classmate${next.students.length > 2 ? "s" : ""}` : ""}</div>
+              <div class="sub">${next.lessonNumber ? `Lesson ${Number(next.lessonNumber)} · ` : ""}Next class with ${sdEsc(next.teacherName || "your teacher")} · ${next.durationMinutes} min${next.students && next.students.length > 1 ? ` · with ${next.students.length - 1} classmate${next.students.length > 2 ? "s" : ""}` : ""}</div>
               ${(() => { const g = LumioSchedule.joinGate(u.name, next); if (!g.ok) return `<a class="sd-gate" href="homework.html?level=${next.level || level}&n=${g.lesson}">🔒 ${sdEsc(g.reason)}</a>`; const ml = LumioSchedule.meetingLinkFor(next); return ml ? `<a href="${sdUrl(ml)}" target="_blank" rel="noopener" class="sd-join-link">${/teams\.microsoft|teams\.live/i.test(ml) ? "🟣 Join on Teams" : "🔗 Join class link"}</a>` : ""; })()}
               ${canCancel(next) ? `<button type="button" class="sd-cancel-link" data-cancel="${next.id}">Cancel</button>` : ""}
             </div>
@@ -2223,7 +2250,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
           <div class="sd-class-row">
             <div class="dt">${fmtSchedDay(c.date)}<span>${fmtSchedTime(c.startTime, c.date)}</span></div>
             <div>
-              <div class="who">${sdEsc(c.teacherName || "Your teacher")}</div>
+              <div class="who">${c.lessonNumber ? `<span class="sd-lesson-tag">Lesson ${Number(c.lessonNumber)}</span> ` : ""}${sdEsc(c.teacherName || "Your teacher")}</div>
               <div class="meta">${c.durationMinutes} min${c.notes ? " · " + sdEsc(c.notes) : ""}</div>
               ${(() => { const g = LumioSchedule.joinGate(u.name, c); if (!g.ok) return `<a class="sd-gate" href="homework.html?level=${c.level || level}&n=${g.lesson}">🔒 Homework ${g.lesson} first</a>`; const ml = LumioSchedule.meetingLinkFor(c); return ml ? `<a href="${sdUrl(ml)}" target="_blank" rel="noopener" class="sd-join-link">${/teams\.microsoft|teams\.live/i.test(ml) ? "🟣 Join on Teams" : "🔗 Join link"}</a>` : ""; })()}
               ${canCancel(c) ? `<button type="button" class="sd-cancel-link" data-cancel="${c.id}">Cancel</button>` : ""}
@@ -2989,6 +3016,12 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
         <div class="mp-tile purple"><span class="ic">📚</span><b>${p.levelsPurchased || 0}</b><span>Levels bought</span></div>
         <div class="mp-tile ${(p.sessionsRemaining || 0) <= 3 ? "coral" : "teal"}"><span class="ic">🎟️</span><b>${p.sessionsRemaining || 0}</b><span>Sessions left</span></div>
         <div class="mp-tile teal"><span class="ic">🏆</span><b>${p.rewardPoints || 0}</b><span>Reward points</span></div>
+        ${(() => { try { const D = window.LumioStudentProgress && LumioStudentProgress.collect(); if (!D) return "";
+          return `<div class="mp-tile purple"><span class="ic">🎥</span><b>${D.attended}</b><span>Classes attended</span></div>
+            <div class="mp-tile blue"><span class="ic">✅</span><b>${D.finished}/${D.total}</b><span>Lessons finished</span></div>
+            <div class="mp-tile teal"><span class="ic">📖</span><b>${D.prepAvg === null ? "–" : D.prepAvg + "%"}</b><span>Prep score</span></div>
+            <div class="mp-tile teal"><span class="ic">📝</span><b>${D.hwAvg === null ? "–" : D.hwAvg + "%"}</b><span>Homework score</span></div>
+            <a class="mp-progress-link" href="#secProgress" onclick="document.getElementById('myProfileOverlay').classList.remove('show')">See every lesson and score →</a>`; } catch (e) { return ""; } })()}
       `;
       // Payment plan: each paid part shows what it added to the balance.
       const payEl = document.getElementById("mpPayments");
@@ -4278,6 +4311,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
   document.write('<script src="js/student-mission.js?v=' + v + '"><' + '/script>');
   document.write('<script src="js/student-motion.js?v=' + v + '"><' + '/script>');
   document.write('<script src="js/student-map3d.js?v=' + v + '"><' + '/script>');
+  document.write('<script src="js/student-progress.js?v=' + v + '"><' + '/script>');
   document.write('<script src="js/lumio-emoji.js?v=' + v + '"><' + '/script>');
 })();
 </script>

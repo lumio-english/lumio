@@ -4642,7 +4642,7 @@
         <div class="ic">🎯</div>
         <div class="val">
           <div class="main">${escHtml(c.level ? levelName(c.level) : "English Club")}${c.lessonNumber ? " · Lesson " + c.lessonNumber : ""}</div>
-          <div class="sub">${fmtDayLabel(c.date)} (${c.date}) ${fmtTime(c.startTime)}${c.durationMinutes ? " – " + fmtTime(minutesToHM(classEndMinutes(c))) : ""} · Saudi time${Lumio.deviceDiffersFromTz() ? ` <span style="opacity:.75">${fmtTimeTz(c.date, c.startTime).replace(/^[^(]*/, "")}</span>` : ""}</div>
+          <div class="sub">${fmtDayLabel(c.date)} (${c.date}) ${fmtTime(c.startTime)}${c.durationMinutes ? " – " + fmtTime(minutesToHM(classEndMinutes(c))) : ""} · Saudi time${Lumio.deviceDiffersFromTz(c.date, c.startTime) ? ` <span style="opacity:.75">${fmtTimeTz(c.date, c.startTime).replace(/^[^(]*/, "")}</span>` : ""}</div>
         </div>
       </div>
       <div class="td-cd-row">

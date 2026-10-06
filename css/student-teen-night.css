@@ -109,6 +109,16 @@ body.theme-teen-light .sd-sessions-pill{background:rgba(249,115,22,.15)!importan
 body.theme-teen-light .sd-day{background:rgba(255,255,255,.05)!important;color:var(--n-ink)!important;border-color:var(--n-line)!important}
 body.theme-teen-light .sd-day.active,body.theme-teen-light .sd-day.today,body.theme-teen-light .sd-day.picked{background:rgba(249,115,22,.16)!important;border-color:var(--n-o)!important}
 body.theme-teen-light .sd-day.active .dw,body.theme-teen-light .sd-day.active .dn{color:#FFD9BA!important}
+/* hour buttons: the night rules in student.html sat before the light ones, so the cream kid button won and the text was white on cream */
+body.theme-teen-light .sd-hour{background:rgba(255,255,255,.05)!important;border-color:var(--n-line)!important;color:var(--n-ink)!important}
+body.theme-teen-light .sd-hour span{color:#7DE8F5!important}
+body.theme-teen-light .sd-hour.closed{background:repeating-linear-gradient(135deg,rgba(255,255,255,.02) 0 6px,rgba(255,255,255,.06) 6px 8px)!important;color:rgba(243,245,255,.35)!important}
+body.theme-teen-light .sd-hour.closed span,body.theme-teen-light .sd-hour.closed em.yt{color:rgba(243,245,255,.3)!important}
+body.theme-teen-light .sd-hour.open:hover{border-color:var(--n-o2)!important}
+body.theme-teen-light .sd-hour.active{background:rgba(249,115,22,.18)!important;border-color:var(--n-o)!important;color:#fff!important}
+body.theme-teen-light .sd-class-row .dt,body.theme-teen-light .sd-class-row .who{color:var(--n-ink)!important}
+body.theme-teen-light .sd-class-row .dt span,body.theme-teen-light .sd-class-row .meta{color:var(--n-mut)!important}
+body.theme-teen-light .sd-lesson-tag{background:rgba(249,115,22,.16)!important;color:#FFD9BA!important}
 
 /* badges */
 body.theme-teen-light .sd-badge.earned{background:linear-gradient(180deg,rgba(249,115,22,.16),var(--n-card))!important;border-color:var(--n-o)!important;box-shadow:0 0 26px -10px rgba(249,115,22,.6)!important}
@@ -141,3 +151,29 @@ body.theme-teen-light .sd-buddy-card{border-color:var(--n-line)!important}
 /* pop-up windows stay light and readable: hand them the light palette back */
 body.theme-teen-light .sd-modal,body.theme-teen-light .mp-card,body.theme-teen-light .pg-tour-overlay{
   --s-ink:#111; --s-soft:#4A4A4A; --s-mut:#767676; --sd-cocoa:#111; --sd-cocoa-soft:#767676; color:#111; color-scheme:light}
+
+/* My progress (js/student-progress.js) */
+body.theme-teen-light .spg-tile,body.theme-teen-light .spg-row,body.theme-teen-light .spg-empty,body.theme-teen-light .spg-locked{background:var(--n-card)!important;border-color:var(--n-line)!important;box-shadow:none!important}
+body.theme-teen-light .spg-tic,body.theme-teen-light .spg-act svg{background:rgba(255,255,255,.92)!important}
+body.theme-teen-light .spg-tile b,body.theme-teen-light .spg-tl,body.theme-teen-light .spg-title b,body.theme-teen-light .spg-head h3,body.theme-teen-light .spg-cell b{color:var(--n-ink)}
+body.theme-teen-light .spg-tile small,body.theme-teen-light .spg-sub,body.theme-teen-light .spg-k,body.theme-teen-light .spg-ar,body.theme-teen-light .spg-tile b small,body.theme-teen-light .spg-empty,body.theme-teen-light .spg-locked{color:var(--n-mut)!important}
+body.theme-teen-light .spg-tile.good b,body.theme-teen-light .spg-cell b.good,body.theme-teen-light .spg-ok{color:#4ADE80!important}
+body.theme-teen-light .spg-tile.ok b,body.theme-teen-light .spg-cell b.ok{color:#FB923C!important}
+body.theme-teen-light .spg-tile.mid b,body.theme-teen-light .spg-cell b.mid{color:#FBBF24!important}
+body.theme-teen-light .spg-tile.low b,body.theme-teen-light .spg-cell b.low,body.theme-teen-light .spg-cell.miss b{color:#F87171!important}
+body.theme-teen-light .spg-cell{background:rgba(255,255,255,.05)!important}
+body.theme-teen-light .spg-cell.todo,body.theme-teen-light .spg-cell.miss{background:rgba(255,255,255,.025)!important}
+body.theme-teen-light .spg-cell.todo b,body.theme-teen-light .spg-wait{color:var(--n-mut)!important}
+body.theme-teen-light .spg-grade{background:rgba(255,255,255,.08)!important}
+body.theme-teen-light .spg-num{background:rgba(249,115,22,.16)!important;color:#FFD9BA!important}
+body.theme-teen-light .spg-row.done .spg-num{background:rgba(74,222,128,.9)!important}
+body.theme-teen-light .spg-head h3 span{background:rgba(249,115,22,.16)!important;color:#FFD9BA!important}
+body.theme-teen-light .spg-filter{background:rgba(255,255,255,.05)!important;border-color:var(--n-line)!important}
+body.theme-teen-light .spg-filter button{color:var(--n-mut)!important}
+body.theme-teen-light .spg-filter button[aria-selected=true]{background:rgba(249,115,22,.2)!important;color:#fff!important}
+body.theme-teen-light .spg-act{background:rgba(255,255,255,.05)!important;border-color:var(--n-line2)!important;color:var(--n-ink)!important}
+body.theme-teen-light .spg-act:hover{border-color:var(--n-o)!important}
+body.theme-teen-light .spg-note{background:rgba(255,255,255,.04)!important;color:var(--n-soft)!important}
+body.theme-teen-light .spg-stars i{color:rgba(255,255,255,.18)}
+body.theme-teen-light .spg-badge.done{background:rgba(74,222,128,.18)!important;color:#4ADE80!important}
+body.theme-teen-light .mp-progress-link{background:rgba(249,115,22,.16)!important;color:#FFD9BA!important}

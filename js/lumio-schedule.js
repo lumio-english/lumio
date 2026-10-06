@@ -645,22 +645,32 @@
   // `startTime` that arrives as "1899-12-30T13:00:00.000Z" is turned back
   // into the "YYYY-MM-DD" / "HH:MM" strings every comparison here expects.
   // Without this a synced class matched no calendar day and no "next
-  // class" card. Dates are read in the browser's local timezone, which is
-  // the same region as the Sheet's for a Lumio teacher.
+  // class" card. Dates are read on the Riyadh clock (the Sheet's zone):
+  // they used to be read on the device's clock, so a student in Egypt or
+  // Europe saw a class from the night before, or an hour off.
+  function riyadhParts(d) {
+    try {
+      const f = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Riyadh", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+      const o = {}; f.formatToParts(d).forEach(p => { o[p.type] = p.value; });
+      return { date: `${o.year}-${o.month}-${o.day}`, hm: `${o.hour === "24" ? "00" : o.hour}:${o.minute}` };
+    } catch (e) {
+      const pad = n => String(n).padStart(2, "0");
+      return { date: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`, hm: `${pad(d.getHours())}:${pad(d.getMinutes())}` };
+    }
+  }
   function normalizeSheetDates(rec) {
     if (!rec) return rec;
-    const pad = n => String(n).padStart(2, "0");
     ["date", "startDate", "endDate"].forEach(k => {
       const v = rec[k];
       if (typeof v === "string" && /^\d{4}-\d{2}-\d{2}T/.test(v)) {
         const d = new Date(v);
-        if (!isNaN(d)) rec[k] = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+        if (!isNaN(d)) rec[k] = riyadhParts(d).date;
       }
     });
     const t = rec.startTime;
     if (typeof t === "string" && /^\d{4}-\d{2}-\d{2}T/.test(t)) {
       const d = new Date(t);
-      if (!isNaN(d)) rec.startTime = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      if (!isNaN(d)) rec.startTime = riyadhParts(d).hm;
     }
     if (typeof rec.lessonNumber === "string" && /^\d+$/.test(rec.lessonNumber)) rec.lessonNumber = Number(rec.lessonNumber);
     if (typeof rec.durationMinutes === "string" && /^\d+$/.test(rec.durationMinutes)) rec.durationMinutes = Number(rec.durationMinutes);

@@ -701,8 +701,21 @@ const Lumio = (() => {
     return new Date(Date.UTC(y, m - 1, d)).getUTCDay();
   };
   const deviceTz = () => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch (e) { return ""; } };
-  // Is this device's clock different from Riyadh right now?
-  const deviceDiffersFromTz = () => Math.round(-new Date().getTimezoneOffset()) !== TZ_OFFSET_MIN;
+  // Is this device's clock different from Riyadh? With a class date + time
+  // the answer is for THAT moment: Egypt keeps Saudi time in summer but
+  // falls an hour behind after its clocks change at the end of October, so
+  // "same as Riyadh today" must not hide the local time of a November class.
+  const deviceDiffersFromTz = (dateStr, hm) => {
+    const at = dateStr ? tzToDate(dateStr, hm) : new Date();
+    return Math.round(-at.getTimezoneOffset()) !== TZ_OFFSET_MIN;
+  };
+  // The device's own clock time for a Riyadh class: { hm, sameDay, day }.
+  const localClassTime = (dateStr, hm) => {
+    const local = tzToDate(dateStr, hm);
+    const sameDay = local.getFullYear() === Number(dateStr.slice(0, 4)) && local.getMonth() + 1 === Number(dateStr.slice(5, 7)) && local.getDate() === Number(dateStr.slice(8, 10));
+    return { hm: `${pad2(local.getHours())}:${pad2(local.getMinutes())}`, sameDay,
+             day: local.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }) };
+  };
   const fmt12 = (hm) => {
     const [h, m] = String(hm || "00:00").split(":").map(Number);
     const ap = h >= 12 ? "PM" : "AM";
@@ -712,12 +725,10 @@ const Lumio = (() => {
   const fmtClassTime = (dateStr, hm, opts) => {
     const o = opts || {};
     let out = fmt12(hm) + " " + (o.ar ? TZ_LABEL_AR : TZ_LABEL);
-    if (deviceDiffersFromTz()) {
-      const local = tzToDate(dateStr, hm);
-      const lh = `${pad2(local.getHours())}:${pad2(local.getMinutes())}`;
-      const sameDay = local.getFullYear() === Number(dateStr.slice(0, 4)) && local.getMonth() + 1 === Number(dateStr.slice(5, 7)) && local.getDate() === Number(dateStr.slice(8, 10));
-      const dayNote = sameDay ? "" : ` on ${local.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}`;
-      out += o.ar ? ` (${fmt12(lh)} بتوقيتك${dayNote})` : ` (${fmt12(lh)} your time${dayNote})`;
+    if (dateStr && deviceDiffersFromTz(dateStr, hm)) {
+      const L = localClassTime(dateStr, hm);
+      const dayNote = L.sameDay ? "" : ` on ${L.day}`;
+      out += o.ar ? ` (${fmt12(L.hm)} بتوقيتك${dayNote})` : ` (${fmt12(L.hm)} your time${dayNote})`;
     }
     return out;
   };
@@ -732,7 +743,7 @@ const Lumio = (() => {
            lessonCountFor, attendedSetFor, lessonDone, currentLesson, lessonsDoneCount, levelComplete, isTeacherSession,
            TEST_PASS_PCT, testBand, levelTestsAll, levelTestFor, saveLevelTest,
            TZ, TZ_LABEL, TZ_LABEL_AR, TZ_OFFSET_MIN, tzNow, tzToDate, tzAddDays, tzDayOfWeek,
-           deviceTz, deviceDiffersFromTz, fmt12, fmtClassTime };
+           deviceTz, deviceDiffersFromTz, localClassTime, fmt12, fmtClassTime };
 })();
 // Expose for modules that check window.Lumio (lumio-schedule.js, lumio-profiles.js); a top-level `const` is not a window property.
 if (typeof window !== "undefined") window.Lumio = Lumio;
