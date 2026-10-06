@@ -199,4 +199,19 @@ for entry in SCENE_DATA:
         (f"assets/vocab-scenes/pre-a/{img_num:02d}.jpg", sentence, bold_words, translation)
     )
 
-run("pre-a", DIALOGUES, None, None, has_phonics=False, skills_data=SKILLS_CHECKPOINTS, spelling_rules=SPELLING_RULES, theme_map=THEME_MAP, scene_map=SCENE_MAP)
+GRAMMAR_UNITS = {
+    14: {  # Lesson 14: Food Part 1 -- "an apple", "an egg" appear here for the first time, so the a/an rule lives here
+        "title": "a / an",
+        "titleAr": "a / an (واحد)",
+        "explanation": "We say \"a\" before most words (a banana), and \"an\" before a word that starts with a, e, i, o, u (an apple, an egg).",
+        "explanationAr": "نقول a قبل معظم الكلمات (a banana)، ونقول an قبل الكلمة التي تبدأ بـ a, e, i, o, u (an apple, an egg).",
+        "examples": [
+            {"en": "a banana", "ar": "موزة"},
+            {"en": "an apple", "ar": "تفاحة"},
+            {"en": "an egg", "ar": "بيضة"},
+            {"en": "I like an apple and a banana.", "ar": "أحب تفاحة وموزة."},
+        ],
+    },
+}
+
+run("pre-a", DIALOGUES, None, GRAMMAR_UNITS, has_phonics=False, skills_data=SKILLS_CHECKPOINTS, spelling_rules=SPELLING_RULES, theme_map=THEME_MAP, scene_map=SCENE_MAP)

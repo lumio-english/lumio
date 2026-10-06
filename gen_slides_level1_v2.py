@@ -202,6 +202,18 @@ GRAMMAR_UNITS = {
             {"en": "It is a ball.", "ar": "إنها كرة."},
         ],
     },
+    4: {  # Lesson 4: "Big & Small" -- the question forms every dialogue uses: What is it? / Is it big? Yes, it is. / No, it isn't.
+        "title": "What is it? / Is it...? Yes, it is. / No, it isn't.",
+        "titleAr": "ما هذا؟ / هل هو...؟ نعم / لا",
+        "explanation": "To ask about a thing we say \"What is it?\" To check, we say \"Is it big?\" and answer \"Yes, it is.\" or \"No, it isn't.\"",
+        "explanationAr": "للسؤال عن شيء نقول What is it? (ما هذا؟). وللتأكد نقول Is it big? (هل هو كبير؟) ونجيب Yes, it is. (نعم) أو No, it isn't. (لا).",
+        "examples": [
+            {"en": "What is it? It is an elephant.", "ar": "ما هذا؟ إنه فيل."},
+            {"en": "Is it big? Yes, it is.", "ar": "هل هو كبير؟ نعم، هو كبير."},
+            {"en": "Is it small? No, it isn't.", "ar": "هل هو صغير؟ لا، ليس صغيراً."},
+            {"en": "What is it? It is a mouse. It is small.", "ar": "ما هذا؟ إنه فأر. إنه صغير."},
+        ],
+    },
 }
 
 run("level1", DIALOGUES, PHONICS_UNITS, grammar_units=GRAMMAR_UNITS, theme_map=THEME_MAP, scene_map=SCENE_MAP)

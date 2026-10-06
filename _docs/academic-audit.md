@@ -53,7 +53,11 @@ Rules applied: a word's category follows **how the example uses it in that lesso
 - **Common-mistake bank** is accurate after two audits (43 topics, 129 pairs).
 - **Image coverage**: Pre-A–L4 complete except the two new override files; L5 missing 44 (prompts delivered); L6 missing 54 (list in §4).
 
-## 3. Weaknesses and recommendations (not applied — need a decision)
+## 3. Weaknesses and recommendations
+
+**Phase 1 (6 Oct, evening) — done and live:** items 1, 2, 3, 5 (L4·17 only), 6, 8 (L4·17), 12, 13, 14, 16 (board only) below are now applied: kids examples in L1·15–19 / L2·15–20 are one clause each; kids decks have a Common Mistakes slide (14 kids topics in `lib/common_mistakes.py` KIDS); L1·4 teaches *What is it? / Is it…? Yes, it is / No, it isn't*; L2·4 adds *we are / they are*; L2·8 has a *There is / There are* rule and examples; L2·12 has a *When is your birthday?* rule; Pre-A·14 has an *a / an* rule; L4·6 and L3·15 examples match their grammar; L6 dialogues 1/8/14 use *going to / will*; L5·3 hub carries the base-form note; L6·7 hub covers short/irregular forms; L4·17 is now *Want to + verb (future goals)* (new hub topic + mistakes); *emoji / deadline / captain* Arabic unified; duplicate *board* removed from L2·9. **Not applied:** the L6·4 ↔ L6·13 swap (lesson numbers key the scenes, backgrounds, dialogues and crew talk — a renumbering would touch ~40 files for a modest gain; L6·4 is kept as the bridge from Level 5) and *song* in Pre-A·18 (the Pre-A trial deck loads it). Items 4, 7, 10, 11 wait for Phase 2 (they need new images).
+
+### 3.0 Original recommendations (for the record)
 
 ### 3.1 Add
 1. **Kids: "What is this/that? — Is it…? Yes/No"** mini-lesson between L1·3 and L1·4; every L1 dialogue relies on it but it is never taught. Also *we/they are* in L2·4, one *There is…* example in L2·8, an *a/an* rule slide in Pre-A·14 (an apple/egg/umbrella appear with no rule), and a "My birthday is in…" example in L2·12 (the focus asks it, no example answers it).

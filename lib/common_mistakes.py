@@ -361,6 +361,84 @@ BANK = {
     ],
 }
 
+# ---------------------------------------------------------------- KIDS --
+# Pre-A / Level 1 / Level 2 grammar units (titles from gen_slides_*_v2.py
+# GRAMMAR_UNITS). Short sentences, one error each, the kind a 6-10 year
+# old Arabic speaker really makes.
+KIDS = {
+    "a / an": [
+        ("I like a apple.", "I like an apple.", "\"apple\" starts with a vowel sound -> an.", "كلمة apple تبدأ بصوت علة ← نستخدم an."),
+        ("An banana is yellow.", "A banana is yellow.", "\"banana\" starts with b -> a.", "كلمة banana تبدأ بحرف b ← نستخدم a."),
+        ("I eat egg for breakfast.", "I eat an egg for breakfast.", "One thing needs a / an.", "الشيء الواحد يحتاج a أو an قبله."),
+    ],
+    "I am / You are": [
+        ("I is happy.", "I am happy.", "I goes with am.", "مع I نستخدم am."),
+        ("You is tired.", "You are tired.", "You goes with are.", "مع you نستخدم are."),
+        ("Am fine.", "I am fine.", "English needs the subject: I am...", "في الإنجليزية لا نحذف الفاعل: I am..."),
+    ],
+    "It's a / an + noun": [
+        ("It is cat.", "It is a cat.", "One thing: a + noun.", "شيء واحد: a + الاسم."),
+        ("It is a apple.", "It is an apple.", "Vowel sound -> an.", "صوت علة ← an."),
+        ("Is a dog.", "It is a dog.", "Say \"It\" first.", "نبدأ بـ It."),
+    ],
+    "What is it? / Is it...? Yes, it is. / No, it isn't.": [
+        ("Is big?", "Is it big?", "The question needs \"it\".", "السؤال يحتاج it."),
+        ("Yes, it is big it is.", "Yes, it is.", "Short answer: Yes, it is.", "الجواب القصير: Yes, it is."),
+        ("No, it is not big isn't.", "No, it isn't.", "Short answer: No, it isn't.", "الجواب القصير: No, it isn't."),
+    ],
+    "He is / She is": [
+        ("He is my sister.", "She is my sister.", "A girl -> she.", "البنت ← she."),
+        ("She my brother.", "He is my brother.", "A boy -> he, and we need \"is\".", "الولد ← he، ولا ننسى is."),
+        ("They is my parents.", "They are my parents.", "They goes with are.", "مع they نستخدم are."),
+    ],
+    "Possessive Adjectives: my, your, his, her, our, their": [
+        ("This is me bag.", "This is my bag.", "Before a noun: my (not me).", "قبل الاسم نستخدم my وليس me."),
+        ("Omar is a boy. Her shirt is blue.", "Omar is a boy. His shirt is blue.", "A boy -> his.", "الولد ← his."),
+        ("This is the house of they.", "This is their house.", "Use their + noun.", "نستخدم their + الاسم."),
+    ],
+    "Have got (I have...)": [
+        ("You have got a watch?", "Have you got a watch?", "Question: Have you got...?", "السؤال: Have you got...؟"),
+        ("I has got a phone.", "I have got a phone.", "I goes with have.", "مع I نستخدم have."),
+        ("I have got umbrella.", "I have got an umbrella.", "One thing: an umbrella.", "شيء واحد: an umbrella."),
+    ],
+    "There is / There are": [
+        ("There is ten students.", "There are ten students.", "Many -> There are.", "للجمع نستخدم There are."),
+        ("There are a board.", "There is a board.", "One -> There is.", "للمفرد نستخدم There is."),
+        ("Is a clock there?", "Is there a clock?", "Question: Is there...?", "السؤال: Is there...؟"),
+    ],
+    "When is your birthday? It's in...": [
+        ("My birthday is on May.", "My birthday is in May.", "Months take \"in\".", "مع الشهور نستخدم in."),
+        ("When your birthday?", "When is your birthday?", "The question needs \"is\".", "السؤال يحتاج is."),
+        ("It's in may.", "It's in May.", "Months start with a capital letter.", "أسماء الشهور تبدأ بحرف كبير."),
+    ],
+    "Telling Time": [
+        ("It's three o'clock and half.", "It's half past three.", "Half past + the hour.", "نقول half past + الساعة."),
+        ("It's quarter past to four.", "It's quarter to four.", "Quarter to = 15 minutes before.", "quarter to = قبل الساعة بربع."),
+        ("Is six o'clock.", "It's six o'clock.", "Start with It's.", "نبدأ بـ It's."),
+    ],
+    "Verb + -ing = a noun (an activity)": [
+        ("I like draw.", "I like drawing.", "After like: verb + -ing.", "بعد like نضيف -ing للفعل."),
+        ("She like singing.", "She likes singing.", "She -> likes.", "مع she نقول likes."),
+        ("Do you like cooking? Yes, I like.", "Do you like cooking? Yes, I do.", "Short answer: Yes, I do.", "الجواب القصير: Yes, I do."),
+    ],
+    "This / That / These / Those": [
+        ("This are my books.", "These are my books.", "Many near things -> these.", "أشياء كثيرة قريبة ← these."),
+        ("Those is your bag.", "That is your bag.", "One far thing -> that.", "شيء واحد بعيد ← that."),
+        ("These is my pencil.", "This is my pencil.", "One near thing -> this.", "شيء واحد قريب ← this."),
+    ],
+    "Plurals: one -> many": [
+        ("I have two box.", "I have two boxes.", "box -> boxes.", "box ← boxes (نضيف es)."),
+        ("The childrens are playing.", "The children are playing.", "\"children\" is already plural.", "children جمع بالفعل، لا نضيف s."),
+        ("Wash your foots.", "Wash your feet.", "foot -> feet.", "foot ← feet (جمع شاذ)."),
+    ],
+    "Want to + verb (future goals)": [
+        ("I want achieve my goals.", "I want to achieve my goals.", "want + to + verb.", "بعد want نضع to ثم الفعل."),
+        ("She want to be a doctor.", "She wants to be a doctor.", "She -> wants.", "مع she نقول wants."),
+        ("I want to learning coding.", "I want to learn coding.", "After \"to\" the verb is in its base form.", "بعد to يأتي الفعل في صيغته الأساسية."),
+    ],
+}
+BANK.update(KIDS)
+
 
 def mistakes_for(topic):
     """The three hand-written mistakes for a grammar-hub topic (by title);

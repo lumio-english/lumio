@@ -1059,6 +1059,42 @@ def slide_teacher_game(vocab, n, total, ch, tier="preA", mode="teacher"):
     ''' + char_img(ch, right=40, bottom=30, height=150))
 
 
+def slide_common_mistakes_kid(mistakes, topic_title, n, total, ch):
+    """Common Mistakes (kids): three short learner errors for the lesson's
+    grammar unit (lib/common_mistakes.py KIDS). Each row shows only the
+    wrong sentence; "Show the fix" reveals the right one and a one-line
+    reason (EN + AR). Pairs: who spots it first? 1-on-1: say the right
+    sentence before revealing."""
+    rows = ""
+    for i, (wrong, right, why_en, why_ar) in enumerate(mistakes[:3], 1):
+        rows += f'''
+        <div style="background:#fff;border-radius:18px;padding:12px 16px;box-shadow:0 8px 18px rgba(67,48,31,.12)">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:32px;height:32px;border-radius:50%;background:#F97316;color:#fff;font-family:'Baloo 2',sans-serif;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">{i}</div>
+            <div style="flex:1;display:flex;align-items:center;gap:10px;background:#FEF2F2;border-radius:12px;padding:9px 14px">
+              <span style="font-size:1.1rem">&#10060;</span><div style="font-family:'Baloo 2',sans-serif;font-weight:700;color:#991B1B;font-size:1.15rem">{esc(wrong)}</div></div>
+            <button onclick="var f=document.getElementById('cmFix{i}');f.style.display='block';this.style.display='none'"
+                    style="cursor:pointer;border:none;font-family:'Baloo 2',sans-serif;background:#0D9488;color:#fff;font-weight:800;padding:8px 16px;border-radius:999px;font-size:.85rem;white-space:nowrap">Show the fix</button>
+          </div>
+          <div id="cmFix{i}" style="display:none;margin-top:8px;padding-left:44px">
+            <div style="display:flex;align-items:center;gap:10px;background:#F0FDF4;border-radius:12px;padding:9px 14px">
+              <span style="font-size:1.1rem">&#9989;</span><div style="font-family:'Baloo 2',sans-serif;font-weight:700;color:#166534;font-size:1.15rem">{esc(right)}</div></div>
+            <div style="display:flex;justify-content:space-between;gap:16px;margin-top:6px;font-size:.86rem;font-weight:700;color:#43301F">
+              <div>&#128161; {esc(why_en)}</div><div dir="rtl" style="color:#8A7160">{why_ar}</div></div>
+          </div>
+        </div>'''
+    return (bg_study() + header("Common Mistakes", n, total) + COLORSTRIP + f'''
+    <div style="position:absolute;left:0;right:0;top:132px;text-align:center;z-index:6">
+      <div style="display:inline-block;background:#fff;padding:8px 20px;border-radius:14px;box-shadow:0 6px 14px rgba(67,48,31,.1);font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1rem;color:#8A7160">
+        {esc(topic_title)} &middot; Find the mistake, then tap to check.
+        <span style="display:block;font-size:.8rem;font-weight:700">Pairs: who spots it first? &middot; 1-on-1: say the correct sentence before you reveal it.</span></div>
+    </div>
+    <div style="position:absolute;left:0;right:0;top:206px;bottom:60px;z-index:6;display:flex;justify-content:center;align-items:center">
+      <div style="width:860px;display:flex;flex-direction:column;gap:12px">{rows}</div>
+    </div>
+    ''' + char_img(ch, right=30, bottom=30, height=150))
+
+
 def today_i_learned_pages(lesson, phonics_unit=None, grammar_topic=None, dialogue=None,
                           scene_sentences=None, letters=None, spelling_rule=None, extra_blocks=None):
     """Everything the class actually covered, grouped and paginated.
@@ -1428,6 +1464,9 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
         plan.append(("grammar_practice", grammar_topic))
         for qi, q in enumerate(grammar_topic.get("mcq", []), 1):
             plan.append(("grammar_mcq", (grammar_topic, q, qi, len(grammar_topic["mcq"]))))
+        import common_mistakes as _cm
+        if _cm.mistakes_for(grammar_topic):
+            plan.append(("common_mistakes", grammar_topic))
     plan.append(("dialogue", None))
     # Real scene images of our characters acting out this lesson's most
     # important words, the sentence displayed with those words
@@ -1516,6 +1555,9 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
             slides.append(slide_quick_check(target, distractors, label, V, n, total, seed, tier=tier))
         elif kind == "teacher_game":
             slides.append(slide_teacher_game(lesson["vocab"], n, total, "omar-wave", tier=tier, mode=data))
+        elif kind == "common_mistakes":
+            import common_mistakes as _cm
+            slides.append(slide_common_mistakes_kid(_cm.mistakes_for(data), data.get("title", ""), n, total, pick_character("explain", lesson_num + 2)))
         elif kind == "act_flash":
             import activity_slides
             slides.append(activity_slides.slide_flash_race(lesson["vocab"], bg_study(), header("Flash Race &bull; Speaking Game", n, total) + COLORSTRIP, char_html=char_img(pick_character("cheer", lesson_num), right=30, bottom=30, height=150)))

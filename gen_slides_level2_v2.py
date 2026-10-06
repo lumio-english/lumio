@@ -176,13 +176,13 @@ GRAMMAR_UNITS = {
     4: {
         "title": "He is / She is",
         "titleAr": "هو... / هي...",
-        "explanation": "We use \"he\" for a boy or a man, and \"she\" for a girl or a woman. Both use \"is\": He is... / She is...",
-        "explanationAr": "نستخدم he للولد أو الرجل، وshe للبنت أو المرأة. كلاهما يأتي معه is: هو... / هي...",
+        "explanation": "We use \"he\" for a boy or a man, and \"she\" for a girl or a woman. Both use \"is\": He is... / She is... For more than one person we use \"we are\" and \"they are\".",
+        "explanationAr": "نستخدم he للولد أو الرجل، وshe للبنت أو المرأة. كلاهما يأتي معه is: هو... / هي... ولأكثر من شخص نستخدم we are (نحن) وthey are (هم).",
         "examples": [
-            {"en": "He is a man.", "ar": "هو رجل."},
-            {"en": "She is a woman.", "ar": "هي امرأة."},
             {"en": "He is my brother.", "ar": "هو أخي."},
             {"en": "She is my sister.", "ar": "هي أختي."},
+            {"en": "We are a family.", "ar": "نحن عائلة."},
+            {"en": "They are my parents.", "ar": "هم والداي."},
         ],
     },
     5: {
@@ -207,6 +207,30 @@ GRAMMAR_UNITS = {
             {"en": "I have got glasses.", "ar": "عندي نظارة."},
             {"en": "Have you got a key?", "ar": "هل عندك مفتاح؟"},
             {"en": "Yes, I have. / No, I haven't.", "ar": "نعم، عندي. / لا، ليس عندي."},
+        ],
+    },
+    8: {  # Lesson 8: "My Classroom" -- the lesson's own focus (There is / There are) finally gets its rule slide
+        "title": "There is / There are",
+        "titleAr": "يوجد / توجد",
+        "explanation": "We use \"There is\" for one thing and \"There are\" for many things, to say what is in a place.",
+        "explanationAr": "نستخدم There is لشيء واحد وThere are لأشياء كثيرة، لنقول ماذا يوجد في مكان ما.",
+        "examples": [
+            {"en": "There is a board in my classroom.", "ar": "يوجد لوح في صفي."},
+            {"en": "There is a playground at my school.", "ar": "يوجد ملعب في مدرستي."},
+            {"en": "There are ten students in my class.", "ar": "يوجد عشرة طلاب في صفي."},
+            {"en": "Is there a clock? Yes, there is.", "ar": "هل توجد ساعة؟ نعم، توجد."},
+        ],
+    },
+    12: {  # Lesson 12: "My Birthday" -- When is your birthday? It's in...
+        "title": "When is your birthday? It's in...",
+        "titleAr": "متى عيد ميلادك؟ إنه في...",
+        "explanation": "To ask about a birthday we say \"When is your birthday?\" and answer with the month: \"It's in May.\"",
+        "explanationAr": "للسؤال عن عيد الميلاد نقول When is your birthday? ونجيب بالشهر: It's in May (إنه في مايو).",
+        "examples": [
+            {"en": "When is your birthday?", "ar": "متى عيد ميلادك؟"},
+            {"en": "It's in May.", "ar": "إنه في مايو."},
+            {"en": "My birthday is in June.", "ar": "عيد ميلادي في يونيو."},
+            {"en": "Her birthday is in December.", "ar": "عيد ميلادها في ديسمبر."},
         ],
     },
     13: {

@@ -252,6 +252,7 @@ Done by three parallel workers (sync layer / teacher UI / student UI), merged an
 - Activities: `lib/activity_slides.py` + `js/slide-activities.js` (loaded by present.html / present-trial.html — slides cannot carry <script>, all interaction is inline onclick → `LumioAct.*`). Kids: Flash Race, Memory Match, Mystery Picture; teens: Describe It, Story Chain, Two Truths & a Lie; one per trial deck.
 - Grammar matching (`match_grammar_by_lesson_focus`): "(review …)" lessons now match the topic they review; only "Review of all" / "Reading comprehension" have none.
 - Image overrides for duplicate meanings: change-verb, goal-aim, orange-fruit (files still to be generated), first.png to be replaced — prompts in `_docs/level5-vocab-replace-prompts-full.md` with the full Level 5 set (44 NEW).
+- Phase 1 of the audit plan applied (version 20261006f): kids one-clause examples (L1 15–19, L2 15–20), kids Common Mistakes slide (`slide_common_mistakes_kid`, KIDS bank keyed by the GRAMMAR_UNITS titles in gen_slides_*_v2.py — keep titles in sync), new kids grammar units (Pre-A 14 a/an, L1 4 What is it?, L2 8 There is, L2 12 birthday), L4·17 = Want to + verb (new hub topic), L6 dialogues 1/8/14 rewritten.
 - Audit report: `_docs/academic-audit.md` (fixed items + open recommendations). The `gen_level*.py` / `gen_level*_teen.py` seed scripts refuse to run (they would overwrite the reviewed lessons JSON).
 
 ## 4. Working style
