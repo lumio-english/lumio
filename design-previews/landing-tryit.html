@@ -108,7 +108,7 @@ html[dir=rtl] .skip:hover span{transform:translateX(-4px)}
 .stats div{background:rgba(255,255,255,.75);border:1px solid var(--ln);border-radius:16px;padding:10px 8px;text-align:center}
 .stats b{display:block;font-family:var(--en);font-size:24px;font-weight:800;color:var(--o2);line-height:1.1}
 .stats span{font-size:12.5px;font-weight:700;color:var(--mu);line-height:1.2;display:block}
-@media (max-width:600px){.strip{font-size:12px}.strip .wrap{min-height:28px;gap:2px 12px}.hero{padding-top:12px}.hero h1{font-size:30px;margin:8px 0 6px}.hero .eyebrow{font-size:12px;padding:4px 10px}.skip{min-height:44px;font-size:14px}.hero .wrap{gap:16px}.lumiBox{width:92px;height:106px}.bubble{margin-bottom:14px}.bubble b{font-size:18px}.ask{font-size:21px}.askSub{margin-bottom:10px}.age{min-height:66px}}
+@media (max-width:600px){.bubble{padding-inline-end:52px}.bubble b{font-size:17px!important}.strip{font-size:12px}.strip .wrap{min-height:28px;gap:2px 12px}.hero{padding-top:12px}.hero h1{font-size:30px;margin:8px 0 6px}.hero .eyebrow{font-size:12px;padding:4px 10px}.skip{min-height:44px;font-size:14px}.hero .wrap{gap:16px}.lumiBox{width:92px;height:106px}.bubble{margin-bottom:14px}.bubble b{font-size:18px}.ask{font-size:21px}.askSub{margin-bottom:10px}.age{min-height:66px}}
 @media (max-width:979px){.hero .lead{font-size:15px;margin-bottom:12px;line-height:1.45}.stats{display:none}.heroCtas .tl{display:none}}
 .stats.m{display:none}
 @media (max-width:979px){.stats.m{display:grid;margin:18px auto 0}}
@@ -328,7 +328,7 @@ html[lang=ar] .h2{letter-spacing:0;line-height:1.25}
 .mtab.on .n{background:var(--o);color:#fff}
 .mtab .tried{display:none;margin-top:6px;font-size:12px;font-weight:900;color:var(--ok);gap:4px;align-items:center}
 .mtab.did .tried{display:inline-flex}
-@media (max-width:979px){.mtab{flex-direction:column;align-items:center;padding:10px 4px;gap:6px;text-align:center}.mtab b{font-size:13px}.mtab span,.mtab .tried{display:none!important}}
+@media (max-width:979px){.mtab{flex-direction:column;align-items:center;padding:10px 4px;gap:6px;text-align:center}.mtab b{font-size:13px}.mtab>span>span{display:none!important}}
 .mview{overflow:hidden}
 .mshot{position:relative;aspect-ratio:16/9;background:var(--pe);overflow:hidden;border-bottom:1px solid var(--ln)}
 .mshot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top}
@@ -628,14 +628,15 @@ html[lang=ar] .sp,html[lang=ar] .hero .lead{line-height:1.75}
 .hero h1 em{background:linear-gradient(92deg,#F97316,#EA580C 60%,#C2410C);-webkit-background-clip:text;background-clip:text;color:transparent}
 .hero h1 em .wi{background:linear-gradient(92deg,#F97316,#EA580C 60%,#C2410C);-webkit-background-clip:text;background-clip:text;color:transparent}
 .stats div{border-radius:var(--r-sm);box-shadow:0 1px 2px rgba(124,45,18,.04)}
-.stk{position:absolute;z-index:3;display:none;pointer-events:none}
+.stk{position:absolute;z-index:3;display:none;pointer-events:none;transition:opacity .45s var(--ease),visibility .45s}
+.stageWrap.playing .stk{opacity:0;visibility:hidden}
 .stk .in{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--ln);border-radius:18px;padding:8px 14px 8px 8px;box-shadow:var(--sh2)}
 .stk img{width:46px;height:46px;object-fit:contain;border-radius:12px;background:var(--pe)}
 .stk b{display:block;font:800 16px/1.1 var(--en);letter-spacing:-.02em;direction:ltr}
 .stk small{display:block;font:800 13px/1.2 var(--ar);color:var(--o2)}
-.stk.s1{top:-26px;inset-inline-start:-58px}
+.stk.s1{top:-44px;inset-inline-end:96px}
 .stk.s2{top:36%;inset-inline-end:-50px}
-.stk.s3{bottom:-22px;inset-inline-start:-34px}
+.stk.s3{bottom:-24px;inset-inline-start:-44px}
 @media (min-width:1180px){.stk{display:block}}
 /* speaker pulses (transform/opacity only) */
 .mini.playing,.spk.playing{animation:spkPulse .55s ease-in-out infinite alternate}
@@ -1102,7 +1103,7 @@ function demoFor(li) {
 var STEPS = ['meet', 'listen', 'spell', 'say'];
 var Q = { step: 'intro', li: -1, d: null, stars: 0 };
 var sBody = $('#sBody'), sHead = $('#sHead'), sTitle = $('#sTitle'), stage = $('#stage');
-var introAnims = [], introDelay = .75;
+var introAnims = [], introDelay = .4;
 
 function avatar() { return '../assets/avatars/' + (Q.d && Q.d.teen ? 'lumi-teen' : 'lumi') + '.png'; }
 function guide(k) { return '<div class="guide"><img src="' + avatar() + '" alt="" width="192" height="192" decoding="async" onerror="this.remove()"><div class="ins"><b lang="en">' + esc(INS[k][0]) + '</b><span lang="ar">' + esc(INS[k][1]) + '</span></div></div>'; }
@@ -1167,6 +1168,7 @@ function addStar(fromEl) {
 }
 
 function render(quiet) {
+  var sw = $('.stageWrap'); if (sw) sw.classList.toggle('playing', Q.step !== 'intro');
   introAnims.forEach(function (a) { try { a.kill ? a.kill() : a.destroy(); } catch (e) {} }); introAnims = [];
   paintHead();
   var f = R[Q.step]; if (f) f(quiet);
@@ -1203,6 +1205,7 @@ R.intro = function (quiet) {
   var li = $('#lumiImg'), lbox = $('.lumiBox', sBody);
   function idle() {
     if (!li || !li.isConnected) return;
+    if (!$('#lumiLt svg')) { var sp = lot($('#lumiLt'), 'star-pop', true); if (sp) introAnims.push(sp); }
     introAnims.push(G.to(lbox, { scale: 1.035, transformOrigin: '50% 100%', duration: 1.7, yoyo: true, repeat: -1, ease: 'sine.inOut' }));
     introAnims.push(G.to(li, { rotation: 3.5, transformOrigin: '50% 100%', duration: 1.5, yoyo: true, repeat: -1, ease: 'sine.inOut' }));
     // a blink-like squash every few seconds
@@ -1214,19 +1217,20 @@ R.intro = function (quiet) {
     var d0 = quiet ? 0 : introDelay; introDelay = 0;
     if (!quiet) {
       var tl = G.timeline({ delay: d0 });
-      tl.fromTo(li, { y: -190, opacity: 0, scaleX: .84, scaleY: 1.2, transformOrigin: '50% 100%' }, { y: 0, opacity: 1, duration: .5, ease: 'power2.in' })
-        .to(li, { scaleX: 1.24, scaleY: .74, duration: .09, ease: 'power1.out' })
+      tl.fromTo(li, { y: -190, opacity: 0, scaleX: .84, scaleY: 1.2, transformOrigin: '50% 100%' }, { y: 0, opacity: 1, duration: .42, ease: 'power2.in' })
+        .to(li, { scaleX: 1.24, scaleY: .74, duration: .08, ease: 'power1.out' })
         .to(li, { scaleX: 1, scaleY: 1, duration: .8, ease: 'elastic.out(1.1,.32)' })
-        .from('#bubble', { scale: .4, opacity: 0, transformOrigin: lang === 'ar' ? '100% 100%' : '0% 100%', duration: .55, ease: 'back.out(2.4)' }, '-=.7')
+        .from('#bubble', { scale: .4, opacity: 0, transformOrigin: lang === 'ar' ? '100% 100%' : '0% 100%', duration: .5, ease: 'back.out(2.4)' }, '-=.75')
         .from($$('.bubble > b, .bubble > span', sBody), { yPercent: 60, opacity: 0, duration: .4, stagger: .07 }, '-=.35')
-        .from($$('.ask,.askSub', sBody), { y: 16, opacity: 0, duration: .5, stagger: .07, ease: 'power3.out' }, '-=.45')
-        .from($$('.age', sBody), { y: 34, opacity: 0, scale: .82, rotation: function (i) { return (i % 2 ? 1 : -1) * (3 + i % 3 * 2); }, duration: .65, stagger: .055, ease: 'back.out(1.9)', clearProps: 'transform,opacity' }, '-=.35')
+        .from($$('.ask,.askSub', sBody), { y: 16, opacity: 0, duration: .45, stagger: .06, ease: 'power3.out' }, '-=.55')
+        .from($$('.age', sBody), { y: 34, opacity: 0, scale: .82, rotation: function (i) { return (i % 2 ? 1 : -1) * (3 + i % 3 * 2); }, duration: .6, stagger: .045, ease: 'back.out(1.9)', clearProps: 'transform,opacity' }, '-=.4')
         .from('.introFoot', { opacity: 0, duration: .4 }, '-=.3')
         .add(idle);
       introAnims.push(tl);
     } else idle();
   }
-  var a = lot($('#lumiLt'), 'star-pop', true); if (a) introAnims.push(a);
+  // the sparkle loop behind Lumi starts once Lumi has landed
+  if (!G || RM || quiet) { var a = lot($('#lumiLt'), 'star-pop', true); if (a) introAnims.push(a); }
 };
 
 function start(li, btn) {
@@ -1503,7 +1507,7 @@ R.celebrate = function () {
       .from('#bigStars span', { y: -90, x: function (i) { return (1.5 - i) * 40; }, scale: 0, rotation: -200, duration: .7, stagger: .16, ease: 'back.out(1.8)', onComplete: function () {} }, .85)
       .from('.celSub', { y: 10, opacity: 0, duration: .4 }, 1.0)
       .add(function () { var o = { n: 0 }, el = $('#celN'); G.to(o, { n: Q.stars, duration: .16 * Math.max(1, Q.stars) + .3, ease: 'none', onUpdate: function () { if (el) el.textContent = Math.round(o.n); } }); }, 1.05)
-      .fromTo('#bigStars span', { scale: 1 }, { scale: 1.25, duration: .14, yoyo: true, repeat: 1, stagger: .16, ease: 'power2.out' }, 1.55)
+      .fromTo('#bigStars span', { scale: 1 }, { scale: 1.25, duration: .14, yoyo: true, repeat: 1, stagger: .16, ease: 'power2.out', immediateRender: false }, 1.55)
       .from('#nx', { y: 20, opacity: 0, duration: .5, ease: 'power3.out' }, 1.9);
   }
   play('amazing');
@@ -2018,11 +2022,11 @@ if (G && !RM) {
   htl.from('.eyebrow', { y: 14, opacity: 0, duration: .5, ease: 'power3.out' })
     .from('.hero h1 .wi', { yPercent: 118, rotation: function () { return 5 * (lang === 'ar' ? -1 : 1); }, duration: 1, stagger: .065, ease: 'power4.out' }, '-=.25')
     .from('.hero .lead', { y: 18, opacity: 0, duration: .7, ease: 'power3.out' }, '-=.6')
-    .from('.heroCtas > *', { y: 16, opacity: 0, duration: .55, stagger: .08, ease: 'power3.out' }, '-=.45')
+    .from('.heroCtas > *', { y: 16, opacity: 0, duration: .55, stagger: .08, ease: 'power3.out' }, '-=.6')
     .from('.stats div', { y: 18, opacity: 0, duration: .55, stagger: .06, ease: 'power3.out' }, '-=.35')
     .add(function () { $$('.stats b').forEach(function (b) { countUp(b, +b.textContent || 0, 1.6); }); }, '<')
     .from('.stage', { y: 60, opacity: 0, scale: .94, duration: 1.1, ease: 'expo.out' }, .2)
-    .from('.stk .in', { scale: 0, opacity: 0, rotation: function (i) { return [-14, 10, -8][i]; }, duration: .8, stagger: .14, ease: 'back.out(2)' }, 1.35);
+    .from('.stk .in', { scale: 0, opacity: 0, rotation: function (i) { return [-14, 10, -8][i]; }, duration: .8, stagger: .14, ease: 'back.out(2)' }, 1.6);
   // stickers float, and drift with the pointer on desktop
   $$('.stk .in').forEach(function (e, i) { G.to(e, { y: [-10, 8, -7][i], rotation: [-3, 2.5, -2][i], duration: [3, 3.6, 2.8][i], yoyo: true, repeat: -1, ease: 'sine.inOut', delay: 2 + i * .3 }); });
   if (FINE) {
