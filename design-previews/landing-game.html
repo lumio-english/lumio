@@ -1075,6 +1075,7 @@ function buildStations() {
   [-1, 1].forEach(function (sd) { var ox = Math.cos(how.yaw) * 1.45 * sd, oz = -Math.sin(how.yaw) * 1.45 * sd; put(new THREE.CylinderGeometry(.09, .11, 2.6, 6), { p: [how.x + ox, 1.3, how.z + oz], c: '#7C2D12', j: 0 }); });
   put(new THREE.BoxGeometry(3.6, .12, .14), { p: [how.x - Math.sin(how.yaw) * .05, .95, how.z - Math.cos(how.yaw) * .05], r: [0, how.yaw, 0], c: '#7C2D12' });
   addColl(how.x, how.z, 1.3);
+  crewStation(0, 2.3, 1, 3.4, 'hamad');
   crewStation(0, 4.2, -1, 3.8, 'sara');
 
   /* Island 1 · L1 */
@@ -1101,7 +1102,7 @@ function buildStations() {
   gate(4);
   var ch = prop(4, .5, 1, 4.8, 'pricing', null, '#C2410C', 2.7);
   chest(ch);
-  crewStation(4, 4.4, -1, 3.8, 'hamad');
+  // Hamad ("Welcome, my friend!") greets visitors on the first island.
 
   /* Island 5 · L5: FAQ signposts */
   gate(5);
