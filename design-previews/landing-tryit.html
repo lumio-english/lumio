@@ -14,7 +14,7 @@
 <link rel="icon" href="../favicon.ico" sizes="any">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Nunito:wght@500;600;700;800;900&family=Tajawal:wght@500;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Nunito:wght@500;600;700;800;900&family=Tajawal:wght@500;700;800;900&display=swap">
 <style>
 :root{
   --o:#F97316;--o2:#C2410C;--o3:#FDBA74;--o4:#FFD8B5;--pe:#FFF6EF;--pe2:#FFEBDA;--wh:#fff;
@@ -596,8 +596,117 @@ footer a:hover{color:var(--o2)}
 .mbar .btn{flex:1;min-height:48px;font-size:15.5px;padding:0 10px}
 @media (min-width:980px){.mbar{display:none}}
 
-.rv{will-change:transform}
 .hero .wrap>*,.how>*,.lvl>*,.hubg>*,.wrg>*,.stg>*,.crewg>*,.freeg>*,.hbg>*,.fqg>*,.plans>*{min-width:0}
+
+/* ================= POLISH LAYER: one spacing / type / shadow / radius system ================= */
+:root{
+  --mu:#5B5049;--ln:#EFDFD0;
+  --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px;--s7:48px;--s8:72px;
+  --r-sm:14px;--r:22px;--r-lg:30px;
+  --sh:0 1px 1px rgba(124,45,18,.04),0 2px 6px -1px rgba(124,45,18,.06),0 16px 32px -14px rgba(124,45,18,.20);
+  --sh2:0 1px 2px rgba(124,45,18,.05),0 10px 20px -8px rgba(124,45,18,.12),0 44px 80px -30px rgba(124,45,18,.36);
+  --glow:0 0 0 1px rgba(249,115,22,.35),0 24px 60px -20px rgba(249,115,22,.55);
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+svg[stroke="currentColor"]{stroke-width:2.2px}
+.h2,.hero h1,.final h2,.ask,.resTop h3,.mtext h3,.fc h3,.plan .nm,.bio .rl,.lvRow b,.gc h3{font-weight:800;letter-spacing:-.035em}
+html[lang=ar] .h2,html[lang=ar] .hero h1,html[lang=ar] .final h2{font-weight:900;letter-spacing:0;line-height:1.3}
+html[lang=ar] .ask,html[lang=ar] .mtext h3,html[lang=ar] .fc h3,html[lang=ar] .plan .nm,html[lang=ar] .bio .rl,html[lang=ar] .lvRow b,html[lang=ar] .gc h3{letter-spacing:0;line-height:1.35}
+.h2{font-size:clamp(30px,4.6vw,54px);line-height:1.02;margin:var(--s3) 0 var(--s4)}
+.sp{line-height:1.6}
+html[lang=ar] .sp,html[lang=ar] .hero .lead{line-height:1.75}
+.secHd{margin-bottom:var(--s6)}
+@media (min-width:980px){.secHd{margin-bottom:var(--s7)}}
+.card{border-radius:var(--r);border-color:var(--ln)}
+.stage{border-radius:var(--r-lg)}
+.btn{border-radius:var(--r-sm);will-change:auto}
+/* word masks for headline reveals */
+.wm{display:inline-block;overflow:hidden;vertical-align:top;padding:.08em .02em .16em;margin:-.08em -.02em -.16em}
+.wi{display:inline-block}
+/* hero */
+@media (min-width:980px){.hero{padding:56px 0 76px}.hero .wrap{gap:72px}.hero h1{font-size:clamp(46px,4.9vw,68px);line-height:.98;letter-spacing:-.045em}html[lang=ar] .hero h1{line-height:1.22}}
+.hero h1 em{background:linear-gradient(92deg,#F97316,#EA580C 60%,#C2410C);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero h1 em .wi{background:linear-gradient(92deg,#F97316,#EA580C 60%,#C2410C);-webkit-background-clip:text;background-clip:text;color:transparent}
+.stats div{border-radius:var(--r-sm);box-shadow:0 1px 2px rgba(124,45,18,.04)}
+.stk{position:absolute;z-index:3;display:none;pointer-events:none}
+.stk .in{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--ln);border-radius:18px;padding:8px 14px 8px 8px;box-shadow:var(--sh2)}
+.stk img{width:46px;height:46px;object-fit:contain;border-radius:12px;background:var(--pe)}
+.stk b{display:block;font:800 16px/1.1 var(--en);letter-spacing:-.02em;direction:ltr}
+.stk small{display:block;font:800 13px/1.2 var(--ar);color:var(--o2)}
+.stk.s1{top:-26px;inset-inline-start:-58px}
+.stk.s2{top:36%;inset-inline-end:-50px}
+.stk.s3{bottom:-22px;inset-inline-start:-34px}
+@media (min-width:1180px){.stk{display:block}}
+/* speaker pulses (transform/opacity only) */
+.mini.playing,.spk.playing{animation:spkPulse .55s ease-in-out infinite alternate}
+.mini.playing::after,.spk.playing::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:3px solid rgba(249,115,22,.55);animation:ripple 1s ease-out infinite;pointer-events:none}
+.mini{position:relative}
+@keyframes spkPulse{to{transform:scale(1.09)}}
+/* example sentence: word-by-word highlight */
+.ex .exT{display:inline}
+.ex .wd{display:inline-block;position:relative;transition:opacity .2s}
+.ex.hl .wd{opacity:.42}
+.ex.hl .wd.on{opacity:1}
+.ex .wd::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:3px;border-radius:2px;background:var(--o);transform:scaleX(0);transform-origin:left;transition:transform .22s var(--ease)}
+.ex.hl .wd.cur::after{transform:scaleX(1)}
+/* listen: glow + gentle shake */
+.opt::before{content:"";position:absolute;inset:-5px;border-radius:26px;box-shadow:0 0 0 4px rgba(22,163,74,.28),0 0 34px 8px rgba(22,163,74,.38);opacity:0;transition:opacity .35s;pointer-events:none}
+.opt.right::before{opacity:1}
+@keyframes shake{20%{transform:translateX(-5px) rotate(-1.5deg)}40%{transform:translateX(5px) rotate(1.5deg)}60%{transform:translateX(-3px) rotate(-.8deg)}80%{transform:translateX(2px)}}
+/* spell: slot glow */
+.slot{position:relative}
+.slot::after{content:"";position:absolute;inset:-6px;border-radius:21px;box-shadow:0 0 0 3px rgba(249,115,22,.32),0 0 22px 2px rgba(249,115,22,.38);opacity:0;transition:opacity .2s;pointer-events:none}
+.slot.hot::after,.slot:not(.ok):hover::after{opacity:1}
+.slot.ok::after{box-shadow:0 0 0 3px rgba(22,163,74,.3),0 0 22px 2px rgba(22,163,74,.35);opacity:1}
+.tile{transition:opacity .2s}
+.tile:hover{filter:brightness(1.06)}
+/* say: level meter */
+.meter{display:flex;gap:5px;align-items:center;justify-content:center;height:28px;margin:0 0 4px}
+.meter i{width:5px;height:28px;border-radius:3px;background:linear-gradient(var(--o3),var(--o));transform:scaleY(.18);transform-origin:center}
+.mic.idle~.meter i{animation:meterIdle 1.2s ease-in-out infinite}
+.meter i:nth-child(2){animation-delay:.12s!important}.meter i:nth-child(3){animation-delay:.24s!important}.meter i:nth-child(4){animation-delay:.36s!important}.meter i:nth-child(5){animation-delay:.48s!important}.meter i:nth-child(6){animation-delay:.6s!important}.meter i:nth-child(7){animation-delay:.72s!important}
+@keyframes meterIdle{50%{transform:scaleY(.5)}}
+/* celebration */
+.cel .ch{display:inline-block}
+.celSub{margin:0 0 14px;font:800 15px var(--body);color:var(--mu)}
+.celSub b{font:800 22px var(--en);color:var(--o2);display:inline-block;min-width:1ch}
+/* progress */
+.segs span b{transition:transform .8s var(--ease)}
+/* sections */
+.mtab,.lvRow,.ht,.cm,.gc .in,.tlv button,.stabs button{transition:border-color .25s,box-shadow .25s,background-color .25s,transform .35s var(--ease)}
+.lvRow:hover,.ht:hover,.mtab:hover{box-shadow:var(--sh)}
+.hubDev,.lvStage,.leaf{border-radius:var(--r-lg)}
+.mview{border-radius:var(--r-lg)}
+.mshot img,.pg .im img{will-change:transform}
+/* pricing: premium */
+.plans{gap:18px}
+.plan{border-radius:var(--r-lg);padding:28px 24px;gap:14px;overflow:hidden;isolation:isolate}
+.plan::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.35) 50%,transparent 65%);transform:translateX(-110%);transition:transform .9s var(--ease);pointer-events:none;z-index:-1}
+.plan:hover::after{transform:translateX(110%)}
+.plan .pr b{font-size:46px;letter-spacing:-.045em}
+.plan .pr .sym{font-size:14px;align-self:flex-start;margin-top:6px}
+.plan ul{border-top:1px dashed var(--ln);padding-top:16px}
+.plan.f{background:radial-gradient(110% 70% at 100% 0%,rgba(249,115,22,.42),transparent 58%),radial-gradient(80% 60% at 0% 100%,rgba(194,65,12,.30),transparent 60%),linear-gradient(165deg,#2B201A,#17110D);color:#fff;border:0;box-shadow:var(--glow),0 2px 4px rgba(0,0,0,.08)}
+.plan.f::after{background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.10) 50%,transparent 65%)}
+.plan.f .sb,.plan.f .pr .sym{color:#E9D9CC}
+.plan.f li{color:#F7EEE7}
+.plan.f li svg{color:var(--o3)}
+.plan.f .per{color:var(--o3)}
+.plan.f ul{border-top-color:rgba(255,255,255,.16)}
+.plan.f .bdg span+span{background:#fff;color:var(--ink)}
+/* faq */
+.fq button{transition:color .2s}
+.fq button:hover{color:var(--o2)}
+.fqa p{padding-inline-end:48px}
+/* footer */
+footer{border-top:1px solid var(--ln);padding-top:var(--s6)}
+footer .wrap{align-items:center}
+footer .fbrand{display:flex;flex-direction:column;gap:6px}
+footer .fbrand .logo{font-size:18px}
+footer .fbrand span{font-size:13.5px;color:var(--mu);font-weight:700}
+footer nav a{font-size:14.5px;color:var(--ink)}
+@media (max-width:640px){footer .wrap{flex-direction:column;align-items:flex-start;gap:var(--s4)}footer nav{gap:0 18px}}
+@media (prefers-reduced-motion:reduce){.plan::after,.gc .cov::after{display:none}}
 </style>
 </head>
 <body>
@@ -687,7 +796,7 @@ footer a:hover{color:var(--o2)}
     <div class="secHd rv"><span class="kick" data-k="hub.kicker">The English Hub</span><h2 class="h2" data-k="hub.h2"></h2><p class="sp" data-k="hub.p"></p></div>
     <div class="hubg">
       <div><div class="hubTiles" id="hubTiles"></div><span class="hint2" data-k="hubTap">Tap a section</span></div>
-      <div class="hubDev rv"><video id="hubVid" poster="../assets/site/shot-hub.jpg" muted loop playsinline preload="none" data-ka="hub.video"><source src="../assets/marketing/demo-hub.webm" type="video/webm"><source src="../assets/marketing/demo-hub.mp4" type="video/mp4"></video><img id="hubImg" alt="" hidden><div class="fl"><b>7</b><span data-k="hub.float">Hub sections</span></div></div>
+      <div class="hubDev rv"><video id="hubVid" poster="../assets/site/shot-hub.jpg" muted loop playsinline preload="none" data-ka="hub.video"><source src="../assets/marketing/demo-hub.webm" type="video/webm"><source src="../assets/marketing/demo-hub.mp4" type="video/mp4"></video><img id="hubImg" alt="" width="1400" height="787" decoding="async" hidden><div class="fl"><b>7</b><span data-k="hub.float">Hub sections</span></div></div>
     </div>
   </div>
 </section>
@@ -817,7 +926,7 @@ footer a:hover{color:var(--o2)}
 </main>
 
 <footer><div class="wrap">
-  <span data-k="foot.copy"></span>
+  <div class="fbrand"><a class="logo" href="#top"><img src="../assets/site/lumi-mark.png" alt="" width="36" height="36" decoding="async"><span>Lumio <i>English</i></span></a><span data-k="foot.copy"></span></div>
   <nav aria-label="Footer"><a href="#handbook" data-k="foot.hb"></a><a href="../guides.html" data-k="foot.guides"></a><a href="https://wa.me/201124882493" target="_blank" rel="noopener" data-k="foot.wa"></a><a href="../login.html" data-k="nav.login"></a></nav>
 </div></footer>
 
@@ -941,21 +1050,28 @@ function synth(text, lg) {
   });
 }
 function stopAudio() { aTok++; if (AU) try { AU.pause(); } catch (e) {} if ('speechSynthesis' in window) try { speechSynthesis.cancel(); } catch (e) {} }
-function play(text, el) {
+function play(text, el, onProg) {
   stopAudio(); var tok = aTok;
   if (!AU) AU = new Audio();
   if (el) el.classList.add('playing');
   return new Promise(function (res) {
-    var done = false;
-    function fin() { if (done) return; done = true; if (el) el.classList.remove('playing'); res(tok === aTok); }
+    var done = false, raf = 0, t0 = performance.now(), est = Math.max(1.2, String(text).split(/\s+/).length * .42) * 1000, synthOn = false;
+    // progress for word-by-word highlighting: real audio time, or an estimate for the browser voice
+    function tick() {
+      if (done) return;
+      if (onProg) { if (!synthOn && AU.duration && isFinite(AU.duration) && AU.currentTime > 0) onProg(AU.currentTime / AU.duration); else if (synthOn) onProg(Math.min(.99, (performance.now() - t0) / est)); }
+      raf = requestAnimationFrame(tick);
+    }
+    if (onProg) raf = requestAnimationFrame(tick);
+    function fin() { if (done) return; done = true; cancelAnimationFrame(raf); if (onProg) onProg(1); if (el) el.classList.remove('playing'); res(tok === aTok); }
     AU.onended = fin;
-    AU.onerror = function () { if (tok !== aTok) return fin(); synth(text).then(fin); };
+    AU.onerror = function () { if (tok !== aTok) return fin(); synthOn = true; t0 = performance.now(); synth(text).then(fin); };
     AU.src = '../assets/audio/' + slugA(text) + '.mp3';
     try { var p = AU.play(); if (p && p.catch) p.catch(function () { setTimeout(fin, 500); }); } catch (e) { fin(); }
     setTimeout(fin, 7000);
   });
 }
-function img(slug, alt) { return '<img src="../assets/vocab/' + slugI(slug) + '.png" alt="' + esc(alt || '') + '" draggable="false" onerror="this.remove()">'; }
+function img(slug, alt) { return '<img src="../assets/vocab/' + slugI(slug) + '.png" alt="' + esc(alt || '') + '" width="444" height="600" decoding="async" draggable="false" onerror="this.remove()">'; }
 
 /* ---------------- lottie ---------------- */
 function lot(el, name, loop) {
@@ -986,23 +1102,54 @@ function demoFor(li) {
 var STEPS = ['meet', 'listen', 'spell', 'say'];
 var Q = { step: 'intro', li: -1, d: null, stars: 0 };
 var sBody = $('#sBody'), sHead = $('#sHead'), sTitle = $('#sTitle'), stage = $('#stage');
-var introAnims = [];
+var introAnims = [], introDelay = .75;
 
 function avatar() { return '../assets/avatars/' + (Q.d && Q.d.teen ? 'lumi-teen' : 'lumi') + '.png'; }
-function guide(k) { return '<div class="guide"><img src="' + avatar() + '" alt="" onerror="this.remove()"><div class="ins"><b lang="en">' + esc(INS[k][0]) + '</b><span lang="ar">' + esc(INS[k][1]) + '</span></div></div>'; }
+function guide(k) { return '<div class="guide"><img src="' + avatar() + '" alt="" width="192" height="192" decoding="async" onerror="this.remove()"><div class="ins"><b lang="en">' + esc(INS[k][0]) + '</b><span lang="ar">' + esc(INS[k][1]) + '</span></div></div>'; }
 function toast(pair, good) {
   var t = $('#toast'); t.className = 'toast' + (good ? ' good' : ''); t.innerHTML = '<span lang="en">' + esc(pair[0]) + '</span><span lang="ar">' + esc(pair[1]) + '</span>';
   void t.offsetWidth; t.classList.add('show'); clearTimeout(toast.tm); toast.tm = setTimeout(function () { t.classList.remove('show'); }, 1500);
 }
-function enter(sel) { if (!G || RM) return; G.from($$(sel, sBody), { y: 18, opacity: 0, duration: .5, stagger: .06, ease: 'power3.out', clearProps: 'transform,opacity' }); }
+function enter(sel) {
+  if (!G || RM) return;
+  var g = $('.guide', sBody);
+  if (g) {
+    G.from($('img', g), { scale: 0, rotation: -40, duration: .6, ease: 'back.out(2.6)', clearProps: 'transform' });
+    G.from($('.ins', g), { scaleX: .82, opacity: 0, transformOrigin: lang === 'ar' ? '100% 50%' : '0% 50%', duration: .45, ease: 'back.out(1.7)', clearProps: 'transform,opacity' });
+    G.from($$('.ins > *', g), { yPercent: 70, opacity: 0, duration: .5, stagger: .08, delay: .08, ease: 'power3.out', clearProps: 'transform,opacity' });
+  }
+  var els = $$(sel, sBody).filter(function (e) { return !e.classList.contains('guide'); });
+  if (els.length) G.from(els, { y: 22, opacity: 0, scale: .97, duration: .6, stagger: .06, delay: .1, ease: 'power3.out', clearProps: 'transform,opacity' });
+}
+function sgn() { return lang === 'ar' ? -1 : 1; }
+// the shared star flight: a curved (quadratic bezier) path into the star counter
+function flyStar(fromEl, done) {
+  var ct = $('#starCt');
+  if (!fromEl || !ct || !G || RM) { if (done) done(); return; }
+  var a = fromEl.getBoundingClientRect(), b = ct.getBoundingClientRect();
+  var ax = a.left + a.width / 2 - 17, ay = a.top + a.height / 2 - 17, bx = b.left + 6, by = b.top + b.height / 2 - 17;
+  var cx = (ax + bx) / 2 + (ax < bx ? -60 : 60), cy = Math.min(ay, by) - 140;
+  var s = document.createElement('div'); s.className = 'flyStar'; s.innerHTML = IC.star; s.style.left = '0'; s.style.top = '0'; document.body.appendChild(s);
+  var o = { t: 0 };
+  G.set(s, { x: ax, y: ay, scale: .4 });
+  G.to(o, { t: 1, duration: .85, ease: 'power1.inOut', onUpdate: function () {
+    var t = o.t, u = 1 - t;
+    G.set(s, { x: u * u * ax + 2 * u * t * cx + t * t * bx, y: u * u * ay + 2 * u * t * cy + t * t * by, rotation: t * 300, scale: .4 + Math.sin(t * Math.PI) * 1.1 + t * .2 });
+  }, onComplete: function () { s.remove(); bump(); if (done) done(); } });
+}
+function bump() { var ct = $('#starCt'); if (ct && G && !RM) G.fromTo(ct, { scale: 1.35 }, { scale: 1, duration: .7, ease: 'elastic.out(1.2,.4)' }); }
 
 function paintHead() {
   if (Q.step === 'intro') {
     sHead.innerHTML = '<span class="tag"><i></i>' + esc(T('demoTag')) + '</span>';
-    sTitle.hidden = true; return;
+    paintHead.prev = null; sTitle.hidden = true; return;
   }
   var si = STEPS.indexOf(Q.step), names = T('stepNames');
-  var segs = STEPS.map(function (s, i) { var c = (Q.step === 'celebrate' || Q.step === 'results' || i < si) ? 'done' : (i === si ? 'on' : ''); return '<span class="' + c + '" title="' + esc(names[i]) + '"><b></b></span>'; }).join('');
+  var now = STEPS.map(function (s, i) { return (Q.step === 'celebrate' || Q.step === 'results' || i < si) ? 'done' : (i === si ? 'on' : ''); });
+  var was = paintHead.prev || now.map(function () { return ''; });
+  var segs = STEPS.map(function (s, i) { return '<span class="' + (RM ? now[i] : was[i]) + '" title="' + esc(names[i]) + '"><b></b></span>'; }).join('');
+  paintHead.prev = now;
+  if (!RM) requestAnimationFrame(function () { requestAnimationFrame(function () { $$('.segs span', sHead).forEach(function (e, i) { e.className = now[i]; }); }); });
   sHead.innerHTML = '<button class="sx" type="button" id="sBack" aria-label="' + esc(T('back')) + '"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button><div class="segs" role="progressbar" aria-valuemin="0" aria-valuemax="4" aria-valuenow="' + (si < 0 ? 4 : si) + '">' + segs + '</div><span class="starCt" id="starCt">' + IC.star + '<b id="starN">' + Q.stars + '</b><span class="pop" id="starPop"></span></span>';
   $('#sBack').onclick = function () { stopMic(); stopAudio(); Q.step = 'intro'; Q.li = -1; render(); };
   var d = Q.d;
@@ -1014,12 +1161,9 @@ function TLv() { return T('trialLevels') || []; }
 function addStar(fromEl) {
   Q.stars++;
   var n = $('#starN'), ct = $('#starCt');
-  var after = function () { if (n) n.textContent = Q.stars; if (ct && G && !RM) G.fromTo(ct, { scale: 1.25 }, { scale: 1, duration: .5, ease: 'back.out(3)' }); var sp = $('#starPop'); if (sp) { sp.innerHTML = ''; var an = lot(sp, 'star-pop', false); if (an) an.addEventListener('complete', function () { sp.innerHTML = ''; }); } };
+  var after = function () { if (n) n.textContent = Q.stars; bump(); var sp = $('#starPop'); if (sp) { sp.innerHTML = ''; var an = lot(sp, 'star-pop', false); if (an) an.addEventListener('complete', function () { sp.innerHTML = ''; }); } };
   if (!fromEl || !ct || !G || RM) return after();
-  var a = fromEl.getBoundingClientRect(), b = ct.getBoundingClientRect();
-  var s = document.createElement('div'); s.className = 'flyStar'; s.innerHTML = IC.star; document.body.appendChild(s);
-  G.set(s, { left: a.left + a.width / 2 - 17, top: a.top + a.height / 2 - 17 });
-  G.to(s, { left: b.left + 4, top: b.top + 2, scale: .6, rotation: 200, duration: .75, ease: 'power2.in', onComplete: function () { s.remove(); after(); } });
+  flyStar(fromEl, after);
 }
 
 function render(quiet) {
@@ -1027,14 +1171,26 @@ function render(quiet) {
   paintHead();
   var f = R[Q.step]; if (f) f(quiet);
 }
-function go(step) { stopAudio(); Q.step = step; render(); if (window.innerWidth < 980) { var top = stage.getBoundingClientRect().top; if (top < 50) window.scrollBy({ top: top - 70, behavior: RM ? 'auto' : 'smooth' }); } }
+var going = null;
+function go(step) {
+  stopAudio();
+  if (going === step) return;
+  function swap() {
+    going = null; Q.step = step; render();
+    if (G && !RM) G.fromTo(sBody, { x: -24 * sgn(), opacity: 0 }, { x: 0, opacity: 1, duration: .45, ease: 'power3.out', clearProps: 'transform,opacity' });
+    if (window.innerWidth < 980) { var top = stage.getBoundingClientRect().top; if (top < 50) window.scrollBy({ top: top - 70, behavior: RM ? 'auto' : 'smooth' }); }
+  }
+  if (!G || RM || !sBody.children.length) return swap();
+  going = step;
+  G.to(sBody, { x: 28 * sgn(), opacity: 0, scale: .985, duration: .22, ease: 'power2.in', onComplete: function () { G.set(sBody, { clearProps: 'transform,opacity' }); swap(); } });
+}
 
 var R = {};
 /* ---- 0. Lumi greets, the parent picks the age ---- */
 R.intro = function (quiet) {
   var tl = TLv();
   sBody.innerHTML = '<div class="intro">' +
-    '<div class="meet"><div class="lumiBox"><div class="lt" id="lumiLt"></div><img id="lumiImg" src="../assets/site/lumi-hero.png" alt="Lumi" onerror="this.remove()"></div>' +
+    '<div class="meet"><div class="lumiBox"><div class="lt" id="lumiLt"></div><img id="lumiImg" src="../assets/site/lumi-hero.png" alt="Lumi" width="525" height="600" decoding="async" onerror="this.remove()"></div>' +
     '<div class="bubble" id="bubble"><b lang="en">' + esc(INS.hi[0]) + '</b><span lang="ar">' + esc(INS.hi[1]) + '</span><button class="mini hear" type="button" id="hiBtn" aria-label="Hello">' + IC.spk + '</button></div></div>' +
     '<h3 class="ask">' + esc(T('ask')) + '</h3><p class="askSub">' + esc(T('askSub')) + '</p>' +
     '<div class="ages" role="group" aria-label="' + esc(T('ask')) + '">' + tl.map(function (l, i) {
@@ -1044,16 +1200,31 @@ R.intro = function (quiet) {
     '<div class="introFoot"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 9v6h4l5 5V4L8 9H4z"/></svg>' + esc(T('privacy')) + '</div></div>';
   $('#hiBtn').onclick = function () { play('hello', this); };
   $$('.age', sBody).forEach(function (b) { b.onclick = function () { start(+b.getAttribute('data-li'), b); }; });
-  var li = $('#lumiImg');
+  var li = $('#lumiImg'), lbox = $('.lumiBox', sBody);
+  function idle() {
+    if (!li || !li.isConnected) return;
+    introAnims.push(G.to(lbox, { scale: 1.035, transformOrigin: '50% 100%', duration: 1.7, yoyo: true, repeat: -1, ease: 'sine.inOut' }));
+    introAnims.push(G.to(li, { rotation: 3.5, transformOrigin: '50% 100%', duration: 1.5, yoyo: true, repeat: -1, ease: 'sine.inOut' }));
+    // a blink-like squash every few seconds
+    var bl = G.timeline({ repeat: -1, repeatDelay: 3.2, delay: 1.6 });
+    bl.to(li, { scaleY: .9, scaleX: 1.07, transformOrigin: '50% 100%', duration: .09, ease: 'power1.in' }).to(li, { scaleY: 1, scaleX: 1, duration: .45, ease: 'elastic.out(1,.4)' });
+    introAnims.push(bl);
+  }
   if (G && !RM && li) {
-    introAnims.push(G.to(li, { rotation: 4, transformOrigin: '50% 100%', duration: 1.3, yoyo: true, repeat: -1, ease: 'sine.inOut' }));
-    introAnims.push(G.to(li, { y: -6, duration: 1.8, yoyo: true, repeat: -1, ease: 'sine.inOut' }));
+    var d0 = quiet ? 0 : introDelay; introDelay = 0;
     if (!quiet) {
-      G.from(li, { y: 60, opacity: 0, scale: .7, duration: .9, ease: 'back.out(1.8)' });
-      G.from('#bubble', { scale: .6, opacity: 0, transformOrigin: lang === 'ar' ? '100% 100%' : '0% 100%', duration: .6, delay: .35, ease: 'back.out(2)' });
-      G.from($$('.ask,.askSub', sBody), { y: 14, opacity: 0, duration: .5, delay: .5, stagger: .07 });
-      G.from($$('.age', sBody), { y: 22, opacity: 0, scale: .9, duration: .5, delay: .6, stagger: .045, ease: 'back.out(1.8)', clearProps: 'transform,opacity' });
-    }
+      var tl = G.timeline({ delay: d0 });
+      tl.fromTo(li, { y: -190, opacity: 0, scaleX: .84, scaleY: 1.2, transformOrigin: '50% 100%' }, { y: 0, opacity: 1, duration: .5, ease: 'power2.in' })
+        .to(li, { scaleX: 1.24, scaleY: .74, duration: .09, ease: 'power1.out' })
+        .to(li, { scaleX: 1, scaleY: 1, duration: .8, ease: 'elastic.out(1.1,.32)' })
+        .from('#bubble', { scale: .4, opacity: 0, transformOrigin: lang === 'ar' ? '100% 100%' : '0% 100%', duration: .55, ease: 'back.out(2.4)' }, '-=.7')
+        .from($$('.bubble > b, .bubble > span', sBody), { yPercent: 60, opacity: 0, duration: .4, stagger: .07 }, '-=.35')
+        .from($$('.ask,.askSub', sBody), { y: 16, opacity: 0, duration: .5, stagger: .07, ease: 'power3.out' }, '-=.45')
+        .from($$('.age', sBody), { y: 34, opacity: 0, scale: .82, rotation: function (i) { return (i % 2 ? 1 : -1) * (3 + i % 3 * 2); }, duration: .65, stagger: .055, ease: 'back.out(1.9)', clearProps: 'transform,opacity' }, '-=.35')
+        .from('.introFoot', { opacity: 0, duration: .4 }, '-=.3')
+        .add(idle);
+      introAnims.push(tl);
+    } else idle();
   }
   var a = lot($('#lumiLt'), 'star-pop', true); if (a) introAnims.push(a);
 };
@@ -1072,15 +1243,30 @@ function start(li, btn) {
   Q.result = null;
   picked(li);
   play('hello');
-  setTimeout(function () { go('meet'); }, G && !RM ? 180 : 0);
+  var lumi = $('#lumiImg');
+  if (G && !RM && lumi && btn) {
+    introAnims.forEach(function (a) { try { a.kill ? a.kill() : a.destroy(); } catch (e) {} }); introAnims = [];
+    G.fromTo(btn, { scale: .92 }, { scale: 1, duration: .5, ease: 'back.out(3)' });
+    G.timeline().to(lumi, { rotation: -16, scaleX: 1, scaleY: 1, transformOrigin: '50% 100%', duration: .12, ease: 'power2.out' })
+      .to(lumi, { rotation: 14, duration: .13, repeat: 3, yoyo: true, ease: 'sine.inOut' })
+      .to(lumi, { rotation: 0, y: -14, duration: .18, ease: 'power2.out' }).to(lumi, { y: 0, duration: .3, ease: 'bounce.out' });
+    setTimeout(function () { go('meet'); }, 620);
+  } else go('meet');
 }
 
 /* ---- 1. meet three new words ---- */
+function flipFeat() {
+  if (!G || RM) return;
+  G.fromTo('#feat', { rotationY: -70 * sgn(), opacity: 0, scale: .9, transformPerspective: 900, transformOrigin: '50% 50%' }, { rotationY: 0, opacity: 1, scale: 1, duration: .7, ease: 'back.out(1.5)', clearProps: 'transform,opacity' });
+  G.from('#feat .w', { yPercent: 70, opacity: 0, duration: .5, delay: .18, ease: 'power3.out', clearProps: 'transform,opacity' });
+  G.from('#feat .a', { y: 10, opacity: 0, duration: .45, delay: .28, clearProps: 'transform,opacity' });
+  G.from('#feat .spk', { scale: 0, duration: .55, delay: .3, ease: 'back.out(3)', clearProps: 'transform' });
+}
 R.meet = function (quiet) {
   var d = Q.d, m = Q.meet, w = d.words[m.i], all = Object.keys(m.heard).length >= 3, autoTok = m.auto;
   sBody.innerHTML = guide('meet') +
     '<button class="feat" type="button" id="feat" aria-label="' + esc(w.en) + '"><span class="pic">' + img(w.image || w.en, w.en) + '</span><span><span class="w">' + esc(w.en) + '</span><span class="a" lang="ar">' + esc(w.ar) + '</span></span><span class="spk" aria-hidden="true">' + IC.spk + '</span></button>' +
-    '<p class="ex" id="ex">' + IC.bars + '<span>“' + esc(w.example || '') + '”</span></p>' +
+    '<p class="ex" id="ex">' + IC.bars + '<span class="exT">“' + String(w.example || '').split(/\s+/).filter(Boolean).map(function (x) { return '<span class="wd">' + esc(x) + '</span>'; }).join(' ') + '”</span></p>' +
     '<div class="thumbs">' + d.words.map(function (x, i) { return '<button class="th' + (i === m.i ? ' on' : '') + (m.heard[i] ? ' heard' : '') + '" type="button" data-i="' + i + '" aria-pressed="' + (i === m.i) + '"><span class="pic">' + img(x.image || x.en, '') + '</span><b>' + esc(x.en) + '</b><span class="ck">' + IC.ck + '</span></button>'; }).join('') + '</div>' +
     '<div class="foot"><span class="hint">' + (all ? '' : esc(T('heardAll'))) + '</span><button class="btn" type="button" id="nx"' + (all ? '' : ' disabled') + '>' + esc(T('next')) + arrowSvg() + '</button></div>';
   function hear() {
@@ -1088,19 +1274,25 @@ R.meet = function (quiet) {
     var th = $$('.th', sBody)[m.i]; if (th) th.classList.add('heard');
     if (Object.keys(m.heard).length >= 3) { $('#nx').disabled = false; $('.foot .hint', sBody).textContent = ''; if (G && !RM) G.fromTo('#nx', { scale: .9 }, { scale: 1, duration: .5, ease: 'back.out(3)' }); }
     var word = d.words[m.i];
-    return play(word.en, $('#feat .spk')).then(function (ok) { if (ok && word.example) { var ex = $('#ex'); return play(word.example, ex); } return ok; });
+    return play(word.en, $('#feat .spk')).then(function (ok) { if (ok && word.example) { var ex = $('#ex'); return play(word.example, ex, exHL); } return ok; });
+  }
+  function exHL(f) {
+    var ex = $('#ex'); if (!ex) return; var ws = $$('.wd', ex), n = ws.length; if (!n) return;
+    if (f >= 1) { ex.classList.remove('hl'); ws.forEach(function (x) { x.classList.remove('on', 'cur'); }); return; }
+    var k = Math.min(n - 1, Math.floor(f * n)); ex.classList.add('hl');
+    ws.forEach(function (x, i) { x.classList.toggle('on', i <= k); x.classList.toggle('cur', i === k); });
   }
   // Plays all three words (word + example) one after another with no tapping;
   // any tap by the child takes over and stops the automatic run.
   function autoAll(i) {
     if (Q.step !== 'meet' || m.auto !== autoTok || i >= d.words.length) return;
-    if (i !== m.i) { m.i = i; R.meet(true); if (G && !RM) G.from('#feat', { opacity: 0, x: (lang === 'ar' ? -1 : 1) * 24, duration: .35, ease: 'power2.out', clearProps: 'all' }); }
+    if (i !== m.i) { m.i = i; R.meet(true); flipFeat(); }
     hear().then(function () { setTimeout(function () { autoAll(i + 1); }, 700); });
   }
   $('#feat').onclick = function () { m.auto = 0; hear(); if (G && !RM) G.fromTo('#feat .pic img', { scale: .9, rotation: -4 }, { scale: 1, rotation: 0, duration: .6, ease: 'elastic.out(1,.5)' }); };
-  $$('.th', sBody).forEach(function (b) { b.onclick = function () { m.auto = 0; m.i = +b.getAttribute('data-i'); R.meet(true); if (G && !RM) G.from('#feat', { opacity: 0, x: (lang === 'ar' ? -1 : 1) * 24, duration: .35, ease: 'power2.out', clearProps: 'all' }); hear(); }; });
+  $$('.th', sBody).forEach(function (b) { b.onclick = function () { m.auto = 0; m.i = +b.getAttribute('data-i'); R.meet(true); flipFeat(); hear(); }; });
   $('#nx').onclick = function () { addStar(this); go('listen'); };
-  if (!quiet) { enter('.guide,.feat,.ex,.th,.foot'); if (!m.heard[0]) { autoTok = m.auto = Date.now(); setTimeout(function () { autoAll(0); }, 450); } }
+  if (!quiet) { enter('.guide,.ex,.th,.foot'); flipFeat(); if (!m.heard[0]) { autoTok = m.auto = Date.now(); setTimeout(function () { autoAll(0); }, 450); } }
 };
 
 /* ---- 2. listen and tap the right picture ---- */
@@ -1119,7 +1311,8 @@ R.listen = function (quiet) {
       if (b.getAttribute('data-en') === tgt.en) {
         locked = true; b.classList.add('right'); lot($('.lt', b), 'check', false);
         if (!L.missed) L.first++;
-        if (G && !RM) G.fromTo(b, { scale: .94 }, { scale: 1, duration: .5, ease: 'back.out(3)' });
+        if (G && !RM) G.fromTo(b, { scale: .92 }, { scale: 1, duration: .7, ease: 'elastic.out(1.2,.4)' });
+        if (L.round < L.targets.length - 1) flyStar(b);
         play(tgt.en);
         setTimeout(function () {
           if (L.round < L.targets.length - 1) { L.round++; L.missed = false; R.listen(); }
@@ -1132,7 +1325,7 @@ R.listen = function (quiet) {
     };
   });
   $('#nx').onclick = function () { go('spell'); };
-  if (!quiet) { enter('.guide,.lisTop,.opt'); if (!L.done) setTimeout(function () { if (Q.step === 'listen' && Q.listen.targets[Q.listen.round] === tgt) play(tgt.en, sp); }, 550); }
+  if (!quiet) { enter('.guide,.lisTop'); if (G && !RM) G.from($$('.opt', sBody), { scale: .55, opacity: 0, rotation: function (i) { return [-6, 5, 4, -5][i % 4]; }, duration: .6, stagger: .08, delay: .18, ease: 'back.out(2)', clearProps: 'transform,opacity' }); if (!L.done) setTimeout(function () { if (Q.step === 'listen' && Q.listen.targets[Q.listen.round] === tgt) play(tgt.en, sp); }, 550); }
 };
 
 /* ---- 3. build the word from letter tiles (tap or drag) ---- */
@@ -1147,10 +1340,14 @@ R.spell = function (quiet) {
   function paint(newSlot, fromRect) {
     $$('.slot', sBody).forEach(function (s, i) { var id = P.slots[i]; s.textContent = id == null ? '' : P.tiles[id].ch; s.classList.toggle('f', id != null); });
     var used = {}; P.slots.forEach(function (id) { if (id != null) used[id] = 1; });
-    $$('.tile', sBody).forEach(function (t) { t.classList.toggle('used', !!used[+t.getAttribute('data-t')]); });
+    $$('.tile', sBody).forEach(function (t) {
+      var u = !!used[+t.getAttribute('data-t')], back = t.classList.contains('used') && !u;
+      t.classList.toggle('used', u);
+      if (back && G && !RM && !P.done) G.fromTo(t, { scale: .3, y: -20 }, { scale: 1, y: 0, duration: .7, ease: 'elastic.out(1,.5)', clearProps: 'transform' });
+    });
     if (newSlot != null && fromRect && G && !RM) {
       var s = $$('.slot', sBody)[newSlot], r = s.getBoundingClientRect();
-      G.fromTo(s, { x: fromRect.left - r.left, y: fromRect.top - r.top, scale: 1.1 }, { x: 0, y: 0, scale: 1, duration: .38, ease: 'back.out(1.6)' });
+      G.fromTo(s, { x: fromRect.left - r.left, y: fromRect.top - r.top, scale: 1.18, rotation: (Math.random() - .5) * 24 }, { x: 0, y: 0, scale: 1, rotation: 0, duration: .75, ease: 'elastic.out(1,.55)', clearProps: 'transform' });
     }
     check();
   }
@@ -1166,13 +1363,17 @@ R.spell = function (quiet) {
     var got = P.slots.map(function (id) { return P.tiles[id].ch; }).join('');
     if (got === P.word) {
       P.done = true; $$('.slot', sBody).forEach(function (s) { s.classList.add('ok'); });
-      if (G && !RM) G.fromTo($$('.slot', sBody), { y: 0 }, { y: -12, duration: .22, yoyo: true, repeat: 1, stagger: .06, ease: 'power2.out' });
+      if (G && !RM) {
+        var sl = $$('.slot', sBody);
+        G.timeline({ delay: .25 }).to(sl, { y: -20, scale: 1.2, rotation: function (i) { return i % 2 ? -9 : 9; }, duration: .2, stagger: .08, ease: 'power2.out' })
+          .to(sl, { y: 0, scale: 1, rotation: 0, duration: .7, stagger: .08, ease: 'elastic.out(1,.4)', clearProps: 'transform' }, '-=' + (.2 + .08 * (sl.length - 1) - .12));
+      }
       $$('.tile', sBody).forEach(function (t) { t.classList.add('used'); });
       toast(INS.good, true); addStar($('#slots')); play(w.en).then(function () { if (Q.step === 'spell') play('awesome'); });
       $('#nx').hidden = false; $('#spClr').hidden = true; $('.spHint', sBody).style.visibility = 'hidden';
     } else {
       P.tries++;
-      var sl = $('#slots'); sl.classList.add('shake'); setTimeout(function () { sl.classList.remove('shake'); }, 500);
+      var sw = $('#slots'); sw.classList.add('shake'); setTimeout(function () { sw.classList.remove('shake'); }, 500);
       toast(INS.try, false);
       setTimeout(function () { P.slots = P.slots.map(function (id, i) { return id != null && P.tiles[id].ch === P.word[i] ? id : null; }); paint(); }, 520);
     }
@@ -1209,7 +1410,7 @@ R.spell = function (quiet) {
   });
   $('#nx').onclick = function () { go('say'); };
   paint();
-  if (!quiet) { enter('.guide,.spTop,.slot,.tile'); if (!P.done) setTimeout(function () { if (Q.step === 'spell') play(w.en, $('#spHear')); }, 500); }
+  if (!quiet) { enter('.guide,.spTop,.slot'); if (G && !RM) G.from($$('.tile', sBody), { y: 40, opacity: 0, scale: .6, rotation: function (i) { return (i % 2 ? 1 : -1) * 12; }, duration: .7, stagger: .06, delay: .3, ease: 'elastic.out(1,.6)', clearProps: 'transform,opacity' }); if (!P.done) setTimeout(function () { if (Q.step === 'spell') play(w.en, $('#spHear')); }, 500); }
 };
 
 /* ---- 4. say it (microphone only if the visitor allows it) ---- */
@@ -1228,6 +1429,7 @@ R.say = function (quiet) {
   sBody.innerHTML = guide('say') +
     '<div class="sayBox"><span class="pic">' + img(w.image || w.en, '') + '</span><div class="sayWord">' + esc(w.en) + '</div><span lang="ar">' + esc(w.ar) + '</span>' +
     '<button class="mic ' + (Y.mic === 'live' ? 'live' : (Y.mic === 'idle' ? 'idle' : '')) + '" type="button" id="mic" aria-label="' + esc(T('micBtn')) + '"' + (Y.mic === 'done' || Y.mic === 'denied' ? ' hidden' : '') + '><span class="rg"></span><span class="rg"></span>' + IC.mic + '</button>' +
+    (Y.mic === 'idle' || Y.mic === 'asking' || Y.mic === 'live' ? '<div class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>' : '') +
     (Y.mic === 'done' ? '<div style="margin:16px 0 6px" id="okLt"></div>' : '') +
     '<div class="micSt" id="micSt">' + esc(st) + '</div>' +
     (Y.mic === 'idle' || Y.mic === 'asking' ? '<p class="micNote">' + esc(T('micNote')) + '</p>' : '') + '</div>' +
@@ -1241,7 +1443,7 @@ R.say = function (quiet) {
   var si = $('#saidIt'); if (si) si.onclick = function () { finishSay(false, si); };
   var nx = $('#nx'); if (nx) nx.onclick = function () { go('celebrate'); };
   if (Y.mic === 'done') { var o = $('#okLt'); if (o) { o.style.cssText = 'width:96px;height:96px;margin:10px auto 0'; lot(o, 'check', false); } }
-  if (!quiet) { enter('.guide,.sayBox>*,.foot'); setTimeout(function () { if (Q.step === 'say' && Y.mic === 'idle') play(w.en, mic); }, 500); }
+  if (!quiet) { enter('.guide,.sayBox>*:not(.mic),.foot'); if (G && !RM && mic) G.from(mic, { scale: 0, rotation: -30, duration: .8, delay: .3, ease: 'elastic.out(1,.5)', clearProps: 'transform' }); setTimeout(function () { if (Q.step === 'say' && Y.mic === 'idle') play(w.en, mic); }, 500); }
 };
 function listen() {
   var Y = Q.say;
@@ -1249,7 +1451,7 @@ function listen() {
   navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
     if (Q.step !== 'say') { stream.getTracks().forEach(function (t) { t.stop(); }); return; }
     MIC.stream = stream; Y.mic = 'live'; R.say(true);
-    var rings = $$('#mic .rg');
+    var rings = $$('#mic .rg'), bars = $$('.meter i'), wts = [.5, .8, 1, 1.2, 1, .8, .5];
     try {
       var AC = window.AudioContext || window.webkitAudioContext; MIC.ctx = new AC();
       var an = MIC.ctx.createAnalyser(); an.fftSize = 512; MIC.ctx.createMediaStreamSource(stream).connect(an);
@@ -1257,6 +1459,7 @@ function listen() {
       (function tick() {
         an.getByteTimeDomainData(buf); var s = 0; for (var i = 0; i < buf.length; i++) { var v = (buf[i] - 128) / 128; s += v * v; }
         var rms = Math.sqrt(s / buf.length); rings.forEach(function (r, k) { r.style.transform = 'scale(' + (1 + Math.min(.8, rms * (5 + k * 3))) + ')'; });
+        bars.forEach(function (b, k) { b.style.transform = 'scaleY(' + Math.min(1, .18 + rms * 9 * wts[k] * (.75 + Math.random() * .5)).toFixed(3) + ')'; });
         if (rms > .06) loud++;
         if (loud > 18 && !MIC.rec) { loud = -999; MIC.tm = setTimeout(function () { finishSay(true); }, 700); }
         MIC.raf = requestAnimationFrame(tick);
@@ -1283,14 +1486,26 @@ function finishSay(spoke, fromEl) {
 /* ---- 5. celebration: three.js trophy + star burst, Lottie confetti ---- */
 R.celebrate = function () {
   var teen = Q.d.teen;
-  sBody.innerHTML = '<div class="cel"><h3 lang="en">' + esc(INS.done[0]) + '</h3><span lang="ar">' + esc(INS.done[1]) + '</span>' +
+  var letters = function (t) { return t.split(' ').map(function (w) { return '<span style="display:inline-block;white-space:nowrap">' + w.split('').map(function (c) { return '<span class="ch">' + esc(c) + '</span>'; }).join('') + '</span>'; }).join(' '); };
+  var sub = esc(T('sStars')).replace('{n}', '<b id="celN">' + (RM ? Q.stars : 0) + '</b>');
+  sBody.innerHTML = '<div class="cel"><h3 lang="en" dir="ltr">' + letters(INS.done[0]) + '</h3><span lang="ar">' + esc(INS.done[1]) + '</span>' +
     '<div class="trophySpot" id="tSpot"></div>' +
     '<div class="bigStars" id="bigStars">' + [0, 1, 2, 3].map(function (i) { return '<span>' + (i < Q.stars ? IC.star : IC.starO) + '</span>'; }).join('') + '</div>' +
+    '<p class="celSub">' + sub + '</p>' +
     '<button class="btn" type="button" id="nx">' + esc(T('celeb')) + arrowSvg() + '</button></div>';
   var ran = trophy();
-  if (!ran) { $('#tSpot').innerHTML = '<img src="../assets/story/characters/' + (teen ? 'lumi-teen-celebrate' : 'lumi-celebrate') + '.png" alt="" onerror="this.remove()">'; if (G && !RM) G.from('#tSpot img', { scale: .3, opacity: 0, duration: .8, ease: 'back.out(2)' }); }
+  if (!ran) { $('#tSpot').innerHTML = '<img src="../assets/story/characters/' + (teen ? 'lumi-teen-celebrate' : 'lumi-celebrate') + '.png" alt="" onerror="this.remove()">'; if (G && !RM) G.timeline().fromTo('#tSpot img', { y: 120, opacity: 0, scaleY: 1.2, scaleX: .85, transformOrigin: '50% 100%' }, { y: 0, opacity: 1, duration: .5, ease: 'power2.out' }).to('#tSpot img', { scaleY: .82, scaleX: 1.15, duration: .1 }).to('#tSpot img', { scaleY: 1, scaleX: 1, duration: .8, ease: 'elastic.out(1,.35)' }); }
   var c = $('#fxConf'); c.innerHTML = ''; if (!RM) { var a = lot(c, 'confetti', false); if (a) a.addEventListener('complete', function () { c.innerHTML = ''; }); }
-  if (G && !RM) { G.from('.cel h3,.cel h3+span', { y: -20, opacity: 0, duration: .6, stagger: .08, ease: 'back.out(2)' }); G.from('#bigStars span', { scale: 0, rotation: -90, duration: .55, delay: .5, stagger: .12, ease: 'back.out(2.5)' }); G.from('#nx', { y: 20, opacity: 0, duration: .5, delay: 1.1 }); }
+  if (G && !RM) {
+    var ctl = G.timeline();
+    ctl.from('.cel .ch', { yPercent: 120, opacity: 0, rotation: function (i) { return (i % 2 ? 1 : -1) * 18; }, duration: .55, stagger: .028, ease: 'back.out(2.6)' })
+      .from('.cel h3+span', { y: 12, opacity: 0, duration: .45 }, '-=.3')
+      .from('#bigStars span', { y: -90, x: function (i) { return (1.5 - i) * 40; }, scale: 0, rotation: -200, duration: .7, stagger: .16, ease: 'back.out(1.8)', onComplete: function () {} }, .85)
+      .from('.celSub', { y: 10, opacity: 0, duration: .4 }, 1.0)
+      .add(function () { var o = { n: 0 }, el = $('#celN'); G.to(o, { n: Q.stars, duration: .16 * Math.max(1, Q.stars) + .3, ease: 'none', onUpdate: function () { if (el) el.textContent = Math.round(o.n); } }); }, 1.05)
+      .fromTo('#bigStars span', { scale: 1 }, { scale: 1.25, duration: .14, yoyo: true, repeat: 1, stagger: .16, ease: 'power2.out' }, 1.55)
+      .from('#nx', { y: 20, opacity: 0, duration: .5, ease: 'power3.out' }, 1.9);
+  }
   play('amazing');
   $('#nx').onclick = function () { go('results'); };
   clearTimeout(R.celTm); R.celTm = setTimeout(function () { if (Q.step === 'celebrate') go('results'); }, 5200);
@@ -1327,7 +1542,8 @@ function trophy() {
       var mats = [0xF97316, 0xFFB13B, 0xFFFFFF, 0xC2410C, 0xFDBA74].map(function (c) { return new THREE.MeshStandardMaterial({ color: c, roughness: .4, metalness: .1, emissive: c, emissiveIntensity: .12 }); });
       var parts = [];
       for (var i = 0; i < 46; i++) { var m = new THREE.Mesh(small, mats[i % mats.length]); m.visible = false; sc.add(m); parts.push(m); }
-      T3 = { r: r, sc: sc, cam: cam, cup: cup, star: bigStar, parts: parts, run: 0 };
+      var sweep = new THREE.PointLight(0xffffff, 0, 9); sc.add(sweep);
+      T3 = { r: r, sc: sc, cam: cam, cup: cup, star: bigStar, parts: parts, run: 0, sweep: sweep };
     } catch (e) { T3 = null; return false; }
   }
   cv.hidden = false; cv.style.opacity = 1;
@@ -1336,17 +1552,21 @@ function trophy() {
   var spot = $('#tSpot'), sr = spot.getBoundingClientRect(), gr = stage.getBoundingClientRect();
   var cy = (sr.top + sr.height / 2 - gr.top) / h; var vh = 2 * Math.tan(T3.cam.fov * Math.PI / 360) * 10; var yW = (.5 - cy) * vh;
   var scale = Math.min(1, (sr.height / h) * vh / 4.6);
-  T3.cup.position.set(0, yW - .65 * scale, 0); T3.cup.scale.setScalar(scale);
-  T3.parts.forEach(function (p) { p.visible = true; p.position.set(0, yW + .3, 0); var a = Math.random() * Math.PI * 2, sp = 3 + Math.random() * 5; p.userData = { vx: Math.cos(a) * sp * .8, vy: Math.sin(a) * sp + 3, vz: (Math.random() - .3) * 4, rx: Math.random() * 8, ry: Math.random() * 8 }; p.rotation.set(Math.random() * 3, Math.random() * 3, 0); });
+  var baseY = yW - .65 * scale; T3.cup.position.set(0, baseY, 0); T3.cup.scale.setScalar(scale);
+  T3.parts.forEach(function (p) { p.visible = false; p.position.set(0, yW + .3, 0); var a = Math.random() * Math.PI * 2, sp = 3 + Math.random() * 5; p.userData = { vx: Math.cos(a) * sp * .8, vy: Math.sin(a) * sp + 3, vz: (Math.random() - .3) * 4, rx: Math.random() * 8, ry: Math.random() * 8 }; p.rotation.set(Math.random() * 3, Math.random() * 3, 0); });
   var t0 = performance.now(), tok = ++T3.run, last = t0;
   (function loop(now) {
     if (tok !== T3.run) return;
     var t = (now - t0) / 1000, dt = Math.min(.05, (now - last) / 1000); last = now;
-    var e = Math.min(1, t / .9), pop = 1 - Math.pow(1 - e, 3) * Math.cos(e * 6) ;
-    T3.cup.scale.setScalar(scale * Math.max(.01, RM ? 1 : pop));
-    T3.cup.rotation.y = RM ? .4 : Math.sin(t * 1.4) * .6 + t * .6;
+    // the trophy rises from below with a soft overshoot, a light sweeps across it, then the stars burst
+    var e = Math.min(1, t / 1.0), c1 = 1.70158, c3 = c1 + 1, rise = RM ? 1 : 1 + c3 * Math.pow(e - 1, 3) + c1 * Math.pow(e - 1, 2);
+    T3.cup.position.y = baseY - (1 - rise) * 3.2 * scale;
+    T3.cup.scale.setScalar(scale * (RM ? 1 : Math.max(.01, .55 + .45 * Math.min(1, e * 1.4))));
+    T3.cup.rotation.y = RM ? .4 : Math.sin(t * 1.4) * .5 + t * .7 - (1 - e) * 2.2;
     T3.star.rotation.y = -T3.cup.rotation.y + Math.sin(t * 2) * .3;
-    T3.parts.forEach(function (p) { var u = p.userData; if (RM) { p.visible = false; return; } u.vy -= 9 * dt; p.position.x += u.vx * dt; p.position.y += u.vy * dt; p.position.z += u.vz * dt; p.rotation.x += u.rx * dt; p.rotation.y += u.ry * dt; });
+    var sw = Math.min(1, Math.max(0, (t - .45) / 1.0));
+    T3.sweep.intensity = RM ? 0 : Math.sin(sw * Math.PI) * 4.5; T3.sweep.position.set(-4.5 + 9 * sw, baseY + 1.2 * scale, 2.6);
+    T3.parts.forEach(function (p) { var u = p.userData; if (RM) { p.visible = false; return; } if (t < .62) return; p.visible = true; u.vy -= 9 * dt; p.position.x += u.vx * dt; p.position.y += u.vy * dt; p.position.z += u.vz * dt; p.rotation.x += u.rx * dt; p.rotation.y += u.ry * dt; });
     T3.r.render(T3.sc, T3.cam);
     if (Q.step !== 'celebrate') { cv.hidden = true; return; }
     requestAnimationFrame(loop);
@@ -1373,7 +1593,8 @@ R.results = function () {
   $$('.resW button', sBody).forEach(function (b) { b.onclick = function () { play(b.getAttribute('data-en'), b); }; });
   $('#again').onclick = function () { start(Q.li); };
   $('#other').onclick = function () { Q.step = 'intro'; render(); };
-  enter('.resTop,.resW button,.resS li,.offer>*,.again');
+  enter('.resTop,.resS li,.offer>*,.again');
+  if (G && !RM) { G.from($$('.resW button', sBody), { y: 30, scale: .7, opacity: 0, rotation: function (i) { return (i - 1) * 8; }, duration: .7, stagger: .09, delay: .15, ease: 'back.out(2)', clearProps: 'transform,opacity' }); G.from('.resTop img', { scale: .4, rotation: -20, duration: .8, ease: 'elastic.out(1,.5)', clearProps: 'transform' }); }
   $$('.mtab')[0] && $$('.mtab')[0].classList.add('did');
 };
 
@@ -1398,7 +1619,7 @@ function showMoment(i, anim) {
   $$('.mtab').forEach(function (b, k) { b.classList.toggle('on', k === i); b.setAttribute('aria-selected', String(k === i)); });
   var v = $('#mview');
   function fill() {
-    v.innerHTML = '<div class="mshot"><img src="../assets/site/' + SHOTS[i] + '.jpg" alt="' + esc(T('s' + n + '.h')) + '" loading="lazy"></div><div class="mtext"><h3>' + esc(T('s' + n + '.h')) + '</h3><p>' + esc(T('s' + n + '.p')) + '</p><div class="chips"><span>' + esc(T('s' + n + '.c1')) + '</span><span>' + esc(T('s' + n + '.c2')) + '</span><span>' + esc(T('s' + n + '.c3')) + '</span></div>' + (i === 0 ? '<a class="btn sm" href="#top">' + esc(T('playDemo')) + '</a>' : '') + '</div>';
+    v.innerHTML = '<div class="mshot"><img src="../assets/site/' + SHOTS[i] + '.jpg" alt="' + esc(T('s' + n + '.h')) + '" width="1400" height="787" loading="lazy" decoding="async"></div><div class="mtext"><h3>' + esc(T('s' + n + '.h')) + '</h3><p>' + esc(T('s' + n + '.p')) + '</p><div class="chips"><span>' + esc(T('s' + n + '.c1')) + '</span><span>' + esc(T('s' + n + '.c2')) + '</span><span>' + esc(T('s' + n + '.c3')) + '</span></div>' + (i === 0 ? '<a class="btn sm" href="#top">' + esc(T('playDemo')) + '</a>' : '') + '</div>';
   }
   if (!anim || !G || RM) return fill();
   G.timeline().to(v, { opacity: 0, y: 10, duration: .18 }).add(fill).to(v, { opacity: 1, y: 0, duration: .35, ease: 'power2.out' }).from($$('.mshot img', v), { scale: 1.08, duration: .8, ease: 'power3.out' }, '<');
@@ -1418,7 +1639,7 @@ function setLevel(i, fromScroll) {
   lvActive = i;
   $$('.lvRow').forEach(function (b, k) { b.classList.toggle('on', k === i); });
   capLevel();
-  if (P3) P3.go(i);
+  if (P3) { if (fromScroll) P3.mark(i); else P3.go(i); }
 }
 function initPath() {
   var cv = $('#lvCanvas'), box = $('#lvStage');
@@ -1476,23 +1697,36 @@ function initPath() {
     isl[i].userData.sp.material.map = label(LV_CODE[i], true); isl[i].userData.sp.material.needsUpdate = true; prevLbl = i;
   }
   mark(0);
+  var mTw = null;
   function go(i) {
     want.i = i; mark(i);
     var o = offs(), tgt = PTS[i].clone().add(o);
     if (G && !RM) {
       G.to(camT, { x: tgt.x, y: tgt.y, z: tgt.z, lx: PTS[i].x, ly: PTS[i].y, lz: PTS[i].z, duration: 1.2, ease: 'power3.inOut', overwrite: true });
       var from = marker.position.clone(), to = PTS[i], h = { t: 0 };
-      G.to(h, { t: 1, duration: 1.1, ease: 'power2.inOut', overwrite: true, onUpdate: function () { marker.position.lerpVectors(from, to, h.t); marker.position.y += Math.sin(h.t * Math.PI) * 1.6; } });
+      if (mTw) mTw.kill();
+      mTw = G.to(h, { t: 1, duration: 1.1, ease: 'power2.inOut', onUpdate: function () { marker.position.lerpVectors(from, to, h.t); marker.position.y += Math.sin(h.t * Math.PI) * 1.6; } });
     } else { camT.x = tgt.x; camT.y = tgt.y; camT.z = tgt.z; camT.lx = PTS[i].x; camT.ly = PTS[i].y; camT.lz = PTS[i].z; marker.position.copy(PTS[i]); }
   }
+  // scroll position -> a point along the path: the camera glides, Lumi hops island to island
+  function scrub(p) {
+    var f = Math.max(0, Math.min(6, p * 6)), i0 = Math.floor(Math.min(5.999, f)), fr = f - i0, o = offs();
+    var a = PTS[i0], b = PTS[i0 + 1];
+    if (G) G.killTweensOf(camT); if (mTw) { mTw.kill(); mTw = null; }
+    camT.x = a.x + (b.x - a.x) * fr + o.x; camT.y = a.y + (b.y - a.y) * fr + o.y; camT.z = a.z + (b.z - a.z) * fr + o.z;
+    camT.lx = a.x + (b.x - a.x) * fr; camT.ly = a.y + (b.y - a.y) * fr; camT.lz = a.z + (b.z - a.z) * fr;
+    var q = curve.getPoint(f / 6); marker.position.set(q.x, q.y - .2 + (RM ? 0 : Math.sin(fr * Math.PI) * .9), q.z);
+  }
   function hop(i) { if (G && !RM) G.fromTo(marker.position, { y: PTS[i].y }, { y: PTS[i].y + 1, duration: .3, yoyo: true, repeat: 1, ease: 'power2.out' }); }
-  var vis = false, t0 = performance.now();
+  var vis = false, t0 = performance.now(), cur = { x: camT.x, y: camT.y, z: camT.z, lx: camT.lx, ly: camT.ly, lz: camT.lz };
   function frame(now) {
     if (!vis) return;
     var t = (now - t0) / 1000;
     isl.forEach(function (g) { g.position.y = g.userData.base + (RM ? 0 : Math.sin(t * .9 + g.userData.ph) * .12); });
     ring.scale.setScalar(1 + (RM ? 0 : Math.sin(t * 3) * .08));
-    cam.position.set(camT.x + (RM ? 0 : Math.sin(t * .3) * .15), camT.y, camT.z); cam.lookAt(camT.lx, camT.ly + .4, camT.lz);
+    var k = RM ? 1 : .085;
+    cur.x += (camT.x - cur.x) * k; cur.y += (camT.y - cur.y) * k; cur.z += (camT.z - cur.z) * k; cur.lx += (camT.lx - cur.lx) * k; cur.ly += (camT.ly - cur.ly) * k; cur.lz += (camT.lz - cur.lz) * k;
+    cam.position.set(cur.x + (RM ? 0 : Math.sin(t * .3) * .15), cur.y, cur.z); cam.lookAt(cur.lx, cur.ly + .4, cur.lz);
     r.render(sc, cam); requestAnimationFrame(frame);
   }
   if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { es.forEach(function (e) { var was = vis; vis = e.isIntersecting; if (vis && !was) { size(); requestAnimationFrame(frame); } }); }).observe(box);
@@ -1505,7 +1739,7 @@ function initPath() {
     ray.setFromCamera(v2, cam); var hit = ray.intersectObjects(tops)[0];
     if (hit) { lvUser = true; setLevel(hit.object.userData.i); }
   });
-  P3 = { go: go, hop: hop };
+  P3 = { go: go, hop: hop, scrub: scrub, mark: mark };
   go(lvActive);
 }
 
@@ -1567,7 +1801,7 @@ function loadPrompt() {
 /* games */
 var GAME_IMG = ['pre-a', 'level1', 'level2', 'level3', 'level4', 'level5', 'level6'];
 function buildGames() {
-  $('#gtrack').innerHTML = T('games').map(function (g, i) { return '<article class="gc"><div class="in"><div class="cov"><img src="../assets/site/game-' + GAME_IMG[i] + '.jpg" alt="" loading="lazy"><span class="lv">' + esc(g[0]) + '</span></div><div class="bd"><h3>' + esc(g[1]) + '</h3><p>' + esc(g[2]) + '</p><span class="pl">' + esc(T('games.play')) + (lang === 'ar' ? ' ←' : ' →') + '</span></div></div></article>'; }).join('') +
+  $('#gtrack').innerHTML = T('games').map(function (g, i) { return '<article class="gc"><div class="in"><div class="cov"><img src="../assets/site/game-' + GAME_IMG[i] + '.jpg" alt="" width="640" height="137" loading="lazy" decoding="async"><span class="lv">' + esc(g[0]) + '</span></div><div class="bd"><h3>' + esc(g[1]) + '</h3><p>' + esc(g[2]) + '</p><span class="pl">' + esc(T('games.play')) + (lang === 'ar' ? ' ←' : ' →') + '</span></div></div></article>'; }).join('') +
     '<article class="gc more"><div class="in"><b style="font-family:var(--disp);font-size:20px">' + esc(T('gTap')) + '</b><a class="btn sm" href="#top">' + esc(T('playDemo')) + '</a></div></article>';
   $$('.gc:not(.more)').forEach(function (c) {
     var inn = $('.in', c);
@@ -1590,9 +1824,9 @@ function buildStories() {
 }
 function pageHtml() {
   var s = stories()[stI];
-  if (pgI === 0) return '<div class="pg cover"><div class="im"><img src="../assets/site/story-' + s.lv + '.jpg" alt="' + esc(T('st.alt').replace('{title}', s.title)) + '"></div><div class="ttl"><small>' + esc(T('st.story').replace('{level}', s.level)) + ' · ' + esc(T('st.pages').replace('{n}', s.pages)) + '</small><b>' + esc(s.title) + '</b></div><span class="pgn">' + esc(T('cover')) + '</span></div>';
+  if (pgI === 0) return '<div class="pg cover"><div class="im"><img src="../assets/site/story-' + s.lv + '.jpg" alt="' + esc(T('st.alt').replace('{title}', s.title)) + '" width="1100" height="619" decoding="async"></div><div class="ttl"><small>' + esc(T('st.story').replace('{level}', s.level)) + ' · ' + esc(T('st.pages').replace('{n}', s.pages)) + '</small><b>' + esc(s.title) + '</b></div><span class="pgn">' + esc(T('cover')) + '</span></div>';
   var k = pgI - 1, pos = ['0% 50%', '35% 50%', '70% 50%', '100% 50%'][k];
-  return '<div class="pg part"><div class="im"><img src="../assets/site/story-' + s.lv + '.jpg" alt="" style="object-position:' + pos + '"></div><div class="tx"><small>' + esc(T('st.part').replace('{n}', pgI)) + '</small><b>' + esc(s.parts[k]) + '</b><span>' + IC.lock + esc(T('st.opens').replace('{n}', pgI * 5)) + '</span></div><span class="pgn">' + pgI + '/4</span></div>';
+  return '<div class="pg part"><div class="im"><img src="../assets/site/story-' + s.lv + '.jpg" alt="" width="1100" height="619" decoding="async" style="object-position:' + pos + '"></div><div class="tx"><small>' + esc(T('st.part').replace('{n}', pgI)) + '</small><b>' + esc(s.parts[k]) + '</b><span>' + IC.lock + esc(T('st.opens').replace('{n}', pgI * 5)) + '</span></div><span class="pgn">' + pgI + '/4</span></div>';
 }
 function paintPage() { $('#leaf').innerHTML = pageHtml(); $('#pgDots').innerHTML = [0, 1, 2, 3, 4].map(function (i) { return '<i class="' + (i === pgI ? 'on' : '') + '"></i>'; }).join(''); $('#pgPrev').disabled = pgI === 0; $('#pgNext').disabled = false; }
 function flip(to, dir) {
@@ -1626,7 +1860,7 @@ var CREW = [
 ];
 var crI = 0;
 function buildCrew() {
-  $('#crewRow').innerHTML = CREW.map(function (c, i) { return '<button class="cm' + (i === crI ? ' on' : '') + '" type="button" role="tab" aria-selected="' + (i === crI) + '" data-i="' + i + '"><span class="say">' + esc(c.en.say) + '</span><span class="wv">' + IC.spk.replace('width="22" height="22"', 'width="14" height="14"') + '</span><img src="../assets/site/' + c.img + '" alt="" loading="lazy"><b>' + esc(c[lang].role) + '</b></button>'; }).join('');
+  $('#crewRow').innerHTML = CREW.map(function (c, i) { return '<button class="cm' + (i === crI ? ' on' : '') + '" type="button" role="tab" aria-selected="' + (i === crI) + '" data-i="' + i + '"><span class="say">' + esc(c.en.say) + '</span><span class="wv">' + IC.spk.replace('width="22" height="22"', 'width="14" height="14"') + '</span><img src="../assets/site/' + c.img + '" alt="" loading="lazy" decoding="async"><b>' + esc(c[lang].role) + '</b></button>'; }).join('');
   $$('.cm').forEach(function (b) { b.onclick = function () { crewPick(+b.getAttribute('data-i'), true); }; });
   crewBio(false);
 }
@@ -1642,7 +1876,7 @@ function crewPick(i, speak) {
   var b = $$('.cm')[i]; crewBio(true);
   if (!speak) return;
   b.classList.add('talk'); clearTimeout(crewPick.tm); crewPick.tm = setTimeout(function () { b.classList.remove('talk'); }, 2600);
-  if (G && !RM) G.fromTo($('img', b), { rotation: -6, y: 0 }, { rotation: 0, y: 0, duration: .9, ease: 'elastic.out(1.2,.35)' });
+  if (G && !RM) G.fromTo($('img', b), { rotation: -7, scaleY: .92 }, { rotation: 0, scaleY: 1, duration: .9, ease: 'elastic.out(1.2,.35)' });
   var c = CREW[i]; stopAudio(); synth(c.en.say, 'en-US').then(function () { if (crI === i && lang === 'ar') synth(c.ar.say, 'ar-SA'); });
 }
 
@@ -1679,7 +1913,7 @@ function buildFaq() {
   $$('.fq').forEach(function (item, i) {
     $('button', item).onclick = function () {
       var open = !item.classList.contains('open');
-      $$('.fq').forEach(function (x) { var o = x === item ? open : false; if (x.classList.contains('open') === o) return; x.classList.toggle('open', o); $('button', x).setAttribute('aria-expanded', String(o)); var a = $('.fqa', x); if (G && !RM) G.to(a, { height: o ? 'auto' : 0, duration: .45, ease: 'power3.inOut' }); else a.style.height = o ? 'auto' : '0'; });
+      $$('.fq').forEach(function (x) { var o = x === item ? open : false; if (x.classList.contains('open') === o) return; x.classList.toggle('open', o); $('button', x).setAttribute('aria-expanded', String(o)); var a = $('.fqa', x); if (G && !RM) { G.to(a, { height: o ? 'auto' : 0, duration: .5, ease: 'power3.inOut', overwrite: true }); if (o) G.fromTo($('p', a), { y: -8, opacity: 0 }, { y: 0, opacity: 1, duration: .45, delay: .1, ease: 'power2.out' }); } else a.style.height = o ? 'auto' : '0'; });
       fqOpen = open ? i : -1;
     };
   });
@@ -1713,7 +1947,9 @@ function paintStatic() {
   $$('[data-kalt]').forEach(function (el) { el.setAttribute('alt', T(el.getAttribute('data-kalt'))); });
   $('.skip .arr').textContent = lang === 'ar' ? '←' : '→';
   document.title = (lang === 'ar' ? 'جرّب درساً حقيقياً · ' : 'Try a real lesson · ') + T('meta.title');
+  $$('.hero h1 [data-k], .h2[data-k]').forEach(splitWords);
 }
+function splitWords(el) { el.innerHTML = el.textContent.split(/\s+/).filter(Boolean).map(function (w) { return '<span class="wm"><span class="wi">' + esc(w) + '</span></span>'; }).join(' '); }
 function buildAll() { paintStatic(); buildNav(); buildHow(); buildLevels(); buildHub(); buildWriting(); buildGames(); buildStories(); buildCrew(); buildPricing(); buildFaq(); buildFree(); }
 $('#langBtn').addEventListener('click', function () {
   lang = lang === 'ar' ? 'en' : 'ar';
@@ -1757,19 +1993,98 @@ paintPrices(false);
   io.observe(box);
 })();
 
-// scroll motion
-if (G && ST && !RM) {
-  $$('.rv').forEach(function (el) { G.from(el, { y: 40, opacity: 0, duration: .9, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 88%', once: true } }); });
-  G.from('.hcopy > *', { y: 24, opacity: 0, duration: .8, stagger: .08, ease: 'power3.out' });
-  G.from('.stage', { y: 40, opacity: 0, scale: .96, duration: 1, ease: 'power3.out', delay: .15 });
-  // levels: the island follows the row in view, until the visitor picks one
-  ST.create({ trigger: '#lvList', start: 'top 60%', end: 'bottom 60%', onUpdate: function (s) { if (lvUser) return; var i = Math.min(6, Math.floor(s.progress * 7)); if (i !== lvActive) setLevel(i, true); } });
-  ST.batch('.gc', { start: 'top 90%', once: true, onEnter: function (els) { G.from(els, { y: 40, opacity: 0, rotate: 2, duration: .7, stagger: .07, ease: 'power3.out', clearProps: 'transform,opacity' }); } });
-  ST.batch('.plan', { start: 'top 90%', once: true, onEnter: function (els) { G.from(els, { y: 50, opacity: 0, duration: .8, stagger: .1, ease: 'power3.out', clearProps: 'opacity' }); paintPrices(true); } });
-  ST.batch('.cm', { start: 'top 92%', once: true, onEnter: function (els) { G.from(els, { y: 30, opacity: 0, duration: .6, stagger: .06, ease: 'back.out(1.6)', clearProps: 'transform,opacity' }); } });
-  ST.batch('.ht', { start: 'top 92%', once: true, onEnter: function (els) { G.from(els, { y: 24, opacity: 0, duration: .5, stagger: .05, clearProps: 'transform,opacity' }); } });
+// ---------- hero: real lesson words floating around the stage (desktop) ----------
+(function () {
+  var wrap = $('.stageWrap'); if (!wrap) return;
+  var picks = [[0, 0], [1, 2], [5, 1]];
+  picks.forEach(function (p, k) {
+    var w = demoFor(p[0]).words[p[1]]; if (!w) return;
+    var d = document.createElement('div'); d.className = 'stk s' + (k + 1); d.setAttribute('aria-hidden', 'true');
+    d.innerHTML = '<div class="in">' + img(w.image || w.en, '') + '<span><b>' + esc(w.en) + '</b><small>' + esc(w.ar) + '</small></span></div>';
+    wrap.appendChild(d);
+  });
+})();
+function countUp(el, to, dur, delay) {
+  if (!el) return;
+  if (!G || RM) { el.textContent = to; return; }
+  var o = { v: 0 }; el.textContent = '0';
+  G.to(o, { v: to, duration: dur || 1.4, delay: delay || 0, ease: 'power3.out', onUpdate: function () { el.textContent = Math.round(o.v); } });
+}
 
-  G.from('.final img', { y: 40, rotation: -10, scrollTrigger: { trigger: '.final', start: 'top 85%', end: 'top 40%', scrub: true } });
+// ---------- motion ----------
+if (G && !RM) {
+  // 1) hero entrance, orchestrated
+  var htl = G.timeline({ delay: .05 });
+  htl.from('.eyebrow', { y: 14, opacity: 0, duration: .5, ease: 'power3.out' })
+    .from('.hero h1 .wi', { yPercent: 118, rotation: function () { return 5 * (lang === 'ar' ? -1 : 1); }, duration: 1, stagger: .065, ease: 'power4.out' }, '-=.25')
+    .from('.hero .lead', { y: 18, opacity: 0, duration: .7, ease: 'power3.out' }, '-=.6')
+    .from('.heroCtas > *', { y: 16, opacity: 0, duration: .55, stagger: .08, ease: 'power3.out' }, '-=.45')
+    .from('.stats div', { y: 18, opacity: 0, duration: .55, stagger: .06, ease: 'power3.out' }, '-=.35')
+    .add(function () { $$('.stats b').forEach(function (b) { countUp(b, +b.textContent || 0, 1.6); }); }, '<')
+    .from('.stage', { y: 60, opacity: 0, scale: .94, duration: 1.1, ease: 'expo.out' }, .2)
+    .from('.stk .in', { scale: 0, opacity: 0, rotation: function (i) { return [-14, 10, -8][i]; }, duration: .8, stagger: .14, ease: 'back.out(2)' }, 1.35);
+  // stickers float, and drift with the pointer on desktop
+  $$('.stk .in').forEach(function (e, i) { G.to(e, { y: [-10, 8, -7][i], rotation: [-3, 2.5, -2][i], duration: [3, 3.6, 2.8][i], yoyo: true, repeat: -1, ease: 'sine.inOut', delay: 2 + i * .3 }); });
+  if (FINE) {
+    var hero = $('#top'), stks = $$('.stk');
+    hero.addEventListener('pointermove', function (e) {
+      var r = hero.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+      stks.forEach(function (k, i) { G.to(k, { x: x * (18 + i * 10), y: y * (14 + i * 8), duration: .9, ease: 'power3.out', overwrite: 'auto' }); });
+    });
+  }
+
+  if (ST) {
+    // 2) section headings: kicker slides, headline words rise from a mask, then the rest
+    $$('.rv').forEach(function (el) {
+      var h = $('.h2', el);
+      if (!h) { G.from(el, { y: 44, opacity: 0, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 88%', once: true } }); return; }
+      var rest = Array.prototype.slice.call(el.children).filter(function (c) { return c !== h && !c.classList.contains('kick'); });
+      var tl = G.timeline({ scrollTrigger: { trigger: el, start: 'top 85%', once: true } });
+      tl.from($$('.kick', el), { x: -24 * sgn(), opacity: 0, duration: .55, ease: 'power3.out' })
+        .from($$('.wi', h), { yPercent: 118, rotation: 4 * sgn(), duration: .95, stagger: .045, ease: 'power4.out' }, '-=.35');
+      if (rest.length) tl.from(rest, { y: 22, opacity: 0, duration: .7, stagger: .08, ease: 'power3.out' }, '-=.7');
+    });
+    // 3) cards stagger in
+    function batch(sel, from, opt) {
+      ST.batch(sel, { start: 'top 90%', once: true, onEnter: function (els) { G.from(els, Object.assign({ duration: .7, stagger: .07, ease: 'power3.out', clearProps: 'transform,opacity' }, from)); if (opt) opt(els); } });
+    }
+    batch('.mtab', { y: 26, opacity: 0 });
+    batch('.lvRow', { y: 30, opacity: 0, scale: .97 });
+    batch('.ht', { y: 26, opacity: 0, scale: .94, ease: 'back.out(1.6)' });
+    batch('.wrf > div', { x: -20 * sgn(), opacity: 0 });
+    batch('.gc', { y: 46, opacity: 0, rotation: 2 });
+    batch('.cm', { y: 36, opacity: 0, scale: .9, ease: 'back.out(1.7)' });
+    batch('.fc', { y: 40, opacity: 0 });
+    batch('.tlv button', { y: 16, opacity: 0, stagger: .04 });
+    batch('.plan', { y: 60, opacity: 0, clearProps: 'opacity' }, function () { paintPrices(true); });
+    batch('.hbl li', { x: 24 * sgn(), opacity: 0, stagger: .06 });
+    batch('.fq', { y: 18, opacity: 0, stagger: .05 });
+    batch('.stabs button', { y: 14, opacity: 0, stagger: .05 });
+    // 4) parallax: crew art, screenshots, story book, handbook, final Lumi
+    G.utils.toArray('.cm img').forEach(function (im, i) { G.fromTo(im, { yPercent: 6 + (i % 3) * 2 }, { yPercent: -6 - (i % 3) * 2, ease: 'none', scrollTrigger: { trigger: '#crew', start: 'top bottom', end: 'bottom top', scrub: true } }); });
+    G.fromTo('#mview', { y: 30 }, { y: -20, ease: 'none', scrollTrigger: { trigger: '#how', start: 'top bottom', end: 'bottom top', scrub: true } });
+    G.fromTo('.hubDev', { y: 40 }, { y: -30, ease: 'none', scrollTrigger: { trigger: '#hub', start: 'top bottom', end: 'bottom top', scrub: true } });
+    G.fromTo('.book', { y: 40, rotation: -1.5 * sgn() }, { y: -30, rotation: 1 * sgn(), ease: 'none', scrollTrigger: { trigger: '#stories', start: 'top bottom', end: 'bottom top', scrub: true } });
+    G.fromTo('.hbc', { y: 40 }, { y: -30, ease: 'none', scrollTrigger: { trigger: '#handbook', start: 'top bottom', end: 'bottom top', scrub: true } });
+    G.from('.final img', { y: 50, rotation: -12, scale: .8, scrollTrigger: { trigger: '.final', start: 'top 90%', end: 'top 40%', scrub: true } });
+    // 5) count-ups
+    ST.create({ trigger: '.hubDev', start: 'top 85%', once: true, onEnter: function () { countUp($('.hubDev .fl b'), 7, 1.2); } });
+    // 6) levels: the 3D path follows the scroll until the visitor picks an island
+    ST.create({ trigger: '#lvList', start: 'top 65%', end: 'bottom 65%', onUpdate: function (st) { if (lvUser) return; if (P3) P3.scrub(st.progress); var i = Math.round(st.progress * 6); if (i !== lvActive) setLevel(i, true); } });
+  }
+
+  // 7) magnetic main buttons (desktop pointer only)
+  if (FINE) {
+    var MAG = '.skip,.final .btn,.plan .btn,.fc .btn,#trialBook,.hbg .btn,.mtext .btn';
+    document.addEventListener('pointermove', function (e) {
+      var b = e.target.closest && e.target.closest(MAG);
+      if (magB && magB !== b) { G.to(magB, { x: 0, y: 0, duration: .7, ease: 'elastic.out(1,.4)' }); magB = null; }
+      if (!b) return; magB = b;
+      var r = b.getBoundingClientRect(), x = e.clientX - r.left - r.width / 2, y = e.clientY - r.top - r.height / 2;
+      G.to(b, { x: x * .22, y: y * .32, duration: .35, ease: 'power3.out' });
+    }, { passive: true });
+    var magB = null;
+  }
 }
 window.__tryit = { Q: Q, go: go };
 })();
