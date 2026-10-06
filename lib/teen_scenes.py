@@ -10,7 +10,7 @@ def _s(en, bold, ar): return {"en": en, "bold": bold, "ar": ar}
 
 SCENES = {
  "level3": {
-  1: _s("We hang out after school.", ["hang out", "after school"], "نتسكع معاً بعد المدرسة."),
+  1: _s("We hang out after school.", ["hang out", "after school"], "نقضي وقتاً معاً بعد المدرسة."),
   2: _s("She studies every evening.", ["studies", "every evening"], "تدرس كل مساء."),
   3: _s("I don't like scary movies.", ["don't like", "scary"], "لا أحب الأفلام المخيفة."),
   4: _s("There is a poster on the wall.", ["There is", "poster"], "هناك ملصق على الحائط."),
@@ -28,7 +28,7 @@ SCENES = {
   16: _s("Ziad is the champion tonight.", ["champion", "tonight"], "زياد هو البطل الليلة."),
   17: _s("This movie is better than that one.", ["better than"], "هذا الفيلم أفضل من ذاك."),
   18: _s("Do you agree or disagree?", ["agree", "disagree"], "هل توافق أم تعارض؟"),
-  19: _s("We were nervous, then proud.", ["nervous", "proud"], "كنا متوترين، ثم فخورين."),
+  19: _s("We are nervous, then proud.", ["nervous", "proud"], "نحن متوترون، ثم فخورون."),
   20: _s("We put our memories in a box.", ["memories", "box"], "وضعنا ذكرياتنا في صندوق."),
  },
  "level4": {

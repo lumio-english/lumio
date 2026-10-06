@@ -39,7 +39,7 @@ Save into `assets/vocab/` with the exact file name shown (lower-case, spaces →
 - `bought.png` NEW — *I bought a new notebook yesterday.* — a cashier counter from the customer side: a hand placing coins, a small paper receipt curling out of the till and a new spiral notebook in a paper shopping bag (no faces)
 - `found.png` REPLACE — *She found her missing shoe under the bed.* — CHAR: Noor kneeling beside a bed lifting the blanket edge, one orange sneaker visible under the bed, her face lit up with relief, a sparkle on the shoe
 - `met.png` NEW — *We met our new neighbors this weekend.* — CHAR: Omar and Hamad at a garden gate waving to a new neighbour family (a father in a thobe and a small boy) with a clear gap and a moving box on the neighbours' side
-- `adventure.png` REPLACE — *That was a fun adventure.* — a rolled treasure-style map with a dotted route, a compass and a pair of hiking boots leaning on it, a mountain outline on the map (no letters)
+- `adventure.png` REPLACE — *Did you go on an adventure?* — a rolled treasure-style map with a dotted route, a compass and a pair of hiking boots leaning on it, a mountain outline on the map (no letters)
 - `mall.png` REPLACE — *We went to the mall yesterday.* — a modern shopping-mall façade with tall glass doors, a few shopfront windows with mannequin silhouettes and a shopping-bag symbol above the entrance (no letters)
 
 **Lesson 3 — Did You…?** (Past Simple negatives & questions)
@@ -69,12 +69,12 @@ Save into `assets/vocab/` with the exact file name shown (lower-case, spaces →
 **Lesson 5 — Back Then** (there was / there were)
 - `crowd.png` REPLACE — *There was a huge crowd.* — a dense crowd of simplified figures seen from slightly above, filling the frame edge to edge, a few raised arms, all modest and generic (no faces in detail)
 - `line.png` REPLACE — *There was a long line.* — CHAR: a single-file line of five teens (Omar, Hamad, Ziad and two generic boys) waiting with gaps between them, the line curving away towards a small ticket window
-- `traffic.png` REPLACE — *There was a lot of traffic.* — a road jammed bumper to bumper with cars, a bus and a van, red brake lights, a traffic light on red (no people)
+- `traffic.png` REPLACE — *We were late because of the traffic.* — a road jammed bumper to bumper with cars, a bus and a van, red brake lights, a traffic light on red (no people)
 - `prize.png` REPLACE — *There was a big prize.* — a gold trophy cup on a small podium with a gift-wrapped box beside it and a burst of confetti (no letters)
 - `surprise.png` REPLACE — *There was a surprise for everyone.* — a large gift box with the lid popping off, bright sparkles and streamers flying out, a few balloons rising (no faces)
 - `problem.png` REPLACE — *There were a few problems.* — a tangled knot of thick rope with a small red warning triangle badge and a loose end, a wrench resting beside it (no letters)
 - `queue.png` NEW — *We stood in a long queue for the roller coaster.* — CHAR: a long winding queue of teens (Omar, Sara, Noor, Ziad, Hamad plus generic figures, each with space between them) snaking between rope barriers towards a roller-coaster entrance arch with a track loop behind it
-- `ticket.png` REPLACE — *I still have the ticket from our first movie together.* — a classic paper admission ticket with a perforated stub and a small star emblem, slightly creased as a keepsake, on a plain tilt (no letters/numerals)
+- `ticket.png` REPLACE — *I still have the ticket from the match last year.* — a classic paper admission ticket with a perforated stub and a small star emblem, slightly creased as a keepsake, on a plain tilt (no letters/numerals)
 - `delay.png` NEW — *There was a short delay before the show started.* — a theatre stage with closed red curtains and a large clock above it with its hands moved on past the hour, a small hourglass icon in the corner (hands only, no numerals)
 
 **Lesson 6 — Time Travel** (time expressions: ago, last, yesterday)
@@ -85,7 +85,7 @@ Save into `assets/vocab/` with the exact file name shown (lower-case, spaces →
 - `last-summer.png` REPLACE — *We went to the beach last summer.* — a sun, a beach umbrella and a bucket on sand with a curved back-arrow in the corner and a small page-flip calendar edge
 - `a-while-ago.png` REPLACE — *I met him a while ago.* — a long winding dotted timeline path leading back to a faded pin far in the distance, a clock face at the near end (hands only)
 - `recently.png` NEW — *I recently started learning the guitar.* — a timeline with a near-end pin glowing bright and a small acoustic guitar icon at it, the rest of the line faded; a tiny "new" sparkle (no letters)
-- `earlier.png` NEW — *I finished my homework earlier than usual today.* — a wall clock with two sets of hands: one solid set earlier in the hour and a faint ghosted set later, a short curved arrow from the later to the earlier (hands only, no numerals)
+- `earlier.png` NEW — *I saw Hamad earlier today.* — a wall clock with two sets of hands: one solid set earlier in the hour and a faint ghosted set later, a short curved arrow from the later to the earlier (hands only, no numerals)
 - `ago.png` NEW — *We moved to this house three years ago.* — a straight horizontal timeline with a bold pin at the right end (now) and a faded pin far to the left with a tiny house icon, a long back-arrow along the line (no numerals)
 
 **Lesson 7 — And Then…** (sequencing words)
@@ -95,20 +95,20 @@ Save into `assets/vocab/` with the exact file name shown (lower-case, spaces →
 - `after-that.png` REPLACE — *After that, we boarded the plane.* — a chain of four small step icons in a row (suitcase → car → desk → airplane) with the airplane step highlighted and a curved "next" arrow landing on it
 - `finally.png` REPLACE — *Finally, we arrived.* — a row of step circles all ticked, the last one a large gold-rimmed circle with a chequered finish flag planted in it
 - `in-the-end.png` REPLACE — *In the end, it was a great trip.* — a closed book with a bookmark ribbon hanging out and a small sun-and-heart badge on the cover, a dotted path ending at the book (no letters)
-- `meanwhile.png` REPLACE — *I was doing homework; meanwhile, my brother was cooking.* — a split frame: left half a desk with an open notebook, right half a stove with a pot steaming, one big double-ended arrow across the split and a single clock face above both (hands only)
+- `meanwhile.png` REPLACE — *I cleaned the kitchen; meanwhile, my brother cooked.* — a split frame: left half a desk with an open notebook, right half a stove with a pot steaming, one big double-ended arrow across the split and a single clock face above both (hands only)
 - `suddenly.png` NEW — *Suddenly, the lights went out.* — a ceiling lamp with a jagged burst outline around it and the bulb going dark, a lightning-bolt flash and surprised motion lines, a small wall switch flipped
 - `at-last.png` NEW — *At last, the bus arrived.* — CHAR: Hamad at a bus stop pole throwing both arms up in relief as a yellow bus pulls in with its doors opening, a small clock behind him with hands far round (hands only)
 
 **Lesson 8 — Why It Happened** (because — giving reasons)
 - `explain.png` REPLACE — *Can you explain why?* — CHAR: Noor at a whiteboard pointing with a marker at a simple cause→effect diagram of two circles joined by an arrow, speaking, her other hand open
 - `reason.png` REPLACE — *What's the reason for that?* — a lightbulb glowing with a small gear inside and an arrow leading from it to a green tick circle (no letters)
-- `excuse.png` REPLACE — *That's not a good excuse.* — CHAR: Ziad with both palms up and an awkward sheepish smile, one shoulder raised, a small sweat drop, a crumpled note in one hand
+- `excuse.png` REPLACE — *That is a good excuse.* — CHAR: Ziad with both palms up and an awkward sheepish smile, one shoulder raised, a small sweat drop, a crumpled note in one hand
 - `cause.png` NEW — *The cause of the delay was heavy traffic.* — a domino row: the first domino being tipped by a finger, a bold arrow following the fall, the first domino highlighted in orange (no letters)
 - `result.png` NEW — *As a result, we missed the first ten minutes.* — the same domino row seen from the other end: all dominoes fallen and the last one highlighted in teal with a small flag planted beside it (no letters)
 - `because.png` REPLACE — *I was late because I missed the bus.* — two linked puzzle pieces: an orange piece with a small bus icon and a teal piece with a small clock icon, joined by a short arrow (no letters)
 - `so.png` REPLACE — *It was raining, so we stayed home.* — a cloud with rain lines on the left, a bold curved arrow, and a cosy house icon with a glowing window on the right
 - `since.png` REPLACE — *Since it was late, we went home.* — a clock face with hands late in the evening on the left, a bold arrow, a house with the door open on the right (hands only)
-- `therefore.png` NEW — *It was raining, therefore we stayed inside.* — a rain cloud at the top, a large downward "therefore" three-dot triangle made of three solid orange circles, and an armchair with a lamp at the bottom (no letters)
+- `therefore.png` NEW — *It was raining; therefore, we stayed inside.* — a rain cloud at the top, a large downward "therefore" three-dot triangle made of three solid orange circles, and an armchair with a lamp at the bottom (no letters)
 
 **Lesson 9 — How I Felt** (feelings in the past)
 - `proud.png` REPLACE — *I was proud of my grade.* — CHAR: Omar standing tall with his chest out, holding up a graded paper with a big green tick and a star, a confident closed-mouth smile
@@ -189,13 +189,13 @@ Save into `assets/vocab/` with the exact file name shown (lower-case, spaces →
 - `got-ready.png` REPLACE — *Then, I got ready fast.* — CHAR: Omar in front of a small mirror fastening his thobe collar, a comb, a toothbrush and a packed bag lined up beside him, motion lines for speed
 - `left.png` REPLACE — *Next, we left the house.* — CHAR: Ziad stepping out of a front door with his backpack on and the door swinging closed behind him, waving back over his shoulder
 - `celebrated.png` REPLACE — *After that, we celebrated together.* — CHAR: Omar and Hamad doing a boys-only high-five with a cake with candles on a table beside them and confetti, Sara and Noor clapping a clear distance away
-- `remembered.png` REPLACE — *I will always remember that day.* — CHAR: Noor looking up with a soft smile and a hand on her cheek, a thought bubble above holding a small framed photo of a cake and balloons
+- `remembered.png` REPLACE — *We remembered every moment of that day.* — CHAR: Noor looking up with a soft smile and a hand on her cheek, a thought bubble above holding a small framed photo of a cake and balloons
 - `unforgettable.png` — same file as Lesson 4 (same meaning) — not regenerated twice
 - `memory.png` REPLACE — *It is a special memory.* — a polaroid-style photo print with a heart sticker on the corner, pinned to a cork board with a drawing-pin, a few faded sparkles around it (plain picture inside: a sunset)
 - `celebration.png` REPLACE — *We had a big celebration.* — a table set for a family celebration: a cake with candles, bunting above, a tray of juice glasses and lanterns, confetti falling (no people)
 - `anniversary.png` NEW — *Today is my parents' wedding anniversary.* — a calendar page with one day circled by a ring of small hearts, a bouquet of flowers in a vase beside it and two gold rings resting on the page (no letters/numerals)
 - `photo-album.png` NEW — *We looked through the old photo album together.* — an open photo album with four slanted photo slots (simple pictures: a beach, a cake, a house, a car), slightly yellowed pages and a ribbon bookmark
-- `tradition.png` REPLACE — *Making pancakes on Sunday is a family tradition.* — a stack of pancakes with syrup on a plate, a small calendar icon with one weekday circled and a repeat-arrows symbol beside it (no letters)
+- `tradition.png` REPLACE — *Making pancakes on Friday is a family tradition.* — a stack of pancakes with syrup on a plate, a small calendar icon with one weekday circled and a repeat-arrows symbol beside it (no letters)
 
 **Lesson 16 — While It Happened** (Past Continuous — review)
 - `was-texting.png` REPLACE — *I was texting while I was walking.* — CHAR: Omar walking while looking down at his phone, thumbs typing, three chat bubbles rising from the screen, a lamp-post ahead of him he hasn't noticed
@@ -243,7 +243,7 @@ Save into `assets/vocab/` with the exact file name shown (lower-case, spaces →
 - `careful.png` REPLACE — *Now I'm more careful with my things.* — CHAR: Hamad zipping his backpack closed and tapping its name tag with one finger, a small green shield-tick badge beside him
 - `lost-and-found.png` NEW — *I checked the lost and found for my jacket.* — a school counter with a big open crate holding a jacket, an umbrella, a water bottle and a single shoe, a plain sign board above with a magnifying-glass symbol (no letters)
 - `label.png` NEW — *My bag has a label with my name on it.* — a backpack strap with a bright orange name label tag tied to it, the label showing a plain coloured bar where the name would be and a small pen beside it (no letters)
-- `panic.png` NEW — *Try not to panic, we'll find it together.* — CHAR: Ziad with both hands on his head, eyes wide, mouth open, zig-zag shock lines and several sweat drops, an empty hook on the wall behind him where a bag should be
+- `panic.png` NEW — *I felt a moment of panic when I couldn't find my bag.* — CHAR: Ziad with both hands on his head, eyes wide, mouth open, zig-zag shock lines and several sweat drops, an empty hook on the wall behind him where a bag should be
 
 ---
 

@@ -60,8 +60,8 @@ CHALLENGES = {
     15: {"prompt": "Tell the story of a memorable day in 4 steps.", "hint": "Woke up, got ready, left, celebrated..."},
     16: {"prompt": "Describe 2 things happening at once in the past.", "hint": "I was ___ while I was ___."},
     17: {"prompt": "Interview a partner with 3 past-tense questions.", "hint": "What was your favorite memory? Did you...?"},
-    18: {"prompt": "Retell the story of the lost backpack in your own words.", "hint": "Use at least 2 vocabulary words from the story."},
-    19: {"prompt": "Tell a partner about a mixed past evening (mix Past Simple and Past Continuous).", "hint": "We chose... while he was..."},
+    18: {"prompt": "Tell a partner about a mixed past evening (mix Past Simple and Past Continuous).", "hint": "We chose... while he was..."},
+    19: {"prompt": "Retell the story of the lost backpack in your own words.", "hint": "Use at least 2 vocabulary words from the story."},
     20: {"prompt": "Tell your own true story from this year using at least 4 different grammar points from this level.", "hint": "Try to use words from at least 3 different lessons."},
 }
 REAL_LIFE = {
@@ -82,8 +82,8 @@ REAL_LIFE = {
     15: "Write down one memorable day from your life in English.",
     16: "Describe two things you did at the same time today.",
     17: "This week, interview a family member about their past.",
-    18: "Think about a time you lost something -- describe what happened.",
-    19: "Describe a mixed evening from your week using both past tenses.",
+    18: "Describe a mixed evening from your week using both past tenses.",
+    19: "Think about a time you lost something -- describe what happened.",
     20: "Write your own short 'story of the year' in English.",
 }
 DISCUSSIONS = {

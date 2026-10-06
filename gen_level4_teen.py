@@ -1,4 +1,11 @@
 # -*- coding: utf-8 -*-
+# LESSON JSON SEED -- ARCHIVED. This script was the one-time seed for lessons/<level>/*.json.
+# The JSON files are now the source of truth (hand-reviewed Arabic, pos, examples, image
+# overrides). Re-running this would overwrite them with the old seed, so it refuses to run.
+import sys as _sys
+if __name__ == "__main__" and "--i-know-this-overwrites-lessons" not in _sys.argv:
+    _sys.exit("Refusing to run: this seed would overwrite the reviewed lessons/*.json. Pass --i-know-this-overwrites-lessons to force.")
+
 import json, os
 
 LESSONS = [

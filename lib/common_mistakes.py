@@ -206,8 +206,8 @@ BANK = {
          "Superlatives need \"the\".", "صيغة التفضيل تحتاج \"the\"."),
     ],
     "Would like / Want (polite requests)": [
-        ("I would like a tea, please.", "I would like some tea, please.",
-         "Tea is uncountable → some tea / a cup of tea.", "الشاي لا يُعد ← some tea أو a cup of tea."),
+        ("I would like a rice, please.", "I would like some rice, please.",
+         "Rice is uncountable → some rice / a plate of rice.", "الأرز لا يُعد ← some rice أو a plate of rice."),
         ("I would like eat pizza.", "I would like to eat pizza.",
          "Would like + to + verb.", "would like + to + الفعل."),
         ("Do you would like a drink?", "Would you like a drink?",
@@ -265,7 +265,7 @@ BANK = {
     "Time Expressions (ago, last, yesterday)": [
         ("I met him before two days.", "I met him two days ago.",
          "\"Ago\" comes AFTER the time.", "\"ago\" تأتي بعد المدة الزمنية."),
-        ("We travelled in the last summer.", "We travelled last summer.",
+        ("We traveled in the last summer.", "We traveled last summer.",
          "No \"in the\" before last summer.", "لا نضع \"in the\" قبل last summer."),
         ("She called me yesterday night.", "She called me last night.",
          "We say last night, not yesterday night.", "نقول last night وليس yesterday night."),
@@ -275,8 +275,8 @@ BANK = {
          "Use first only once; the next step is then/next.", "نستخدم first مرة واحدة فقط، والخطوة التالية then/next."),
         ("Finally I packed, then I left.", "First I packed, then I left.",
          "Finally is for the LAST event.", "finally للحدث الأخير."),
-        ("After that I went home, and after that I went home.", "After that, I went home. In the end, I slept early.",
-         "Vary the order words; don't repeat the same event.", "نوّعوا كلمات الترتيب ولا نكرر الحدث نفسه."),
+        ("At the end, we went home happy.", "In the end, we went home happy.",
+         "\"In the end\" = finally; \"at the end\" needs \"of\" (at the end of the day).", "\"in the end\" تعني أخيراً؛ أما \"at the end\" فتحتاج \"of\" (at the end of the day)."),
     ],
     "Because (giving reasons)": [
         ("I stayed home because of I was sick.", "I stayed home because I was sick.",
@@ -328,8 +328,8 @@ BANK = {
          "The verb needs -ing.", "الفعل يحتاج -ing."),
     ],
     "Past Continuous (full)": [
-        ("While I walked home, it was raining.", "While I was walking home, it was raining.",
-         "\"While\" usually takes the -ing form.", "\"while\" عادةً تأخذ صيغة -ing."),
+        ("What you were doing at 7 pm?", "What were you doing at 7 pm?",
+         "Questions: were + subject + verb-ing.", "في السؤال: were + الفاعل + الفعل مع -ing."),
         ("I was sleeping when the phone was ringing.", "I was sleeping when the phone rang.",
          "The short interrupting action is Past Simple.", "الحدث القصير الذي يقاطع يكون في الماضي البسيط."),
         ("They were watch TV at 8 pm.", "They were watching TV at 8 pm.",
