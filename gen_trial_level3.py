@@ -210,6 +210,9 @@ def _build():
     crew_words = [load_word("level3", 1, w) for w in ["hang out", "chat", "text", "laugh", "crew", "meme", "group chat"]]
     for w in crew_words:
         slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "omar-teen-explain"))
+    # Activity slide (lib/activity_slides.py): Describe It on the words just taught -- pairs and 1-on-1 modes on the slide.
+    import activity_slides as _AS
+    slides.append(_AS.slide_describe_guess(crew_words, bg_theme(), header("Describe It &bull; Speaking Game", len(slides) + 1, TOTAL)))
 
     slides.append(slide_buzzer_challenge(crew_words[0], len(slides) + 1, TOTAL))
     slides.append(slide_buzzer_challenge(crew_words[4], len(slides) + 1, TOTAL))

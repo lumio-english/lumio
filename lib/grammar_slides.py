@@ -30,16 +30,32 @@ def match_grammar_by_lesson_focus(level, lessons):
     mapping = {}
     for lesson_num, lesson in lessons.items():
         focus = (lesson.get("grammarFocus") or "").lower()
-        if not focus or "review" in focus:
+        if not focus:
             continue
-        focus_words = words(focus)
-        best, best_score = None, 0
+        # Review lessons ("Past Simple (review, travel)") still teach a
+        # topic -- the one they review -- so they get its rule, practice,
+        # MCQ and common-mistake slides too. Only the whole-level review
+        # ("Review of all structures...") and reading lessons have no
+        # single topic to show.
+        if "review of all" in focus or "comprehension" in focus:
+            continue
+        focus_words = words(focus) - {"review", "mixed", "intro"}
+        best, best_key = None, (0, 0.0)
         for t in topics:
             t_words = words(t["title"])
             score = len(focus_words & t_words)
-            if score > best_score:
-                best, best_score = t, score
-        if best and best_score >= 2:  # require at least 2 shared significant words
+            # tie-break: the topic whose own title is covered more fully
+            key = (score, score / max(1, len(t_words)))
+            if key > best_key:
+                best, best_key = t, key
+        # At least 2 shared words -- or a single-word focus ("Because
+        # (review)", "Will (review)") whose one word is distinctive, i.e.
+        # not a generic tense word shared by several topics.
+        GENERIC = {"past", "present", "simple", "continuous", "nouns", "verbs", "questions", "to", "the", "a", "of", "with"}
+        matched = (focus_words & words(best["title"])) - GENERIC if best else set()
+        # ...unique: no other topic title contains those distinctive words
+        unique = bool(matched) and sum(1 for t in topics if matched & words(t["title"])) == 1
+        if best and (best_key[0] >= 2 or unique):
             mapping[lesson_num] = best
     return mapping
 

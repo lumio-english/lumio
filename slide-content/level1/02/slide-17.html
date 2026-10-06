@@ -1,22 +1,69 @@
 <div style="position:absolute;inset:0;background:url('assets/lesson-bg-kid/classroom.jpg') center/cover no-repeat"></div><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,251,245,.2) 0%,rgba(255,243,214,.28) 62%,rgba(232,197,143,.4) 100%)"></div><div class="spark" style="left:375px;top:135px;font-size:1.6rem">&#10022;</div><div class="spark" style="left:415px;top:105px;font-size:1.1rem">&#10022;</div><div class="spark" style="left:392px;top:178px;font-size:1.3rem">&#10022;</div><div class="header">
       <div class="brand"><img src="assets/logo/lumio-logo.png" alt="Lumio English" style="height:70px"></div>
-      <div class="pagetitle">Grammar Time! &#128221;</div>
-      <div class="counter">17 / 44</div>
+      <div class="pagetitle">Flash Race &bull; Speaking Game</div>
+      <div class="counter">17 / 47</div>
     </div><div class="colorstrip"><div class="c1"></div><div class="c2"></div><div class="c3"></div><div class="c4"></div><div class="c5"></div></div>
-    <div class="card" style="position:absolute;left:46px;top:150px;width:820px;padding:30px 36px">
-      <div style="font-size:.78rem;font-weight:800;color:#0D9488;letter-spacing:1.5px;margin-bottom:8px">TEACHER: EXPLAIN THIS RULE</div>
-      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;color:#43301F;margin-bottom:2px">I am / You are</div>
-      <div style="direction:rtl;text-align:right;font-size:.9rem;color:#8A7160;font-weight:700;margin-bottom:14px">أنا... / أنت...</div>
-      <div style="font-size:.9rem;color:#43301F;line-height:1.6;margin-bottom:6px">We use &quot;am&quot; with I, and &quot;are&quot; with you, to say how we feel or what we are like.</div>
-      <div style="direction:rtl;text-align:right;font-size:.85rem;color:#8A7160;line-height:1.6;margin-bottom:16px">نستخدم am مع I، ونستخدم are مع you، للتعبير عمّا نشعر به أو عن صفاتنا.</div>
-      
-      <div style="background:#fff;border-radius:12px;padding:10px 16px;margin-bottom:8px">
-        <div style="font-size:.92rem;color:#43301F;font-weight:700">I am happy.</div>
-        <div style="direction:rtl;text-align:right;font-size:.82rem;color:#8A7160;font-weight:700;margin-top:2px">أنا سعيد.</div>
+    <div style="position:absolute;left:46px;right:46px;top:128px;z-index:6;display:flex;gap:14px">
+      <div style="flex:1;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);padding:10px 16px">
+        <div style="font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#0D9488">&#128101; PAIRS / GROUP</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.92rem;color:#43301F;line-height:1.3">Two teams. A picture appears &mdash; the first team to shout the English word gets a point. Teacher taps <b>Next</b>.</div>
       </div>
-      <div style="background:#fff;border-radius:12px;padding:10px 16px;margin-bottom:8px">
-        <div style="font-size:.92rem;color:#43301F;font-weight:700">You are tired.</div>
-        <div style="direction:rtl;text-align:right;font-size:.82rem;color:#8A7160;font-weight:700;margin-top:2px">أنت متعب.</div>
+      <div style="flex:1;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);padding:10px 16px">
+        <div style="font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#F97316">&#128100; 1-ON-1 WITH YOUR TEACHER</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.92rem;color:#43301F;line-height:1.3">A picture appears &mdash; you say the word! Each correct word = one star. Five stars and you win. Stuck? Your teacher says it, you repeat it.</div>
       </div>
     </div>
-    <div class="floorshadow" style="right:95px;bottom:35px;width:230px;height:36px"></div><img class="char" src="assets/story/characters/sara-teach-board.png" style="right:95px;bottom:42px;height:310px" onerror="this.style.display='none'; this.previousElementSibling.style.display='none'">
+    <div style="position:absolute;left:0;right:0;top:214px;bottom:60px;z-index:6;display:flex;align-items:center;justify-content:center;gap:40px">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+        <div id="frPanels" data-idx="0" data-autosay="0">
+        <div data-say="happy" style="display:block"><div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+          <div style="width:300px;height:300px;border-radius:24px;overflow:hidden;background:#FFFCF6;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);"><img src="assets/vocab/happy.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        </div></div>
+        <div data-say="sad" style="display:none"><div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+          <div style="width:300px;height:300px;border-radius:24px;overflow:hidden;background:#FFFCF6;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);"><img src="assets/vocab/sad.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        </div></div>
+        <div data-say="fine" style="display:none"><div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+          <div style="width:300px;height:300px;border-radius:24px;overflow:hidden;background:#FFFCF6;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);"><img src="assets/vocab/fine.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        </div></div>
+        <div data-say="tired" style="display:none"><div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+          <div style="width:300px;height:300px;border-radius:24px;overflow:hidden;background:#FFFCF6;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);"><img src="assets/vocab/tired.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        </div></div>
+        <div data-say="okay" style="display:none"><div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+          <div style="width:300px;height:300px;border-radius:24px;overflow:hidden;background:#FFFCF6;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);"><img src="assets/vocab/okay.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        </div></div>
+        <div data-say="great" style="display:none"><div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+          <div style="width:300px;height:300px;border-radius:24px;overflow:hidden;background:#FFFCF6;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);"><img src="assets/vocab/great.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        </div></div></div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button onclick="LumioAct.cycle('frPanels',-1)" style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,#94A3B8,#64748B);color:#fff;font-weight:800;padding:11px 22px;border-radius:999px;font-size:.95rem;box-shadow:0 8px 18px rgba(0,0,0,.2);">&#9664; Back</button>
+          <span data-act-counter="frPanels" style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#8A7160">1 / 6</span>
+          <button onclick="LumioAct.cycle('frPanels',1)" style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;padding:11px 22px;border-radius:999px;font-size:.95rem;box-shadow:0 8px 18px rgba(0,0,0,.2);">Next &#9654;</button>
+          <button onclick="LumioAct.random('frPanels')" style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,#0D9488,#0B7A6F);color:#fff;font-weight:800;padding:11px 22px;border-radius:999px;font-size:.95rem;box-shadow:0 8px 18px rgba(0,0,0,.2);">&#127922; Random</button>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;width:300px">
+        <div style="background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);padding:14px 16px">
+          <div style="font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#0D9488;margin-bottom:6px">TEAM SCORES</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;gap:8px;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);padding:6px 10px 6px 14px">
+        <span style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#F97316;font-size:.9rem">Team A</span>
+        <span data-act-score style="display:inline-block;min-width:34px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;color:#43301F;transition:transform .15s">0</span>
+        <button onclick="LumioAct.score(this,1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#F97316;color:#fff;font-weight:900;font-size:1rem">+</button>
+        <button onclick="LumioAct.score(this,-1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#E5E7EB;color:#6B7280;font-weight:900;font-size:1rem">&minus;</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);padding:6px 10px 6px 14px">
+        <span style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#0D9488;font-size:.9rem">Team B</span>
+        <span data-act-score style="display:inline-block;min-width:34px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;color:#43301F;transition:transform .15s">0</span>
+        <button onclick="LumioAct.score(this,1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#0D9488;color:#fff;font-weight:900;font-size:1rem">+</button>
+        <button onclick="LumioAct.score(this,-1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#E5E7EB;color:#6B7280;font-weight:900;font-size:1rem">&minus;</button>
+      </div></div>
+        </div>
+        <div style="background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);padding:14px 16px">
+          <div style="font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#F97316;margin-bottom:6px">1-ON-1 STARS</div>
+          <div id="frStars" style="display:flex;gap:4px;justify-content:center"><span data-star="0" style="font-size:2rem;opacity:.25;transition:transform .2s">&#11088;</span><span data-star="0" style="font-size:2rem;opacity:.25;transition:transform .2s">&#11088;</span><span data-star="0" style="font-size:2rem;opacity:.25;transition:transform .2s">&#11088;</span><span data-star="0" style="font-size:2rem;opacity:.25;transition:transform .2s">&#11088;</span><span data-star="0" style="font-size:2rem;opacity:.25;transition:transform .2s">&#11088;</span></div>
+          <div style="display:flex;justify-content:center;margin-top:8px"><button onclick="LumioAct.star('frStars')" style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,#FBBF24,#F59E0B);color:#fff;font-weight:800;padding:11px 22px;border-radius:999px;font-size:.95rem;box-shadow:0 8px 18px rgba(0,0,0,.2);color:#43301F">&#11088; Got it!</button></div>
+          <div data-act-stars-done="frStars" style="display:none;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:800;color:#0D9488;margin-top:8px">&#127881; Five stars &mdash; you win!</div>
+        </div>
+      </div>
+    </div>
+    <div class="floorshadow" style="right:30px;bottom:23px;width:230px;height:36px"></div><img class="char" src="assets/story/characters/sara-teach-board.png" style="right:30px;bottom:30px;height:150px" onerror="this.style.display='none'; this.previousElementSibling.style.display='none'">

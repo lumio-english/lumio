@@ -15,31 +15,29 @@
         <div style="height:60px;padding:4px 10px;border-radius:14px;background:#fff;display:flex;align-items:center;box-shadow:0 4px 12px rgba(0,0,0,.18)"><img src="assets/logo/lumio-logo.png" alt="Lumio English" style="height:100%;width:auto;object-fit:contain"></div>
       </div>
       <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#EDE9FB;font-size:.95rem;background:rgba(139,92,246,.14);
-                  padding:6px 16px;border-radius:8px">Build the Sentence</div>
-      <div style="font-family:'Nunito',sans-serif;font-weight:800;color:#C6BBF2;font-size:.8rem">16 / 43</div>
+                  padding:6px 16px;border-radius:8px">Dialogue</div>
+      <div style="font-family:'Nunito',sans-serif;font-weight:800;color:#C6BBF2;font-size:.8rem">16 / 44</div>
     </div>
     <div style="position:relative;z-index:5;margin:14px 40px 0;height:3px;background:#4A3B7A;border-radius:2px">
-      <div style="height:100%;width:37%;background:linear-gradient(90deg,#8B5CF6,#F97316);border-radius:2px"></div>
+      <div style="height:100%;width:36%;background:linear-gradient(90deg,#8B5CF6,#F97316);border-radius:2px"></div>
     </div>
-    <div style="position:relative;z-index:5;text-align:center;margin-top:40px;font-family:'Nunito',sans-serif;font-weight:700;color:#C6BBF2">
-      Drag the tiles into order.</div>
-    <div id="sbSlots" data-correct="I played football with my friends." style="position:relative;z-index:5;display:flex;justify-content:center;gap:10px;margin-top:30px;flex-wrap:wrap">
-      <div class="sb-slot" data-index="0"></div><div class="sb-slot" data-index="1"></div><div class="sb-slot" data-index="2"></div><div class="sb-slot" data-index="3"></div><div class="sb-slot" data-index="4"></div><div class="sb-slot" data-index="5"></div><div class="sb-tile sb-punct" style="cursor:default">.</div>
-    </div>
-    <div id="sbTray" style="position:relative;z-index:5;display:flex;justify-content:center;gap:10px;margin-top:40px;flex-wrap:wrap;padding:0 60px">
-      <div class="sb-tile" draggable="false" data-word="football">football</div><div class="sb-tile" draggable="false" data-word="with">with</div><div class="sb-tile" draggable="false" data-word="friends">friends</div><div class="sb-tile" draggable="false" data-word="I">I</div><div class="sb-tile" draggable="false" data-word="my">my</div><div class="sb-tile" draggable="false" data-word="played">played</div>
-    </div>
-    <div id="sbFeedback" style="position:relative;z-index:5;text-align:center;margin-top:20px;font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.2rem;color:#EDE9FB;min-height:32px"></div>
-    <button onclick="window.checkSentenceBuilder && checkSentenceBuilder()"
-            style="position:absolute;left:50%;transform:translateX(-170px);bottom:110px;z-index:20;cursor:pointer;border:none;font-family:'Fredoka',sans-serif;
-            background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:600;padding:12px 24px;border-radius:10px;font-size:.9rem">Check</button>
-    
-    <style>
-      .sb-slot { width:110px; height:58px; border:2px dashed #4A3B7A; border-radius:10px; background:rgba(255,255,255,.04); }
-      .sb-slot.sb-filled { border-style:solid; border-color:#F97316; background:#FFFFFF; }
-      .sb-tile { min-width:80px; height:58px; padding:0 16px; background:#FFFFFF; border-radius:10px; display:flex; align-items:center;
-                  justify-content:center; font-family:'Fredoka',sans-serif; font-weight:600; font-size:1.05rem; color:#2B2640;
-                  box-shadow:0 8px 16px rgba(0,0,0,.2); cursor:grab; touch-action:none; user-select:none; }
-      .sb-tile.sb-dragging { opacity:.4; }
-      .sb-tile.sb-punct { background:transparent; box-shadow:none; font-size:1.6rem; min-width:16px; padding:0; color:#EDE9FB; }
-    </style>
+        <div style="position:absolute;left:60px;top:70px;max-width:520px;background:#FFFFFF;border-radius:12px;
+                    padding:14px 20px;box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
+          <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:1rem;color:#2B2640">So what did you actually do this weekend? Anything interesting happen?</div>
+          <div style="direction:rtl;text-align:right;font-size:.82rem;color:#8A8398;font-weight:700;margin-top:3px">إذاً ماذا فعلت فعلاً في عطلة نهاية الأسبوع؟ هل حدث شيء مثير؟</div>
+        </div>
+        <div style="position:absolute;right:60px;top:176px;max-width:520px;background:#FFFFFF;border-radius:12px;
+                    padding:14px 20px;box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
+          <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:1rem;color:#2B2640">Not really exciting, honestly. I played video games and watched a movie.</div>
+          <div style="direction:rtl;text-align:right;font-size:.82rem;color:#8A8398;font-weight:700;margin-top:3px">ليس مثيراً حقاً، بصراحة. لعبت ألعاب فيديو وشاهدت فيلماً.</div>
+        </div>
+        <div style="position:absolute;left:60px;top:282px;max-width:520px;background:#FFFFFF;border-radius:12px;
+                    padding:14px 20px;box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
+          <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:1rem;color:#2B2640">That sounds relaxing at least. I cleaned my whole room and cooked dinner.</div>
+          <div style="direction:rtl;text-align:right;font-size:.82rem;color:#8A8398;font-weight:700;margin-top:3px">هذا يبدو مريحاً على الأقل. نظفت غرفتي بالكامل وطهيت العشاء.</div>
+        </div>
+        <div style="position:absolute;right:60px;top:388px;max-width:520px;background:#FFFFFF;border-radius:12px;
+                    padding:14px 20px;box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
+          <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:1rem;color:#2B2640">Wow, productive weekend. Did anyone help you with all of that?</div>
+          <div style="direction:rtl;text-align:right;font-size:.82rem;color:#8A8398;font-weight:700;margin-top:3px">واو، عطلة منتجة. هل ساعدك أحد في كل ذلك؟</div>
+        </div>

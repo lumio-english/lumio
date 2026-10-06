@@ -194,6 +194,9 @@ def _build():
     weekend_words = [load_word("level5", 1, w) for w in ["played", "watched", "walked", "helped", "cleaned", "cooked"]]
     for w in weekend_words:
         slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "noor-teen-point"))
+    # Activity slide (lib/activity_slides.py): Describe It on the words just taught -- pairs and 1-on-1 modes on the slide.
+    import activity_slides as _AS
+    slides.append(_AS.slide_describe_guess(weekend_words, bg_theme(), header("Describe It &bull; Speaking Game", len(slides) + 1, TOTAL)))
 
     slides.append(slide_copycat_challenge("Who can act out \u201ccooked\u201d the best? Show me!", len(slides) + 1, TOTAL))
     slides.append(slide_copycat_challenge("Who can act out \u201ccleaned\u201d the best? Show me!", len(slides) + 1, TOTAL))

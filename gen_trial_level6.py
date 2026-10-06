@@ -195,6 +195,9 @@ def _build():
     plan_words = [load_word("level6", 1, w) for w in ["plan", "visit", "join", "apply", "team"]]
     for w in plan_words:
         slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "omar-teen-explain"))
+    # Activity slide (lib/activity_slides.py): Describe It on the words just taught -- pairs and 1-on-1 modes on the slide.
+    import activity_slides as _AS
+    slides.append(_AS.slide_describe_guess(plan_words, bg_theme(), header("Describe It &bull; Speaking Game", len(slides) + 1, TOTAL)))
 
     slides.append(slide_buzzer_challenge(plan_words[0], len(slides) + 1, TOTAL))
     slides.append(slide_buzzer_challenge(plan_words[4], len(slides) + 1, TOTAL))

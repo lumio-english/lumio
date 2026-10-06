@@ -740,7 +740,10 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
         print("scene skipped:", _e)
     if phrase_focus:
         plan.append(("phrase_focus", phrase_focus))
-    plan.append(("pair_check", f"Quiz your partner on today's words -- point and ask 'What's this?'"))
+    # Activity 1 of 3 (lib/activity_slides.py): Describe It -- replaces the
+    # old one-line "pair check" prompt with a real card game that has a
+    # pairs mode and a 1-on-1 mode on the slide.
+    plan.append(("act_describe", None))
     # Vocabulary Check: live, in-class MCQ practice, split into two 5-question
     # rounds with a checkpoint -- breaks up 10 slides in a row and gives a
     # natural pacing beat instead of one long uninterrupted block.
@@ -763,6 +766,9 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
     plan.append(("sentence_trio", sentence_indices[3:6]))
     if grammar_topic:
         plan.append(("grammar_practice", grammar_topic))
+    # Activity 2 of 3: Story Chain -- free production with today's words and
+    # pattern, right after the controlled grammar practice.
+    plan.append(("act_story", None))
     if crew_talk2:
         plan.append(("crew_talk", crew_talk2))
     if grammar_recap_topics:
@@ -792,6 +798,9 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
     _yt_idx = sorted({round(i * (V - 1) / max(1, your_turn_n - 1)) for i in range(your_turn_n)}) if V else []
     for i, _vi in enumerate(_yt_idx):
         plan.append(("your_turn", (lesson["vocab"][_vi], i + 1)))
+    # Activity 3 of 3: Two Truths & a Lie -- personalised speaking after the
+    # Your Turn rounds, before the challenge/discussion block.
+    plan.append(("act_truth", None))
     if challenge:
         plan.append(("challenge", None))
     if real_life:
@@ -855,6 +864,15 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
             slides.append(slide_practice_themed(w, n, total, VOCAB_CHARS[i % len(VOCAB_CHARS)], seed=i, theme_key=theme_key))
         elif kind == "pair_check":
             slides.append(slide_pair_check(data, n, total, theme_key))
+        elif kind == "act_describe":
+            import activity_slides
+            slides.append(activity_slides.slide_describe_guess(lesson["vocab"], bg_theme(theme_key), header_themed("Describe It &bull; Speaking Game", n, total, theme_key)))
+        elif kind == "act_story":
+            import activity_slides
+            slides.append(activity_slides.slide_story_chain(lesson["vocab"], grammar_topic, bg_theme(theme_key), header_themed("Story Chain &bull; Speaking Game", n, total, theme_key)))
+        elif kind == "act_truth":
+            import activity_slides
+            slides.append(activity_slides.slide_truth_or_lie(lesson["vocab"], grammar_topic, bg_theme(theme_key), header_themed("Two Truths &amp; a Lie &bull; Speaking Game", n, total, theme_key)))
         elif kind == "checkpoint":
             slides.append(slide_round_checkpoint(data, n, total, theme_key))
         elif kind == "vocab_mcq":

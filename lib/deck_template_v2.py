@@ -1419,6 +1419,10 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
             plan.append(("practice_phonics", (w, i)))
             if is_review_lesson and (i + 1) % BREAK_EVERY == 0 and (i + 1) < V:
                 plan.append(("review_break", (i + 1, V)))
+    # Activity 1 of 3 (lib/activity_slides.py): Flash Race -- straight after
+    # the new words, before grammar: say the word before the next picture.
+    if not is_abc_lesson:
+        plan.append(("act_flash", None))
     if grammar_topic:
         plan.append(("grammar_rule", grammar_topic))
         plan.append(("grammar_practice", grammar_topic))
@@ -1445,6 +1449,8 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
     sentence_indices = [i % V for i in range(6)]
     plan.append(("sentence_trio", sentence_indices[0:3]))
     plan.append(("sentence_trio", sentence_indices[3:6]))
+    # Activity 2 of 3: Memory Match (pairs take turns / student vs teacher).
+    plan.append(("act_memory", None))
     plan.append(("sound_spot", None))
     your_turn_n = min(5, V)
     _yt_idx = sorted({round(i * (V - 1) / max(1, your_turn_n - 1)) for i in range(your_turn_n)}) if V else []
@@ -1456,6 +1462,8 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
     # question format twice)
     for i in range(V):
         plan.append(("quick_check", (i, 0)))
+    # Activity 3 of 3: Mystery Picture -- guess early for more points.
+    plan.append(("act_mystery", None))
     plan.append(("teacher_game", "teacher"))
     plan.append(("teacher_game", "student"))
     plan.append(("teacher_game", "partner"))
@@ -1508,6 +1516,15 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
             slides.append(slide_quick_check(target, distractors, label, V, n, total, seed, tier=tier))
         elif kind == "teacher_game":
             slides.append(slide_teacher_game(lesson["vocab"], n, total, "omar-wave", tier=tier, mode=data))
+        elif kind == "act_flash":
+            import activity_slides
+            slides.append(activity_slides.slide_flash_race(lesson["vocab"], bg_study(), header("Flash Race &bull; Speaking Game", n, total) + COLORSTRIP, char_html=char_img(pick_character("cheer", lesson_num), right=30, bottom=30, height=150)))
+        elif kind == "act_memory":
+            import activity_slides
+            slides.append(activity_slides.slide_memory_match(lesson["vocab"], bg_study(), header("Memory Match &bull; Game", n, total) + COLORSTRIP))
+        elif kind == "act_mystery":
+            import activity_slides
+            slides.append(activity_slides.slide_mystery_picture(lesson["vocab"], bg_study(), header("Mystery Picture &bull; Game", n, total) + COLORSTRIP))
         elif kind == "phonics_rule": slides.append(slide_phonics_rule(data, n, total, pick_character("explain", lesson_num)))
         elif kind == "phonics_practice": slides.append(slide_phonics_practice(data, n, total, pick_character("explain", lesson_num + 1)))
         elif kind == "phonics_story": slides.append(slide_phonics_story(data, n, total, pick_character("point", lesson_num)))

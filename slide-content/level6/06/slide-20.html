@@ -13,17 +13,100 @@
         <div style="height:60px;padding:4px 10px;border-radius:14px;background:#fff;display:flex;align-items:center;box-shadow:0 4px 12px rgba(0,0,0,.18)"><img src="assets/logo/lumio-logo.png" alt="Lumio English" style="height:100%;width:auto;object-fit:contain"></div>
       </div>
       <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#fff;font-size:.95rem;background:#818CF83A;
-                  border:1px solid #818CF880;padding:6px 16px;border-radius:8px">Pair Check</div>
-      <div style="font-family:'Nunito',sans-serif;font-weight:800;color:#C6BBF2;font-size:.8rem">20 / 60</div>
+                  border:1px solid #818CF880;padding:6px 16px;border-radius:8px">Describe It &bull; Speaking Game</div>
+      <div style="font-family:'Nunito',sans-serif;font-weight:800;color:#C6BBF2;font-size:.8rem">20 / 62</div>
     </div>
     <div style="position:relative;z-index:5;margin:14px 40px 0;height:3px;background:#4A3B7A;border-radius:2px">
-      <div style="height:100%;width:33%;background:linear-gradient(90deg,#818CF8,#6366F1);border-radius:2px"></div>
+      <div style="height:100%;width:32%;background:linear-gradient(90deg,#818CF8,#6366F1);border-radius:2px"></div>
     </div>
-    <div style="position:relative;z-index:5;display:flex;justify-content:center;margin-top:80px">
-      <div style="background:#FFFFFF;border-radius:12px;border:1px solid rgba(0,0,0,.06);border-top:4px solid #818CF8;box-shadow:0 12px 26px rgba(0,0,0,.28);width:660px;padding:40px 44px;text-align:center">
-        <div style="font-size:2rem;margin-bottom:14px">&#129309;</div>
-        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.2rem;color:#2B2640;margin-bottom:10px">Quiz your partner on today's words -- point and ask 'What's this?'</div>
-        <div style="font-size:.85rem;color:#6B6580;font-weight:700">60 seconds &mdash; go!</div>
+    <div style="position:absolute;left:46px;right:46px;top:128px;z-index:6;display:flex;gap:14px">
+      <div style="flex:1;background:#fff;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.28);border:1px solid rgba(0,0,0,.06);padding:10px 16px">
+        <div style="font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#0D9488">&#128101; PAIRS / GROUP</div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:700;font-size:.92rem;color:#2B2640;line-height:1.3">Partner A flips a card and describes the word in English &mdash; <b>without saying it</b>. Partner B guesses. Swap after each card. 60 seconds, most cards wins.</div>
+      </div>
+      <div style="flex:1;background:#fff;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.28);border:1px solid rgba(0,0,0,.06);padding:10px 16px">
+        <div style="font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#F97316">&#128100; 1-ON-1 WITH YOUR TEACHER</div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:700;font-size:.92rem;color:#2B2640;line-height:1.3">Your teacher flips a card and describes it &mdash; you guess in English. Then swap: you describe, the teacher guesses. Use a full sentence: <i>It's a place where&hellip; / You do this when&hellip;</i></div>
+      </div>
+    </div>
+    <div style="position:absolute;left:0;right:0;top:214px;bottom:56px;z-index:6;display:flex;align-items:center;justify-content:center;gap:34px">
+      <div style="display:grid;grid-template-columns:repeat(3,170px);gap:14px">
+      <div onclick="LumioAct.flip(this)" style="position:relative;width:170px;height:170px;border-radius:14px;overflow:hidden;cursor:pointer;background:#fff;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.28);border:1px solid rgba(0,0,0,.06);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff"><div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:8px">
+          <img src="assets/vocab/quickly.png" style="width:110px;height:110px;object-fit:contain" onerror="this.style.display='none'">
+          <div style="font-family:'Fredoka',sans-serif;font-weight:700;color:#2B2640;font-size:.95rem">quickly</div>
+        </div></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#8B5CF6,#6D4BD6);color:#fff">
+          <div style="font-size:2.6rem;font-weight:900">?</div><div style="font-size:.7rem;font-weight:800;letter-spacing:1.5px;opacity:.85">TAP TO FLIP</div>
+        </div>
+      </div>
+      <div onclick="LumioAct.flip(this)" style="position:relative;width:170px;height:170px;border-radius:14px;overflow:hidden;cursor:pointer;background:#fff;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.28);border:1px solid rgba(0,0,0,.06);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff"><div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:8px">
+          <img src="assets/vocab/quietly.png" style="width:110px;height:110px;object-fit:contain" onerror="this.style.display='none'">
+          <div style="font-family:'Fredoka',sans-serif;font-weight:700;color:#2B2640;font-size:.95rem">quietly</div>
+        </div></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#8B5CF6,#6D4BD6);color:#fff">
+          <div style="font-size:2.6rem;font-weight:900">?</div><div style="font-size:.7rem;font-weight:800;letter-spacing:1.5px;opacity:.85">TAP TO FLIP</div>
+        </div>
+      </div>
+      <div onclick="LumioAct.flip(this)" style="position:relative;width:170px;height:170px;border-radius:14px;overflow:hidden;cursor:pointer;background:#fff;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.28);border:1px solid rgba(0,0,0,.06);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff"><div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:8px">
+          <img src="assets/vocab/loudly.png" style="width:110px;height:110px;object-fit:contain" onerror="this.style.display='none'">
+          <div style="font-family:'Fredoka',sans-serif;font-weight:700;color:#2B2640;font-size:.95rem">loudly</div>
+        </div></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#8B5CF6,#6D4BD6);color:#fff">
+          <div style="font-size:2.6rem;font-weight:900">?</div><div style="font-size:.7rem;font-weight:800;letter-spacing:1.5px;opacity:.85">TAP TO FLIP</div>
+        </div>
+      </div>
+      <div onclick="LumioAct.flip(this)" style="position:relative;width:170px;height:170px;border-radius:14px;overflow:hidden;cursor:pointer;background:#fff;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.28);border:1px solid rgba(0,0,0,.06);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff"><div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:8px">
+          <img src="assets/vocab/patiently.png" style="width:110px;height:110px;object-fit:contain" onerror="this.style.display='none'">
+          <div style="font-family:'Fredoka',sans-serif;font-weight:700;color:#2B2640;font-size:.95rem">patiently</div>
+        </div></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#8B5CF6,#6D4BD6);color:#fff">
+          <div style="font-size:2.6rem;font-weight:900">?</div><div style="font-size:.7rem;font-weight:800;letter-spacing:1.5px;opacity:.85">TAP TO FLIP</div>
+        </div>
+      </div>
+      <div onclick="LumioAct.flip(this)" style="position:relative;width:170px;height:170px;border-radius:14px;overflow:hidden;cursor:pointer;background:#fff;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.28);border:1px solid rgba(0,0,0,.06);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff"><div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:8px">
+          <img src="assets/vocab/slowly.png" style="width:110px;height:110px;object-fit:contain" onerror="this.style.display='none'">
+          <div style="font-family:'Fredoka',sans-serif;font-weight:700;color:#2B2640;font-size:.95rem">slowly</div>
+        </div></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#8B5CF6,#6D4BD6);color:#fff">
+          <div style="font-size:2.6rem;font-weight:900">?</div><div style="font-size:.7rem;font-weight:800;letter-spacing:1.5px;opacity:.85">TAP TO FLIP</div>
+        </div>
+      </div>
+      <div onclick="LumioAct.flip(this)" style="position:relative;width:170px;height:170px;border-radius:14px;overflow:hidden;cursor:pointer;background:#fff;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.28);border:1px solid rgba(0,0,0,.06);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff"><div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:8px">
+          <img src="assets/vocab/accurately.png" style="width:110px;height:110px;object-fit:contain" onerror="this.style.display='none'">
+          <div style="font-family:'Fredoka',sans-serif;font-weight:700;color:#2B2640;font-size:.95rem">accurately</div>
+        </div></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#8B5CF6,#6D4BD6);color:#fff">
+          <div style="font-size:2.6rem;font-weight:900">?</div><div style="font-size:.7rem;font-weight:800;letter-spacing:1.5px;opacity:.85">TAP TO FLIP</div>
+        </div>
+      </div></div>
+      <div style="width:250px;display:flex;flex-direction:column;gap:12px">
+        <div style="background:#fff;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.28);border:1px solid rgba(0,0,0,.06);padding:14px 16px;text-align:center">
+          <div style="font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#8B5CF6;margin-bottom:8px">TIMER</div>
+          <button onclick="LumioAct.timer(this,60)" style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,#8B5CF6,#6D4BD6);color:#fff;font-weight:800;padding:11px 22px;border-radius:999px;font-size:.95rem;box-shadow:0 8px 18px rgba(0,0,0,.2);width:100%;font-size:1.1rem">&#9201; Start 60s</button>
+        </div>
+        <div style="background:#fff;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.28);border:1px solid rgba(0,0,0,.06);padding:14px 16px">
+          <div style="font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#0D9488;margin-bottom:8px">SCORE</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;gap:8px;background:#fff;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.28);border:1px solid rgba(0,0,0,.06);padding:6px 10px 6px 14px">
+        <span style="font-family:'Fredoka',sans-serif;font-weight:800;color:#F97316;font-size:.9rem">A / You</span>
+        <span data-act-score style="display:inline-block;min-width:34px;text-align:center;font-family:'Fredoka',sans-serif;font-weight:800;font-size:1.3rem;color:#2B2640;transition:transform .15s">0</span>
+        <button onclick="LumioAct.score(this,1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#F97316;color:#fff;font-weight:900;font-size:1rem">+</button>
+        <button onclick="LumioAct.score(this,-1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#E5E7EB;color:#6B7280;font-weight:900;font-size:1rem">&minus;</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;background:#fff;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.28);border:1px solid rgba(0,0,0,.06);padding:6px 10px 6px 14px">
+        <span style="font-family:'Fredoka',sans-serif;font-weight:800;color:#0D9488;font-size:.9rem">B / Teacher</span>
+        <span data-act-score style="display:inline-block;min-width:34px;text-align:center;font-family:'Fredoka',sans-serif;font-weight:800;font-size:1.3rem;color:#2B2640;transition:transform .15s">0</span>
+        <button onclick="LumioAct.score(this,1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#0D9488;color:#fff;font-weight:900;font-size:1rem">+</button>
+        <button onclick="LumioAct.score(this,-1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#E5E7EB;color:#6B7280;font-weight:900;font-size:1rem">&minus;</button>
+      </div></div>
+        </div>
+        <div style="font-family:'Fredoka',sans-serif;font-size:.78rem;color:#6B6580;font-weight:700;text-align:center">Rule: no Arabic, no spelling, no pointing &mdash; English only!</div>
       </div>
     </div>
     
