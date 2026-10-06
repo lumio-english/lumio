@@ -134,11 +134,13 @@ html[dir=rtl] .veil{transform:scaleX(-1)}
 
 /* hero */
 .hero{min-height:calc(100vh - var(--navh) - 34px);display:flex;flex-direction:column;justify-content:center;padding-block:40px 30px}
-.hero .copy{max-width:600px}
+.hero .copy{max-width:600px;position:relative}
+@media (min-width:821px){.hero .copy::before{content:"";position:absolute;z-index:-1;inset:-60px -70px -40px -70px;border-radius:60px;background:radial-gradient(closest-side,rgba(255,246,239,.97) 55%,rgba(255,246,239,.85) 75%,rgba(255,246,239,0) 100%);filter:blur(6px);pointer-events:none}.hero .hstats{position:relative}.hero .hstats::before{content:"";position:absolute;z-index:-1;inset:-24px -50px;border-radius:50px;background:radial-gradient(closest-side,rgba(255,246,239,.95) 60%,rgba(255,246,239,0) 100%);pointer-events:none}}
 .hero h1{font-size:clamp(46px,7.2vw,92px);font-weight:800;margin-top:20px}
 .hero h1 .l{display:block;overflow:hidden;padding-bottom:.06em}
 .hero h1 .l > span{display:inline-block}
 .hero h1 em{font-style:normal;color:var(--o);position:relative;white-space:nowrap}
+html[lang=ar] .hero h1{font-size:clamp(42px,6vw,78px)}
 .hero h1 em::after{content:"";position:absolute;inset-inline:2%;bottom:.04em;height:.16em;border-radius:99px;background:var(--o3);opacity:.55;z-index:-1}
 .hero .lead{margin-top:20px;font-size:clamp(17px,1.6vw,21px);color:var(--ink2);max-width:31em;font-weight:600}
 .ctas{display:flex;flex-wrap:wrap;gap:16px;margin-top:30px}
@@ -185,7 +187,7 @@ html[dir=rtl] .veil{transform:scaleX(-1)}
   .hero .lead{margin-top:12px;font-size:16.5px}
   .ctas{margin-top:20px;gap:12px}
   .ctas .btn{flex:1 1 100%;min-height:54px}
-  .hero .grow{flex:1;min-height:170px}
+  .hero .grow{flex:1;min-height:120px}
   .hstats{grid-template-columns:repeat(4,1fr);gap:6px;margin-top:0;background:rgba(255,255,255,.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:22px;padding:12px 10px;box-shadow:var(--shadow);text-align:center}
   .hstats b{font-size:26px}
   .hstats span{font-size:12px;line-height:1.25}
@@ -456,6 +458,7 @@ footer img{height:44px;width:auto;background:#fff;border-radius:12px;padding:2px
 .wafab{position:fixed;bottom:18px;inset-inline-end:18px;z-index:70;width:62px;height:62px;border-radius:22px;background:#25D366;color:#fff;display:grid;place-items:center;
   box-shadow:0 6px 0 #128C4B,0 18px 30px -10px rgba(18,140,75,.6);transition:transform .2s}
 .wafab:hover{transform:translateY(-3px)}
+@media (max-width:820px){.wafab.away{transform:translateY(120px);opacity:0;pointer-events:none}.wafab{transition:transform .3s,opacity .3s}}
 .wafab svg{width:32px;height:32px}
 
 @media (prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important} }
@@ -1071,7 +1074,7 @@ footer img{height:44px;width:auto;background:#fff;border-radius:12px;padding:2px
     var state = { f: -1, fs: -1, mx: 0, my: 0, intro: reduce ? 0 : 1, running: true, active: -2 };
     var V3 = THREE.Vector3, tmpT = new V3(), tmpP = new V3(), up = new V3(0, 1, 0), fwd = new V3(), right = new V3(), camUp = new V3();
     function view(i, t) {
-      if (i < 0) { var a = TH[0] + .5 + (reduce ? 0 : Math.sin(t * .07) * .3); return { a: a, r: 33, h: 12 + (reduce ? 0 : Math.sin(t * .11) * .6), ta: TH[0], tr: 0, ty: 1.4 }; }
+      if (i < 0) { var a = TH[0] + (rtl ? -.5 : .5) + (reduce ? 0 : Math.sin(t * .07) * .3); return { a: a, r: 33, h: 12 + (reduce ? 0 : Math.sin(t * .11) * .6), ta: TH[0], tr: 0, ty: 1.4 }; }
       return { a: TH[i], r: R + 7.6, h: Y[i] + 3.1, ta: TH[i], tr: R, ty: Y[i] + 1.15 };
     }
     function mix(a, b, k) { return a + (b - a) * k; }
@@ -1093,7 +1096,7 @@ footer img{height:44px;width:auto;background:#fff;border-radius:12px;padding:2px
       var hh = d * Math.tan(cam.fov * Math.PI / 360);
       var heroK = Math.max(0, Math.min(1, -f)); // 1 in the hero, 0 at the first island
       if (!narrow) {
-        var nx = mix(.4, .34, heroK) * (rtl ? -1 : 1); // where the subject should sit (NDC x)
+        var nx = mix(.4, .42, heroK) * (rtl ? -1 : 1); // where the subject should sit (NDC x)
         tmpT.addScaledVector(right, -nx * hh * aspect);
       } else {
         var ny = mix(.42, -.32, heroK);
@@ -1184,6 +1187,9 @@ footer img{height:44px;width:auto;background:#fff;border-radius:12px;padding:2px
     var y = absTop(p) + p.offsetHeight / 2 - innerHeight / 2;
     window.scrollTo({ top: y, behavior: reduce ? 'auto' : 'smooth' });
   }
+
+  /* WhatsApp button stays clear of the hero stats on phones until the visitor scrolls */
+  (function () { var fab = $('.wafab'); function f() { fab.classList.toggle('away', scrollY < 240); } addEventListener('scroll', f, { passive: true }); f(); })();
 
   /* ---------- boot ---------- */
   render();
