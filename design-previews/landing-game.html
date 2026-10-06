@@ -1367,26 +1367,18 @@ function buildStars() {
   $('#starT').textContent = STARS.length;
 }
 function buildLumi() {
+  // The real Lumi art as a sprite that always faces the camera (the owner's mascot,
+  // not a modelled stand-in). The walk bob, squash and tilt below still drive "body".
   lumi = new THREE.Group(); var body = new THREE.Group(); lumi.add(body); scene.add(lumi);
-  var Y = lam(0xFFD23F, { emissive: 0x3A2400, emissiveIntensity: .35 }), O = lam(0xF97316), K = lam(0x2B1B10), W = new THREE.MeshBasicMaterial({ color: 0xFFFFFF }), P = lam(0xFF9EA0), D = lam(0x34303A), C = lam(0xFFF1C9);
-  function mk(geo, mat, x, y, z, sx, sy, sz, parent) { var m = new THREE.Mesh(flat(geo), mat); m.position.set(x, y, z); if (sx) m.scale.set(sx, sy, sz); m.castShadow = !mobile; (parent || body).add(m); return m; }
-  mk(new THREE.IcosahedronGeometry(.62, 1), Y, 0, .74, 0, 1, .98, .95);
-  mk(new THREE.IcosahedronGeometry(.36, 1), C, 0, .5, .36, 1, 1.05, .55);
-  [-1, 1].forEach(function (sd) {
-    mk(new THREE.SphereGeometry(.15, 10, 8), W, .2 * sd, .95, .46, 1, 1.2, .55);
-    mk(new THREE.SphereGeometry(.1, 10, 8), K, .2 * sd + .01 * sd, .94, .53, 1, 1.15, .6);
-    mk(new THREE.SphereGeometry(.035, 6, 4), W, .2 * sd + .04, .99, .6);
-    mk(new THREE.SphereGeometry(.09, 8, 6), P, .38 * sd, .76, .45, 1, .7, .4);
+  var sm = new THREE.SpriteMaterial({ transparent: true, alphaTest: .35, depthWrite: true });
+  var sp = new THREE.Sprite(sm); sp.center.set(.5, 0); sp.position.set(0, 0, 0); sp.scale.set(1.75, 2, 1); body.add(sp);
+  new THREE.TextureLoader().load('../assets/story/characters/lumi-welcome-hero.png', function (tx) {
+    tx.wrapS = THREE.RepeatWrapping; sm.map = tx; sm.needsUpdate = true;
+    var a = tx.image.width / tx.image.height; sp.scale.set(2.15 * a, 2.15, 1);
   });
-  lumiParts.eyes = body.children.filter(function (c) { return c.material === K; });
-  var beak = mk(new THREE.ConeGeometry(.17, .34, 4), O, 0, .76, .64); beak.rotation.x = Math.PI / 2; beak.rotation.y = Math.PI / 4; beak.scale.set(1.25, 1, .75);
-  [-.12, 0, .12].forEach(function (x, i) { var tf = mk(new THREE.ConeGeometry(.07, .3, 4), Y, x, 1.38 - Math.abs(x) * .4, .05 - i * .02); tf.rotation.z = -x * 2.5; });
-  lumiParts.wings = [-1, 1].map(function (sd) { var pv = new THREE.Group(); pv.position.set(.58 * sd, .78, 0); body.add(pv); var w = mk(new THREE.IcosahedronGeometry(.22, 0), Y, .08 * sd, -.12, 0, .45, 1, .8, pv); w.rotation.z = .3 * sd; return pv; });
-  mk(new THREE.BoxGeometry(.62, .62, .3), D, 0, .78, -.52);
-  mk(new THREE.BoxGeometry(.64, .22, .32), O, 0, 1.0, -.53);
-  [-1, 1].forEach(function (sd) { var st = mk(new THREE.BoxGeometry(.07, .7, .12), O, .26 * sd, .8, -.3); st.rotation.x = .25; });
-  lumiParts.feet = [-1, 1].map(function (sd) { var pv = new THREE.Group(); pv.position.set(.22 * sd, .14, 0); lumi.add(pv); mk(new THREE.BoxGeometry(.24, .08, .34), O, 0, -.1, .1, 1, 1, 1, pv); mk(new THREE.CylinderGeometry(.04, .04, .14, 4), O, 0, 0, 0, 1, 1, 1, pv); return pv; });
-  lumiParts.body = body;
+  lumiParts.sprite = sp; lumiParts.eyes = [];
+  lumiParts.wings = [new THREE.Group(), new THREE.Group()]; lumiParts.feet = [new THREE.Group(), new THREE.Group()];
+  lumiParts.body = body; lumiParts.flip = 1;
   var bc = document.createElement('canvas'); bc.width = bc.height = 64; var bx = bc.getContext('2d'), gr = bx.createRadialGradient(32, 32, 2, 32, 32, 32); gr.addColorStop(0, 'rgba(90,40,10,.38)'); gr.addColorStop(1, 'rgba(90,40,10,0)'); bx.fillStyle = gr; bx.fillRect(0, 0, 64, 64);
   blob = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 1.5), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(bc), transparent: true, depthWrite: false }));
   blob.rotation.x = -Math.PI / 2; blob.position.y = .08; scene.add(blob);
@@ -1512,6 +1504,13 @@ function update(dt) {
   lumiParts.wings[0].rotation.z = -flap; lumiParts.wings[1].rotation.z = flap;
   var blink = (timeT % 3.4) < .12 ? .12 : 1; lumiParts.eyes.forEach(function (e) { e.scale.y = 1.15 * blink; });
   lumi.position.set(L.x, L.y, L.z); lumi.rotation.y = L.face;
+  // Sprite: face the way Lumi walks on screen, tilt with the step.
+  var S = lumiParts.sprite;
+  if (S && S.material.map) {
+    if (sp > .5) { var e = camera.matrixWorld.elements, dir = L.vx * e[0] + L.vz * e[2]; if (dir > .3) lumiParts.flip = 1; else if (dir < -.3) lumiParts.flip = -1; }
+    var mp = S.material.map; mp.repeat.x = lumiParts.flip; mp.offset.x = lumiParts.flip < 0 ? 1 : 0;
+    S.material.rotation = -B.rotation.z * 1.4;
+  }
   blob.position.set(L.x, .07, L.z); blob.scale.setScalar(1 - Math.min(.5, L.y * .25));
   if (!mobile) { sunLight.position.set(L.x - 9, 16, L.z + 8); sunLight.target.position.set(L.x, 0, L.z); }
 
