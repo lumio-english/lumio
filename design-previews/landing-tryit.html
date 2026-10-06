@@ -368,6 +368,8 @@ html[lang=ar] .h2{letter-spacing:0;line-height:1.25}
 .hubg{display:grid;gap:22px;align-items:start}
 @media (min-width:980px){.hubg{grid-template-columns:1fr 1.1fr;gap:40px}}
 .hubTiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#hubImg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top center;border-radius:inherit;z-index:1}
+.hubDev{position:relative}
 .ht{border:1.5px solid var(--ln);background:#fff;border-radius:20px;padding:14px;text-align:start;display:flex;flex-direction:column;gap:6px;transition:border-color .2s,transform .2s,box-shadow .2s;min-height:44px}
 .ht:hover{transform:translateY(-2px);border-color:var(--o3)}
 .ht .ic{width:42px;height:42px;border-radius:13px;background:var(--pe);color:var(--o);display:grid;place-items:center;transition:background .2s,color .2s}
@@ -682,7 +684,7 @@ footer a:hover{color:var(--o2)}
     <div class="secHd rv"><span class="kick" data-k="hub.kicker">The English Hub</span><h2 class="h2" data-k="hub.h2"></h2><p class="sp" data-k="hub.p"></p></div>
     <div class="hubg">
       <div><div class="hubTiles" id="hubTiles"></div><span class="hint2" data-k="hubTap">Tap a section</span></div>
-      <div class="hubDev rv"><video id="hubVid" poster="../assets/site/shot-hub.jpg" muted loop playsinline preload="none" data-ka="hub.video"><source src="../assets/marketing/demo-hub.webm" type="video/webm"><source src="../assets/marketing/demo-hub.mp4" type="video/mp4"></video><div class="fl"><b>7</b><span data-k="hub.float">Hub sections</span></div></div>
+      <div class="hubDev rv"><video id="hubVid" poster="../assets/site/shot-hub.jpg" muted loop playsinline preload="none" data-ka="hub.video"><source src="../assets/marketing/demo-hub.webm" type="video/webm"><source src="../assets/marketing/demo-hub.mp4" type="video/mp4"></video><img id="hubImg" alt="" hidden><div class="fl"><b>7</b><span data-k="hub.float">Hub sections</span></div></div>
     </div>
   </div>
 </section>
@@ -1507,9 +1509,19 @@ function initPath() {
 /* hub */
 var HUB_IC = ['<path d="M4 19V5a2 2 0 012-2h13v16H6a2 2 0 00-2 2zm0 0a2 2 0 002 2h13"/>', '<path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z"/>', '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/>', '<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>', '<path d="M3 18l4-12 4 12M4.5 14h5"/><path d="M14 6v12h3.5a3 3 0 000-6H14m0 0h3a3 3 0 000-6h-3"/>', '<path d="M6 8.5a6 6 0 1112 0c0 3.5-3 4.5-3 7.5a3.5 3.5 0 01-6.5 1.8"/><path d="M9.5 8.5a2.5 2.5 0 015 0"/>', '<path d="M4 6h16M4 12h10M4 18h7"/><circle cx="18" cy="16" r="3"/>'];
 var hubOpen = 0;
+// A real screen of each Hub section, in the same order as the tiles; Vocabulary keeps the screen recording.
+var HUB_SHOTS = [null, 'idioms', 'writing', 'songs', 'spelling', 'phonics', 'grammar'];
+function showHubShot() {
+  var im = $('#hubImg'), v = $('#hubVid'), n = HUB_SHOTS[hubOpen];
+  if (!im) return;
+  if (!n) { im.hidden = true; if (v) v.style.visibility = ''; return; }
+  im.src = '../assets/site/hub-' + n + '.jpg'; im.alt = (T('hub')[hubOpen] || [''])[0]; im.hidden = false;
+  if (v) { v.style.visibility = 'hidden'; try { v.pause(); } catch (e) {} }
+  if (G && !RM) G.fromTo(im, { opacity: 0, scale: 1.03 }, { opacity: 1, scale: 1, duration: .45, ease: 'power2.out' });
+}
 function buildHub() {
   $('#hubTiles').innerHTML = T('hub').map(function (h, i) { return '<button class="ht' + (i === hubOpen ? ' on' : '') + '" type="button" aria-expanded="' + (i === hubOpen) + '" data-i="' + i + '"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + HUB_IC[i] + '</svg></span><b>' + esc(h[0]) + '</b><em>' + esc(h[2]) + '</em><p>' + esc(h[1]) + '</p></button>'; }).join('');
-  $$('.ht').forEach(function (b) { b.onclick = function () { hubOpen = +b.getAttribute('data-i'); $$('.ht').forEach(function (x, k) { x.classList.toggle('on', k === hubOpen); x.setAttribute('aria-expanded', String(k === hubOpen)); }); if (G && !RM) G.fromTo($('.ic', b), { rotation: -20, scale: .8 }, { rotation: 0, scale: 1, duration: .6, ease: 'elastic.out(1,.5)' }); }; });
+  $$('.ht').forEach(function (b) { b.onclick = function () { hubOpen = +b.getAttribute('data-i'); $$('.ht').forEach(function (x, k) { x.classList.toggle('on', k === hubOpen); x.setAttribute('aria-expanded', String(k === hubOpen)); }); showHubShot(); if (G && !RM) G.fromTo($('.ic', b), { rotation: -20, scale: .8 }, { rotation: 0, scale: 1, duration: .6, ease: 'elastic.out(1,.5)' }); }; });
 }
 
 /* writing practice: real prompts from writing-hub/<level>.json */
