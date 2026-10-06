@@ -580,7 +580,7 @@
   .mp-avatar{
     width:64px;height:64px;border-radius:20px;background:#fff;display:flex;align-items:center;justify-content:center;
     font-size:2rem;margin:0 auto 10px;box-shadow:0 10px 24px rgba(0,0,0,.2);position:relative;z-index:1;
-    background-size:cover;background-position:center;
+    background-size:cover;background-position:center;overflow:hidden;
   }
   .mp-banner h3{margin:0 0 4px;font-size:1.15rem;font-weight:800;position:relative;z-index:1}
   .mp-level{
@@ -995,11 +995,19 @@
   .sd-modal-close-x{position:absolute;top:14px;right:14px;background:#F3EEE4;border:none;border-radius:50%;width:30px;height:30px;font-weight:800;cursor:pointer;color:var(--sd-cocoa-soft)}
 
   /* avatar picker */
-  .sd-avatar-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:18px}
+  .sd-avatar-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-bottom:18px;max-height:52vh;overflow-y:auto;padding:2px}
+  .sd-avatar-head{grid-column:1/-1;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--sd-cocoa-soft);margin-top:4px}
   .sd-avatar-opt{
-    aspect-ratio:1;border-radius:14px;border:3px solid transparent;background:#F7F1E6;font-size:1.6rem;
-    display:flex;align-items:center;justify-content:center;cursor:pointer;
+    border-radius:16px;border:3px solid transparent;background:#F7F1E6;padding:4px 2px 5px;font:inherit;
+    display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;min-width:0;color:var(--sd-cocoa);
+    transition:transform .15s ease,border-color .15s ease;
   }
+  .sd-avatar-opt img{width:100%;max-width:64px;aspect-ratio:1;border-radius:50%;display:block}
+  .sd-avatar-opt span{font-size:.68rem;font-weight:800;line-height:1.1}
+  .sd-avatar-opt:hover{transform:translateY(-2px)}
+  .sd-avatar-btn{overflow:hidden;padding:0}
+  .sd-avatar-btn img.lm-avatar{width:100%;height:100%}
+  @media (max-width:520px){.sd-avatar-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.sd-avatar-opt img{max-width:72px}}
   .sd-avatar-opt.selected{border-color:var(--sd-orange);background:#FFF1E0}
   .sd-photo-row{display:flex;align-items:center;gap:16px;margin-bottom:8px}
   .sd-photo-preview{
@@ -1460,7 +1468,7 @@
         <input type="file" id="photoFileInput" accept="image/*" style="display:none">
       </div>
     </div>
-    <p class="sd-hint" style="margin:14px 0 6px">...or pick a fun avatar instead</p>
+    <p class="sd-hint" style="margin:14px 0 6px">...or pick one of the Lumio crew</p>
     <div class="sd-avatar-grid" id="avatarGrid"></div>
     <button class="sd-modal-close" id="avatarSave">Save</button>
   </div>
@@ -2999,7 +3007,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
       document.getElementById("mpLevel").textContent = levelMeta.name;
       const avatarEl = document.getElementById("mpAvatar");
       if (p.photoDataUrl) { avatarEl.style.backgroundImage = `url(${p.photoDataUrl})`; avatarEl.textContent = ""; }
-      else { avatarEl.style.backgroundImage = "none"; avatarEl.textContent = p.avatar || "🦊"; }
+      else { avatarEl.style.backgroundImage = "none"; avatarEl.innerHTML = (window.LumioProfiles && LumioProfiles.avatarHtml ? LumioProfiles.avatarHtml(p.avatar || "🦊") : sdEsc(p.avatar || "🦊")); }
 
       document.getElementById("mpFields").innerHTML = `
         <div class="mp-field"><div class="lbl">Age</div><div class="val">${p.age != null ? p.age : "<i>Not set</i>"}</div></div>
@@ -3113,7 +3121,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
             </div>
           </div>
           <div class="pr-student">
-            <div class="av">${sdEsc(p.avatar || "🦊")}</div>
+            <div class="av">${window.LumioProfiles && LumioProfiles.avatarSrc && LumioProfiles.avatarSrc(p.avatar) ? `<img src="${new URL(LumioProfiles.avatarSrc(p.avatar), location.href).href}" alt="" style="width:100%;height:100%;border-radius:50%">` : sdEsc(p.avatar || "🦊")}</div>
             <div><h1>${sdEsc(p.name)}</h1><p>${meta.name}</p></div>
           </div>
           <div class="pr-stats">
@@ -3179,13 +3187,13 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
   let currentPhoto = (rosterProfile && rosterProfile.photoDataUrl) || null;
   function renderAvatarBtn() {
     const btn = document.getElementById("avatarBtn");
-    btn.innerHTML = currentPhoto ? `<img src="${currentPhoto}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : currentAvatar;
+    btn.innerHTML = currentPhoto ? `<img src="${currentPhoto}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : (window.LumioProfiles && LumioProfiles.avatarHtml ? LumioProfiles.avatarHtml(currentAvatar) : sdEsc(currentAvatar));
   }
   renderAvatarBtn();
 
   function renderPhotoPreview() {
     const preview = document.getElementById("photoPreview");
-    preview.innerHTML = currentPhoto ? `<img src="${currentPhoto}" alt="">` : currentAvatar;
+    preview.innerHTML = currentPhoto ? `<img src="${currentPhoto}" alt="">` : (window.LumioProfiles && LumioProfiles.avatarHtml ? LumioProfiles.avatarHtml(currentAvatar) : sdEsc(currentAvatar));
     document.getElementById("photoRemoveBtn").style.display = currentPhoto ? "block" : "none";
   }
   renderPhotoPreview();
@@ -3239,17 +3247,31 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
     renderPhotoPreview();
   };
 
+  // The Lumio crew as avatars: the student's own age group first, then the other one.
   const avatarGrid = document.getElementById("avatarGrid");
-  AVATARS.forEach(a => {
-    const opt = document.createElement("div");
-    opt.className = "sd-avatar-opt" + (a === currentAvatar ? " selected" : "");
-    opt.textContent = a;
-    opt.onclick = () => {
-      document.querySelectorAll(".sd-avatar-opt").forEach(o => o.classList.remove("selected"));
-      opt.classList.add("selected");
-      currentAvatar = a;
-    };
-    avatarGrid.appendChild(opt);
+  const crew = (window.LumioProfiles && LumioProfiles.CHARACTER_AVATARS) || [];
+  const teenFirst = ["level3", "level4", "level5", "level6"].includes(u.level);
+  [[teenFirst, teenFirst ? "Teen crew" : "Kid crew"], [!teenFirst, teenFirst ? "Kid crew" : "Teen crew"]].forEach(([teen, label]) => {
+    const head = document.createElement("div");
+    head.className = "sd-avatar-head"; head.textContent = label;
+    avatarGrid.appendChild(head);
+    crew.filter(c => !!c.teen === teen).forEach(c => {
+      const a = "c:" + c.id;
+      const opt = document.createElement("button");
+      opt.type = "button";
+      opt.className = "sd-avatar-opt" + (a === currentAvatar ? " selected" : "");
+      opt.setAttribute("aria-label", c.name + (c.teen ? " (teen)" : ""));
+      opt.setAttribute("aria-pressed", a === currentAvatar ? "true" : "false");
+      opt.innerHTML = `<img src="assets/avatars/${c.id}.png" alt=""><span>${c.name}</span>`;
+      opt.onclick = () => {
+        avatarGrid.querySelectorAll(".sd-avatar-opt").forEach(o => { o.classList.remove("selected"); o.setAttribute("aria-pressed", "false"); });
+        opt.classList.add("selected"); opt.setAttribute("aria-pressed", "true");
+        currentAvatar = a;
+        currentPhoto = null; // picking a character replaces the uploaded photo
+        renderPhotoPreview();
+      };
+      avatarGrid.appendChild(opt);
+    });
   });
   document.getElementById("avatarBtn").onclick = () => {
     renderPhotoPreview();
@@ -3263,7 +3285,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
     }
     renderAvatarBtn();
     document.getElementById("avatarOverlay").classList.remove("show");
-    showToast("Avatar updated!", currentPhoto ? "📷" : currentAvatar);
+    showToast("Avatar updated!", currentPhoto ? "📷" : "✨");
   };
   document.getElementById("avatarOverlay").addEventListener("click", e => {
     if (e.target.id === "avatarOverlay") document.getElementById("avatarOverlay").classList.remove("show");

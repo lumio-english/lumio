@@ -47,7 +47,30 @@
   // lumio-pro-test.html, lumio-pro-dashboard.html.
   const LUMIO_API_KEY = "504bc50951590970a9faf630";
 
-  const AVATARS = ["🦊", "🐼", "🦁", "🐸", "🐵", "🐨", "🦄", "🐯", "🐰", "🐶", "🐱"];
+  // Student avatars are the Lumio crew (since 6 Oct 2026): stored as "c:<id>",
+  // drawn from assets/avatars/<id>.png (made by _docs/tools/make-avatars.py).
+  // Older students may still hold an emoji; avatarHtml() shows either.
+  const CHARACTER_AVATARS = [
+    { id: "lumi", name: "Lumi" }, { id: "hamad", name: "Hamad" }, { id: "noor", name: "Noor" },
+    { id: "omar", name: "Omar" }, { id: "sara", name: "Sara" }, { id: "ziad", name: "Ziad" },
+    { id: "lumi-teen", name: "Lumi", teen: true }, { id: "hamad-teen", name: "Hamad", teen: true }, { id: "noor-teen", name: "Noor", teen: true },
+    { id: "omar-teen", name: "Omar", teen: true }, { id: "sara-teen", name: "Sara", teen: true }, { id: "ziad-teen", name: "Ziad", teen: true },
+  ];
+  const AVATARS = CHARACTER_AVATARS.map(c => "c:" + c.id);
+  const TEEN_LEVELS = ["level3", "level4", "level5", "level6"];
+  const characterOf = v => { const m = /^c:([a-z-]+)$/.exec(String(v || "")); return m ? CHARACTER_AVATARS.find(c => c.id === m[1]) || null : null; };
+  const avatarSrc = v => { const c = characterOf(v); return c ? "assets/avatars/" + c.id + ".png" : ""; };
+  const escAv = x => String(x == null ? "" : x).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+  // HTML for an avatar value: the character image, or the old emoji as text.
+  // opts.inline: a small image that sits in a line of text (lists, rows).
+  function avatarHtml(v, opts) {
+    const c = characterOf(v);
+    if (!c) return escAv(v || "");
+    const st = opts && opts.inline ? "width:1.6em;height:1.6em;vertical-align:-.45em;border-radius:50%" : "width:100%;height:100%;object-fit:cover;border-radius:50%;display:block";
+    return `<img class="lm-avatar" src="assets/avatars/${c.id}.png" alt="${escAv(c.name)}" style="${st}">`;
+  }
+  // A starting avatar for a new student: a random crew member, teen art for Levels 3-6.
+  const defaultAvatar = level => { const kids = CHARACTER_AVATARS.filter(c => !c.teen === !TEEN_LEVELS.includes(level)); return "c:" + kids[Math.floor(Math.random() * kids.length)].id; };
   const TEACHER_AVATARS = ["🦉", "🎓", "📚", "🍎", "⭐", "🧑‍🏫", "👩‍🏫", "👨‍🏫", "✏️", "🌟", "💡", "🏆"];
   // Country -> currency table used by currencyForCountry() (defined
   // further down). Lives up here with the other module constants because
@@ -525,7 +548,7 @@
       // existing addStudent() call site that never mentions level keeps
       // defaulting to pre-a exactly as before.
       level: level === undefined ? "pre-a" : level,
-      avatar: avatar || AVATARS[Math.floor(Math.random() * AVATARS.length)],
+      avatar: avatar || defaultAvatar(level),
       pin: finalPin,
       pinHash: await hashPin(finalPin),
       // A short, human-typeable login code, separate from the internal
@@ -2204,7 +2227,7 @@
   }
 
   global.LumioProfiles = {
-    AVATARS, TEACHER_AVATARS,
+    AVATARS, TEACHER_AVATARS, CHARACTER_AVATARS, avatarHtml, avatarSrc, defaultAvatar,
     listStudents, getStudent, findByName, findByPhone, findByLoginCode, groupmatesOf,
     addStudent, updateStudent, removeStudent, assignStudent,
     addRewardPoints, redeemReward, pointsThisMonthForStudent,

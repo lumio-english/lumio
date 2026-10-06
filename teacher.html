@@ -858,6 +858,8 @@
     display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .12s ease,border-color .15s ease;
   }
   .td-avatar-opt:hover{transform:translateY(-1px)}
+  .td-avatar-opt img.lm-avatar{width:100%;height:100%;max-width:48px;max-height:48px}
+  .av img.lm-avatar,.td-sl-av img.lm-avatar{width:100%;height:100%}
   .td-avatar-opt.selected{border-color:var(--td-indigo);background:var(--td-indigo-soft)}
   .td-pin-field{display:flex;align-items:center;gap:8px}
   .td-pin-field input{
@@ -2270,7 +2272,11 @@
     if (person && person.photoDataUrl) {
       return `<img src="${/^data:image\//.test(String(person.photoDataUrl)) ? escHtml(person.photoDataUrl) : ""}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
     }
-    return escHtml((person && person.avatar) || "");
+    return avInline((person && person.avatar) || "", true);
+  }
+  // A student's avatar: a Lumio crew image ("c:<id>") or an old emoji. inline=false fills a round box.
+  function avInline(v, fill) {
+    return window.LumioProfiles && LumioProfiles.avatarHtml ? LumioProfiles.avatarHtml(v, fill ? null : { inline: true }) : escHtml(v || "");
   }
 
   // ================= Recordings modal =================
@@ -2656,7 +2662,7 @@
         ? `<a class="td-wa-btn" target="_blank" rel="noopener" href="https://wa.me/${String(f.student.phone).replace(/\D/g, "")}?text=${encodeURIComponent(message)}">💬 WhatsApp</a>`
         : `<span class="sub" style="font-size:.72rem;flex-shrink:0">No phone on file</span>`;
       return `<div class="td-inactive-row">
-        <div><div class="who">${escHtml(f.student.avatar || "")} ${escHtml(f.student.name)}</div><div class="meta">${label} · ${levelName(f.student.level)}</div></div>
+        <div><div class="who">${avInline(f.student.avatar || "")} ${escHtml(f.student.name)}</div><div class="meta">${label} · ${levelName(f.student.level)}</div></div>
         ${action}
       </div>`;
     }).join("");
@@ -2689,7 +2695,7 @@
     list.innerHTML = flagged.map(f => {
       const label = f.never ? "No report sent yet" : `${f.days} days since last report`;
       return `<div class="td-inactive-row">
-        <div><div class="who">${escHtml(f.student.avatar || "")} ${escHtml(f.student.name)}</div><div class="meta">${label} · ${levelName(f.student.level)}</div></div>
+        <div><div class="who">${avInline(f.student.avatar || "")} ${escHtml(f.student.name)}</div><div class="meta">${label} · ${levelName(f.student.level)}</div></div>
         <a class="td-wa-btn" href="report.html?student=${encodeURIComponent(f.student.id)}">📋 View report</a>
       </div>`;
     }).join("");
@@ -2798,7 +2804,7 @@
       avatarEl.textContent = "";
     } else {
       avatarEl.style.backgroundImage = "none";
-      avatarEl.textContent = (profileForAvatar && profileForAvatar.avatar) || "🦊";
+      avatarEl.innerHTML = avInline((profileForAvatar && profileForAvatar.avatar) || "🦊", true);
     }
     document.getElementById("drawerDone").textContent = r.done;
     document.getElementById("drawerStars").textContent = r.stars;
@@ -3340,7 +3346,7 @@
     (window.LumioProfiles ? LumioProfiles.AVATARS : ["🦊"]).forEach(a => {
       const opt = document.createElement("div");
       opt.className = "td-avatar-opt" + (a === selectedAvatar ? " selected" : "");
-      opt.textContent = a;
+      opt.innerHTML = avInline(a, true);
       opt.onclick = () => {
         selectedAvatar = a;
         stuAvatarGrid.querySelectorAll(".td-avatar-opt").forEach(o => o.classList.remove("selected"));
@@ -3703,7 +3709,7 @@
       stuPhoneCountry.value = split.countryCode;
       stuPhoneInput.value = split.localNumber;
     }
-    selectedAvatar = profile ? profile.avatar : (window.LumioProfiles ? LumioProfiles.AVATARS[Math.floor(Math.random() * LumioProfiles.AVATARS.length)] : "🦊");
+    selectedAvatar = profile ? profile.avatar : (window.LumioProfiles && LumioProfiles.defaultAvatar ? LumioProfiles.defaultAvatar(prefill && prefill.level) : "🦊");
     stuNameError.textContent = "";
     stuLevelError.textContent = "";
     renderAvatarGrid();
@@ -5025,7 +5031,7 @@
       const row = document.createElement("label");
       row.style.cssText = "display:flex;align-items:center;gap:7px;font-size:.85rem;font-weight:600;cursor:pointer";
       const checked = preselected.size ? preselected.has(s.id) : true;
-      row.innerHTML = `<input type="checkbox" id="${id}" value="${escHtml(s.id)}" ${checked ? "checked" : ""}> ${escHtml(s.avatar)} ${escHtml(s.name)}`;
+      row.innerHTML = `<input type="checkbox" id="${id}" value="${escHtml(s.id)}" ${checked ? "checked" : ""}> ${avInline(s.avatar)} ${escHtml(s.name)}`;
       wrap.appendChild(row);
     });
     renderClsLessonOptions();
@@ -5137,7 +5143,7 @@
       const row = document.createElement("label");
       row.style.cssText = `display:flex;align-items:center;gap:7px;font-size:.85rem;font-weight:600;cursor:${reason ? "not-allowed" : "pointer"};opacity:${reason ? ".5" : "1"}`;
       const checked = checkedIds.has(s.id);
-      row.innerHTML = `<input type="checkbox" value="${escHtml(s.id)}" ${checked ? "checked" : ""} ${reason ? "disabled" : ""}> ${escHtml(s.avatar)} ${escHtml(s.name)} <span style="font-size:.72rem;color:var(--td-muted);font-weight:700">· ${already ? "booked" : st.levelDone ? "level complete" : `next: ${levelName(s.level)} · L${st.nextLesson}`}${reason && !already ? ` — ${reason}` : ""}${!s.subscribed && !already ? " · not subscribed" : ""}</span>`;
+      row.innerHTML = `<input type="checkbox" value="${escHtml(s.id)}" ${checked ? "checked" : ""} ${reason ? "disabled" : ""}> ${avInline(s.avatar)} ${escHtml(s.name)} <span style="font-size:.72rem;color:var(--td-muted);font-weight:700">· ${already ? "booked" : st.levelDone ? "level complete" : `next: ${levelName(s.level)} · L${st.nextLesson}`}${reason && !already ? ` — ${reason}` : ""}${!s.subscribed && !already ? " · not subscribed" : ""}</span>`;
       wrap.appendChild(row);
     });
     wrap.querySelectorAll("input").forEach(i => i.addEventListener("change", renderSlotChecks));
@@ -6342,7 +6348,7 @@
     const partNo = (s.installments || []).slice().sort((a, b) => a.dueDate.localeCompare(b.dueDate)).findIndex(x => x.id === inst.id) + 1;
     return `<div class="td-due-row" data-sid="${s.id}" data-iid="${inst.id}">
       <div class="amt">${LumioProfiles.fmtMoney(inst.amount, inst.currency || s.currency)}</div>
-      <div><div style="font-weight:800">${escHtml(s.avatar || "")} ${escHtml(s.name)} <span class="when ${cls}">${label}</span></div>
+      <div><div style="font-weight:800">${avInline(s.avatar || "")} ${escHtml(s.name)} <span class="when ${cls}">${label}</span></div>
         <div class="sub" style="font-size:.74rem">Due ${inst.dueDate} · part ${partNo} of ${sum.count}${Number(inst.sessions) ? ` · adds ${Number(inst.sessions)} session${Number(inst.sessions) === 1 ? "" : "s"}` : ""}${s.phone ? " · " + escHtml(formatPhoneDisplay(s.phone)) : " · no phone"}${inst.remindedAt || inst.remindedDueAt ? " · reminder sent to inbox" : ""}${inst.smsAt ? " · SMS sent" : ""}</div></div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">${wa ? `<a class="td-wa-btn" target="_blank" rel="noopener" href="${wa}">💬 WhatsApp (AR)</a>` : ""}<button type="button" class="td-btn td-btn-primary" data-act="paid" style="padding:6px 12px">✓ Paid</button></div>
     </div>`;
@@ -6431,7 +6437,7 @@
       row.innerHTML = `
         <div class="td-class-time"><span style="color:var(--td-coral);font-weight:800;font-size:1rem">${s.sessionsRemaining || 0}</span><span>left</span></div>
         <div class="td-class-info">
-          <div class="who">${escHtml(s.avatar)} <b>${escHtml(s.name)}</b></div>
+          <div class="who">${avInline(s.avatar)} <b>${escHtml(s.name)}</b></div>
           <div class="meta">${levelName(s.level)} · Paid ${s.amountPaid || 0} for ${s.levelsPurchased || 0} level${(s.levelsPurchased || 0) === 1 ? "" : "s"}</div>
         </div>
         <div class="td-class-acts">${waBtn}</div>`;
@@ -6460,7 +6466,7 @@
       <div class="td-lead-row">
         <div style="width:32px;text-align:center;font-size:1.1rem">${medals[i] || (i + 1)}</div>
         <div class="td-lead-info">
-          <div class="who">${escHtml(x.s.avatar)} <b>${escHtml(x.s.name)}</b></div>
+          <div class="who">${avInline(x.s.avatar)} <b>${escHtml(x.s.name)}</b></div>
           <div class="meta">${levelName(x.s.level)}</div>
         </div>
         <div class="td-lead-score"><b>${x.score}</b><span>points</span></div>
