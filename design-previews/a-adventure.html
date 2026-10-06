@@ -50,11 +50,13 @@ p{margin:0}
 svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;flex:none}
 
 /* ---------- preview strip ---------- */
-.strip{background:#1D1712;color:#FFE9D6;font-size:13px;font-weight:700;padding:8px 16px;display:flex;gap:6px 14px;align-items:center;justify-content:center;flex-wrap:wrap;text-align:center}
+.strip{background:#1D1712;color:#FFE9D6;font-size:12.5px;font-weight:700;padding:7px 16px;display:flex;gap:6px 14px;align-items:center;justify-content:center;flex-wrap:wrap;text-align:center}
 .strip b{color:#fff}
 .strip a{color:#FDBA74;text-decoration:none;padding:2px 2px;border-bottom:1px dashed rgba(253,186,116,.5)}
 .strip a[aria-current]{color:#fff;border-bottom-color:#fff}
 .strip .links{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.strip .full{display:none}
+@media (min-width:700px){.strip .full{display:inline}}
 
 /* ---------- header ---------- */
 .top{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px) saturate(1.3);-webkit-backdrop-filter:blur(14px) saturate(1.3);border-bottom:1px solid var(--line)}
@@ -103,7 +105,10 @@ body.teen .hero h1{color:#fff;text-shadow:0 4px 26px rgba(0,0,0,.5)}
 .hero h1 .wave{display:inline-block;transform-origin:70% 80%}
 .hero .sub{font-weight:800;color:#24406A;margin-top:6px;font-size:16px;max-width:30ch}
 body.teen .hero .sub{color:#C9D3EE}
-.lvl{margin-top:12px;display:flex;align-items:center;gap:10px;max-width:340px}
+.lvl{margin-top:12px;display:flex;align-items:center;gap:10px;max-width:400px}
+.listbtn{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:14px;background:rgba(255,255,255,.92);color:#C2410C;font-weight:900;font-size:14px;box-shadow:0 6px 16px -8px rgba(30,60,110,.45);flex:none}
+.listbtn svg{width:18px;height:18px}
+body.teen .listbtn{background:rgba(16,24,52,.8);color:#FDBA74;box-shadow:0 0 0 1px rgba(255,255,255,.1)}
 .bar{flex:1;height:12px;border-radius:99px;background:rgba(255,255,255,.75);overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.12)}
 body.teen .bar{background:rgba(255,255,255,.12)}
 .bar i{display:block;height:100%;width:var(--w,10%);border-radius:99px;background:linear-gradient(90deg,#FFB547,#F97316);box-shadow:0 0 12px rgba(249,115,22,.6)}
@@ -126,7 +131,7 @@ body.teen .tag{background:rgba(249,115,22,.2);color:#FDBA74}
 body.teen .tag.now{background:#F97316;color:#fff}
 body.teen .tag.done{background:rgba(74,222,128,.16);color:#86EFAC}
 body.teen .tag.lock{background:rgba(255,255,255,.1);color:#C9D3EE}
-.hint{display:none;font-size:13px;font-weight:800;color:#24406A;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.7);padding:6px 12px;border-radius:99px}
+.hint{display:none;font-size:13px;font-weight:800;color:#24406A;align-items:center;gap:6px;background:rgba(255,255,255,.7);padding:6px 12px;border-radius:99px}
 body.teen .hint{color:#C9D3EE;background:rgba(16,24,52,.6)}
 .hero-foot .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;width:100%;max-width:400px;justify-content:space-between}
 .hero .sub .long{display:none}
@@ -194,6 +199,9 @@ body.teen .mission{background:linear-gradient(135deg,#F97316 0%,#C2410C 60%,#7C2
 .step.part .node span{width:52px;height:52px;border-radius:50%;background:var(--card);display:grid;place-items:center}
 .step.now .node{box-shadow:inset 0 0 0 4px var(--o),0 0 0 6px var(--tint)}
 .step .node .lot{position:absolute;right:-8px;top:-8px;width:34px;height:34px}
+.words{margin-top:16px;padding-top:14px;border-top:1px dashed var(--line)}
+.words > b{font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.words .facts span{font-size:14px;padding:6px 12px;background:var(--tint);color:var(--otext)}
 .step b{font-family:var(--display);font-size:15px;line-height:1.1}
 .step small{font-size:12px;font-weight:800;color:var(--muted)}
 .step.now small{color:var(--otext)}
@@ -281,7 +289,7 @@ body.teen .cert{background:linear-gradient(135deg,#1C2852,#2A2246);border-color:
 .cover img{width:100%;height:100%;object-fit:cover}
 .cover .tag{position:absolute;left:10px;top:10px}
 .parts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:10px 0 12px}
-.part{border-radius:14px;padding:8px 6px;text-align:center;background:var(--card2);font-weight:900;font-size:13px;line-height:1.15;min-height:56px;display:flex;flex-direction:column;justify-content:center}
+.part{white-space:nowrap;border-radius:14px;padding:8px 4px;text-align:center;background:var(--card2);font-weight:900;font-size:13px;line-height:1.15;min-height:56px;display:flex;flex-direction:column;justify-content:center}
 .part small{font-size:11px;color:var(--muted);font-weight:800}
 .part.open{background:var(--tint);color:var(--otext);box-shadow:inset 0 0 0 2px var(--o)}
 
@@ -492,7 +500,7 @@ body.teen .toast{background:#fff;color:#0B1226}
 
 <div class="strip" role="note">
   <span>Design preview · <b>Direction A: Adventure World</b></span>
-  <span class="links"><a href="index.html">Overview</a><a href="a-adventure.html" aria-current="page">A · Adventure</a><a href="b-studio.html">B · Studio</a><a href="c-journey.html">C · Journey</a></span>
+  <span class="links"><a href="index.html">Overview</a><a href="a-adventure.html" aria-current="page">A<span class="full"> · Adventure</span></a><a href="b-studio.html">B<span class="full"> · Studio</span></a><a href="c-journey.html">C<span class="full"> · Journey</span></a></span>
 </div>
 
 <header class="top">
@@ -528,11 +536,11 @@ body.teen .toast{background:#fff;color:#0B1226}
     <p class="sub ha"><span data-b="levelname">Level 1 · About Me</span><span class="long"> — Lesson 3 is glowing on your map.</span></p>
     <div class="lvl ha" data-fn="9" aria-label="Level progress: 2 of 20 lessons done, 10 percent">
       <div class="bar"><i style="--w:10%"></i></div><b>2/20 · 10%</b>
+      <button class="listbtn" type="button" id="listBtn" aria-controls="mapList" aria-expanded="false" aria-label="Show the map as a list"><svg class="i"><use href="#i-list"/></svg>List</button>
     </div>
     <div class="hero-foot">
       <div class="row ha">
         <span class="hint" aria-hidden="true">👆 Tap a stone to peek at a lesson</span>
-        <button class="btn ghost sm" type="button" id="listBtn" aria-controls="mapList" aria-expanded="false" style="background:rgba(255,255,255,.92);color:#C2410C;box-shadow:none"><svg class="i"><use href="#i-list"/></svg>Show as a list</button>
       </div>
       <article class="stone-card ha" id="stoneCard" aria-live="polite"></article>
     </div>
@@ -567,6 +575,7 @@ body.teen .toast{background:#fff;color:#0B1226}
           <div class="step done"><div class="node">🎥<span class="lot" data-lottie="check" aria-hidden="true"></span></div><b>Live class</b><small>Oct 21 ✓</small></div>
           <div class="step now"><div class="node">📝</div><b>Homework</b><small>To do</small></div>
         </div>
+        <div class="words"><b>New words in this lesson</b><div class="facts" id="words"></div></div>
       </article>
       <article class="card reveal" data-fn="2">
         <div class="card-h"><div class="ico">🎯</div><div class="ttl"><h3>Lesson prep</h3><p class="cap">9 games · 50% done · ★</p></div><button class="btn sm" data-toast="Continue prep (preview only)">Continue</button></div>
@@ -667,7 +676,7 @@ body.teen .toast{background:#fff;color:#0B1226}
         <div class="cover"><img data-img="story" src="../assets/site/story-level1.jpg" alt="Story cover" onerror="this.remove()"><span class="tag now">Story</span></div>
         <h3>Lumi’s Magic Map</h3><p class="cap small muted">4 parts · a new part opens as you learn</p>
         <div class="parts">
-          <div class="part open">Part 1<small>Open</small></div><div class="part">🔒 Part 2<small>Lesson 6</small></div><div class="part">🔒 Part 3<small>Lesson 11</small></div><div class="part">🔒 Part 4<small>Lesson 16</small></div>
+          <div class="part open"><small>📖</small>Part 1<small>Open</small></div><div class="part"><small>🔒</small>Part 2<small>Lesson 6</small></div><div class="part"><small>🔒</small>Part 3<small>Lesson 11</small></div><div class="part"><small>🔒</small>Part 4<small>Lesson 16</small></div>
         </div>
         <button class="btn block" data-toast="Reading Part 1 (preview)"><svg class="i"><use href="#i-play"/></svg>Read Part 1</button>
       </article>
@@ -882,12 +891,12 @@ const MODES={
     mascot:'../assets/story/characters/lumi-welcome-hero.png',celebrate:'../assets/site/lumi-celebrate.png',buddy:'../assets/site/hamad-wave.png',buddy2:'../assets/site/sara-wave.png',
     story:'../assets/site/story-level1.jpg',game:'Treehouse Builder',gameImg:'../assets/site/game-level1.jpg',
     age:'7',gender:'Girl',grade:'Grade 2',country:'Saudi Arabia',placement:'Placement: Level 1',refcode:'LINA-60',
-    prompt:'What is your favourite toy? Tell me about it.',arhelp:'مساعدة: اكتب جملة عن لعبتك المفضلة'},
+    prompt:'What is your favourite toy? Tell me about it.',words:['a cat','a ball','a book','a pen','an apple','a bag','an egg','a toy'],arhelp:'مساعدة: اكتب جملة عن لعبتك المفضلة'},
   teen:{name:'Omar',avatar:'🦁',level:'Level 4',levelname:'Level 4 · Smart Choices',titles:TEEN_T,xp:'900 XP',
     mascot:'../assets/story/characters/lumi-teen-welcome-hero.png',celebrate:'../assets/site/omar-thumbs.png',buddy:'../assets/site/ziad-wave.png',buddy2:'../assets/site/noor-wave.png',
     story:'../assets/site/story-level3.jpg',game:'Squad Budget',gameImg:'../assets/site/game-level4.jpg',
     age:'13',gender:'Boy',grade:'Grade 8',country:'Kuwait',placement:'Placement: Level 4',refcode:'OMAR-60',
-    prompt:'Saving or spending: which is the smarter choice for you? Why?',arhelp:'مساعدة: اكتب رأيك بجملتين واذكر السبب'}
+    prompt:'Saving or spending: which is the smarter choice for you? Why?',words:['a budget','a choice','a goal','a reason','a risk','a plan','an option','a deal'],arhelp:'مساعدة: اكتب رأيك بجملتين واذكر السبب'}
 };
 const LESSONS=[
   {st:'done',prep:100,stars:3,cls:'Attended Oct 11',grade:'A',comment:'Great speaking today!',hw:'90%'},
@@ -989,6 +998,7 @@ function applyMode(m,animate){
   const y1=yourTime(13,22), y2=yourTime(15,28);
   $$('[data-b="yt1"]').forEach(e=>e.textContent=y1?y1+' your time':'Saudi = your time');
   $$('[data-b="yt2"]').forEach(e=>e.textContent=y2?' · '+y2+' your time':'');
+  $('#words').innerHTML=D.words.map(w=>'<span>'+w+'</span>').join('');
   points=60; renderPoints(); renderMapList(); renderLibrary(); renderAvatars();
   showStone(selected);
   if(world) world.setTheme(m==='teen', D.mascot);
@@ -1041,7 +1051,7 @@ function goTo(id){
 function toggleList(force){
   const ml=$('#mapList'); const open=force!==undefined?force:!ml.classList.contains('open');
   ml.classList.toggle('open',open);
-  ['#listBtn','#listBtn2'].forEach(s=>{ const b=$(s); b.setAttribute('aria-expanded',open); b.lastChild.textContent=open?'Hide the list':'Show as a list'; });
+  $('#listBtn').setAttribute('aria-expanded',open); const b2=$('#listBtn2'); b2.setAttribute('aria-expanded',open); b2.lastChild.textContent=open?'Hide the list':'Show as a list';
   if(open){ mountAll(ml); if(window.ScrollTrigger) ScrollTrigger.refresh(); }
   return open;
 }
@@ -1088,11 +1098,11 @@ function initWorld(){
   const scene=new THREE.Scene();
   scene.fog=new THREE.Fog(0xD6EEFF,16,46);
   const camera=new THREE.PerspectiveCamera(42,1,.1,160);
-  const hemi=new THREE.HemisphereLight(0xffffff,0xffd2ac,.9); scene.add(hemi);
-  const sun=new THREE.DirectionalLight(0xfff4e0,.75); sun.position.set(6,12,8); scene.add(sun);
+  const hemi=new THREE.HemisphereLight(0xffffff,0xffd2ac,.72); scene.add(hemi);
+  const sun=new THREE.DirectionalLight(0xfff4e0,.6); sun.position.set(6,12,8); scene.add(sun);
   const glow=new THREE.PointLight(0xF97316,1.4,7,2); scene.add(glow);
   const P=(c,o)=>new THREE.MeshPhongMaterial(Object.assign({color:c,flatShading:true,shininess:6},o||{}));
-  const M={ rock:P(0xF1D2AE), under:P(0xC9915F), grass:P(0x8EDB7A), done:P(0xFFC83D,{emissive:0x5a3000,emissiveIntensity:.15}), now:P(0xF97316,{emissive:0xC2410C,emissiveIntensity:.35}), locked:P(0xC8E9BE),
+  const M={ rock:P(0xF1D2AE), under:P(0xC9915F), grass:P(0x8EDB7A), done:P(0xFFC83D,{emissive:0x5a3000,emissiveIntensity:.15}), now:P(0xF26A0F,{emissive:0x9A3412,emissiveIntensity:.3}), locked:P(0xC8E9BE),
     tree:P(0x3FB45E), tree2:P(0x2E9E53), trunk:P(0x9A6238), roof:P(0xF97316), wall:P(0xFFF6EF), dot:new THREE.MeshBasicMaterial({color:0xffffff}), cloud:new THREE.MeshLambertMaterial({color:0xffffff,emissive:0xffffff,emissiveIntensity:.35,transparent:true,opacity:.92}),
     ring:new THREE.MeshBasicMaterial({color:0xF97316,transparent:true,opacity:.75}), lantern:new THREE.MeshBasicMaterial({color:0xFFB547}) };
   function jitter(g,a){ const p=g.attributes.position; for(let i=0;i<p.count;i++){ const y=p.getY(i); if(y<0.1){ p.setX(i,p.getX(i)+(Math.random()-.5)*a); p.setZ(i,p.getZ(i)+(Math.random()-.5)*a); } } g.computeVertexNormals(); return g; }
@@ -1172,13 +1182,13 @@ function initWorld(){
   function setTheme(teen,mascotSrc){
     teenMode=teen;
     scene.fog.color.set(teen?0x0E1733:0xD6EEFF); scene.fog.near=teen?12:16; scene.fog.far=teen?40:46;
-    hemi.color.set(teen?0x8EA2FF:0xffffff); hemi.groundColor.set(teen?0x1A1033:0xffd2ac); hemi.intensity=teen?.55:.9;
-    sun.intensity=teen?.35:.75; sun.color.set(teen?0xB9C6FF:0xfff4e0);
+    hemi.color.set(teen?0x8EA2FF:0xffffff); hemi.groundColor.set(teen?0x1A1033:0xffd2ac); hemi.intensity=teen?.55:.72;
+    sun.intensity=teen?.35:.6; sun.color.set(teen?0xB9C6FF:0xfff4e0);
     glow.intensity=teen?2.6:.6; glow.distance=teen?8:5;
     M.rock.color.set(teen?0x2B3768:0xF1D2AE); M.under.color.set(teen?0x1A2248:0xC9915F);
     M.grass.color.set(teen?0x23406A:0x8EDB7A); M.locked.color.set(teen?0x2E3F74:0xC8E9BE);
     M.done.color.set(teen?0xFFB547:0xFFC83D); M.done.emissive.set(teen?0x7a3500:0x5a3000); M.done.emissiveIntensity=teen?.45:.15;
-    M.now.emissiveIntensity=teen?.8:.35;
+    M.now.emissiveIntensity=teen?.8:.3;
     M.tree.color.set(teen?0x1C6B66:0x3FB45E); M.tree2.color.set(teen?0x15524F:0x2E9E53);
     M.wall.color.set(teen?0x3A4A85:0xFFF6EF); M.wall.emissive=new THREE.Color(teen?0x221100:0x000000);
     M.dot.color.set(teen?0xFB923C:0xffffff);
@@ -1260,7 +1270,7 @@ function initMotion(){
   $$('[data-count]').forEach(el=>{ const end=+el.dataset.count, suf=el.dataset.suf||''; const o={v:0}; ScrollTrigger.create({trigger:el,start:'top 92%',once:true,onEnter:()=>gsap.to(o,{v:end,duration:1.2,ease:'power2.out',onUpdate:()=>el.textContent=Math.round(o.v)+suf})}); });
   $$('.ring').forEach(r=>{ const o={p:0}; ScrollTrigger.create({trigger:r,start:'top 92%',once:true,onEnter:()=>gsap.to(o,{p:10,duration:1.2,ease:'power2.out',onUpdate:()=>r.style.setProperty('--p',o.p)})}); });
   // tab bar active state
-  ['today','map','classes','hub','rewards'].forEach(id=>ScrollTrigger.create({trigger:'#'+id,start:'top 50%',end:'bottom 50%',onToggle:s=>{ if(s.isActive){ $$('.tabs [data-go], .nav [data-go]').forEach(b=>b.classList.toggle('on',b.dataset.go===id||(id==='rewards'&&b.dataset.go==='hub'&&b.closest('.tabs')))); } }}));
+  ['today','map','classes','hub'].forEach(id=>ScrollTrigger.create({trigger:'#'+id,start:'top 50%',end:'bottom 50%',onToggle:s=>{ if(s.isActive){ $$('.tabs [data-go], .nav [data-go]').forEach(b=>b.classList.toggle('on',b.dataset.go===id)); } }}));
 }
 
 /* ---------------- boot ---------------- */
