@@ -983,7 +983,7 @@ function initWorld() {
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(redrawSigns);
   window.addEventListener('resize', onResize);
   onResize(); bindPointer();
-  window.LUMIO_GAME = { walk: walk, road: function () { return RS.map(function (p) { return [p.x, p.z]; }); }, renderer: renderer, scene: scene, camera: camera, stations: STATIONS, travelTo: function (i) { travelTo(STATIONS[i]); }, state: function () { return { x: L.x, z: L.z, stars: starCount, total: STARS.length, card: cardOpen && cardOpen.type, playing: playing, travel: !!travel }; }, place: function (x, z) { travel = null; moveTarget = null; L.x = x; L.z = z; }, teleport: function (i) { var s = STATIONS[i]; travel = null; moveTarget = null; L.x = s.ax; L.z = s.az; } };
+  window.LUMIO_GAME = { walk: walk, road: function () { return RS.map(function (p) { return [p.x, p.z]; }); }, stations: STATIONS, travelTo: function (i) { travelTo(STATIONS[i]); }, state: function () { return { x: L.x, z: L.z, stars: starCount, total: STARS.length, card: cardOpen && cardOpen.type, playing: playing, travel: !!travel }; }, place: function (x, z) { travel = null; moveTarget = null; L.x = x; L.z = z; }, teleport: function (i) { var s = STATIONS[i]; travel = null; moveTarget = null; L.x = s.ax; L.z = s.az; } };
 }
 
 function grassCol(c, x, y, z) { if (y > -.05) c.setHSL(.27 + (Math.sin(x * .7) * Math.cos(z * .6)) * .02, .5, .62); else c.set('#86C35A'); }
