@@ -160,17 +160,18 @@ body.teen .stone-card .btn.ghost{background:rgba(249,115,22,.16);color:#FDBA74}
 .zone{scroll-margin-top:78px;position:relative}
 .zone + .zone{padding-top:12px}
 .zone-head{display:flex;align-items:flex-end;gap:12px;margin:8px 4px 16px;position:relative}
-.zone-head .txt{flex:1;min-width:0}
+.zone-head{flex-wrap:wrap}
+.zone-head .txt{flex:1 1 220px;min-width:0}
 .sign{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--otext);background:var(--tint);border-radius:99px;padding:5px 11px 5px 8px}
 .zone-head h2{font-size:clamp(30px,7.4vw,42px);font-weight:800;margin-top:8px}
 .zone-head .ar{margin-top:4px}
-.zone-mascot{width:96px;height:auto;flex:none;margin-bottom:-6px;filter:drop-shadow(0 10px 14px rgba(194,65,12,.18))}
+.zone-mascot{height:128px;width:auto;max-width:120px;object-fit:contain;flex:none;margin-bottom:-6px;filter:drop-shadow(0 10px 14px rgba(194,65,12,.18))}
 .grid{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
 .card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:18px;position:relative;min-width:0;border:1px solid var(--line)}
 body.teen .card{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 .card h3{font-size:21px;font-weight:800}
 .card-h{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.card-h .ttl{flex:1;min-width:0}
+.card-h .ttl{flex:1 1 150px;min-width:0}
 .card-h .cap{font-size:13px;color:var(--muted);font-weight:700;margin-top:2px}
 .ico{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-size:22px;flex:none;background:var(--tint)}
 .fn-i{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;font-size:11px;font-weight:900;color:var(--muted);border:1.5px solid currentColor;margin-left:4px;vertical-align:2px;opacity:.7;cursor:help}
@@ -189,8 +190,8 @@ body.teen .mission{background:linear-gradient(135deg,#F97316 0%,#C2410C 60%,#7C2
 .mission .acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;position:relative;z-index:1}
 .mission .btn{background:#fff;color:#C2410C;box-shadow:0 4px 0 rgba(124,45,18,.45)}
 .mission .btn.ghost{background:rgba(255,255,255,.18);color:#fff;box-shadow:inset 0 0 0 2px rgba(255,255,255,.45)}
-.mission img{position:absolute;right:-6px;bottom:-8px;width:132px;z-index:1;filter:drop-shadow(0 12px 20px rgba(124,45,18,.45))}
-.mission .steps-note{margin-top:12px;font-size:12px;font-weight:800;opacity:.85;position:relative;z-index:1;max-width:28ch}
+.mission img{position:absolute;right:-8px;bottom:-10px;width:112px;z-index:1;filter:drop-shadow(0 12px 20px rgba(124,45,18,.45))}
+.mission .steps-note{margin-top:12px;font-size:12px;font-weight:800;opacity:.85;position:relative;z-index:1;max-width:calc(100% - 110px)}
 
 /* trail */
 .trail{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;position:relative}
@@ -242,6 +243,7 @@ body.teen .mission{background:linear-gradient(135deg,#F97316 0%,#C2410C 60%,#7C2
 
 /* progress */
 .prog-top{display:flex;align-items:center;gap:16px}
+.prog-acts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
 .ring{--p:10;width:96px;height:96px;border-radius:50%;flex:none;display:grid;place-items:center;background:conic-gradient(var(--o) calc(var(--p)*1%),var(--line) 0)}
 .ring > div{width:76px;height:76px;border-radius:50%;background:var(--card);display:grid;place-items:center;text-align:center}
 body.teen .ring > div{background:#121B3A}
@@ -275,7 +277,7 @@ body.teen .cert{background:linear-gradient(135deg,#1C2852,#2A2246);border-color:
 .lib-top .n .lot{position:absolute;inset:-14px;width:72px;height:72px;pointer-events:none}
 .lib-top h4{font-size:18px}
 .lib-top .t{flex:1;min-width:0}
-.kv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:10px}
+.kv{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr) minmax(0,1fr);gap:6px;margin-top:10px}
 .kv div{background:var(--card);border-radius:14px;padding:8px 10px;min-width:0}
 .kv small{display:block;font-size:11px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
 .kv b{font-size:14px;font-weight:900;display:block;line-height:1.25}
@@ -299,9 +301,10 @@ body.teen .cert{background:linear-gradient(135deg,#1C2852,#2A2246);border-color:
 /* classes */
 .next{display:flex;flex-direction:column;gap:12px}
 .next-when{display:flex;gap:14px;align-items:center}
-.cal{width:66px;height:72px;border-radius:18px;background:var(--card);box-shadow:0 6px 14px -8px rgba(0,0,0,.3),inset 0 0 0 2px var(--line);overflow:hidden;text-align:center;flex:none}
-.cal i{display:block;font-style:normal;background:var(--o);color:#fff;font-size:11px;font-weight:900;letter-spacing:.08em;padding:3px 0}
-.cal b{font-family:var(--display);font-size:28px;line-height:1.5}
+.cal{width:74px;height:74px;border-radius:18px;background:var(--card);box-shadow:0 6px 14px -8px rgba(0,0,0,.3),inset 0 0 0 2px var(--line);overflow:hidden;text-align:center;flex:none}
+.cal i{display:block;font-style:normal;background:var(--o);color:#fff;font-size:9.5px;font-weight:900;letter-spacing:.04em;padding:4px 0;text-transform:uppercase}
+.cal b{display:block;font-family:var(--display);font-size:24px;line-height:1;padding-top:9px}
+.cal small{display:block;font-size:11px;font-weight:900;color:var(--muted)}
 .next-when h4{font-size:21px}
 .lockline{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:16px;background:var(--card2);font-size:14px;font-weight:800}
 .lockline .ico{width:36px;height:36px;font-size:18px;border-radius:12px}
@@ -451,7 +454,7 @@ body.teen .toast{background:#fff;color:#0B1226}
   .hub{grid-template-columns:repeat(3,minmax(0,1fr))}
   .hub .tile.wide,.hub .tile.full{grid-column:1/-1}
   .ml{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .zone-mascot{width:120px}
+  .zone-mascot{height:160px;max-width:160px}
   .stats{grid-template-columns:repeat(6,minmax(0,1fr))}
   .mission img{width:170px}
 }
@@ -562,7 +565,7 @@ body.teen .toast{background:#fff;color:#0B1226}
 <section class="zone" id="today" aria-labelledby="h-today">
   <div class="zone-head">
     <div class="txt"><span class="sign">🏝️ Zone 1 · Today</span><h2 id="h-today">Today’s quest</h2><p class="ar" dir="rtl" lang="ar">مهمة اليوم: خطوة صغيرة كل يوم تصنع فرقًا كبيرًا</p></div>
-    <img class="zone-mascot px" data-img="mascot" src="../assets/story/characters/lumi-welcome-hero.png" alt="" onerror="this.remove()">
+    <img class="zone-mascot px" data-img="buddy3" src="../assets/site/noor-wave.png" alt="" onerror="this.remove()">
   </div>
   <div class="grid">
     <article class="card mission reveal" data-fn="1">
@@ -638,11 +641,11 @@ body.teen .toast{background:#fff;color:#0B1226}
         <div style="flex:1;min-width:0">
           <h3 data-b="levelname">Level 1 · About Me</h3>
           <p class="cap small muted" style="margin-top:4px">2 of 20 lessons done · Lesson 3 now</p>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-            <button class="btn sm" data-scroll-hero>🏝️ See 3D map</button>
-            <button class="btn sm ghost" id="listBtn2" aria-controls="mapList" aria-expanded="false"><svg class="i"><use href="#i-list"/></svg>Show as a list</button>
-          </div>
         </div>
+      </div>
+      <div class="prog-acts">
+        <button class="btn sm" data-scroll-hero>🏝️ See 3D map</button>
+        <button class="btn sm ghost" id="listBtn2" aria-controls="mapList" aria-expanded="false"><svg class="i"><use href="#i-list"/></svg>Show as a list</button>
       </div>
       <div class="maplist" id="mapList" data-fn="8"><h4 class="sr">All 20 lessons</h4><div class="ml" id="mlRows" style="margin-top:14px"></div></div>
     </article>
@@ -711,7 +714,7 @@ body.teen .toast{background:#fff;color:#0B1226}
   <div class="grid">
     <div class="grid two">
       <article class="card reveal next" data-fn="16">
-        <div class="next-when"><div class="cal"><i>TOMORROW</i><b>4:00</b></div>
+        <div class="next-when"><div class="cal" aria-hidden="true"><i>Tomorrow</i><b>4:00</b><small>PM</small></div>
           <div style="min-width:0"><span class="tag">Next class · Lesson 4</span><h4 style="margin-top:6px">Tomorrow 4:00 PM <span style="font-weight:600">Saudi time</span></h4><p class="small muted" style="margin-top:2px">with Teacher Eslam · 45 min · <span data-b="yt1"></span></p></div></div>
         <div class="lockline"><span class="ico">🔒</span><span style="flex:1">Join opens when your Lesson 3 homework is done</span></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn locked" data-toast="Finish Lesson 3 homework to unlock Join"><svg class="i"><use href="#i-video"/></svg>Join link</button><button class="btn ghost" data-toast="Opening homework (preview only)">Do homework</button></div>
@@ -896,12 +899,12 @@ const KID_T=['This is…','I am / You are','It is a…','My family','Colours','N
 const TEEN_T=['This is…','I am / You are','It is a…','Pros and cons','Saving vs spending','Healthy habits','Screen time','Making plans','Comparing options','Giving advice','Money talk','Team roles','Time management','Online safety','Setting goals','Debate it','Problem solving','Peer pressure','My smart choice','Project day'];
 const MODES={
   kid:{name:'Lina',avatar:'🐼',level:'Level 1',levelname:'Level 1 · About Me',titles:KID_T,xp:'9 stars',
-    mascot:'../assets/story/characters/lumi-welcome-hero.png',celebrate:'../assets/site/lumi-celebrate.png',buddy:'../assets/site/hamad-wave.png',buddy2:'../assets/site/sara-wave.png',
+    mascot:'../assets/story/characters/lumi-welcome-hero.png',celebrate:'../assets/site/lumi-celebrate.png',buddy:'../assets/site/hamad-wave.png',buddy2:'../assets/site/sara-wave.png',buddy3:'../assets/site/noor-wave.png',
     story:'../assets/site/story-level1.jpg',game:'Treehouse Builder',gameImg:'../assets/site/game-level1.jpg',
     age:'7',gender:'Girl',grade:'Grade 2',country:'Saudi Arabia',placement:'Placement: Level 1',refcode:'LINA-60',
     prompt:'What is your favourite toy? Tell me about it.',words:['a cat','a ball','a book','a pen','an apple','a bag','an egg','a toy'],arhelp:'مساعدة: اكتب جملة عن لعبتك المفضلة'},
   teen:{name:'Omar',avatar:'🦁',level:'Level 4',levelname:'Level 4 · Smart Choices',titles:TEEN_T,xp:'900 XP',
-    mascot:'../assets/story/characters/lumi-teen-welcome-hero.png',celebrate:'../assets/site/omar-thumbs.png',buddy:'../assets/site/ziad-wave.png',buddy2:'../assets/site/noor-wave.png',
+    mascot:'../assets/story/characters/lumi-teen-welcome-hero.png',celebrate:'../assets/site/omar-thumbs.png',buddy:'../assets/site/ziad-wave.png',buddy2:'../assets/site/noor-wave.png',buddy3:'../assets/story/characters/hamad-teen-wave.png',
     story:'../assets/site/story-level3.jpg',game:'Squad Budget',gameImg:'../assets/site/game-level4.jpg',
     age:'13',gender:'Boy',grade:'Grade 8',country:'Kuwait',placement:'Placement: Level 4',refcode:'OMAR-60',
     prompt:'Saving or spending: which is the smarter choice for you? Why?',words:['a budget','a choice','a goal','a reason','a risk','a plan','an option','a deal'],arhelp:'مساعدة: اكتب رأيك بجملتين واذكر السبب'}
@@ -1002,7 +1005,7 @@ function applyMode(m,animate){
   avatar=D.avatar;
   const bind={name:D.name,avatar:avatar,avatar2:avatar,levelname:D.levelname,level:D.level,xp:D.xp,game:D.game,age:D.age,gender:D.gender,grade:D.grade,country:D.country,placement:D.placement,refcode:D.refcode,prompt:D.prompt,arhelp:D.arhelp,l3title:D.titles[2],streak:'4',sessions:'5'};
   Object.keys(bind).forEach(k=>$$('[data-b="'+k+'"]').forEach(e=>e.textContent=bind[k]));
-  $$('[data-img]').forEach(img=>{ const k=img.dataset.img; const src=k==='mascot'?D.mascot:k==='celebrate'?D.celebrate:k==='story'?D.story:k==='game'?D.gameImg:k==='buddy'?D.buddy:k==='buddy2'?D.buddy2:null; if(src&&img.getAttribute('src')!==src) img.src=src; });
+  $$('[data-img]').forEach(img=>{ const k=img.dataset.img; const src=k==='mascot'?D.mascot:k==='celebrate'?D.celebrate:k==='story'?D.story:k==='game'?D.gameImg:k==='buddy'?D.buddy:k==='buddy2'?D.buddy2:k==='buddy3'?D.buddy3:null; if(src&&img.getAttribute('src')!==src) img.src=src; });
   const y1=yourTime(13,22), y2=yourTime(15,28);
   $$('[data-b="yt1"]').forEach(e=>e.textContent=y1?y1+' your time':'Saudi = your time');
   $$('[data-b="yt2"]').forEach(e=>e.textContent=y2?' · '+y2+' your time':'');

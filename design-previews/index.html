@@ -34,13 +34,14 @@ h2{font-family:var(--display);font-size:28px;letter-spacing:-.02em;margin:0 0 6p
 .sub{color:var(--mut);margin:0 0 20px;font-weight:700}
 .groups{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
 .grp{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px}
+.grp.wide{grid-column:span 3}
 .grp h3{margin:0 0 10px;font-family:var(--display);font-size:17px;color:var(--od)}
 .grp ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px;font-size:14px;line-height:1.4;color:var(--soft)}
 .grp li::marker{color:var(--o);font-weight:800}
 .new{font-size:10.5px;font-weight:800;background:#DCFCE7;color:#15803D;border-radius:999px;padding:1px 7px;margin-left:4px;vertical-align:1px}
 footer{margin-top:40px;color:var(--mut);font-size:13.5px;line-height:1.6}
-@media (max-width:980px){.dirs{grid-template-columns:1fr}.groups{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:560px){.groups{grid-template-columns:1fr}header img{height:44px}}
+@media (max-width:980px){.dirs{grid-template-columns:1fr}.groups{grid-template-columns:repeat(2,minmax(0,1fr))}.grp.wide{grid-column:1/-1}}
+@media (max-width:560px){.groups{grid-template-columns:1fr}.grp.wide ol{columns:1!important}header img{height:44px}}
 </style>
 </head>
 <body>
@@ -89,7 +90,7 @@ footer{margin-top:40px;color:var(--mut);font-size:13.5px;line-height:1.6}
       <li>Vocabulary + Word Pop, Word Builder, Memory Match</li><li>Grammar</li><li>Idioms</li><li>Phonics</li><li>Spelling</li><li>Songs</li><li>Writing &amp; Speaking</li></ol></div>
     <div class="grp"><h3>Rewards</h3><ol start="29"><li>Reward points + Redeem (50 → +1 hour)</li><li>Badges (8)</li><li>Study buddies</li><li>Daily streak</li></ol>
       <h3 style="margin-top:14px">More</h3><ol start="33"><li>Level manual (PDF)</li></ol></div>
-    <div class="grp" style="grid-column:span 3"><h3>Menu / account</h3><ol start="34" style="columns:2;display:block">
+    <div class="grp wide"><h3>Menu / account</h3><ol start="34" style="columns:2;display:block">
       <li>My profile: photo, details, subscription, payments, level test, grades, performance report</li><li>Messages and notifications</li><li>Guides</li>
       <li>Referrals: invite friends, free sessions</li><li>Parent guide tour (Arabic + English)</li><li>Avatar picker</li><li>Sound effects and music on/off</li>
       <li>Kid look / Teen night look (by level)</li><li>Log out</li></ol></div>
