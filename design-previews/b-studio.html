@@ -56,7 +56,7 @@ p{margin:0}
 svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
 /* preview strip */
-.strip{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:7px 16px;font-size:12.5px;color:var(--muted);background:var(--bg2);border-bottom:1px solid var(--line);position:relative;z-index:30}
+.strip{white-space:nowrap;display:flex;align-items:center;gap:10px;justify-content:space-between;padding:7px 16px;font-size:12.5px;color:var(--muted);background:var(--bg2);border-bottom:1px solid var(--line);position:relative;z-index:30}
 .strip b{color:var(--ink);font-weight:800}
 .strip nav{display:flex;gap:4px;flex-wrap:nowrap}
 .strip nav a{text-decoration:none;padding:4px 9px;border-radius:999px;font-weight:700;white-space:nowrap}
@@ -159,7 +159,7 @@ body[data-theme="teen"] .hero .stat{background:rgba(255,255,255,.06);border:1px 
 .badge3d canvas{width:100%!important;height:100%!important;display:block}
 .badge3d .fb{position:absolute;inset:0;display:none}
 .badge3d.nogl .fb{display:block}
-.badge3d .cap3d{position:absolute;left:0;right:0;bottom:-2px;text-align:center;font-size:12px;font-weight:800;color:var(--muted)}
+.badge3d .cap3d{position:absolute;left:0;right:0;bottom:-22px;text-align:center;font-size:12px;font-weight:800;color:var(--muted)}
 
 /* mission */
 .mission{display:flex;flex-direction:column;background:linear-gradient(180deg,var(--surface),var(--surface))}
@@ -247,6 +247,7 @@ body[data-theme="teen"] .hero .stat{background:rgba(255,255,255,.06);border:1px 
 
 /* rings */
 .rings{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+.rings > .rcard{grid-column:auto!important}
 .rcard{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:26px 18px 22px}
 .ring{position:relative;width:150px;height:150px}
 .ring svg{width:100%;height:100%;transform:rotate(-90deg)}
@@ -277,7 +278,7 @@ body[data-theme="teen"] .ring .fl{filter:drop-shadow(0 0 6px rgba(249,115,22,.55
 .legend i{display:inline-block;width:12px;height:12px;border-radius:4px;margin-right:6px;vertical-align:-1px}
 
 /* map */
-.mapwrap{position:relative;height:340px;margin-top:14px;border-radius:20px;background:radial-gradient(80% 90% at 50% 40%, var(--soft2), transparent 70%)}
+.mapwrap{position:relative;height:430px;margin-top:14px;border-radius:20px;background:radial-gradient(80% 90% at 50% 40%, var(--soft2), transparent 70%)}
 .mapwrap canvas{width:100%!important;height:100%!important;display:block;border-radius:20px}
 .mapwrap .fb{display:none}
 .mapwrap.nogl canvas{display:none}
@@ -287,6 +288,7 @@ body[data-theme="teen"] .ring .fl{filter:drop-shadow(0 0 6px rgba(249,115,22,.55
 .mapfb i.done{background:linear-gradient(180deg,#FDBA74,#F97316);color:#fff}
 .mapfb i.now{background:var(--surface);border:3px solid var(--accent);color:var(--deep)}
 .maplegend{position:absolute;left:14px;bottom:12px;display:flex;gap:6px;flex-wrap:wrap}
+.maplist[hidden],.mapwrap[hidden]{display:none!important}
 .maplist{list-style:none;margin:14px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 18px;max-height:340px;overflow:auto}
 .maplist li{display:flex;align-items:center;gap:10px;min-height:44px;border-bottom:1px solid var(--line);font-weight:700;font-size:14px}
 .maplist li .n{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-size:12px;font-weight:900;background:var(--surface2);border:1px solid var(--line2);flex:none}
@@ -314,7 +316,7 @@ body[data-theme="teen"] .filt .knob{background:rgba(255,255,255,.1)}
 .lnum{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:17px;background:var(--surface2);border:1px solid var(--line2);position:relative}
 .lesson.fin .lnum{background:linear-gradient(180deg,#FDBA74,#F97316);color:#fff;border-color:transparent}
 .lesson.now .lnum{border:2px solid var(--accent);color:var(--deep);background:var(--soft)}
-.lnum .lt{position:absolute;inset:-20px;pointer-events:none}
+.lnum .lt{position:absolute;top:-16px;right:-16px;width:34px;height:34px;pointer-events:none}
 .ltitle b{display:block;font-size:16px;font-weight:800}
 .ltitle small{font-size:12.5px;color:var(--muted);font-weight:700}
 .stars{color:#F59E0B;letter-spacing:1px;font-size:15px}
@@ -480,7 +482,10 @@ body[data-theme="teen"] .toast{background:#F5F7FF;color:#0B1226}
   .toast{bottom:calc(92px + env(safe-area-inset-bottom))}
   .top{grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"av greet actions" "status status status";gap:12px 12px;margin-bottom:18px}
   .top .avatarbtn{grid-area:av}
-  .greet h1{font-size:24px}
+  .greet h1{font-size:23px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .greet .hello{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .seg .em{display:none}
+  .seg button{padding:0 11px}
   .greet .hello{font-size:12.5px}
   .greet .sub{display:none}
   .status{overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:2px 16px 4px}
@@ -496,7 +501,7 @@ body[data-theme="teen"] .toast{background:#F5F7FF;color:#0B1226}
   .tile{padding:20px;border-radius:24px}
   .vhead h2{font-size:24px}
   .hero{grid-template-columns:minmax(0,1fr);padding:16px 20px 22px;min-height:0}
-  .badge3d{width:100%;height:200px;justify-self:stretch;order:-1;margin-bottom:-4px}
+  .badge3d{width:100%;height:200px;justify-self:stretch;order:-1;margin-bottom:20px}
   .hero h2{font-size:32px;margin-top:10px}
   .hero .stats{margin-top:16px}
   .hero .stat{padding:8px 12px}
@@ -551,7 +556,7 @@ body[data-theme="teen"] .toast{background:#F5F7FF;color:#0B1226}
 </defs></svg>
 
 <div class="strip" role="banner">
-  <span><span class="long">Design preview · </span><b>Direction B: Learning Studio</b></span>
+  <span><span class="long">Design preview · </span><b><span class="long">Direction </span>B: Learning Studio</b></span>
   <nav aria-label="Other design directions">
     <a href="a-adventure.html">A<span class="long"> · Adventure</span></a>
     <a href="b-studio.html" aria-current="page">B<span class="long"> · Studio</span></a>
@@ -574,7 +579,7 @@ body[data-theme="teen"] .toast{background:#F5F7FF;color:#0B1226}
     <button class="nav" data-drawer="more" data-scroll="d-guides"><svg class="i" viewBox="0 0 24 24" data-ic="help"></svg>Guides</button>
     <button class="nav" data-drawer="more" data-scroll="d-ref"><svg class="i" viewBox="0 0 24 24" data-ic="userplus"></svg>Invite friends</button>
     <button class="nav" data-drawer="more" data-scroll="d-tour"><svg class="i" viewBox="0 0 24 24" data-ic="route"></svg>Parent tour</button>
-    <button class="nav" data-act="sound" role="switch" aria-checked="true"><svg class="i" viewBox="0 0 24 24" data-ic="vol"></svg>Sound<span class="switch sw" aria-hidden="true" data-mirror="sound"></span></button>
+    <button class="nav" data-act="sound" role="switch" aria-checked="true"><svg class="i" viewBox="0 0 24 24" data-ic="vol"></svg>Sound<span class="switch sw" aria-hidden="true" aria-checked="true" data-mirror="sound"></span></button>
     <div class="foot">
       <button class="nav" data-act="logout"><svg class="i" viewBox="0 0 24 24" data-ic="logout"></svg>Log out</button>
       <div class="sidecard"><img id="sideMascot" src="../assets/story/characters/lumi-welcome-hero.png" alt="" onerror="this.remove()"><p><b>Need help?</b>Lumi is here 24/7</p></div>
@@ -593,8 +598,8 @@ body[data-theme="teen"] .toast{background:#F5F7FF;color:#0B1226}
       <div class="actions">
         <div class="seg" role="group" aria-label="Demo student: kid or teen" id="ktSeg">
           <span class="knob" aria-hidden="true"></span>
-          <button aria-pressed="true" data-mode="kid">🐼 Kid</button>
-          <button aria-pressed="false" data-mode="teen">🦁 Teen</button>
+          <button aria-pressed="true" data-mode="kid"><span class="em">🐼 </span>Kid</button>
+          <button aria-pressed="false" data-mode="teen"><span class="em">🦁 </span>Teen</button>
         </div>
         <button class="iconbtn" data-drawer="messages" aria-label="Messages and notifications, 3 unread"><svg class="i" viewBox="0 0 24 24" data-ic="bell"></svg><span class="dot">3</span></button>
       </div>
@@ -747,12 +752,11 @@ function vToday(){
     <span class="lvl">${ic('award')} ${s.level} · ${s.unit}</span>
     <h2 id="heroT">Lesson 3 <em>of 20</em></h2>
     <div class="meta">
-     <div class="barlab"><span>Level progress · 2 of 20 lessons done</span><span><span class="cu" data-to="10" data-suf="%">10%</span></span></div>
+     <div class="barlab"><span>2 of 20 lessons done</span><span><span class="cu" data-to="10" data-suf="%">10%</span></span></div>
      <div class="bar" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100" aria-label="Level progress"><i data-w="10"></i></div>
     </div>
     <div class="stats">
      <span class="stat">${s.starsIcon} <b class="cu" data-to="${s.starsV}">${s.starsV}</b> ${s.starsL}</span>
-     <span class="stat">🔥 <b class="cu" data-to="4">4</b> days</span>
      <span class="stat">🎁 <b class="cu" data-to="60">60</b> points</span>
     </div>
    </div>
@@ -831,7 +835,7 @@ function vToday(){
   </article>
 
   <article class="tile s-12" aria-labelledby="flT">
-   <div class="row wrap"><div class="grow"><div class="eyebrow">${ic('file')} Sheets to print</div><h3 class="tt" id="flT">Worksheets &amp; manual</h3></div><p class="ar cap">أوراق العمل للطباعة</p></div>
+   <div class="eyebrow">${ic('file')} Sheets to print <span class="ar" style="margin-left:auto;letter-spacing:0;text-transform:none;font-size:13px">أوراق العمل للطباعة</span></div><h3 class="tt" id="flT">Worksheets &amp; manual</h3>
    <div class="files">
     <button class="file" data-fn="4" data-toast="Homework sheet (PDF)"><span class="fi">${ic('file')}</span><span><b>Homework sheet</b><small>Lesson 3 · 2 pages</small></span><span class="dl">${ic('dl')}</span></button>
     <button class="file" data-fn="5" data-toast="Writing sheet (PDF)"><span class="fi">${ic('pen')}</span><span><b>Writing sheet</b><small>Lesson 3 · 1 page</small></span><span class="dl">${ic('dl')}</span></button>
@@ -996,10 +1000,9 @@ function vClasses(){
   </article>
 
   <article class="tile s-12" data-fn="19" aria-labelledby="fxT">
-   <div class="row wrap" style="gap:14px"><div class="grow"><div class="eyebrow">${ic('redo')} Fixed weekly schedule ${fn(19)}</div><h3 class="tt" id="fxT">Same times every week</h3><p class="cap mt8">Pick up to 3 weekly times — we book the next weeks for you. <span class="ar">اختر حتى ٣ مواعيد أسبوعية</span></p></div>
-    <div class="row"><span class="chip or" id="fxCount">2 of 3 picked</span></div></div>
+   <div class="row wrap" style="gap:14px"><div class="grow"><div class="eyebrow">${ic('redo')} Fixed weekly schedule ${fn(19)}</div><h3 class="tt" id="fxT">Same times every week</h3><p class="cap mt8">Pick up to 3 weekly times — we book the next weeks for you.</p><p class="ar cap">اختر حتى ٣ مواعيد أسبوعية</p></div></div>
    <div class="sched" id="sched">${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((d,di)=>`<div class="day"><b>${d}</b>${[16,17,18].map(h=>{const on=(di===3&&h===18)||(di===6&&h===17);return `<button class="opt" aria-pressed="${on}" aria-label="${d} ${fmtH(h)} Saudi time">${fmtH(h).replace(':00','')}</button>`}).join('')}</div>`).join('')}</div>
-   <div class="row wrap mt16" style="justify-content:space-between"><div class="swrow"><button class="switch" role="switch" aria-checked="true" aria-label="Book next weeks automatically" data-sw="auto"></button><span style="font-weight:800">Book next weeks automatically</span></div><button class="btn pri sm" data-toast="Weekly schedule saved">Save schedule</button></div>
+   <div class="row wrap mt16" style="justify-content:space-between"><div class="swrow"><button class="switch" role="switch" aria-checked="true" aria-label="Book next weeks automatically" data-sw="auto"></button><span style="font-weight:800">Book next weeks automatically</span></div><div class="row"><span class="chip or" id="fxCount">2 of 3 picked</span><button class="btn pri sm" data-toast="Weekly schedule saved">Save schedule</button></div></div>
   </article>
  </div>`;
 }
@@ -1234,7 +1237,7 @@ function renderAll(){
  $('#dbody').innerHTML=vDrawer(); paintIcons($('#dbody')); syncSegs();
  const s=cur;
  $('#greetName').textContent=`${s.name} ${s.emoji}`;
- $('#greetSub').textContent=`${s.level} · ${s.unit} — lesson 3 of 20`;
+ $('#greetSub').textContent=`${s.level} · ${s.unit}`;
  $('#starPill').innerHTML=`<span class="ico">${s.starsIcon}</span>${s.starsV} ${s.starsL}`;
  setAvatar(avatarChoice||s.emoji);
  const sm=$('#sideMascot'); if(sm) sm.src=s.mascot;
@@ -1375,7 +1378,7 @@ function faceTexture(kid,lvl){
  x.font='800 52px "Bricolage Grotesque", Nunito, system-ui, sans-serif'; x.fillText('LEVEL',256,170);
  x.fillStyle=kid?'#9A3412':'#FFFFFF'; x.font='800 230px "Bricolage Grotesque", Nunito, system-ui, sans-serif'; x.fillText(String(lvl),256,372);
  x.fillStyle=kid?'#C2410C':'#FB923C'; x.font='800 40px Nunito, system-ui, sans-serif'; x.fillText('★ 2 / 20 ★',256,430);
- const t=new THREE.CanvasTexture(c); t.anisotropy=4; return t;
+ const t=new THREE.CanvasTexture(c); t.anisotropy=4; t.encoding=THREE.sRGBEncoding; return t;
 }
 const Badge={ok:false,
  init(){
@@ -1418,7 +1421,7 @@ const Badge={ok:false,
   star.position.set(0,1.2,-.065); medal.add(star);
   // progress ring
   const ringG=new THREE.Group(); ringG.rotation.x=-.18; root.add(ringG); this.ringG=ringG;
-  const track=new THREE.Mesh(new THREE.TorusGeometry(1.62,.055,8,96),new THREE.MeshStandardMaterial({color:kid?0xF3D3B8:0x2A3766,metalness:.2,roughness:.6,transparent:true,opacity:kid?.9:.85}));
+  const track=new THREE.Mesh(new THREE.TorusGeometry(1.62,.055,8,96),new THREE.MeshStandardMaterial({color:kid?0xE9B086:0x2A3766,metalness:.2,roughness:.6,transparent:true,opacity:kid?.9:.85}));
   ringG.add(track);
   this.fillM=new THREE.MeshStandardMaterial({color:0xF97316,emissive:0xF97316,emissiveIntensity:kid?.45:.9,metalness:.3,roughness:.35});
   this.fill=null; this.cap=new THREE.Mesh(new THREE.SphereGeometry(.11,12,10),new THREE.MeshStandardMaterial({color:0xFFE2C4,emissive:0xF97316,emissiveIntensity:kid?.6:1.2}));
@@ -1436,7 +1439,7 @@ const Badge={ok:false,
   if(this.fill){ this.ringG.remove(this.fill); this.fill.geometry.dispose(); }
   const arc=Math.max(.0001,p*Math.PI*2);
   this.fill=new THREE.Mesh(new THREE.TorusGeometry(1.62,.085,10,Math.max(4,Math.round(96*p)),arc),this.fillM);
-  this.fill.rotation.z=Math.PI/2; this.fill.scale.x=-1; this.ringG.add(this.fill);
+  this.fill.rotation.z=-Math.PI/2; this.fill.scale.x=-1; this.ringG.add(this.fill);
   const a=Math.PI/2-arc; this.cap.position.set(Math.cos(a)*1.62,Math.sin(a)*1.62,0);
   this.dirty=true;
  },
@@ -1450,7 +1453,7 @@ const Badge={ok:false,
   if(!this.ok||!this.canvas.isConnected||!this.canvas.offsetParent) return;
   this.size();
   if(!RM){
-   this.medal.rotation.y=t*.0007; this.medal.position.y=Math.sin(t*.0015)*.05;
+   this.medal.rotation.y=Math.sin(t*.0009)*.62+Math.max(0,Math.sin(t*.00025))**40*Math.PI*2; this.medal.position.y=Math.sin(t*.0015)*.05;
    this.ringG.rotation.y=Math.sin(t*.0006)*.25;
    this.sp.forEach(m=>{ const u=m.userData; const a=u.a+t*.0003*(1+u.s); m.position.set(Math.cos(a)*u.r,u.y+Math.sin(t*.001+u.a)*.15,Math.sin(a)*u.r*.4-.2); m.rotation.x+=.02; m.rotation.y+=.03; });
    this.dirty=true;
@@ -1471,7 +1474,7 @@ function numTex(n,state,kid){
  x.clearRect(0,0,128,128); x.textAlign='center'; x.textBaseline='middle';
  x.fillStyle=state==='done'?'#FFFFFF':state==='now'?'#C2410C':(kid?'#B49A87':'#7F8CB8');
  x.font='800 64px "Bricolage Grotesque", Nunito, system-ui, sans-serif'; x.fillText(String(n),64,68);
- return new THREE.CanvasTexture(c);
+ const t=new THREE.CanvasTexture(c); t.encoding=THREE.sRGBEncoding; return t;
 }
 const MapG={ok:false,
  init(){

@@ -82,7 +82,9 @@ body.teen .avatar-btn{background:linear-gradient(145deg,#2B3B70,#1A2550)}
 .top .pill.sess{display:none}
 
 /* ---------- hero world ---------- */
-.hero{position:relative;height:clamp(600px,84svh,700px);overflow:hidden;isolation:isolate}
+.hero{position:relative;height:clamp(560px,calc(100svh - 196px),700px);overflow:hidden;isolation:isolate}
+.hero .veil{position:absolute;left:0;right:0;top:0;height:46%;z-index:0;pointer-events:none;background:linear-gradient(180deg,rgba(91,182,247,.92) 0%,rgba(110,192,250,.6) 55%,rgba(110,192,250,0) 100%)}
+body.teen .hero .veil{background:linear-gradient(180deg,rgba(5,10,26,.9) 0%,rgba(8,14,34,.55) 55%,rgba(8,14,34,0) 100%)}
 .sky{position:absolute;inset:0;z-index:-2;transition:opacity .6s;
   background:
    radial-gradient(160px 160px at 84% 13%,rgba(255,236,150,.95),rgba(255,214,90,.55) 40%,transparent 70%),
@@ -94,8 +96,9 @@ body.teen .avatar-btn{background:linear-gradient(145deg,#2B3B70,#1A2550)}
 body.teen .sky.night{opacity:1}
 .hero canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y;z-index:-1}
 .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:90px;background:linear-gradient(transparent,var(--bg));pointer-events:none;z-index:0}
-.hero-in{position:relative;max-width:1280px;height:100%;margin:0 auto;padding:18px 16px 26px;display:flex;flex-direction:column;pointer-events:none;z-index:1}
-.hero-in > *{pointer-events:auto}
+.hero-in{position:relative;max-width:1280px;height:100%;margin:0 auto;padding:16px 16px 18px;display:flex;flex-direction:column;pointer-events:none;z-index:1}
+.hero-in *{pointer-events:none}
+.hero-in .chip,.hero-in .stone-card,.hero-in .stone-card *,.hero-in button,.hero-in button *{pointer-events:auto}
 .chips{display:flex;gap:8px;flex-wrap:wrap}
 .chip{display:inline-flex;align-items:center;gap:5px;height:36px;padding:0 12px 0 9px;border-radius:999px;background:rgba(255,255,255,.88);color:#1D1712;font-weight:900;font-size:14px;box-shadow:0 6px 16px -8px rgba(30,60,110,.45);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 body.teen .chip{background:rgba(16,24,52,.78);color:#fff;box-shadow:0 0 0 1px rgba(255,255,255,.08),0 8px 18px -8px rgba(0,0,0,.6)}
@@ -149,7 +152,7 @@ body.teen .stone-card .btn.ghost{background:rgba(249,115,22,.16);color:#FDBA74}
 .btn.sm{min-height:44px;padding:0 14px;font-size:14px;border-radius:14px}
 .btn.soft{background:var(--tint);color:var(--otext);box-shadow:none}
 .btn[disabled],.btn.locked{background:var(--card2);color:var(--muted);box-shadow:inset 0 0 0 2px var(--line);cursor:not-allowed}
-.btn.block{width:100%}
+.btn.block{width:100%;white-space:normal;text-align:center;line-height:1.2;padding-top:8px;padding-bottom:8px}
 
 /* ---------- layout ---------- */
 .world{max-width:1280px;margin:0 auto;padding:6px 16px 40px;display:grid;grid-template-columns:minmax(0,1fr);gap:22px}
@@ -337,8 +340,10 @@ body.teen .cert{background:linear-gradient(135deg,#1C2852,#2A2246);border-color:
 .switch[aria-checked="true"] .tr{background:var(--o)}
 .switch[aria-checked="true"] .tr::after{transform:translateX(22px)}
 .rate{display:flex;gap:4px}
-.rate button{width:48px;height:48px;font-size:32px;line-height:1;color:var(--line);transition:transform .15s,color .15s}
+.rate button{width:48px;height:48px;font-size:32px;line-height:1;color:#EADBCD;transition:transform .15s,color .15s}
 .rate button.on{color:#FFB800}
+body.teen .rate button{color:rgba(255,255,255,.22)}
+body.teen .rate button.on{color:#FFB800}
 .rate button:active{transform:scale(.85)}
 
 /* hub */
@@ -444,8 +449,7 @@ body.teen .toast{background:#fff;color:#0B1226}
   .grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
   .unl{grid-template-columns:repeat(2,minmax(0,1fr))}
   .hub{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .hub .tile.wide{grid-column:span 2}
-  .hub .tile.full{grid-column:1/-1}
+  .hub .tile.wide,.hub .tile.full{grid-column:1/-1}
   .ml{grid-template-columns:repeat(2,minmax(0,1fr))}
   .zone-mascot{width:120px}
   .stats{grid-template-columns:repeat(6,minmax(0,1fr))}
@@ -458,6 +462,7 @@ body.teen .toast{background:#fff;color:#0B1226}
   .nav{display:flex}
   .top .pill.sess{display:inline-flex}
   .hero{height:620px}
+  .hero .veil{display:none}
   .hint{display:flex}
   .hero .sub .long{display:inline}
   .chip{height:38px;font-size:14px}
@@ -465,7 +470,9 @@ body.teen .toast{background:#fff;color:#0B1226}
   .hero .sub{font-size:18px}
   .world{grid-template-columns:minmax(0,1fr) 360px;gap:32px;padding:0 28px 60px}
   .side{position:relative}
-  .side-in{position:sticky;top:84px;display:flex;flex-direction:column;gap:18px}
+  .hub{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .hub .tile.wide{grid-column:span 2}
+  .side-in{position:sticky;top:var(--stick,84px);display:flex;flex-direction:column;gap:18px}
   .stats{grid-template-columns:repeat(3,minmax(0,1fr))}
   .sheet-panel{left:auto;top:0;bottom:0;width:440px;max-height:none;border-radius:28px 0 0 28px;transform:translateX(105%)}
   .sh-grab{display:none}
@@ -524,6 +531,7 @@ body.teen .toast{background:#fff;color:#0B1226}
 <!-- ================= HERO: 3D adventure world ================= -->
 <section class="hero" id="hero" aria-labelledby="hero-title">
   <div class="sky"></div><div class="sky night"></div>
+  <div class="veil" aria-hidden="true"></div>
   <canvas id="world" aria-label="3D adventure map of the 20 lessons. Tap a stone to see its lesson." role="img" data-fn="8"></canvas>
   <img class="no-webgl-art" data-img="mascot" src="../assets/story/characters/lumi-welcome-hero.png" alt="" onerror="this.remove()">
   <div class="hero-in">
@@ -1024,7 +1032,7 @@ const isDesk=()=>window.matchMedia('(min-width:1024px)').matches;
 function openSheet(where){
   lastFocus=document.activeElement; sheet.classList.add('open'); scrim.classList.add('open');
   const from=isDesk()?{xPercent:105,yPercent:0}:{yPercent:105,xPercent:0};
-  if(window.gsap&&!RM){ gsap.fromTo(sheet,from,{xPercent:0,yPercent:0,duration:.45,ease:'power3.out'}); gsap.from('#shBody > *',{y:24,opacity:0,stagger:.04,duration:.4,delay:.1,ease:'power2.out'}); }
+  if(window.gsap&&!RM){ gsap.fromTo(sheet,Object.assign({x:0,y:0},from),{x:0,y:0,xPercent:0,yPercent:0,duration:.45,ease:'power3.out'}); gsap.from('#shBody > *',{y:24,opacity:0,stagger:.04,duration:.4,delay:.1,ease:'power2.out'}); }
   else sheet.style.transform='none';
   const body=$('#shBody'); body.scrollTop=0;
   if(where==='msgs'){ setTimeout(()=>{ const m=$('#sh-msgs'); body.scrollTo({top:m.offsetTop-body.offsetTop-8,behavior:RM?'auto':'smooth'}); },300); }
@@ -1273,13 +1281,17 @@ function initMotion(){
   ['today','map','classes','hub'].forEach(id=>ScrollTrigger.create({trigger:'#'+id,start:'top 50%',end:'bottom 50%',onToggle:s=>{ if(s.isActive){ $$('.tabs [data-go], .nav [data-go]').forEach(b=>b.classList.toggle('on',b.dataset.go===id)); } }}));
 }
 
+/* sticky rewards rail: stick by its bottom when taller than the viewport */
+function fitRail(){ const r=$('.side-in'); if(!r) return; const h=r.offsetHeight; document.documentElement.style.setProperty('--stick',Math.min(84,window.innerHeight-h-24)+'px'); }
+window.addEventListener('resize',fitRail);
 /* ---------------- boot ---------------- */
 renderBadges(); renderHours(); renderRate(0);
 world=initWorld();
 applyMode(mode,false);
 mountAll();
 initMotion();
-window.addEventListener('load',()=>{ if(window.ScrollTrigger) ScrollTrigger.refresh(); });
+window.addEventListener('load',()=>{ fitRail(); if(window.ScrollTrigger) ScrollTrigger.refresh(); });
+fitRail();
 })();
 </script>
 </body>
