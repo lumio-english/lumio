@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumio English: Storybook Scroll (Landing C preview)</title>
+<meta name="description" content="Design preview C for the Lumio English landing page: the page told as Lumi's illustrated story.">
+<meta name="theme-color" content="#F97316">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<script>
+/* Language before first paint: Arabic by default, remembers "lumio_lang" (shared with the real site).
+   Motion flag: html.mo is set only when motion is allowed, so the closed-book cover never blocks a reduced-motion visitor. */
+(function () { var l = 'ar'; try { l = localStorage.getItem('lumio_lang') === 'en' ? 'en' : 'ar'; } catch (e) {}
+  var h = document.documentElement; h.lang = l; h.dir = l === 'ar' ? 'rtl' : 'ltr';
+  var rm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  h.className += rm ? ' rm' : ' mo'; })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Nunito:ital,wght@0,500;0,600;0,700;0,800;1,700&family=Tajawal:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --o:#F97316;--od:#C2410C;--peach:#FFF6EF;--paper:#FFFDF9;--ink:#141414;--mute:#5E5148;--line:#F0E1D0;--soft:#FFE8D6;
+  --bg:#FFF6EF;--display:'Bricolage Grotesque',system-ui,sans-serif;--body:'Nunito',system-ui,sans-serif;--ar:'Tajawal','Nunito',system-ui,sans-serif;
+  --nav:64px;--r:22px;--sh:0 1px 0 #EAD8C3,0 22px 50px -24px rgba(194,65,12,.32);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:500 16px/1.6 var(--body);transition:background-color .9s ease;-webkit-font-smoothing:antialiased}
+html[dir=rtl] body{font-family:var(--ar)}
+img{max-width:100%;display:block}
+a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.08;letter-spacing:-.02em}
+html[dir=rtl] h1,html[dir=rtl] h2,html[dir=rtl] h3{font-family:var(--ar);letter-spacing:0;line-height:1.25}
+.wrap{width:min(1180px,100% - 32px);margin-inline:auto}
+.skip{position:absolute;inset-inline-start:-999px;top:0;z-index:999;background:#fff;padding:10px 14px}
+.skip:focus{inset-inline-start:8px}
+:focus-visible{outline:3px solid var(--o);outline-offset:3px;border-radius:8px}
+main{overflow-x:clip;position:relative;z-index:1}
+
+/* ---------- WebGL paper sky (behind everything) ---------- */
+#sky{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;display:block}
+.nogl{display:none}
+html.no-gl .nogl{display:block;position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.55}
+html.no-gl .nogl svg{position:absolute;fill:var(--o)}
+
+/* ---------- top strip + nav ---------- */
+.strip{position:relative;z-index:60;background:var(--ink);color:#fff;font:700 12.5px/1.3 var(--body);text-align:center;padding:7px 12px;display:flex;gap:6px 14px;justify-content:center;flex-wrap:wrap;align-items:center}
+html[dir=rtl] .strip{font-family:var(--ar)}
+.strip a{color:#FFD7B5;text-decoration:none;padding:4px 2px}
+.strip a:hover{text-decoration:underline}
+.nav{position:sticky;top:0;z-index:50;height:var(--nav);background:rgba(255,253,249,.86);backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px);border-bottom:1px solid rgba(234,216,195,.7)}
+.navin{height:100%;display:flex;align-items:center;gap:14px}
+.brand{display:flex;align-items:center;min-height:44px;flex:none}
+.brand img{height:46px;width:auto}
+.links{display:flex;gap:2px;margin-inline:auto}
+.links a{font-weight:800;font-size:14.5px;text-decoration:none;padding:10px 10px;border-radius:999px;color:#2a2420;white-space:nowrap}
+.links a:hover{background:var(--soft);color:var(--od)}
+.navr{display:flex;gap:8px;align-items:center;margin-inline-start:auto}
+.links+.navr{margin-inline-start:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 22px;border-radius:999px;font-weight:800;text-decoration:none;border:0;font-size:16px;transition:transform .2s,box-shadow .2s,background .2s;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn-p{background:var(--o);color:#fff;box-shadow:0 10px 24px -10px rgba(249,115,22,.8)}
+.btn-p:hover{background:var(--od)}
+.btn-g{background:#fff;color:var(--ink);box-shadow:inset 0 0 0 2px var(--line)}
+.btn-g:hover{box-shadow:inset 0 0 0 2px var(--o)}
+.btn-s{min-height:44px;padding:0 16px;font-size:14.5px}
+.lang{min-height:44px;padding:0 14px;border-radius:999px;border:2px solid var(--line);background:#fff;font-weight:800;font-size:14.5px}
+.lang:hover{border-color:var(--o)}
+html[dir=ltr] .lang{font-family:var(--ar)}
+html[dir=rtl] .lang{font-family:var(--body)}
+.menub{display:none;width:44px;height:44px;border-radius:50%;border:2px solid var(--line);background:#fff;place-items:center;flex:none}
+.prog{position:absolute;inset-inline:0;bottom:-1px;height:3px;background:var(--o);transform:scaleX(0);transform-origin:left}
+html[dir=rtl] .prog{transform-origin:right}
+.sheet{position:fixed;inset:calc(var(--nav) + 0px) 12px auto;z-index:49;background:var(--paper);border-radius:20px;box-shadow:var(--sh),0 30px 60px -20px rgba(0,0,0,.25);padding:10px;display:none;grid-template-columns:1fr 1fr;gap:4px}
+.sheet.open{display:grid}
+.sheet a{min-height:48px;display:flex;align-items:center;padding:0 14px;border-radius:12px;font-weight:800;text-decoration:none}
+.sheet a:hover{background:var(--soft)}
+@media (max-width:1180px){.links{display:none}.menub{display:grid}.navr{margin-inline-start:auto}}
+@media (max-width:420px){.brand img{height:40px}.navin{gap:8px}.navr{gap:6px}.lang{padding:0 11px}.btn-s{padding:0 12px;font-size:14px}}
+
+/* ---------- chapters ---------- */
+.chap{position:relative;padding:96px 0}
+.chap.turn{perspective:1800px}
+.chead{max-width:760px;margin-bottom:40px}
+.chead.c{margin-inline:auto;text-align:center}
+.ornament{display:inline-flex;align-items:center;gap:10px;font:800 13px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--od)}
+html[dir=rtl] .ornament{font-family:var(--ar);letter-spacing:0;font-size:14px}
+.ornament:before,.ornament:after{content:"";width:26px;height:2px;background:currentColor;border-radius:2px;opacity:.5}
+.kick{display:block;margin:12px 0 10px;font-weight:800;color:var(--mute);font-size:15px}
+.chead h2{font-size:clamp(32px,4.6vw,56px)}
+.chead p{color:var(--mute);font-size:18px;margin:14px 0 0;max-width:640px}
+.chead.c p{margin-inline:auto}
+.page{background:var(--paper);border-radius:var(--r);box-shadow:var(--sh);position:relative}
+.curl{position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(90deg,rgba(194,65,12,.18),rgba(255,255,255,0) 45%);opacity:0;z-index:5}
+html[dir=rtl] .curl{background:linear-gradient(270deg,rgba(194,65,12,.18),rgba(255,255,255,0) 45%)}
+.dog{position:absolute;top:0;inset-inline-end:0;width:44px;height:44px;border-start-end-radius:var(--r);background:linear-gradient(225deg,var(--bg) 50%,#F3DFC9 50%);box-shadow:-3px 3px 6px -3px rgba(120,60,20,.25)}
+html[dir=rtl] .dog{background:linear-gradient(135deg,var(--bg) 50%,#F3DFC9 50%);box-shadow:3px 3px 6px -3px rgba(120,60,20,.25)}
+
+/* ---------- hero: the book opens ---------- */
+.hero{padding:28px 0 72px}
+.book{position:relative;perspective:2200px}
+.spread{display:grid;grid-template-columns:1.05fr 1fr;min-height:min(640px,calc(100vh - 150px));background:var(--paper);border-radius:26px;box-shadow:var(--sh);position:relative;overflow:hidden}
+.spread:after{content:"";position:absolute;top:0;bottom:0;left:50%;width:60px;margin-left:-30px;background:linear-gradient(90deg,rgba(194,65,12,0),rgba(194,65,12,.10) 48%,rgba(120,50,10,.16) 50%,rgba(194,65,12,.10) 52%,rgba(194,65,12,0));pointer-events:none}
+.pg-text{padding:56px 52px 40px;display:flex;flex-direction:column;justify-content:center}
+.eyebrow{display:inline-flex;align-self:flex-start;align-items:center;gap:8px;background:var(--soft);color:var(--od);font-weight:800;font-size:14px;border-radius:999px;padding:7px 14px}
+.hero h1{font-size:clamp(40px,5.4vw,74px);margin:20px 0 18px}
+.hero h1 .l{display:block}
+.hero h1 em{font-style:normal;color:var(--o);position:relative;display:inline-block}
+.hero h1 em svg{position:absolute;inset-inline:0;bottom:-.16em;width:100%;height:.3em;overflow:visible}
+.hero h1 em svg path{stroke:var(--o);stroke-width:5;fill:none;stroke-linecap:round}
+.lead{font-size:19px;color:var(--mute);margin:0 0 26px;max-width:520px}
+.ctas{display:flex;gap:12px;flex-wrap:wrap}
+.ctas .btn{min-height:54px;font-size:17px;padding:0 26px}
+.btn svg{flex:none}
+html[dir=rtl] .btn .arr{transform:scaleX(-1)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:34px;padding-top:22px;border-top:2px dashed var(--line)}
+.stats b{display:block;font:800 34px/1 var(--display);color:var(--ink)}
+.stats span{font-size:13.5px;font-weight:700;color:var(--mute);line-height:1.3;display:block;margin-top:6px}
+.pg-stage{position:relative;background:radial-gradient(120% 80% at 50% 100%,#FFE1C6 0,#FFF0E2 45%,#FFF8F1 75%);overflow:hidden;display:flex;align-items:flex-end;justify-content:center;min-height:300px}
+.sun{position:absolute;width:46%;aspect-ratio:1;border-radius:50%;top:24%;left:50%;transform:translateX(-50%);background:radial-gradient(circle,#FFD3A8 0,#FFE6CF 55%,rgba(255,240,226,0) 70%)}
+.hill{position:absolute;inset-inline:0;bottom:0;height:34%;width:100%}
+.crewrow{position:relative;z-index:2;display:flex;align-items:flex-end;justify-content:center;padding:0 10px 7%;width:100%}
+.pop{position:relative;transform-origin:50% 100%;background:none;border:0;padding:0;margin:0 -6px;min-width:44px;min-height:44px}
+.pop img{height:var(--h);width:auto;filter:drop-shadow(0 10px 10px rgba(150,70,20,.18))}
+.pop.lumi{z-index:3;margin:0 2px}
+.pop .say{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) scale(.6);opacity:0;background:#fff;border-radius:14px;padding:8px 12px;font-weight:800;font-size:14px;white-space:nowrap;box-shadow:0 10px 24px -10px rgba(0,0,0,.3);transition:.25s;pointer-events:none;z-index:9}
+.pop .say:after{content:"";position:absolute;top:100%;left:50%;margin-left:-7px;border:7px solid transparent;border-top-color:#fff}
+.pop.on .say{opacity:1;transform:translateX(-50%) scale(1)}
+.tapnote{position:absolute;top:18px;inset-inline-start:18px;z-index:3;font-weight:800;font-size:13px;color:var(--od);background:rgba(255,255,255,.8);border-radius:999px;padding:6px 12px}
+.heroStar{position:absolute;top:6%;inset-inline-end:6%;width:110px;height:110px;z-index:3;pointer-events:none}
+.cover{position:absolute;inset:0;z-index:10;transform-origin:left center;transform-style:preserve-3d;display:none}
+html.mo .cover{display:block}
+html[dir=rtl] .cover{transform-origin:right center}
+.cv{position:absolute;inset:0;border-radius:26px;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.cv-front{background:radial-gradient(120% 90% at 30% 20%,#FB923C,#F97316 45%,#C2410C);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;box-shadow:inset 0 0 0 10px rgba(255,255,255,.12),inset 0 0 0 12px rgba(255,255,255,.25)}
+.cv-front img{width:min(300px,62%);filter:drop-shadow(0 18px 30px rgba(90,30,0,.35))}
+.cv-front .stars{color:#FFE8D1;font-size:22px;letter-spacing:.5em}
+.cv-back{transform:rotateY(180deg);background:repeating-linear-gradient(45deg,#FFE3CC 0 14px,#FFEFE2 14px 28px)}
+
+/* ---------- how it works: four spreads ---------- */
+.moments{display:grid;gap:34px}
+.moment{display:grid;grid-template-columns:1fr 1.15fr;overflow:visible}
+.moment:nth-child(even) .mtext{order:2}
+.mtext{padding:44px 44px;display:flex;flex-direction:column;justify-content:center}
+.mnum{font:800 64px/1 var(--display);color:var(--o);opacity:.9}
+.mtext h3{font-size:clamp(26px,3vw,36px);margin:10px 0 12px}
+.mtext p{color:var(--mute);margin:0 0 18px;font-size:17px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chips span{background:var(--soft);color:var(--od);font-weight:800;font-size:13.5px;border-radius:999px;padding:6px 12px}
+.mpic{padding:34px;display:grid;place-items:center;background:linear-gradient(180deg,#FFF4EA,#FFE9D6);border-radius:0 var(--r) var(--r) 0;position:relative}
+.moment:nth-child(even) .mpic{border-radius:var(--r) 0 0 var(--r)}
+html[dir=rtl] .mpic{border-radius:var(--r) 0 0 var(--r)}
+html[dir=rtl] .moment:nth-child(even) .mpic{border-radius:0 var(--r) var(--r) 0}
+.photo{position:relative;background:#fff;padding:10px 10px 12px;border-radius:10px;box-shadow:0 18px 40px -18px rgba(120,50,10,.45);transform:rotate(-1.6deg);width:100%}
+.moment:nth-child(even) .photo{transform:rotate(1.4deg)}
+.photo img{border-radius:6px;width:100%;aspect-ratio:16/9;object-fit:cover;background:#f6eadf}
+.tape{position:absolute;width:86px;height:26px;background:rgba(255,214,170,.75);top:-12px;left:50%;margin-left:-43px;transform:rotate(-3deg);box-shadow:0 2px 4px rgba(0,0,0,.06)}
+.faces{display:flex;gap:8px;margin-top:10px}
+.faces div{flex:1;background:#FFF1E4;border-radius:10px;display:flex;flex-direction:column;align-items:center;padding:6px 4px 0;overflow:hidden;font-size:12px;font-weight:800;color:var(--od)}
+.faces div.live{box-shadow:inset 0 0 0 2px var(--o)}
+.faces img{height:52px;width:auto;object-fit:contain;margin-top:4px}
+.streak{position:absolute;bottom:14px;inset-inline-end:14px;display:flex;align-items:center;gap:4px;background:#fff;border-radius:999px;padding:4px 14px 4px 6px;font-weight:800;font-size:14px;box-shadow:0 10px 20px -10px rgba(0,0,0,.3)}
+html[dir=rtl] .streak{padding:4px 6px 4px 14px}
+.streak i{width:34px;height:34px;display:block}
+
+/* ---------- horizontal chapters (levels, games) ---------- */
+.hsec{padding:0}
+.pinbox{min-height:100vh;padding:calc(var(--nav) + 34px) 0 34px;display:flex;flex-direction:column;justify-content:center}
+.pinbox .chead{margin-bottom:26px}
+.hview{overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.hview::-webkit-scrollbar{display:none}
+.hsec.pinned .hview{overflow:hidden;scroll-snap-type:none}
+.htrack{display:flex;gap:22px;width:max-content;padding:16px max(16px,calc((100vw - 1180px)/2)) 24px;position:relative}
+.hprog{width:min(1180px,100% - 32px);margin:8px auto 0;height:6px;border-radius:6px;background:#F3E3D2;position:relative}
+.hprog i{position:absolute;inset-block:0;inset-inline-start:0;width:100%;border-radius:6px;background:var(--o);transform:scaleX(0);transform-origin:left}
+html[dir=rtl] .hprog i{transform-origin:right}
+.lvroad{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible}
+.lv{scroll-snap-align:center;width:min(330px,78vw);flex:none;padding:26px 26px 28px;z-index:1;display:flex;flex-direction:column}
+.lv:nth-child(odd){margin-top:46px}
+.disc{width:74px;height:74px;border-radius:50%;display:grid;place-items:center;color:#fff;font:800 22px/1 var(--display);box-shadow:0 0 0 6px #fff,0 12px 20px -8px rgba(194,65,12,.6);margin-bottom:18px}
+.lv h3{font-size:28px;margin-bottom:8px}
+.ages{align-self:flex-start;background:var(--soft);color:var(--od);font-weight:800;font-size:13.5px;border-radius:999px;padding:5px 12px}
+.lv p{color:var(--mute);margin:14px 0 0;font-size:16px}
+.lvend{width:min(240px,60vw);flex:none;display:grid;place-items:center;position:relative;z-index:1;scroll-snap-align:center}
+.lvend img{width:80%;position:relative;z-index:1}
+.lvend .conf{position:absolute;inset:-20%;z-index:2;pointer-events:none}
+.gcard{scroll-snap-align:center;width:min(340px,80vw);flex:none;overflow:hidden;display:flex;flex-direction:column}
+.gcard .cov{position:relative;height:150px;background:#FFE3CC;border-radius:var(--r) var(--r) 0 0;overflow:hidden}
+.gcard .cov img{width:100%;height:100%;object-fit:cover;object-position:85% 50%}
+html[dir=rtl] .gcard .cov img{object-position:85% 50%}
+.gcard .cov span{position:absolute;top:12px;inset-inline-start:12px;background:#fff;color:var(--od);font-weight:800;font-size:13px;border-radius:999px;padding:5px 11px}
+.gbody{padding:20px 22px 24px;display:flex;flex-direction:column;flex:1}
+.gbody h3{font-size:24px;margin-bottom:8px}
+.gbody p{margin:0 0 14px;color:var(--mute);flex:1}
+.gplay{font-weight:800;color:var(--od);font-size:14.5px}
+.gmore{display:flex;flex-wrap:wrap;gap:10px 26px;margin-top:20px;color:var(--mute);font-weight:700;font-size:15px}
+.gmore b{color:var(--o)}
+
+/* ---------- hub: table of contents ---------- */
+.hubgrid{display:grid;grid-template-columns:1.1fr 1fr;gap:34px;align-items:center}
+.device{position:relative;padding:12px;border-radius:24px;background:#1f1a17;box-shadow:0 30px 60px -30px rgba(80,30,0,.6)}
+.device video,.device img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:14px;background:#2a2320}
+.float{position:absolute;bottom:-22px;inset-inline-start:22px;background:#fff;border-radius:18px;padding:10px 18px;display:flex;align-items:center;gap:10px;box-shadow:var(--sh)}
+.float b{font:800 36px/1 var(--display);color:var(--o)}
+.float span{font-weight:800;font-size:14px;line-height:1.2;max-width:90px}
+.toc{padding:26px 28px}
+.toc h3{font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:var(--od);font-family:var(--body);margin:0 0 6px}
+html[dir=rtl] .toc h3{letter-spacing:0;font-family:var(--ar)}
+.trow{display:grid;grid-template-columns:42px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px dashed var(--line)}
+.trow:last-child{border-bottom:0}
+.trow .ic{width:42px;height:42px;border-radius:12px;background:var(--soft);color:var(--od);display:grid;place-items:center}
+.trow b{display:block;font-size:16.5px}
+.trow span{display:block;color:var(--mute);font-size:14.5px;line-height:1.4}
+.trow em{font-style:normal;font-weight:800;font-size:12.5px;color:var(--od);background:#FFF1E4;border-radius:999px;padding:4px 10px;white-space:nowrap}
+
+/* ---------- writing: the notebook ---------- */
+.wrgrid{display:grid;grid-template-columns:1fr 1.05fr;gap:44px;align-items:center}
+.notes{list-style:none;padding:0;margin:26px 0 0;display:grid;gap:14px}
+.notes li{display:grid;grid-template-columns:44px 1fr;gap:14px;padding:18px 20px;border-radius:18px;background:var(--paper);box-shadow:var(--sh)}
+.notes .n{width:44px;height:44px;border-radius:50%;background:var(--o);color:#fff;font:800 20px/44px var(--display);text-align:center}
+.notes b{display:block;font-size:17.5px;margin-bottom:4px}
+.notes p{margin:0;color:var(--mute);font-size:15.5px}
+.nbwrap{position:relative;padding:14px 4px 30px}
+.wsheet{position:absolute;inset:40px -6px 0 22px;background:#fff;border-radius:6px;transform:rotate(4deg);box-shadow:0 18px 40px -20px rgba(120,50,10,.45);padding:22px;overflow:hidden}
+.wsheet svg{position:absolute;inset-inline-end:16px;bottom:18px;width:60%}
+.notebook{position:relative;background:#FFFEFB;border-radius:8px 18px 18px 8px;box-shadow:0 24px 50px -22px rgba(120,50,10,.5),inset 0 0 0 1px #F2E5D6;padding:26px 24px 22px 62px;transform:rotate(-1.2deg)}
+.notebook:before{content:"";position:absolute;top:10px;bottom:10px;left:14px;width:20px;background:radial-gradient(circle at 10px 10px,#E7D7C6 5px,transparent 6px) 0 0/20px 30px repeat-y}
+.notebook:after{content:"";position:absolute;top:0;bottom:0;left:50px;width:2px;background:#F8B4A0}
+.nbtop{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-weight:800;font-size:14px;color:var(--od);margin-bottom:14px}
+.nbtabs{display:flex;gap:6px}
+.nbtabs span{padding:5px 12px;border-radius:999px;background:#FFF1E4;color:var(--mute)}
+.nbtabs span.on{background:var(--o);color:#fff}
+.wq{font:800 22px/1.3 var(--display);margin:0}
+.wqa{font:700 17px/1.5 var(--ar);color:var(--mute);margin:4px 0 12px;text-align:left}
+.lines{min-height:136px;background:repeating-linear-gradient(180deg,transparent 0 33px,#CFE0F2 33px 34px);font:italic 700 21px/34px var(--body);color:#2b2b2b;padding-top:2px}
+.caret{display:inline-block;width:2px;height:24px;background:var(--o);vertical-align:-4px;margin-left:2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.nbfoot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;font-weight:800;font-size:14px}
+.saved{display:flex;align-items:center;gap:4px;color:#15803D;opacity:0;transition:opacity .4s}
+.saved.on{opacity:1}
+html.rm .saved,html.nomo .saved{opacity:1}
+.saved i{width:30px;height:30px;display:block}
+.pdf{background:#FFF1E4;color:var(--od);padding:6px 12px;border-radius:999px}
+
+/* ---------- stories: open book ---------- */
+.sbook{display:grid;grid-template-columns:1.25fr 1fr;padding:18px;gap:18px}
+.sleft{perspective:1400px}
+.sframe{position:relative;border-radius:16px;overflow:hidden;transform-origin:left center;background:#F6E6D6}
+html[dir=rtl] .sframe{transform-origin:right center}
+.sframe img{width:100%;aspect-ratio:16/9;object-fit:cover}
+.sframe .pages{position:absolute;top:12px;inset-inline-end:12px;background:#fff;border-radius:999px;padding:5px 12px;font-weight:800;font-size:13px}
+.sframe .cap{position:absolute;inset-inline:0;bottom:0;padding:40px 18px 14px;background:linear-gradient(0deg,rgba(40,15,0,.72),rgba(40,15,0,0));color:#fff}
+.sframe .cap small{font-weight:800;opacity:.9;font-size:13px}
+.sframe .cap h3{font-size:26px;color:#fff}
+.sfeat{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.sfeat span{background:#FFF1E4;color:var(--od);font-weight:800;font-size:13.5px;border-radius:999px;padding:6px 12px}
+.sright{display:flex;flex-direction:column;gap:14px;padding:6px 6px 6px 0}
+.stabs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stab{text-align:start;border:2px solid var(--line);background:#fff;border-radius:14px;padding:10px 12px;min-height:56px}
+.stab b{display:block;font-size:15px;line-height:1.25}
+.stab span{display:block;font-size:12.5px;color:var(--mute);font-weight:700}
+.stab.on{border-color:var(--o);background:#FFF4EA}
+.parts{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.parts li{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:center;padding:10px 12px;border-radius:12px;background:#FFF8F1}
+.parts .pn{grid-row:span 2;width:40px;height:40px;border-radius:12px;background:var(--o);color:#fff;font:800 17px/40px var(--display);text-align:center}
+.parts b{font-size:15.5px;line-height:1.3}
+.parts small{color:var(--mute);font-weight:700;font-size:13px}
+
+/* ---------- start free ---------- */
+.freegrid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.fcard{position:relative;display:flex;flex-direction:column;padding:30px 30px 0;text-decoration:none;overflow:hidden;min-height:340px;transition:transform .25s}
+.fcard:hover{transform:translateY(-4px)}
+.fcard.a{background:linear-gradient(160deg,#FFF 0,#FFF1E4 100%)}
+.fcard.b{background:linear-gradient(160deg,#F97316,#C2410C);color:#fff}
+.tag{align-self:flex-start;font-weight:800;font-size:13px;border-radius:999px;padding:6px 12px;background:var(--soft);color:var(--od)}
+.fcard.b .tag{background:rgba(255,255,255,.2);color:#fff}
+.fcard h3{font-size:clamp(26px,3vw,34px);margin:14px 0 10px;max-width:72%}
+.fcard p{margin:0 0 18px;max-width:64%;font-size:16px;color:var(--mute)}
+.fcard.b p{color:#FFF1E4}
+.go{display:inline-flex;align-items:center;gap:10px;font-weight:800;margin-bottom:28px;min-height:44px}
+.go i{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--o);color:#fff}
+.fcard.b .go i{background:#fff;color:var(--od)}
+.fcard img.ch{position:absolute;bottom:0;inset-inline-end:8px;width:min(190px,34%)}
+.fcard .sp{position:absolute;bottom:120px;inset-inline-end:4px;width:96px;height:96px;pointer-events:none}
+
+/* ---------- crew: cast page ---------- */
+.cast{display:grid;grid-template-columns:.9fr 1.1fr;overflow:hidden}
+.stagec{position:relative;min-height:440px;background:radial-gradient(60% 60% at 50% 40%,#FFE0C2,#FFF1E4 60%,#FFF8F1);display:grid;place-items:end center;padding-top:70px}
+.stagec:before{content:"";position:absolute;bottom:0;left:10%;right:10%;height:40px;border-radius:50%;background:rgba(194,65,12,.12);filter:blur(6px)}
+.stagec img{position:relative;max-height:380px;width:auto;max-width:80%}
+.bubble{position:absolute;top:22px;inset-inline-start:22px;inset-inline-end:22px;width:fit-content;max-width:calc(100% - 44px);background:#fff;border-radius:18px;padding:10px 16px;font-weight:800;box-shadow:0 12px 26px -12px rgba(0,0,0,.28);z-index:2}
+.bio{padding:36px 36px 30px}
+.bio .who{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.bio .who h3{font-size:40px}
+.bio .who span{font-weight:800;color:var(--od)}
+.bio p{color:var(--mute);font-size:16.5px;min-height:7.5em;margin:12px 0 16px}
+.biolang{display:inline-flex;gap:4px;background:#FFF1E4;border-radius:999px;padding:4px}
+.biolang button{min-height:40px;min-width:44px;padding:0 14px;border-radius:999px;border:0;background:none;font-weight:800;font-size:14px}
+.biolang button.on{background:#fff;box-shadow:0 2px 8px -2px rgba(0,0,0,.15);color:var(--od)}
+.thumbs{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:20px}
+.thumbs button{aspect-ratio:1;min-height:48px;border-radius:16px;border:2px solid var(--line);background:#FFF8F1;overflow:hidden;padding:4px 4px 0;display:grid;place-items:end center}
+.thumbs button img{height:100%;width:auto;object-fit:contain;object-position:bottom}
+.thumbs button.on{border-color:var(--o);background:#FFE8D6}
+
+/* ---------- pricing ---------- */
+.freehint{text-align:center;color:var(--mute);margin:-14px 0 20px;font-weight:700}
+.freehint a{color:var(--od);font-weight:800}
+.curs{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:30px}
+.curs button{min-height:44px;min-width:50px;padding:0 8px;border-radius:999px;border:2px solid var(--line);background:#fff;font:800 14px var(--body)}
+.curs button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch}
+.plan{padding:30px 26px 26px;display:flex;flex-direction:column;gap:14px}
+.plan.feat{background:linear-gradient(170deg,#FFF 0,#FFF0E2 100%);box-shadow:0 0 0 3px var(--o),var(--sh);transform:translateY(-10px)}
+.badges{display:flex;gap:6px;flex-wrap:wrap}
+.badges span{background:var(--o);color:#fff;font-weight:800;font-size:12.5px;border-radius:999px;padding:5px 11px}
+.badges span+span{background:var(--ink)}
+.plan .nm{font:800 24px/1.2 var(--display)}
+html[dir=rtl] .plan .nm{font-family:var(--ar)}
+.plan .sm{color:var(--mute);font-weight:700;font-size:14.5px}
+.pr{display:flex;align-items:baseline;gap:8px;direction:ltr;justify-content:flex-start}
+html[dir=rtl] .pr{justify-content:flex-end}
+.pr .sym{font-weight:800;color:var(--mute);font-size:16px}
+.pr b{font:800 44px/1 var(--display);letter-spacing:-.03em}
+.per{color:var(--od);font-weight:800;font-size:14px;min-height:1.5em}
+.per bdi{direction:ltr}
+.plan ul{list-style:none;padding:0;margin:4px 0 8px;display:grid;gap:9px;flex:1}
+.plan li{display:grid;grid-template-columns:20px 1fr;gap:10px;font-size:15px;align-items:start}
+.plan li svg{color:var(--o);margin-top:3px}
+.plan .btn{width:100%}
+.prnote{text-align:center;color:var(--mute);font-size:13.5px;max-width:760px;margin:26px auto 0}
+
+/* ---------- handbook ---------- */
+.hbgrid{display:grid;grid-template-columns:.75fr 1.25fr;gap:44px;align-items:center;padding:36px}
+.hbcover{position:relative;max-width:330px;margin-inline:auto;transform:rotate(-3deg)}
+.hbcover img{border-radius:10px 16px 16px 10px;box-shadow:-10px 0 0 -4px #E9D2BB,0 30px 50px -24px rgba(120,50,10,.6)}
+.hbcover span{position:absolute;top:-14px;inset-inline-end:-14px;background:var(--ink);color:#fff;font-weight:800;border-radius:999px;padding:8px 14px;font-size:14px}
+.hblist{list-style:none;padding:0;margin:20px 0 24px;display:grid;gap:10px}
+.hblist li{padding-inline-start:28px;position:relative;color:var(--mute)}
+.hblist li:before{content:"";position:absolute;inset-inline-start:0;top:.55em;width:12px;height:12px;border-radius:3px;background:var(--o);transform:rotate(45deg)}
+.hblist b{color:var(--ink)}
+.hbctas{display:flex;gap:10px;flex-wrap:wrap}
+
+/* ---------- faq ---------- */
+.faqgrid{display:grid;grid-template-columns:.8fr 1.2fr;gap:40px;align-items:start}
+.ask{display:flex;align-items:center;gap:14px;padding:12px 20px 0 14px;text-decoration:none;margin-top:22px;overflow:hidden}
+.ask img{height:96px;width:auto;align-self:flex-end}
+.ask b{display:block;font-size:17px}
+.ask span{color:var(--mute);font-size:14.5px}
+.fq{border-radius:18px;background:var(--paper);box-shadow:var(--sh);margin-bottom:12px;overflow:hidden}
+.fq button{width:100%;display:flex;justify-content:space-between;align-items:center;gap:14px;text-align:start;padding:18px 20px;min-height:60px;background:none;border:0;font-weight:800;font-size:17px}
+.fq .ic{flex:none;width:34px;height:34px;border-radius:50%;background:var(--soft);color:var(--od);display:grid;place-items:center;transition:transform .3s}
+.fq.open .ic{transform:rotate(45deg);background:var(--o);color:#fff}
+.fq .ans{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s ease}
+.fq.open .ans{grid-template-rows:1fr}
+.fq .ans>div{overflow:hidden}
+.fq .ans p{margin:0;padding:0 20px 20px;color:var(--mute)}
+.fq .ans a{color:var(--od);font-weight:800}
+
+/* ---------- final page ---------- */
+.final{padding:110px 0 40px;color:#fff;text-align:center}
+.fbook{position:relative;background:radial-gradient(90% 90% at 50% 0%,#FB923C,#F97316 40%,#C2410C);border-radius:30px;padding:60px 26px 34px;overflow:hidden;box-shadow:0 40px 80px -40px rgba(120,40,0,.7)}
+.fbook .ornament{color:#FFE3CC}
+.fbook h2{font-size:clamp(36px,5.6vw,72px);max-width:880px;margin:16px auto 28px;color:#fff}
+.fbook h2 em{font-style:normal;color:#FFE3CC;text-decoration:underline;text-decoration-thickness:.08em;text-underline-offset:.12em}
+.fbook .row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative;z-index:2}
+.fbook .btn-p{background:#fff;color:var(--od);box-shadow:0 14px 30px -12px rgba(0,0,0,.4)}
+.fbook .btn-g{background:transparent;color:#fff;box-shadow:inset 0 0 0 2px rgba(255,255,255,.6)}
+.fbook .lumi{width:min(230px,52vw);margin:26px auto -34px;position:relative;z-index:1}
+.fconf{position:absolute;inset:0;pointer-events:none;z-index:1}
+footer{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;align-items:center;margin-top:28px;color:var(--mute);font-weight:700;font-size:14.5px;padding:0 4px}
+footer nav{display:flex;gap:4px 18px;flex-wrap:wrap}
+footer a{min-height:44px;display:inline-flex;align-items:center;text-decoration:none;color:var(--ink)}
+footer a:hover{color:var(--od)}
+
+/* ---------- trial dialog + WhatsApp ---------- */
+.tdlg{position:fixed;inset:0;z-index:200;background:rgba(30,15,5,.5);display:none;place-items:center;padding:16px}
+.tdlg.open{display:grid}
+.tbox{background:var(--paper);border-radius:24px;max-width:560px;width:100%;padding:28px 24px 24px;position:relative;max-height:calc(100vh - 32px);overflow:auto}
+.tbox h3{font-size:26px;margin:0 40px 8px 0}
+html[dir=rtl] .tbox h3{margin:0 0 8px 40px}
+.tbox>p{color:var(--mute);margin:0 0 16px}
+.tclose{position:absolute;top:14px;inset-inline-end:14px;width:44px;height:44px;border-radius:50%;border:0;background:var(--soft);font-size:24px;line-height:1}
+.tlevels{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tlevels button{min-height:56px;text-align:start;border:2px solid var(--line);background:#fff;border-radius:14px;padding:8px 12px;font-weight:800;font-size:14.5px;line-height:1.3}
+.tlevels button small{display:block;color:var(--mute);font-weight:700}
+.tlevels button.on{border-color:var(--o);background:#FFF4EA}
+.tpick{display:none;margin-top:16px}
+.tpick.show{display:block}
+.tpick .pts{display:grid;gap:6px;color:var(--mute);font-size:14.5px;margin-bottom:14px}
+.tpick .btn{width:100%;white-space:normal;text-align:center}
+.wafab{position:fixed;right:18px;bottom:18px;z-index:120;width:58px;height:58px;border-radius:50%;background:#25D366;color:#fff;display:grid;place-items:center;box-shadow:0 14px 30px -10px rgba(0,0,0,.35);transition:transform .25s}
+.wafab:hover{transform:scale(1.07)}
+html[dir=rtl] .wafab{right:auto;left:18px}
+
+/* ---------- responsive ---------- */
+@media (max-width:980px){
+  .chap{padding:72px 0}
+  .spread{grid-template-columns:1fr;min-height:0}
+  .spread:after{display:none}
+  .pg-text{padding:34px 22px 22px}
+  .pg-stage{min-height:250px}
+  .moment,.hubgrid,.wrgrid,.cast,.faqgrid,.hbgrid,.sbook{grid-template-columns:1fr}
+  .moment:nth-child(even) .mtext{order:0}
+  .mpic,.moment:nth-child(even) .mpic,html[dir=rtl] .mpic,html[dir=rtl] .moment:nth-child(even) .mpic{border-radius:0 0 var(--r) var(--r);padding:26px 18px 22px}
+  .mtext{padding:30px 22px 24px}
+  .plans{grid-template-columns:1fr}
+  .plan.feat{transform:none;order:-1}
+  .freegrid{grid-template-columns:1fr}
+  .sright{padding:0}
+  .hbgrid{padding:26px 20px}
+  .stagec{min-height:330px}
+  .stagec img{max-height:270px}
+}
+@media (max-width:600px){
+  body{font-size:15.5px}
+  .hero{padding:16px 0 56px}
+  .hero h1{font-size:40px;margin:16px 0 12px}
+  .lead{font-size:16.5px;margin-bottom:20px}
+  .ctas .btn{flex:1 1 100%}
+  .stats{gap:6px;margin-top:24px;padding-top:16px}
+  .stats b{font-size:26px}
+  .stats span{font-size:12px}
+  .pg-stage{min-height:232px}
+  .heroStar{width:80px;height:80px}
+  .tapnote{display:none}
+  .chead{margin-bottom:26px}
+  .chead p{font-size:16px}
+  .mnum{font-size:46px}
+  .mtext p{font-size:16px}
+  .pinbox{padding:calc(var(--nav) + 18px) 0 20px}
+  .pinbox .chead{margin-bottom:12px}
+  .pinbox .chead h2{font-size:28px}
+  .pinbox .chead p{font-size:14.5px;margin-top:8px}
+  .lv{padding:20px 20px 22px}
+  .lv:nth-child(odd){margin-top:26px}
+  .disc{width:60px;height:60px;font-size:18px;margin-bottom:12px}
+  .lv h3{font-size:24px}
+  .lv p{font-size:15px}
+  .htrack{gap:14px}
+  .gcard .cov{height:110px}
+  .gbody{padding:16px 18px 18px}
+  .gbody h3{font-size:21px}
+  .toc{padding:18px 16px}
+  .trow{grid-template-columns:38px 1fr;gap:4px 12px}
+  .trow .ic{width:38px;height:38px;grid-row:span 2}
+  .trow em{grid-column:2;justify-self:start}
+  .float{bottom:-18px;padding:8px 14px}
+  .float b{font-size:28px}
+  .notebook{padding:20px 14px 18px 50px}
+  .notebook:after{left:40px}
+  .notebook:before{left:10px}
+  .wq{font-size:19px}
+  .lines{font-size:18px}
+  .wsheet{inset:30px -4px 0 14px}
+  .stabs{grid-template-columns:1fr 1fr}
+  .sbook{padding:12px}
+  .sframe .cap h3{font-size:21px}
+  .fcard{padding:24px 22px 0;min-height:0}
+  .fcard h3{max-width:100%}
+  .fcard p{max-width:62%}
+  .fcard img.ch{width:118px}
+  .bio{padding:24px 20px 22px}
+  .bio .who h3{font-size:32px}
+  .pr b{font-size:38px}
+  .faqgrid{gap:10px}
+  .fq button{font-size:16px;padding:16px}
+  .fbook{padding:44px 18px 30px;border-radius:24px}
+  .tlevels{grid-template-columns:1fr}
+  .hbctas .btn{flex:1 1 100%}
+  .ask img{height:80px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main" data-i18n="skip">Skip to content</a>
+<canvas id="sky" aria-hidden="true"></canvas>
+<div class="nogl" aria-hidden="true">
+  <svg style="top:14%;left:6%;width:30px" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z"/></svg>
+  <svg style="top:38%;right:5%;width:22px" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z"/></svg>
+  <svg style="top:70%;left:12%;width:18px" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z"/></svg>
+  <svg style="top:84%;right:16%;width:26px" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z"/></svg>
+</div>
+
+<div class="strip"><span data-ex="strip">Design preview · Landing C: Storybook Scroll</span><a href="landing-a.html" data-ex="la">Landing A</a><a href="landing-b.html" data-ex="lb">Landing B</a><a href="index.html" data-ex="ov">Design overview</a></div>
+
+<header class="nav" id="nav">
+  <div class="wrap navin">
+    <a class="brand" href="#top"><img src="../assets/logo/lumio-logo.png" alt="Lumio English" onerror="this.remove()"></a>
+    <nav class="links" aria-label="Sections" id="links">
+      <a href="#story" data-i18n="nav.how">How it works</a><a href="#levels" data-i18n="nav.levels">Levels</a><a href="#hub" data-i18n="nav.hub">English Hub</a><a href="#writing" data-i18n="nav.writing">Writing</a><a href="#games" data-i18n="nav.games">Games</a><a href="#stories" data-i18n="nav.stories">Stories</a><a href="#pricing" data-i18n="nav.pricing">Pricing</a><a href="#faq" data-i18n="nav.faq">FAQ</a>
+    </nav>
+    <div class="navr">
+      <button type="button" class="lang" id="langBtn" data-i18n="nav.lang" data-i18n-label="nav.langLabel">English</button>
+      <a class="btn btn-p btn-s" href="../login.html" data-i18n="nav.login">Log in</a>
+      <button type="button" class="menub" id="menuBtn" aria-expanded="false" aria-controls="sheet" data-ex-label="menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    </div>
+  </div>
+  <i class="prog" id="prog"></i>
+</header>
+<nav class="sheet" id="sheet" aria-label="Sections"></nav>
+
+<main id="main">
+  <!-- Chapter 0: the cover opens -->
+  <section class="chap hero" id="top" data-bg="#FFF6EF" data-ac="#F97316">
+    <div class="wrap">
+      <div class="book" id="book">
+        <div class="spread">
+          <div class="pg-text">
+            <span class="eyebrow hin" data-i18n="hero.eyebrow">English for Arabic-speaking children · ages 4–15</span>
+            <h1><span class="l hl" data-i18n="hero.h1a">Let's learn English</span><span class="l hl"><em><span data-i18n="hero.h1b">the fun way.</span><svg viewBox="0 0 200 20" preserveAspectRatio="none" aria-hidden="true"><path id="squig" d="M3 13 C 40 3, 70 19, 100 10 S 160 4, 197 11"/></svg></em></span></h1>
+            <p class="lead hin" data-i18n="hero.lead">Live classes with real teachers, an app your child actually wants to open, and Arabic support in every single lesson.</p>
+            <div class="ctas hin">
+              <a class="btn btn-p" href="../lumio-pro-test.html"><span data-i18n="hero.ctaTest">Free placement test</span><svg class="arr" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+              <a class="btn btn-g" href="../login.html" data-i18n="hero.ctaStudent">I'm a student</a>
+            </div>
+            <div class="stats hin">
+              <div><b data-count="7">7</b><span data-i18n="stat.levels">levels</span></div>
+              <div><b data-count="140">140</b><span data-i18n="stat.lessons">live lessons</span></div>
+              <div><b data-count="123">123</b><span data-i18n="stat.pages">story pages</span></div>
+              <div><b data-count="25">25</b><span data-i18n="stat.songs">original songs</span></div>
+            </div>
+          </div>
+          <div class="pg-stage">
+            <div class="sun"></div>
+            <svg class="hill" viewBox="0 0 400 120" preserveAspectRatio="none" aria-hidden="true"><path d="M0 60 C 80 20, 150 40, 210 46 S 330 30, 400 50 V120 H0z" fill="#FFD2AE"/><path d="M0 84 C 90 58, 170 76, 240 72 S 350 60, 400 74 V120 H0z" fill="#FDBA8C"/></svg>
+            <span class="tapnote" data-ex="tap">Tap a friend</span>
+            <div class="heroStar" id="heroStar" aria-hidden="true"></div>
+            <div class="crewrow" id="crewrow"></div>
+          </div>
+        </div>
+        <div class="cover" id="cover" aria-hidden="true">
+          <div class="cv cv-front"><img src="../assets/logo/lumio-logo.png" alt="" onerror="this.remove()"><span class="stars">★ ★ ★</span></div>
+          <div class="cv cv-back"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chapter 1: how it works -->
+  <section class="chap turn" id="story" data-bg="#FFF1E4" data-ac="#FB923C">
+    <div class="wrap">
+      <div class="chead"><span class="ornament" data-ch="1"></span><span class="kick" data-i18n="how.kicker">How it works</span><h2 data-i18n="how.h2">One lesson, four moments.</h2><p data-i18n="how.p"></p></div>
+      <div class="moments">
+        <article class="moment page tp"><div class="mtext"><div class="mnum">01</div><h3 data-i18n="s1.h"></h3><p data-i18n="s1.p"></p><div class="chips"><span data-i18n="s1.c1"></span><span data-i18n="s1.c2"></span><span data-i18n="s1.c3"></span></div></div>
+          <div class="mpic"><div class="photo"><i class="tape"></i><img src="../assets/site/shot-preview.jpg" data-i18n-alt="s1.alt" alt="" loading="lazy" onerror="this.remove()"></div></div></article>
+        <article class="moment page tp"><div class="mtext"><div class="mnum">02</div><h3 data-i18n="s2.h"></h3><p data-i18n="s2.p"></p><div class="chips"><span data-i18n="s2.c1"></span><span data-i18n="s2.c2"></span><span data-i18n="s2.c3"></span></div></div>
+          <div class="mpic"><div class="photo"><i class="tape"></i><img src="../assets/site/shot-lesson.jpg" data-i18n-alt="s2.alt" alt="" loading="lazy" onerror="this.remove()">
+            <div class="faces"><div class="live"><span data-i18n="s2.teacher">Teacher</span><img src="../assets/site/lumi-teach-board.png" alt="" loading="lazy" onerror="this.remove()"></div><div><span>Sara</span><img src="../assets/site/sara-wave.png" alt="" loading="lazy" onerror="this.remove()"></div><div><span>Ziad</span><img src="../assets/site/ziad-wave.png" alt="" loading="lazy" onerror="this.remove()"></div><div><span>Noor</span><img src="../assets/site/noor-wave.png" alt="" loading="lazy" onerror="this.remove()"></div></div></div></div></article>
+        <article class="moment page tp"><div class="mtext"><div class="mnum">03</div><h3 data-i18n="s3.h"></h3><p data-i18n="s3.p"></p><div class="chips"><span data-i18n="s3.c1"></span><span data-i18n="s3.c2"></span><span data-i18n="s3.c3"></span></div></div>
+          <div class="mpic"><div class="photo"><i class="tape"></i><img src="../assets/site/shot-homework.jpg" data-i18n-alt="s3.alt" alt="" loading="lazy" onerror="this.remove()"></div></div></article>
+        <article class="moment page tp"><div class="mtext"><div class="mnum">04</div><h3 data-i18n="s4.h"></h3><p data-i18n="s4.p"></p><div class="chips"><span data-i18n="s4.c1"></span><span data-i18n="s4.c2"></span><span data-i18n="s4.c3"></span></div></div>
+          <div class="mpic"><div class="photo"><i class="tape"></i><img src="../assets/site/shot-dashboard.jpg" data-i18n-alt="db.aria" alt="" loading="lazy" onerror="this.remove()"><div class="streak"><i id="flame"></i><span id="streakTxt"></span></div></div></div></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chapter 2: the path (horizontal, pinned) -->
+  <section class="chap hsec" id="levels" data-bg="#FFF7E0" data-ac="#F59E0B">
+    <div class="pinbox">
+      <div class="wrap"><div class="chead"><span class="ornament" data-ch="2"></span><span class="kick" data-i18n="lv.kicker">The path</span><h2 data-i18n="lv.h2"></h2><p data-i18n="lv.p"></p></div></div>
+      <div class="hview"><div class="htrack" id="lvTrack"></div></div>
+      <div class="hprog"><i></i></div>
+    </div>
+  </section>
+
+  <!-- Chapter 3: English Hub -->
+  <section class="chap turn" id="hub" data-bg="#FFF6EF" data-ac="#EA580C">
+    <div class="wrap">
+      <div class="chead"><span class="ornament" data-ch="3"></span><span class="kick" data-i18n="hub.kicker">The English Hub</span><h2 data-i18n="hub.h2"></h2><p data-i18n="hub.p"></p></div>
+      <div class="hubgrid tp">
+        <div class="device" id="hubdev"><video poster="../assets/site/shot-hub.jpg" muted loop playsinline preload="none" data-i18n-label="hub.video"><source src="../assets/marketing/demo-hub.webm" type="video/webm"><source src="../assets/marketing/demo-hub.mp4" type="video/mp4"></video><div class="float"><b>7</b><span data-i18n="hub.float">Hub sections</span></div></div>
+        <div class="toc page"><i class="dog"></i><h3 data-ex="contents">Contents</h3><div id="toc"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chapter 4: writing practice, the notebook -->
+  <section class="chap turn" id="writing" data-bg="#F7F1E8" data-ac="#C2410C">
+    <div class="wrap wrgrid">
+      <div>
+        <div class="chead" style="margin-bottom:0"><span class="ornament" data-ch="4"></span><span class="kick" data-i18n="wr.kicker">Writing practice</span><h2 data-i18n="wr.h2"></h2><p data-i18n="wr.p"></p></div>
+        <ul class="notes">
+          <li><span class="n">1</span><div><b data-i18n="wr.f1h"></b><p data-i18n="wr.f1p"></p></div></li>
+          <li><span class="n">2</span><div><b data-i18n="wr.f2h"></b><p data-i18n="wr.f2p"></p></div></li>
+          <li><span class="n">3</span><div><b data-i18n="wr.f3h"></b><p data-i18n="wr.f3p"></p></div></li>
+        </ul>
+      </div>
+      <div class="nbwrap tp" aria-hidden="true">
+        <div class="wsheet"><svg viewBox="0 0 300 70"><text x="0" y="52" font-family="Nunito,sans-serif" font-size="50" font-weight="800" fill="none" stroke="#F4A774" stroke-width="2" stroke-dasharray="5 5">my family</text><line x1="0" y1="60" x2="300" y2="60" stroke="#CFE0F2" stroke-width="2"/></svg></div>
+        <div class="notebook" dir="ltr">
+          <div class="nbtop"><span data-i18n="wr.demoLevel"></span><span class="nbtabs"><span class="on" data-i18n="wr.demoWrite"></span><span data-i18n="wr.demoSpeak"></span></span></div>
+          <p class="wq">Tell me about your family.</p>
+          <p class="wqa" dir="rtl" lang="ar">أخبرني عن عائلتك.</p>
+          <div class="lines"><span id="typed">I have a big family. My mom is kind and my brother is funny.</span><span class="caret"></span></div>
+          <div class="nbfoot"><span class="saved" id="saved"><i id="checkLot"></i><span data-i18n="wr.demoSave"></span></span><span class="pdf" data-i18n="wr.demoSheet"></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chapter 5: games (horizontal, pinned) -->
+  <section class="chap hsec" id="games" data-bg="#FFEFE6" data-ac="#F97316">
+    <div class="pinbox">
+      <div class="wrap"><div class="chead"><span class="ornament" data-ch="5"></span><span class="kick" data-i18n="games.kicker">Games</span><h2 data-i18n="games.h2"></h2><p data-i18n="games.p"></p></div></div>
+      <div class="hview"><div class="htrack" id="gTrack"></div></div>
+      <div class="hprog"><i></i></div>
+      <div class="wrap gmore"><span data-i18n-html="games.more1"></span><span data-i18n-html="games.more2"></span></div>
+    </div>
+  </section>
+
+  <!-- Chapter 6: stories -->
+  <section class="chap turn" id="stories" data-bg="#FDF0E3" data-ac="#B45309">
+    <div class="wrap">
+      <div class="chead"><span class="ornament" data-ch="6"></span><span class="kick" data-i18n="st.kicker">Stories</span><h2 data-i18n="st.h2"></h2><p data-i18n="st.p"></p></div>
+      <div class="sbook page tp">
+        <div class="sleft">
+          <div class="sframe" id="sframe"><img id="sImg" src="../assets/site/story-pre-a.jpg" alt="" loading="lazy" onerror="this.remove()"><span class="pages" id="sPages"></span><div class="cap"><small id="sLevel"></small><h3 id="sTitle"></h3></div></div>
+          <div class="sfeat"><span data-i18n="st.f1"></span><span data-i18n="st.f2"></span><span data-i18n="st.f3"></span></div>
+        </div>
+        <div class="sright"><div class="stabs" id="stabs"></div><ol class="parts" id="sParts"></ol></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chapter 7: start free -->
+  <section class="chap turn" id="free" data-bg="#FFF6EF" data-ac="#F97316"><span id="startfree" aria-hidden="true"></span>
+    <div class="wrap">
+      <div class="chead"><span class="ornament" data-ch="7"></span><span class="kick" data-i18n="free.kicker">Start free</span><h2 data-i18n="free.h2"></h2></div>
+      <div class="freegrid tp">
+        <a class="fcard page a" href="../lumio-pro-test.html"><span class="tag" data-i18n="free.tag"></span><h3 data-i18n="free.test.h"></h3><p data-i18n="free.test.p"></p><span class="go"><i><svg class="arr" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></i><span data-i18n="free.test.go"></span></span><img class="ch" src="../assets/site/lumi-hero.png" alt="" loading="lazy" onerror="this.remove()"><span class="sp" id="spA"></span></a>
+        <a class="fcard page b" href="#trial" data-trial><span class="tag" data-i18n="free.tag"></span><h3 data-i18n="free.trial.h"></h3><p data-i18n="free.trial.p"></p><span class="go"><i><svg class="arr" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></i><span data-i18n="free.trial.go"></span></span><img class="ch" src="../assets/site/sara-celebrate.png" alt="" loading="lazy" onerror="this.remove()"><span class="sp" id="spB"></span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chapter 8: the crew -->
+  <section class="chap turn" id="crew" data-bg="#FFF3EA" data-ac="#FB923C">
+    <div class="wrap">
+      <div class="chead"><span class="ornament" data-ch="8"></span><span class="kick" data-i18n="crew.kicker">The Lumio crew</span><h2 data-i18n="crew.h2"></h2><p data-i18n="crew.p"></p></div>
+      <div class="cast page tp">
+        <div class="stagec"><div class="bubble" id="cSay"></div><img id="cImg" src="../assets/site/lumi-hero.png" alt="" onerror="this.remove()"></div>
+        <div class="bio">
+          <div class="who"><h3 id="cName"></h3><span id="cTitle"></span></div>
+          <p id="cBio"></p>
+          <div class="biolang" role="group"><button type="button" id="bEn">English</button><button type="button" id="bAr">العربية</button></div>
+          <div class="thumbs" id="thumbs" role="tablist" data-i18n-label="crew.tabs"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chapter 9: pricing -->
+  <section class="chap turn" id="pricing" data-bg="#FFFBF7" data-ac="#F97316">
+    <div class="wrap">
+      <div class="chead c"><span class="ornament" data-ch="9"></span><span class="kick" data-i18n="pr.kicker">Pricing</span><h2 data-i18n="pr.h2"></h2><p data-i18n="pr.intro"></p></div>
+      <p class="freehint" data-i18n-html="pr.freehint"></p>
+      <div class="curs" id="curs" role="group" data-i18n-label="pr.cur"></div>
+      <div class="plans tp" id="plans"></div>
+      <p class="prnote" data-i18n="pr.note"></p>
+    </div>
+  </section>
+
+  <!-- Chapter 10: parent handbook -->
+  <section class="chap turn" id="handbook" data-bg="#FFF6EF" data-ac="#C2410C">
+    <div class="wrap">
+      <div class="hbgrid page tp">
+        <div class="hbcover"><img src="../assets/marketing/parent-handbook-cover.jpg" data-i18n-alt="pb.alt" alt="" loading="lazy" onerror="this.remove()"><span data-i18n="pb.badge">13 pages</span></div>
+        <div>
+          <div class="chead" style="margin-bottom:0"><span class="ornament" data-ch="10"></span><span class="kick" data-i18n="pb.kicker"></span><h2 data-i18n="pb.h2"></h2><p data-i18n="pb.p"></p></div>
+          <ul class="hblist"><li data-i18n-html="pb.li1"></li><li data-i18n-html="pb.li2"></li><li data-i18n-html="pb.li3"></li><li data-i18n-html="pb.li4"></li><li data-i18n-html="pb.li5"></li></ul>
+          <div class="hbctas"><a class="btn btn-p" href="../downloads/Lumio_Parent_Handbook_AR.pdf" download data-i18n="pb.download"></a><a class="btn btn-g" id="pbWa" href="https://wa.me/201124882493" target="_blank" rel="noopener" data-i18n="pb.wa"></a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chapter 11: FAQ -->
+  <section class="chap turn" id="faq" data-bg="#FFFAF5" data-ac="#FB923C">
+    <div class="wrap faqgrid">
+      <div>
+        <div class="chead" style="margin-bottom:0"><span class="ornament" data-ch="11"></span><span class="kick" data-i18n="faq.kicker">FAQ</span><h2 data-i18n="faq.h2"></h2><p data-i18n="faq.p"></p></div>
+        <a class="ask page" href="https://wa.me/201124882493" target="_blank" rel="noopener"><img src="../assets/site/hamad-wave.png" alt="" loading="lazy" onerror="this.remove()"><div><b data-i18n="faq.ask"></b><span data-i18n="faq.askSub"></span></div></a>
+      </div>
+      <div id="faqs" class="tp"></div>
+    </div>
+  </section>
+
+  <!-- The closing page -->
+  <section class="chap final" id="final" data-bg="#FFE7D3" data-ac="#C2410C">
+    <div class="wrap">
+      <div class="fbook" id="fbook">
+        <div class="fconf" id="fconf" aria-hidden="true"></div>
+        <span class="ornament" data-i18n="final.kicker">Ready?</span>
+        <h2 data-i18n-html="final.h2"></h2>
+        <div class="row"><a class="btn btn-p" href="../lumio-pro-test.html" data-i18n="final.test"></a><a class="btn btn-g" href="#trial" data-trial data-i18n="final.trial"></a></div>
+        <img class="lumi" src="../assets/site/lumi-celebrate.png" alt="" loading="lazy" onerror="this.remove()">
+      </div>
+      <footer><span data-i18n="foot.copy"></span><nav aria-label="Footer"><a href="#handbook" data-i18n="foot.hb"></a><a href="../guides.html" data-i18n="foot.guides"></a><a href="https://wa.me/201124882493" target="_blank" rel="noopener" data-i18n="foot.wa"></a></nav></footer>
+    </div>
+  </section>
+</main>
+
+<div class="tdlg" id="trial" role="dialog" aria-modal="true" aria-labelledby="trialH">
+  <div class="tbox">
+    <button type="button" class="tclose" id="trialClose" data-i18n-label="trial.close">×</button>
+    <h3 id="trialH" data-i18n="trial.h"></h3>
+    <p data-i18n="trial.p"></p>
+    <div class="tlevels" id="tlevels"></div>
+    <div class="tpick" id="tpick"><div class="pts"><span data-i18n-html="trial.p1"></span><span data-i18n-html="trial.p2"></span></div><a class="btn btn-p" id="trialBook" href="https://wa.me/201124882493" target="_blank" rel="noopener" data-i18n="trial.book"></a></div>
+  </div>
+</div>
+
+<a class="wafab" href="https://wa.me/201124882493" target="_blank" rel="noopener" data-i18n-label="wa.aria"><svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3zM12 21.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.7 1 1-3.6-.2-.4C2.7 15.6 2.2 13.8 2.2 12 2.2 6.6 6.6 2.2 12 2.2c2.6 0 5.1 1 6.9 2.9 1.8 1.8 2.9 4.3 2.9 6.9 0 5.4-4.4 9.8-9.8 9.8zm8.3-18.1C18.1 1.5 15.1.2 12 .2 5.5.2.2 5.5.2 12c0 2.1.5 4.1 1.6 5.9L.1 24l6.3-1.7c1.7.9 3.7 1.4 5.6 1.4 6.5 0 11.8-5.3 11.8-11.8 0-3.1-1.2-6.1-3.5-8.3z"/></svg></a>
+
+<script src="../vendor/three-r128.min.js"></script>
+<script src="../vendor/gsap-3.12.5.min.js"></script>
+<script src="../vendor/ScrollTrigger-3.12.5.min.js"></script>
+<script src="../vendor/lottie-light-5.12.2.min.js"></script>
+<script>
+/* Copy: js/site-i18n.js, inlined verbatim so this preview is self-contained. */
+/* Lumio English — public site copy, English + Arabic.
+   Static text uses data-i18n="key" (text) or data-i18n-html="key" (trusted markup written here).
+   Lists (levels, games, stories, crew, plans, FAQ) live under their own keys and are built by js/site.js.
+   Arabic reuses the wording already approved on the previous site wherever the meaning is the same. */
+window.LUMIO_SITE_I18N = {
+  en: {
+    'meta.title': 'Lumio English — Small Steps · Big Futures',
+    'skip': 'Skip to content',
+    'brand': 'Lumio <i>English</i>',
+    'nav.how': 'How it works', 'nav.levels': 'Levels', 'nav.hub': 'English Hub', 'nav.writing': 'Writing', 'nav.games': 'Games', 'nav.stories': 'Stories',
+    'nav.crew': 'The crew', 'nav.pricing': 'Pricing', 'nav.faq': 'FAQ', 'nav.login': 'Log in', 'nav.lang': 'العربية', 'nav.langLabel': 'اقرأ الصفحة بالعربية',
+
+    'hero.eyebrow': 'English for Arabic-speaking children · ages 4–15',
+    'hero.h1a': "Let's learn English", 'hero.h1b': 'the fun way.',
+    'hero.lead': 'Live classes with real teachers, an app your child actually wants to open, and Arabic support in every single lesson.',
+    'hero.ctaTest': 'Free placement test', 'hero.ctaStudent': "I'm a student",
+    'stat.levels': 'levels', 'stat.lessons': 'live lessons', 'stat.pages': 'story pages', 'stat.songs': 'original songs',
+    'hero.hint': 'Scroll, or tap a letter tile', 'hero.world': 'Floating English and Arabic letter tiles. Tap a tile to see its word.',
+
+    'how.kicker': 'How it works', 'how.h2': 'One lesson, four moments.',
+    'how.p': 'Every Lumio lesson follows the same rhythm, so your child always knows what comes next.',
+    's1.h': 'Prepare in the app', 's1.p': 'Before class your child meets the new words with pictures, sound and Arabic meaning, at their own pace.',
+    's1.c1': 'Pictures & audio', 's1.c2': 'Arabic meaning', 's1.c3': 'Stars for every step', 's1.alt': 'The word preview in the Lumio app: a picture of a cat, the word, its Arabic meaning and a Listen button',
+    's2.h': 'Live class on Teams', 's2.p': 'A real teacher and up to four classmates at the same level, live on Microsoft Teams. Your child walks in already knowing the words.',
+    's2.c1': 'Up to 4 children', 's2.c2': 'Saudi time', 's2.c3': 'Same level, same age', 's2.alt': 'The lesson shared on screen in a live class',
+    's2.teacher': 'Teacher',
+    's3.h': 'Practise at home', 's3.p': 'Homework with real sentences: spelling, speaking out loud and a short quiz, plus a printable worksheet and flashcards for every lesson.',
+    's3.c1': 'Spelling', 's3.c2': 'Say it', 's3.c3': 'Printable', 's3.alt': 'Lumio homework',
+    's4.h': 'Grow on the map', 's4.p': 'Each finished lesson lights up the adventure map and unlocks the next part of the story, games and songs.',
+    's4.c1': 'Adventure map', 's4.c2': 'Stories', 's4.c3': 'Certificates',
+    'db.aria': "A student's Lumio dashboard: the adventure map lights up to lesson 10, story part 2 unlocks, and progress, stars and the next live class are shown.",
+    'db.hi': 'Hi, Lina!', 'db.level': 'Level 2 · The Twelve Months Club', 'db.streakA': '', 'db.streakB': '-day streak',
+    'db.map': 'Adventure map', 'db.lv': 'Level 2', 'db.toast': 'Story part 2 unlocked!',
+    'db.of': '{n} of 20 lessons', 'db.next': 'Next live class', 'db.when': 'Tue · 5:00 PM', 'db.join': 'Join class',
+    'db.unl': 'Unlocked', 'db.story': 'Story 2', 'db.game': 'Game', 'db.songs': 'Songs',
+
+    'lv.kicker': 'The path', 'lv.h2': 'Seven levels, from first words to real conversations.',
+    'lv.p': 'Every level has 20 real lessons behind it, built for one age group.',
+
+    'hub.kicker': 'The English Hub', 'hub.h2': 'A library of English, open any time.',
+    'hub.p': 'Every level unlocks its own Hub: organised, searchable and available any time, not only during lessons.',
+    'hub.float': 'Hub sections', 'hub.video': 'A real screen recording of the English Hub',
+    'wr.kicker': 'Writing practice', 'wr.h2': 'Children write in English, not only speak it.',
+    'wr.p': 'Writing is part of every level: short answers to real questions, a writing sheet for each lesson and spelling in every homework, with Arabic help whenever it is needed.',
+    'wr.f1h': 'Write or say your answer', 'wr.f1p': 'Writing & Speaking prompts in the English Hub for every level. Type the answer (it is saved) or record it out loud, with the question in Arabic too.',
+    'wr.f2h': 'A writing sheet for every lesson', 'wr.f2p': 'Printable writing practice for all 20 lessons, from Pre-A to Level 3: trace, copy and write your own sentences on paper.',
+    'wr.f3h': 'Spelling in every homework', 'wr.f3p': 'Each homework asks the child to type the new words, so reading, listening and writing grow together, and parents see the results.',
+    'wr.demoLevel': 'Level 1 · About Me', 'wr.demoWrite': 'Write', 'wr.demoSpeak': 'Speak', 'wr.demoSave': 'Saved ✓', 'wr.demoSheet': 'Lesson writing sheet (PDF)',
+    'hub.every': 'Every level',
+
+    'games.kicker': 'Games', 'games.h2': 'A game for every level.',
+    'games.p': "Each level has its own game, built from that level's words and sentences. A new round unlocks after every lesson your child finishes.",
+    'games.play': 'Unlocks on the map',
+    'games.more1': '<b>+</b> Balloon Pop, Fetch with Lumi’s Puppy and Match It inside the lessons',
+    'games.more2': '<b>+</b> Matching, listening and spelling games in every lesson',
+
+    'st.kicker': 'Stories', 'st.h2': 'Stories that unlock as they learn.',
+    'st.p': 'Each level has its own illustrated story in four parts. A new part opens after lessons 5, 10, 15 and 20, so finishing lessons always leads somewhere.',
+    'st.f1': '123 illustrated pages', 'st.f2': 'Hide or show the text', 'st.f3': 'Arabic-speaking characters children recognise',
+    'st.story': '{level} story', 'st.pages': '{n} pages', 'st.part': 'Part {n}', 'st.opens': 'Opens after lesson {n}', 'st.alt': 'A page from {title}',
+
+    'free.kicker': 'Start free', 'free.h2': 'Start with zero risk. Both are free.',
+    'free.tag': '100% free · no card',
+    'free.test.h': 'Free placement test', 'free.test.p': 'The full Lumio level test: listening, reading and writing questions that find the right level for your child, with the result straight away. About 8 minutes.',
+    'free.test.go': 'Take the free test',
+    'free.trial.h': 'Free trial class', 'free.trial.p': "Pick the level that fits your child's age and join a real trial class, the same format as an actual Lumio lesson.",
+    'free.trial.go': 'Choose an age group',
+
+    'trial.h': 'Book a free trial class', 'trial.p': "Tap your child's age group. We'll book the trial at that level on WhatsApp.",
+    'trial.p1': '<b>Not alone:</b> your child joins other students already at this level.',
+    'trial.p2': '<b>Real fun:</b> the trial includes games, challenges and little gifts from the teachers.',
+    'trial.book': 'Book my free trial on WhatsApp', 'trial.close': 'Close',
+    'trial.msg': "Hi! I'd like to book a free trial class for {name} ({ages}).",
+
+    'crew.kicker': 'The Lumio crew', 'crew.h2': 'Six friends. Each one stands for something.',
+    'crew.p': 'Every character carries a part of what Lumio is.', 'crew.tabs': 'Characters',
+
+    'pr.kicker': 'Pricing', 'pr.h2': 'Simple pricing, real value.',
+    'pr.intro': "One level = 2 months · 20 live sessions · full access to that level's English Hub. Save more the longer you commit.",
+    'pr.freehint': 'Not sure which level fits? <a href="lumio-pro-test.html">Take the free placement test</a> or <a href="#free">try a free trial class</a> first.',
+    'pr.cur': 'Choose currency', 'pr.get': 'Get started', 'pr.perlevel': 'per level', 'pr.save': 'save {n}%',
+    'pr.note': 'Prices shown for reference. SAR, AED, OMR and QAR are all pegged to the US dollar and stay stable; KWD is a floating rate, so it may move slightly.',
+
+    'pb.kicker': 'Free download · written fully in Arabic', 'pb.h2': 'The Parent Handbook',
+    'pb.p': "A 13-page guide written for you, not your child: everything you'd want to know before and after saying yes, in one place.",
+    'pb.li1': '<b>Chapters 1–2 ·</b> How the story begins, the free placement test and the free trial class',
+    'pb.li2': '<b>Chapter 3 ·</b> The learning cycle: what a real lesson looks like, step by step',
+    'pb.li3': "<b>Chapter 4 ·</b> How to track your child's real progress, and the English Hub",
+    'pb.li4': '<b>Chapter 5 ·</b> Homework and practice: what to expect at home',
+    'pb.li5': '<b>Chapters 6–7 ·</b> The full 7-level journey, and how certificates work',
+    'pb.download': 'Download the Handbook', 'pb.wa': 'Send it to me on WhatsApp', 'pb.badge': '13 pages',
+    'pb.msg': 'Hi! Could you send me the Parent Handbook PDF, please?', 'pb.alt': 'The cover of the Lumio Parent Handbook',
+
+    'faq.kicker': 'FAQ', 'faq.h2': 'Questions parents ask.', 'faq.p': 'Still unsure? We answer on WhatsApp, in Arabic or English.',
+    'faq.ask': 'Ask us on WhatsApp', 'faq.askSub': 'Message us any time',
+
+    'final.kicker': 'Ready?', 'final.h2': "Start your child's <em>adventure</em> today.",
+    'final.test': 'Free placement test', 'final.trial': 'Book a free trial class',
+    'foot.copy': '© 2026 Lumio English · Small steps, big futures', 'foot.hb': 'Parent Handbook', 'foot.guides': 'Guides', 'foot.wa': 'WhatsApp',
+    'wa.aria': 'Chat with us on WhatsApp',
+
+    levels: [
+      ['Pre-A', 'First Words', 'Ages 4–6 · Pre-A1', "The alphabet, first sounds and the very first spoken words, built for a child who's never studied English before."],
+      ['L1', 'About Me', 'Ages 6–8 · Pre-A1', 'Simple sentences about family, feelings and daily routines: the first real conversations.'],
+      ['L2', 'My World', 'Ages 8–10 · Pre-A1', 'School, home and everyday objects: describing the world right around them.'],
+      ['L3', 'Everyday Life', 'Ages 10–12 · A1', 'Real-life situations (shopping, plans, opinions) with grammar that starts doing real work.'],
+      ['L4', 'Smart Choices', 'Ages 11–13 · A1', 'Making plans, giving reasons and talking through decisions in longer, more confident sentences.'],
+      ['L5', 'Telling My Story', 'Ages 12–14 · A2', 'Narrating experiences and opinions: the shift from answering questions to telling a story.'],
+      ['L6', 'Looking Ahead', 'Ages 13–15 · A2', 'The final stretch: future plans, bigger ideas and real confidence speaking English.']
+    ],
+    trialLevels: [
+      ['Pre-A · First Words', 'Ages 4–6'], ['Level 1 · About Me', 'Ages 6–8'], ['Level 2 · My World', 'Ages 8–10'],
+      ['Level 3 · Everyday Life', 'Ages 10–12'], ['Level 4 · Smart Choices', 'Ages 11–13'], ['Level 5 · Telling My Story', 'Ages 12–14'], ['Level 6 · Looking Ahead', 'Ages 13–15']
+    ],
+    hub: [
+      ['Vocabulary', 'Every word from the lessons, with pictures, sound and Arabic.', 'Every level'],
+      ['Idioms', 'Everyday English expressions, explained simply.', 'Every level'],
+      ['Writing & Speaking', 'Questions to answer in writing or out loud, with Arabic help.', 'Every level'],
+      ['Songs', 'Hello, theme, review and goodbye songs with lyrics.', 'Every level'],
+      ['Spelling', 'Letters and first words, sound by sound.', 'Pre-A'],
+      ['Phonics', 'The sounds behind the letters, with mouth pictures.', 'Levels 1–2'],
+      ['Grammar', 'One clear grammar point at a time, with examples.', 'Levels 3–6']
+    ],
+    games: [
+      ['Pre-A', "Lumi's Pocket", 'A gentle picture-and-sound matching game, no reading needed.'],
+      ['Level 1', 'Treehouse Builder', 'Answer correctly to build the treehouse, piece by piece.'],
+      ['Level 2', 'Twelve Months Calendar', 'A full-year picture calendar that fills up as you play.'],
+      ['Level 3', 'Crew Chat', "A group-chat game: reply to the crew's messages in English."],
+      ['Level 4', 'Squad Budget', 'Make spending decisions in English as a team.'],
+      ['Level 5', 'Story Detective', 'Piece together what happened, using clues in the past tense.'],
+      ['Level 6', 'Crystal Ball', 'Make predictions and read your own English fortune.']
+    ],
+    stories: [
+      { level: 'Pre-A', title: "Lumi's Magic Map", parts: ['The Mysterious Map', 'The Whispering Forest', 'The Family Picnic Village', 'The Treasure Celebration'] },
+      { level: 'Level 1', title: 'The Treehouse Club', parts: ['The Big Idea', 'Building Day', 'Grand Opening Prep', 'The Backyard Party'] },
+      { level: 'Level 2', title: 'The Twelve Months Club', parts: ['New Friends, New Family', 'School Days', 'A Year of Birthdays', 'The Big Poster Party'] },
+      { level: 'Level 3', title: 'The Crew', parts: ['Meet the Crew', 'Around School', 'Game Night', 'The Big Match'] }
+    ],
+    plans: [
+      { name: 'Single Level', sub: '2 months · 20 sessions', per: 'per level', li: ['1 full level, start to finish', 'Full English Hub access for that level', 'Grouped with peers at your level', 'Teacher + supervisor support'] },
+      { name: '6-Level Bundle', sub: 'Full year · 120 sessions', badges: ['Most popular', 'Best value'], li: ['6 full levels: nearly the whole path', 'Full English Hub access, every level included', 'Grouped with peers at your level', 'Teacher + supervisor support'] },
+      { name: '3-Level Bundle', sub: '6 months · 60 sessions', li: ['3 full levels, back to back', 'Full English Hub access, every level included', 'Grouped with peers at your level', 'Teacher + supervisor support'] }
+    ],
+    faq: [
+      ['What age is Lumio for?', 'From 4 all the way to 15. The curriculum spans 7 levels, each built for a specific age range, from a child’s very first English words to real conversation.'],
+      ['Is there a real teacher, or is this just an app?', 'Both. Your child prepares in the app, then joins a real, live class with their teacher on Microsoft Teams. The app isn’t a replacement for the teacher; it’s what makes the time with the teacher count.'],
+      ['My child has never studied English. Where do they start?', '<a href="lumio-pro-test.html">Take the free placement test</a>. It’s quick, and it places your child at the right level automatically based on their real result.'],
+      ['Can we try a class before paying anything?', 'Yes. <a href="#free">Pick your child’s age group</a> and book a free trial class, in the same format as a real Lumio lesson. No card, no commitment.'],
+      ['Is the Arabic support just a translation button?', 'No. Arabic is built into every lesson from the start: every word, every instruction and every spelling rule has its Arabic alongside it.'],
+      ['What happens after class ends?', 'Homework, right away: real sentences to practise, words to spell and a quick quiz, all tied to exactly what was covered in that day’s class.']
+    ]
+  },
+
+  ar: {
+    'meta.title': 'لوميو إنجلش — خطوات صغيرة · مستقبل كبير',
+    'skip': 'انتقل إلى المحتوى',
+    'brand': 'لوميو <i>إنجلش</i>',
+    'nav.how': 'كيف تعمل', 'nav.levels': 'المستويات', 'nav.hub': 'المكتبة', 'nav.writing': 'الكتابة', 'nav.games': 'الألعاب', 'nav.stories': 'القصص',
+    'nav.crew': 'الأصدقاء', 'nav.pricing': 'الأسعار', 'nav.faq': 'الأسئلة', 'nav.login': 'تسجيل الدخول', 'nav.lang': 'English', 'nav.langLabel': 'Read this page in English',
+
+    'hero.eyebrow': 'الإنجليزية لأطفالنا · من ٤ إلى ١٥ سنة',
+    'hero.h1a': 'لنتعلّم الإنجليزية', 'hero.h1b': 'بطريقة ممتعة.',
+    'hero.lead': 'حصص مباشرة مع معلمين حقيقيين، وتطبيق يحب طفلك فتحه، ودعم بالعربية في كل درس.',
+    'hero.ctaTest': 'اختبار تحديد المستوى المجاني', 'hero.ctaStudent': 'أنا طالب',
+    'stat.levels': 'مستويات', 'stat.lessons': 'حصة مباشرة', 'stat.pages': 'صفحة قصص', 'stat.songs': 'أغنية أصلية',
+    'hero.hint': 'مرّر للأسفل، أو اضغط على حرف', 'hero.world': 'حروف إنجليزية وعربية تطفو. اضغط على حرف لترى كلمته.',
+
+    'how.kicker': 'كيف تعمل', 'how.h2': 'درس واحد، أربع لحظات.',
+    'how.p': 'كل درس في لوميو يسير بنفس الإيقاع، فيعرف طفلك دائماً ما الخطوة التالية.',
+    's1.h': 'التحضير في التطبيق', 's1.p': 'قبل الحصة يتعرّف طفلك على الكلمات الجديدة بالصور والصوت والمعنى بالعربية، بالسرعة التي تناسبه.',
+    's1.c1': 'صور وصوت', 's1.c2': 'المعنى بالعربية', 's1.c3': 'نجوم لكل خطوة', 's1.alt': 'معاينة الكلمات في تطبيق لوميو: صورة قطة والكلمة ومعناها بالعربية وزر الاستماع',
+    's2.h': 'حصة مباشرة عبر Teams', 's2.p': 'معلم حقيقي ومعه حتى أربعة زملاء من نفس المستوى، مباشرة عبر Microsoft Teams. يدخل طفلك الحصة وهو يعرف الكلمات مسبقاً.',
+    's2.c1': 'حتى ٤ أطفال', 's2.c2': 'بتوقيت السعودية', 's2.c3': 'نفس المستوى والعمر', 's2.alt': 'الدرس معروض على الشاشة في حصة مباشرة',
+    's2.teacher': 'المعلم',
+    's3.h': 'التدريب في المنزل', 's3.p': 'واجب منزلي بجمل حقيقية: إملاء، ونطق بصوت عالٍ، واختبار قصير، مع ورقة عمل وبطاقات تعليمية قابلة للطباعة لكل درس.',
+    's3.c1': 'الإملاء', 's3.c2': 'انطقها', 's3.c3': 'قابل للطباعة', 's3.alt': 'واجب لوميو المنزلي',
+    's4.h': 'التقدّم على الخريطة', 's4.p': 'كل درس يُكمله طفلك يُضيء خريطة المغامرة، ويفتح الجزء التالي من القصة والألعاب والأغاني.',
+    's4.c1': 'خريطة المغامرة', 's4.c2': 'القصص', 's4.c3': 'الشهادات',
+    'db.aria': 'لوحة طالب في لوميو: خريطة المغامرة تضيء حتى الدرس العاشر، ويُفتح الجزء الثاني من القصة، مع التقدم والنجوم والحصة القادمة.',
+    'db.hi': 'أهلاً يا لينا!', 'db.level': 'المستوى 2 · نادي الأشهر الاثني عشر', 'db.streakA': 'أيام متتالية: ', 'db.streakB': '',
+    'db.map': 'خريطة المغامرة', 'db.lv': 'المستوى 2', 'db.toast': 'فُتح الجزء الثاني من القصة!',
+    'db.of': '{n} من 20 درساً', 'db.next': 'الحصة القادمة', 'db.when': 'الثلاثاء · 5:00 م', 'db.join': 'انضم للحصة',
+    'db.unl': 'مفتوح', 'db.story': 'القصة 2', 'db.game': 'اللعبة', 'db.songs': 'الأغاني',
+
+    'lv.kicker': 'المسار', 'lv.h2': 'سبعة مستويات، من الكلمات الأولى إلى محادثات حقيقية.',
+    'lv.p': 'كل مستوى يحتوي على 20 درساً حقيقياً جاهزاً، مصمم لفئة عمرية واحدة.',
+
+    'hub.kicker': 'المكتبة التعليمية', 'hub.h2': 'مكتبة إنجليزية مفتوحة في أي وقت.',
+    'hub.p': 'كل مستوى يفتح مكتبته الخاصة: منظمة، قابلة للبحث، ومتاحة في أي وقت، وليس فقط أثناء الدروس.',
+    'hub.float': 'أقسام المكتبة', 'hub.video': 'تسجيل شاشة حقيقي للمكتبة التعليمية',
+    'wr.kicker': 'تدريب الكتابة', 'wr.h2': 'أطفالنا يكتبون بالإنجليزية، لا يتحدثون فقط.',
+    'wr.p': 'الكتابة جزء من كل مستوى: إجابات قصيرة على أسئلة حقيقية، وورقة كتابة لكل درس، وإملاء في كل واجب، مع مساعدة بالعربية عند الحاجة.',
+    'wr.f1h': 'اكتب إجابتك أو قلها', 'wr.f1p': 'أسئلة "الكتابة والتحدث" في المكتبة التعليمية لكل المستويات. يكتب الطفل إجابته (وتُحفظ) أو يسجلها بصوته، والسؤال مترجم للعربية أيضاً.',
+    'wr.f2h': 'ورقة كتابة لكل درس', 'wr.f2p': 'تدريب كتابة قابل للطباعة لكل الدروس العشرين، من المستوى التمهيدي حتى المستوى 3: تتبّع وانسخ واكتب جملك بنفسك على الورق.',
+    'wr.f3h': 'إملاء في كل واجب', 'wr.f3p': 'كل واجب يطلب من الطفل كتابة الكلمات الجديدة، فتنمو القراءة والاستماع والكتابة معاً، ويرى الأهل النتائج.',
+    'wr.demoLevel': 'المستوى 1 · عني أنا', 'wr.demoWrite': 'اكتب', 'wr.demoSpeak': 'تحدّث', 'wr.demoSave': 'تم الحفظ ✓', 'wr.demoSheet': 'ورقة كتابة الدرس (PDF)',
+    'hub.every': 'كل المستويات',
+
+    'games.kicker': 'الألعاب', 'games.h2': 'لعبة لكل مستوى.',
+    'games.p': 'لكل مستوى لعبته الخاصة، مبنية من كلمات وجمل ذلك المستوى. تُفتح جولة جديدة بعد كل درس يُكمله طفلك.',
+    'games.play': 'تُفتح على الخريطة',
+    'games.more1': '<b>+</b> فرقعة البالونات، وجلب الكرة مع جرو لومي، والمطابقة داخل الدروس',
+    'games.more2': '<b>+</b> ألعاب مطابقة واستماع وإملاء في كل درس',
+
+    'st.kicker': 'القصص', 'st.h2': 'قصص تُفتح كلما تعلّموا.',
+    'st.p': 'لكل مستوى قصته المصوّرة في أربعة أجزاء. يُفتح جزء جديد بعد الدروس 5 و10 و15 و20، فكل درس يُكمله طفلك يقوده إلى شيء جديد.',
+    'st.f1': '123 صفحة مصوّرة', 'st.f2': 'إظهار النص أو إخفاؤه', 'st.f3': 'شخصيات عربية يعرفها الأطفال',
+    'st.story': 'قصة {level}', 'st.pages': '{n} صفحة', 'st.part': 'الجزء {n}', 'st.opens': 'يُفتح بعد الدرس {n}', 'st.alt': 'صفحة من قصة {title}',
+
+    'free.kicker': 'ابدأ مجاناً', 'free.h2': 'ابدأ بدون أي مخاطرة. كلاهما مجاني.',
+    'free.tag': 'مجاني 100% · بدون بطاقة',
+    'free.test.h': 'اختبار تحديد المستوى المجاني', 'free.test.p': 'اختبار لوميو الكامل لتحديد المستوى: أسئلة استماع وقراءة وكتابة تحدد المستوى المناسب لطفلك، مع النتيجة فوراً. حوالي 8 دقائق.',
+    'free.test.go': 'ابدأ الاختبار المجاني',
+    'free.trial.h': 'حصة تجريبية مجانية', 'free.trial.p': 'اختر المستوى المناسب لعمر طفلك وانضم إلى حصة تجريبية حقيقية، بنفس صيغة درس لوميو الفعلي.',
+    'free.trial.go': 'اختر الفئة العمرية',
+
+    'trial.h': 'احجز حصة تجريبية مجانية', 'trial.p': 'اضغط على الفئة العمرية لطفلك، وسنحجز الحصة التجريبية في هذا المستوى عبر واتساب.',
+    'trial.p1': '<b>لست وحدك:</b> ينضم طفلك إلى طلاب آخرين موجودين بالفعل في نفس هذا المستوى.',
+    'trial.p2': '<b>متعة حقيقية:</b> تتضمن الحصة التجريبية ألعاباً وتحديات وهدايا صغيرة من المعلمين.',
+    'trial.book': 'احجز حصتي التجريبية عبر واتساب', 'trial.close': 'إغلاق',
+    'trial.msg': 'مرحباً! أود حجز حصة تجريبية مجانية لمستوى {name} ({ages}).',
+
+    'crew.kicker': 'أصدقاء لوميو', 'crew.h2': 'ستة أصدقاء، لكل واحد منهم معنى.',
+    'crew.p': 'كل شخصية تحمل جزءاً مما تمثله لوميو.', 'crew.tabs': 'الشخصيات',
+
+    'pr.kicker': 'الأسعار', 'pr.h2': 'أسعار بسيطة، وقيمة حقيقية.',
+    'pr.intro': 'المستوى الواحد = شهران · 20 حصة مباشرة · وصول كامل لمكتبة ذلك المستوى. وفّر أكثر كلما التزمت لفترة أطول.',
+    'pr.freehint': 'لست متأكداً من المستوى المناسب؟ <a href="lumio-pro-test.html">جرّب اختبار تحديد المستوى المجاني</a> أو <a href="#free">احجز حصة تجريبية مجانية</a> أولاً.',
+    'pr.cur': 'اختر العملة', 'pr.get': 'ابدأ الآن', 'pr.perlevel': 'لكل مستوى', 'pr.save': 'وفّر {n}%',
+    'pr.note': 'الأسعار للاطلاع فقط. الريال السعودي والدرهم الإماراتي والريال العماني والريال القطري مربوطة بالدولار الأمريكي وتبقى ثابتة؛ أما الدينار الكويتي فسعره متغير وقد يتحرك قليلاً.',
+
+    'pb.kicker': 'تحميل مجاني · مكتوب بالكامل بالعربية', 'pb.h2': 'دليل أولياء الأمور',
+    'pb.p': 'دليل من 13 صفحة، مكتوب لك أنت وليس لطفلك: كل ما تريد معرفته قبل الموافقة وبعدها، في مكان واحد.',
+    'pb.li1': '<b>الفصلان 1–2 ·</b> كيف تبدأ القصة، واختبار المستوى المجاني، والحصة التجريبية المجانية',
+    'pb.li2': '<b>الفصل 3 ·</b> دورة التعلّم: كيف يبدو الدرس الحقيقي، خطوة بخطوة',
+    'pb.li3': '<b>الفصل 4 ·</b> كيف تتابع تقدّم طفلك الحقيقي، والمكتبة التعليمية',
+    'pb.li4': '<b>الفصل 5 ·</b> الواجبات والتدريب: ما الذي تتوقعه في المنزل',
+    'pb.li5': '<b>الفصلان 6–7 ·</b> رحلة المستويات السبعة كاملة، وكيف تعمل الشهادات',
+    'pb.download': 'تحميل الدليل', 'pb.wa': 'أرسله لي عبر واتساب', 'pb.badge': '13 صفحة',
+    'pb.msg': 'مرحباً! هل يمكنكم إرسال دليل أولياء الأمور بصيغة PDF؟', 'pb.alt': 'غلاف دليل أولياء الأمور من لوميو',
+
+    'faq.kicker': 'الأسئلة الشائعة', 'faq.h2': 'أسئلة يطرحها الأهالي.', 'faq.p': 'ما زلت متردداً؟ نجيبك عبر واتساب، بالعربية أو الإنجليزية.',
+    'faq.ask': 'اسألنا عبر واتساب', 'faq.askSub': 'راسلنا في أي وقت',
+
+    'final.kicker': 'مستعد؟', 'final.h2': 'ابدأ <em>مغامرة</em> طفلك اليوم.',
+    'final.test': 'اختبار تحديد المستوى المجاني', 'final.trial': 'احجز حصة تجريبية مجانية',
+    'foot.copy': '© 2026 لوميو إنجلش · خطوات صغيرة، مستقبل كبير', 'foot.hb': 'دليل أولياء الأمور', 'foot.guides': 'الأدلة', 'foot.wa': 'واتساب',
+    'wa.aria': 'تواصل معنا عبر واتساب',
+
+    levels: [
+      ['Pre-A', 'الكلمات الأولى', 'الأعمار 4–6 · Pre-A1', 'الحروف الأبجدية، الأصوات الأولى، وأولى الكلمات المنطوقة — مصمم لطفل لم يدرس الإنجليزية من قبل.'],
+      ['L1', 'عني أنا', 'الأعمار 6–8 · Pre-A1', 'جمل بسيطة عن العائلة، المشاعر، والروتين اليومي — أولى المحادثات الحقيقية.'],
+      ['L2', 'عالمي', 'الأعمار 8–10 · Pre-A1', 'المدرسة، المنزل، والأشياء اليومية — وصف العالم من حولهم.'],
+      ['L3', 'الحياة اليومية', 'الأعمار 10–12 · A1', 'مواقف من الحياة الواقعية — التسوق، الخطط، الآراء — مع قواعد تبدأ بالعمل بشكل حقيقي.'],
+      ['L4', 'قرارات ذكية', 'الأعمار 11–13 · A1', 'وضع الخطط، إعطاء الأسباب، ومناقشة القرارات بجمل أطول وأكثر ثقة.'],
+      ['L5', 'أروي قصتي', 'الأعمار 12–14 · A2', 'سرد التجارب والآراء — الانتقال من الإجابة على الأسئلة إلى رواية قصة.'],
+      ['L6', 'نحو المستقبل', 'الأعمار 13–15 · A2', 'المرحلة الأخيرة — خطط المستقبل، أفكار أكبر، وثقة حقيقية في التحدث بالإنجليزية.']
+    ],
+    trialLevels: [
+      ['المستوى التمهيدي · الكلمات الأولى', 'الأعمار 4–6'], ['المستوى 1 · عني أنا', 'الأعمار 6–8'], ['المستوى 2 · عالمي', 'الأعمار 8–10'],
+      ['المستوى 3 · الحياة اليومية', 'الأعمار 10–12'], ['المستوى 4 · قرارات ذكية', 'الأعمار 11–13'], ['المستوى 5 · أروي قصتي', 'الأعمار 12–14'], ['المستوى 6 · نحو المستقبل', 'الأعمار 13–15']
+    ],
+    hub: [
+      ['المفردات', 'كل كلمة من الدروس، مع الصورة والصوت والعربية.', 'كل المستويات'],
+      ['التعبيرات', 'تعبيرات إنجليزية يومية، مشروحة ببساطة.', 'كل المستويات'],
+      ['الكتابة والتحدث', 'أسئلة يجيب عنها الطفل كتابةً أو بصوته، مع مساعدة بالعربية.', 'كل المستويات'],
+      ['الأغاني', 'أغاني الترحيب والموضوع والمراجعة والوداع مع كلماتها.', 'كل المستويات'],
+      ['الإملاء', 'الحروف والكلمات الأولى، صوتاً بصوت.', 'التمهيدي'],
+      ['الصوتيات', 'الأصوات وراء الحروف، مع صور لحركة الفم.', 'المستويان 1–2'],
+      ['القواعد', 'قاعدة واضحة في كل مرة، مع أمثلة.', 'المستويات 3–6']
+    ],
+    games: [
+      ['التمهيدي', 'جيب لومي', 'لعبة مطابقة صور وأصوات هادئة، لا تحتاج إلى قراءة.'],
+      ['المستوى 1', 'بناء بيت الشجرة', 'أجب بشكل صحيح لتبني بيت الشجرة، قطعة بقطعة.'],
+      ['المستوى 2', 'تقويم الأشهر الاثني عشر', 'تقويم مصوّر لسنة كاملة يمتلئ كلما لعبت.'],
+      ['المستوى 3', 'محادثة الأصدقاء', 'لعبة على شكل محادثة جماعية: رُدّ على رسائل الأصدقاء بالإنجليزية.'],
+      ['المستوى 4', 'ميزانية الفريق', 'اتخذ قرارات إنفاق بالإنجليزية كفريق واحد.'],
+      ['المستوى 5', 'محقق القصص', 'اجمع أجزاء ما حدث، باستخدام أدلة بصيغة الماضي.'],
+      ['المستوى 6', 'الكرة البلورية', 'توقّع المستقبل واقرأ حظك الخاص بالإنجليزية.']
+    ],
+    stories: [
+      { level: 'التمهيدي', title: 'خريطة لومي السحرية', parts: ['الخريطة الغامضة', 'الغابة الهامسة', 'قرية نزهة العائلة', 'احتفال الكنز'] },
+      { level: 'المستوى 1', title: 'نادي بيت الشجرة', parts: ['الفكرة الكبيرة', 'يوم البناء', 'التحضير للافتتاح', 'حفلة الحديقة'] },
+      { level: 'المستوى 2', title: 'نادي الأشهر الاثني عشر', parts: ['أصدقاء جدد، عائلة جديدة', 'أيام المدرسة', 'سنة من أعياد الميلاد', 'حفلة الملصقات الكبرى'] },
+      { level: 'المستوى 3', title: 'الشلة', parts: ['تعرّف على الشلة', 'في أرجاء المدرسة', 'ليلة الألعاب', 'المباراة الكبرى'] }
+    ],
+    plans: [
+      { name: 'مستوى واحد', sub: 'شهران · 20 حصة', per: 'لكل مستوى', li: ['مستوى كامل، من البداية للنهاية', 'وصول كامل لمكتبة ذلك المستوى', 'ضمن مجموعة من زملاء بنفس مستواك', 'دعم من معلم ومشرف'] },
+      { name: 'باقة 6 مستويات', sub: 'سنة كاملة · 120 حصة', badges: ['الأكثر طلباً', 'الأفضل قيمة'], li: ['6 مستويات كاملة — تقريباً المسار بأكمله', 'وصول كامل للمكتبة، بكل المستويات', 'ضمن مجموعة من زملاء بنفس مستواك', 'دعم من معلم ومشرف'] },
+      { name: 'باقة 3 مستويات', sub: '6 أشهر · 60 حصة', li: ['3 مستويات كاملة، متتالية', 'وصول كامل للمكتبة، بكل المستويات', 'ضمن مجموعة من زملاء بنفس مستواك', 'دعم من معلم ومشرف'] }
+    ],
+    faq: [
+      ['لأي عمر مناسب لوميو؟', 'من عمر 4 حتى 15 عاماً — يمتد المنهج عبر 7 مستويات، كل منها مصمم لفئة عمرية محددة، بدءاً من أولى كلمات الطفل بالإنجليزية وصولاً إلى محادثة حقيقية.'],
+      ['هل يوجد معلم حقيقي، أم أنه مجرد تطبيق؟', 'كلاهما. يحضّر طفلك في التطبيق، ثم ينضم إلى حصة حقيقية مباشرة مع معلمه عبر Microsoft Teams — التطبيق ليس بديلاً عن المعلم، بل هو ما يجعل وقت الحصة أكثر فائدة.'],
+      ['طفلي لم يدرس الإنجليزية من قبل. من أين يبدأ؟', '<a href="lumio-pro-test.html">جرّب اختبار تحديد المستوى المجاني</a> — إنه سريع، ويضع طفلك في المستوى المناسب تلقائياً بناءً على نتيجته الحقيقية.'],
+      ['هل يمكننا تجربة حصة قبل دفع أي شيء؟', 'نعم — <a href="#free">اختر الفئة العمرية لطفلك</a> واحجز حصة تجريبية مجانية، بنفس صيغة درس لوميو الحقيقي. بدون بطاقة، وبدون أي التزام.'],
+      ['هل الدعم العربي مجرد زر ترجمة؟', 'لا — اللغة العربية جزء أساسي من كل درس منذ البداية: كل كلمة، كل تعليمة، كل قاعدة إملائية لها ترجمتها العربية بجانبها.'],
+      ['ماذا يحدث بعد انتهاء الحصة؟', 'واجب منزلي، فوراً — جمل حقيقية للتدرب عليها، كلمات لتهجئتها، واختبار سريع، كلها مرتبطة تماماً بما تم تغطيته في حصة ذلك اليوم.']
+    ]
+  }
+};
+</script>
+<script>
+(function () {
+  'use strict';
+  var DICT = window.LUMIO_SITE_I18N;
+  var WA = 'https://wa.me/201124882493';
+  /* Crew bios: exactly as js/site.js (previous site). */
+  var CREW = [
+    { key:'lumi', img:'lumi-hero.png', glow:'#FFD3B0', en:{ role:'Lumi', title:'The Explorer', bio:"Lumi set out from Egypt to explore the world — and quickly discovered that English was the key to reaching it. He travelled through the Gulf, the one part of the world he could still explore in his own language, and made it his mission to help every Arabic-speaking child learn English the same way: one curious step at a time.", say:"Yay! Let's learn together!" }, ar:{ role:'لومي', title:'المستكشف', bio:'انطلق لومي من مصر لاستكشاف العالم — واكتشف سريعاً أن اللغة الإنجليزية هي مفتاح الوصول إليه. سافر عبر منطقة الخليج، المكان الوحيد الذي استطاع استكشافه بلغته العربية، وجعل مهمته مساعدة كل طفل يتحدث العربية على تعلم الإنجليزية بنفس الطريقة: خطوة فضولية بعد أخرى.', say:'هيا نتعلم معًا!' } },
+    { key:'sara', img:'sara-wave.png', glow:'#FFD3B0', en:{ role:'Sara', title:'The Spark of Color', bio:"Sara is bright, warm, and always dressed in color — she's the face of everything joyful about learning with Lumio. Her charm and vibrant style are the platform itself: colorful, welcoming, and full of life, so every lesson feels like something to look forward to.", say:"Ready for today's lesson?" }, ar:{ role:'سارة', title:'بريق الألوان', bio:'سارة مشرقة ودافئة، وترتدي الألوان دائماً — إنها الوجه المبهج لكل ما هو ممتع في التعلم مع Lumio. سحرها وأسلوبها النابض بالحياة يعكسان المنصة نفسها: ملونة، ترحيبية، ومليئة بالحياة، فتجعل كل درس شيئاً يُنتظر بشوق.', say:'هل أنت مستعد لدرس اليوم؟' } },
+    { key:'noor', img:'noor-wave.png', glow:'#FFD3B0', en:{ role:'Noor', title:'The Steady Hand', bio:'Noor has worn her hijab since she was four years old, and carries a wisdom and calm beyond her years. She’s the one who looks after every detail — the progress reports, the worksheets, the flashcards, the writing pages — the same papers a parent holds and signs at home.', say:'I love learning new words!' }, ar:{ role:'نور', title:'اليد الثابتة', bio:'ترتدي نور الحجاب منذ كانت في الرابعة من عمرها، وتحمل حكمة وهدوءاً يفوقان سنها. هي من تهتم بكل تفصيلة — تقارير التقدم، أوراق العمل، البطاقات التعليمية، صفحات الكتابة — نفس الأوراق التي يحملها ويوقعها ولي الأمر في المنزل.', say:'أحب تعلم كلمات جديدة!' } },
+    { key:'hamad', img:'hamad-wave.png', glow:'#FFD3B0', en:{ role:'Hamad', title:'The Voice in Arabic', bio:'Hamad wears his thobe and ghutra with quiet pride. He represents the genuine Arabic support built into every part of Lumio — real Arabic-speaking teachers, and a curriculum that speaks a child’s own language, every step of the way.', say:'Welcome, my friend!' }, ar:{ role:'حمد', title:'الصوت بالعربية', bio:'يرتدي حمد ثوبه وغترته بفخر هادئ. يمثل الدعم العربي الحقيقي المدمج في كل جزء من Lumio — معلمون عرب حقيقيون، ومنهج يتحدث بلغة الطفل نفسها في كل خطوة.', say:'أهلا وسهلا يا صديقي!' } },
+    { key:'ziad', img:'ziad-wave.png', glow:'#FFD3B0', en:{ role:'Ziad', title:'The Player', bio:'Ziad is a gamer through and through — it shows in how he dresses and how he moves. He represents everything playful about Lumio: the bonus games, the game-based challenges, and the simple idea that learning sticks best when it’s fun.', say:"Let's play a game and learn!" }, ar:{ role:'زياد', title:'اللاعب', bio:'زياد لاعب ألعاب بكل معنى الكلمة — يظهر ذلك في طريقة لبسه وحركته. يمثل كل ما هو ممتع في Lumio: الألعاب الإضافية، التحديات القائمة على اللعب، والفكرة البسيطة بأن التعلم يترسخ بشكل أفضل عندما يكون ممتعاً.', say:'هيا نلعب ونتعلم!' } },
+    { key:'omar', img:'omar-thumbs.png', glow:'#FFD3B0', en:{ role:'Omar', title:'The Platform Itself', bio:'Omar wears his thobe with pride in who he is, dresses with Ziad’s easy urban style, carries Noor’s calm, and is always as put-together as Sara. He doesn’t stand for just one thing — he stands for Lumio itself, the platform that brings every one of these qualities together in one place.', say:"Let's read a story together!" }, ar:{ role:'عمر', title:'المنصة ذاتها', bio:'يرتدي عمر ثوبه بفخر بهويته، ويرتدي بأسلوب زياد الحضري السهل، ويحمل هدوء نور، وأنيق دائماً مثل سارة. لا يمثل شيئاً واحداً فقط — بل يمثل Lumio نفسها، المنصة التي تجمع كل هذه الصفات في مكان واحد.', say:'هيا نقرأ قصة معًا!' } }
+  ];
+  /* A few interface words this storybook layout needs (chapter labels, menu, preview strip). */
+  var EX = {
+    en: { strip: 'Design preview · Landing C: Storybook Scroll', la: 'Landing A', lb: 'Landing B', ov: 'Design overview', menu: 'Menu', chapter: 'Chapter {n}', tap: 'Tap a friend', contents: 'Contents' },
+    ar: { strip: 'معاينة تصميم · الصفحة C: قصة مصوّرة', la: 'الصفحة A', lb: 'الصفحة B', ov: 'نظرة عامة على التصاميم', menu: 'القائمة', chapter: 'الفصل {n}', tap: 'اضغط على صديق', contents: 'المحتويات' }
+  };
+  var CUR = ['SAR', 'USD', 'AED', 'KWD', 'OMR', 'QAR'], SYM = { SAR: 'SAR', USD: '$', AED: 'AED', KWD: 'KD', OMR: 'OMR', QAR: 'QAR' };
+  var PRICE = [
+    { SAR: 730.00, USD: 194.67, AED: 714.91, KWD: 59.96, OMR: 74.85, QAR: 708.59 },
+    { SAR: 3499.99, USD: 933.33, AED: 3427.66, KWD: 287.47, OMR: 358.87, QAR: 3397.32 },
+    { SAR: 1949.99, USD: 520.00, AED: 1909.69, KWD: 160.16, OMR: 199.94, QAR: 1892.79 }
+  ];
+  var PER = [null, { SAR: 583.33, USD: 155.56, AED: 571.28, KWD: 47.91, OMR: 59.81, QAR: 566.22 }, { SAR: 650.00, USD: 173.33, AED: 636.56, KWD: 53.39, OMR: 66.65, QAR: 630.93 }];
+  var SAVE = [0, 20, 11], FEAT = 1, cur = 'SAR';
+  var GAME_IMG = ['pre-a', 'level1', 'level2', 'level3', 'level4', 'level5', 'level6'];
+  var STORY_META = [['pre-a', 19], ['level1', 24], ['level2', 40], ['level3', 40]];
+  var HUB_IC = [
+    '<path d="M4 19V5a2 2 0 012-2h13v16H6a2 2 0 00-2 2zm0 0a2 2 0 002 2h13"/>',
+    '<path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z"/>',
+    '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/>',
+    '<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>',
+    '<path d="M3 18l4-12 4 12M4.5 14h5"/><path d="M14 6v12h3.5a3 3 0 000-6H14m0 0h3a3 3 0 000-6h-3"/>',
+    '<path d="M6 8.5a6 6 0 1112 0c0 3.5-3 4.5-3 7.5a3.5 3.5 0 01-6.5 1.8"/><path d="M9.5 8.5a2.5 2.5 0 015 0"/>',
+    '<path d="M4 6h16M4 12h10M4 18h7"/><circle cx="18" cy="16" r="3"/>'
+  ];
+  /* hero pop-up order and heights (desktop / phone) */
+  var STAGE = [['hamad', 'hamad-wave.png', 210, 104], ['sara', 'sara-wave.png', 170, 92], ['lumi', 'lumi-hero.png', 250, 128], ['noor', 'noor-wave.png', 168, 90], ['ziad', 'ziad-wave.png', 208, 102], ['omar', 'omar-thumbs.png', 196, 98]];
+
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var fixLinks = function (h) { return String(h).replace(/href="(?!#|https?:|\.\.\/|mailto:)/g, 'href="../'); };
+  var money = function (n) { return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
+  var html = document.documentElement;
+  var reduce = html.classList.contains('rm');
+  var G = window.gsap, ST = window.ScrollTrigger;
+  var motion = !!(G && ST) && !reduce;
+  if (!motion) html.classList.add('nomo');
+  if (G && ST) G.registerPlugin(ST);
+  var lang = html.lang === 'en' ? 'en' : 'ar', rtl = lang === 'ar';
+  function t(k) { var d = DICT[lang]; if (d && k in d) return d[k]; if (k in EX[lang]) return EX[lang][k]; return (DICT.en[k] != null ? DICT.en[k] : (EX.en[k] || '')); }
+  var arrowSvg = '<svg class="arr" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  var ck = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>';
+
+  /* ---------- Lottie helpers ---------- */
+  function lot(el, name, loop) {
+    if (!el || !window.lottie) return null;
+    try { return lottie.loadAnimation({ container: el, renderer: 'svg', loop: !!loop, autoplay: false, path: '../assets/lottie/' + name + '.json' }); } catch (e) { return null; }
+  }
+  function play(a) {
+    if (!a) return;
+    var go = function () { if (reduce) a.goToAndStop(a.totalFrames - 1, true); else a.goToAndPlay(0, true); };
+    if (a.isLoaded) go(); else a.addEventListener('DOMLoaded', go);
+  }
+  var L = { star: lot($('#heroStar'), 'star-pop'), flame: lot($('#flame'), 'flame', true), check: lot($('#checkLot'), 'check'), spA: lot($('#spA'), 'star-pop'), spB: lot($('#spB'), 'star-pop'), fin: lot($('#fconf'), 'confetti') };
+  function whenSeen(el, fn, th) {
+    if (!el) return;
+    if (!('IntersectionObserver' in window)) { fn(); return; }
+    var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { fn(); io.disconnect(); } }); }, { threshold: th || .4 });
+    io.observe(el);
+  }
+
+  /* ---------- render all copy in the current language ---------- */
+  var crewI = 0, crewLang = lang, storyI = 0;
+  function render() {
+    rtl = lang === 'ar';
+    html.lang = lang; html.dir = rtl ? 'rtl' : 'ltr';
+    document.title = t('meta.title') + ' · Preview C';
+    $$('[data-i18n]').forEach(function (el) { el.textContent = t(el.getAttribute('data-i18n')); });
+    $$('[data-i18n-html]').forEach(function (el) { el.innerHTML = fixLinks(t(el.getAttribute('data-i18n-html'))); });
+    $$('[data-i18n-label]').forEach(function (el) { el.setAttribute('aria-label', t(el.getAttribute('data-i18n-label'))); });
+    $$('[data-i18n-alt]').forEach(function (el) { el.alt = t(el.getAttribute('data-i18n-alt')); });
+    $$('[data-ex]').forEach(function (el) { el.textContent = EX[lang][el.getAttribute('data-ex')]; });
+    $$('[data-ex-label]').forEach(function (el) { el.setAttribute('aria-label', EX[lang][el.getAttribute('data-ex-label')]); });
+    $$('[data-ch]').forEach(function (el) { el.textContent = EX[lang].chapter.replace('{n}', el.getAttribute('data-ch')); });
+    $('#sheet').innerHTML = $('#links').innerHTML;
+    $('#streakTxt').textContent = t('db.streakA') + '5' + t('db.streakB');
+    $('#pbWa').href = WA + '?text=' + encodeURIComponent(t('pb.msg'));
+
+    /* hero pop-up crew */
+    $('#crewrow').innerHTML = STAGE.map(function (s, i) {
+      var c = CREW.filter(function (x) { return x.key === s[0]; })[0];
+      return '<button type="button" class="pop' + (s[0] === 'lumi' ? ' lumi on' : '') + '" data-k="' + i + '" aria-label="' + esc(c[lang].role) + '" style="--h:' + (innerWidth < 600 ? s[3] : s[2]) + 'px"><span class="say">' + esc(c[lang].say) + '</span><img src="../assets/site/' + s[1] + '" alt="" onerror="this.remove()"></button>';
+    }).join('');
+    $$('#crewrow .pop').forEach(function (b) { b.onclick = function () { var on = b.classList.contains('on'); $$('#crewrow .pop').forEach(function (x) { x.classList.remove('on'); }); if (!on) b.classList.add('on'); }; });
+
+    /* levels */
+    $('#lvTrack').innerHTML = '<svg class="lvroad" id="lvRoad" aria-hidden="true"></svg>' + t('levels').map(function (l, i) {
+      return '<article class="lv page"><div class="disc" style="background:' + (i % 2 ? '#C2410C' : '#F97316') + '">' + esc(l[0]) + '</div><h3>' + esc(l[1]) + '</h3><span class="ages">' + esc(l[2]) + '</span><p>' + esc(l[3]) + '</p></article>';
+    }).join('') + '<div class="lvend" aria-hidden="true"><img src="../assets/site/lumi-celebrate.png" alt="" loading="lazy" onerror="this.remove()"><div class="conf" id="lvConf"></div></div>';
+    L.lv = lot($('#lvConf'), 'confetti');
+
+    /* hub */
+    $('#toc').innerHTML = t('hub').map(function (h, i) {
+      return '<div class="trow"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + HUB_IC[i] + '</svg></span><div><b>' + esc(h[0]) + '</b><span>' + esc(h[1]) + '</span></div><em>' + esc(h[2]) + '</em></div>';
+    }).join('');
+
+    /* games */
+    $('#gTrack').innerHTML = t('games').map(function (g, i) {
+      return '<article class="gcard page"><div class="cov"><img src="../assets/site/game-' + GAME_IMG[i] + '.jpg" alt="" loading="lazy" onerror="this.remove()"><span>' + esc(g[0]) + '</span></div><div class="gbody"><h3>' + esc(g[1]) + '</h3><p>' + esc(g[2]) + '</p><span class="gplay">' + esc(t('games.play')) + (rtl ? ' ←' : ' →') + '</span></div></article>';
+    }).join('');
+
+    /* stories */
+    var ST_ = t('stories');
+    $('#stabs').innerHTML = ST_.map(function (s, i) { return '<button type="button" class="stab" data-i="' + i + '" aria-pressed="false"><b>' + esc(s.title) + '</b><span>' + esc(s.level) + ' · ' + esc(t('st.pages').replace('{n}', STORY_META[i][1])) + '</span></button>'; }).join('');
+    $$('#stabs .stab').forEach(function (b) { b.onclick = function () { showStory(+b.getAttribute('data-i'), true); }; });
+    showStory(storyI, false);
+
+    /* crew */
+    crewLang = lang;
+    $('#thumbs').innerHTML = CREW.map(function (c, i) { return '<button type="button" role="tab" data-i="' + i + '" aria-label="' + esc(c[lang].role) + '"><img src="../assets/site/' + c.img + '" alt="" loading="lazy" onerror="this.remove()"></button>'; }).join('');
+    $$('#thumbs button').forEach(function (b) { b.onclick = function () { showCrew(+b.getAttribute('data-i'), true); }; });
+    showCrew(crewI, false);
+
+    /* pricing */
+    $('#curs').innerHTML = CUR.map(function (c) { return '<button type="button" data-cur="' + c + '" aria-pressed="' + (c === cur) + '"' + (c === cur ? ' class="on"' : '') + '>' + c + '</button>'; }).join('');
+    $$('#curs button').forEach(function (b) { b.onclick = function () { cur = b.getAttribute('data-cur'); $$('#curs button').forEach(function (x) { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', String(x === b)); }); paintPrices(); }; });
+    $('#plans').innerHTML = t('plans').map(function (p, i) {
+      var per = PER[i] ? '~<bdi><span class="psym"></span> <span data-per="' + i + '"></span></bdi> ' + esc(t('pr.perlevel')) + ' · ' + esc(t('pr.save').replace('{n}', SAVE[i])) : esc(p.per || '');
+      return '<div class="plan page' + (i === FEAT ? ' feat' : '') + '">' + (p.badges ? '<div class="badges">' + p.badges.map(function (b) { return '<span>' + esc(b) + '</span>'; }).join('') + '</div>' : '') +
+        '<div><div class="nm">' + esc(p.name) + '</div><div class="sm">' + esc(p.sub) + '</div></div>' +
+        '<div class="pr"><span class="sym psym"></span><b data-price="' + i + '"></b></div><div class="per">' + per + '</div>' +
+        '<ul>' + p.li.map(function (x) { return '<li>' + ck + '<span>' + esc(x) + '</span></li>'; }).join('') + '</ul><a class="btn ' + (i === FEAT ? 'btn-p' : 'btn-g') + '" href="../login.html">' + esc(t('pr.get')) + '</a></div>';
+    }).join('');
+    paintPrices();
+
+    /* FAQ */
+    $('#faqs').innerHTML = t('faq').map(function (f, i) { return '<div class="fq' + (i === 0 ? ' open' : '') + '"><button type="button" aria-expanded="' + (i === 0) + '" aria-controls="fqa' + i + '" id="fqq' + i + '"><span>' + esc(f[0]) + '</span><span class="ic" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button><div class="ans" id="fqa' + i + '" role="region" aria-labelledby="fqq' + i + '"><div><p>' + fixLinks(f[1]) + '</p></div></div></div>'; }).join('');
+    $$('#faqs .fq').forEach(function (item) { $('button', item).onclick = function () { var open = !item.classList.contains('open'); $$('#faqs .fq').forEach(function (x) { x.classList.remove('open'); $('button', x).setAttribute('aria-expanded', 'false'); }); item.classList.toggle('open', open); $('button', item).setAttribute('aria-expanded', String(open)); }; });
+
+    /* trial levels */
+    $('#tpick').classList.remove('show');
+    $('#tlevels').innerHTML = t('trialLevels').map(function (l, i) { return '<button type="button" data-i="' + i + '" aria-pressed="false">' + esc(l[0]) + '<small>' + esc(l[1]) + '</small></button>'; }).join('');
+    $$('#tlevels button').forEach(function (b) {
+      b.onclick = function () {
+        var i = +b.getAttribute('data-i'), l = (rtl ? DICT.ar : DICT.en).trialLevels[i];
+        $$('#tlevels button').forEach(function (x) { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', String(x === b)); });
+        $('#trialBook').href = WA + '?text=' + encodeURIComponent(t('trial.msg').replace('{name}', l[0]).replace('{ages}', l[1]));
+        $('#tpick').classList.add('show');
+      };
+    });
+  }
+  function paintPrices() {
+    $$('#plans .psym').forEach(function (s) { s.textContent = SYM[cur]; });
+    $$('#plans [data-price]').forEach(function (b) { b.textContent = money(PRICE[+b.getAttribute('data-price')][cur]); });
+    $$('#plans [data-per]').forEach(function (b) { b.textContent = money(PER[+b.getAttribute('data-per')][cur]); });
+  }
+  function showStory(i, anim) {
+    storyI = i; var s = t('stories')[i], m = STORY_META[i];
+    $$('#stabs .stab').forEach(function (b, j) { b.classList.toggle('on', j === i); b.setAttribute('aria-pressed', String(j === i)); });
+    function paint() {
+      var img = $('#sImg'); if (img) { img.src = '../assets/site/story-' + m[0] + '.jpg'; img.alt = t('st.alt').replace('{title}', s.title); }
+      $('#sLevel').textContent = t('st.story').replace('{level}', s.level); $('#sTitle').textContent = s.title; $('#sPages').textContent = t('st.pages').replace('{n}', m[1]);
+      $('#sParts').innerHTML = s.parts.map(function (p, j) { return '<li><span class="pn">' + (j + 1) + '</span><b>' + esc(p) + '</b><small>' + esc(t('st.part').replace('{n}', j + 1)) + ' · ' + esc(t('st.opens').replace('{n}', (j + 1) * 5)) + '</small></li>'; }).join('');
+    }
+    if (anim && motion) {
+      var f = $('#sframe'), d = rtl ? 90 : -90;
+      G.timeline().to(f, { rotateY: d, duration: .28, ease: 'power2.in', onComplete: paint }).fromTo(f, { rotateY: -d }, { rotateY: 0, duration: .45, ease: 'power3.out' });
+      G.fromTo('#sParts li', { opacity: 0, x: rtl ? -16 : 16 }, { opacity: 1, x: 0, stagger: .06, delay: .3, duration: .35 });
+    } else paint();
+  }
+  function showCrew(i, anim) {
+    crewI = i; var c = CREW[i], C = c[crewLang];
+    $$('#thumbs button').forEach(function (b, j) { b.classList.toggle('on', j === i); b.setAttribute('aria-selected', String(j === i)); });
+    $('#bEn').classList.toggle('on', crewLang === 'en'); $('#bAr').classList.toggle('on', crewLang === 'ar');
+    function paint() {
+      var img = $('#cImg'); if (img) { img.src = '../assets/site/' + c.img; img.alt = c[lang].role; }
+      $('#cName').textContent = C.role; $('#cTitle').textContent = C.title; $('#cSay').textContent = C.say;
+      var who = $('.bio .who'), bio = $('#cBio'); var d = crewLang === 'ar' ? 'rtl' : 'ltr';
+      who.dir = d; bio.dir = d; bio.textContent = C.bio; $('#cSay').dir = d;
+      bio.style.fontFamily = $('#cName').style.fontFamily = crewLang === 'ar' ? 'var(--ar)' : '';
+    }
+    if (anim && motion) {
+      G.timeline().to(['#cImg', '#cSay'], { y: 30, opacity: 0, duration: .18, onComplete: paint }).to('#cImg', { y: 0, opacity: 1, duration: .5, ease: 'back.out(1.6)' }).to('#cSay', { y: 0, opacity: 1, duration: .35 }, '-=.25');
+    } else paint();
+  }
+  $('#bEn').onclick = function () { crewLang = 'en'; showCrew(crewI, true); };
+  $('#bAr').onclick = function () { crewLang = 'ar'; showCrew(crewI, true); };
+
+  /* ---------- nav: language, menu, reading progress ---------- */
+  $('#langBtn').onclick = function () {
+    lang = lang === 'ar' ? 'en' : 'ar';
+    try { localStorage.setItem('lumio_lang', lang); } catch (e) {}
+    if (ctx) ctx.revert();
+    render(); setupMotion(false);
+  };
+  var sheet = $('#sheet'), mb = $('#menuBtn');
+  mb.onclick = function () { var o = !sheet.classList.contains('open'); sheet.classList.toggle('open', o); mb.setAttribute('aria-expanded', String(o)); };
+  sheet.addEventListener('click', function (e) { if (e.target.closest('a')) { sheet.classList.remove('open'); mb.setAttribute('aria-expanded', 'false'); } });
+  var prog = $('#prog');
+  addEventListener('scroll', function () { var h = document.documentElement.scrollHeight - innerHeight; prog.style.transform = 'scaleX(' + (h > 0 ? scrollY / h : 0) + ')'; }, { passive: true });
+
+  /* ---------- trial dialog ---------- */
+  var dlg = $('#trial'), lastFocus = null;
+  function openTrial(e) { if (e) e.preventDefault(); lastFocus = document.activeElement; dlg.classList.add('open'); document.body.style.overflow = 'hidden'; var f = $('#tlevels button'); if (f) f.focus(); }
+  function closeTrial() { dlg.classList.remove('open'); document.body.style.overflow = ''; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
+  document.addEventListener('click', function (e) { var a = e.target.closest('[data-trial]'); if (a) openTrial(e); });
+  $('#trialClose').onclick = closeTrial;
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) closeTrial(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && dlg.classList.contains('open')) closeTrial(); });
+
+  /* ---------- hub video: plays only while on screen ---------- */
+  (function () {
+    var vid = $('#hubdev video'); if (!vid || reduce || !('IntersectionObserver' in window)) return;
+    new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { var p = vid.play(); if (p && p.catch) p.catch(function () {}); } else vid.pause(); }); }, { threshold: .35 }).observe(vid);
+  })();
+
+  /* ---------- notebook: the answer is written in front of you ---------- */
+  var typed = $('#typed'), full = typed.textContent, wrote = false;
+  if (motion) typed.textContent = '';
+  function writeIt() {
+    if (wrote) return; wrote = true;
+    if (!motion) { typed.textContent = full; $('#saved').classList.add('on'); play(L.check); return; }
+    var o = { n: 0 };
+    G.to(o, { n: full.length, duration: full.length * .045, ease: 'none', onUpdate: function () { typed.textContent = full.slice(0, Math.round(o.n)); }, onComplete: function () { $('#saved').classList.add('on'); play(L.check); } });
+  }
+  whenSeen($('.notebook'), writeIt, .55);
+
+  /* milestone Lottie moments that do not depend on scroll position */
+  whenSeen($('#flame'), function () { play(L.flame); }, .6);
+  whenSeen($('.freegrid'), function () { play(L.spA); setTimeout(function () { play(L.spB); }, 350); }, .45);
+  whenSeen($('#fbook'), function () { play(L.fin); }, .45);
+
+  /* ---------- chapter colours (CSS background + WebGL palette) ---------- */
+  var chapters = $$('main > .chap'), curCh = null;
+  function setChapter(sec) {
+    if (sec === curCh) return; curCh = sec;
+    document.body.style.backgroundColor = sec.getAttribute('data-bg');
+    html.style.setProperty('--bg', sec.getAttribute('data-bg'));
+    if (sky) sky.tint(sec.getAttribute('data-ac'), sec.getAttribute('data-bg'));
+  }
+  function pickChapter() {
+    var mid = innerHeight * .5, best = chapters[0];
+    chapters.forEach(function (s) { var r = s.getBoundingClientRect(); if (r.top <= mid && r.bottom > mid) best = s; });
+    setChapter(best);
+  }
+
+  /* ---------- three.js: drifting paper letters, stars and confetti ---------- */
+  var sky = (function () {
+    var cvs = $('#sky');
+    if (!window.THREE) { html.classList.add('no-gl'); return null; }
+    var R;
+    try { R = new THREE.WebGLRenderer({ canvas: cvs, alpha: true, antialias: true, powerPreference: 'low-power' }); } catch (e) { R = null; }
+    if (!R || !R.getContext()) { html.classList.add('no-gl'); return null; }
+    R.setClearColor(0x000000, 0);
+    var scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(50, 1, .1, 100); cam.position.z = 22;
+    var small = innerWidth < 700, N = small ? 26 : 46;
+    var accent = new THREE.Color('#F97316'), accT = accent.clone(), paperT = new THREE.Color('#FFE2CA'), paper = paperT.clone();
+    function letterTex(ch, ar) {
+      var c = document.createElement('canvas'); c.width = c.height = 128; var x = c.getContext('2d');
+      x.fillStyle = '#ffffff'; x.beginPath(); if (x.roundRect) x.roundRect(8, 8, 112, 112, 22); else x.rect(8, 8, 112, 112); x.fill();
+      x.fillStyle = 'rgba(0,0,0,.08)'; x.fillRect(8, 104, 112, 16);
+      x.fillStyle = '#7a7a7a'; x.textAlign = 'center'; x.textBaseline = 'middle';
+      x.font = '800 70px ' + (ar ? 'Tajawal, "DejaVu Sans", sans-serif' : '"Bricolage Grotesque", Nunito, sans-serif');
+      x.fillText(ch, 64, 66);
+      var tx = new THREE.CanvasTexture(c); tx.anisotropy = 2; return tx;
+    }
+    var LET = ['A', 'b', 'C', 'd', 'L', 'u', 'm', 'i', 'o', 'ب', 'ع', 'ن'];
+    var tex = LET.map(function (l, i) { return letterTex(l, i > 8); });
+    var star = new THREE.Shape(); for (var k = 0; k < 10; k++) { var r = k % 2 ? .42 : 1, a = k / 10 * Math.PI * 2 + Math.PI / 2; if (k) star.lineTo(Math.cos(a) * r, Math.sin(a) * r); else star.moveTo(Math.cos(a) * r, Math.sin(a) * r); }
+    var gStar = new THREE.ShapeGeometry(star), gTile = new THREE.PlaneGeometry(1.7, 1.7), gConf = new THREE.PlaneGeometry(.55, .26), gDot = new THREE.CircleGeometry(.32, 20);
+    var mats = { star: new THREE.MeshBasicMaterial({ color: accent, transparent: true, opacity: .85, side: THREE.DoubleSide, depthWrite: false }),
+                 conf: new THREE.MeshBasicMaterial({ color: accent, transparent: true, opacity: .6, side: THREE.DoubleSide, depthWrite: false }),
+                 dot: new THREE.MeshBasicMaterial({ color: paper, transparent: true, opacity: .9, depthWrite: false }) };
+    var tileMats = tex.map(function (tx) { return new THREE.MeshBasicMaterial({ map: tx, color: paper, transparent: true, opacity: .92, side: THREE.DoubleSide, depthWrite: false }); });
+    var items = [], W = 30, H = 20;
+    function rnd(a, b) { return a + Math.random() * (b - a); }
+    for (var n = 0; n < N; n++) {
+      var kind = n % 4, m;
+      if (kind === 0) m = new THREE.Mesh(gTile, tileMats[n % tileMats.length]);
+      else if (kind === 1) { m = new THREE.Mesh(gStar, mats.star); m.scale.setScalar(rnd(.35, .7)); }
+      else if (kind === 2) m = new THREE.Mesh(gConf, mats.conf);
+      else m = new THREE.Mesh(gDot, mats.dot);
+      m.position.set(rnd(-1, 1), rnd(-1, 1), rnd(-10, 4));
+      m.userData = { bx: m.position.x, by: m.position.y, s: rnd(.02, .06), rx: rnd(-.6, .6), ry: rnd(-.8, .8), rz: rnd(-.5, .5), par: rnd(.4, 1.2), ph: rnd(0, 6.28) };
+      m.rotation.set(rnd(-.5, .5), rnd(-.5, .5), rnd(0, 6.28));
+      scene.add(m); items.push(m);
+    }
+    function size() {
+      var w = innerWidth, h = innerHeight; R.setPixelRatio(Math.min(devicePixelRatio || 1, small ? 1.5 : 1.75)); R.setSize(w, h, false);
+      cam.aspect = w / h; cam.updateProjectionMatrix();
+      H = 2 * Math.tan(cam.fov * Math.PI / 360) * cam.position.z; W = H * cam.aspect;
+    }
+    size(); addEventListener('resize', size);
+    var clock = new THREE.Clock(), time = 0, running = true;
+    function frame(dt) {
+      time += dt;
+      accent.lerp(accT, Math.min(1, dt * 2.5)); paper.lerp(paperT, Math.min(1, dt * 2.5));
+      mats.star.color.copy(accent); mats.conf.color.copy(accent); mats.dot.color.copy(paper); tileMats.forEach(function (mt) { mt.color.copy(paper); });
+      var sc = (window.scrollY || 0) * .006, span = H * 1.4;
+      items.forEach(function (m) {
+        var u = m.userData; var depth = (14 - m.position.z) / 14;
+        var y = u.by * span * .5 + time * u.s * 6 + sc * u.par;
+        y = ((y + span / 2) % span + span) % span - span / 2;
+        m.position.y = y; m.position.x = u.bx * W * .55 * depth + Math.sin(time * .4 + u.ph) * .4;
+        m.rotation.x += u.rx * dt * .5; m.rotation.y += u.ry * dt * .5; m.rotation.z += u.rz * dt * .3;
+      });
+      R.render(scene, cam);
+      window.__lcGL = (window.__lcGL || 0) + 1;
+    }
+    function loop() { if (!running) return; frame(Math.min(clock.getDelta(), .05)); requestAnimationFrame(loop); }
+    if (reduce) { frame(0); }
+    else { requestAnimationFrame(loop); document.addEventListener('visibilitychange', function () { running = !document.hidden; if (running) { clock.getDelta(); requestAnimationFrame(loop); } }); }
+    if (reduce) addEventListener('resize', function () { frame(0); });
+    return { tint: function (ac, bg) {
+      accT.set(ac); var b = new THREE.Color(bg); paperT.copy(new THREE.Color('#ffffff').lerp(accT, .22)).lerp(b, .25);
+      if (reduce) { accent.copy(accT); paper.copy(paperT); frame(0); }
+    } };
+  })();
+
+  /* ---------- motion (GSAP + ScrollTrigger) ---------- */
+  var ctx = null, introDone = false;
+  function pinRow(sec, onProgress) {
+    var view = $('.hview', sec), track = $('.htrack', sec), box = $('.pinbox', sec), bar = $('.hprog i', sec);
+    sec.classList.add('pinned');
+    var dist = function () { return Math.max(0, track.offsetWidth - view.clientWidth); };
+    G.to(track, { x: function () { return (rtl ? 1 : -1) * dist(); }, ease: 'none',
+      scrollTrigger: { trigger: box, start: 'top top', end: function () { return '+=' + Math.max(1, dist()); }, pin: true, scrub: .6, invalidateOnRefresh: true, anticipatePin: 1,
+        onUpdate: function (s) { if (bar) bar.style.transform = 'scaleX(' + s.progress + ')'; if (onProgress) onProgress(s.progress); } } });
+  }
+  function drawRoad() {
+    var track = $('#lvTrack'), svg = $('#lvRoad'); if (!track || !svg) return null;
+    var T = track.getBoundingClientRect();
+    var pts = $$('.lv .disc', track).map(function (d) { var b = d.getBoundingClientRect(); return [b.left - T.left + b.width / 2, b.top - T.top + b.height / 2]; });
+    var e = $('.lvend', track); if (e) { var b = e.getBoundingClientRect(); pts.push([b.left - T.left + b.width / 2, b.top - T.top + b.height * .45]); }
+    if (rtl) pts.sort(function (a, c) { return c[0] - a[0]; }); else pts.sort(function (a, c) { return a[0] - c[0]; });
+    if (pts.length < 2) return null;
+    var d = 'M' + pts[0][0] + ' ' + pts[0][1];
+    for (var i = 1; i < pts.length; i++) { var a = pts[i - 1], c = pts[i], mx = (a[0] + c[0]) / 2; d += ' C ' + mx + ' ' + a[1] + ', ' + mx + ' ' + c[1] + ', ' + c[0] + ' ' + c[1]; }
+    svg.setAttribute('viewBox', '0 0 ' + T.width + ' ' + T.height);
+    svg.innerHTML = '<path d="' + d + '" fill="none" stroke="#F3D9BE" stroke-width="8" stroke-linecap="round" stroke-dasharray="2 16"/><path id="roadFill" d="' + d + '" fill="none" stroke="#F97316" stroke-width="8" stroke-linecap="round"/>';
+    var p = $('#roadFill'), len = p.getTotalLength(); p.style.strokeDasharray = len; p.style.strokeDashoffset = motion ? len : 0;
+    return { p: p, len: len };
+  }
+  function setupMotion(first) {
+    var road = drawRoad();
+    if (!motion) {
+      $('#cover').style.display = 'none';
+      if (L.lv) whenSeen($('.lvend'), function () { play(L.lv); }, .5);
+      play(L.star); return;
+    }
+    ctx = G.context(function () {
+      /* intro: the cover opens, the crew pops up like a pop-up book */
+      if (first && !introDone) {
+        introDone = true;
+        var tl = G.timeline({ delay: .25 });
+        tl.set('#cover', { display: 'block' })
+          .to('#cover', { rotateY: rtl ? 168 : -168, duration: 1.5, ease: 'power3.inOut' })
+          .to('#cover', { autoAlpha: 0, duration: .3 }, '-=.35')
+          .from('.hero .hl', { yPercent: 60, opacity: 0, stagger: .12, duration: .8, ease: 'power3.out' }, '-=.75')
+          .from('.hero .hin', { y: 18, opacity: 0, stagger: .08, duration: .6, ease: 'power2.out' }, '-=.55')
+          .from('#crewrow .pop', { rotateX: -85, transformPerspective: 600, opacity: 0, stagger: { each: .09, from: 'center' }, duration: .8, ease: 'back.out(1.7)' }, '-=.9')
+          .fromTo('#squig', { strokeDasharray: 260, strokeDashoffset: 260 }, { strokeDashoffset: 0, duration: .8, ease: 'power2.out' }, '-=.6')
+          .add(function () { play(L.star); }, '-=.4');
+        $$('.stats b').forEach(function (b) { var n = +b.getAttribute('data-count'), o = { v: 0 }; tl.to(o, { v: n, duration: 1.2, ease: 'power2.out', onUpdate: function () { b.textContent = Math.round(o.v); } }, 1.4); });
+      } else { G.set('#cover', { display: 'none' }); }
+      /* the hero page drifts back as the next page arrives */
+      G.to('.spread', { scale: .96, y: 30, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } });
+      G.to('#crewrow .pop', { y: function (i) { return -18 - (i % 3) * 10; }, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } });
+
+      /* turn the page: each chapter's sheets swing in from the spine with a sweeping shadow */
+      $$('.tp').forEach(function (el) {
+        if (!$('.curl', el)) { var c = document.createElement('i'); c.className = 'curl'; el.appendChild(c); }
+        var st = { trigger: el, start: 'top 96%', end: 'top 52%', scrub: .5 };
+        G.fromTo(el, { rotateY: rtl ? 22 : -22, transformOrigin: (rtl ? 'right' : 'left') + ' center', opacity: .25, y: 40 }, { rotateY: 0, opacity: 1, y: 0, ease: 'power2.out', scrollTrigger: st });
+        G.fromTo($('.curl', el), { opacity: 1 }, { opacity: 0, ease: 'none', scrollTrigger: st });
+      });
+      $$('.chead').forEach(function (h) { G.from(h.children, { y: 26, opacity: 0, stagger: .08, duration: .7, ease: 'power3.out', scrollTrigger: { trigger: h, start: 'top 85%' } }); });
+      G.from('.moment .photo', { rotate: 0, scale: .9, ease: 'none', scrollTrigger: { trigger: '#story', start: 'top 70%', end: 'bottom 60%', scrub: true } });
+
+      /* horizontal chapters */
+      var fired = false;
+      pinRow($('#levels'), function (p) {
+        if (road) road.p.style.strokeDashoffset = road.len * (1 - Math.min(1, p * 1.04));
+        if (p > .94 && !fired) { fired = true; play(L.lv); }
+      });
+      pinRow($('#games'));
+      G.from('#gTrack .gcard', { y: 60, opacity: 0, stagger: .08, duration: .7, ease: 'power3.out', scrollTrigger: { trigger: '#games', start: 'top 60%' } });
+
+      G.from('.notes li', { x: rtl ? 40 : -40, opacity: 0, stagger: .12, duration: .6, scrollTrigger: { trigger: '.notes', start: 'top 80%' } });
+      G.from('#plans .plan', { y: 50, opacity: 0, stagger: .12, duration: .7, ease: 'power3.out', scrollTrigger: { trigger: '#plans', start: 'top 82%' } });
+      G.from('.fbook', { scale: .9, rotateX: 12, transformPerspective: 1200, opacity: 0, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: '.final', start: 'top 80%' } });
+    });
+    ST.refresh();
+  }
+
+  render();
+  /* run after layout so the road and pins measure real sizes */
+  function boot() {
+    setupMotion(true);
+    pickChapter();
+    addEventListener('scroll', pickChapter, { passive: true });
+    addEventListener('resize', function () { var r = drawRoad(); if (motion && r) ST.refresh(); });
+  }
+  if (document.readyState === 'complete') boot(); else addEventListener('load', boot);
+  if (location.hash === '#trial') openTrial();
+})();
+</script>
+</body>
+</html>
