@@ -198,7 +198,7 @@ html[lang=ar] .chapp{font-size:13.5px}
 .dots button i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.45);transition:all .3s;box-shadow:0 0 0 1px rgba(0,0,0,.15)}
 .dots button.on i{width:22px;border-radius:6px;background:var(--o)}
 .skipf{min-height:44px;padding:0 16px;border-radius:999px;border:0;background:rgba(255,255,255,.9);color:var(--ink);font:800 13.5px/1 var(--txt);display:inline-flex;align-items:center;gap:8px;text-decoration:none}
-@media (min-aspect-ratio:10/9){.hint{left:auto !important;transform:none !important;inset-inline-end:9vw}}
+@media (min-aspect-ratio:10/9){html[dir=rtl] .hint{left:7vw !important;right:auto;transform:none !important}html[dir=ltr] .hint{left:auto !important;right:7vw;transform:none !important}}
 .hint{position:absolute;left:50%;bottom:76px;transform:translateX(-50%);z-index:5;color:#fff;font:700 13px/1 var(--txt);display:flex;flex-direction:column;align-items:center;gap:10px;opacity:.9;pointer-events:none;transition:opacity .4s}
 .hint i{width:24px;height:38px;border-radius:14px;border:2px solid rgba(255,255,255,.75);position:relative}
 .hint i::after{content:"";position:absolute;left:50%;top:7px;width:4px;height:8px;margin-left:-2px;border-radius:2px;background:#fff;animation:wheel 1.6s ease-in-out infinite}
@@ -246,6 +246,8 @@ html[lang=ar] .chapp{font-size:13.5px}
   .join span{font-size:13px}
   .cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
   .join q,.gc .pl{display:none}
+  .lvtag{white-space:nowrap;font-size:12.5px;padding:6px 11px}
+  html[lang=ar] .lvtag{font-size:13.5px}
   .join{border-radius:18px}
   .btn{min-height:50px;padding:0 18px;font-size:15px}
   .chips span{font-size:12.5px;padding:7px 11px}
@@ -255,7 +257,7 @@ html[lang=ar] .chapp{font-size:13.5px}
 /* ---------- static fallback (no WebGL / reduced motion): the film becomes illustrated sections ---------- */
 .static .film{height:auto}
 .static .stage{position:relative;height:auto;overflow:visible;background:none}
-.static .chap,.static #gl,.static .fx,.static .fui,.static .hint,.static .film-only,.static .ghost{display:none}
+.static .chap,.static #gl,.static .fx,.static .fui,.static .hint,.static .film-only,.static .beat.film-only,.static .ghost{display:none}
 .static .beats{position:relative}
 .static .beat{position:relative;inset:auto;visibility:visible;opacity:1;padding:64px 20px;background:var(--bgs,#0a1033);overflow:hidden;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);gap:28px;align-items:center;justify-content:normal}
 .static .beat:first-child{padding-top:calc(var(--top-h) + 40px)}
@@ -355,7 +357,7 @@ html[lang=ar] .gi small,html[lang=ar] .si small{letter-spacing:0;font-size:13px}
 .cm b{font:800 19px/1.2 var(--head)}
 .cm small{font:800 13px/1.3 var(--txt);color:var(--o2)}
 .cm p{grid-column:1/-1;font:500 14.5px/1.65 var(--txt);color:#40352c;margin:8px 0 0}
-.cm q{grid-column:1/-1;font:700 14px/1.4 var(--txt);color:var(--o2);margin-top:6px}
+.cm q{grid-column:1/-1;font:700 14px/1.4 var(--txt);color:var(--o2);margin-top:6px;quotes:none}
 .hb{background:#fff}
 .hbgrid{display:grid;grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);gap:48px;align-items:center}
 .hbcover{position:relative;justify-self:center;max-width:320px}
@@ -392,6 +394,10 @@ html[lang=ar] .endc h2{font-weight:900;line-height:1.3}
   .fgrid,.hbgrid,.faqgrid{grid-template-columns:1fr}
   .hbgrid{gap:30px}
   .hbcover{max-width:220px}
+  .fcard{min-height:0;padding:22px 20px 24px}
+  .fcard img{top:14px;bottom:auto;height:92px}
+  .fcard .tag{margin-inline-end:76px}
+  .fcard h3{padding-inline-end:56px}
 }
 @media (min-width:600px) and (max-width:900px){.crewg{grid-template-columns:1fr 1fr}}
 
@@ -1163,7 +1169,7 @@ html[dir=rtl] .tbox h3{margin:0 0 6px 44px}
       var crew = [], m = Math.min(k, 5) + 1;
       for (var j = 0; j < m; j++) {
         var url = k === 6 ? kidsAll[j] : CREW[j].img, h = j === 0 ? 2.5 : 2.85;
-        var s = charSprite(url, h, TK(k) - 6); var xx = (j - (m - 1) / 2) * 1.85;
+        var s = charSprite(url, h, TK(k) - 6); var xx = (j - (m - 1) / 2) * 1.62;
         s.position.set(xx, 0, 4.2 - Math.abs(xx) * 0.15); g.add(s);
         crew.push({ s: s, x: xx, join: (j === Math.min(k, 5) && k < 6) ? TK(k) + 0.9 : null, ph: rnd() * 6 });
       }
@@ -1186,7 +1192,7 @@ html[dir=rtl] .tbox h3{margin:0 0 6px 44px}
     var floorT = canvasTex(256, 256, function (x) { var gr = x.createRadialGradient(128, 128, 0, 128, 128, 128); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.5, 'rgba(255,214,170,.75)'); gr.addColorStop(1, 'rgba(255,190,130,0)'); x.fillStyle = gr; x.fillRect(0, 0, 256, 256); x.strokeStyle = 'rgba(249,115,22,.35)'; x.lineWidth = 2; [40, 70, 100].forEach(function (r) { x.beginPath(); x.arc(128, 128, r, 0, 7); x.stroke(); }); });
     mesh(g, new THREE.PlaneGeometry(64, 64), new THREE.MeshBasicMaterial({ map: floorT, transparent: true, depthWrite: false }), 0, 0, 0, -Math.PI / 2);
     var beamT = canvasTex(32, 256, function (x) { var gr = x.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.7, 'rgba(255,236,214,.5)'); gr.addColorStop(1, 'rgba(255,255,255,.9)'); x.fillStyle = gr; x.fillRect(0, 0, 32, 256); });
-    var beamM = new THREE.MeshBasicMaterial({ map: beamT, transparent: true, opacity: 0.3, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false });
+    var beamM = new THREE.MeshBasicMaterial({ map: beamT, color: 0xFFB36B, transparent: true, opacity: 0.22, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false });
     for (var i = 0; i < 12; i++) { var a = i / 12 * Math.PI * 2 + 0.26; mesh(g, new THREE.CylinderGeometry(0.22, 0.4, 46, 6, 1, true), beamM, Math.cos(a) * 30, 23, Math.sin(a) * 30); }
     var pp = []; for (var d = 0; d < 260; d++) pp.push(rr(-24, 24), rr(0, 20), rr(-24, 24));
     var pg = new THREE.BufferGeometry(); pg.setAttribute('position', new THREE.Float32BufferAttribute(pp, 3));
@@ -1327,6 +1333,8 @@ html[dir=rtl] .tbox h3{margin:0 0 6px 44px}
     var pp = []; for (var d = 0; d < 220; d++) pp.push(rr(-30, 30), rr(-6, 30), rr(-30, 20));
     var pg = new THREE.BufferGeometry(); pg.setAttribute('position', new THREE.Float32BufferAttribute(pp, 3));
     Z.finDust = new THREE.Points(pg, new THREE.PointsMaterial({ map: GLOW, color: 0xFFD08A, size: 0.6, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false })); g.add(Z.finDust);
+    Z.finSpark = [];
+    for (var sp3 = 0; sp3 < 18; sp3++) { var a3 = sp3 / 18 * Math.PI * 2, gs = glow(sp3 % 3 ? 0xFFFFFF : 0xFF9A3C, rr(1.2, 3), 0); gs.material.blending = THREE.NormalBlending; gs.position.set(8.5 + Math.cos(a3) * rr(12, 17), rr(1, 5), Math.sin(a3) * rr(10, 14)); g.add(gs); Z.finSpark.push(gs); }
   }
 
   /* ---------- camera path: keyframes in film time ---------- */
@@ -1345,14 +1353,14 @@ html[dir=rtl] .tbox h3{margin:0 0 6px 44px}
     K(22.62, [0, 15, -150], [0, 2, -200], true);
     for (var k = 0; k < 7; k++) {
       var C = -200 - 80 * k, s = k % 2 ? 1 : -1;
-      K(TK(k) + 0.4, [-6.5 * s, 7, C + 25], [0, 2.6, C]);
-      K(TK(k) + 3.1, [-1 * s, 5.6, C + 21.5], [0, 2.5, C]);
-      K(TK(k) + 5.6, [6 * s, 5, C + 18.5], [0, 2.4, C]);
+      K(TK(k) + 0.4, [-6.5 * s, 7.4, C + 27], [0, 2.6, C]);
+      K(TK(k) + 3.1, [-1 * s, 6, C + 23.5], [0, 2.5, C]);
+      K(TK(k) + 5.6, [6 * s, 5.4, C + 20.5], [0, 2.4, C]);
       if (k < 6) K(TK(k) + 6.4, [10 * s, 9.5, C - 14], [0, 3, C - 80]);
     }
     K(72.4, [3, 9, -680 + 30], [0, 6, -680 - 20]);
     K(74.5, [0, 40, -660], A(QC, [0, 6, 0]));
-    K(77.5, A(QC, [0, 6.5, 15]), A(QC, [0, 4.4, -8]));
+    K(77.5, A(QC, [0, 5.8, 8.5]), A(QC, [0, 4.4, -8]));
     K(80.2, A(QC, [0, 6.5, 9]), A(QC, [0, 4.8, -8]));
     for (var m = 0; m < 4; m++) {
       var sg = Z.screens[m], th = sg.userData.th, dx = Math.sin(th), dz = -Math.cos(th);
@@ -1371,8 +1379,8 @@ html[dir=rtl] .tbox h3{margin:0 0 6px 44px}
     K(124.4, A(WC, [0, 10.8, 16]), A(WC, [0, 10.4, -16]));
     K(125.6, A(FC, [0, 13, 24]), A(FC, [0, 1.2, 0]));
     K(128.4, A(FC, [0, 20, 44]), A(FC, [0, 1.2, 0]));
-    K(131.6, A(FC, [0, 16, 38]), A(FC, [0, 2.4, 0]));
-    K(D, A(FC, [0, 12, 27]), A(FC, [0, 3.4, 0]));
+    K(131.6, A(FC, [0, 19, 44]), A(FC, [0, 2.4, 0]));
+    K(D, A(FC, [0, 16, 38]), A(FC, [0, 3, 0]));
   }
   function cr(p0, p1, p2, p3, u2, out) {
     var u3 = u2 * u2, u4 = u3 * u2;
@@ -1431,8 +1439,9 @@ html[dir=rtl] .tbox h3{margin:0 0 6px 44px}
     ENV.push(E(100.8, '#FFF2E2', '#FFE0C4', 26, 120, '#ffffff', 1.0, '#ffffff', 0.8, 0, 0.32, 1, 0, 0.12, 1.75));
     ENV.push(E(102.6, '#0b1030', '#2a2152', 30, 110, '#8a7cff', 0.7, '#ffd6a8', 0.6, 0.7, 0.9, 1, 0, 0.12, 1.45));
     ENV.push(E(114.6, '#0b1030', '#2a2152', 30, 110, '#8a7cff', 0.7, '#ffd6a8', 0.6, 0.7, 0.9, 1, 0, 0.12, 1.45));
-    ENV.push(E(116.2, '#1d1550', '#b84a74', 50, 220, '#ffd2c0', 0.8, '#ffb07a', 0.8, 0.6, 0.85, 0, -0.1, 0.16, 1.95));
-    ENV.push(E(124.6, '#1d1550', '#b84a74', 50, 220, '#ffd2c0', 0.8, '#ffb07a', 0.8, 0.6, 0.85, 0, -0.1, 0.16, 1.95));
+    ENV.push(E(116.2, '#1d1550', '#b84a74', 50, 220, '#ffd2c0', 0.8, '#ffb07a', 0.8, 0.6, 0.85, 0, -0.03, 0.16, 1.95));
+    ENV.push(E(124.6, '#1d1550', '#b84a74', 50, 220, '#ffd2c0', 0.8, '#ffb07a', 0.8, 0.6, 0.85, 0, -0.03, 0.16, 1.95));
+
     ENV.push(E(125.8, '#140b30', '#4a2a5e', 50, 220, '#b48cff', 0.7, '#ffd08a', 0.9, 0.9, 0.95, 0, 0.2, 0.2, 1.5));
     ENV.push(E(129.4, '#140b30', '#4a2a5e', 50, 220, '#b48cff', 0.7, '#ffd08a', 0.9, 0.9, 0.95, 0, 0.22, 0.24, 1.5));
     ENV.push(E(133.5, '#FFD58A', '#FFB65C', 50, 220, '#fff2d6', 1.0, '#ffffff', 1.0, 0, 0.35, 0, 0.3, 0.3, 1.4));
@@ -1479,7 +1488,7 @@ html[dir=rtl] .tbox h3{margin:0 0 6px 44px}
     cam.position.set(_p.x + Math.sin(time * 0.31) * drift + mouse.sx * 0.9, _p.y + Math.sin(time * 0.43) * drift * 0.7 + mouse.sy * 0.5, _p.z);
     cam.lookAt(_l);
     // framing: push the subject away from the text
-    var offX = portrait ? 0 : (rtl ? 1 : -1) * e.sx * W * 0.17, offY = portrait ? -e.syP * H : -e.syL * H;
+    var offX = portrait ? 0 : (rtl ? 1 : -1) * e.sx * W * 0.2, offY = portrait ? -e.syP * H : -e.syL * H;
     cam.setViewOffset(W, H, offX, offY, W, H);
     Z.sky.position.copy(cam.position);
     Z.sun.position.set(cam.position.x - 30, cam.position.y + 50, cam.position.z + 30); Z.sun.target.position.copy(_l);
@@ -1583,10 +1592,14 @@ html[dir=rtl] .tbox h3{margin:0 0 6px 44px}
       Z.miniL.scale.set(1, ms + 0.001, 1); Z.miniR.scale.setScalar(ms + 0.001); Z.miniR.visible = Z.miniL.visible = ms > 0.01;
       Z.fbook.g.rotation.y = Math.sin(time * 0.3) * 0.05;
       Z.fbook.g.position.y = seg(T, 130, 136) * 2 + Math.sin(time * 0.8) * 0.15;
+      Z.fbook.g.position.x = close * 8.5; Z.finGlow.position.x = close * 8.5;
+
       var gl = ease(seg(T, 130.4, 134));
       Z.finGlow.scale.setScalar(2 + gl * 90); Z.finGlow.material.opacity = gl * 0.95;
       Z.fbook.frontM.emissiveIntensity = 1 + gl * 2.5;
       Z.finDust.rotation.y = time * 0.04;
+      Z.finSpark.forEach(function (s, i) { s.material.opacity = gl * (0.35 + 0.45 * Math.abs(Math.sin(time * 1.3 + i * 1.7))); s.position.y += Math.sin(time + i) * 0.004; });
+
     }
   }
 
@@ -1609,7 +1622,7 @@ html[dir=rtl] .tbox h3{margin:0 0 6px 44px}
     lang = lang === 'ar' ? 'en' : 'ar'; rtl = lang === 'ar';
     try { localStorage.setItem('lumio_lang', lang); } catch (e) {}
     document.documentElement.lang = lang; document.documentElement.dir = rtl ? 'rtl' : 'ltr';
-    lastChap = -1; render();
+    lastChap = -1; lastT = -1; render();
     if (glOK) { layoutScreens(); layoutCards(); buildKeys(); Z.cards.forEach(function (c) { redrawTex(c.tex); }); }
     if (FILM) { buildTimeline(); ST.refresh(); }
     setupReveals();
@@ -1629,7 +1642,7 @@ html[dir=rtl] .tbox h3{margin:0 0 6px 44px}
     if (!glOK) { FILM = false; document.documentElement.classList.add('static'); }
   }
   setupReveals();
-  window.__cine = { film: FILM, gl: glOK, T: function () { return Tnow; }, dbg: function () { return { Z: Z, cam: cam, keys: keys }; } };
+  window.__cine = { film: FILM, gl: glOK, T: function () { return Tnow; } };
   if (!FILM) {
     var onScrollS = function () { var h = document.documentElement.scrollHeight - innerHeight; $('#progI').style.transform = 'scaleX(' + (h > 0 ? pageYOffset / h : 0).toFixed(4) + ')'; };
     addEventListener('scroll', onScrollS, { passive: true }); onScrollS();
@@ -1659,7 +1672,7 @@ html[dir=rtl] .tbox h3{margin:0 0 6px 44px}
     var dt = Math.min(0.1, (now - last) / 1000); last = now;
     var f = $('#film'), r = f.getBoundingClientRect();
     inFilm = r.bottom > 0 && r.top < innerHeight;
-    document.body.classList.toggle('infilm', inFilm && r.bottom > innerHeight * 1.2);
+    document.body.classList.toggle('infilm', inFilm && r.bottom > innerHeight * 0.55);
     var k = 1 - Math.exp(-dt * 4.2);
     sp += (target - sp) * k; if (Math.abs(target - sp) < 0.00002) sp = target;
     Tnow = sp * D;
