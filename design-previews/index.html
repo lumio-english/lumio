@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Student Dashboard Designs</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Nunito:wght@600;700;800&family=Tajawal:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--o:#F97316;--od:#C2410C;--peach:#FFF6EF;--peach2:#FFEBDB;--line:#F3DCCB;--ink:#111;--soft:#4A4A4A;--mut:#767676;--bg:#FFFBF7;--card:#fff;
+  --display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;--body:'Nunito','Segoe UI',system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--peach:#1E2440;--peach2:#2A2F52;--line:#33447A;--ink:#F3F5FF;--soft:#C3CCEB;--mut:#8E9AC4;--bg:#0B1226;--card:#141E3E}}
+:root[data-theme="dark"]{--peach:#1E2440;--peach2:#2A2F52;--line:#33447A;--ink:#F3F5FF;--soft:#C3CCEB;--mut:#8E9AC4;--bg:#0B1226;--card:#141E3E}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(900px 500px at 90% -10%,rgba(249,115,22,.18),transparent 60%),var(--bg);color:var(--ink);font-family:var(--body)}
+.wrap{max-width:1180px;margin:0 auto;padding:40px 16px 80px}
+header{display:flex;align-items:center;gap:14px}
+header img{height:56px}
+.kick{font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--od)}
+h1{font-family:var(--display);font-size:clamp(32px,5vw,56px);line-height:1.02;letter-spacing:-.03em;margin:18px 0 10px;max-width:16em}
+.lead{font-size:17px;line-height:1.6;color:var(--soft);max-width:44em;margin:0}
+.dirs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:34px 0 50px}
+.dir{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:26px;overflow:hidden;text-decoration:none;color:inherit;box-shadow:0 24px 50px -40px rgba(194,65,12,.7);transition:transform .2s,box-shadow .2s}
+.dir:hover{transform:translateY(-4px);box-shadow:0 30px 60px -36px rgba(194,65,12,.8)}
+.dir .shot{aspect-ratio:16/10;background:var(--peach) center/cover no-repeat;border-bottom:1px solid var(--line);display:grid;place-items:center;font:800 64px var(--display);color:var(--o)}
+.dir .tx{padding:18px 20px 22px;display:flex;flex-direction:column;gap:8px;flex:1}
+.dir b{font-family:var(--display);font-size:22px;letter-spacing:-.02em}
+.dir p{margin:0;color:var(--soft);line-height:1.55;font-size:15px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:8px}
+.tags span{font-size:12px;font-weight:800;border-radius:999px;padding:4px 10px;background:var(--peach2);color:var(--od)}
+.open{display:inline-flex;align-self:flex-start;margin-top:6px;background:var(--o);color:#fff;border-radius:999px;padding:10px 16px;font-weight:800;font-size:14px}
+h2{font-family:var(--display);font-size:28px;letter-spacing:-.02em;margin:0 0 6px}
+.sub{color:var(--mut);margin:0 0 20px;font-weight:700}
+.groups{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.grp{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px}
+.grp h3{margin:0 0 10px;font-family:var(--display);font-size:17px;color:var(--od)}
+.grp ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px;font-size:14px;line-height:1.4;color:var(--soft)}
+.grp li::marker{color:var(--o);font-weight:800}
+.new{font-size:10.5px;font-weight:800;background:#DCFCE7;color:#15803D;border-radius:999px;padding:1px 7px;margin-left:4px;vertical-align:1px}
+footer{margin-top:40px;color:var(--mut);font-size:13.5px;line-height:1.6}
+@media (max-width:980px){.dirs{grid-template-columns:1fr}.groups{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.groups{grid-template-columns:1fr}header img{height:44px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><img src="../assets/logo/lumio-logo.png" alt="Lumio English" onerror="this.remove()"><span class="kick">Design preview · student dashboard + profile</span></header>
+  <h1>Three new directions for the student page</h1>
+  <p class="lead">Each direction shows the same student with every function the platform offers today, with a Kid / Teen switch. They are previews with demo data: pick one (or mix parts) and it will be built into the real student page.</p>
+
+  <div class="dirs">
+    <a class="dir" href="a-adventure.html">
+      <div class="shot" style="background-image:url(shots/a.jpg)">A</div>
+      <div class="tx"><span class="kick">Direction A</span><b>Adventure World</b>
+        <p>The dashboard is a game world: a 3D floating-island map of the lessons on top, every section a zone below, and a bottom tab bar on phones.</p>
+        <div class="tags"><span>three.js islands</span><span>GSAP scroll</span><span>Lottie wins</span></div><span class="open">Open preview →</span></div>
+    </a>
+    <a class="dir" href="b-studio.html">
+      <div class="shot" style="background-image:url(shots/b.jpg)">B</div>
+      <div class="tx"><span class="kick">Direction B</span><b>Learning Studio</b>
+        <p>A calm app-style dashboard: sidebar on laptops, a bento grid of cards, and progress charts at the centre. The clearest for parents.</p>
+        <div class="tags"><span>three.js trophy</span><span>GSAP count-ups</span><span>Lottie checks</span></div><span class="open">Open preview →</span></div>
+    </a>
+    <a class="dir" href="c-journey.html">
+      <div class="shot" style="background-image:url(shots/c.jpg)">C</div>
+      <div class="tx"><span class="kick">Direction C</span><b>Story Journey</b>
+        <p>The page reads like a storybook: a path draws itself as you scroll, each stop is a chapter of the student's world, with Lumi walking along.</p>
+        <div class="tags"><span>three.js sky</span><span>GSAP path</span><span>Lottie moments</span></div><span class="open">Open preview →</span></div>
+    </a>
+  </div>
+
+  <h2>Everything a student can do on Lumio</h2>
+  <p class="sub">42 functions, all present in each direction. <span class="new">New</span> = added this week.</p>
+  <div class="groups">
+    <div class="grp"><h3>Today</h3><ol>
+      <li>Today's mission (next step)</li><li>Lesson prep: 9 activity types, record your voice</li><li>Interactive homework (draw, record, spell, quiz)</li>
+      <li>Homework sheet (PDF)</li><li>Writing sheet (PDF)</li><li>Flashcards (PDF)</li><li>Lesson trail: prep → class → homework</li></ol></div>
+    <div class="grp"><h3>My adventure</h3><ol start="8">
+      <li>3D adventure map of 20 lessons (or a list)</li><li>Level progress and lessons done</li><li>Level test (30 questions, 70% to pass)</li><li>Certificate</li></ol>
+      <h3 style="margin-top:14px">My progress</h3><ol start="12">
+      <li>Totals: finished, attended, attendance, prep, homework, teacher grade <span class="new">New</span></li>
+      <li>My lessons: scores per class + go back to any finished prep, homework, flashcards, sheets <span class="new">New</span></li></ol></div>
+    <div class="grp"><h3>Unlocked for you</h3><ol start="14"><li>Lumi's Magic Map story (4 parts)</li><li>Level game</li></ol>
+      <h3 style="margin-top:14px">My classes</h3><ol start="16">
+      <li>Next class + Join link</li><li>Upcoming classes, Cancel up to 30 min before</li><li>Book one class: day, hour (Saudi + your time <span class="new">New</span>), teacher</li>
+      <li>Fixed weekly schedule</li><li>Rate your teacher</li><li>Sessions left</li></ol></div>
+    <div class="grp"><h3>English Hub</h3><ol start="22">
+      <li>Vocabulary + Word Pop, Word Builder, Memory Match</li><li>Grammar</li><li>Idioms</li><li>Phonics</li><li>Spelling</li><li>Songs</li><li>Writing &amp; Speaking</li></ol></div>
+    <div class="grp"><h3>Rewards</h3><ol start="29"><li>Reward points + Redeem (50 → +1 hour)</li><li>Badges (8)</li><li>Study buddies</li><li>Daily streak</li></ol>
+      <h3 style="margin-top:14px">More</h3><ol start="33"><li>Level manual (PDF)</li></ol></div>
+    <div class="grp" style="grid-column:span 3"><h3>Menu / account</h3><ol start="34" style="columns:2;display:block">
+      <li>My profile: photo, details, subscription, payments, level test, grades, performance report</li><li>Messages and notifications</li><li>Guides</li>
+      <li>Referrals: invite friends, free sessions</li><li>Parent guide tour (Arabic + English)</li><li>Avatar picker</li><li>Sound effects and music on/off</li>
+      <li>Kid look / Teen night look (by level)</li><li>Log out</li></ol></div>
+  </div>
+  <footer>Built with three.js r128, GSAP 3.12 + ScrollTrigger and lottie-web 5.12 (Lumio's own Lottie animations in <code>assets/lottie/</code>). Demo data only: nothing here reads or changes real student records.</footer>
+</div>
+</body>
+</html>
