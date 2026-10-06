@@ -1072,7 +1072,7 @@ function start(li, btn) {
 
 /* ---- 1. meet three new words ---- */
 R.meet = function (quiet) {
-  var d = Q.d, m = Q.meet, w = d.words[m.i], all = Object.keys(m.heard).length >= 3;
+  var d = Q.d, m = Q.meet, w = d.words[m.i], all = Object.keys(m.heard).length >= 3, autoTok = m.auto;
   sBody.innerHTML = guide('meet') +
     '<button class="feat" type="button" id="feat" aria-label="' + esc(w.en) + '"><span class="pic">' + img(w.image || w.en, w.en) + '</span><span><span class="w">' + esc(w.en) + '</span><span class="a" lang="ar">' + esc(w.ar) + '</span></span><span class="spk" aria-hidden="true">' + IC.spk + '</span></button>' +
     '<p class="ex" id="ex">' + IC.bars + '<span>“' + esc(w.example || '') + '”</span></p>' +
@@ -1083,12 +1083,19 @@ R.meet = function (quiet) {
     var th = $$('.th', sBody)[m.i]; if (th) th.classList.add('heard');
     if (Object.keys(m.heard).length >= 3) { $('#nx').disabled = false; $('.foot .hint', sBody).textContent = ''; if (G && !RM) G.fromTo('#nx', { scale: .9 }, { scale: 1, duration: .5, ease: 'back.out(3)' }); }
     var word = d.words[m.i];
-    play(word.en, $('#feat .spk')).then(function (ok) { if (ok && word.example) { var ex = $('#ex'); play(word.example, ex); } });
+    return play(word.en, $('#feat .spk')).then(function (ok) { if (ok && word.example) { var ex = $('#ex'); return play(word.example, ex); } return ok; });
   }
-  $('#feat').onclick = function () { hear(); if (G && !RM) G.fromTo('#feat .pic img', { scale: .9, rotation: -4 }, { scale: 1, rotation: 0, duration: .6, ease: 'elastic.out(1,.5)' }); };
-  $$('.th', sBody).forEach(function (b) { b.onclick = function () { m.i = +b.getAttribute('data-i'); R.meet(true); if (G && !RM) G.from('#feat', { opacity: 0, x: (lang === 'ar' ? -1 : 1) * 24, duration: .35, ease: 'power2.out', clearProps: 'all' }); hear(); }; });
+  // Plays all three words (word + example) one after another with no tapping;
+  // any tap by the child takes over and stops the automatic run.
+  function autoAll(i) {
+    if (Q.step !== 'meet' || m.auto !== autoTok || i >= d.words.length) return;
+    if (i !== m.i) { m.i = i; R.meet(true); if (G && !RM) G.from('#feat', { opacity: 0, x: (lang === 'ar' ? -1 : 1) * 24, duration: .35, ease: 'power2.out', clearProps: 'all' }); }
+    hear().then(function () { setTimeout(function () { autoAll(i + 1); }, 700); });
+  }
+  $('#feat').onclick = function () { m.auto = 0; hear(); if (G && !RM) G.fromTo('#feat .pic img', { scale: .9, rotation: -4 }, { scale: 1, rotation: 0, duration: .6, ease: 'elastic.out(1,.5)' }); };
+  $$('.th', sBody).forEach(function (b) { b.onclick = function () { m.auto = 0; m.i = +b.getAttribute('data-i'); R.meet(true); if (G && !RM) G.from('#feat', { opacity: 0, x: (lang === 'ar' ? -1 : 1) * 24, duration: .35, ease: 'power2.out', clearProps: 'all' }); hear(); }; });
   $('#nx').onclick = function () { addStar(this); go('listen'); };
-  if (!quiet) { enter('.guide,.feat,.ex,.th,.foot'); if (!m.heard[0]) setTimeout(function () { if (Q.step === 'meet' && !m.heard[0]) hear(); }, 450); }
+  if (!quiet) { enter('.guide,.feat,.ex,.th,.foot'); if (!m.heard[0]) { autoTok = m.auto = Date.now(); setTimeout(function () { autoAll(0); }, 450); } }
 };
 
 /* ---- 2. listen and tap the right picture ---- */
