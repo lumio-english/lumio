@@ -543,11 +543,14 @@ html[dir=rtl] .plan .pr{justify-content:flex-end}
 /* handbook */
 .hbg{display:grid;gap:26px;align-items:center}
 @media (min-width:880px){.hbg{grid-template-columns:320px 1fr;gap:50px}}
-.hbc{position:relative;max-width:300px;margin:0 auto;perspective:1000px}
-.hbc img{border-radius:10px 20px 20px 10px;box-shadow:var(--sh2);transition:transform .5s;transform:rotateY(-14deg) rotateX(4deg)}
-html[dir=rtl] .hbc img{transform:rotateY(14deg) rotateX(4deg)}
-.hbc:hover img{transform:none!important}
-.hbc span{position:absolute;top:12px;inset-inline-end:-8px;background:var(--o);color:#fff;font-weight:900;border-radius:99px;padding:5px 12px;font-size:13px}
+.hbc{position:relative;width:min(280px,72vw);margin:0 auto}
+.hbc::before{content:"";position:absolute;inset:14px -10px -14px 10px;border-radius:6px 16px 16px 6px;background:#F3DCCB;z-index:0}
+html[dir=rtl] .hbc::before{inset:14px 10px -14px -10px;border-radius:16px 6px 6px 16px}
+.hbc img{position:relative;z-index:1;display:block;width:100%;height:auto;aspect-ratio:696/984;object-fit:cover;border-radius:6px 16px 16px 6px;
+  box-shadow:inset 6px 0 10px -6px rgba(0,0,0,.35),0 26px 50px -24px rgba(194,65,12,.6),0 4px 10px rgba(0,0,0,.08);transition:transform .4s cubic-bezier(.22,1,.36,1);transform:rotate(-2deg)}
+html[dir=rtl] .hbc img{border-radius:16px 6px 6px 16px;transform:rotate(2deg)}
+.hbc:hover img{transform:rotate(0) translateY(-4px)}
+.hbc span{position:absolute;z-index:2;top:12px;inset-inline-end:-8px;background:var(--o);color:#fff;font-weight:900;border-radius:99px;padding:5px 12px;font-size:13px}
 .hbl{list-style:none;margin:16px 0 20px;padding:0;display:grid;gap:8px}
 .hbl li{background:#fff;border:1px solid var(--ln);border-radius:14px;padding:10px 14px;font-size:15px;color:var(--mu);font-weight:600}
 .hbl li b{color:var(--ink)}
@@ -1765,7 +1768,7 @@ if (G && ST && !RM) {
   ST.batch('.plan', { start: 'top 90%', once: true, onEnter: function (els) { G.from(els, { y: 50, opacity: 0, duration: .8, stagger: .1, ease: 'power3.out', clearProps: 'opacity' }); paintPrices(true); } });
   ST.batch('.cm', { start: 'top 92%', once: true, onEnter: function (els) { G.from(els, { y: 30, opacity: 0, duration: .6, stagger: .06, ease: 'back.out(1.6)', clearProps: 'transform,opacity' }); } });
   ST.batch('.ht', { start: 'top 92%', once: true, onEnter: function (els) { G.from(els, { y: 24, opacity: 0, duration: .5, stagger: .05, clearProps: 'transform,opacity' }); } });
-  G.to('.hbc img', { y: -20, ease: 'none', scrollTrigger: { trigger: '#handbook', start: 'top bottom', end: 'bottom top', scrub: true } });
+
   G.from('.final img', { y: 40, rotation: -10, scrollTrigger: { trigger: '.final', start: 'top 85%', end: 'top 40%', scrub: true } });
 }
 window.__tryit = { Q: Q, go: go };
