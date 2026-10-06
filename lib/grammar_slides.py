@@ -91,20 +91,50 @@ def slide_grammar_rule(topic, n, total, ch, header_fn, colorstrip, bg_study_fn, 
 
 
 def slide_grammar_practice(topic, n, total, ch, header_fn, colorstrip, bg_plain_fn, char_img_fn):
-    examples = topic.get("examples", [])
-    last_two = examples[2:4] or examples[:2]
-    cards = "".join(f'''
-      <div style="background:#fff;border-radius:16px;padding:20px 24px;box-shadow:0 8px 16px rgba(67,48,31,.14);max-width:560px">
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.1rem;color:#43301F">{esc(ex["en"])}</div>
-        <div style="direction:rtl;text-align:right;font-size:.88rem;color:#8A7160;font-weight:700;margin-top:6px">{ex["ar"]}</div>
-      </div>''' for ex in last_two)
+    """Read & Repeat: the rule on the left (title, pattern, 3 steps), up to
+    four numbered example sentences on the right, each with its own
+    Listen button (EN + AR). Same layout on kid and teen decks -- the
+    header/background functions carry the theme."""
+    examples = topic.get("examples", [])[:4]
+    rows = ""
+    for i, ex in enumerate(examples, 1):
+        en = ex["en"]; ar = ex.get("ar", "")
+        rows += f'''
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:14px;background:#FFFCF6;border:1.5px solid #F0E6D6">
+          <div style="width:34px;height:34px;border-radius:50%;background:#F97316;color:#fff;font-weight:800;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Baloo 2',sans-serif">{i}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.12rem;color:#43301F;line-height:1.25">{esc(en)}</div>
+            <div style="direction:rtl;text-align:right;font-size:.86rem;color:#8A7160;font-weight:700;margin-top:3px">{ar}</div>
+          </div>
+          <button onclick="typeof Lumio!=='undefined' && Lumio.speak && Lumio.speak({esc(json.dumps(en))})" title="Listen"
+                  style="cursor:pointer;border:none;width:42px;height:42px;border-radius:50%;background:#0D9488;color:#fff;font-size:1.05rem;flex-shrink:0;box-shadow:0 4px 10px rgba(13,148,136,.3)">&#128266;</button>
+        </div>'''
+    steps = "".join(f'<div style="display:flex;align-items:center;gap:10px;margin-top:8px"><div style="width:26px;height:26px;border-radius:50%;background:{c};color:#fff;font-weight:800;font-size:.8rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">{k}</div><div style="font-weight:800;font-size:.88rem;color:#43301F">{t}<span style="display:block;font-weight:700;font-size:.76rem;color:#8A7160">{a}</span></div></div>'
+                    for k, c, t, a in [(1, "#0D9488", "Listen", "استمعوا"), (2, "#F97316", "Repeat together", "ردّدوا معاً"), (3, "#2451B8", "Say it on your own", "قولوها بمفردكم")])
     return (bg_plain_fn() + header_fn("Grammar Practice &bull; Read &amp; Repeat", n, total) + colorstrip + f'''
-    <div style="position:absolute;left:0;right:0;top:180px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:700;
-                font-size:1.05rem;color:#8A7160;margin-bottom:10px">Read each sentence together, then say it on your own!</div>
-    <div style="position:absolute;left:0;right:0;top:250px;display:flex;flex-direction:column;gap:16px;align-items:center;padding:0 60px">
-      {cards}
+    <div style="position:absolute;left:46px;right:46px;top:132px;bottom:70px;display:flex;gap:22px;z-index:5">
+      <div style="width:380px;flex-shrink:0;background:#fff;border-radius:20px;padding:22px 24px;box-shadow:0 10px 24px rgba(67,48,31,.14);display:flex;flex-direction:column">
+        <div style="font-size:.7rem;font-weight:800;letter-spacing:1.5px;color:#F97316">THE PATTERN</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;color:#43301F;line-height:1.15;margin-top:4px">{esc(topic.get("title", ""))}</div>
+        <div style="direction:rtl;text-align:right;font-weight:800;font-size:.95rem;color:#8A7160;margin-top:2px">{topic.get("titleAr", "")}</div>
+        <div style="margin-top:12px;padding:12px 14px;border-radius:12px;background:#FFF3D6;font-weight:700;font-size:.9rem;color:#43301F;line-height:1.4">{esc(topic.get("explanation", ""))}
+          <div style="direction:rtl;text-align:right;font-size:.84rem;color:#8A7160;margin-top:4px">{topic.get("explanationAr", "")}</div></div>
+        <div style="margin-top:16px;padding-top:12px;border-top:1.5px dashed #F0E6D6"><div style="font-size:.7rem;font-weight:800;letter-spacing:1.5px;color:#2451B8;margin-bottom:4px">HOW WE PRACTISE</div>{steps}</div>
+      </div>
+      <div style="flex:1;background:#fff;border-radius:20px;padding:18px 20px;box-shadow:0 10px 24px rgba(67,48,31,.14);display:flex;flex-direction:column;gap:10px;overflow:hidden">
+        <div style="font-size:.7rem;font-weight:800;letter-spacing:1.5px;color:#0D9488;margin-bottom:2px">READ &amp; REPEAT &middot; اقرؤوا وردّدوا</div>
+        {rows}
+        <div style="margin-top:auto;display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:14px;background:linear-gradient(135deg,#E6FBF8,#DDF6F0);border:1.5px solid #BFEFE6">
+          <div style="font-size:1.5rem">&#128172;</div>
+          <div style="flex:1">
+            <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.02rem;color:#0F766E">Now you &mdash; make one NEW sentence with this pattern.</div>
+            <div style="font-size:.8rem;color:#4B6B66;font-weight:700;margin-top:2px">Pairs: say it to your partner, who repeats it back. &nbsp;1-on-1: say it to your teacher, then swap &mdash; the teacher says one, you repeat.
+              <span style="display:block;direction:rtl;text-align:right;color:#8A7160">الآن دوركم: كوّنوا جملة جديدة بنفس القاعدة.</span></div>
+          </div>
+        </div>
+      </div>
     </div>
-    ''' + char_img_fn(ch, bottom=42, height=300))
+    ''')
 
 
 def slide_grammar_mcq(topic, q, idx, total_q, n, total, ch, header_fn, colorstrip, bg_plain_fn, char_img_fn):

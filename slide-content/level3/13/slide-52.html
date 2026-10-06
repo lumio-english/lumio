@@ -15,26 +15,37 @@
         <div style="height:60px;padding:4px 10px;border-radius:14px;background:#fff;display:flex;align-items:center;box-shadow:0 4px 12px rgba(0,0,0,.18)"><img src="assets/logo/lumio-logo.png" alt="Lumio English" style="height:100%;width:auto;object-fit:contain"></div>
       </div>
       <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#EDE9FB;font-size:.95rem;background:rgba(139,92,246,.14);
-                  padding:6px 16px;border-radius:8px">Your Turn · 1/2</div>
-      <div style="font-family:'Nunito',sans-serif;font-weight:800;color:#C6BBF2;font-size:.8rem">52 / 59</div>
+                  padding:6px 16px;border-radius:8px">Your Turn &middot; 1/5</div>
+      <div style="font-family:'Nunito',sans-serif;font-weight:800;color:#C6BBF2;font-size:.8rem">52 / 62</div>
     </div>
     <div style="position:relative;z-index:5;margin:14px 40px 0;height:3px;background:#4A3B7A;border-radius:2px">
-      <div style="height:100%;width:88%;background:linear-gradient(90deg,#8B5CF6,#F97316);border-radius:2px"></div>
+      <div style="height:100%;width:84%;background:linear-gradient(90deg,#8B5CF6,#F97316);border-radius:2px"></div>
     </div>
-    <div style="position:relative;z-index:5;display:flex;align-items:center;justify-content:center;gap:36px;margin-top:60px">
-      <div style="background:#FFFFFF;border-radius:12px;border:1px solid rgba(0,0,0,.06);border-top:4px solid #818CF8;box-shadow:0 12px 26px rgba(0,0,0,.28);width:280px;height:280px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;background:#232038">
-        <div id="ytMystery1" style="font-size:3.2rem">&#128266;</div>
-        <img id="ytImg1" src="assets/vocab/raise-your-hand.png" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff" onerror="this.style.display='none'">
+    <div style="position:absolute;left:0;right:0;top:140px;bottom:150px;display:flex;align-items:center;justify-content:center;gap:34px;z-index:5">
+      <div id="ytCard1" style="width:300px;height:300px;border-radius:24px;background:#232038;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;box-shadow:0 14px 30px rgba(0,0,0,.2)">
+        <div id="ytMystery1" style="font-size:4rem">&#128266;</div>
+        <img id="ytImg1" src="assets/vocab/raise-your-hand.png" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;padding:14px" onerror="this.style.display='none'">
       </div>
-      <div style="background:#FFFFFF;border-radius:12px;border:1px solid rgba(0,0,0,.06);border-top:4px solid #818CF8;box-shadow:0 12px 26px rgba(0,0,0,.28);width:360px;padding:32px;text-align:center">
-        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.3rem;color:#2B2640;margin-bottom:8px">Listen first.</div>
-        <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:.9rem;color:#6B6580">Play the sound, guess it, then reveal.</div>
+      <div style="width:470px;background:#FFFFFF;border-radius:24px;padding:26px 30px;box-shadow:0 14px 30px rgba(0,0,0,.18);text-align:center">
+        <div id="ytAsk1">
+          <div style="font-family:'Fredoka',sans-serif;font-weight:800;font-size:1.5rem;color:#2B2640">Listen &mdash; say it in Arabic!</div>
+          <div style="direction:rtl;font-weight:800;font-size:1.15rem;color:#6B6580;margin-top:4px">استمعوا ثم قولوا الكلمة بالعربية</div>
+          <div style="display:flex;justify-content:center;gap:10px;margin-top:16px;flex-wrap:wrap">
+            <span style="background:#7C5CFC18;color:#7C5CFC;font-weight:800;font-size:.8rem;padding:6px 12px;border-radius:999px">1 Play the word</span><span style="background:#7C5CFC18;color:#7C5CFC;font-weight:800;font-size:.8rem;padding:6px 12px;border-radius:999px">2 Say the Arabic</span><span style="background:#7C5CFC18;color:#7C5CFC;font-weight:800;font-size:.8rem;padding:6px 12px;border-radius:999px">3 Reveal</span>
+          </div>
+          <div style="margin-top:14px;font-size:.8rem;font-weight:700;color:#6B6580;line-height:1.45">Pairs: the first to say the Arabic wins the point.<br>1-on-1: your teacher plays the word, you answer.</div>
+        </div>
+        <div id="ytAns1" style="display:none">
+          <div style="direction:rtl;font-weight:900;font-size:2.4rem;color:#2B2640;line-height:1.2">ارفع يدك</div>
+          <div style="font-family:'Fredoka',sans-serif;font-weight:800;font-size:1.5rem;color:#7C5CFC;margin-top:6px">raise your hand</div>
+          <div style="font-size:.95rem;font-weight:700;color:#6B6580;margin-top:8px">&ldquo;Raise your hand to answer.&rdquo;</div>
+        </div>
       </div>
     </div>
-    <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('raise your hand')"
-            style="position:absolute;left:50%;transform:translateX(-170px);bottom:110px;z-index:20;cursor:pointer;border:none;font-family:'Fredoka',sans-serif;
-            background:linear-gradient(135deg,#14B8A6,#0D9488);color:#fff;font-weight:600;padding:12px 22px;border-radius:10px;font-size:.88rem">&#9654; Play</button>
-    <button onclick="document.getElementById('ytMystery1').style.display='none'; document.getElementById('ytImg1').style.display='block'; this.textContent='raise your hand \u2014 ارفع يدك'; this.style.background='linear-gradient(135deg,#4ADE80,#16A34A)'"
-            style="position:absolute;left:50%;transform:translateX(10px);bottom:110px;z-index:20;cursor:pointer;border:none;font-family:'Fredoka',sans-serif;
-            background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:600;padding:12px 22px;border-radius:10px;font-size:.88rem">Reveal</button>
+    <div style="position:absolute;left:0;right:0;bottom:84px;display:flex;justify-content:center;gap:18px;z-index:20">
+      <button onclick="typeof Lumio!=='undefined' && Lumio.speak && Lumio.speak(&quot;raise your hand&quot;)"
+              style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,#0D9488,#0B7A6F);color:#fff;font-weight:800;padding:13px 28px;border-radius:999px;font-size:1.02rem;box-shadow:0 8px 18px rgba(13,148,136,.35)">&#9654; Play the word</button>
+      <button onclick="document.getElementById('ytMystery1').style.display='none';document.getElementById('ytImg1').style.display='block';document.getElementById('ytAsk1').style.display='none';document.getElementById('ytAns1').style.display='block';this.disabled=true;this.style.opacity=.55"
+              style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,#7C5CFC,#5B3FD9);color:#fff;font-weight:800;padding:13px 28px;border-radius:999px;font-size:1.02rem;box-shadow:0 8px 18px rgba(0,0,0,.25)">&#128064; Reveal</button>
+    </div>
     

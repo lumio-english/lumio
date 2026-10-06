@@ -15,23 +15,61 @@
         <div style="height:60px;padding:4px 10px;border-radius:14px;background:#fff;display:flex;align-items:center;box-shadow:0 4px 12px rgba(0,0,0,.18)"><img src="assets/logo/lumio-logo.png" alt="Lumio English" style="height:100%;width:auto;object-fit:contain"></div>
       </div>
       <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#fff;font-size:.95rem;background:#F59E0B3A;
-                  border:1px solid #F59E0B80;padding:6px 16px;border-radius:8px">Common Mistake</div>
-      <div style="font-family:'Nunito',sans-serif;font-weight:800;color:#C6BBF2;font-size:.8rem">48 / 57</div>
+                  border:1px solid #F59E0B80;padding:6px 16px;border-radius:8px">Common Mistakes</div>
+      <div style="font-family:'Nunito',sans-serif;font-weight:800;color:#C6BBF2;font-size:.8rem">48 / 59</div>
     </div>
     <div style="position:relative;z-index:5;margin:14px 40px 0;height:3px;background:#4A3B7A;border-radius:2px">
-      <div style="height:100%;width:84%;background:linear-gradient(90deg,#F59E0B,#D97706);border-radius:2px"></div>
+      <div style="height:100%;width:81%;background:linear-gradient(90deg,#F59E0B,#D97706);border-radius:2px"></div>
     </div>
-    <div style="position:relative;z-index:5;display:flex;justify-content:center;margin-top:60px">
-      <div style="background:#FFFFFF;border-radius:12px;border:1px solid rgba(0,0,0,.06);border-top:4px solid #F59E0B;box-shadow:0 12px 26px rgba(0,0,0,.28);width:720px;padding:36px 40px">
-        <div style="display:flex;align-items:center;gap:12px;background:#FEF2F2;border-radius:10px;padding:12px 16px;margin-bottom:10px">
-          <span style="font-size:1.1rem">&#10060;</span>
-          <div style="font-family:'Nunito',sans-serif;font-weight:700;color:#991B1B;font-size:1rem">It's have to finish my homework.</div>
+    <div style="position:relative;z-index:5;text-align:center;margin-top:24px;font-family:'Nunito',sans-serif;font-weight:800;color:#C6BBF2;font-size:.95rem">
+      Have to / Don't have to &middot; Find the mistake in each sentence, then tap to check.
+      <div style="font-weight:700;font-size:.8rem;opacity:.8;margin-top:2px">Pairs: who spots it first? &middot; 1-on-1: say the correct sentence before you reveal it.</div></div>
+    <div style="position:absolute;left:0;right:0;top:150px;bottom:62px;z-index:5;display:flex;justify-content:center;align-items:center">
+      <div style="width:900px;display:flex;flex-direction:column;gap:12px">
+        <div style="background:#FFFFFF;border-radius:16px;padding:14px 18px;box-shadow:0 8px 18px rgba(0,0,0,.2)">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:30px;height:30px;border-radius:50%;background:#F59E0B;color:#fff;font-family:'Fredoka',sans-serif;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
+            <div style="flex:1;display:flex;align-items:center;gap:10px;background:#FEF2F2;border-radius:10px;padding:9px 14px">
+              <span style="font-size:1rem">&#10060;</span><div style="font-family:'Nunito',sans-serif;font-weight:800;color:#991B1B;font-size:1.02rem">She have to wake up early.</div></div>
+            <button onclick="var f=document.getElementById('cmFix1');f.style.display='block';this.style.display='none'"
+                    style="cursor:pointer;border:none;font-family:'Fredoka',sans-serif;background:#F59E0B;color:#fff;font-weight:600;padding:8px 14px;border-radius:8px;font-size:.8rem;white-space:nowrap">Show the fix</button>
+          </div>
+          <div id="cmFix1" style="display:none;margin-top:8px;padding-left:42px">
+            <div style="display:flex;align-items:center;gap:10px;background:#F0FDF4;border-radius:10px;padding:9px 14px">
+              <span style="font-size:1rem">&#9989;</span><div style="font-family:'Nunito',sans-serif;font-weight:800;color:#166534;font-size:1.02rem">She has to wake up early.</div></div>
+            <div style="display:flex;justify-content:space-between;gap:16px;margin-top:6px;font-size:.84rem;font-weight:700;color:#2B2640">
+              <div>&#128161; She → has to.</div><div dir="rtl" style="color:#6B6580">مع she ← has to.</div></div>
+          </div>
         </div>
-        <div style="display:flex;align-items:center;gap:12px;background:#F0FDF4;border-radius:10px;padding:12px 16px;margin-bottom:18px">
-          <span style="font-size:1.1rem">&#9989;</span>
-          <div style="font-family:'Nunito',sans-serif;font-weight:700;color:#166534;font-size:1rem">I have to finish my homework.</div>
+        <div style="background:#FFFFFF;border-radius:16px;padding:14px 18px;box-shadow:0 8px 18px rgba(0,0,0,.2)">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:30px;height:30px;border-radius:50%;background:#F59E0B;color:#fff;font-family:'Fredoka',sans-serif;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</div>
+            <div style="flex:1;display:flex;align-items:center;gap:10px;background:#FEF2F2;border-radius:10px;padding:9px 14px">
+              <span style="font-size:1rem">&#10060;</span><div style="font-family:'Nunito',sans-serif;font-weight:800;color:#991B1B;font-size:1.02rem">You don't have to not come.</div></div>
+            <button onclick="var f=document.getElementById('cmFix2');f.style.display='block';this.style.display='none'"
+                    style="cursor:pointer;border:none;font-family:'Fredoka',sans-serif;background:#F59E0B;color:#fff;font-weight:600;padding:8px 14px;border-radius:8px;font-size:.8rem;white-space:nowrap">Show the fix</button>
+          </div>
+          <div id="cmFix2" style="display:none;margin-top:8px;padding-left:42px">
+            <div style="display:flex;align-items:center;gap:10px;background:#F0FDF4;border-radius:10px;padding:9px 14px">
+              <span style="font-size:1rem">&#9989;</span><div style="font-family:'Nunito',sans-serif;font-weight:800;color:#166534;font-size:1.02rem">You don't have to come.</div></div>
+            <div style="display:flex;justify-content:space-between;gap:16px;margin-top:6px;font-size:.84rem;font-weight:700;color:#2B2640">
+              <div>&#128161; One negative only: don't have to.</div><div dir="rtl" style="color:#6B6580">نفي واحد فقط: don't have to.</div></div>
+          </div>
         </div>
-        <div style="font-size:.9rem;color:#2B2640;font-weight:700">With Have to / Don't have to, we say &quot;I&quot; here, not &quot;It's&quot;.</div>
-      </div>
+        <div style="background:#FFFFFF;border-radius:16px;padding:14px 18px;box-shadow:0 8px 18px rgba(0,0,0,.2)">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:30px;height:30px;border-radius:50%;background:#F59E0B;color:#fff;font-family:'Fredoka',sans-serif;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</div>
+            <div style="flex:1;display:flex;align-items:center;gap:10px;background:#FEF2F2;border-radius:10px;padding:9px 14px">
+              <span style="font-size:1rem">&#10060;</span><div style="font-family:'Nunito',sans-serif;font-weight:800;color:#991B1B;font-size:1.02rem">I must to finish my homework.</div></div>
+            <button onclick="var f=document.getElementById('cmFix3');f.style.display='block';this.style.display='none'"
+                    style="cursor:pointer;border:none;font-family:'Fredoka',sans-serif;background:#F59E0B;color:#fff;font-weight:600;padding:8px 14px;border-radius:8px;font-size:.8rem;white-space:nowrap">Show the fix</button>
+          </div>
+          <div id="cmFix3" style="display:none;margin-top:8px;padding-left:42px">
+            <div style="display:flex;align-items:center;gap:10px;background:#F0FDF4;border-radius:10px;padding:9px 14px">
+              <span style="font-size:1rem">&#9989;</span><div style="font-family:'Nunito',sans-serif;font-weight:800;color:#166534;font-size:1.02rem">I have to finish my homework.</div></div>
+            <div style="display:flex;justify-content:space-between;gap:16px;margin-top:6px;font-size:.84rem;font-weight:700;color:#2B2640">
+              <div>&#128161; Must has no &quot;to&quot;; have to does.</div><div dir="rtl" style="color:#6B6580">must لا تأتي مع "to"، أما have to فتأتي معها.</div></div>
+          </div>
+        </div></div>
     </div>
     

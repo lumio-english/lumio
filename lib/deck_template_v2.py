@@ -5,6 +5,7 @@ generalized to run across a full level's 20 lessons. Overwrites the
 live slide-content/{level}/{NN}/ decks and assets/slides/{level}/manifest.json.
 """
 import json, os, re, glob, random
+import json as _json
 import grammar_slides
 import recap_pages
 
@@ -209,13 +210,9 @@ def slide_vocab(w, idx, n, total, num_words, ch, verb_count=0):
     # actVocab, kept in sync deliberately -- verb_count=0 (the default)
     # reproduces the exact original "Vocabulary &bull; word" label with
     # zero behavior change for every lesson that hasn't opted in.
-    is_verb = w.get("pos") == "verb"
-    if is_verb:
-        chip_label = f"New Verbs &bull; {esc(w['en'])}"
-    elif verb_count:
-        chip_label = f"New Words &bull; {esc(w['en'])}"
-    else:
-        chip_label = f"Vocabulary &bull; {esc(w['en'])}"
+    from word_categories import chip_label as _chip, categorize as _cat, CATEGORY_LABELS as _CL
+    chip_label = _chip(w, esc(w["en"])).replace(" · ", " &bull; ")
+    cat_en, cat_ar = _CL[_cat(w)]
     return (bg_plain() + header(chip_label, n, total) + dots(idx, num_words) + COLORSTRIP + f'''
     <div class="card" style="position:absolute;left:46px;top:180px;width:450px;padding:24px;background:#fff">
       <div style="width:100%;aspect-ratio:1/1;border-radius:22px;overflow:hidden;margin-bottom:20px;
@@ -227,6 +224,7 @@ def slide_vocab(w, idx, n, total, num_words, ch, verb_count=0):
       <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:3.1rem;color:#43301F">{esc(w["en"])}</div>
       <div style="display:inline-block;margin-top:12px;padding:9px 24px;background:linear-gradient(135deg,#DDF6F0,#C8F0E7);color:#0D9488;
                   border-radius:999px;font-weight:800;font-size:1.15rem">{w["ar"]}</div>
+      <span style="display:inline-block;margin:12px 0 0 10px;padding:7px 14px;border:1.5px solid #E7DFD0;border-radius:999px;color:#8A7A66;font-weight:700;font-size:.9rem">{cat_en} &middot; {cat_ar}</span>
       <div style="border-top:1.5px solid #F5EEE1;margin:24px 0 18px"></div>
       <div style="font-size:.82rem;font-weight:800;color:#F97316;letter-spacing:1.8px;margin-bottom:8px">SAY IT</div>
       <div style="font-family:'Baloo 2',sans-serif;font-style:italic;font-weight:700;font-size:1.4rem;color:#43301F;margin-bottom:24px">&ldquo;{esc(quote)}&rdquo;</div>
@@ -471,40 +469,41 @@ def char_display_name(sprite_name):
     return sprite_name.split("-")[0].capitalize()
 
 def slide_dialogue(lines, n, total, lesson_num=0):
-    # Each line is (speaker, en, ar) where speaker is "L" or "R", matching
-    # which of the two characters below actually says it -- not just
-    # alternating by position. Real speaker attribution, not an implied
-    # left/right turn-taking pattern, is what makes "two characters having
-    # a conversation" mean something rather than just two people standing
-    # next to unattributed text.
-    y_positions = [165, 271, 378, 484]
+    """Dialogue as one centred chat column (not bubbles pushed to the
+    margins): the two characters stand either side, every bubble sits in
+    a 640px column in the middle, left/right-aligned by who speaks.
+    Each line is (speaker, en, ar) with speaker "L"/"R" (Pre-A/L1/L2) or
+    (en, ar) with the two characters simply alternating (L3/L4)."""
     left_char, right_char = DIALOGUE_CHAR_PAIRS[lesson_num % len(DIALOGUE_CHAR_PAIRS)]
     left_name, right_name = char_display_name(left_char), char_display_name(right_char)
+    k = len(lines)
+    fs, fa, pad, gap = (1.1, .88, "12px 18px", 12) if k <= 4 else (.98, .8, "9px 15px", 8)
     bubbles = ""
     for i, line in enumerate(lines):
-        # Two data shapes exist: (speaker, en, ar) for Pre-A/L1/L2, and
-        # (en, ar) with NO speaker for L3/L4 -- there the two characters
-        # simply alternate, starting on the left.
         if len(line) >= 3:
             speaker, en, ar = line[0], line[1], line[2]
         else:
             speaker, en, ar = ("L" if i % 2 == 0 else "R"), line[0], (line[1] if len(line) > 1 else "")
         left = speaker == "L"
-        side = "left" if left else "right"
-        tri = "left" if left else "right"
         name = left_name if left else right_name
         name_color = "#0D9488" if left else "#F97316"
         bubbles += f'''
-        <div style="position:absolute;{side}:150px;top:{y_positions[i]}px;max-width:520px;background:#fff;border-radius:20px;
-                    padding:14px 20px;box-shadow:0 10px 22px rgba(67,48,31,.16);z-index:6">
-          <div style="position:absolute;top:20px;{tri}:-10px;border-{'right' if left else 'left'}-color:#fff;width:0;height:0;border:10px solid transparent"></div>
-          <div style="font-size:.72rem;font-weight:800;color:{name_color};letter-spacing:.5px;margin-bottom:2px">{esc(name)}</div>
-          <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.08rem;color:#43301F">{esc(en)}</div>
-          <div style="direction:rtl;text-align:right;font-size:.86rem;color:#8A7160;font-weight:700;margin-top:3px">{ar}</div>
+        <div style="align-self:{'flex-start' if left else 'flex-end'};max-width:86%;background:#fff;border-radius:18px;border-{'top-left' if left else 'top-right'}-radius:4px;
+                    padding:{pad};box-shadow:0 8px 18px rgba(67,48,31,.14);border-left:4px solid {name_color}">
+          <div style="font-size:.7rem;font-weight:800;color:{name_color};letter-spacing:.5px;margin-bottom:1px">{esc(name)}</div>
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:{fs}rem;color:#43301F;line-height:1.25">{esc(en)}</div>
+          <div style="direction:rtl;text-align:right;font-size:{fa}rem;color:#8A7160;font-weight:700;margin-top:2px">{ar}</div>
         </div>'''
-    return (bg_plain() + header("Dialogue &bull; Let's talk!", n, total) + COLORSTRIP + bubbles + f'''
-    <img class="char" src="{CHAR}/{left_char}.png" style="left:280px;bottom:0px;height:230px;position:absolute;z-index:5;filter:drop-shadow(0 16px 22px rgba(67,48,31,.3))" onerror="this.style.display='none'">
-    <img class="char" src="{CHAR}/{right_char}.png" style="right:280px;bottom:0px;height:230px;position:absolute;z-index:5;filter:drop-shadow(0 16px 22px rgba(67,48,31,.3));transform:scaleX(-1)" onerror="this.style.display='none'">
+    return (bg_plain() + header("Dialogue &bull; Let's talk!", n, total) + COLORSTRIP + f'''
+    <div style="position:absolute;left:0;right:0;top:128px;text-align:center;z-index:6">
+      <div style="display:inline-block;background:rgba(255,255,255,.92);padding:8px 22px;border-radius:999px;box-shadow:0 6px 14px rgba(67,48,31,.12)">
+        <span style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1rem;color:#43301F">Listen first, then read it in pairs &mdash; swap roles!</span>
+        <span style="display:block;font-size:.78rem;color:#8A7160;font-weight:700">1-on-1: you read one character, your teacher reads the other &mdash; then swap.</span>
+      </div>
+    </div>
+    <div style="position:absolute;left:320px;width:640px;top:188px;bottom:40px;display:flex;flex-direction:column;justify-content:center;gap:{gap}px;z-index:6">{bubbles}</div>
+    <img class="char" src="{CHAR}/{left_char}.png" style="left:48px;bottom:0px;height:250px;position:absolute;z-index:5;filter:drop-shadow(0 16px 22px rgba(67,48,31,.3))" onerror="this.style.display='none'">
+    <img class="char" src="{CHAR}/{right_char}.png" style="right:48px;bottom:0px;height:250px;position:absolute;z-index:5;filter:drop-shadow(0 16px 22px rgba(67,48,31,.3));transform:scaleX(-1)" onerror="this.style.display='none'">
     ''')
 
 def tokenize_sentence(sentence):
@@ -640,35 +639,51 @@ def slide_sound_spot(vocab, n, total, ch):
     </div>
     ''' + char_img(ch, right=90, bottom=40, height=320))
 
-def slide_your_turn_listen_first(w, idx, total_rounds, n, total, ch):
-    return (bg_plain() + header(f"Your Turn &bull; Round {idx} of {total_rounds}", n, total) + COLORSTRIP + f'''
-    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:40px;padding-bottom:60px">
-      <div class="card" id="ytCard{idx}" style="width:320px;height:320px;display:flex;align-items:center;justify-content:center;
-                  background:linear-gradient(135deg,#FFF3D6,#FFE0B8);position:relative;overflow:hidden">
+
+def your_turn_html(w, idx, total_rounds, teen, chars_html=""):
+    """Shared Your Turn body (kid + teen): hear the word -> say it in
+    Arabic -> reveal (Arabic big, English, picture). Round idx/total_rounds."""
+    img = f"assets/vocab/{slug(w.get('image') or w['en'])}.png"
+    en = w["en"]; ar = w.get("ar", "")
+    if teen:
+        card_bg, ink, soft, accent, accent2, font = "#FFFFFF", "#2B2640", "#6B6580", "#7C5CFC", "#0D9488", "'Fredoka',sans-serif"
+        mystery_bg = "#232038"
+    else:
+        card_bg, ink, soft, accent, accent2, font = "#FFFFFF", "#43301F", "#8A7160", "#F97316", "#0D9488", "'Baloo 2',sans-serif"
+        mystery_bg = "linear-gradient(135deg,#FFF3D6,#FFE0B8)"
+    return f'''
+    <div style="position:absolute;left:0;right:0;top:140px;bottom:150px;display:flex;align-items:center;justify-content:center;gap:34px;z-index:5">
+      <div id="ytCard{idx}" style="width:300px;height:300px;border-radius:24px;background:{mystery_bg};display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;box-shadow:0 14px 30px rgba(0,0,0,.2)">
         <div id="ytMystery{idx}" style="font-size:4rem">&#128266;</div>
-        <img id="ytImg{idx}" src="assets/vocab/{slug(w.get('image') or w['en'])}.png" style="display:none;width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
+        <img id="ytImg{idx}" src="{img}" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;padding:14px" onerror="this.style.display='none'">
       </div>
-      <div class="card" style="width:400px;padding:40px 36px;text-align:center">
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.7rem;color:#43301F;margin-bottom:10px">Listen first!</div>
-        <div style="font-size:.95rem;color:#8A7160;font-weight:700">Play the sound, guess the word, then reveal the picture.</div>
+      <div style="width:470px;background:{card_bg};border-radius:24px;padding:26px 30px;box-shadow:0 14px 30px rgba(0,0,0,.18);text-align:center">
+        <div id="ytAsk{idx}">
+          <div style="font-family:{font};font-weight:800;font-size:1.5rem;color:{ink}">Listen &mdash; say it in Arabic!</div>
+          <div style="direction:rtl;font-weight:800;font-size:1.15rem;color:{soft};margin-top:4px">استمعوا ثم قولوا الكلمة بالعربية</div>
+          <div style="display:flex;justify-content:center;gap:10px;margin-top:16px;flex-wrap:wrap">
+            {"".join(f'<span style="background:{accent}18;color:{accent};font-weight:800;font-size:.8rem;padding:6px 12px;border-radius:999px">{t}</span>' for t in ("1 Play the word", "2 Say the Arabic", "3 Reveal"))}
+          </div>
+          <div style="margin-top:14px;font-size:.8rem;font-weight:700;color:{soft};line-height:1.45">Pairs: the first to say the Arabic wins the point.<br>1-on-1: your teacher plays the word, you answer.</div>
+        </div>
+        <div id="ytAns{idx}" style="display:none">
+          <div style="direction:rtl;font-weight:900;font-size:2.4rem;color:{ink};line-height:1.2">{ar}</div>
+          <div style="font-family:{font};font-weight:800;font-size:1.5rem;color:{accent};margin-top:6px">{esc(en)}</div>
+          {f'<div style="font-size:.95rem;font-weight:700;color:{soft};margin-top:8px">&ldquo;{esc(w.get("example"))}&rdquo;</div>' if w.get("example") else ""}
+        </div>
       </div>
     </div>
-    <!-- Standard bottom-action-row position for this template: bottom:86px
-         (clear of the player's own Back/Next nav bar, which overlaps the
-         lower ~60px of every slide) and a fixed 26px gap sized to each
-         button's own rendered width, rather than a second hardcoded
-         left offset that drifted into the first button as label text
-         length varied. -->
-    <button id="ytPlayBtn{idx}" onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(w["en"])}')"
-            style="position:absolute;left:46px;bottom:86px;z-index:20;cursor:pointer;border:none;font-family:inherit;
-            background:linear-gradient(135deg,#0D9488,#0B7A6F);color:#fff;font-weight:800;padding:13px 26px;border-radius:999px;
-            font-size:1.02rem;box-shadow:0 8px 18px rgba(13,148,136,.35)">&#9654; Play sound</button>
-    <button id="ytRevealBtn{idx}" onclick="document.getElementById('ytMystery{idx}').style.display='none'; document.getElementById('ytImg{idx}').style.display='block'; this.textContent='{esc(w["en"])} \\u2014 {w["ar"]}'; this.style.background='linear-gradient(135deg,#4ADE80,#16A34A)'"
-            style="position:absolute;left:216px;bottom:86px;z-index:20;cursor:pointer;border:none;font-family:inherit;
-            background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;padding:13px 26px;border-radius:999px;
-            font-size:1.02rem;box-shadow:0 8px 18px rgba(249,115,22,.35)">&#128064; Reveal picture</button>
-    <script>(function(){{var a=document.getElementById('ytPlayBtn{idx}'),b=document.getElementById('ytRevealBtn{idx}');if(a&&b)requestAnimationFrame(function(){{b.style.left=(a.offsetLeft+a.offsetWidth+26)+'px';}});}})();</script>
-    ''' + char_img(ch, bottom=32, height=250))
+    <div style="position:absolute;left:0;right:0;bottom:84px;display:flex;justify-content:center;gap:18px;z-index:20">
+      <button onclick="typeof Lumio!=='undefined' && Lumio.speak && Lumio.speak({esc(_json.dumps(en))})"
+              style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,{accent2},#0B7A6F);color:#fff;font-weight:800;padding:13px 28px;border-radius:999px;font-size:1.02rem;box-shadow:0 8px 18px rgba(13,148,136,.35)">&#9654; Play the word</button>
+      <button onclick="document.getElementById('ytMystery{idx}').style.display='none';document.getElementById('ytImg{idx}').style.display='block';document.getElementById('ytAsk{idx}').style.display='none';document.getElementById('ytAns{idx}').style.display='block';this.disabled=true;this.style.opacity=.55"
+              style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,{accent},{'#5B3FD9' if teen else '#EA580C'});color:#fff;font-weight:800;padding:13px 28px;border-radius:999px;font-size:1.02rem;box-shadow:0 8px 18px rgba(0,0,0,.25)">&#128064; Reveal</button>
+    </div>
+    {chars_html}'''
+
+def slide_your_turn_listen_first(w, idx, total_rounds, n, total, ch):
+    return (bg_plain() + header(f"Your Turn &bull; Round {idx} of {total_rounds}", n, total) + COLORSTRIP
+            + your_turn_html(w, idx, total_rounds, False, char_img(ch, bottom=32, height=200)))
 
 def _prea_ar_card(target):
     # Pre-A Quick Check reference: the Arabic word only (no picture),
@@ -1061,9 +1076,8 @@ def today_i_learned_pages(lesson, phonics_unit=None, grammar_topic=None, dialogu
     # Picture cards while they fit in two rows; text pills for the big
     # review lessons (38-44 words) so the list stays on one slide.
     max_chips = 2 * recap_pages.KID.chips_per_row()
-    blocks.append({"kind": "chips" if len(lesson["vocab"]) <= max_chips else "pills",
-                   "label": "KEY WORDS",
-                   "items": [w["en"] for w in lesson["vocab"]]})
+    from word_categories import recap_word_blocks
+    blocks += recap_word_blocks(lesson["vocab"], "chips" if len(lesson["vocab"]) <= max_chips else "pills")
     for blk in (extra_blocks or []):   # e.g. a trial's TPR action words
         if blk.get("items"): blocks.append(blk)
     if letters:
@@ -1106,14 +1120,14 @@ def _recap_block_html(blk):
         chips = "".join(f'''
       <div style="background:#fff;border-radius:14px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;
                   box-shadow:0 6px 14px rgba(67,48,31,.1);width:110px">
-        <div style="width:70px;height:70px;border-radius:10px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/{slug(w)}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.8rem;color:#43301F;text-align:center">{esc(w)}</div>
+        <div style="width:70px;height:70px;border-radius:10px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/{slug(w["image"] if isinstance(w, dict) else w)}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.8rem;color:#43301F;text-align:center">{esc(w["en"] if isinstance(w, dict) else w)}</div>
       </div>''' for w in items)
         out += f'<div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:18px">{chips}</div>'
     elif kind == "pills":
         pills = "".join(f'''
       <div style="background:#fff;border-radius:999px;padding:7px 14px;font-family:'Baloo 2',sans-serif;font-weight:800;
-                  font-size:.8rem;color:#43301F;box-shadow:0 4px 10px rgba(67,48,31,.08);line-height:1.2">{esc(w)}</div>''' for w in items)
+                  font-size:.8rem;color:#43301F;box-shadow:0 4px 10px rgba(67,48,31,.08);line-height:1.2">{esc(w["en"] if isinstance(w, dict) else w)}</div>''' for w in items)
         out += f'<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px">{pills}</div>'
     else:
         title = blk.get("title")
@@ -1432,9 +1446,10 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
     plan.append(("sentence_trio", sentence_indices[0:3]))
     plan.append(("sentence_trio", sentence_indices[3:6]))
     plan.append(("sound_spot", None))
-    your_turn_n = min(4, V) if V <= 4 else min(3, V)
-    for i in range(your_turn_n):
-        plan.append(("your_turn", (lesson["vocab"][i], i + 1)))
+    your_turn_n = min(5, V)
+    _yt_idx = sorted({round(i * (V - 1) / max(1, your_turn_n - 1)) for i in range(your_turn_n)}) if V else []
+    for i, _vi in enumerate(_yt_idx):
+        plan.append(("your_turn", (lesson["vocab"][_vi], i + 1)))
     # Quick Check: live, age-calibrated in-class practice -- one round per
     # vocab word, once through (no repeat round -- that repetition is now
     # a real teacher-led game instead, more engaging than seeing the same
