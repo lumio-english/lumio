@@ -58,6 +58,7 @@
   .them .cc-bub{background:var(--cc-them);border:1px solid rgba(255,255,255,.1);border-bottom-left-radius:6px}
   .me .cc-bub{background:linear-gradient(135deg,var(--cc-me1),var(--cc-me2));border-bottom-right-radius:6px;transform-origin:100% 100%;box-shadow:0 12px 26px -14px rgba(90,110,255,.9)}
   .cc-bub b{color:#FFD666}
+  .cc-bub b.hl{background:rgba(255,214,102,.18);padding:0 4px;border-radius:6px}
   .cc-bub .ar{font-family:'Tajawal',var(--lp-body);font-weight:700;font-size:1.08em;unicode-bidi:isolate}
   .cc-meta{display:flex;justify-content:flex-end;align-items:center;gap:4px;font-size:11px;font-weight:700;color:rgba(255,255,255,.55);margin-top:2px;line-height:1}
   .cc-meta .ticks{font-size:12px;letter-spacing:-3px;color:rgba(255,255,255,.6);transition:color .3s}
@@ -209,14 +210,15 @@ const REACTS = ["🔥", "😂", "❤️", "👏", "💯", "🙌"];
 
 // Photos: the shared vocab picture for a word. "watches" (the verb: "She watches videos online.")
 // used to show two wristwatches; the matching picture of someone watching a video is watches-tv.
+// The lesson data names the right picture in v.image when it differs from the word.
 const PHOTO_FIX = { watches: "watches-tv" };
-const photoSrc = w => LP.vocabImg(PHOTO_FIX[w.toLowerCase()] || w);
+const photoSrc = v => LP.vocabImg(v.image || PHOTO_FIX[v.en.toLowerCase()] || v.en);
 
 // Two options must never both be right: skip distractors whose Arabic is the same word as the target's
 // (e.g. boring/dull = "ممل", riddle/puzzle = "أحجية", assignment/homework = "واجب").
 const normAr = s => String(s || "").replace(/\(.*?\)/g, "").replace(/[ً-ْ]/g, "").replace(/[أإآ]/g, "ا").replace(/ة/g, "ه").replace(/ى/g, "ي").replace(/\s+/g, " ").trim();
 function clash(a, b) {
-  if (a.en.toLowerCase() === b.en.toLowerCase()) return true;
+  if (a.en.toLowerCase() === b.en.toLowerCase() || (a.image || a.en) === (b.image || b.en)) return true;
   const x = normAr(a.ar), y = normAr(b.ar); if (!x || !y) return false;
   return x === y || (" " + x + " ").includes(" " + y + " ") || (" " + y + " ").includes(" " + x + " ");
 }
@@ -229,6 +231,14 @@ function pickOptions(target, n, filter) {
   return Lumio.shuffle(out);
 }
 
+// highlight the word inside its example sentence (also "plays" in "She plays...", "studying" etc.)
+function markWord(sentence, word) {
+  const stem = word.toLowerCase().replace(/(ing|es|s)$/, "");
+  const re = new RegExp("\\b(" + word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "|" + stem.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\w*)\\b", "i");
+  const m = sentence.match(re);
+  if (!m) return esc(sentence);
+  return esc(sentence.slice(0, m.index)) + `<b class="hl">${esc(m[0])}</b>` + esc(sentence.slice(m.index + m[0].length));
+}
 const thread = $("thread"), quickReplies = $("quickReplies"), typeZone = $("typeZone"), hintRow = $("hintRow"), statusEl = $("onlineStatus");
 $("resetType").innerHTML = LP.ICON.again;
 const now = () => { const d = new Date(); return d.getHours() + ":" + String(d.getMinutes()).padStart(2, "0"); };
@@ -353,10 +363,11 @@ if (!vocab.length) {
       await say(asker, `How do you say <b>"<bdi class="ar" dir="rtl" lang="ar">${esc(target.ar)}</bdi>"</b> in English? 🤔`);
       roundType === "tap" ? drawTapRound(target) : drawTypeRound(target);
     } else if (roundType === "caption") {
-      await say(asker, `look what I found 📸 what's happening here?`, photoSrc(target.en), "point");
+      await say(asker, `look what I found 📸 what's happening here?`, photoSrc(target), "point");
       drawCaptionRound(target);
     } else {
-      await say(asker, `"${esc(target.example || target.en)}" ... what does that mean? 🧐`, null, "think");
+      // the options are single-word meanings, so ask about the word (highlighted in its sentence)
+      await say(asker, `"${markWord(target.example || target.en, target.en)}" ... what does <b>${esc(target.en)}</b> mean? 🧐`, null, "think");
       drawMeaningRound(target);
     }
   }

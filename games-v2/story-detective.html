@@ -15,7 +15,7 @@
   .sd-dark{position:fixed;inset:0;z-index:1;pointer-events:none;--x:50vw;--y:35vh;
     background:radial-gradient(circle at var(--x) var(--y),rgba(255,226,160,.16) 0,rgba(255,214,140,.06) 80px,rgba(5,4,12,.22) 190px,rgba(5,4,12,.66) 420px)}
   .sd-beam{position:fixed;left:0;top:0;width:12px;height:12px;margin:-6px;border-radius:50%;z-index:2;pointer-events:none;background:rgba(255,236,190,.9);box-shadow:0 0 30px 12px rgba(255,220,150,.35);opacity:.55}
-  .sd{position:relative;width:100%;max-width:1240px;display:flex;flex-direction:column;gap:12px;align-items:stretch}
+  .sd{position:relative;width:100%;max-width:1240px;display:flex;flex-direction:column;gap:12px;align-items:stretch;justify-content:center;min-height:calc(100dvh - 170px)}
 
   /* ---------- the case board ---------- */
   .sd-board{position:relative;border-radius:18px;padding:12px 12px 16px;--bx:50%;--by:30%;
@@ -264,7 +264,10 @@ if (!vocab.length) {
   }
 
   let currentSpeak = "", speakIsLine = false;
-  const playPrompt = () => speakIsLine ? sayLine(currentSpeak, hearBtn) : LP.say(currentSpeak, hearBtn);
+  const playPrompt = () => { if (!currentSpeak) return; speakIsLine ? sayLine(currentSpeak, hearBtn) : LP.say(currentSpeak, hearBtn); };
+  // shrink an answer card's text until the longest word fits (never clip "counterargument")
+  function fitBtn(b) { const t = b.querySelector(".t") || b; t.style.fontSize = ""; let f = parseFloat(getComputedStyle(t).fontSize); while (b.scrollWidth > b.clientWidth + 1 && f > 11) { f -= 1; t.style.fontSize = f + "px"; } }
+  addEventListener("resize", () => [...opts.querySelectorAll("button")].forEach(fitBtn));
 
   /* red yarn between the pinned clues */
   const pinPt = i => { const p = document.querySelector(`#ev${i} .pin`).getBoundingClientRect(), b = board.getBoundingClientRect(); return { x: p.left + p.width / 2 - b.left, y: p.top + p.height / 2 - b.top }; };
@@ -285,7 +288,7 @@ if (!vocab.length) {
     const ev = $(`ev${idx}`), card = ev.querySelector(".card");
     if (item.dialogue) card.innerHTML = `<div class="ph note">${ICO_QUOTE}<span class="tw">clue found</span></div><div class="cap">testimony</div>`;
     else {
-      const img = picImg(item.en);
+      const img = picImg(item.image || item.en);
       card.innerHTML = img ? `<div class="ph pf">${img}</div><div class="cap">${LP.esc(item.en)}</div>`
         : `<div class="ph note"><span class="tw">${LP.esc(item.en)}</span><span class="ar" dir="rtl" lang="ar">${LP.esc(item.ar)}</span></div><div class="cap">exhibit ${"ABCDEF"[idx]}</div>`;
     }
@@ -296,7 +299,7 @@ if (!vocab.length) {
     if (fromEl) {
       const a = LP.center(fromEl), b = LP.center(ev);
       LP.sfx("whoosh");
-      await new Promise(res => G.fromTo(card, { x: a.x - b.x, y: a.y - b.y, scale: .55, rotation: -28, opacity: .3 }, { x: 0, y: 0, scale: 1, rotation: 0, opacity: 1, duration: .7, ease: "power3.inOut", onComplete: res }));
+      await Promise.race([LP.wait(3500), new Promise(res => G.fromTo(card, { x: a.x - b.x, y: a.y - b.y, scale: .55, rotation: -28, opacity: .3 }, { x: 0, y: 0, scale: 1, rotation: 0, opacity: 1, duration: .7, ease: "power3.inOut", onComplete: res }));
     } else G.fromTo(card, { scale: .4, opacity: 0 }, { scale: 1, opacity: 1, duration: .4, ease: "back.out(2)" });
     LP.sfx("tap");
     G.fromTo(pin, { y: -36, scale: 1.8, opacity: 0 }, { y: 0, scale: 1, opacity: 1, duration: .32, ease: "back.out(3)" });
@@ -371,7 +374,7 @@ if (!vocab.length) {
       const claim = showCorrect ? target.en : others[0].en;
       promptText.className = "prompt";
       promptText.innerHTML = `A witness says:<br>"<span class="ar" dir="rtl" lang="ar">${LP.esc(target.ar)}</span>" means "<b class="cl">${LP.esc(claim)}</b>"`;
-      currentSpeak = target.en; speakIsLine = false;
+      currentSpeak = ""; speakIsLine = false;   // never say the answer before it is given
       const t = document.createElement("button"), f = document.createElement("button");
       t.type = f.type = "button"; t.className = "sd-stampbtn t"; f.className = "sd-stampbtn f"; t.dataset.key = "true"; f.dataset.key = "false";
       t.innerHTML = `<span class="ink">${LP.ICON.check}TRUE</span><span class="ring"></span>`; f.innerHTML = `<span class="ink">${ICO_X}FALSE</span><span class="ring"></span>`;
@@ -382,7 +385,7 @@ if (!vocab.length) {
       opts.classList.add("find");
       promptText.className = "prompt";
       promptText.innerHTML = `What does "<span class="ar" dir="rtl" lang="ar">${LP.esc(target.ar)}</span>" mean?`;
-      currentSpeak = target.en; speakIsLine = false;
+      currentSpeak = ""; speakIsLine = false;
       const distractorPool = Lumio.shuffle(vocab.filter(distinctFrom(target)));
       const numOptions = Math.min(3, vocab.length);
       const list = Lumio.shuffle([target, ...distractorPool.slice(0, numOptions - 1)]);
@@ -391,6 +394,8 @@ if (!vocab.length) {
     }
     if (G && !RM) G.fromTo($("promptCard"), { y: 30, opacity: 0, rotation: -2 }, { y: 0, opacity: 1, rotation: 0, duration: .45, ease: "back.out(1.8)" });
     det.nod();
+    hearBtn.style.visibility = currentSpeak ? "" : "hidden";
+    cards.forEach(fitBtn);
     await LP.deal(cards, $("promptCard"));
     reveal();
     locked = false;
@@ -433,12 +438,13 @@ if (!vocab.length) {
     [...opts.children].forEach(c => c.disabled = true);
     det.cheer("celebrate", false); if (witOn) wit.cheer("thumbs", false);
     LP.fill(r);
+    if (item.en) { currentSpeak = item.en; speakIsLine = false; hearBtn.style.visibility = ""; setTimeout(() => LP.say(item.en, hearBtn), 250); }   // the answer is heard once it has been found
     const star = LP.good(card);
     await LP.wait(380);
     LP.clear(opts.children, card);
     await pinEvidence(r, item, card, confirmed);
     if (G && !RM) G.to(card, { opacity: 0, duration: .25 });
-    await star;
+    await Promise.race([star, LP.wait(1600)]);   // never hang a round on an animation
     next(500);
   }
 
@@ -464,7 +470,7 @@ if (!vocab.length) {
     [...opts.children].forEach(b => b.disabled = true);
     if (ok) { solved(btn, target, true); return; }
     // wrong: the clue is still pinned (unconfirmed) and the file shows what it really means
-    LP.bad(btn); det.oops("surprised", "think");
+    LP.bad(btn); det.oops("surprised", "think"); currentSpeak = target.en; speakIsLine = false; hearBtn.style.visibility = ""; setTimeout(() => LP.say(target.en, hearBtn), 400);
     [...opts.children].forEach(b => { if (b !== btn) b.classList.add("dim"); });
     promptText.insertAdjacentHTML("beforeend", `<span class="truth">"<span class="ar" dir="rtl" lang="ar">${LP.esc(target.ar)}</span>" = ${LP.esc(target.en)}</span>`);
     LP.fill(r);
@@ -480,7 +486,7 @@ if (!vocab.length) {
     if (G && !RM) {
       await LP.wait(300);
       LP.sfx("whoosh");
-      await new Promise(res => G.fromTo(st, { scale: 3.2, opacity: 0, rotation: -24 }, { scale: 1, opacity: 1, rotation: -9, duration: .32, ease: "power4.in", onComplete: res }));
+      await Promise.race([LP.wait(3500), new Promise(res => G.fromTo(st, { scale: 3.2, opacity: 0, rotation: -24 }, { scale: 1, opacity: 1, rotation: -9, duration: .32, ease: "power4.in", onComplete: res }));
       LP.sfx("boom");
       G.fromTo(board, { x: -8, y: 4 }, { x: 0, y: 0, duration: .5, ease: "elastic.out(1,.3)" });
       const c = LP.center(st); LP.burst(c.x, c.y, { n: 40, colors: ["#C81D25", "#FFD666", "#F7EEDB"], ringColor: "#C81D25" });

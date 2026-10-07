@@ -82,6 +82,7 @@
   .tm-cards.c2{max-width:440px}
   .tm-cards .lp-card .lbl{font-size:clamp(14px,3.8vw,19px);overflow-wrap:anywhere;hyphens:auto}
   .lp-card .pic img{border-radius:12px}
+  .tm-cards .lp-card.long .lbl{font-size:clamp(12.5px,3.3vw,17px);overflow-wrap:normal;word-break:normal}
   @media (max-width:420px){ .tm-cards{gap:10px} .tm-cards .lp-card .pic{margin:7px 7px 0;border-radius:14px} .tm-cards .lp-card .lbl{padding:6px 4px 9px} }
 
   @media (min-width:900px){
@@ -162,7 +163,7 @@ const LOOK = [
   { c: "#2F6FDB", ink: "#1E4FA8", crop: [75, 128, 460], bg: "assets/story/backgrounds/family-interior.jpg", fx: "snow",   mood: "rgba(80,120,230,.20)" },
   { c: "#E8476F", ink: "#C02853", crop: [78, 135, 460], bg: "assets/lesson-bg-kid/party.jpg",             fx: "hearts", mood: "rgba(255,120,170,.12)" },
   { c: "#4FA83D", ink: "#2F7D22", crop: [72, 128, 460], bg: "assets/lesson-bg-kid/park.jpg",              fx: "petals", mood: "rgba(140,230,120,.06)" },
-  { c: "#3D86C6", ink: "#23608F", crop: [90, 105, 460], bg: "assets/story/backgrounds/village.jpg",        fx: "rain",   mood: "rgba(30,50,95,.34)" },
+  { c: "#3D86C6", ink: "#23608F", crop: [85, 105, 450], bg: "assets/story/backgrounds/village.jpg",        fx: "rain",   mood: "rgba(30,50,95,.34)" },
   { c: "#F59E0B", ink: "#B76E00", crop: [110, 165, 400], bg: "assets/story/backgrounds/forest.jpg",        fx: "sun",    mood: "rgba(255,225,130,.10)" },
   { c: "#F2B705", ink: "#A87400", crop: [72, 128, 460], bg: "assets/story/backgrounds/forest-stream.jpg",  fx: "summer", mood: "rgba(255,170,60,.10)" },
 ];
@@ -176,7 +177,29 @@ const ICONS = [
 ];
 const STAMP = '<svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="36" fill="#fff" stroke="#22C55E" stroke-width="5" stroke-dasharray="6 4"/><path d="M40 14l7.4 15 16.6 2.4-12 11.7 2.8 16.5L40 51.8l-14.8 7.8 2.8-16.5-12-11.7 16.6-2.4z" fill="#FFC93C" stroke="#E08A00" stroke-width="2.6" stroke-linejoin="round"/></svg>';
 
-LP.init({ scene: { bg: LOOK[0].bg, tint: "linear-gradient(180deg,rgba(255,240,220,.06),rgba(40,20,0,.22))" }, hud: { rounds: 6, exitHref: backHref } });
+// Replays carry on through the year: a finished January-June game makes the next game July-December.
+const MONTHS_LATER = [
+  { name: "July", sub: "Beach days!" },
+  { name: "August", sub: "Summer trips" },
+  { name: "September", sub: "Back to school!" },
+  { name: "October", sub: "Falling leaves" },
+  { name: "November", sub: "Cozy and cool" },
+  { name: "December", sub: "Holiday fun!" },
+];
+LOOK.push(
+  { c: "#1E9BD7", ink: "#126E9C", crop: [100, 70, 450, 640], bg: "assets/story/backgrounds/forest-stream.jpg", fx: "summer", mood: "rgba(80,190,255,.10)" },
+  { c: "#EF4B5F", ink: "#B92B3E", crop: [75, 90, 500, 640], bg: "assets/story/backgrounds/celebration.jpg",    fx: "sun",    mood: "rgba(255,200,120,.10)" },
+  { c: "#F2711C", ink: "#B54C07", crop: [70, 130, 460], bg: "assets/story/backgrounds/classroom.jpg",          fx: "sun",    mood: "rgba(255,210,150,.08)" },
+  { c: "#E8641B", ink: "#A9440B", crop: [70, 140, 500, 640], bg: "assets/story/backgrounds/forest.jpg",        fx: "leaves", mood: "rgba(230,120,30,.16)" },
+  { c: "#D9572B", ink: "#9E3714", crop: [75, 140, 500, 640], bg: "assets/story/backgrounds/village.jpg",       fx: "leaves", mood: "rgba(120,70,40,.20)" },
+  { c: "#14A3A3", ink: "#0C7474", crop: [70, 130, 460], bg: "assets/story/backgrounds/family-interior.jpg",    fx: "snow",   mood: "rgba(60,110,200,.16)" });
+const LEAF = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 26C6 13 14 5 27 5c0 13-8 21-21 21z" fill="#F2711C" stroke="#A9440B" stroke-width="2" stroke-linejoin="round"/><path d="M6 26L19 13" stroke="#A9440B" stroke-width="2" stroke-linecap="round"/></svg>';
+const PENCIL = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 26l2-7L21 6l5 5-13 13z" fill="#FFC93C" stroke="#B76E00" stroke-width="2" stroke-linejoin="round"/><path d="M6 26l2-7 5 5z" fill="#F7D9B0"/><path d="M19 8l5 5" stroke="#B76E00" stroke-width="2"/></svg>';
+ICONS.push(ICONS[5], ICONS[4], PENCIL, LEAF, LEAF, ICONS[0]);
+let HALF = 0; try { HALF = localStorage.getItem("lumio_tm_half") === "1" ? 1 : 0; } catch (e) {}
+const OFF = HALF * 6, MON = HALF ? MONTHS_LATER : MONTHS, LK = LOOK.slice(OFF, OFF + 6), IC = ICONS.slice(OFF, OFF + 6);
+
+LP.init({ scene: { bg: LK[0].bg, tint: "linear-gradient(180deg,rgba(255,240,220,.06),rgba(40,20,0,.22))" }, hud: { rounds: 6, exitHref: backHref } });
 document.getElementById("hearBtn").innerHTML = LP.ICON.speaker;
 // From a trial deck the game opened in its own tab: Exit just closes it (the trial is still open in the first tab).
 if (source === "trial") LP.hud.exit.onclick = e => { e.preventDefault(); try { window.close(); } catch (x) {} setTimeout(() => { location.href = backHref; }, 250); };
@@ -218,12 +241,15 @@ const phonicsPool = eligiblePhonicsWords(num);
 const mentions = (sentence, w) => new RegExp("\\b" + w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(s|es)?\\b", "i").test(sentence || "");
 const SAME_PICTURE = [["big", "elephant"], ["small", "mouse"], ["pet", "dog"], ["age", "years old", "birthday"]];
 const samePicture = (a, b) => SAME_PICTURE.some(g => g.includes(a.toLowerCase()) && g.includes(b.toLowerCase()));
+const imgKey = v => String(v.image || v.en).toLowerCase().replace(/'/g, "").replace(/ /g, "-");   // the data's own picture (e.g. "fish" -> fish-food in L1 lesson 8)
+// two options may not share a picture file or the same Arabic meaning (fine / okay)
+const clash = (a, b) => imgKey(a) === imgKey(b) || (a.ar && a.ar === b.ar) || samePicture(a.en, b.en) || mentions(a.en, b.en) || mentions(b.en, a.en);
 function pickDistractors(target, n) {
   const others = Lumio.shuffle(vocab.filter(v => v.en !== target.en));
   const say = target.example || target.en;
-  const safe = others.filter(v => !mentions(say, v.en) && !mentions(v.en, target.en) && !mentions(target.en, v.en) && !samePicture(v.en, target.en));
-  const out = safe.slice(0, n);
-  if (out.length < Math.min(n, 2)) others.forEach(v => { if (out.length < n && !out.includes(v) && !mentions(say, v.en)) out.push(v); });
+  const out = [];
+  others.forEach(v => { if (out.length < n && !mentions(say, v.en) && ![target, ...out].some(o => clash(o, v))) out.push(v); });
+  if (out.length < Math.min(n, 2)) others.forEach(v => { if (out.length < n && !out.includes(v) && !mentions(say, v.en) && imgKey(v) !== imgKey(target)) out.push(v); });
   return out;
 }
 
@@ -233,27 +259,27 @@ document.getElementById("bind").innerHTML = "<i></i>".repeat(9);
 const now = new Date(), YEAR = now.getFullYear() + (now.getMonth() >= 6 ? 1 : 0);   // the coming January-June
 const DAYS = ["S", "M", "T", "W", "T", "F", "S"];
 function pageHTML(i) {
-  const m = MONTHS[i], L = LOOK[i], first = new Date(YEAR, i, 1).getDay(), len = new Date(YEAR, i + 1, 0).getDate();
-  const [x0, y0, cw] = L.crop, ch = cw / 2.2;
-  const bgSize = (600 / cw * 100).toFixed(2), px = (x0 / (600 - cw) * 100).toFixed(2), py = (y0 / (600 - ch) * 100).toFixed(2);
+  const m = MON[i], L = LK[i], first = new Date(YEAR, OFF + i, 1).getDay(), len = new Date(YEAR, OFF + i + 1, 0).getDate();
+  const [x0, y0, cw, S = 600] = L.crop, ch = cw / 2.2;
+  const bgSize = (S / cw * 100).toFixed(2), px = (x0 / (S - cw) * 100).toFixed(2), py = (y0 / (S - ch) * 100).toFixed(2);
   let grid = DAYS.map((d, k) => `<span class="dh${k === 0 || k === 6 ? " we" : ""}">${d}</span>`).join("");
   for (let k = 0; k < first; k++) grid += "<span></span>";
   for (let d = 1; d <= len; d++) { const wd = (first + d - 1) % 7; grid += `<span class="${d === 1 ? "one" : (wd === 0 || wd === 6) ? "we" : ""}">${d}</span>`; }
   for (let k = first + len; k < 42; k++) grid += "<span>&nbsp;</span>";   // always 6 weeks, so every page is the same height
   return `<div class="face"><div class="tm-perf"></div>` +
     `<div class="tm-photo" style="background-image:url('${LP.vocabImg(m.name)}');background-size:${bgSize}% auto;background-position:${px}% ${py}%"><div class="tm-stamp">${STAMP}</div></div>` +
-    `<div class="tm-head">${ICONS[i]}<b>${m.name}</b><span class="yr">${YEAR}</span></div><div class="tm-sub">${LP.esc(m.sub)}</div>` +
+    `<div class="tm-head">${IC[i]}<b>${m.name}</b><span class="yr">${YEAR}</span></div><div class="tm-sub">${LP.esc(m.sub)}</div>` +
     `<div class="tm-grid">${grid}</div></div><div class="back"></div>`;
 }
-const pages = MONTHS.map((m, i) => {
+const pages = MON.map((m, i) => {
   const p = document.createElement("div"); p.className = "tm-page" + (i ? " under" : ""); p.id = `calPage${i}`;
-  p.style.setProperty("--mc", LOOK[i].c); p.style.setProperty("--mc-ink", LOOK[i].ink); p.style.zIndex = String(10 - i);
+  p.style.setProperty("--mc", LK[i].c); p.style.setProperty("--mc-ink", LK[i].ink); p.style.zIndex = String(10 - i);
   p.innerHTML = pageHTML(i);
   if (i > 1) p.style.visibility = "hidden";               // only the top page and the one right under it are drawn
   stack.appendChild(p);
   const tab = document.createElement("div"); tab.className = "tm-tab" + (i === 0 ? " now" : ""); tab.id = `dot${i}`;
-  tab.style.setProperty("--mc", LOOK[i].c); tab.style.setProperty("--mc-ink", LOOK[i].ink);
-  tab.innerHTML = ICONS[i] + m.name.slice(0, 3); tab.setAttribute("aria-label", m.name);
+  tab.style.setProperty("--mc", LK[i].c); tab.style.setProperty("--mc-ink", LK[i].ink);
+  tab.innerHTML = IC[i] + m.name.slice(0, 3); tab.setAttribute("aria-label", m.name);
   calStrip.appendChild(tab);
   return p;
 });
@@ -264,11 +290,12 @@ let fxType = null, fxList = [], fxW = 0, fxH = 0, fxRaf = 0;
 const rnd = (a, b) => a + Math.random() * (b - a);
 function fxSize() { const d = Math.min(2, devicePixelRatio || 1); fxW = cv.clientWidth; fxH = cv.clientHeight; cv.width = fxW * d; cv.height = fxH * d; cx.setTransform(d, 0, 0, d, 0, 0); }
 fxSize(); addEventListener("resize", fxSize);
-const FXN = { snow: 70, hearts: 18, petals: 26, rain: 110, sun: 34, summer: 30 };
+const FXN = { leaves: 22, snow: 70, hearts: 18, petals: 26, rain: 110, sun: 34, summer: 30 };
 function mkP(init) {
   const t = fxType, p = { x: rnd(0, fxW), y: init ? rnd(0, fxH) : -20, r: rnd(0, 6.28), vr: rnd(-.03, .03), ph: rnd(0, 6.28) };
   if (t === "snow") Object.assign(p, { s: rnd(1.5, 4.2), vx: rnd(-.3, .3), vy: rnd(.5, 1.3) });
   if (t === "hearts") Object.assign(p, { s: rnd(6, 13), vx: rnd(-.2, .2), vy: -rnd(.4, .9), y: init ? rnd(0, fxH) : fxH + 20, c: ["#FF5C8A", "#FF8FB1", "#FFC2D4"][Math.floor(rnd(0, 3))] });
+  if (t === "leaves") Object.assign(p, { s: rnd(5, 9), vx: rnd(-.7, .2), vy: rnd(.6, 1.2), c: ["230,120,40", "245,170,50", "200,70,40"][Math.floor(rnd(0, 3))] });
   if (t === "petals") Object.assign(p, { s: rnd(4, 8), vx: rnd(-.6, .1), vy: rnd(.5, 1.1), c: ["255,170,200", "255,214,228", "255,240,200"][Math.floor(rnd(0, 3))] });
   if (t === "rain") Object.assign(p, { s: rnd(10, 22), vx: -1.6, vy: rnd(9, 14), y: init ? rnd(0, fxH) : rnd(-60, -10) });
   if (t === "sun") Object.assign(p, { s: rnd(1.5, 3.5), vx: rnd(-.15, .15), vy: -rnd(.08, .3), y: init ? rnd(0, fxH) : fxH + 10 });
@@ -279,12 +306,12 @@ function heart(s) { cx.beginPath(); cx.moveTo(0, s * .35); cx.bezierCurveTo(-s *
 function fxDraw() {
   cx.clearRect(0, 0, fxW, fxH);
   for (const p of fxList) {
-    if (!RM) { p.x += p.vx + (fxType === "petals" || fxType === "snow" ? Math.sin(p.ph) * .4 : 0); p.y += p.vy; p.ph += .02; p.r += p.vr; }
+    if (!RM) { p.x += p.vx + (fxType === "petals" || fxType === "leaves" || fxType === "snow" ? Math.sin(p.ph) * .4 : 0); p.y += p.vy; p.ph += .02; p.r += p.vr; }
     if (p.y > fxH + 30 || p.y < -40 || p.x < -40 || p.x > fxW + 40) Object.assign(p, mkP(false));
     cx.save(); cx.translate(p.x, p.y);
     if (fxType === "snow") { cx.fillStyle = "rgba(255,255,255,.9)"; cx.beginPath(); cx.arc(0, 0, p.s, 0, 6.28); cx.fill(); }
     else if (fxType === "hearts") { cx.rotate(Math.sin(p.ph) * .3); cx.globalAlpha = .75; cx.fillStyle = p.c; heart(p.s); }
-    else if (fxType === "petals") { cx.rotate(p.r); cx.fillStyle = `rgba(${p.c},.9)`; cx.beginPath(); cx.ellipse(0, 0, p.s, p.s * .5, 0, 0, 6.28); cx.fill(); }
+    else if (fxType === "petals" || fxType === "leaves") { cx.rotate(p.r); cx.fillStyle = `rgba(${p.c},.9)`; cx.beginPath(); cx.ellipse(0, 0, p.s, p.s * .5, 0, 0, 6.28); cx.fill(); }
     else if (fxType === "rain") { cx.strokeStyle = "rgba(210,230,255,.55)"; cx.lineWidth = 1.6; cx.beginPath(); cx.moveTo(0, 0); cx.lineTo(-p.s * .15, p.s); cx.stroke(); }
     else if (fxType === "sun") { const a = .4 + .6 * Math.abs(Math.sin(p.ph * 1.3)); const g = cx.createRadialGradient(0, 0, 0, 0, 0, p.s * 4); g.addColorStop(0, `rgba(255,236,150,${a})`); g.addColorStop(1, "rgba(255,236,150,0)"); cx.fillStyle = g; cx.beginPath(); cx.arc(0, 0, p.s * 4, 0, 6.28); cx.fill(); }
     else if (fxType === "summer") { cx.strokeStyle = "rgba(255,255,255,.7)"; cx.lineWidth = 1.4; cx.beginPath(); cx.arc(0, 0, p.s, 0, 6.28); cx.stroke(); cx.fillStyle = "rgba(255,255,255,.55)"; cx.beginPath(); cx.arc(-p.s * .35, -p.s * .35, p.s * .22, 0, 6.28); cx.fill(); }
@@ -293,7 +320,7 @@ function fxDraw() {
   fxRaf = RM ? 0 : requestAnimationFrame(fxDraw);
 }
 function setMood(i, first) {
-  const L = LOOK[i];
+  const L = LK[i];
   if (!first) LP.sceneTo(L.bg);
   mood.style.backgroundColor = L.mood;
   const swap = () => { fxType = L.fx; fxList = []; const n = RM ? Math.round(FXN[L.fx] / 3) : FXN[L.fx]; for (let k = 0; k < n; k++) fxList.push(mkP(true)); cancelAnimationFrame(fxRaf); fxDraw(); };
@@ -332,7 +359,7 @@ function tearPage(i) {
     const tl = G.timeline({ onComplete: () => { fly.remove(); if (next) { next.classList.remove("under"); } stack.style.minHeight = ""; res(); } });
     tl.to(fly, { rotation: -3, y: 6, duration: .14, ease: "power2.out", transformOrigin: "100% 0%", onStart: () => LP.sfx("tick") })
       .to(fly, { rotation: 4, y: 10, duration: .12, ease: "power2.inOut", transformOrigin: "0% 0%" })
-      .add(() => { LP.sfx("flip"); LP.burst(r.left + r.width / 2, r.top + 6, { n: 18, speed: 5, up: 1, colors: ["#FFFDF8", "#EFE6D6", LOOK[i].c], ring: false }); swing(-4); })
+      .add(() => { LP.sfx("flip"); LP.burst(r.left + r.width / 2, r.top + 6, { n: 18, speed: 5, up: 1, colors: ["#FFFDF8", "#EFE6D6", LK[i].c], ring: false }); swing(-4); })
       .to(fly, { rotationX: 150, y: -40, z: 120, duration: .5, ease: "power2.out", transformOrigin: "50% 0%" })
       .to(fly, { y: innerHeight * .9, x: rnd(-140, 140), rotation: rnd(-40, 40), rotationX: 230, z: 220, opacity: 0, duration: .85, ease: "power2.in", onStart: () => LP.sfx("whoosh") }, "-=.05");
     if (next) G.fromTo(next, { scale: .985, y: 3 }, { scale: 1, y: 0, duration: .5, delay: .35, ease: "back.out(2)" });
@@ -375,21 +402,22 @@ if (!vocab.length) {
     LP.round(r);
     lumi.set("pencil");
     optGrid.innerHTML = "";
-    let words;
+    let words, pics = {};
     if (plan[r] === "phonics") {
       const target = pickUnused(phonicsPool, w => w);
       words = Lumio.shuffle([target, ...Lumio.shuffle(phonicsPool.filter(w => w !== target)).slice(0, Math.min(2, phonicsPool.length - 1))]);
       currentTargetWord = currentSpeakText = target;
     } else {
       const target = pickUnused(vocab, w => w.en);
-      words = Lumio.shuffle([target, ...pickDistractors(target, 2)]).map(o => o.en);
+      const opts = Lumio.shuffle([target, ...pickDistractors(target, 2)]);
+      words = opts.map(o => o.en); pics = Object.fromEntries(opts.map(o => [o.en, LP.vocabImg(imgKey(o))]));
       currentTargetWord = target.en;
       currentSpeakText = target.example || target.en;
     }
     window.__lastTarget = currentTargetWord; // exposed for automated QA only
-    await LP.banner(MONTHS[r].name, "Round " + (r + 1) + " of " + ROUNDS);
+    await LP.banner(MON[r].name, "Round " + (r + 1) + " of " + ROUNDS);
     optGrid.className = "lp-cards tm-cards " + (words.length === 2 ? "c2" : "c3");
-    const cards = words.map(w => { const c = LP.picCard(w); c.onclick = () => choose(c); optGrid.appendChild(c); return c; });
+    const cards = words.map(w => { const c = LP.picCard(w, { img: pics[w] || LP.vocabImg(w) }); if (w.length > 9) c.classList.add("long"); c.onclick = () => choose(c); optGrid.appendChild(c); return c; });
     if (G && !RM) G.fromTo("#promptCard", { scale: .6, opacity: 0 }, { scale: 1, opacity: 1, duration: .5, ease: "back.out(2)" });
     lumi.nod();
     await LP.deal(cards, document.getElementById("cal"));
@@ -433,6 +461,7 @@ if (!vocab.length) {
 
   function endGame() {
     LP.round(-1);
+    try { localStorage.setItem("lumio_tm_half", HALF ? "0" : "1"); } catch (e) {}
     LP.results({ score, total: ROUNDS, title: "Another page in the book!", scoreLabel: "Pages filled",
       note: `You filled ${score} out of ${ROUNDS} calendar pages!`, actor: { char: "lumi", pose: "celebrate" },
       exitHref: backHref, exitLabel: source === "lesson" ? "Back to my map" : "Done" });

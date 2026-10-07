@@ -56,6 +56,20 @@
   .md-hint+.md-tray{min-height:48px}
   #stage{padding-bottom:calc(74px + env(safe-area-inset-bottom,0px))}
   .md-hint .ar{font-family:'Tajawal',var(--lp-body);margin-inline-start:6px}
+  .md-slot.poster .pic{aspect-ratio:4/3;margin:7px 7px 0;background:#fff}
+  .md-slot.poster .pic img{inset:0;width:100%;height:100%;filter:none}
+  @media (max-width:899px){
+    .md-board.posters{grid-template-columns:repeat(2,1fr);max-width:460px}
+    .md-board.posters ~ .md-shelf .md-hint{display:none}
+    .md-board.posters{gap:10px}
+    .md-board.posters .md-slot .pic{aspect-ratio:3/2;margin:7px 7px 0}
+    .md-board.posters .md-slot{padding-bottom:34px}
+    .md-board.posters .md-slot .dock{height:24px;bottom:6px}
+    body.md-posters .md-lumi{height:76px;width:64px}
+    body.md-posters .md-ask{padding-bottom:6px}
+    body.md-posters .md-chip{min-height:44px;font-size:17px;padding:0 12px 0 26px}
+    body.md-posters .md-chip::before{left:10px}
+  }
   @media (min-width:900px){
     .md{grid-template-columns:300px auto;justify-content:center;column-gap:36px;row-gap:14px;align-items:start;min-height:calc(100dvh - 110px);align-content:center}
     .md-top{display:contents}
@@ -99,19 +113,28 @@ const num = parseInt(Lumio.qs("n") || "1", 10);
 const source = Lumio.qs("from");
 const backHref = source === "lesson" ? "../student.html" : source === "trial" ? `../present-trial.html?level=${level}` : `../present.html?level=${level}&n=${num}`;
 const lesson = window.LUMIO_LESSONS?.[level]?.[num];
-const vocab = (lesson ? Lumio.shuffle([...lesson.vocab]) : []).slice(0, 6);
+// Words whose pictures show the same thing (e.g. "hello"/"hi" are both a wave, "I"/"you"/"boy" are the same Omar
+// figure, "hands" is a clapping picture like "clap", "big" shows an elephant). Two words that share a picture
+// group, a picture file or the same Arabic are never on the board together, so every picture has one answer.
+const SAME_PIC = [["hello", "hi"], ["i", "you", "boy", "hi", "he", "sad"], ["hands", "clap"], ["dog", "puppy", "pet"], ["cat", "kitten"],
+  ["big", "elephant"], ["big", "mouse"], ["small", "mouse"], ["small", "ball"], ["happy", "great"], ["fine", "okay"], ["draw", "picture"], ["cousin", "brother"],
+  ["clock", "hour", "minute", "o'clock", "half past", "quarter past", "quarter to", "alarm clock"]];
+const picOf = v => v.image || v.en;   // the data's own picture override (e.g. Level 1 "fish" -> fish-food)
+const clash = (a, b) => a.en === b.en || (a.ar && a.ar === b.ar) || LP.vocabImg(picOf(a)) === LP.vocabImg(picOf(b)) ||
+  SAME_PIC.some(g => g.includes(a.en.toLowerCase()) && g.includes(b.en.toLowerCase()));
+// up to 6 words, as in the original; a few random tries keep the board as full as the lesson allows
+let vocab = [];
+for (let t = 0; t < 40 && vocab.length < 6; t++) {
+  const pick = [];
+  for (const v of (lesson ? Lumio.shuffle([...lesson.vocab]) : [])) { if (pick.length >= 6) break; if (!pick.some(o => clash(o, v))) pick.push(v); }
+  if (pick.length > vocab.length) vocab = pick;
+}
 
 LP.init({ scene: { bg: "assets/lesson-bg-kid/playroom.jpg", particles: "motes", tint: "linear-gradient(180deg,rgba(255,236,200,.12),rgba(60,30,0,.22))" },
   hud: { rounds: Math.max(1, vocab.length), exitHref: backHref } });
 // From a trial deck the game opened in its own tab: Exit just closes it (the trial is still open in the first tab).
 if (source === "trial") LP.hud.exit.onclick = e => { e.preventDefault(); try { window.close(); } catch (x) {} setTimeout(() => { location.href = backHref; }, 250); };
 
-// Words whose pictures show the same thing (e.g. "hello" and "hi" are both a wave, "hands" is a clapping
-// picture like "clap", "puppy" and "dog" are both puppies). If both are on the board, either word may go on
-// either of those pictures, so a child is never marked wrong for a picture that really does show their word.
-const SAME_PIC = [["hello", "hi"], ["hands", "clap"], ["dog", "puppy", "pet"], ["cat", "kitten"], ["big", "elephant"], ["small", "mouse"],
-  ["happy", "great"], ["boy", "sad"], ["fine", "okay"], ["draw", "picture"], ["cousin", "brother"], ["clock", "hour", "minute", "o'clock"]];
-const same = (a, b) => a === b || SAME_PIC.some(g => g.includes(a.toLowerCase()) && g.includes(b.toLowerCase()));
 
 const lumi = LP.actor(document.getElementById("lumiZone"), { char: "lumi", pose: "point", cheer: "celebrate", oops: "surprised", alt: "Lumi" });
 const picsEl = document.getElementById("pics"), wordsEl = document.getElementById("words"), promptText = document.getElementById("promptText");
@@ -125,8 +148,9 @@ if (!vocab.length) {
   const missed = new Set();
   picsEl.className = "md-board" + (total <= 4 ? " c2" : "");
 
-  const slots = Lumio.shuffle(vocab.map(v => v.en)).map(w => {
-    const s = LP.picCard(w, { label: false, aria: "Picture" });
+  const slots = Lumio.shuffle([...vocab]).map(v => {
+    const w = v.en, s = LP.picCard(w, { label: false, aria: "Picture", img: LP.vocabImg(picOf(v)) });
+    posterCheck(s);
     s.classList.add("md-slot"); s.dataset.answer = w;
     s.insertAdjacentHTML("beforeend", '<span class="dock" aria-hidden="true">?</span>');
     s.onclick = () => { if (selected && !s.classList.contains("filled")) place(selected, s, null); else if (!selected && !s.classList.contains("filled")) nudgeChips(); };
@@ -137,6 +161,17 @@ if (!vocab.length) {
     c.style.setProperty("--c", CHIPC[i % CHIPC.length]); c.setAttribute("aria-label", "Word: " + w);
     wordsEl.appendChild(c); wireChip(c); return c;
   });
+  // Full-bleed poster pictures (the Level 1 day-of-the-week posters) have their word printed on them:
+  // they get a wider frame, edge to edge, and the board switches to two big columns on phones so they stay readable.
+  function posterCheck(card) {
+    const im = card.querySelector(".pic img"); if (!im) return;
+    const test = () => { try {
+      const cv = document.createElement("canvas"); cv.width = cv.height = 4; const cx = cv.getContext("2d"); cx.drawImage(im, 0, 0, 4, 4);
+      const d = cx.getImageData(0, 0, 4, 4).data, wide = im.naturalWidth / im.naturalHeight > 1.25;
+      if (wide || (d[3] > 200 && d[15] > 200 && d[51] > 200 && d[63] > 200)) { card.classList.add("poster"); picsEl.classList.add("posters"); document.body.classList.add("md-posters"); }
+    } catch (e) {} };
+    if (im.complete && im.naturalWidth) test(); else im.addEventListener("load", test);
+  }
   const setAnswer = () => { const c = chips.find(c => !c.dataset.placed); LP.answer = c ? c.dataset.word : null; };
 
   function nudgeChips() {
@@ -244,8 +279,7 @@ if (!vocab.length) {
       }
     }
     const word = c.dataset.word, ans = slot.dataset.answer;
-    if (same(word, ans)) {
-      if (word !== ans) { const other = slots.find(s => s.dataset.answer === word && !s.classList.contains("filled")); if (other) other.dataset.answer = ans; slot.dataset.answer = word; }
+    if (word === ans) {
       // snap: the chip shrinks into the frame's name slot with a springy click
       const dk = slot.querySelector(".dock"), r = dk.getBoundingClientRect();
       if (window.gsap && !LP.RM) {

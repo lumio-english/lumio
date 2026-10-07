@@ -142,6 +142,7 @@ html[data-lp="teen"] .readBtn{background:linear-gradient(180deg,#8B97FF,var(--ac
 .tpBody{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;-webkit-overflow-scrolling:touch;
   scrollbar-width:thin;scrollbar-color:var(--edge) transparent;margin-right:-6px;padding-right:6px;position:relative}
 .tpIn{margin:auto 0;padding:4px 0 6px}
+.tpBody.more{-webkit-mask-image:linear-gradient(180deg,#000 calc(100% - 34px),transparent);mask-image:linear-gradient(180deg,#000 calc(100% - 34px),transparent)}
 p.en{margin:0;font-family:var(--read);font-weight:600;font-size:var(--fs);line-height:1.5;color:var(--ink);user-select:text;-webkit-user-select:text}
 html[data-lp="teen"] p.en{font-weight:700;line-height:1.55}
 .w{border-radius:.3em;transition:background-color .18s,color .18s,box-shadow .18s;cursor:pointer;display:inline-block}
@@ -644,7 +645,7 @@ function layout(keepAnim) {
     let R, leftW;
     if (textHidden) { leftW = Math.min(availW, availH * 16 / 9); R = 0; }
     else {
-      const Rdes = short ? clamp(268, availW * .35, 360) : clamp(360, availW * .31, 520);
+      const Rdes = short ? clamp(300, availW * .43, 420) : clamp(360, availW * .31, 520);
       leftW = Math.min(availW - Rdes, availH * 16 / 9);
       R = Math.min(availW - leftW, short ? 430 : 640);
     }
@@ -674,20 +675,22 @@ function place(el, x, y, w, h) { el.style.left = x + "px"; el.style.top = y + "p
 function fsRange() {
   if (!L) return [20, 15];
   if (L.stack) return L.W >= 600 ? [27, 17] : [24, 15];
-  if (L.short) return [18, 13];
+  if (L.short) return [19, 13.5];
   return [25, 15];
 }
 function fitText(tp) {
   const body = $(".tpBody", tp); if (!body || !body.clientHeight) return;
   let [hi, lo] = fsRange(), best = lo;
   tp.style.setProperty("--fs", hi + "px");
-  if (body.scrollHeight <= body.clientHeight + 1) return;
+  if (body.scrollHeight <= body.clientHeight + 1) { moreFade(body); return; }
   while (hi - lo > .5) {
     const mid = (hi + lo) / 2; tp.style.setProperty("--fs", mid + "px");
     if (body.scrollHeight <= body.clientHeight + 1) { best = mid; lo = mid; } else hi = mid;
   }
   tp.style.setProperty("--fs", best + "px");
+  moreFade(body);
 }
+function moreFade(body) { body.classList.toggle("more", body.scrollHeight - body.clientHeight - body.scrollTop > 4); if (!body._mf) { body._mf = 1; body.addEventListener("scroll", () => moreFade(body), { passive: true }); } }
 function refit() { $$(".tp", book).forEach(fitText); }
 let rsT = 0;
 addEventListener("resize", () => { clearTimeout(rsT); rsT = setTimeout(() => layout(), 80); });
@@ -743,7 +746,7 @@ function wrapWords(html) {
   walk(host);
   // "The End" gets its own flourish line
   for (let i = 0; i < words.length - 1; i++) {
-    if (/^the$/i.test(words[i].word) && /^end\b/i.test(words[i + 1].word)) {
+    if (words[i].word === "The" && /^End\b/.test(words[i + 1].word)) {
       const wrap = document.createElement("span"); wrap.className = "theEnd";
       const first = words[i].el; first.parentNode.insertBefore(wrap, first);
       let n = first; while (n) { const nx = n.nextSibling; wrap.appendChild(n); n = nx; }

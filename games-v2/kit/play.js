@@ -264,7 +264,11 @@
     const poses = Object.assign({}, o.poses || {});
     const src = p => poses[p] || LP.char(o.char || "lumi", p);
     Object.keys(poses).forEach(k => { const i = new Image(); i.src = poses[k]; });
-    let cur = o.pose || "happy", idleTl = null;
+    // every character has a "<name>-happy" pose except kid Lumi, whose friendly default is "thumbs"
+    if (!o.pose) o.pose = (o.char || "lumi") === "lumi" ? "thumbs" : "happy";
+    let cur = o.pose, idleTl = null;
+    // a pose that doesn't exist for this character falls back to its thumbs-up art instead of a broken image
+    img.onerror = () => { const f = LP.char(o.char || "lumi", "thumbs"); if (img.src !== f) img.src = f; };
     img.src = src(cur);
     const A = { el: wrap, body, img };
     A.set = (p) => {

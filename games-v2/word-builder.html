@@ -40,7 +40,12 @@
   .wb-plank::before{left:9px}.wb-plank::after{right:9px}
   html[data-lp="teen"] .wb-plank{background:linear-gradient(180deg,rgba(28,34,70,.86),rgba(16,20,44,.9));box-shadow:0 0 0 1px rgba(140,160,255,.3),0 22px 40px -16px rgba(0,0,0,.9);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
   html[data-lp="teen"] .wb-plank::before,html[data-lp="teen"] .wb-plank::after{display:none}
-  .wb-slots{display:flex;justify-content:center;gap:var(--sg,7px);flex-wrap:nowrap}
+  .wb-slots{display:flex;justify-content:center;flex-wrap:wrap;gap:12px 22px}
+  .wb-group{display:flex;gap:var(--sg,7px);flex-wrap:nowrap}
+  .wb-slot.fixed{background:none;box-shadow:none;width:auto;min-width:calc(var(--sw,52px) * .4);color:rgba(255,255,255,.9)}
+  html[data-lp="teen"] .wb-slot.fixed{background:none;box-shadow:none}
+  .wb-tiles.many{gap:8px}
+  .lp .wb-tiles.many .wb-tile{width:54px;height:58px;font-size:29px}
   .wb-slot{position:relative;flex:none;width:var(--sw,52px);height:calc(var(--sw,52px) * 1.18);border-radius:12px;display:grid;place-items:center;
     background:rgba(70,35,10,.35);box-shadow:inset 0 4px 8px rgba(0,0,0,.35),0 2px 0 rgba(255,255,255,.18);
     font-family:var(--lp-display);font-weight:800;font-size:calc(var(--sw,52px) * .62);color:#fff}
@@ -166,6 +171,20 @@ const picSrc = w => `../assets/vocab/${w.pic || sdVocabFile(w)}.png`;
 // a failed picture (the student.html fallback) but without asking the server for a file that isn't there.
 const NO_PIC = new Set("accurately ago anniversary apologized as-soon-as at-last attend backup-plan board-game boarding-pass body-language booking brunch by-the-time cause certain chaperone conclusion counterargument credits cuisine daydreaming delay deliver discover distraction dropped durable earlier effort eye-contact forecast gently giggling guest-list headcount heritage hospitality instructions internship itinerary label landmark lost-and-found mandatory milestone motivation noisy panic peaceful photo-album playlist plot-twist privacy productive progress queue recently result revision road-trip scene scholarship shelter statistic step-by-step suddenly technology the-best therefore thrilled thunder timeline timer tone turning-point unlikely whispering".split(" "));
 const hasPic = w => !w.em && !NO_PIC.has(w.pic || sdVocabFile(w));
+// Content fix: some lessons give two words the same Arabic (fine/okay, boring/dull, line/queue ...) or the same
+// picture. Picking both into one game made two right answers (Word Pop) or look-alike non-pairs (Memory).
+const picKey = w => w.em ? "em:" + w.em : hasPic(w) ? "pic:" + (w.pic || sdVocabFile(w)) : "";
+const normAr = t => String(t).replace(/[\u064B-\u0652\u0640]/g, "").replace(/[أإآ]/g, "ا").replace(/ى/g, "ي").replace(/ة/g, "ه").replace(/\s+/g, " ").trim();
+function distinctWords(list, n) {
+  const out = [], seen = new Set();
+  for (const w of list) {
+    const keys = ["en:" + w.en.toLowerCase().trim(), picKey(w), w.ar ? "ar:" + normAr(w.ar) : ""].filter(Boolean);
+    if (keys.some(k => seen.has(k))) continue;
+    keys.forEach(k => seen.add(k)); out.push(w);
+    if (out.length >= n) break;
+  }
+  return out;
+}
 let gamesLessonNum = null, gamesUsingRealVocab = false;
 function shuffled(arr) { return [...arr].sort(() => Math.random() - 0.5); }
 function pickWords(n, source) { const bank = source || WORD_BANK; return shuffled(bank).slice(0, Math.min(n, bank.length)); }
@@ -244,11 +263,20 @@ const colOf = i => (TEEN ? TEEN_COLS : KID_COLS)[i % (TEEN ? TEEN_COLS : KID_COL
 const blkStyle = c => `--c1:${c[0]};--c2:${c[1]};--c3:${c[2]}`;
 let host, misN;
 
+// only letters become blocks; spaces, "-" and "'" (T-shirt, o'clock) are fixed, pre-filled characters
+const isTile = ch => /[A-Z0-9]/.test(ch);
+const tilesOf = w => w.en.toUpperCase().split("").filter(isTile);
 function poolOf(source) {
   // Letter-scrambling only makes sense for single words (real lesson vocab includes phrases), as in student.html
   const baseBank = source || WORD_BANK;
   let pool = baseBank.filter(w => !w.en.includes(" ") && w.en.length <= 10);
-  const real = !source && gamesUsingRealVocab && pool.length >= 3;
+  let real = !source && gamesUsingRealVocab && pool.length >= 3;
+  // Content fix: a lesson made almost only of phrases (Level 2 L14/L15, Level 6 L7) used to fall back to the
+  // generic Cat/Dog bank. It now builds its own phrases, with the spaces shown as fixed gaps.
+  if (pool.length < 3) {
+    const ph = baseBank.filter(w => tilesOf(w).length <= 15 && w.en.split(" ").every(p => p.length <= 11));
+    if (ph.length >= 3) { pool = ph; real = !source && gamesUsingRealVocab; }
+  }
   if (pool.length < 3) pool = FALLBACK_WORD_BANK;
   return { pool, real };
 }
@@ -258,7 +286,7 @@ function startBuilder(source) {
   const { pool, real } = poolOf(source);
   wbUsedRealVocabThisRound = real;
   const words = shuffled(pool).slice(0, Math.min(WB_ROUNDS, pool.length));
-  wbState = { words, round: 0, mistakes: 0, totalLetters: words.reduce((s, w) => s + w.en.length, 0), source };
+  wbState = { words, round: 0, mistakes: 0, totalLetters: words.reduce((s, w) => s + tilesOf(w).length, 0), source };
   resetHud(); misN.textContent = "0";
   nextBuilderRound(true);
 }
@@ -269,20 +297,29 @@ async function nextBuilderRound(first) {
   wbState.round++;
   LP.round(wbState.round - 1);
   host.set(CH.pose);
-  if (ANIM && !first) await new Promise(r => G.to([...wbSlots.children, ...wbLetters.children, document.getElementById("card")], { y: -16, opacity: 0, scale: .8, duration: .25, stagger: .015, ease: "power2.in", onComplete: r }));
+  if (ANIM && !first) await new Promise(r => G.to([...wbSlots.querySelectorAll(".wb-slot"), ...wbLetters.children, document.getElementById("card")], { y: -16, opacity: 0, scale: .8, duration: .25, stagger: .015, ease: "power2.in", onComplete: r }));
   if (G) G.set(document.getElementById("card"), { clearProps: "all" });
   picEl.innerHTML = w.em ? `<span class="emo">${LP.esc(w.em)}</span>`
     : hasPic(w) ? `<img src="${LP.esc(picSrc(w))}" alt="" draggable="false" onerror="this.remove()">`
     : `<span class="noimg" dir="rtl" lang="ar">${LP.esc(w.ar)}</span>`;
   arTxt.textContent = (w.em || hasPic(w)) ? w.ar : "";
-  const letters = w.en.toUpperCase().split("");
-  currentBuild = { w, word: letters, placed: [], letterEls: [], busy: true };
-  // slots sized to fit the plank
+  const letters = tilesOf(w);
+  currentBuild = { w, word: letters, placed: [], letterEls: [], slots: [], busy: true };
+  // slots sized to fit the plank; each word of a phrase is its own group (groups wrap onto new lines)
   wbSlots.innerHTML = "";
+  const parts = w.en.toUpperCase().split(" "), longest = Math.max(...parts.map(p => p.length));
   const plankW = wbSlots.parentElement.clientWidth - 40, maxW = innerWidth >= 900 ? 66 : 52;
-  const sw = Math.max(26, Math.min(maxW, Math.floor((plankW - (letters.length - 1) * 7) / letters.length)));
+  const sw = Math.max(26, Math.min(maxW, Math.floor((plankW - (longest - 1) * 7) / longest)));
   wbSlots.style.setProperty("--sw", sw + "px"); wbSlots.style.setProperty("--sg", (sw < 36 ? 4 : 7) + "px");
-  letters.forEach(() => wbSlots.appendChild(LP.el("div", "wb-slot")));
+  parts.forEach(part => {
+    const g = LP.el("div", "wb-group");
+    part.split("").forEach(ch => {
+      if (isTile(ch)) { const s = LP.el("div", "wb-slot"); g.appendChild(s); currentBuild.slots.push(s); }
+      else g.appendChild(LP.el("div", "wb-slot fixed", LP.esc(ch)));
+    });
+    wbSlots.appendChild(g);
+  });
+  wbLetters.classList.toggle("many", letters.length > 10);
   wbLetters.innerHTML = "";
   shuffled(letters.map((_, i) => i)).forEach((idx, k) => {
     const btn = document.createElement("button");
@@ -300,15 +337,15 @@ async function nextBuilderRound(first) {
   if (ANIM) {
     const tl = G.timeline();
     tl.fromTo("#card", { scale: .3, rotation: -12, opacity: 0 }, { scale: 1, rotation: 0, opacity: 1, duration: .6, ease: "back.out(2)", clearProps: "transform" })
-      .fromTo(wbSlots.children, { scaleY: 0, opacity: 0, transformOrigin: "50% 100%" }, { scaleY: 1, opacity: 1, duration: .3, stagger: .035, ease: "back.out(2)", clearProps: "transform" }, .15)
+      .fromTo(wbSlots.querySelectorAll(".wb-slot"), { scaleY: 0, opacity: 0, transformOrigin: "50% 100%" }, { scaleY: 1, opacity: 1, duration: .3, stagger: .035, ease: "back.out(2)", clearProps: "transform" }, .15)
       .fromTo(wbLetters.children, { y: 140, opacity: 0, rotation: () => (Math.random() - .5) * 60 }, { y: 0, opacity: 1, rotation: 0, duration: .7, stagger: .05, ease: TEEN ? "power3.out" : "elastic.out(1,.6)", clearProps: "transform", onStart: () => LP.sfx("deal") }, .25);
     await new Promise(r => tl.eventCallback("onComplete", r));
-  } else [document.getElementById("card"), ...wbSlots.children, ...wbLetters.children].forEach(e => e.style.opacity = 1);
+  } else [document.getElementById("card"), ...wbSlots.querySelectorAll(".wb-slot"), ...wbLetters.children].forEach(e => e.style.opacity = 1);
   host.nod();
   currentBuild.busy = false;
   LP.answer = letters.join("");   // read by the automated play-through tests
 }
-function markNext() { [...wbSlots.children].forEach((s, i) => s.classList.toggle("next", !!currentBuild && i === currentBuild.placed.length)); }
+function markNext() { (currentBuild ? currentBuild.slots : []).forEach((s, i) => s.classList.toggle("next", !!currentBuild && i === currentBuild.placed.length)); }
 
 /* drag a block: it follows the finger and is pulled in by the next slot like a magnet */
 function dragify(btn, idx) {
@@ -323,7 +360,7 @@ function dragify(btn, idx) {
     let dx = e.clientX - sx, dy = e.clientY - sy;
     if (!on && Math.hypot(dx, dy) < 9) return;
     if (!on) { on = true; btn.classList.add("drag"); if (G) G.killTweensOf(btn); }
-    const slot = wbSlots.children[currentBuild.placed.length];
+    const slot = currentBuild.slots[currentBuild.placed.length];
     if (slot) { // magnet
       const r = btn.getBoundingClientRect(), s = LP.center(slot);
       const cx = r.left + r.width / 2 - (G ? G.getProperty(btn, "x") : 0) + dx, cy = r.top + r.height / 2 - (G ? G.getProperty(btn, "y") : 0) + dy;
@@ -336,7 +373,7 @@ function dragify(btn, idx) {
     if (pid !== e.pointerId) return; pid = null;
     if (!on) return;
     btn._dragged = true; btn.classList.remove("drag"); on = false;
-    const slot = currentBuild && wbSlots.children[currentBuild.placed.length];
+    const slot = currentBuild && currentBuild.slots[currentBuild.placed.length];
     const near = slot && Math.hypot(LP.center(slot).x - LP.center(btn).x, LP.center(slot).y - LP.center(btn).y) < 80;
     if (near) tryPlace(btn, idx, true);
     else if (G) G.to(btn, { x: 0, y: 0, scale: 1, rotation: 0, duration: .5, ease: "elastic.out(1,.5)" }); else btn.style.transform = "";
@@ -371,7 +408,7 @@ async function tryPlace(btn, idx, fromDrag) {
   const nextPos = currentBuild.placed.length;
   if (letters[idx] === currentBuild.word[nextPos]) {
     currentBuild.placed.push(idx);
-    const slot = wbSlots.children[nextPos];
+    const slot = currentBuild.slots[nextPos];
     const style = btn.getAttribute("style").split(";").filter(p => /^\s*--c/.test(p)).join(";");
     const p = flyToSlot(btn, slot, letters[idx], style);
     btn.disabled = true; if (G) G.set(btn, { clearProps: "transform" });
@@ -404,7 +441,7 @@ document.getElementById("wbClear").onclick = () => {
 };
 
 async function finishWord() {
-  const w = currentBuild.w, slots = [...wbSlots.children];
+  const w = currentBuild.w, slots = [...wbSlots.querySelectorAll(".wb-slot")];
   LP.sfx("correct"); LP.streak(true);
   host.cheer(CH.cheer, CH.pose);
   LP.fill(wbState.round - 1);
@@ -414,7 +451,7 @@ async function finishWord() {
   // the picture celebrates in the middle of the scene
   const cel = LP.el("div", "wb-cel");
   const inner = w.em ? `<span class="emo">${LP.esc(w.em)}</span>` : hasPic(w) ? `<img src="${LP.esc(picSrc(w))}" alt="" onerror="this.remove()">` : `<span class="noimg" dir="rtl" lang="ar">${LP.esc(w.ar)}</span>`;
-  cel.innerHTML = `<div class="rays"></div><div class="box"><div class="pic"><div class="in">${inner}</div></div><div class="word">${[...w.en].map(c => `<span>${LP.esc(c)}</span>`).join("")}</div></div>`;
+  cel.innerHTML = `<div class="rays"></div><div class="box"><div class="pic"><div class="in">${inner}</div></div><div class="word">${[...w.en].map(c => `<span>${c === " " ? "&nbsp;" : LP.esc(c)}</span>`).join("")}</div></div>`;
   document.body.appendChild(cel);
   LP.say(w.en);
   const picBox = cel.querySelector(".pic");

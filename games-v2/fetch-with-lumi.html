@@ -21,6 +21,8 @@
   .fw-item .lp-card .pic{margin:9px}
   .fw-item::after{content:"";position:absolute;left:12%;right:12%;bottom:-16px;height:18px;border-radius:50%;background:rgba(30,50,0,.32);filter:blur(5px);z-index:-1}
   .fw-item.taken::after{opacity:0}
+  .fw-item .lp-card.poster .pic{background:#fff}
+  .fw-item .lp-card.poster .pic img{inset:0;width:100%;height:100%;filter:none}
   .fw-lumi{position:absolute;left:0;bottom:0;height:clamp(150px,34%,360px);z-index:3;pointer-events:none}
   .fw-lumi .lp-actor{height:100%}
   .fw-pup{position:absolute;left:58%;bottom:2%;height:clamp(110px,24%,230px);z-index:4;margin-left:-60px}
@@ -47,7 +49,7 @@
     <div class="fw-ask">
       <button class="lp-bubble" id="promptCard" type="button" aria-label="Hear it again">
         <span class="lp-speak" id="hearBtn" aria-hidden="true"></span>
-        <span class="txt" id="promptText">Listen! Tap what Lumi's puppy wants!</span>
+        <span class="txt" id="promptText">Tap the picture Lumi's puppy wants!</span>
         <span class="tail"></span>
       </button>
     </div>
@@ -78,10 +80,15 @@ LP.init({ scene: { bg: "assets/lesson-bg-kid/park.jpg", pos: "50% 60%", particle
 if (source === "trial") LP.hud.exit.onclick = e => { e.preventDefault(); try { window.close(); } catch (x) {} setTimeout(() => { location.href = backHref; }, 250); };
 document.getElementById("hearBtn").innerHTML = LP.ICON.speaker;
 
-// Words whose pictures show the same thing: never offered together, so there is only one right picture.
-const SAME_PIC = [["hello", "hi"], ["hands", "clap"], ["dog", "puppy", "pet"], ["cat", "kitten"], ["big", "elephant"], ["small", "mouse"],
-  ["happy", "great"], ["boy", "sad"], ["fine", "okay"], ["draw", "picture"], ["cousin", "brother"], ["clock", "hour", "minute", "o'clock"]];
-const clash = (a, b) => a === b || SAME_PIC.some(g => g.includes(a.toLowerCase()) && g.includes(b.toLowerCase()));
+// Words whose pictures show the same thing (e.g. "hello"/"hi" wave, "I"/"you"/"boy" are the same Omar figure,
+// "big" shows an elephant and a mouse). Two words that share a picture group, a picture file or the same Arabic
+// are never offered in the same round, so there is only one right picture.
+const SAME_PIC = [["hello", "hi"], ["i", "you", "boy", "hi", "he", "sad"], ["hands", "clap"], ["dog", "puppy", "pet"], ["cat", "kitten"],
+  ["big", "elephant"], ["big", "mouse"], ["small", "mouse"], ["small", "ball"], ["happy", "great"], ["fine", "okay"], ["draw", "picture"], ["cousin", "brother"],
+  ["clock", "hour", "minute", "o'clock", "half past", "quarter past", "quarter to", "alarm clock"]];
+const picOf = v => v.image || v.en;   // the data's own picture override (e.g. Level 1 "fish" -> fish-food)
+const clash = (a, b) => a.en === b.en || (a.ar && a.ar === b.ar) || LP.vocabImg(picOf(a)) === LP.vocabImg(picOf(b)) ||
+  SAME_PIC.some(g => g.includes(a.en.toLowerCase()) && g.includes(b.en.toLowerCase()));
 
 const yard = document.getElementById("yard"), pupHost = document.getElementById("pup");
 const lumi = LP.actor(document.getElementById("lumiZone"), { char: "lumi", pose: "point", cheer: "celebrate", oops: "surprised", alt: "Lumi" });
@@ -94,7 +101,9 @@ const G = window.gsap, MOVE = G && !LP.RM;
 if (!vocab.length) {
   yard.innerHTML = "<p class='lp-panel' style='padding:24px;margin:20px'>No lesson data found.</p>";
 } else {
-  const order = Lumio.shuffle([...vocab]).slice(0, ROUNDS);
+  // six different targets: no word is asked twice in one game
+  const order = [];
+  for (const v of Lumio.shuffle([...vocab])) { if (order.length >= ROUNDS) break; if (!order.some(o => o.en.toLowerCase() === v.en.toLowerCase())) order.push(v); }
   let r = 0, score = 0, locked = true;
   const hearBtn = document.getElementById("hearBtn"), promptText = document.getElementById("promptText");
   let items = [];
@@ -107,9 +116,9 @@ if (!vocab.length) {
     locked = true; LP.answer = null; LP.round(r); lumi.set("point");
     items.forEach(i => i.remove()); items = [];
     const target = order[r];
-    const pool = Lumio.shuffle(vocab.filter(v => !clash(v.en, target.en)));
+    const pool = Lumio.shuffle(vocab.filter(v => !clash(v, target)));
     const picks = [target];
-    for (const v of pool) { if (picks.length >= Math.min(3, vocab.length)) break; if (!picks.some(p => clash(p.en, v.en))) picks.push(v); }
+    for (const v of pool) { if (picks.length >= Math.min(3, vocab.length)) break; if (!picks.some(p => clash(p, v))) picks.push(v); }
     const opts = Lumio.shuffle(picks);
     const spots = SPOTS[opts.length] || SPOTS[3];
     opts.forEach((o, i) => {
@@ -117,12 +126,12 @@ if (!vocab.length) {
       // laptop: Lumi stands on the left, so the things lie on the grass to her right
       const wide = innerWidth >= 900;
       wrap.style.left = (wide ? 36 + spots[i][0] * .6 : spots[i][0]) + "%"; wrap.style.top = (wide ? spots[i][1] - 6 : spots[i][1]) + "%";
-      const c = LP.picCard(o.en, { label: false, aria: "Picture" }); c.dataset.en = o.en; c.classList.add("item-card");
+      const c = LP.picCard(o.en, { label: false, aria: "Picture", img: LP.vocabImg(picOf(o)) }); posterCheck(c); c.dataset.en = o.en; c.classList.add("item-card");
       c.style.rotate = ((i - 1) * 4) + "deg";
       c.onclick = () => choose(c, wrap, target);
       wrap.appendChild(c); yard.appendChild(wrap); items.push(wrap);
     });
-    promptText.textContent = "Listen! Tap what Lumi's puppy wants!";
+    promptText.textContent = "Tap the picture Lumi's puppy wants!";
     items.forEach(w => w.firstChild.style.opacity = 0);
     await LP.banner("Fetch!", "Round " + (r + 1) + " of " + ROUNDS);
     await LP.deal(items.map(w => w.firstChild), pupHost);
@@ -130,6 +139,17 @@ if (!vocab.length) {
     locked = false;
     LP.answer = target.en;    // read by the automated play-through tests
     setTimeout(playPrompt, 200);
+  }
+
+  // full-bleed poster pictures (e.g. the day-of-the-week posters) fill their card edge to edge
+  function posterCheck(card) {
+    const im = card.querySelector(".pic img"); if (!im) return;
+    const test = () => { try {
+      const cv = document.createElement("canvas"); cv.width = cv.height = 4; const cx = cv.getContext("2d"); cx.drawImage(im, 0, 0, 4, 4);
+      const d = cx.getImageData(0, 0, 4, 4).data;
+      if (im.naturalWidth / im.naturalHeight > 1.25 || (d[3] > 200 && d[15] > 200 && d[51] > 200 && d[63] > 200)) card.classList.add("poster");
+    } catch (e) {} };
+    if (im.complete && im.naturalWidth) test(); else im.addEventListener("load", test);
   }
 
   // ---------- the puppy run ----------

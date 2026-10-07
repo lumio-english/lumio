@@ -124,7 +124,7 @@
     .sb-cards.c4 .lp-card .pic{aspect-ratio:1/1}
     .sb-cards .lp-card .lbl{font-size:21px}
     .sb-receipt{align-self:start}
-    .sb-list{align-self:end}
+    .sb-list{align-self:start}
   }
   @media (max-width:899px){
     .sb{gap:8px}
@@ -208,6 +208,7 @@ const dialoguePool = ALL_DIALOGUES.slice(0, num); // only lessons up to and incl
 // Only these dialogue lines have a recording in assets/audio; the rest are read by the browser voice
 // directly (going through Lumio.speak first made every one of them a 404 before the fallback).
 const RECORDED = new Set([[3, 2], [4, 0], [5, 0], [7, 0], [8, 2], [9, 2], [13, 0]].map(([d, l]) => ALL_DIALOGUES[d][l]));
+vocab.forEach(v => { if (v.example) RECORDED.add(v.example); });   // every lesson example sentence has a recording
 function speakLine(text, btn) {
   if (RECORDED.has(text)) return LP.say(text, btn);
   try { if (window.speechSynthesis) { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = "en-US"; u.rate = .92; speechSynthesis.speak(u); } } catch (e) {}
@@ -215,20 +216,20 @@ function speakLine(text, btn) {
 }
 
 // ---------- content guards ----------
-// Some Level 4 lessons give two words the very same Arabic, so the shopping list showed the same
-// Arabic twice and a round could have two right answers. The list shows a clearer Arabic for these,
-// and an option is never offered next to a word that shares its Arabic.
-const AR_FIX = { occasionally: "من حين لآخر", cheer: "يهتف (للفريق)", choice: "اختيار" };
-const arOf = v => (level === "level4" && AR_FIX[v.en]) || v.ar;
-const normAr = s => String(s || "").replace(/\(.*?\)/g, "").replace(/[ً-ْ]/g, "").replace(/[أإآ]/g, "ا").replace(/ة/g, "ه").replace(/ى/g, "ي").replace(/\s+/g, " ").trim();
+// Some Level 4 lessons give two words the same Arabic (occasionally/sometimes "أحيانا", option/choice
+// "خيار", encourage/cheer "يشجع", appointment/deadline "موعد"...). The list never holds two such words
+// (so no Arabic appears twice) and an option is never offered next to a word that shares its Arabic or picture.
+const normAr = s => String(s || "").replace(/\(.*?\)/g, "").replace(/[\u064B-\u0652]/g, "").replace(/[أإآ]/g, "ا").replace(/ة/g, "ه").replace(/ى/g, "ي").replace(/\s+/g, " ").trim();
+// the picture: the lesson's own image name when it has one, else the word
+const PIC_FIX = { level4: { goal: "future" } };   // "My goal is to learn coding." — the goal.png picture is a football in a net
+const imgName = v => (v.image || (PIC_FIX[level] || {})[v.en.toLowerCase()] || v.en).toLowerCase();
+const picOf = v => LP.vocabImg(imgName(v));
 function clash(a, b) {
-  if (a.en.toLowerCase() === b.en.toLowerCase()) return true;
+  if (a.en.toLowerCase() === b.en.toLowerCase() || imgName(a) === imgName(b)) return true;
   const x = normAr(a.ar), y = normAr(b.ar); if (!x || !y) return false;
   return x === y || (" " + x + " ").includes(" " + y + " ") || (" " + y + " ").includes(" " + x + " ");
 }
-// "goal" here means an aim ("My goal is to learn coding.") but its picture is a football in a net.
-const PIC_FIX = { level4: { goal: "future" } };
-const picOf = w => LP.vocabImg((PIC_FIX[level] || {})[w.toLowerCase()] || w);
+const hasWord = (text, w) => new RegExp("\\b" + w.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b").test(String(text).toLowerCase());
 
 const CHECK = '<svg viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="M5 13.5l5 5L21 7" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const omar = LP.actor($("omarZone"), { char: "omar-teen", pose: "point", cheer: "celebrate", oops: "surprised", alt: "Omar" });
@@ -249,12 +250,20 @@ if (!vocab.length) {
     [dlg[1], dlg[2], dlg[3]].forEach(line => { if (myDialogue && line !== myDialogue[2]) dlgDistractors.push(line); });
   });
   // a conversation round needs two wrong lines from earlier lessons; Lesson 1 has none, so it shops instead
-  const canTalk = !!myDialogue && dlgDistractors.length >= 2;
-  const PLAN = ["shop", "shop", "dialogue", "shop", "shop", "dialogue"].map(t => t === "dialogue" && !canTalk ? "shop" : t);
+  // These dialogues come from an older course order and only fit a lesson when they actually use its
+  // words (Level 4 lessons 1 and 3). A dialogue round also needs two wrong lines from earlier lessons.
+  // Otherwise the conversation round is built from this lesson's own example sentences.
+  const fits = !!myDialogue && vocab.filter(v => hasWord(myDialogue.join(" "), v.en)).length >= 2;
+  const canTalk = fits && dlgDistractors.length >= 2;
+  const PLAN = ["shop", "shop", canTalk ? "dialogue" : "sentence", "shop", "shop", "sentence"];
   const shopRounds = PLAN.filter(t => t === "shop").length;
 
-  // the list holds exactly what the shop rounds buy, so every item gets ticked off
-  const order = Lumio.shuffle([...vocab]).slice(0, shopRounds);
+  // the list holds exactly what the shop rounds buy (so every item gets ticked off), never two words with the same Arabic
+  const order = [];
+  for (const v of Lumio.shuffle([...vocab])) { if (order.length >= shopRounds) break; if (!order.some(o => clash(o, v))) order.push(v); }
+  while (order.length < shopRounds) order.push(order[order.length % Math.max(1, order.length)] || vocab[0]);
+  // sentence rounds: a word whose own example uses it, different each time
+  const sentencePool = Lumio.shuffle(vocab.filter(v => v.example && hasWord(v.example, v.en)));
   const prices = {};
   const priceOf = en => prices[en] || (prices[en] = [10, 15, 20, 25][Math.floor(Math.random() * 4)]);
   order.forEach(w => priceOf(w.en));
@@ -267,7 +276,7 @@ if (!vocab.length) {
   const stallGrid = $("stallGrid"), shopList = $("shopList"), receiptLines = $("receiptLines"), dialogueContext = $("dialogueContext");
 
   if (order.length > 4) document.querySelector(".sb-list").classList.add("many");
-  shopList.innerHTML = order.map((w, i) => `<li class="sb-item" id="item${i}"><span class="box">${CHECK}</span><span class="lbl" dir="rtl" lang="ar">${esc(arOf(w))}</span><span class="strike"></span></li>`).join("");
+  shopList.innerHTML = order.map((w, i) => `<li class="sb-item" id="item${i}"><span class="box">${CHECK}</span><span class="lbl" dir="rtl" lang="ar">${esc(w.ar)}</span><span class="strike"></span></li>`).join("");
 
   let currentSpeakText = "", talkRound = false;
   const playPrompt = () => talkRound ? speakLine(currentSpeakText, $("hearBtn")) : LP.say(currentSpeakText, $("hearBtn"));
@@ -280,6 +289,9 @@ if (!vocab.length) {
     if (PLAN[r] === "dialogue") {
       await LP.banner("What's next?", "Round " + (r + 1) + " of " + ROUNDS);
       drawDialogueRound();
+    } else if (PLAN[r] === "sentence" && sentencePool.length) {
+      await LP.banner("Text back!", "Round " + (r + 1) + " of " + ROUNDS);
+      drawSentenceRound(sentencePool.shift());
     } else {
       await LP.banner("Shop!", "Round " + (r + 1) + " of " + ROUNDS);
       await drawShopRound();
@@ -303,7 +315,7 @@ if (!vocab.length) {
     }
     stallGrid.className = "lp-cards sb-cards " + (opts.length >= 4 ? "c4" : opts.length === 3 ? "c3 wrap2" : "c2");
     const cards = Lumio.shuffle(opts).map(o => {
-      const c = LP.picCard(o.en, { img: picOf(o.en) });
+      const c = LP.picCard(o.en, { img: picOf(o) });
       c.dataset.key = o.en;
       c.insertAdjacentHTML("afterbegin", `<span class="sb-tag"><span class="coin"></span>${priceOf(o.en)}</span>`);
       c.onclick = () => choose(c, target.en, true, k);
@@ -320,20 +332,35 @@ if (!vocab.length) {
   // Dialogue round: shows the first two lines of this lesson's real
   // conversation and asks what comes next -- the correct third line vs.
   // two distractor lines drawn from other already-taught lessons' dialogues.
+  const omarHead = `<span class="who"><img alt="" src="${LP.char("omar-teen", "happy")}" style="height:385%;top:4%;left:-29%"></span>`;
+  const lineHtml = (who, html, id) => who === "you"
+    ? `<div class="sb-line you${id ? " q" : ""}"${id ? ` id="${id}"` : ""}><span class="who you">YOU</span><div class="b"><small>You</small>${html}</div></div>`
+    : `<div class="sb-line${id ? " q" : ""}"${id ? ` id="${id}"` : ""}>${omarHead}<div class="b"><small>Omar</small>${html}</div></div>`;
   function drawDialogueRound() {
+    showChat("What comes next in the chat?",
+      lineHtml("omar", esc(myDialogue[0])) + lineHtml("you", esc(myDialogue[1])) + lineHtml("omar", "…", "dlgSlot"),
+      myDialogue[1], myDialogue[2], Lumio.shuffle(dlgDistractors).slice(0, 2));
+  }
+  // Sentence round (from this lesson's own example sentences): Omar asks for a sentence about a word
+  // given in Arabic; the right reply is that word's example sentence, the others are examples of other words.
+  function drawSentenceRound(target) {
+    const wrong = [];
+    for (const v of Lumio.shuffle(vocab.filter(v => v.en !== target.en && v.example && v.example !== target.example))) {
+      if (wrong.length >= 2) break;
+      if (!clash(v, target) && !hasWord(v.example, target.en) && !wrong.some(w => clash(w, v))) wrong.push(v);
+    }
+    showChat("Which sentence fits the chat?",
+      lineHtml("omar", `Text me a sentence about <b class="ar" dir="rtl" lang="ar" style="font-family:Tajawal,var(--lp-body);color:#FFD666">«${esc(target.ar)}»</b> 👇`) + lineHtml("you", "…", "dlgSlot"),
+      "Which sentence fits the chat?", target.example, wrong.map(v => v.example));
+  }
+  function showChat(prompt, html, speak, correct, wrongLines) {
     document.querySelectorAll(".sb-item").forEach(li => li.classList.remove("now"));
-    $("promptText").textContent = "What comes next in the chat?";
+    $("promptText").textContent = prompt;
     stallGrid.hidden = true; dialogueContext.hidden = false; talkRound = true;
     document.querySelector(".sb").classList.add("talk");
-    const omarHead = `<span class="who"><img alt="" src="${LP.char("omar-teen", "happy")}" style="height:385%;top:4%;left:-29%"></span>`;
-    dialogueContext.innerHTML = `
-      <div class="sb-line">${omarHead}<div class="b"><small>Omar</small>${esc(myDialogue[0])}</div></div>
-      <div class="sb-line you"><span class="who you">YOU</span><div class="b"><small>You</small>${esc(myDialogue[1])}</div></div>
-      <div class="sb-line q" id="dlgSlot">${omarHead}<div class="b"><small>Omar</small>…</div></div>
-      <div class="sb-opts" id="dlgOpts"></div>`;
-    currentSpeakText = myDialogue[1];
-    const correct = myDialogue[2];
-    const opts = Lumio.shuffle([correct, ...Lumio.shuffle(dlgDistractors).slice(0, 2)]);
+    dialogueContext.innerHTML = html + `<div class="sb-opts" id="dlgOpts"></div>`;
+    currentSpeakText = speak;
+    const opts = Lumio.shuffle([correct, ...wrongLines]);
     const wrap = $("dlgOpts");
     const btns = opts.map(o => { const b = document.createElement("button"); b.type = "button"; b.className = "lp-word"; b.dataset.key = o; b.textContent = o; b.onclick = () => choose(b, correct, false); wrap.appendChild(b); return b; });
     omar.set("think");
@@ -375,7 +402,7 @@ if (!vocab.length) {
       card.classList.add("good");
       const star = LP.good(card);
       // Omar's next line lands in the chat
-      const slot = $("dlgSlot"); slot.classList.remove("q"); slot.querySelector(".b").innerHTML = `<small>Omar</small>${esc(targetKey)}`;
+      const slot = $("dlgSlot"); slot.classList.remove("q"); const sm = slot.querySelector("small").outerHTML; slot.querySelector(".b").innerHTML = `${sm}${esc(targetKey)}`;
       if (G && !RM) G.fromTo(slot, { scale: .5, opacity: 0 }, { scale: 1, opacity: 1, duration: .5, ease: "back.out(2.2)", transformOrigin: "0% 100%" });
       LP.sfx("pop"); speakLine(targetKey);
       await star; await LP.wait(900);
@@ -421,7 +448,7 @@ if (!vocab.length) {
     const li = $("item" + k); if (!li) return;
     li.classList.remove("now"); li.classList.add("bought");
     const w = order[k];
-    li.querySelector(".lbl").innerHTML = `<span class="en" dir="ltr">${esc(en)}</span> — ${esc(arOf(w))}`;
+    li.querySelector(".lbl").innerHTML = `<span class="en" dir="ltr">${esc(en)}</span> — ${esc(w.ar)}`;
     if (G && !RM) {
       G.fromTo(li.querySelector("path"), { strokeDashoffset: 30 }, { strokeDashoffset: 0, duration: .35, ease: "power2.out" });
       G.fromTo(li.querySelector(".strike"), { scaleX: 0 }, { scaleX: 1, duration: .4, delay: .2, ease: "power2.out" });

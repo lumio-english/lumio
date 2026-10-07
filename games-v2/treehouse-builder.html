@@ -54,6 +54,7 @@
   .th-cards.c2{max-width:440px}
   .th-cards .lp-card .lbl{font-size:clamp(15px,4vw,20px);overflow-wrap:anywhere}
   .lp-card .pic img{border-radius:12px}
+  .th-cards .lp-card.long .lbl{font-size:clamp(12.5px,3.3vw,17px);overflow-wrap:normal;word-break:normal}
   /* a couple of drawings sit small inside a big empty canvas: show them at the same size as the rest */
   .lp-card[data-word="ant"] .pic img{transform:scale(1.35)}
   .lp-card[data-word="hamster"] .pic img{transform:scale(1.22) translateY(-6%)}
@@ -224,12 +225,15 @@ const phonicsPool = eligiblePhonicsWords(num);
 const mentions = (sentence, w) => new RegExp("\\b" + w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(s|es)?\\b", "i").test(sentence || "");
 const SAME_PICTURE = [["big", "elephant"], ["small", "mouse"], ["pet", "dog"], ["age", "years old", "birthday"]];
 const samePicture = (a, b) => SAME_PICTURE.some(g => g.includes(a.toLowerCase()) && g.includes(b.toLowerCase()));
+const imgKey = v => String(v.image || v.en).toLowerCase().replace(/'/g, "").replace(/ /g, "-");   // the data's own picture (e.g. "fish" -> fish-food in L1 lesson 8)
+// two options may not share a picture file or the same Arabic meaning (fine / okay)
+const clash = (a, b) => imgKey(a) === imgKey(b) || (a.ar && a.ar === b.ar) || samePicture(a.en, b.en) || mentions(a.en, b.en) || mentions(b.en, a.en);
 function pickDistractors(target, n) {
   const others = Lumio.shuffle(vocab.filter(v => v.en !== target.en));
   const say = target.example || target.en;
-  const safe = others.filter(v => !mentions(say, v.en) && !mentions(v.en, target.en) && !mentions(target.en, v.en) && !samePicture(v.en, target.en));
-  const out = safe.slice(0, n);
-  if (out.length < Math.min(n, 2)) others.forEach(v => { if (out.length < n && !out.includes(v) && !mentions(say, v.en)) out.push(v); });
+  const out = [];
+  others.forEach(v => { if (out.length < n && !mentions(say, v.en) && ![target, ...out].some(o => clash(o, v))) out.push(v); });
+  if (out.length < Math.min(n, 2)) others.forEach(v => { if (out.length < n && !out.includes(v) && !mentions(say, v.en) && imgKey(v) !== imgKey(target)) out.push(v); });
   return out;
 }
 
@@ -361,7 +365,7 @@ if (!vocab.length) {
     LP.round(r);
     lumi.set("megaphone");
     optGrid.innerHTML = "";
-    let words;
+    let words, pics = {};
     if (plan[r] === "phonics") {
       const target = nextPhonicsTarget();
       const distractorPool = Lumio.shuffle(phonicsPool.filter(w => w !== target));
@@ -372,12 +376,12 @@ if (!vocab.length) {
       const opts = Lumio.shuffle([target, ...pickDistractors(target, 2)]);
       currentTargetWord = target.en;
       currentSpeakText = target.example || target.en;
-      words = opts.map(o => o.en);
+      words = opts.map(o => o.en); pics = Object.fromEntries(opts.map(o => [o.en, LP.vocabImg(imgKey(o))]));
     }
     window.__lastTarget = currentTargetWord; // exposed for automated QA only
     await LP.banner(r === ROUNDS - 1 ? "Last piece!" : "Listen!", "Round " + (r + 1) + " of " + ROUNDS);
     optGrid.className = "lp-cards th-cards " + (words.length === 2 ? "c2" : "c3");
-    const cards = words.map(w => { const c = LP.picCard(w); c.onclick = () => choose(c); optGrid.appendChild(c); return c; });
+    const cards = words.map(w => { const c = LP.picCard(w, { img: pics[w] || LP.vocabImg(w) }); if (w.length > 9) c.classList.add("long"); c.onclick = () => choose(c); optGrid.appendChild(c); return c; });
     if (G && !RM) G.fromTo("#promptCard", { scale: .6, opacity: 0 }, { scale: 1, opacity: 1, duration: .5, ease: "back.out(2)" });
     lumi.nod();
     await LP.deal(cards, site);

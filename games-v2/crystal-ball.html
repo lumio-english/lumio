@@ -12,7 +12,7 @@
   /* Crystal Ball: a teen room at night. A glowing ball swirls with nebula light, a word
      appears inside, and every right answer rises out of the ball as a vision that floats
      up into the row of visions at the top. */
-  .cb{position:relative;width:100%;max-width:1220px;display:flex;flex-direction:column;align-items:center;gap:10px}
+  .cb{position:relative;width:100%;max-width:1220px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:calc(100dvh - 170px)}
   .cb-shelf{display:flex;gap:10px;justify-content:center;padding:6px 12px;border-radius:999px;background:rgba(14,10,40,.45);border:1px solid rgba(190,170,255,.18);
     -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
   .cb-slot{position:relative;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;border:1.5px dashed rgba(200,185,255,.35);color:rgba(220,210,255,.4)}
@@ -68,7 +68,7 @@
   .cb-orb{position:fixed;left:0;top:0;width:118px;height:118px;margin:-59px 0 0 -59px;border-radius:50%;z-index:200;pointer-events:none;display:grid;place-items:center;
     background:radial-gradient(circle at 40% 32%,#fff 0,#F3EEFF 45%,#C9B6FF 78%,rgba(124,92,255,.9));box-shadow:0 0 30px 10px rgba(170,140,255,.7),0 0 80px 20px rgba(124,92,255,.35)}
   .cb-orb .pv{position:absolute;inset:10px;border-radius:50%;overflow:hidden}
-  .cb-orb .w{font-family:var(--lp-display);font-weight:800;color:#4C1D95;text-align:center;line-height:1.05;padding:0 12px;font-size:18px;word-break:keep-all}
+  .cb-orb .w{font-family:var(--lp-display);font-weight:800;color:#4C1D95;text-align:center;line-height:1.05;padding:0 10px;font-size:22px;word-break:keep-all}
   .cb-orb svg{width:46%;color:#6D28D9}
   .cb-power{background:linear-gradient(135deg,#A78BFA,#7C3AED)!important;color:#fff!important;display:none}
   .cb-power svg{width:18px;height:18px}
@@ -263,7 +263,10 @@ if (!vocab.length) {
   }
 
   let currentSpeak = "", speakIsLine = false;
-  const playPrompt = () => speakIsLine ? sayLine(currentSpeak, hearBtn) : LP.say(currentSpeak, hearBtn);
+  const playPrompt = () => { if (!currentSpeak) return; speakIsLine ? sayLine(currentSpeak, hearBtn) : LP.say(currentSpeak, hearBtn); };
+  // shrink an answer card's text until the longest word fits (never clip "counterargument")
+  function fitBtn(b) { const t = b.querySelector("span") || b; t.style.fontSize = ""; let f = parseFloat(getComputedStyle(t).fontSize); while (b.scrollWidth > b.clientWidth + 1 && f > 11) { f -= 1; t.style.fontSize = f + "px"; } }
+  addEventListener("resize", () => [...opts.querySelectorAll("button")].forEach(fitBtn));
 
   // fit the text inside the ball (shrink, never break a word)
   function fitBall() {
@@ -309,7 +312,7 @@ if (!vocab.length) {
       if (!others.length) showCorrect = true;
       const claim = showCorrect ? target.en : others[0].en;
       showInBall(`<span>"<span class="ar" dir="rtl" lang="ar">${LP.esc(target.ar)}</span>" = "${LP.esc(claim)}" ?</span>`);
-      currentSpeak = target.en; speakIsLine = false;
+      currentSpeak = ""; speakIsLine = false;   // never say the answer before it is given
       const y = makeCard("true", LP.ICON.check + "<span>Correct</span>", "yes");
       const n = makeCard("false", '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/></svg><span>Wrong</span>', "no");
       cards = [y, n]; cards.forEach(b => { b.onclick = () => verify(b, showCorrect, target); opts.appendChild(b); });
@@ -318,7 +321,7 @@ if (!vocab.length) {
       seer.set("look-right");
       opts.classList.add("read");
       showInBall(`<span class="ar" dir="rtl" lang="ar">${LP.esc(target.ar)}</span>`);
-      currentSpeak = target.en; speakIsLine = false;
+      currentSpeak = ""; speakIsLine = false;
       const distractorPool = Lumio.shuffle(vocab.filter(distinctFrom(target)));
       const numOptions = Math.min(3, vocab.length);
       const list = Lumio.shuffle([target, ...distractorPool.slice(0, numOptions - 1)]);
@@ -326,6 +329,8 @@ if (!vocab.length) {
       answer = target.en;
     }
     seer.nod();
+    hearBtn.style.visibility = currentSpeak ? "" : "hidden";
+    cards.forEach(fitBtn);
     await LP.deal(cards, ballWrap);
     const last = opts.lastElementChild;
     if (last) { const b = last.getBoundingClientRect().bottom, lim = innerHeight - 74; if (b > lim) window.scrollBy({ top: b - lim, behavior: RM ? "auto" : "smooth" }); }
@@ -365,7 +370,7 @@ if (!vocab.length) {
       const b = LP.center(ballWrap);
       const parts = [...dialogueContext.children];
       G.set(dialogueContext, { opacity: 1 });
-      await new Promise(res => G.timeline({ onComplete: res }).fromTo(parts, { opacity: 0, y: (i, el) => b.y - LP.center(el).y, scale: .4, filter: "blur(12px)" },
+      await Promise.race([LP.wait(3500), new Promise(res => G.timeline({ onComplete: res }).fromTo(parts, { opacity: 0, y: (i, el) => b.y - LP.center(el).y, scale: .4, filter: "blur(12px)" },
         { opacity: 1, y: 0, scale: 1, filter: "blur(0px)", duration: .9, ease: "power2.out", stagger: .35 }));
     }
     return { cards, answer: correct };
@@ -374,21 +379,22 @@ if (!vocab.length) {
   // a vision rises out of the ball and floats up into its place on the shelf
   async function riseVision(idx, item, ok) {
     const slot = $(`slot${idx}`);
+    const pk = item.image || item.en;
     const content = item.dialogue ? '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 4h16a2 2 0 012 2v9a2 2 0 01-2 2h-9l-5 4v-4H4a2 2 0 01-2-2V6a2 2 0 012-2z"/></svg>'
-      : (picImg(item.en) ? `<div class="pv pf">${picImg(item.en)}</div>` : `<span class="w">${LP.esc(item.en)}</span>`);
+      : (picImg(pk) ? `<div class="pv pf">${picImg(pk)}</div>` : `<span class="w">${LP.esc(item.en)}</span>`);
     const fill = () => {
       slot.classList.add("on"); if (!ok) slot.classList.add("miss");
-      slot.innerHTML = ok && !item.dialogue && picImg(item.en) ? `<div class="pv pf">${picImg(item.en)}</div>` : SPARK;
+      slot.innerHTML = ok && !item.dialogue && picImg(pk) ? `<div class="pv pf">${picImg(pk)}</div>` : SPARK;
       slot.title = item.dialogue ? "vision" : item.en;
       if (G && !RM) G.fromTo(slot, { scale: 1.6 }, { scale: 1, duration: .6, ease: "elastic.out(1,.4)" });
     };
     if (!ok || !G || RM) { fill(); return; }
     const orb = document.createElement("div"); orb.className = "cb-orb"; orb.innerHTML = content; document.body.appendChild(orb);
-    const w = orb.querySelector(".w"); if (w) { let f = 18; while ((w.scrollWidth > 100 || w.scrollHeight > 90) && f > 10) { f--; w.style.fontSize = f + "px"; } }
+    const w = orb.querySelector(".w"); if (w) { let f = 22; while ((w.scrollWidth > 98 || w.scrollHeight > 92) && f > 10) { f--; w.style.fontSize = f + "px"; } }
     const a = LP.center(ballWrap.querySelector(".cb-ball")), s = LP.center(slot);
     const upY = Math.max(130, a.y - 140);
     ball.flash("255,240,255", 5); LP.sfx("rise");
-    await new Promise(res => G.timeline({ onComplete: res })
+    await Promise.race([LP.wait(3500), new Promise(res => G.timeline({ onComplete: res })
       .fromTo(orb, { x: a.x, y: a.y, scale: .15, opacity: 0 }, { x: a.x + 10, y: upY, scale: 1, opacity: 1, duration: .8, ease: "power2.out" })
       .to(orb, { x: a.x - 8, duration: .35, ease: "sine.inOut" })
       .to(orb, { x: s.x, y: s.y, scale: (slot.offsetWidth / 118), duration: .6, ease: "power3.in" }));
@@ -404,12 +410,13 @@ if (!vocab.length) {
     [...opts.children].forEach(c => c.disabled = true);
     seer.cheer("celebrate", false);
     LP.fill(r);
+    if (item.en) { currentSpeak = item.en; speakIsLine = false; hearBtn.style.visibility = ""; setTimeout(() => LP.say(item.en, hearBtn), 250); }   // the answer is heard once it has been read
     const star = LP.good(card);
     await LP.wait(300);
     LP.clear(opts.children, card);
     if (G && !RM) G.to(ballText, { opacity: 0, scale: 1.4, filter: "blur(8px)", duration: .4 });
     await riseVision(r, item, true);
-    await star;
+    await Promise.race([star, LP.wait(1600)]);   // never hang a round on an animation
     next(400);
   }
   function miss(card, back) {
@@ -439,7 +446,7 @@ if (!vocab.length) {
     LP.answer = null;
     [...opts.children].forEach(b => b.disabled = true);
     if (ok) { btn.classList.add("chosen"); solved(btn, target); return; }
-    miss(btn, "think");
+    miss(btn, "think"); currentSpeak = target.en; speakIsLine = false; hearBtn.style.visibility = ""; setTimeout(() => LP.say(target.en, hearBtn), 400);
     [...opts.children].forEach(b => { if (b !== btn) b.classList.add("dim"); });
     truth.innerHTML = `"<span class="ar" dir="rtl" lang="ar">${LP.esc(target.ar)}</span>" = ${LP.esc(target.en)}`;
     LP.fill(r);

@@ -42,7 +42,7 @@
       radial-gradient(circle at 50% 50%,rgba(255,255,255,.42) 0 52%,rgba(160,225,255,.45) 66%,rgba(255,170,235,.5) 79%,rgba(255,240,170,.55) 89%,rgba(255,255,255,.9) 100%);
     box-shadow:inset 0 -8px 18px rgba(80,160,255,.25),inset 0 8px 14px rgba(255,255,255,.5),0 14px 26px -12px rgba(20,60,120,.45);
     -webkit-backdrop-filter:blur(3px) saturate(1.3);backdrop-filter:blur(3px) saturate(1.3);touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-  .wp-bub .t{display:block;max-width:80%;font-family:var(--lp-display);font-weight:800;color:#12355B;line-height:1.02;text-align:center;overflow-wrap:normal;word-break:normal;
+  .wp-bub .t{display:block;width:80%;min-width:0;max-width:80%;hyphens:none;font-family:var(--lp-display);font-weight:800;color:#12355B;line-height:1.02;text-align:center;overflow-wrap:normal;word-break:normal;
     text-shadow:0 1px 0 rgba(255,255,255,.9),0 0 12px rgba(255,255,255,.9);pointer-events:none}
   html[data-lp="teen"] .wp-bub{background:
       radial-gradient(circle at 30% 24%,rgba(255,255,255,.85) 0 5%,rgba(255,255,255,0) 6%),
@@ -126,6 +126,20 @@ const picSrc = w => `../assets/vocab/${w.pic || sdVocabFile(w)}.png`;
 // a failed picture (the student.html fallback) but without asking the server for a file that isn't there.
 const NO_PIC = new Set("accurately ago anniversary apologized as-soon-as at-last attend backup-plan board-game boarding-pass body-language booking brunch by-the-time cause certain chaperone conclusion counterargument credits cuisine daydreaming delay deliver discover distraction dropped durable earlier effort eye-contact forecast gently giggling guest-list headcount heritage hospitality instructions internship itinerary label landmark lost-and-found mandatory milestone motivation noisy panic peaceful photo-album playlist plot-twist privacy productive progress queue recently result revision road-trip scene scholarship shelter statistic step-by-step suddenly technology the-best therefore thrilled thunder timeline timer tone turning-point unlikely whispering".split(" "));
 const hasPic = w => !w.em && !NO_PIC.has(w.pic || sdVocabFile(w));
+// Content fix: some lessons give two words the same Arabic (fine/okay, boring/dull, line/queue ...) or the same
+// picture. Picking both into one game made two right answers (Word Pop) or look-alike non-pairs (Memory).
+const picKey = w => w.em ? "em:" + w.em : hasPic(w) ? "pic:" + (w.pic || sdVocabFile(w)) : "";
+const normAr = t => String(t).replace(/[\u064B-\u0652\u0640]/g, "").replace(/[أإآ]/g, "ا").replace(/ى/g, "ي").replace(/ة/g, "ه").replace(/\s+/g, " ").trim();
+function distinctWords(list, n) {
+  const out = [], seen = new Set();
+  for (const w of list) {
+    const keys = ["en:" + w.en.toLowerCase().trim(), picKey(w), w.ar ? "ar:" + normAr(w.ar) : ""].filter(Boolean);
+    if (keys.some(k => seen.has(k))) continue;
+    keys.forEach(k => seen.add(k)); out.push(w);
+    if (out.length >= n) break;
+  }
+  return out;
+}
 let gamesLessonNum = null, gamesUsingRealVocab = false;
 function shuffled(arr) { return [...arr].sort(() => Math.random() - 0.5); }
 function pickWords(n, source) { const bank = source || WORD_BANK; return shuffled(bank).slice(0, Math.min(n, bank.length)); }
@@ -308,7 +322,7 @@ function hearts(lost) {
 function resetHud() { LP.setStars(0); document.querySelectorAll(".lp-prog i b").forEach(b => { if (G) G.set(b, { scaleX: 0 }); else b.style.transform = "scaleX(0)"; }); }
 
 function startWordPop(source) {
-  wpState = { round: 0, score: 0, lives: 3, total: WP_ROUNDS, source };
+  wpState = { round: 0, score: 0, lives: 3, total: WP_ROUNDS, source, queue: [], lastWord: "" };
   bubs.forEach(b => b.el.remove()); bubs = [];
   resetHud(); hearts();
   nextWpRound();
@@ -317,8 +331,13 @@ async function nextWpRound() {
   LP.answer = null;
   if (wpState.round >= wpState.total || wpState.lives <= 0) { endWordPop(); return; }
   wpState.round++; wpState.locked = true;
-  const words = pickWords(4, wpState.source);
-  const correct = words[0];
+  // Content fix: targets come from a shuffled queue (no word is asked twice until all have been asked),
+  // and the other 3 bubbles never share the target's picture or Arabic (no two right answers).
+  const bank = wpState.source || WORD_BANK;
+  if (!wpState.queue.length) wpState.queue = shuffled(bank).filter(w => w.en !== wpState.lastWord);
+  const correct = wpState.queue.shift() || bank[0];
+  wpState.lastWord = correct.en;
+  const words = distinctWords([correct, ...shuffled(bank.filter(w => w !== correct))], 4);
   wpState.correctWord = correct.en;
   LP.round(wpState.round - 1);
   host.set(CH.think);
