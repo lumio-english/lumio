@@ -203,7 +203,8 @@
   ];
   function decode(s) { var t = document.createElement("textarea"); t.innerHTML = s; return t.value; }
   function titleOfHtml(html) {
-    var m = /class="pagetitle"[^>]*>([^<]+)</.exec(html);
+    var m = /class="pagetitle"[^>]*>([^<]+)</.exec(html) || /class="pagetitle v3-ribbon">([\s\S]*?)<\/div>/.exec(html);
+    if (m && /</.test(m[1])) m = [m[0], m[1].replace(/<[^>]*>/g, "")];
     if (!m) m = />\s*([A-Z][^<>]{1,40}?\s(?:&middot;|·|&bull;|•)\s[^<>]{1,50}?)\s*</.exec(html);
     return m ? decode(m[1]).replace(/\s+/g, " ").trim() : "";
   }

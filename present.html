@@ -179,7 +179,7 @@ function loadSlide(n) {
 async function findGameStartSlide(total) {
   const key = `lumio_game_start${DECK}_${level}_${nn}_${total}`;
   try { const c = sessionStorage.getItem(key); if (c) return Number(c); } catch (e) {}
-  const yourTurnRx = />\s*Your Turn\s*(?:&bull;|&middot;|·|•)/;
+  const yourTurnRx = />\s*Your Turn\s*(?:<\/b>\s*)?(?:&bull;|&middot;|·|•)/;
   const BATCH = 8;
   for (let hi = total; hi >= 1; hi -= BATCH) {
     const nums = [];
