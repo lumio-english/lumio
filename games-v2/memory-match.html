@@ -2,422 +2,135 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Memory Match — Lumio English</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@700;800&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Bricolage+Grotesque:wght@700;800&family=Nunito:wght@700;800&family=Tajawal:wght@700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/brand.css">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="kit/play.css">
 <style>
-/* ---------- v2 motion kit (shared look; inlined per page so each file stands alone) ---------- */
-:root{
-  --o:#F97316;--o2:#C2530A;--o3:#FB923C;--sun:#FFC93C;--sun2:#FFE7A3;--sunS:#FFF3D6;
-  --ink:#2A2118;--cocoa:#43301F;--mu:#8A7160;--ok:#22C55E;--ok2:#15803D;--okS:#EAFBEF;
-  --bad:#F43F5E;--badS:#FDE8EC;--teal:#0D9488;--tealS:#E6FAF7;--sky:#0EA5E9;--pu:#8B5CF6;
-  --sh1:0 1px 2px rgba(67,48,31,.06),0 4px 12px rgba(67,48,31,.08);
-  --sh2:0 2px 4px rgba(67,48,31,.06),0 14px 34px rgba(67,48,31,.14);
-  --sh3:0 6px 14px rgba(67,48,31,.10),0 30px 70px rgba(249,115,22,.24);
-  --fd:'Baloo 2','Nunito',system-ui,sans-serif;--fb:'Nunito',system-ui,sans-serif;
-}
-*{box-sizing:border-box}
-html,body{margin:0;padding:0}
-html{overflow-x:hidden}
-body{font-family:var(--fb);color:var(--ink);overflow-x:hidden;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
-button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
-img{-webkit-user-drag:none;user-select:none}
-:focus-visible{outline:3px solid var(--o);outline-offset:3px;border-radius:12px}
+  /* Memory Match: Lumi deals a deck of Lumio cards onto a play mat. Cards flip in real 3D; a matched
+     picture + word pair flies together, bursts, and lands on Lumi's pile. */
+  .mm{width:100%;max-width:1220px;display:grid;grid-template-columns:1fr;gap:8px;justify-items:center;align-content:start}
+  .mm-side{width:100%;max-width:420px;display:flex;align-items:flex-end;gap:8px;min-height:118px}
+  .mm-host{position:relative;flex:none;height:118px;width:96px;display:flex;justify-content:center;align-items:flex-end}
+  .mm-host .lp-actor{height:100%}
+  .mm-say{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding-bottom:14px}
+  .mm-say .lp-bubble{padding:8px 14px 8px 8px;gap:8px}
+  .mm-say .lp-bubble .lp-speak{width:42px;height:42px}
+  .mm-say .lp-bubble .lp-speak svg{width:20px;height:20px}
+  .mm-say .lp-bubble .txt{font-size:clamp(17px,4.4vw,22px)}
+  .mm-say .lp-bubble .tail{left:-7px;bottom:16px}
+  .mm-tray{position:relative;flex:none;width:74px;height:92px;margin-bottom:12px}
+  .mm-tray .lbl{position:absolute;left:0;right:0;bottom:-20px;text-align:center;font-family:var(--lp-display);font-weight:800;font-size:13px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.6);white-space:nowrap}
+  .mm-mini{position:absolute;inset:0;border-radius:12px;overflow:hidden}
 
-/* HUD */
-.v2-hud{position:relative;z-index:30;display:flex;align-items:center;gap:8px;padding:12px 16px;max-width:1120px;margin:0 auto}
-.v2-exit{min-height:44px;min-width:44px;padding:0 16px;border-radius:999px;background:#fff;border:0;box-shadow:var(--sh1);
-  font-family:var(--fd);font-weight:800;font-size:1rem;color:var(--cocoa);text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:none}
-.v2-exit svg{width:18px;height:18px}
-.v2-pill{min-height:44px;padding:0 14px;border-radius:999px;background:#fff;box-shadow:var(--sh1);display:inline-flex;align-items:center;gap:6px;
-  font-family:var(--fd);font-weight:800;font-size:1.05rem;color:var(--cocoa);white-space:nowrap;flex:none}
-.v2-pill svg{width:24px;height:24px;flex:none}
-.v2-prog{position:relative;height:14px;border-radius:999px;background:rgba(67,48,31,.09);overflow:hidden;flex:1;min-width:40px;box-shadow:inset 0 1px 2px rgba(67,48,31,.08)}
-.v2-prog i{position:absolute;inset:0;border-radius:inherit;background:linear-gradient(90deg,#FFC93C,#FB923C 55%,#F97316);transform-origin:0 50%;transform:scaleX(0)}
-.v2-prog i::after{content:"";position:absolute;left:6px;right:6px;top:3px;height:3px;border-radius:9px;background:rgba(255,255,255,.55)}
+  /* play mat */
+  .mm-mat{position:relative;width:100%;max-width:min(560px,calc((100dvh - 262px) * .6 + 26px));padding:12px;border-radius:28px;
+    background:linear-gradient(180deg,rgba(255,250,240,.55),rgba(255,236,206,.42));border:2px solid rgba(255,255,255,.75);
+    box-shadow:0 30px 60px -30px rgba(60,30,5,.75),inset 0 2px 0 rgba(255,255,255,.6);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2)}
+  html[data-lp="teen"] .mm-mat{background:linear-gradient(180deg,rgba(18,22,48,.62),rgba(10,12,30,.7));border:1px solid rgba(150,160,255,.22);box-shadow:0 30px 70px -30px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.08)}
+  .mm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 
-/* mascot */
-.v2-mascot{position:relative;display:inline-block;transform-origin:50% 100%}
-.v2-mascot img{display:block;width:100%;height:auto;transform-origin:50% 100%;filter:drop-shadow(0 10px 14px rgba(67,48,31,.18))}
+  /* the 3D card */
+  .mm-card{position:relative;border:0;padding:0;background:none;cursor:pointer;aspect-ratio:4/5;perspective:1000px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;min-height:44px}
+  .mm-card[disabled]{cursor:default}
+  .mm-card::before{content:"";position:absolute;inset:4px;border-radius:16px;border:2.5px dashed rgba(255,255,255,.75);opacity:0;transition:opacity .4s}
+  html[data-lp="teen"] .mm-card::before{border-color:rgba(160,170,255,.35)}
+  .mm-card.gone::before{opacity:1}
+  .mm-in{position:absolute;inset:0;transform-style:preserve-3d;will-change:transform}
+  .mm-face{position:absolute;inset:0;border-radius:18px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden}
+  .mm-front{transform:rotateY(180deg);background:#fff;box-shadow:0 5px 0 #EBD3B0,0 16px 22px -12px rgba(60,30,5,.6);display:grid;place-items:center}
+  html[data-lp="teen"] .mm-front{background:linear-gradient(180deg,#232a55,#161b3b);box-shadow:0 0 0 1px rgba(150,160,255,.3),0 18px 26px -14px rgba(0,0,0,.9)}
+  .mm-front .plate{position:absolute;inset:7px;border-radius:13px;background:radial-gradient(90% 80% at 50% 35%,#FFFDF8,#FFEFD6);display:grid;place-items:center;overflow:hidden}
+  html[data-lp="teen"] .mm-front .plate{background:radial-gradient(90% 80% at 50% 35%,#F7F8FF,#DCE2F7)}
+  .mm-front .plate img{width:84%;height:84%;object-fit:contain;filter:drop-shadow(0 5px 6px rgba(60,30,5,.2))}
+  .mm-front .emo{font-size:clamp(40px,12vw,72px);line-height:1}
+  .mm-front.word{background:linear-gradient(160deg,#FFF8EA,#FFE7C2)}
+  html[data-lp="teen"] .mm-front.word{background:linear-gradient(160deg,#2b2f66,#1a1d44)}
+  .mm-front.word::before{content:"";position:absolute;inset:7px;border-radius:13px;border:2px solid rgba(249,115,22,.25)}
+  html[data-lp="teen"] .mm-front.word::before{border-color:rgba(140,160,255,.35)}
+  .mm-wordtxt{position:relative;padding:0 10px;text-align:center;font-family:var(--lp-display);font-weight:800;color:#3B2A17;line-height:1.05;overflow-wrap:anywhere;font-size:calc(var(--k,1) * 26px)}
+  html[data-lp="teen"] .mm-wordtxt{color:#F4F6FF;text-shadow:0 0 18px rgba(130,150,255,.5)}
+  .mm-wordtxt.l2{font-size:calc(var(--k,1) * 21px)} .mm-wordtxt.l3{font-size:calc(var(--k,1) * 17px)} .mm-wordtxt.l4{font-size:calc(var(--k,1) * 14px)}
+  .mm-pip{position:absolute;width:16px;height:16px;opacity:.55}
+  .mm-pip.a{left:10px;top:10px} .mm-pip.b{right:10px;bottom:10px;transform:rotate(180deg)}
+  .mm-pip svg{width:100%;height:100%}
 
-/* flying star + effects */
-.v2-fly{position:fixed;left:0;top:0;z-index:400;width:36px;height:36px;pointer-events:none;will-change:transform}
-.v2-fly svg{width:100%;height:100%;filter:drop-shadow(0 3px 6px rgba(194,83,10,.35))}
-.v2-ring{position:absolute;inset:-4px;border-radius:inherit;pointer-events:none;border:4px solid var(--ok);opacity:0}
-.v2-dot{position:fixed;left:0;top:0;z-index:350;width:10px;height:10px;border-radius:50%;pointer-events:none;will-change:transform,opacity}
-.v2-check{position:absolute;width:56px;height:56px;pointer-events:none;z-index:4}
-.v2-check svg{width:100%;height:100%}
-.v2-bad{animation:v2Bad .45s ease}
-@keyframes v2Bad{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px) rotate(-1.5deg)}40%{transform:translateX(8px) rotate(1.5deg)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
+  /* card back: Lumio orange with a star weave and Lumi's mark */
+  .mm-back{background:
+      radial-gradient(circle at 50% 50%,rgba(255,255,255,.0) 0 38%,transparent 39%),
+      radial-gradient(rgba(255,255,255,.22) 1.6px,transparent 2px) 0 0/16px 16px,
+      linear-gradient(150deg,#FFB547 0%,#FF8A1F 45%,#F2620F 100%);
+    box-shadow:0 5px 0 #C2530A,0 16px 22px -12px rgba(120,50,0,.7);display:grid;place-items:center}
+  .mm-back::before{content:"";position:absolute;inset:6px;border-radius:13px;border:2px dashed rgba(255,255,255,.7)}
+  .mm-back::after{content:"";position:absolute;top:-40%;left:-60%;width:45%;height:180%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);transform:rotate(20deg) translateX(-120%);opacity:0}
+  .mm-card:hover .mm-back::after{opacity:1;transition:transform .7s ease,opacity .2s;transform:rotate(20deg) translateX(420%)}
+  .mm-back .seal{position:relative;width:52%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 40% 35%,#FFFDF5,#FFE6B8);display:grid;place-items:center;
+    box-shadow:0 0 0 4px rgba(255,255,255,.55),0 6px 12px -4px rgba(120,50,0,.6)}
+  .mm-back .seal img{width:82%;height:82%;object-fit:contain}
+  .mm-back .corner{position:absolute;width:15px;height:15px}
+  .mm-back .corner svg{width:100%;height:100%}
+  .mm-back .c1{left:11px;top:11px} .mm-back .c2{right:11px;top:11px} .mm-back .c3{left:11px;bottom:11px} .mm-back .c4{right:11px;bottom:11px}
+  html[data-lp="teen"] .mm-back{background:
+      repeating-linear-gradient(45deg,rgba(255,255,255,.05) 0 2px,transparent 2px 12px),
+      radial-gradient(120% 90% at 30% 10%,#5B4BFF 0%,#2B2C8F 45%,#141743 100%);
+    box-shadow:0 0 0 1px rgba(160,170,255,.4),0 0 24px -6px rgba(110,120,255,.6),0 18px 26px -14px rgba(0,0,0,.9)}
+  html[data-lp="teen"] .mm-back::before{border:1.5px solid rgba(150,200,255,.55);box-shadow:inset 0 0 14px rgba(120,160,255,.35)}
+  html[data-lp="teen"] .mm-back .seal{background:radial-gradient(circle at 40% 35%,#2a2f70,#151842);box-shadow:0 0 0 2px rgba(150,200,255,.7),0 0 22px rgba(120,160,255,.7)}
 
-/* masked letters */
-.v2-w{display:inline-block;white-space:nowrap;overflow:hidden;vertical-align:bottom;padding:.06em .02em .1em;margin:-.06em -.02em -.1em}
-.v2-ch{display:inline-block;will-change:transform}
+  .mm-card.match .mm-front{box-shadow:0 0 0 4px var(--lp-good),0 0 26px rgba(34,197,94,.65)}
+  .mm-card.miss .mm-front{box-shadow:0 0 0 4px var(--lp-bad),0 0 20px rgba(244,63,94,.45)}
+  .mm-card:focus-visible{outline:3px solid var(--lp-accent-2);outline-offset:3px;border-radius:18px}
 
-/* celebration */
-.v2-cel{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;padding:96px 16px 16px;background:rgba(43,33,24,.52)}
-.v2-cel.show{display:flex}
-.v2-cel .box{position:relative;background:#fff;border-radius:32px;padding:20px 22px 24px;max-width:430px;width:100%;text-align:center;box-shadow:var(--sh3)}
-.v2-cel .box::before{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(120% 60% at 50% 0%,#FFF3D6 0%,rgba(255,243,214,0) 60%);pointer-events:none}
-.v2-cel .v2-hero{position:relative;display:block;width:150px;height:150px;object-fit:contain;margin:-96px auto 0;filter:drop-shadow(0 14px 18px rgba(67,48,31,.25));transform-origin:50% 100%}
-.v2-cel h2{position:relative;font-family:var(--fd);font-weight:800;font-size:clamp(1.7rem,7vw,2.1rem);line-height:1.1;margin:8px 0 2px;color:var(--cocoa);letter-spacing:-.01em}
-.v2-cel .sub{position:relative;font-weight:800;font-size:1.15rem;margin:8px 0 4px;color:var(--ink)}
-.v2-cel .sub b,.v2-n{font-family:var(--fd);color:var(--o2);font-size:1.25em}
-.v2-stars{position:relative;display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin:12px auto 6px;max-width:340px}
-.v2-stars span{width:52px;height:52px;display:inline-block}
-.v2-stars.many span{width:40px;height:40px}
-.v2-stars svg{width:100%;height:100%;filter:drop-shadow(0 4px 6px rgba(194,83,10,.25))}
-.v2-big{position:relative;display:flex;align-items:center;justify-content:center;gap:8px;margin:12px 0 4px;font-family:var(--fd);font-weight:800;font-size:3rem;line-height:1;color:var(--o2)}
-.v2-big svg{width:62px;height:62px}
-.v2-btns{position:relative;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:16px}
-.v2-btn{min-height:52px;padding:0 24px;border-radius:999px;border:0;font-family:var(--fd);font-weight:800;font-size:1.08rem;
-  display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;cursor:pointer}
-.v2-btn.pri{background:linear-gradient(135deg,#FB923C,#F97316 55%,#F59E0B);color:#fff;box-shadow:0 4px 0 #C2530A,0 12px 24px rgba(249,115,22,.32)}
-.v2-btn.sec{background:#E6FAF7;color:#0F766E;box-shadow:0 4px 0 #9FE3D9}
-.v2-conf{position:fixed;left:50%;top:46%;width:min(118vw,680px);aspect-ratio:1/1;transform:translate(-50%,-50%);z-index:320;pointer-events:none}
-.v2-xp{position:relative;margin:14px 0 6px}
-.v2-xp .val{font-family:var(--fd);font-weight:800;font-size:2rem;color:var(--o)}
-.v2-xp .bar{width:200px;height:12px;border-radius:999px;background:rgba(249,115,22,.15);margin:6px auto 0;overflow:hidden}
-.v2-xp .bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#F97316,#FFC93C);transform-origin:0 50%}
+  .mm-moves .k{opacity:.7;font-size:14px}
+  @media (max-width:420px){.mm-moves .k{display:none}}
 
-@media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
-}
-.v2-sp{flex:1}
-
-  /* ---------- Hub mini games: shared page look ---------- */
-  body { min-height: 100vh; min-height: 100dvh; position: relative;
-    background: radial-gradient(circle at 1px 1px, rgba(67,48,31,.06) 1.2px, transparent 1.6px) 0 0/22px 22px, linear-gradient(170deg, #FFF1DD 0%, #FFF8EC 45%, #F1FBF7 100%); }
-  .deco { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-  .deco i { position: absolute; border-radius: 50%; opacity: .5; }
-  .deco i:nth-child(1) { width: 300px; height: 300px; left: -110px; top: 90px; background: radial-gradient(circle, #FFD7A8, rgba(255,215,168,0) 70%); }
-  .deco i:nth-child(2) { width: 360px; height: 360px; right: -140px; bottom: -80px; background: radial-gradient(circle, #C7F0E8, rgba(199,240,232,0) 70%); }
-  .deco i:nth-child(3) { width: 200px; height: 200px; right: 22%; top: -70px; background: radial-gradient(circle, #E3DBFF, rgba(227,219,255,0) 70%); }
-
-  .wrapM { position: relative; z-index: 2; max-width: 640px; margin: 0 auto; padding: 0 16px 28px;
-    display: flex; flex-direction: column; justify-content: center; min-height: calc(100vh - 68px); min-height: calc(100dvh - 68px); }
-  .wrapM > * { width: 100%; }
-  .titleRow { display: flex; align-items: flex-end; justify-content: center; gap: 10px; margin: 0 0 10px; }
-  .titleRow .v2-mascot { width: 78px; flex: none; }
-  .titleRow h1 { font-family: var(--fd); font-weight: 800; color: var(--cocoa); font-size: clamp(1.7rem, 6vw, 2.4rem); line-height: 1; margin: 0 0 10px; letter-spacing: -.01em; }
-  .panel { position: relative; background: #fff; border-radius: 30px; padding: 18px; box-shadow: var(--sh2); }
-  .hudRow { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 14px; }
-  .chip { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border-radius: 999px; background: #FFF6EA;
-    font-family: var(--fd); font-weight: 800; color: var(--cocoa); font-size: 1rem; white-space: nowrap; }
-  .chip svg { width: 22px; height: 22px; }
-  .target { position: relative; background: linear-gradient(160deg, #FFF8EC, #FFF1DD); border-radius: 24px; padding: 14px; text-align: center; margin-bottom: 16px; font-weight: 800; overflow: hidden; }
-  .target .em { font-size: 3.4rem; line-height: 1; min-height: 110px; display: flex; align-items: center; justify-content: center; }
-  .target .em .sd-word-pic { width: 112px; height: 112px; object-fit: contain; display: block; filter: drop-shadow(0 8px 10px rgba(67,48,31,.15)); }
-  .target .ar { font-size: 1.25rem; color: var(--mu); direction: rtl; margin-top: 4px; font-family: 'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif; }
-  .v2-note { position: relative; font-weight: 800; font-size: .9rem; color: var(--mu); margin: 8px 0 0; }
-  .v2-note.ok { color: #0F766E; }
-  .v2-cel .moves { position: relative; font-weight: 800; color: var(--mu); margin: 6px 0 0; }
-  .sd-word-pic { display: block; width: 78%; height: 78%; object-fit: contain; margin: auto; }
-
-  /* teens (L3-L6): same light orange/white skin as their dashboard, grown-up type, calmer surfaces */
-  body.teen { background: linear-gradient(180deg, #FFFFFF 0%, #FBF7F2 100%); }
-  body.teen .deco i { opacity: .28; }
-  body.teen .titleRow h1, body.teen .v2-cel h2 { font-family: 'Bricolage Grotesque', var(--fd); letter-spacing: -.02em; }
-  body.teen .panel { border-radius: 22px; box-shadow: 0 1px 0 rgba(67,48,31,.06), 0 18px 40px rgba(67,48,31,.08); border: 1px solid #F1E8DC; }
-  body.teen .target { background: #FBF7F2; border-radius: 18px; }
-
-  @media (min-width: 760px) {
-    .wrapM { padding-top: 6px; }
-    .titleRow .v2-mascot { width: 100px; }
-    .panel { padding: 24px; }
+  @media (min-width:900px){
+    .mm{grid-template-columns:300px auto;justify-content:center;align-items:center;column-gap:44px;min-height:calc(100dvh - 120px);align-content:center}
+    .mm-side{flex-direction:column;align-items:center;max-width:300px;min-height:0;gap:14px}
+    .mm-host{height:min(46vh,380px);width:280px;order:2}
+    .mm-say{order:1;align-items:center;padding:0}
+    .mm-say .lp-bubble .tail{left:50%;bottom:-9px;margin-left:-11px}
+    .mm-tray{order:3;width:96px;height:120px;margin:4px 0 26px}
+    .mm-mat{max-width:min(880px,calc((100dvh - 176px) * 1.0667 + 72px));padding:18px}
+    .mm-grid{grid-template-columns:repeat(4,1fr);gap:16px}
+    .mm-card{--k:1.35}
   }
-
-  .mm-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; perspective: 900px; }
-  .mm-card { position: relative; aspect-ratio: 1 / 1; border: 0; padding: 0; background: none; cursor: pointer; border-radius: 16px; touch-action: manipulation; }
-  .mm-card .in { position: absolute; inset: 0; transform-style: preserve-3d; border-radius: inherit; }
-  .mm-card .face { position: absolute; inset: 0; border-radius: inherit; backface-visibility: hidden; -webkit-backface-visibility: hidden; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-  .mm-card .back { background: linear-gradient(135deg, #8B7CF6, #6D5AE0); box-shadow: 0 4px 0 #5644C9, var(--sh1); }
-  .mm-card .back::before { content: ""; position: absolute; inset: 7px; border-radius: 11px; border: 2px dashed rgba(255,255,255,.35); }
-  .mm-card .back span { width: 42%; height: 42%; opacity: .9; }
-  .mm-card .back svg { width: 100%; height: 100%; }
-  .mm-card .front { background: #fff; border: 3px solid #2DD4BF; transform: rotateY(180deg); font-size: clamp(1.8rem, 8vw, 2.8rem); color: var(--cocoa); }
-  .mm-card .front .mm-word { font-family: var(--fd); font-weight: 800; font-size: clamp(.85rem, 3.6vw, 1.2rem); line-height: 1.05; padding: 4px; text-align: center; overflow-wrap: normal; word-break: keep-all; }
-  .mm-card .front .mm-word.long { font-size: clamp(.62rem, 2.75vw, .95rem); letter-spacing: -.01em; }
-  .mm-card.matched .front { background: #E7FAF8; border-color: #0F766E; }
-  .mm-card.matched { cursor: default; }
-  .mm-card.flipped { cursor: default; }
-  body.teen .mm-card .back { background: linear-gradient(135deg, #FB923C, #F97316); box-shadow: 0 4px 0 #C2530A, var(--sh1); }
-  @media (min-width: 760px) { .mm-grid { gap: 14px; } .mm-card { border-radius: 20px; } }
+  @media (min-width:900px) and (max-height:760px){ .mm-host{height:40vh} }
+  @media (max-width:899px) and (max-height:720px){ .mm-side{min-height:96px} .mm-host{height:96px;width:80px} .mm-tray{width:60px;height:75px} }
 </style>
 </head>
 <body>
-<div class="deco" aria-hidden="true"><i></i><i></i><i></i></div>
-
-<header class="v2-hud" id="hud">
-  <a class="v2-exit tap" href="../student.html" id="exitBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>Exit</a>
-  <div class="v2-prog" aria-hidden="true"><i id="progFill"></i></div>
-</header>
-
-<main class="wrapM">
-  <div class="titleRow">
-    <div class="v2-mascot" id="lumi"><img src="../assets/site/lumi-hero.png" alt="Lumi" width="525" height="600"></div>
-    <h1 id="gTitle">Memory Match</h1>
-  </div>
-  <section class="panel">
-    <div class="hudRow"><span class="chip" id="mmMovesChip">Moves: <span id="mmMoves">0</span></span><span class="chip" id="mmPairsChip"><span class="js-star"></span><span id="mmPairs">Pairs: 0/6</span></span></div>
-    <div class="mm-grid" id="mmGrid"></div>
-  </section>
-</main>
-
-<div id="endcard" class="v2-cel" role="dialog" aria-modal="true">
-  <div class="box">
-    <img class="v2-hero" src="../assets/story/characters/lumi-celebrate.png" alt="Lumi">
-    <h2>Great job! 🎉</h2>
-    <div class="v2-award"></div>
-    <p class="moves" id="mmEndMoves"></p>
-    <div id="mmNote"></div>
-    <div class="v2-btns">
-      <button class="v2-btn pri tap" id="mmAgain" type="button">Play again</button>
-      <a class="v2-btn sec tap" href="../student.html">Back</a>
+<main class="lp-stage" id="stage">
+  <div class="mm">
+    <div class="mm-side">
+      <div class="mm-host" id="host"></div>
+      <div class="mm-say">
+        <button class="lp-bubble" id="sayBtn" type="button" aria-label="Hear the word again">
+          <span class="lp-speak" id="speakIco" aria-hidden="true"></span>
+          <span class="txt" id="sayTxt">Find the pairs!</span>
+          <span class="tail"></span>
+        </button>
+      </div>
+      <div class="mm-tray" id="tray" aria-hidden="true"><span class="lbl" id="trayLbl"></span></div>
     </div>
+    <div class="mm-mat"><div class="mm-grid" id="mmGrid" aria-label="Memory cards"></div></div>
   </div>
-</div>
+</main>
 
 <script src="../vendor/gsap-3.12.5.min.js"></script>
 <script src="../vendor/lottie-light-5.12.2.min.js"></script>
-<script>
-/* ---------- v2 motion kit: GSAP + Lottie helpers (same motion language as design-previews/landing-tryit.html) ---------- */
-window.V2 = (function () {
-  var G = window.gsap, LOT = window.lottie;
-  var RM = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
-  var V = { G: G, RM: RM, teen: false };
-  var STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FFC93C" stroke="#E8A23D" stroke-width="1.3" stroke-linejoin="round" d="M12 2.6l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17l-5.7 3.1 1.2-6.4L2.8 9.3l6.4-.8z"/><path fill="#FFF" opacity=".55" d="M9.6 8.6l1.6-3.3.5 1-1.1 2.6z"/></svg>';
-  var STAR_O = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#F3EADB" stroke="#E2D3BC" stroke-width="1.3" stroke-linejoin="round" d="M12 2.6l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17l-5.7 3.1 1.2-6.4L2.8 9.3l6.4-.8z"/></svg>';
-  var CHECK = '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#22C55E"/><path d="M14 24.5l7 7 13-14" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  V.STAR = STAR; V.STAR_O = STAR_O; V.CHECK = CHECK;
-  V.anim = !!G && !RM;
-  V.$ = function (s, r) { return (r || document).querySelector(s); };
-  V.$$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
-  V.esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
-  // kids bounce, teens glide
-  V.pop = function () { return V.teen ? "power3.out" : "back.out(2)"; };
-  V.spring = function () { return V.teen ? "power3.out" : "elastic.out(1.1,.45)"; };
-
-  V.lot = function (el, name, loop, slice) {
-    if (!LOT || !el || RM) return null;
-    try {
-      return LOT.loadAnimation({ container: el, renderer: "svg", loop: !!loop, autoplay: true, path: "../assets/lottie/" + name + ".json",
-        rendererSettings: slice ? { preserveAspectRatio: "xMidYMid slice" } : {} });
-    } catch (e) { return null; }
-  };
-
-  // springy press on anything with .tap
-  if (V.anim) {
-    document.addEventListener("pointerdown", function (e) {
-      var t = e.target && e.target.closest ? e.target.closest(".tap") : null;
-      if (!t || t.disabled || t.classList.contains("no-press")) return;
-      G.to(t, { scale: .92, duration: .12, ease: "power2.out", overwrite: "auto" });
-      var up = function () {
-        window.removeEventListener("pointerup", up, true); window.removeEventListener("pointercancel", up, true);
-        if (t.isConnected) G.to(t, { scale: 1, duration: V.teen ? .35 : .6, ease: V.spring(), overwrite: "auto" });
-      };
-      window.addEventListener("pointerup", up, true); window.addEventListener("pointercancel", up, true);
-    }, true);
-  }
-
-  V.center = function (el) { var r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width, h: r.height }; };
-
-  // a star flies on a curved path into a counter, which bumps on arrival
-  V.flyStar = function (fromEl, toEl, done) {
-    if (!fromEl || !toEl || !V.anim) { if (done) done(); return; }
-    var a = V.center(fromEl), b = V.center(toEl);
-    var ax = a.x - 18, ay = a.y - 18, bx = b.x - 18, by = b.y - 18;
-    var cx = (ax + bx) / 2 + (ax < bx ? -70 : 70), cy = Math.min(ay, by) - 120;
-    var s = document.createElement("div"); s.className = "v2-fly"; s.innerHTML = STAR; document.body.appendChild(s);
-    var o = { t: 0 };
-    G.set(s, { x: ax, y: ay, scale: .4 });
-    G.to(o, { t: 1, duration: .8, ease: "power1.inOut", onUpdate: function () {
-      var t = o.t, u = 1 - t;
-      G.set(s, { x: u * u * ax + 2 * u * t * cx + t * t * bx, y: u * u * ay + 2 * u * t * cy + t * t * by, rotation: t * 320, scale: .45 + Math.sin(t * Math.PI) * 1.05 });
-    }, onComplete: function () { s.remove(); V.bump(toEl); if (done) done(); } });
-  };
-  V.bump = function (el) { if (el && V.anim) G.fromTo(el, { scale: 1.3 }, { scale: 1, duration: .7, ease: V.teen ? "power3.out" : "elastic.out(1.2,.4)", overwrite: "auto" }); };
-
-  V.shake = function (el) {
-    if (!el) return;
-    if (!V.anim) { el.classList.remove("v2-bad"); void el.offsetWidth; el.classList.add("v2-bad"); setTimeout(function () { el.classList.remove("v2-bad"); }, 500); return; }
-    G.fromTo(el, { x: 0 }, { keyframes: { x: [-9, 9, -6, 5, -2, 0], rotation: [-1.5, 1.5, -1, .5, 0, 0] }, duration: .45, ease: "none", overwrite: "auto" });
-  };
-  // expanding ring (transform/opacity only)
-  V.ring = function (el, color) {
-    if (!el || !V.anim) return;
-    var r = document.createElement("span"); r.className = "v2-ring"; if (color) r.style.borderColor = color;
-    el.appendChild(r);
-    G.fromTo(r, { scale: .96, opacity: .95 }, { scale: 1.14, opacity: 0, duration: .7, ease: "power2.out", onComplete: function () { r.remove(); } });
-  };
-  // green check (Lottie; a still check when motion is reduced)
-  V.check = function (host, css) {
-    if (!host) return;
-    var c = document.createElement("div"); c.className = "v2-check"; c.style.cssText = css || "right:-6px;top:-6px";
-    host.appendChild(c);
-    var a = V.lot(c, "check", false);
-    if (!a) c.innerHTML = CHECK;
-    return c;
-  };
-  // little confetti dots from a point
-  V.burst = function (x, y, colors, n) {
-    if (!V.anim) return;
-    colors = colors || ["#FFC93C", "#F97316", "#22C55E", "#0EA5E9", "#F472B6"];
-    for (var i = 0; i < (n || 14); i++) {
-      var d = document.createElement("div"); d.className = "v2-dot";
-      var sz = 6 + Math.random() * 8; d.style.width = d.style.height = sz + "px";
-      d.style.background = colors[i % colors.length]; if (i % 3 === 0) d.style.borderRadius = "2px";
-      document.body.appendChild(d);
-      var ang = Math.random() * Math.PI * 2, dist = 50 + Math.random() * 80;
-      G.set(d, { x: x - sz / 2, y: y - sz / 2 });
-      G.to(d, { x: x + Math.cos(ang) * dist, y: y + Math.sin(ang) * dist + 30, rotation: Math.random() * 360, opacity: 0, scale: .4, duration: .7 + Math.random() * .3, ease: "power2.out", onComplete: (function (dd) { return function () { dd.remove(); }; })(d) });
-    }
-  };
-  V.count = function (el, to, dur, from) {
-    if (!el) return;
-    if (!V.anim) { el.textContent = to; return; }
-    var o = { n: from || 0 };
-    G.to(o, { n: to, duration: dur || .8, ease: "power1.out", onUpdate: function () { el.textContent = Math.round(o.n); } });
-  };
-  V.progress = function (fill, frac) {
-    if (!fill) return;
-    frac = Math.max(0, Math.min(1, frac));
-    if (V.anim) G.to(fill, { scaleX: frac, duration: .7, ease: "power3.out" }); else fill.style.transform = "scaleX(" + frac + ")";
-  };
-  // split text into masked letters
-  V.letters = function (text) {
-    return String(text).replace(/ (?=\S*\p{Extended_Pictographic})/gu, "\u00a0").split(" ").map(function (w) {
-      return '<span class="v2-w">' + Array.from(w).map(function (c) { return '<span class="v2-ch">' + V.esc(c) + "</span>"; }).join("") + "</span>";
-    }).join(" ");
-  };
-  V.reveal = function (el, delay) {
-    if (!el || !V.anim) return null;
-    return G.from(V.$$(".v2-ch", el), { yPercent: 115, rotation: function (i) { return V.teen ? 0 : (i % 2 ? 1 : -1) * 14; }, duration: V.teen ? .5 : .55, stagger: .028, delay: delay || 0, ease: V.teen ? "power3.out" : "back.out(2.4)" });
-  };
-  // a character drops in with squash & stretch
-  V.dropIn = function (el, delay) {
-    if (!el || !V.anim) return null;
-    var tl = G.timeline({ delay: delay || 0 });
-    if (V.teen) return tl.fromTo(el, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: .6, ease: "power3.out" });
-    tl.fromTo(el, { y: -160, opacity: 0, scaleX: .85, scaleY: 1.18, transformOrigin: "50% 100%" }, { y: 0, opacity: 1, duration: .42, ease: "power2.in" })
-      .to(el, { scaleX: 1.2, scaleY: .78, duration: .08, ease: "power1.out" })
-      .to(el, { scaleX: 1, scaleY: 1, duration: .8, ease: "elastic.out(1.1,.32)" });
-    return tl;
-  };
-  // idle life: breathe, sway, blink-squash, and a wave now and then
-  V.mascot = function (box) {
-    var img = box && box.querySelector("img");
-    var api = { cheer: function () {}, sad: function () {}, kill: function () {} };
-    if (!img || !V.anim) return api;
-    var tw = [];
-    tw.push(G.to(box, { scale: 1.035, transformOrigin: "50% 100%", duration: 1.7, yoyo: true, repeat: -1, ease: "sine.inOut" }));
-    tw.push(G.to(img, { rotation: V.teen ? 1.5 : 3.5, transformOrigin: "50% 100%", duration: 1.5, yoyo: true, repeat: -1, ease: "sine.inOut" }));
-    var bl = G.timeline({ repeat: -1, repeatDelay: 3.2, delay: 1.4 });
-    bl.to(img, { scaleY: .91, scaleX: 1.06, transformOrigin: "50% 100%", duration: .09, ease: "power1.in" }).to(img, { scaleY: 1, scaleX: 1, duration: .45, ease: V.teen ? "power2.out" : "elastic.out(1,.4)" });
-    tw.push(bl);
-    var wv = G.timeline({ repeat: -1, repeatDelay: 6.5, delay: 4 });
-    wv.to(img, { rotation: -8, duration: .18, ease: "power1.out" }).to(img, { rotation: 7, duration: .18, yoyo: true, repeat: 3, ease: "sine.inOut" }).to(img, { rotation: 0, duration: .3 });
-    tw.push(wv);
-    api.cheer = function () {
-      G.timeline().to(box, { y: -26, duration: .22, ease: "power2.out" }).to(box, { y: 0, duration: .5, ease: "bounce.out" });
-      G.fromTo(img, { scaleX: 1.12, scaleY: .88 }, { scaleX: 1, scaleY: 1, duration: .6, ease: "elastic.out(1,.4)", transformOrigin: "50% 100%" });
-    };
-    api.sad = function () { G.fromTo(box, { rotation: 0 }, { keyframes: { rotation: [-5, 5, -3, 0] }, duration: .5, ease: "none" }); };
-    api.kill = function () { tw.forEach(function (t) { t.kill(); }); };
-    return api;
-  };
-  // deal a set of cards in
-  V.dealIn = function (els, opt) {
-    if (!els || !els.length || !V.anim) return null;
-    opt = opt || {};
-    return G.from(els, { y: opt.y == null ? 40 : opt.y, scale: V.teen ? .92 : .6, opacity: 0,
-      rotation: function (i) { return V.teen ? 0 : [-7, 6, -4, 5][i % 4]; },
-      duration: V.teen ? .5 : .6, stagger: opt.stagger || .07, delay: opt.delay || 0, ease: V.pop(), clearProps: opt.keep ? "" : "transform,opacity" });
-  };
-
-  // end-of-game celebration on a .v2-cel overlay
-  // o: { title, sub(html, may contain <b class="v2-n" data-to="N">), rating (1-3) | xp (rating) | tally {n, max} | big (number), confetti:true }
-  V.celebrate = function (ov, o) {
-    o = o || {};
-    var box = V.$(".box", ov), h = V.$("h2", ov);
-    if (o.title != null) h.innerHTML = V.letters(o.title);
-    if (o.sub != null) { var sb = V.$(".sub", ov); if (sb) sb.innerHTML = o.sub; }
-    var st = V.$(".v2-stars", ov) || V.$(".v2-slot", ov);
-    var area = V.$(".v2-award", ov);
-    if (area) {
-      if (o.xp) {
-        var pct = Math.round(o.xp / 3 * 100);
-        area.innerHTML = '<div class="v2-xp"><div class="val">+<span class="v2-n" data-to="' + (o.xp * 100) + '">' + (o.xp * 100) + '</span> XP</div><div class="bar"><i style="transform:scaleX(' + (pct / 100) + ')"></i></div></div>';
-      } else if (o.rating) {
-        area.innerHTML = '<div class="v2-stars">' + [0, 1, 2].map(function (i) { return "<span>" + (i < o.rating ? STAR : STAR_O) + "</span>"; }).join("") + "</div>";
-      } else if (o.tally) {
-        var mx = o.tally.max;
-        area.innerHTML = '<div class="v2-stars' + (mx > 5 ? " many" : "") + '">' + Array.from({ length: mx }, function (_, i) { return "<span>" + (i < o.tally.n ? STAR : STAR_O) + "</span>"; }).join("") + "</div>";
-      } else if (o.big != null) {
-        area.innerHTML = '<div class="v2-big">' + STAR + '<span class="v2-n" data-to="' + o.big + '">' + o.big + "</span></div>";
-      } else area.innerHTML = "";
-    }
-    ov.classList.add("show");
-    try { if (window.Lumio && Lumio.sfx) Lumio.sfx("complete"); } catch (e) {}
-    if (o.confetti !== false && V.anim) {
-      var c = document.createElement("div"); c.className = "v2-conf"; document.body.appendChild(c);
-      var a = V.lot(c, "confetti", false);
-      if (a) a.addEventListener("complete", function () { c.remove(); }); else c.remove();
-      setTimeout(function () { if (c.isConnected) c.remove(); }, 4000);
-    }
-    var nums = V.$$(".v2-n[data-to]", ov);
-    if (!V.anim) { nums.forEach(function (n) { n.textContent = n.getAttribute("data-to"); }); return; }
-    nums.forEach(function (n) { n.textContent = "0"; });
-    var hero = V.$(".v2-hero", ov);
-    var tl = G.timeline();
-    tl.fromTo(ov, { opacity: 0 }, { opacity: 1, duration: .25 })
-      .from(box, { scale: V.teen ? .94 : .7, y: 40, opacity: 0, duration: V.teen ? .5 : .6, ease: V.teen ? "power3.out" : "back.out(1.8)" }, "<.05");
-    if (hero) {
-      if (V.teen) tl.from(hero, { y: 30, opacity: 0, duration: .5, ease: "power3.out" }, "-=.35");
-      else tl.fromTo(hero, { y: -140, opacity: 0, scaleX: .85, scaleY: 1.2, transformOrigin: "50% 100%" }, { y: 0, opacity: 1, duration: .4, ease: "power2.in" }, "-=.3")
-        .to(hero, { scaleX: 1.18, scaleY: .8, duration: .08 }).to(hero, { scaleX: 1, scaleY: 1, duration: .8, ease: "elastic.out(1,.35)" });
-    }
-    tl.from(V.$$(".v2-ch", h), { yPercent: 115, rotation: function (i) { return V.teen ? 0 : (i % 2 ? 1 : -1) * 16; }, duration: .5, stagger: .03, ease: V.teen ? "power3.out" : "back.out(2.6)" }, .35);
-    var stars = V.$$(".v2-stars span", ov);
-    if (stars.length) tl.from(stars, { y: -80, x: function (i) { return (stars.length / 2 - i) * 22; }, scale: 0, rotation: -200, duration: .65, stagger: Math.min(.16, 1 / stars.length), ease: "back.out(1.8)" }, .7)
-      .fromTo(stars, { scale: 1 }, { scale: 1.22, duration: .14, yoyo: true, repeat: 1, stagger: Math.min(.16, 1 / stars.length), ease: "power2.out", immediateRender: false });
-    var big = V.$(".v2-big svg", ov);
-    if (big) tl.from(big, { scale: 0, rotation: -240, duration: .8, ease: "back.out(2)" }, .7);
-    var bar = V.$(".v2-xp .bar i", ov);
-    if (bar) tl.from(bar, { scaleX: 0, duration: 1, ease: "power3.out" }, .75);
-    tl.from(V.$$(".sub,.v2-note,.v2-ar,.moves", ov), { y: 12, opacity: 0, duration: .4, stagger: .06 }, .8);
-    tl.add(function () { nums.forEach(function (n) { V.count(n, +n.getAttribute("data-to"), Math.min(1.6, .25 + .12 * (+n.getAttribute("data-to") || 1))); }); }, .85);
-    tl.from(V.$$(".v2-btns > *", ov), { y: 22, opacity: 0, duration: .5, stagger: .08, ease: "power3.out", clearProps: "transform,opacity" }, 1.1);
-  };
-  V.hideCel = function (ov) { ov.classList.remove("show"); };
-  // soft drifting decor
-  V.drift = function (els) {
-    if (!V.anim) return;
-    els.forEach(function (el, i) {
-      G.to(el, { x: (i % 2 ? -1 : 1) * (18 + i * 6), y: (i % 3 - 1) * 10, duration: 5 + i * 1.3, yoyo: true, repeat: -1, ease: "sine.inOut" });
-    });
-  };
-  return V;
-})();
-
-</script>
 <script src="../js/app.js"></script>
 <script src="../js/lessons-data.js"></script>
+<script src="kit/play.js"></script>
 <script>
-/* ---------- Hub mini games: the same word source, faces, stars and saving rule as student.html ---------- */
-function sdEsc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch])); }
+/* ================= Hub mini games: same word source, faces and saving rule as student.html ================= */
 const u = Lumio.user();
 const level = Lumio.qs("level") || (u && u.level) || "pre-a";
 const TEEN = ["level3", "level4", "level5", "level6"].includes(level);
-V2.teen = TEEN;
-if (TEEN) document.body.classList.add("teen");
-const G = V2.G, anim = V2.anim;
-
-// Starts as this generic fallback list so games are playable right
-// away; loadLessonVocabForGames() below swaps it for the real words
-// from the lesson (?level=&n=, or the student's latest attempted lesson).
+const backHref = "../student.html";
+// Starts as this generic fallback list; loadLessonVocabForGames() swaps it for the real lesson words.
 const FALLBACK_WORD_BANK = [
   { en: "Cat", ar: "قطة", em: "🐱" }, { en: "Dog", ar: "كلب", em: "🐶" },
   { en: "Sun", ar: "شمس", em: "☀️" }, { en: "Moon", ar: "قمر", em: "🌙" },
@@ -430,202 +143,281 @@ const FALLBACK_WORD_BANK = [
   { en: "Tree", ar: "شجرة", em: "🌳" }, { en: "Car", ar: "سيارة", em: "🚗" },
 ];
 let WORD_BANK = FALLBACK_WORD_BANK;
-// Lesson vocab has no emoji: show the word's picture instead (same file rule
-// as student.html). If the picture is missing: Memory falls back to the word
-// itself; Word Pop / Builder keep only the Arabic (the English would give the answer away).
-function sdVocabFile(v) { return String(v.image || v.en).toLowerCase().trim().replace(/'/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""); }
-function wordFaceHtml(w, wordFallback) {
-  if (w.em) return sdEsc(w.em);
-  const onErr = wordFallback
-    ? "var s=document.createElement('span');s.className='mm-word';s.textContent=this.alt;this.replaceWith(s)"
-    : "this.remove()";
-  return `<img class="sd-word-pic" src="../assets/vocab/${sdEsc(w.pic || sdVocabFile(w))}.png" alt="${sdEsc(w.en)}" draggable="false" onerror="${onErr}">`;
+// Photo fix: these lesson words have no picture under their own name, but the same picture exists
+// under its base form (visited -> visit.png ...). Without this they fell back to plain text.
+const PIC_ALIAS = { visited: "visit", baked: "bake", rested: "rest", bought: "buy", met: "meet", forgot: "forget",
+  balloons: "balloon", invitation: "invite", slowly: "slow", cheaper: "cheap", affordable: "cheap", healthier: "healthy-food",
+  rehearsal: "rehearse", efficient: "efficiently", "double-check": "check" };
+function sdVocabFile(v) {
+  if (!v.image) { const k = String(v.en).toLowerCase().trim(); if (PIC_ALIAS[k]) return PIC_ALIAS[k]; }
+  return String(v.image || v.en).toLowerCase().trim().replace(/'/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 }
-let gamesLessonNum = null;   // which lesson's vocab is currently loaded, if any
-let gamesUsingRealVocab = false;
-
+const picSrc = w => `../assets/vocab/${w.pic || sdVocabFile(w)}.png`;
+let gamesLessonNum = null, gamesUsingRealVocab = false;
 function shuffled(arr) { return [...arr].sort(() => Math.random() - 0.5); }
 function pickWords(n, source) { const bank = source || WORD_BANK; return shuffled(bank).slice(0, Math.min(n, bank.length)); }
-
 async function loadLessonVocabForGames() {
-  // ?n= picks the lesson; without it, the student's most recently ATTEMPTED
-  // lesson in this level (lesson 1 before any attempt) -- same as student.html.
+  // ?n= picks the lesson; without it, the student's most recently ATTEMPTED lesson in this level (lesson 1 before any).
   const prog = u ? ((Lumio.progressFor(u.name) || {})[level] || {}) : {};
   const attemptedNums = Object.keys(prog).map(Number);
   const nq = parseInt(Lumio.qs("n") || "", 10);
   const targetNum = nq > 0 ? nq : (attemptedNums.length ? Math.max(...attemptedNums) : 1);
-  let lessonData = (typeof window.LUMIO_LESSONS !== "undefined" && window.LUMIO_LESSONS[level])
-    ? window.LUMIO_LESSONS[level][targetNum]
-    : null;
+  let lessonData = (window.LUMIO_LESSONS && window.LUMIO_LESSONS[level]) ? window.LUMIO_LESSONS[level][targetNum] : null;
   if (!lessonData) {
-    try {
-      const nn = String(targetNum).padStart(2, "0");
-      const res = await fetch(`../lessons/${level}/lesson${nn}.json`);
-      if (res.ok) lessonData = await res.json();
-    } catch (e) { /* fine — falls back to the generic word bank below */ }
+    try { const res = await fetch(`../lessons/${level}/lesson${String(targetNum).padStart(2, "0")}.json`); if (res.ok) lessonData = await res.json(); } catch (e) {}
   }
   const vocab = lessonData && Array.isArray(lessonData.vocab) ? lessonData.vocab : [];
-  if (vocab.length < 3) return; // too few real words to make a decent game — keep the fallback bank
+  if (vocab.length < 3) return; // too few real words: keep the fallback bank
   WORD_BANK = vocab.map(v => ({ en: v.en, ar: v.ar || "", em: v.emoji || "", pic: sdVocabFile(v) }));
-  gamesLessonNum = targetNum;
-  gamesUsingRealVocab = true;
+  gamesLessonNum = targetNum; gamesUsingRealVocab = true;
 }
-
-// Blends a mini-game result into that lesson's saved progress with the same
-// "keep the best" rule as student.html -- only for a lesson already attempted.
+// Same "keep the best" rule as student.html; only touches a lesson already attempted.
 function saveGameResultToLesson(stars, score, total) {
   if (!gamesUsingRealVocab || !gamesLessonNum || !u) return { counted: false, reason: "no-lesson" };
-  let all;
-  try { all = JSON.parse(localStorage.getItem("lumio_progress") || "{}"); } catch (e) { all = {}; }
+  let all; try { all = JSON.parse(localStorage.getItem("lumio_progress") || "{}"); } catch (e) { all = {}; }
   const existing = ((all[u.name] || {})[level] || {})[gamesLessonNum];
   if (!existing) return { counted: false, reason: "not-attempted", lessonNum: gamesLessonNum };
   if (stars < existing.stars) return { counted: false, reason: "not-better", lessonNum: gamesLessonNum };
-  all[u.name] = all[u.name] || {};
-  all[u.name][level] = all[u.name][level] || {};
+  all[u.name] = all[u.name] || {}; all[u.name][level] = all[u.name][level] || {};
   all[u.name][level][gamesLessonNum] = { stars, score, total, date: Lumio.tzNow().date };
   try { localStorage.setItem("lumio_progress", JSON.stringify(all)); } catch (e) { return { counted: false, reason: "storage-failed" }; }
   return { counted: true, lessonNum: gamesLessonNum };
 }
-function gameResultNote(blended) {
-  if (blended.counted) return `<p class="v2-note ok">🎯 Counted toward Lesson ${blended.lessonNum}'s stars!</p>`;
-  if (blended.reason === "not-attempted") return `<p class="v2-note">Finish Lesson ${blended.lessonNum} first, then this game can boost its stars!</p>`;
-  if (blended.reason === "not-better") return `<p class="v2-note">Your Lesson ${blended.lessonNum} score is already this good — try beating it!</p>`;
+function gameResultNote(b) {
+  if (b.counted) return `<span class="hub-note ok">🎯 Counted toward Lesson ${b.lessonNum}'s stars!</span>`;
+  if (b.reason === "not-attempted") return `<span class="hub-note">Finish Lesson ${b.lessonNum} first, then this game can boost its stars!</span>`;
+  if (b.reason === "not-better") return `<span class="hub-note">Your Lesson ${b.lessonNum} score is already this good — try beating it!</span>`;
   return "";
 }
-function gameStars(scoreRatio) {
-  // Same thresholds as lesson.js (>= 85% -> 3, >= 60% -> 2, else 1).
-  if (scoreRatio >= 0.85) return 3;
-  if (scoreRatio >= 0.6) return 2;
-  return 1;
+function gameStars(r) { if (r >= 0.85) return 3; if (r >= 0.6) return 2; return 1; } // same as lesson.js
+// Results card: kit card + the hub's own lines (teens see XP, like student.html)
+function hubResults(o, lines, quiet) {
+  const keepRain = LP.rain, keepLottie = window.lottie;
+  if (quiet) { LP.rain = () => {}; window.lottie = null; }
+  LP.results(o);
+  if (quiet) setTimeout(() => { LP.rain = keepRain; window.lottie = keepLottie; }, 1500);
+  const note = document.querySelector(".lp-results .note");
+  if (note) note.innerHTML = lines.filter(Boolean).join("") + (TEEN ? `<span class="hub-xp"><b>+${o.stars * 100} XP</b><i><s style="transform:scaleX(${o.stars / 3})"></s></i></span>` : "");
 }
-// stars for kids, XP bar for teen levels (display only -- same 1-3 rating underneath)
-function starsAward(st) { return TEEN ? { xp: st } : { rating: st }; }
+const hubCss = document.createElement("style");
+hubCss.textContent = `.lp-results .note{display:flex;flex-direction:column;align-items:center;gap:6px}
+.hub-line{font-family:var(--lp-display);font-weight:800;font-size:18px}
+.hub-note{font-size:14px;opacity:.85;max-width:30em}.hub-note.ok{color:#0D9488;opacity:1}
+html[data-lp="teen"] .hub-note.ok{color:#5EEAD4}
+.hub-xp{display:flex;align-items:center;gap:10px;margin-top:4px}.hub-xp b{font-family:var(--lp-display);font-size:20px;color:#A78BFA}
+.hub-xp i{display:block;width:140px;height:10px;border-radius:99px;background:rgba(255,255,255,.14);overflow:hidden}
+.hub-xp s{display:block;height:100%;background:linear-gradient(90deg,#7C5CFF,#3BA0FF);transform-origin:0 50%;text-decoration:none}`;
+document.head.appendChild(hubCss);
 
-// shared page bits
-document.getElementById("exitBtn").href = "../student.html";
-document.querySelectorAll(".js-star").forEach(e => { e.innerHTML = V2.STAR; });
-const mascot = V2.mascot(document.getElementById("lumi"));
-if (TEEN) { const li = document.querySelector("#lumi img"); if (li) li.src = "../assets/story/characters/lumi-teen-wave.png"; const ch = document.querySelector("#endcard .v2-hero"); if (ch) ch.src = "../assets/story/characters/lumi-teen-celebrate.png"; }
-function pageIntro() {
-  if (!anim) return;
-  const h = document.getElementById("gTitle");
-  h.innerHTML = V2.letters(h.textContent);
-  G.timeline()
-    .from("#hud > *", { y: -30, opacity: 0, duration: .5, stagger: .06, ease: "power3.out", clearProps: "transform,opacity" })
-    .add(V2.dropIn(document.querySelector("#lumi img")), .1)
-    .add(V2.reveal(h), .35)
-    .from(".panel", { y: 40, opacity: 0, scale: .97, duration: .6, ease: "power3.out", clearProps: "transform,opacity" }, .3)
-    .from(".hudRow > *", { y: 10, opacity: 0, duration: .4, stagger: .07, clearProps: "transform,opacity" }, .55);
-}
-
-
-// ================= Memory Match (rules from student.html) =================
-const mmGrid = document.getElementById("mmGrid");
-const mmMoves = document.getElementById("mmMoves");
-const mmPairs = document.getElementById("mmPairs");
-const pairsChip = document.getElementById("mmPairsChip");
-const progFill = document.getElementById("progFill");
-const endcard = document.getElementById("endcard");
+/* ================= Memory Match (rules from student.html) ================= */
+const PAIRS = 6;
+const movesChip = LP.el("div", "lp-chip mm-moves", '<span class="k">Moves</span><span class="n" id="mmMoves">0</span>');
+movesChip.setAttribute("aria-label", "Moves");
+LP.init({
+  theme: TEEN ? "teen" : "kid",
+  scene: TEEN
+    ? { bg: "assets/story/backgrounds/game-night-room.jpg", particles: "motes", tint: "linear-gradient(180deg,rgba(20,14,40,.35),rgba(6,8,22,.55))" }
+    : { bg: "assets/lesson-bg-kid/playroom.jpg", particles: "motes", tint: "linear-gradient(180deg,rgba(255,236,190,.08),rgba(60,30,0,.22))" },
+  hud: { rounds: PAIRS, exitHref: backHref, extra: movesChip }
+});
+document.getElementById("speakIco").innerHTML = LP.ICON.speaker;
+const CH = TEEN ? { char: "lumi-teen", pose: "think", cheer: "laugh", oops: "surprised" } : { char: "lumi", pose: "magnify", cheer: "celebrate", oops: "surprised" };
+const host = LP.actor(document.getElementById("host"), Object.assign({ alt: "Lumi" }, CH));
+const mmGrid = document.getElementById("mmGrid"), tray = document.getElementById("tray"), trayLbl = document.getElementById("trayLbl");
+const sayTxt = document.getElementById("sayTxt"), sayBtn = document.getElementById("sayBtn"), movesN = document.getElementById("mmMoves");
+const G = window.gsap, ANIM = !!G && !LP.RM;
+const STAR_PIP = '<svg viewBox="0 0 24 24"><path d="M12 2.5l2.7 6 6.5.6-4.9 4.3 1.4 6.4L12 16.6 6.3 19.8l1.4-6.4L2.8 9.1l6.5-.6z" fill="currentColor"/></svg>';
+const MARK = LP.asset("assets/site/lumi-mark.png");
+let lastWord = "";
 let mmState = null;
 
-function startMemory(source, again) {
-  V2.hideCel(endcard);
-  const words = pickWords(6, source);
-  const cards = shuffled([
-    ...words.map(w => ({ key: w.en, face: wordFaceHtml(w, true), kind: "emoji" })),
-    ...words.map(w => ({ key: w.en, face: w.en, kind: "word" })),
-  ]);
-  mmState = { cards, flipped: [], matched: new Set(), moves: 0, busy: false, source };
-  mmMoves.textContent = "0";
-  mmPairs.textContent = `Pairs: 0/${words.length}`;
-  V2.progress(progFill, 0);
-  mmGrid.innerHTML = "";
-  cards.forEach((c, i) => {
-    const el = document.createElement("button");
-    el.type = "button";
-    el.className = "mm-card tap";
-    el.dataset.index = i;
-    el.setAttribute("aria-label", "Card " + (i + 1));
-    el.innerHTML = `<div class="in"><div class="face back"><span>${V2.STAR}</span></div><div class="face front">${c.kind === "emoji" ? `<span>${c.face}</span>` : `<span class="mm-word${c.face.length > 7 ? " long" : ""}">${sdEsc(c.face)}</span>`}</div></div>`;
-    el.onclick = () => flipCard(i);
-    mmGrid.appendChild(el);
-  });
-  // deal the cards out from the middle of the board
-  if (anim) {
-    const els = [...mmGrid.children], gc = V2.center(mmGrid);
-    G.from(els, { x: i => gc.x - V2.center(els[i]).x, y: i => gc.y - V2.center(els[i]).y, rotation: i => TEEN ? 0 : (i % 2 ? 12 : -12), scale: .5, opacity: 0,
-      duration: TEEN ? .55 : .65, stagger: .045, delay: again ? .1 : .7, ease: TEEN ? "power3.out" : "back.out(1.5)", clearProps: "transform,opacity" });
+function say(t, speak) { sayTxt.textContent = t; if (ANIM) G.fromTo(sayBtn, { scale: .85 }, { scale: 1, duration: .5, ease: "back.out(2.5)" }); if (speak) { lastWord = speak; LP.say(speak, document.getElementById("speakIco")); } }
+sayBtn.onclick = () => { if (lastWord) LP.say(lastWord, document.getElementById("speakIco")); };
+
+function backHtml() {
+  const pipCol = TEEN ? "rgba(170,200,255,.8)" : "rgba(255,255,255,.85)";
+  return `<div class="mm-face mm-back"><span class="seal"><img src="${MARK}" alt="" draggable="false"></span>` +
+    [1, 2, 3, 4].map(i => `<span class="corner c${i}" style="color:${pipCol}">${STAR_PIP}</span>`).join("") + `</div>`;
+}
+function lenClass(t) { const n = t.length; return n <= 6 ? "" : n <= 9 ? "l2" : n <= 13 ? "l3" : "l4"; }
+function frontHtml(c) {
+  const pip = `<span class="mm-pip a" style="color:${TEEN ? "#8EA2FF" : "#F97316"}">${STAR_PIP}</span><span class="mm-pip b" style="color:${TEEN ? "#8EA2FF" : "#F97316"}">${STAR_PIP}</span>`;
+  if (c.kind === "word") return `<div class="mm-face mm-front word">${pip}<span class="mm-wordtxt ${lenClass(c.w.en)}">${LP.esc(c.w.en)}</span></div>`;
+  // picture face (emoji in the fallback bank); a missing picture falls back to the word itself (as in student.html)
+  const inner = c.w.em ? `<span class="emo">${LP.esc(c.w.em)}</span>`
+    : `<img src="${LP.esc(picSrc(c.w))}" alt="${LP.esc(c.w.en)}" draggable="false" onerror="var s=document.createElement('span');s.className='mm-wordtxt ${lenClass(c.w.en)}';s.textContent=this.alt;this.replaceWith(s)">`;
+  return `<div class="mm-face mm-front pic"><div class="plate">${inner}</div></div>`;
+}
+
+function resetHud() {
+  LP.setStars(0);
+  document.querySelectorAll(".lp-prog i b").forEach(b => { if (G) G.set(b, { scaleX: 0 }); else b.style.transform = "scaleX(0)"; });
+}
+
+function trayDeck(show) {
+  tray.querySelectorAll(".mm-mini").forEach(m => m.remove());
+  trayLbl.textContent = "";
+  if (!show) return;
+  for (let i = 0; i < 4; i++) {
+    const m = LP.el("div", "mm-mini", backHtml()); m.firstChild.style.borderRadius = "12px";
+    m.style.transform = `translate(${i * -1.5}px,${i * -2.5}px) rotate(${(i - 1.5) * 2.5}deg)`;
+    tray.appendChild(m);
   }
+}
+
+async function startMemory(source) {
+  LP.answer = null;
+  const words = pickWords(PAIRS, source);
+  const cards = shuffled([
+    ...words.map(w => ({ key: w.en, w, kind: "pic" })),
+    ...words.map(w => ({ key: w.en, w, kind: "word" })),
+  ]);
+  mmState = { cards, flipped: [], matched: new Set(), moves: 0, busy: true, source, pairs: words.length };
+  movesN.textContent = "0";
+  resetHud(); LP.round(0);
+  host.set(CH.pose);
+  say("Find the pairs!");
+  mmGrid.innerHTML = "";
+  trayDeck(true);
+  const els = cards.map((c, i) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "mm-card"; b.dataset.key = c.key; b.dataset.kind = c.kind; b.dataset.press = "";
+    b.setAttribute("aria-label", "Card " + (i + 1) + ", face down");
+    b.innerHTML = `<div class="mm-in">${backHtml()}${frontHtml(c)}</div>`;
+    b.onclick = () => flipCard(i);
+    mmGrid.appendChild(b);
+    return b;
+  });
+  await LP.banner("Memory Match", words.length + " pairs to find");
+  // deal from Lumi's deck: each card flies out spinning and lands face down
+  if (ANIM) {
+    const from = LP.center(tray);
+    host.nod();
+    await new Promise(res => {
+      const tl = G.timeline({ onComplete: res });
+      els.forEach((b, i) => {
+        const inn = b.firstChild, to = LP.center(b);
+        tl.fromTo(inn, { x: from.x - to.x, y: from.y - to.y, scale: .45, rotation: -160 + Math.random() * 60, opacity: 0 },
+          { x: 0, y: 0, scale: 1, rotation: 0, opacity: 1, duration: .62, ease: "back.out(1.3)", onStart: () => LP.sfx("deal") }, i * .085);
+      });
+      tl.to(tray.querySelectorAll(".mm-mini"), { scale: .6, opacity: 0, duration: .3, stagger: .05 }, "-=.4");
+      tl.to(els.map(b => b.firstChild), { y: -6, duration: .14, stagger: .03, yoyo: true, repeat: 1, ease: "sine.out" });
+    });
+  }
+  trayDeck(false);
+  mmState.busy = false;
+  setAnswer();
+}
+function setAnswer() {
+  const left = mmState.cards.find((c, i) => !mmState.matched.has(i));
+  LP.answer = left ? left.key : null;   // read by the automated play-through tests
 }
 
 function setFlip(i, up) {
-  const inner = mmGrid.children[i].querySelector(".in");
-  if (anim) G.to(inner, { rotationY: up ? 180 : 0, duration: TEEN ? .45 : .5, ease: TEEN ? "power2.inOut" : "back.out(1.4)" });
-  else inner.style.transform = up ? "rotateY(180deg)" : "";
-}
-function renderCard(i) {
-  const el = mmGrid.children[i];
-  const isFlipped = mmState.flipped.includes(i) || mmState.matched.has(i);
-  el.classList.toggle("flipped", isFlipped);
-  el.classList.toggle("matched", mmState.matched.has(i));
-  setFlip(i, isFlipped);
+  const b = mmGrid.children[i], inn = b.firstChild;
+  b.setAttribute("aria-label", up ? (mmState.cards[i].kind === "word" ? "Word: " : "Picture: ") + mmState.cards[i].key : "Card " + (i + 1) + ", face down");
+  if (!ANIM) { if (G) G.set(inn, { rotationY: up ? 180 : 0 }); else inn.style.transform = up ? "rotateY(180deg)" : ""; return Promise.resolve(); }
+  LP.sfx("flip");
+  return new Promise(res => G.timeline({ onComplete: res })
+    .to(inn, { z: 60, scale: 1.08, duration: .14, ease: "power2.out" })
+    .to(inn, { rotationY: up ? 180 : 0, duration: TEEN ? .42 : .5, ease: TEEN ? "power2.inOut" : "back.out(1.4)" }, 0.04)
+    .to(inn, { z: 0, scale: 1, duration: .25, ease: "power2.in" }, "-=.2"));
 }
 
 function flipCard(i) {
-  if (mmState.busy || mmState.matched.has(i) || mmState.flipped.includes(i)) return;
+  if (!mmState || mmState.busy || mmState.matched.has(i) || mmState.flipped.includes(i)) return;
   mmState.flipped.push(i);
-  renderCard(i);
+  setFlip(i, true);
+  const c = mmState.cards[i];
+  if (c.kind === "word") LP.say(c.key);
   if (mmState.flipped.length === 2) {
-    mmState.busy = true;
+    mmState.busy = true; LP.answer = null;
     mmState.moves++;
-    mmMoves.textContent = mmState.moves;
-    V2.bump(document.getElementById("mmMovesChip"));
+    movesN.textContent = mmState.moves;
+    if (ANIM) G.fromTo(movesChip, { scale: 1.2 }, { scale: 1, duration: .5, ease: "elastic.out(1,.4)" });
     const [a, b] = mmState.flipped;
     const match = mmState.cards[a].key === mmState.cards[b].key;
-    setTimeout(() => {
-      if (match) {
-        mmState.matched.add(a); mmState.matched.add(b);
-        renderCard(a); renderCard(b);
-        Lumio.beep(true);
-        [a, b].forEach(k => {
-          const el = mmGrid.children[k];
-          V2.ring(el, "#14B8A6");
-          if (anim) G.fromTo(el, { scale: 1.12 }, { scale: 1, duration: .7, ease: V2.spring() });
-        });
-        V2.check(mmGrid.children[b], "right:-12px;top:-12px;width:44px;height:44px");
-        mascot.cheer();
-        const totalPairs = mmState.cards.length / 2;
-        const got = mmState.matched.size / 2;
-        V2.flyStar(mmGrid.children[b], pairsChip, () => { mmPairs.textContent = `Pairs: ${got}/${totalPairs}`; });
-        if (!anim) mmPairs.textContent = `Pairs: ${got}/${totalPairs}`;
-        V2.progress(progFill, got / totalPairs);
-        if (mmState.matched.size === mmState.cards.length) setTimeout(endMemory, anim ? 900 : 0);
-      } else {
-        Lumio.beep(false);
-        [a, b].forEach(k => V2.shake(mmGrid.children[k]));
-        mmState.flipped = [];
-        setTimeout(() => { renderCard(a); renderCard(b); }, anim ? 260 : 0);
-      }
-      mmState.flipped = [];
-      mmState.busy = false;
-    }, match ? 450 : 700);
+    setTimeout(() => match ? onMatch(a, b) : onMiss(a, b), match ? 450 : 700);
   }
 }
 
-function endMemory() {
-  const totalPairs = mmState.cards.length / 2;
-  const efficiency = totalPairs / mmState.moves; // 1.0 = perfect
-  const ratio = Math.min(1, efficiency);
-  const st = gameStars(ratio);
-  document.getElementById("mmNote").innerHTML = gameResultNote(saveGameResultToLesson(st, Math.round(ratio * 10), 10));
-  document.getElementById("mmEndMoves").innerHTML = `Finished in <b class="v2-n" data-to="${mmState.moves}">${mmState.moves}</b> moves`;
-  V2.celebrate(endcard, Object.assign({ title: "Great job! 🎉" }, starsAward(st)));
+async function onMatch(a, b) {
+  mmState.matched.add(a); mmState.matched.add(b);
+  mmState.flipped = [];
+  const got = mmState.matched.size / 2, total = mmState.cards.length / 2;
+  const A = mmGrid.children[a], B = mmGrid.children[b], w = mmState.cards[a].w;
+  [A, B].forEach(el => { el.classList.add("match"); el.disabled = true; });
+  LP.sfx("correct"); LP.streak(true);
+  host.cheer(CH.cheer);
+  say(w.en + "!", w.en);
+  LP.fill(got - 1); LP.round(got < total ? got : -1);
+  if (ANIM) {
+    // the pair flies together, kisses, bursts, then lands on Lumi's pile
+    const ca = LP.center(A), cb = LP.center(B), mx = (ca.x + cb.x) / 2, my = (ca.y + cb.y) / 2;
+    A.style.zIndex = B.style.zIndex = 30;
+    const ia = A.firstChild, ib = B.firstChild, off = Math.min(46, ca.r.width * .36);
+    await new Promise(res => G.timeline({ onComplete: res })
+      .to(ia, { x: mx - ca.x - off, y: my - ca.y, rotation: -8, scale: 1.12, duration: .45, ease: "power3.inOut" })
+      .to(ib, { x: mx - cb.x + off, y: my - cb.y, rotation: 8, scale: 1.12, duration: .45, ease: "power3.inOut" }, 0)
+      .to(ia, { x: "+=" + off * .55, duration: .12, ease: "power2.in" })
+      .to(ib, { x: "-=" + off * .55, duration: .12, ease: "power2.in" }, "<")
+      .add(() => { LP.burst(mx, my, { n: 34, ringColor: "#22C55E" }); LP.sfx("pop"); })
+      .to([ia, ib], { scale: 1.25, duration: .12, ease: "power2.out" })
+      .to([ia, ib], { scale: 1.1, duration: .3, ease: "elastic.out(1,.4)" }));
+    const star = LP.el("span", ""); star.style.cssText = `position:fixed;left:${mx}px;top:${my}px;width:2px;height:2px`; document.body.appendChild(star);
+    LP.addStar(star).then(() => star.remove());
+    const t = LP.center(tray);
+    await new Promise(res => G.timeline({ onComplete: res })
+      .to([ia, ib], { x: (i) => t.x - (i ? cb.x : ca.x), y: (i) => t.y - (i ? cb.y : ca.y), scale: .42, rotation: (i) => i ? 14 : -10, duration: .55, ease: "power2.in", stagger: .06 })
+      .to([ia, ib], { opacity: 0, duration: .12 }));
+    A.style.zIndex = B.style.zIndex = "";
+  } else { LP.addStar(A); }
+  [A, B].forEach(el => { el.classList.add("gone"); el.firstChild.style.visibility = "hidden"; });
+  addToPile(w, got);
+  if (mmState.matched.size === mmState.cards.length) { setTimeout(endMemory, ANIM ? 700 : 0); return; }
+  mmState.busy = false; setAnswer();
 }
-document.getElementById("mmAgain").onclick = () => startMemory(mmState.source, true);
+function addToPile(w, got) {
+  const n = tray.querySelectorAll(".mm-mini").length;
+  const m = LP.el("div", "mm-mini", frontHtml({ kind: w.em ? "pic" : "pic", w }));
+  const f = m.firstChild; f.style.transform = "none"; f.style.borderRadius = "12px";
+  m.style.transform = `translate(${n * 1.2}px,${n * -2.2}px) rotate(${((n % 3) - 1) * 6}deg)`;
+  tray.appendChild(m);
+  trayLbl.textContent = got + " / " + mmState.pairs;
+  if (ANIM) G.from(m, { y: -30, scale: 1.3, opacity: 0, duration: .45, ease: "bounce.out" });
+}
 
-pageIntro();
-// games work immediately with the fallback bank; real lesson words load first when available
-loadLessonVocabForGames().catch(() => {}).then(() => startMemory());
+async function onMiss(a, b) {
+  const A = mmGrid.children[a], B = mmGrid.children[b];
+  [A, B].forEach(el => el.classList.add("miss"));
+  LP.sfx("wrong"); LP.streak(false);
+  host.oops(CH.oops, CH.pose);
+  say("Not a pair. Try again!");
+  if (ANIM) await new Promise(res => G.timeline({ onComplete: res })
+    .to([A.firstChild, B.firstChild], { x: -8, duration: .06 }).to([A.firstChild, B.firstChild], { x: 8, duration: .08 })
+    .to([A.firstChild, B.firstChild], { x: -5, duration: .08 }).to([A.firstChild, B.firstChild], { x: 0, duration: .25, ease: "elastic.out(1,.4)" }));
+  [A, B].forEach(el => el.classList.remove("miss"));
+  await Promise.all([setFlip(a, false), setFlip(b, false)]);
+  mmState.flipped = [];
+  mmState.busy = false; setAnswer();
+}
+
+function endMemory() {
+  LP.answer = null;
+  const totalPairs = mmState.cards.length / 2;
+  const ratio = Math.min(1, totalPairs / mmState.moves); // 1.0 = perfect
+  const st = gameStars(ratio);
+  const note = gameResultNote(saveGameResultToLesson(st, Math.round(ratio * 10), 10));
+  hubResults({ score: totalPairs, total: totalPairs, stars: st, title: "Great job! 🎉", scoreLabel: "Pairs found",
+    actor: { char: TEEN ? "lumi-teen" : "lumi", pose: "celebrate" }, exitHref: backHref, exitLabel: "Back to the Hub",
+    onReplay: () => startMemory(mmState.source) },
+    [`<span class="hub-line">Finished in ${mmState.moves} moves</span>`, note]);
+}
+
+const ready = loadLessonVocabForGames().catch(() => {});
+LP.title({ kicker: TEEN ? "English Hub · Mini game" : "English Hub · Play", title: "Memory Match", sub: "Flip two cards. Match each picture with its word!",
+  ar: "اقلب البطاقات وطابق كل صورة مع كلمتها", actor: TEEN ? { char: "lumi-teen", pose: "wave", cheer: "high-five" } : { char: "lumi", pose: "wave-book", cheer: "celebrate" }
+}).then(() => ready).then(() => startMemory());
 </script>
 </body>
 </html>
