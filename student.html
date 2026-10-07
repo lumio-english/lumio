@@ -4315,7 +4315,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
   const gameMapOverlay = document.getElementById("gameMapOverlay");
   const gameMapPath = document.getElementById("gameMapPath");
   document.getElementById("gameMapTitle").textContent = `${gameInfo.icon} ${gameInfo.title}`;
-  document.getElementById("gameMapSub").textContent = "Finish a lesson's homework to unlock its part of the game!";
+  document.getElementById("gameMapSub").textContent = "Play the parts up to your current lesson. A new part opens with every lesson you reach!";
 
   function renderGameMap() {
     const N = meta.lessons || 20;
@@ -4325,7 +4325,10 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
       // side activity available as soon as prep is done -- each part only
       // unlocks once that lesson's homework is finished, same isHomeworkDone
       // already computed above for the map and the schedule trail.
-      const unlocked = isHomeworkDone(n);
+      // Open from day 1 of the subscription: every part up to the lesson the student is on now
+      // (Lesson 1 on day 1), plus any lesson whose homework is already done. Later lessons stay
+      // locked so the game only uses words they have reached.
+      const unlocked = n <= current || isHomeworkDone(n);
       const el = document.createElement(unlocked ? "a" : "div");
       el.className = `node ${unlocked ? "done" : "locked"}`;
       if (unlocked) {
@@ -4335,7 +4338,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
         // default when a game is opened from a live class.
         el.href = `games/${gameInfo.file}?level=${level}&n=${n}&from=lesson`;
       } else {
-        el.title = "Finish this lesson's homework to unlock its part of the game";
+        el.title = "Opens when you reach this lesson";
       }
       el.innerHTML = unlocked
         ? `<span>${n}</span>`
