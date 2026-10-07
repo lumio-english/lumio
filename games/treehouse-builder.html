@@ -2,210 +2,195 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Treehouse Builder — Lumio English</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@700;800&family=Tajawal:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/brand.css">
+<link rel="stylesheet" href="kit/play.css">
 <style>
-  body {
-    min-height: 100vh; overflow-x: hidden;
-    background: linear-gradient(180deg, #BEE3D4 0%, #E3F3E9 50%, #FFFBF5 100%);
-    position: relative;
-  }
-  .cloud { position: absolute; background: #fff; border-radius: 999px; opacity: .75;
-    box-shadow: 40px 6px 0 -6px #fff, -40px 10px 0 -10px #fff; }
-  .leaf { position: absolute; font-size: 1.3rem; opacity: .5; animation: drift 3s ease-in-out infinite; }
-  @keyframes drift { 0%,100% { transform: translateY(0) rotate(-6deg); } 50% { transform: translateY(-10px) rotate(6deg); } }
+  /* Treehouse Builder: the backyard painting is the world. A framed close-up of the big tree is the
+     building site: every right answer delivers a piece that drops onto the tree, lands with a thump,
+     a dust puff and a bounce. Omar and Noor cheer below; on the last piece the dust clears on the
+     real, finished Treehouse Club (the painting moves planning -> building -> finished). */
+  .lp-scene .bg{filter:blur(3px) saturate(1.08)}
+  .lp-stage{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+  .th{width:100%;max-width:1320px;display:grid;grid-template-columns:1fr;gap:10px;justify-items:center;align-content:center;flex:1}
 
-  #hud { position: relative; z-index: 5; display: flex; align-items: center; gap: 12px; padding: 16px 20px; }
-  #hud .pill { background: #fff; border-radius: 999px; padding: 8px 18px; font-family: var(--font-display); font-weight: 800; box-shadow: var(--sh-sm); }
+  /* ---- the building site (a framed close-up of the painting) ---- */
+  .th-site{position:relative;width:100%;max-width:560px;aspect-ratio:6/5;border-radius:28px;overflow:hidden;
+    box-shadow:0 0 0 6px #FFF7E8,0 0 0 9px rgba(150,95,40,.55),0 28px 50px -22px rgba(40,20,0,.75);background:#9ccf6a;isolation:isolate}
+  .th-paint{position:absolute;inset:0;background-repeat:no-repeat;background-size:201.4% auto;background-position:100% 48.1%}
+  .th-paint.a{background-image:url("../assets/story/backgrounds/treehouse-planning.jpg")}
+  .th-paint.b{background-image:url("../assets/story/backgrounds/treehouse-finished.jpg");opacity:0}
+  .th-site::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+    background:radial-gradient(120% 90% at 50% 30%,transparent 60%,rgba(30,15,0,.28));box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}
+  .th-build{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+  .th-build .piece{visibility:hidden}
+  .th-kid{position:absolute;bottom:1.5%;height:40%;z-index:3;pointer-events:none}
+  .th-kid .lp-actor{height:100%}
+  .th-kid.omar{left:2%} .th-kid.noor{right:2%} .th-kid.sara{left:50%;transform:translateX(-50%);height:38%;visibility:hidden}
+  .th-dust{position:absolute;inset:0;z-index:4;pointer-events:none}
+  .th-puff{position:absolute;left:0;top:0;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;
+    background:radial-gradient(circle at 40% 40%,rgba(255,246,226,.95),rgba(214,186,140,.75) 55%,rgba(190,160,115,0) 72%)}
+  .th-sitewrap{position:relative;width:100%;max-width:560px;margin-bottom:14px}
+  .th-sitewrap .th-site{max-width:none}
+  .th-sign{position:absolute;left:0;right:0;margin:0 auto;width:max-content;bottom:-18px;z-index:5;max-width:92%;
+    padding:7px 16px 8px;border-radius:12px;background:linear-gradient(180deg,#D9A262,#B9773C);color:#FFF8EA;
+    font-family:var(--lp-display);font-weight:800;font-size:clamp(14px,3.9vw,18px);line-height:1.15;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    text-shadow:0 2px 0 rgba(90,45,10,.5);box-shadow:inset 0 -4px 0 rgba(0,0,0,.18),inset 0 2px 0 rgba(255,255,255,.3),0 10px 18px -8px rgba(50,25,0,.7)}
+  .th-sign::before,.th-sign::after{content:"";position:absolute;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:#7A4A22;box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+  .th-sign::before{left:6px} .th-sign::after{right:6px}
 
-  #layout { position: relative; z-index: 5; max-width: 920px; margin: 0 auto; padding: 0 20px 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
-  @media (max-width: 760px) { #layout { grid-template-columns: 1fr; } #treeWrap { order: 2; } #playWrap { order: 1; } }
+  /* ---- prompt + cards ---- */
+  .th-play{width:100%;max-width:600px;display:flex;flex-direction:column;align-items:center;gap:10px}
+  .th-ask{display:flex;align-items:flex-end;gap:8px;width:100%;justify-content:center}
+  .th-lumi{flex:none;height:96px;width:84px;display:flex;justify-content:center;align-items:flex-end}
+  .th-lumi .lp-actor{height:100%}
+  .th-ask .lp-bubble{flex:0 1 auto;margin-bottom:10px}
+  .th-ask .lp-bubble .tail{left:-8px;bottom:20px}
+  .th-cards{max-width:600px}
+  .th-cards.c3 .lp-card,.th-cards.c2 .lp-card{width:100%;max-width:210px;justify-self:center}
+  .th-cards.c2{max-width:440px}
+  .th-cards .lp-card .lbl{font-size:clamp(15px,4vw,20px);overflow-wrap:anywhere}
+  .lp-card .pic img{border-radius:12px}
+  .th-cards .lp-card.long .lbl{font-size:clamp(12.5px,3.3vw,17px);overflow-wrap:normal;word-break:normal}
+  /* a couple of drawings sit small inside a big empty canvas: show them at the same size as the rest */
+  .lp-card[data-word="ant"] .pic img{transform:scale(1.35)}
+  .lp-card[data-word="hamster"] .pic img{transform:scale(1.22) translateY(-6%)}
+  @media (max-width:420px){ .th-cards{gap:10px} .th-cards .lp-card .pic{margin:7px 7px 0;border-radius:14px} .th-cards .lp-card .lbl{padding:6px 4px 9px} }
 
-  #treeWrap { display: flex; flex-direction: column; align-items: center; padding-top: 10px; }
-  #treeWrap svg { width: 100%; max-width: 340px; height: auto; }
-  .piece { opacity: 0; transform: scale(.7); transform-origin: center; transition: opacity .5s ease, transform .5s cubic-bezier(.34,1.56,.64,1); }
-  .piece.show { opacity: 1; transform: scale(1); }
-  #buildLabel { font-family: var(--font-display); font-weight: 800; color: var(--cocoa); text-align: center; margin-top: 6px; font-size: 1.05rem; }
-
-  #playWrap { text-align: center; }
-  #promptCard {
-    background: #fff; border-radius: 24px; padding: 16px 22px; margin: 6px auto 18px;
-    box-shadow: var(--sh-md); display: inline-flex; align-items: center; gap: 12px; max-width: 100%;
-   cursor:pointer;
+  /* laptop: build site on the left, Lumi + cards on the right */
+  @media (min-width:900px){
+    .th{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);column-gap:44px;align-items:center;min-height:calc(100dvh - 160px)}
+    .th-sitewrap{max-width:700px;justify-self:end}
+    .th-play{justify-self:start;max-width:600px;gap:18px}
+    .th-ask{justify-content:flex-start}
+    .th-lumi{height:190px;width:160px}
+    .th-cards{gap:18px}
   }
-  #promptCard p { font-family: var(--font-display); font-weight: 800; color: var(--cocoa); font-size: 1.1rem; margin: 0; }
-  #hearBtn {
-    background: var(--grad-sun); border: none; border-radius: 999px; width: 52px; height: 52px;
-    display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
-    box-shadow: 0 6px 14px rgba(255,197,61,.5); transition: transform .15s ease;
-  }
-  #hearBtn:active { transform: scale(.9); }
-  #hearBtn.pulse { animation: pulse 1s ease infinite; }
-  @keyframes pulse { 0%,100% { box-shadow: 0 6px 14px rgba(255,197,61,.5); } 50% { box-shadow: 0 6px 22px rgba(255,197,61,.85); } }
-
-  #optGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-  @media (max-width: 420px) { #optGrid { grid-template-columns: repeat(2, 1fr); } }
-  .opt-card {
-    background: #fff; border: 5px solid transparent; border-radius: 22px; padding: 0;
-    cursor: pointer; overflow: hidden; box-shadow: var(--sh-md);
-    transition: transform .15s ease, border-color .2s ease, opacity .3s ease;
-    position: relative;
-  }
-  .opt-card:active { transform: scale(.94); }
-  .opt-card .pic { position: relative; width: 100%; aspect-ratio: 1/1; overflow: hidden; }
-  .opt-card .pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 8%; box-sizing: border-box; background: #fff; }
-  .opt-card .word { font-family: var(--font-display); font-weight: 800; font-size: .95rem; color: var(--cocoa); padding: 8px 4px; }
-  .opt-card.correct { border-color: var(--green); background: var(--green-soft); }
-  .opt-card.correct-pop { animation: correctPop .5s ease; }
-  @keyframes correctPop { 0% { transform: scale(1); } 40% { transform: scale(1.1); } 100% { transform: scale(1); } }
-  .opt-card.wrong-dim { opacity: .35; pointer-events: none; }
-  .opt-card.wrong-shake { animation: wrongShake .4s ease; }
-  @keyframes wrongShake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
-  .opt-card.locked { pointer-events: none; }
-  .opt-card .check {
-    position: absolute; top: 8px; right: 8px; width: 30px; height: 30px; border-radius: 999px;
-    background: var(--green); color: #fff; display: flex; align-items: center; justify-content: center;
-    font-weight: 800; opacity: 0; transform: scale(.5); transition: all .25s ease;
-  }
-  .opt-card.correct .check { opacity: 1; transform: scale(1); }
-
-  #endcard {
-    position: fixed; inset: 0; z-index: 60; display: none;
-    align-items: center; justify-content: center; background: rgba(67,48,31,.45); padding: 20px;
-  }
-  #endcard .box { background: #fff; border-radius: 28px; padding: 32px 36px; text-align: center; box-shadow: var(--sh-lg); max-width: 440px; }
-  #endcard .crew { display: flex; justify-content: center; gap: -10px; margin: 6px 0; }
-  #endcard .crew img { height: 90px; margin: 0 -10px; filter: drop-shadow(0 8px 12px rgba(67,48,31,.2)); }
+  @media (min-width:900px) and (max-height:760px){ .th-sitewrap{max-width:560px} .th-lumi{height:150px;width:130px} }
+  @media (max-height:700px) and (max-width:899px){ .th-sitewrap{max-width:380px} .th-lumi{height:76px;width:66px} }
 </style>
 </head>
 <body>
-
-<div class="cloud" style="width:64px;height:24px;top:36px;left:8%"></div>
-<div class="cloud" style="width:50px;height:18px;top:80px;right:10%"></div>
-<div class="leaf" style="top:18%;left:5%">🍃</div>
-<div class="leaf" style="top:60%;right:4%;animation-delay:.9s">🍃</div>
-
-<div id="hud">
-  <a class="btn btn-ghost" href="../present.html" id="exitBtn" style="background:#fff">Exit</a>
-  <span class="pill">★ <span id="score">0</span></span>
-  <span class="pill" id="roundPill">1/6</span>
-</div>
-
-<div id="layout">
-  <div id="treeWrap">
-    <svg viewBox="0 0 340 420" xmlns="http://www.w3.org/2000/svg">
-      <!-- piece 0: ground + trunk + branches (always visible, the starting point) -->
-      <ellipse cx="170" cy="405" rx="140" ry="14" fill="#BEE3D4"/>
-      <path d="M155 405 C150 300 148 220 160 150 C165 120 175 100 172 60 L188 60 C182 100 190 120 195 150 C202 220 200 300 195 405 Z" fill="#B5794A"/>
-      <path d="M172 170 C140 155 110 160 90 140" stroke="#B5794A" stroke-width="14" stroke-linecap="round" fill="none"/>
-      <path d="M195 190 C230 175 255 180 275 160" stroke="#B5794A" stroke-width="14" stroke-linecap="round" fill="none"/>
-      <circle cx="80" cy="130" r="34" fill="#7DBF8E"/>
-      <circle cx="270" cy="150" r="30" fill="#7DBF8E"/>
-      <circle cx="120" cy="90" r="26" fill="#8FCB9E"/>
-
-      <!-- piece 1: platform -->
-      <g class="piece" id="pc-platform">
-        <rect x="90" y="248" width="160" height="20" rx="4" fill="#D9A85E"/>
-        <rect x="90" y="248" width="160" height="6" rx="3" fill="#E9C08A"/>
-        <line x1="105" y1="248" x2="105" y2="268" stroke="#B5794A" stroke-width="2"/>
-        <line x1="135" y1="248" x2="135" y2="268" stroke="#B5794A" stroke-width="2"/>
-        <line x1="165" y1="248" x2="165" y2="268" stroke="#B5794A" stroke-width="2"/>
-        <line x1="195" y1="248" x2="195" y2="268" stroke="#B5794A" stroke-width="2"/>
-        <line x1="225" y1="248" x2="225" y2="268" stroke="#B5794A" stroke-width="2"/>
-      </g>
-
-      <!-- piece 2: walls + door -->
-      <g class="piece" id="pc-walls">
-        <rect x="105" y="150" width="130" height="98" rx="8" fill="#F0C48A"/>
-        <rect x="150" y="196" width="40" height="52" rx="4" fill="#B5794A"/>
-        <circle cx="182" cy="222" r="3" fill="#7A4E24"/>
-      </g>
-
-      <!-- piece 3: roof -->
-      <g class="piece" id="pc-roof">
-        <polygon points="95,152 170,95 245,152" fill="#EF6B4B"/>
-        <polygon points="95,152 170,95 170,110 108,152" fill="#F58868"/>
-        <rect x="160" y="80" width="10" height="22" fill="#8A5A34"/>
-      </g>
-
-      <!-- piece 4: window + bunting -->
-      <g class="piece" id="pc-window">
-        <circle cx="128" cy="200" r="16" fill="#BEE3F5" stroke="#8A5A34" stroke-width="3"/>
-        <line x1="128" y1="184" x2="128" y2="216" stroke="#8A5A34" stroke-width="2"/>
-        <line x1="112" y1="200" x2="144" y2="200" stroke="#8A5A34" stroke-width="2"/>
-        <path d="M108 152 Q170 172 232 152" stroke="#8A5A34" stroke-width="2" fill="none"/>
-        <polygon points="120,158 128,170 112,170" fill="#F97316"/>
-        <polygon points="150,160 158,172 142,172" fill="#0D9488"/>
-        <polygon points="180,160 188,172 172,172" fill="#F59E0B"/>
-        <polygon points="210,158 218,170 202,170" fill="#8B5CF6"/>
-      </g>
-
-      <!-- piece 5: rope ladder + flag -->
-      <g class="piece" id="pc-final">
-        <polygon points="170,60 170,80 185,70" fill="#F97316"/>
-        <line x1="150" y1="268" x2="140" y2="360" stroke="#D9A85E" stroke-width="4"/>
-        <line x1="170" y1="268" x2="165" y2="360" stroke="#D9A85E" stroke-width="4"/>
-        <line x1="142" y1="290" x2="167" y2="288" stroke="#B5794A" stroke-width="5"/>
-        <line x1="141" y1="315" x2="166" y2="313" stroke="#B5794A" stroke-width="5"/>
-        <line x1="140" y1="340" x2="165" y2="338" stroke="#B5794A" stroke-width="5"/>
-      </g>
-    </svg>
-    <div id="buildLabel">Building the Treehouse Club! 🌳</div>
-  </div>
-
-  <div id="playWrap">
-    <div id="promptCard">
-      <button id="hearBtn" class="pulse" aria-label="Listen">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="#43301F"/><path d="M16.5 8.5a5 5 0 010 7M19 6a9 9 0 010 12" stroke="#43301F" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
-      </button>
-      <p>Tap the picture you hear!</p>
+<main class="lp-stage" id="stage">
+  <div class="th">
+    <div class="th-sitewrap">
+    <section class="th-site" id="site" aria-label="The treehouse building site">
+      <div class="th-paint a"></div><div class="th-paint b" id="paintDone"></div>
+      <svg class="th-build" id="build" viewBox="0 0 600 500" aria-hidden="true">
+        <defs>
+          <linearGradient id="thWood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E7B577"/><stop offset="1" stop-color="#B97A3F"/></linearGradient>
+          <linearGradient id="thWoodD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A86A33"/><stop offset="1" stop-color="#7A4A22"/></linearGradient>
+          <linearGradient id="thRed" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E9564A"/><stop offset="1" stop-color="#C93B30"/></linearGradient>
+          <linearGradient id="thBlue" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4C8BE3"/><stop offset="1" stop-color="#2F67C2"/></linearGradient>
+          <linearGradient id="thRoof" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E24B36"/><stop offset="1" stop-color="#B8321F"/></linearGradient>
+          <linearGradient id="thGlass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E3F6FF"/><stop offset="1" stop-color="#9BD3F2"/></linearGradient>
+        </defs>
+        <!-- 1: platform + braces -->
+        <g class="piece" id="pc-platform">
+          <path d="M232 252 L262 300 M372 252 L342 300" stroke="url(#thWoodD)" stroke-width="12" stroke-linecap="round"/>
+          <rect x="160" y="226" width="284" height="28" rx="6" fill="url(#thWood)" stroke="#7A4A22" stroke-width="3"/>
+          <rect x="160" y="226" width="284" height="8" rx="4" fill="#F2CB92"/>
+          <g stroke="#8A5A2B" stroke-width="2.4" opacity=".7"><line x1="196" y1="232" x2="196" y2="252"/><line x1="236" y1="232" x2="236" y2="252"/><line x1="276" y1="232" x2="276" y2="252"/><line x1="316" y1="232" x2="316" y2="252"/><line x1="356" y1="232" x2="356" y2="252"/><line x1="396" y1="232" x2="396" y2="252"/></g>
+          <g fill="#6B3F1C"><circle cx="170" cy="242" r="3"/><circle cx="434" cy="242" r="3"/></g>
+        </g>
+        <!-- 2: walls + door -->
+        <g class="piece" id="pc-walls">
+          <rect x="194" y="122" width="110" height="106" fill="url(#thRed)"/>
+          <rect x="304" y="122" width="108" height="106" fill="url(#thBlue)"/>
+          <g stroke="rgba(0,0,0,.16)" stroke-width="2"><line x1="194" y1="144" x2="412" y2="144"/><line x1="194" y1="166" x2="412" y2="166"/><line x1="194" y1="188" x2="412" y2="188"/><line x1="194" y1="210" x2="412" y2="210"/></g>
+          <rect x="190" y="120" width="10" height="110" rx="3" fill="url(#thWood)" stroke="#7A4A22" stroke-width="2"/>
+          <rect x="298" y="120" width="10" height="110" rx="3" fill="url(#thWood)" stroke="#7A4A22" stroke-width="2"/>
+          <rect x="406" y="120" width="10" height="110" rx="3" fill="url(#thWood)" stroke="#7A4A22" stroke-width="2"/>
+          <rect x="330" y="150" width="52" height="78" rx="6" fill="#F5B83D" stroke="#8A5A2B" stroke-width="3"/>
+          <rect x="338" y="158" width="36" height="24" rx="3" fill="url(#thGlass)" stroke="#8A5A2B" stroke-width="2"/>
+          <circle cx="372" cy="196" r="3.5" fill="#7A4A22"/>
+        </g>
+        <!-- 3: roof -->
+        <g class="piece" id="pc-roof">
+          <polygon points="172,130 303,44 434,130" fill="url(#thRoof)" stroke="#8E2618" stroke-width="3" stroke-linejoin="round"/>
+          <g stroke="rgba(110,25,10,.35)" stroke-width="2.4" fill="none"><path d="M206 108 L400 108"/><path d="M238 87 L368 87"/><path d="M270 66 L336 66"/></g>
+          <polygon points="172,130 303,44 303,58 192,130" fill="rgba(255,255,255,.18)"/>
+          <rect x="166" y="126" width="274" height="12" rx="5" fill="url(#thWood)" stroke="#7A4A22" stroke-width="2.5"/>
+        </g>
+        <!-- 4: window with flower box + bunting -->
+        <g class="piece" id="pc-window">
+          <g id="pc-win">
+            <rect x="222" y="150" width="56" height="48" rx="5" fill="url(#thGlass)" stroke="#F7F0E2" stroke-width="5"/>
+            <path d="M250 152 V196 M224 174 H276" stroke="#F7F0E2" stroke-width="4"/>
+            <rect x="216" y="198" width="68" height="14" rx="4" fill="url(#thWoodD)"/>
+            <g><circle cx="226" cy="196" r="6" fill="#FF7FA8"/><circle cx="240" cy="193" r="6" fill="#FFD84D"/><circle cx="256" cy="196" r="6" fill="#FF7FA8"/><circle cx="272" cy="193" r="6" fill="#fff"/><circle cx="240" cy="193" r="2.4" fill="#E08A00"/><circle cx="272" cy="193" r="2.4" fill="#E08A00"/></g>
+          </g>
+          <g id="pc-bunting">
+            <path d="M176 138 Q303 176 430 138" stroke="#6B3F1C" stroke-width="2.5" fill="none"/>
+            <polygon points="196,145 214,149 203,166" fill="#F97316"/><polygon points="226,153 244,156 233,173" fill="#0D9488"/>
+            <polygon points="258,158 276,159 266,177" fill="#FFC93C"/><polygon points="292,160 310,160 301,178" fill="#8B5CF6"/>
+            <polygon points="326,159 344,158 336,176" fill="#22C55E"/><polygon points="360,155 378,152 370,170" fill="#3BA0FF"/>
+            <polygon points="392,148 410,144 403,161" fill="#FF5C8A"/>
+          </g>
+        </g>
+        <!-- 5: rope ladder -->
+        <g class="piece" id="pc-ladder">
+          <path d="M250 252 L236 386 M290 252 L282 386" stroke="#C9935A" stroke-width="8" stroke-linecap="round"/>
+          <g stroke="#8A5A2B" stroke-width="8" stroke-linecap="round"><line x1="247" y1="278" x2="288" y2="278"/><line x1="245" y1="304" x2="287" y2="304"/><line x1="242" y1="330" x2="285" y2="330"/><line x1="239" y1="356" x2="284" y2="356"/></g>
+        </g>
+        <!-- 6: flag on the roof -->
+        <g class="piece" id="pc-flag">
+          <rect x="300" y="6" width="6" height="42" rx="3" fill="#6B3F1C"/>
+          <circle cx="303" cy="6" r="5" fill="#FFC93C"/>
+          <path id="pc-flagcloth" d="M306 10 L352 20 L306 32 Z" fill="#F97316" stroke="#C2530A" stroke-width="2" stroke-linejoin="round"/>
+        </g>
+      </svg>
+      <div class="th-kid omar" id="kidOmar"></div>
+      <div class="th-kid noor" id="kidNoor"></div>
+      <div class="th-kid sara" id="kidSara"></div>
+      <div class="th-dust" id="dust"></div>
+    </section>
+    <div class="th-sign" id="buildLabel" aria-live="polite">Building the Treehouse Club!</div>
     </div>
-    <div id="optGrid"></div>
-  </div>
-</div>
 
-<div id="endcard">
-  <div class="box">
-    <div class="crew">
-      <img src="../assets/story/characters/lumi-celebrate.png" alt="Lumi">
-      <img src="../assets/story/characters/omar-celebrate.png" alt="Omar">
-      <img src="../assets/story/characters/sara-celebrate.png" alt="Sara">
-      <img src="../assets/story/characters/noor-happy.png" alt="Noor">
-    </div>
-    <h1 style="font-family:var(--font-display);margin-top:8px">The Treehouse Club is open!</h1>
-    <p style="font-weight:800;font-size:1.2rem;margin:10px 0" id="finalScore"></p>
-    <div class="row" style="justify-content:center;gap:10px">
-      <button class="btn btn-primary" onclick="location.reload()">↺ Build again</button>
-      <a class="btn btn-teal" id="backBtn" href="../present.html">Back</a>
-    </div>
+    <section class="th-play">
+      <div class="th-ask">
+        <div class="th-lumi" id="lumiZone"></div>
+        <button class="lp-bubble" id="promptCard" type="button" aria-label="Hear it again">
+          <span class="lp-speak" id="hearBtn" aria-hidden="true"></span>
+          <span class="txt" id="promptText">Tap the picture you hear!</span>
+          <span class="tail"></span>
+        </button>
+      </div>
+      <div class="lp-cards c3 th-cards" id="optGrid" aria-live="polite"></div>
+    </section>
   </div>
-</div>
+</main>
 
+<script src="../vendor/gsap-3.12.5.min.js"></script>
+<script src="../vendor/lottie-light-5.12.2.min.js"></script>
 <script src="../js/app.js"></script>
 <script src="../js/lessons-data.js"></script>
+<script src="kit/play.js"></script>
 <script>
 const level = Lumio.qs("level") || "level1";
 const num = parseInt(Lumio.qs("n") || "1", 10);
 const source = Lumio.qs("from");
 const backHref = source === "lesson" ? "../student.html" : source === "trial" ? `../present-trial.html?level=${level}` : `../present.html?level=${level}&n=${num}`;
+
+LP.init({ scene: { bg: "assets/story/backgrounds/treehouse-planning.jpg", particles: "leaves", pos: "62% 40%", tint: "linear-gradient(180deg,rgba(255,240,200,.10),rgba(40,25,0,.22))" }, hud: { rounds: 6, exitHref: backHref } });
+document.getElementById("hearBtn").innerHTML = LP.ICON.speaker;
 // From a trial deck the game opened in its own tab: Exit just closes it (the trial is still open in the first tab).
-if (source === "trial") ["exitBtn", "backBtn"].forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener("click", e => { e.preventDefault(); try { window.close(); } catch (x) {} setTimeout(() => { location.href = backHref; }, 250); }); });
-document.getElementById("exitBtn").href = backHref;
-document.getElementById("backBtn").href = backHref;
+if (source === "trial") LP.hud.exit.onclick = e => { e.preventDefault(); try { window.close(); } catch (x) {} setTimeout(() => { location.href = backHref; }, 250); };
 
 const lesson = window.LUMIO_LESSONS?.[level]?.[num];
 const vocab = lesson ? lesson.vocab : [];
-const slug = w => w.toLowerCase().replace(/'/g, "").replace(/ /g, "-");
+const G = window.gsap, RM = LP.RM;
 
-// One treehouse piece unlocks per correct round, in build order (base is
-// already visible, so a 6-round lesson finishes with every piece placed
-// exactly on the final correct answer).
-const PIECES = ["pc-platform", "pc-walls", "pc-roof", "pc-window", "pc-final"];
+// One build step per correct round (6 rounds -> platform, walls, roof, window, ladder, flag).
+// (The old page re-used the window step for round 5, so one right answer built nothing.)
+const PIECES = ["pc-platform", "pc-walls", "pc-roof", "pc-window", "pc-ladder", "pc-flag"];
 const BUILD_LABELS = [
-  "Building the Treehouse Club! 🌳", "The platform is up! 🪵", "Walls are in place! 🏠",
-  "The roof is on! 🏡", "A window for waving! 👋", "The ladder's ready — come on up! 🎉",
+  "Building the Treehouse Club!", "The platform is up!", "Walls are in place!",
+  "The roof is on!", "A window for waving!", "The ladder's ready — come on up!", "The Treehouse Club is open!",
 ];
 
 // ---------- Curated phonics word bank (each entry has a confirmed real vocab image) ----------
@@ -234,24 +219,122 @@ function eligiblePhonicsWords(lessonNum) {
 }
 const phonicsPool = eligiblePhonicsWords(num);
 
+// Sentence rounds speak the target's example sentence. A distractor that is ALSO named in that
+// sentence ("The ball is in the box" -> in / ball / box) or that shows the same picture (big = an
+// elephant, small = a mouse, pet = a dog) would be a second right answer, so it is never offered.
+const mentions = (sentence, w) => new RegExp("\\b" + w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(s|es)?\\b", "i").test(sentence || "");
+const SAME_PICTURE = [["big", "elephant"], ["small", "mouse"], ["pet", "dog"], ["age", "years old", "birthday"]];
+const samePicture = (a, b) => SAME_PICTURE.some(g => g.includes(a.toLowerCase()) && g.includes(b.toLowerCase()));
+const imgKey = v => String(v.image || v.en).toLowerCase().replace(/'/g, "").replace(/ /g, "-");   // the data's own picture (e.g. "fish" -> fish-food in L1 lesson 8)
+// two options may not share a picture file or the same Arabic meaning (fine / okay)
+const clash = (a, b) => imgKey(a) === imgKey(b) || (a.ar && a.ar === b.ar) || samePicture(a.en, b.en) || mentions(a.en, b.en) || mentions(b.en, a.en);
+function pickDistractors(target, n) {
+  const others = Lumio.shuffle(vocab.filter(v => v.en !== target.en));
+  const say = target.example || target.en;
+  const out = [];
+  others.forEach(v => { if (out.length < n && !mentions(say, v.en) && ![target, ...out].some(o => clash(o, v))) out.push(v); });
+  if (out.length < Math.min(n, 2)) others.forEach(v => { if (out.length < n && !out.includes(v) && !mentions(say, v.en) && imgKey(v) !== imgKey(target)) out.push(v); });
+  return out;
+}
+
+const lumi = LP.actor(document.getElementById("lumiZone"), { char: "lumi", pose: "megaphone", cheer: "celebrate", oops: "surprised", alt: "Lumi" });
+const omar = LP.actor(document.getElementById("kidOmar"), { char: "omar", pose: "happy", cheer: "celebrate", oops: "surprised", alt: "Omar" });
+const noor = LP.actor(document.getElementById("kidNoor"), { char: "noor", pose: "happy", cheer: "celebrate", oops: "surprised", alt: "Noor" });
+let sara = null;
+
+const site = document.getElementById("site"), dustL = document.getElementById("dust"), buildLabel = document.getElementById("buildLabel");
+const VB = 600;                                                      // svg viewBox width
+const vbPx = () => site.clientWidth / VB;
+
+/* ---------- build FX: dust puffs, wood chips, thump ---------- */
+function dust(cx, cy, spread, n) {
+  if (RM || !G) return;
+  const k = vbPx();
+  for (let i = 0; i < (n || 12); i++) {
+    const p = document.createElement("span"); p.className = "th-puff"; dustL.appendChild(p);
+    const x = (cx + (Math.random() - .5) * spread) * k, y = cy * k;
+    const dir = (x / k - cx) >= 0 ? 1 : -1;
+    G.fromTo(p, { x, y, scale: .25 + Math.random() * .3, opacity: .95 },
+      { x: x + dir * (25 + Math.random() * 70) * k * 1.4, y: y - (8 + Math.random() * 40) * k * 1.4, scale: 1.1 + Math.random() * 1.1, opacity: 0,
+        duration: .8 + Math.random() * .6, ease: "power2.out", onComplete: () => p.remove() });
+  }
+  const r = site.getBoundingClientRect();
+  LP.burst(r.left + cx * k, r.top + cy * k, { n: 14, speed: 6, up: 4, colors: ["#C98A4B", "#8A5A2B", "#E7B577", "#FFE7B0"], ring: false, scale: .8 });
+}
+function shake(power) {
+  if (RM || !G) return;
+  G.fromTo(site, { y: 0 }, { y: power || 5, duration: .05, yoyo: true, repeat: 5, ease: "none", onComplete: () => G.set(site, { y: 0 }) });
+}
+function thump() { LP.sfx("boom"); setTimeout(() => LP.sfx("tick"), 120); setTimeout(() => LP.sfx("tick"), 260); }
+
+/* each piece arrives in its own way, but every one lands with dust and a bounce */
+function landPiece(i) {
+  const g = document.getElementById(PIECES[i]); if (!g) return Promise.resolve();
+  g.style.visibility = "visible";
+  if (RM || !G) { g.style.opacity = 1; return Promise.resolve(); }
+  return new Promise(res => {
+    const tl = G.timeline({ onComplete: res });
+    const drop = (el, landY, spread) => tl
+      .fromTo(el, { y: -560, rotation: (Math.random() - .5) * 8, opacity: 1 }, { y: 0, rotation: 0, duration: .62, ease: "power3.in", transformOrigin: "50% 100%" })
+      .add(() => { thump(); shake(6); dust(303, landY, spread, 16); })
+      .fromTo(el, { scaleY: .78, scaleX: 1.08 }, { scaleY: 1, scaleX: 1, duration: .9, ease: "elastic.out(1,.32)", transformOrigin: "50% 100%" });
+    if (i === 0) drop(g, 254, 260);
+    else if (i === 1) drop(g, 228, 220);
+    else if (i === 2) drop(g, 132, 250);
+    else if (i === 3) {
+      const win = document.getElementById("pc-win"), bun = document.getElementById("pc-bunting");
+      tl.fromTo(win, { scale: 0, rotation: -25 }, { scale: 1, rotation: 0, duration: .55, ease: "back.out(2.6)", transformOrigin: "50% 50%",
+          onStart: () => LP.sfx("pop"), onComplete: () => { dust(250, 205, 70, 8); LP.sfx("tick"); } })
+        .fromTo(bun, { scaleX: 0, opacity: 1 }, { scaleX: 1, duration: .5, ease: "power2.out", transformOrigin: "0% 50%", onStart: () => LP.sfx("whoosh") }, "-=.1")
+        .fromTo(bun, { rotation: 4 }, { rotation: 0, duration: 1, ease: "elastic.out(1,.3)", transformOrigin: "50% 0%" });
+    } else if (i === 4) {
+      tl.fromTo(g, { scaleY: 0, opacity: 1 }, { scaleY: 1, duration: .55, ease: "bounce.out", transformOrigin: "50% 0%", onStart: () => LP.sfx("whoosh") })
+        .add(() => { thump(); dust(262, 386, 90, 12); shake(3); }, "-=.18")
+        .fromTo(g, { rotation: 3 }, { rotation: 0, duration: .9, ease: "elastic.out(1,.3)", transformOrigin: "50% 0%" });
+    } else {
+      tl.fromTo(g, { scaleY: 0, opacity: 1 }, { scaleY: 1, duration: .6, ease: "back.out(2)", transformOrigin: "50% 100%", onStart: () => LP.sfx("rise") })
+        .add(() => { const r = site.getBoundingClientRect(), k = vbPx(); LP.burst(r.left + 330 * k, r.top + 20 * k, { n: 22, shape: "star", colors: ["#FFD666", "#FFB300", "#fff"] }); LP.sfx("star"); });
+      G.to("#pc-flagcloth", { skewY: 8, scaleX: .9, duration: .5, yoyo: true, repeat: -1, ease: "sine.inOut", transformOrigin: "0% 50%", delay: .6 });
+    }
+  });
+}
+function setLabel(t) {
+  if (RM || !G) { buildLabel.textContent = t; return; }
+  G.timeline().to(buildLabel, { rotationX: 90, duration: .18, ease: "power2.in", onComplete: () => { buildLabel.textContent = t; } })
+    .to(buildLabel, { rotationX: 0, duration: .5, ease: "back.out(2.5)" });
+}
+/* the dust clears on the real, finished treehouse */
+async function grandOpening() {
+  const pieces = document.querySelectorAll("#build .piece");
+  LP.sceneTo("assets/story/backgrounds/treehouse-finished.jpg", "62% 40%");
+  if (RM || !G) { document.getElementById("paintDone").style.opacity = 1; pieces.forEach(p => p.style.visibility = "hidden"); }
+  else {
+    dust(303, 140, 300, 26); dust(303, 300, 260, 16); LP.sfx("boom");
+    await LP.wait(250);
+    G.to("#paintDone", { opacity: 1, duration: 1.1, ease: "power2.inOut" });
+    G.to(pieces, { opacity: 0, duration: .9, ease: "power2.in" });
+    const r = site.getBoundingClientRect(); LP.burst(r.left + r.width / 2, r.top + r.height * .3, { n: 40, speed: 9 });
+  }
+  const sz = document.getElementById("kidSara"); sz.style.visibility = "visible";
+  sara = LP.actor(sz, { char: "sara", pose: "wave", cheer: "celebrate", alt: "Sara" });
+  if (!RM) await sara.enter("bottom");
+  [omar, noor, sara, lumi].forEach((a, i) => setTimeout(() => a.cheer(null, false), i * 140));
+  LP.sfx("win");
+  await LP.wait(1800);
+}
+
 if (!vocab.length) {
-  document.getElementById("playWrap").innerHTML = "<p style='padding:40px'>No lesson data found.</p>";
+  document.getElementById("optGrid").innerHTML = "<p class='lp-panel' style='padding:24px;grid-column:1/-1'>No lesson data found.</p>";
 } else {
   const ROUNDS = 6;
-  let r = 0, score = 0, locked = false;
+  let r = 0, score = 0, locked = true;
   // Target-word queue: every vocab word once, shuffled, before any word
-  // repeats. Previously each round picked a fresh random target with no
-  // memory of earlier rounds, so the same word could easily come up two
-  // or three times in one 6-round game while others never appeared.
-  // Single shared "already asked" set for the whole game -- the previous
-  // fix (two separate queues, one per round type) still let the same
-  // word repeat if it happened to exist in both the phonics pool and the
-  // regular vocab list, which is exactly what was happening ("ant" is
-  // both). Both pickers now check against one shared set.
+  // repeats. Single shared "already asked" set for the whole game, so a
+  // word that is in both the phonics pool and the vocab list ("ant") can't repeat.
   let usedThisGame = new Set();
   function pickUnused(pool, keyFn) {
     let avail = pool.filter(w => !usedThisGame.has(keyFn(w)));
-    if (!avail.length) { usedThisGame.clear(); avail = pool.slice(); }
+    if (!avail.length) { pool.forEach(w => usedThisGame.delete(keyFn(w))); avail = pool.slice(); }   // only this pool starts over
     const pick = Lumio.shuffle(avail)[0];
     usedThisGame.add(keyFn(pick));
     return pick;
@@ -259,111 +342,102 @@ if (!vocab.length) {
   function nextTarget() { return pickUnused(vocab, w => w.en); }
   function nextPhonicsTarget() { return pickUnused(phonicsPool, w => w); }
   const optGrid = document.getElementById("optGrid");
-  const buildLabel = document.getElementById("buildLabel");
+  const hearBtn = document.getElementById("hearBtn");
 
   // Round plan: mostly phonics rounds (this level's main focus), with a
   // sentence-pattern round mixed in so vocabulary and the lesson's own
-  // grammar pattern get covered too, not only sounds.
-  // Cap phonics rounds at the pool size: with only 2-3 curated words per
-  // phonics unit, scheduling more phonics rounds than that guarantees a
-  // repeat no matter how the picker works (there simply aren't enough
-  // unique words to fill the slots). Previously up to 4 of the 6 rounds
-  // were marked "phonics" regardless of pool size. Excess phonics slots
-  // fall back to "sentence" rounds instead, which draw from the much
-  // larger per-lesson vocab list.
+  // grammar pattern get covered too. Phonics rounds are capped at the
+  // pool size (max 4); excess slots fall back to sentence rounds.
   const plan = [];
   let phonicsRoundsLeft = Math.min(phonicsPool.length, 4);
   for (let i = 0; i < ROUNDS; i++) {
     const wantsPhonics = phonicsPool.length >= 2 && i % 3 !== 2;
-    if (wantsPhonics && phonicsRoundsLeft > 0) {
-      plan.push("phonics");
-      phonicsRoundsLeft--;
-    } else {
-      plan.push("sentence");
-    }
+    if (wantsPhonics && phonicsRoundsLeft > 0) { plan.push("phonics"); phonicsRoundsLeft--; }
+    else plan.push("sentence");
   }
   if (phonicsPool.length < 2) plan.forEach((_, i) => plan[i] = "sentence");
 
-  function placePiece(roundIndexJustWon) {
-    const pieceIdx = roundIndexJustWon === ROUNDS - 1 ? PIECES.length - 1
-      : Math.min(roundIndexJustWon, PIECES.length - 2);
-    const el = document.getElementById(PIECES[pieceIdx]);
-    if (el && !el.classList.contains("show")) el.classList.add("show");
-    buildLabel.textContent = BUILD_LABELS[Math.min(roundIndexJustWon + 1, BUILD_LABELS.length - 1)];
-  }
+  let currentTargetWord = "", currentSpeakText = "";
+  const playPrompt = () => LP.say(currentSpeakText, hearBtn);
 
-  let currentTargetWord = "";
-  let currentSpeakText = "";
-
-  function playPrompt() { Lumio.speak(currentSpeakText); }
-
-  function makeCard(word, imgPath) {
-    return `
-      <button class="opt-card" data-en="${word}">
-        <div class="pic">
-          <div style="position:absolute;inset:0">${Lumio.letterTile(word)}</div>
-          <img src="${imgPath}" alt="${word}" onload="this.previousElementSibling.style.display='none'" onerror="this.remove()">
-        </div>
-        <div class="word">${word}</div>
-        <div class="check">✓</div>
-      </button>`;
-  }
-
-  function drawRound() {
-    locked = false;
-    document.getElementById("roundPill").textContent = `${r + 1}/${ROUNDS}`;
-
+  async function drawRound() {
+    locked = true; LP.answer = null;
+    LP.round(r);
+    lumi.set("megaphone");
+    optGrid.innerHTML = "";
+    let words, pics = {};
     if (plan[r] === "phonics") {
       const target = nextPhonicsTarget();
       const distractorPool = Lumio.shuffle(phonicsPool.filter(w => w !== target));
-      const words = Lumio.shuffle([target, ...distractorPool.slice(0, Math.min(2, distractorPool.length))]);
-      currentTargetWord = target;
-      currentSpeakText = target;
-      window.__lastTarget = target; // exposed for automated QA only
-      optGrid.innerHTML = words.map(w => makeCard(w, `../assets/vocab/${slug(w)}.png`)).join("");
+      words = Lumio.shuffle([target, ...distractorPool.slice(0, Math.min(2, distractorPool.length))]);
+      currentTargetWord = currentSpeakText = target;
     } else {
       const target = nextTarget();
-      const distractorPool = Lumio.shuffle(vocab.filter(v => v.en !== target.en));
-      const opts = Lumio.shuffle([target, ...distractorPool.slice(0, 2)]);
+      const opts = Lumio.shuffle([target, ...pickDistractors(target, 2)]);
       currentTargetWord = target.en;
       currentSpeakText = target.example || target.en;
-      window.__lastTarget = target.en; // exposed for automated QA only
-      optGrid.innerHTML = opts.map(o => makeCard(o.en, `../assets/vocab/${slug(o.en)}.png`)).join("");
+      words = opts.map(o => o.en); pics = Object.fromEntries(opts.map(o => [o.en, LP.vocabImg(imgKey(o))]));
     }
-
-    document.querySelectorAll(".opt-card").forEach(card => { card.onclick = () => choose(card); });
-    setTimeout(playPrompt, 350);
+    window.__lastTarget = currentTargetWord; // exposed for automated QA only
+    await LP.banner(r === ROUNDS - 1 ? "Last piece!" : "Listen!", "Round " + (r + 1) + " of " + ROUNDS);
+    optGrid.className = "lp-cards th-cards " + (words.length === 2 ? "c2" : "c3");
+    // load the pictures first so a card never flashes its letter-tile placeholder
+    await Promise.race([Promise.all(words.map(w => new Promise(ok => { const im = new Image(); im.onload = im.onerror = ok; im.src = pics[w] || LP.vocabImg(w); }))), LP.wait(1500)]);
+    const cards = words.map(w => { const c = LP.picCard(w, { img: pics[w] || LP.vocabImg(w) }); if (w.length > 9) c.classList.add("long"); c.onclick = () => choose(c); optGrid.appendChild(c); return c; });
+    if (G && !RM) G.fromTo("#promptCard", { scale: .6, opacity: 0 }, { scale: 1, opacity: 1, duration: .5, ease: "back.out(2)" });
+    lumi.nod();
+    await LP.deal(cards, site);
+    locked = false;
+    LP.answer = currentTargetWord;   // read by the automated play-through tests
+    playPrompt();
   }
 
-  function choose(card) {
+  async function choose(card) {
     if (locked) return;
-    const ok = card.dataset.en === currentTargetWord;
-    if (ok) {
-      locked = true;
-      score++;
-      document.getElementById("score").textContent = score;
-      Lumio.beep(true);
-      card.classList.add("correct", "correct-pop");
-      document.querySelectorAll(".opt-card").forEach(c => c.classList.add("locked"));
-      placePiece(r);
-      setTimeout(() => { r++; r < ROUNDS ? drawRound() : endGame(); }, 1200);
-    } else {
-      Lumio.beep(false);
-      card.classList.add("wrong-shake", "wrong-dim");
+    const ok = card.dataset.word === currentTargetWord;
+    if (!ok) {
       // gentle -- no scoring penalty, no lockout; they simply try another card
+      LP.bad(card); lumi.oops("surprised", "megaphone"); (r % 2 ? noor : omar).oops("surprised", "happy");
+      card.disabled = true; setTimeout(() => card.classList.add("dim"), 350);
+      return;
     }
+    locked = true; score++; LP.answer = null;
+    const cards = [...optGrid.children];
+    cards.forEach(c => c.disabled = true);
+    lumi.cheer("celebrate", false);
+    LP.fill(r);
+    await LP.good(card);
+    LP.clear(cards, card);
+    // the right card flies up to the tree and becomes the next piece
+    if (G && !RM) {
+      const a = LP.center(card), sr = site.getBoundingClientRect();
+      await new Promise(res => G.to(card, { x: sr.left + sr.width / 2 - a.x, y: sr.top + sr.height * .12 - a.y, scale: .12, rotation: 180, opacity: .3, duration: .5, ease: "power2.in", onComplete: res }));
+      card.style.visibility = "hidden";
+    }
+    await landPiece(r);
+    setLabel(BUILD_LABELS[Math.min(r + 1, BUILD_LABELS.length - 1)]);
+    (r % 2 ? noor : omar).cheer("celebrate");
+    setTimeout(() => (r % 2 ? omar : noor).cheer("celebrate"), 160);
+    if (r === 2) LP.sceneTo("assets/story/backgrounds/treehouse-building.jpg", "62% 40%");   // the yard catches up with the build
+    await LP.wait(500);
+    r++;
+    if (r < ROUNDS) drawRound(); else { await grandOpening(); endGame(); }
   }
 
   function endGame() {
-    Lumio.confetti(100);
-    const pct = Math.round((score / ROUNDS) * 100);
-    Lumio.speak(pct >= 80 ? "Amazing!" : "Great job!"); // was "Amazing! The Treehouse Club is open!" / "Great building! Let's finish the treehouse again soon!" -- no recordings for those (404), these two exist
-    document.getElementById("finalScore").textContent = `You built the treehouse with ${score} out of ${ROUNDS} correct answers!`;
-    document.getElementById("endcard").style.display = "flex";
+    LP.round(-1);
+    LP.answer = null;
+    LP.results({ score, total: ROUNDS, title: "The Treehouse Club is open!", scoreLabel: "Pieces built",
+      note: `You built the treehouse with ${score} out of ${ROUNDS} correct answers!`, actor: { char: "lumi", pose: "celebrate" },
+      exitHref: backHref, exitLabel: source === "lesson" ? "Back to my map" : "Done" });
   }
 
   document.getElementById("promptCard").onclick = playPrompt;
-  drawRound();
+  LP.title({ kicker: "Level 1 · Listen and build", title: "Treehouse Builder", sub: "Listen, tap the right picture and build the Treehouse Club!",
+    ar: "استمع واختر الصورة الصحيحة لنبني بيت الشجرة", actor: { char: "lumi", pose: "point", cheer: "celebrate" } }).then(() => {
+      omar.enter("bottom"); setTimeout(() => noor.enter("bottom"), 150);
+      drawRound();
+    });
 }
 </script>
 </body>

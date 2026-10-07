@@ -1,6 +1,6 @@
 /* ============================================================
    Lumio Play kit (window.LP): scene, HUD, actors, cards, FX, sound,
-   title screen, round banners and the results screen for games-v2/.
+   title screen, round banners and the results screen for games/.
    Needs vendor/gsap (required) and vendor/lottie-light (optional),
    plus js/app.js (Lumio.speak / Lumio.music / sound setting).
    Every animation is transform/opacity; prefers-reduced-motion gets
@@ -482,6 +482,19 @@
     if (o.hud !== false) LP.hud(o.hud || {});
     return LP;
   };
+
+  /* A word whose new picture (data "image", e.g. "orange-fruit") is not drawn yet falls back to the word's own
+     picture instead of a letter tile. Runs before any img onerror handler on the page. */
+  const vocabFallback = (() => {
+    const m = {}, sl = w => String(w).toLowerCase().replace(/'/g, "").replace(/ /g, "-");
+    try { const L = window.LUMIO_LESSONS || {}; Object.keys(L).forEach(lv => Object.keys(L[lv]).forEach(n => (L[lv][n].vocab || []).forEach(v => { if (v.image && sl(v.image) !== sl(v.en)) m[sl(v.image)] = sl(v.en); }))); } catch (e) {}
+    return m;
+  })();
+  window.addEventListener("error", e => {
+    const t = e.target; if (!t || t.tagName !== "IMG" || t.dataset.lpAlt) return;
+    const mm = /assets\/vocab\/([^/?#]+)\.png/.exec(t.src || ""); if (!mm || !vocabFallback[mm[1]]) return;
+    e.stopPropagation(); t.dataset.lpAlt = "1"; t.src = LP.asset(`assets/vocab/${vocabFallback[mm[1]]}.png`);
+  }, true);
 
   window.LP = LP;
 })();

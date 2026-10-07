@@ -988,6 +988,14 @@
   /* ---------- Generic modal shell ---------- */
   .sd-modal-overlay{position:fixed;inset:0;background:rgba(60,40,20,.45);display:none;align-items:center;justify-content:center;z-index:100;padding:16px}
   .sd-modal-overlay.show{display:flex}
+  .sd-gpick{display:grid;gap:10px}
+  .sd-gpick-a{display:flex;align-items:center;gap:14px;min-height:64px;padding:12px 14px;border-radius:18px;text-decoration:none;color:inherit;
+    background:var(--sd-cream,#FFF8EC);border:1px solid var(--sd-border,#EAE3D8);cursor:pointer;transition:transform .15s ease}
+  .sd-gpick-a:hover{transform:translateY(-2px)}
+  .sd-gpick-a:focus-visible{outline:3px solid rgba(249,115,22,.45);outline-offset:2px}
+  .sd-gpick-a b{display:block;font-size:1.05rem}
+  .sd-gpick-a small{display:block;font-weight:700;opacity:.75}
+  .sd-gpick-ic{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:24px;background:#fff;flex:none}
   .sd-modal{background:#fff;border-radius:22px;padding:22px;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.25);animation:sdPop .25s ease both}
   .sd-modal.wide{max-width:560px}
   .sd-modal h3{margin:0 0 4px}
@@ -1389,6 +1397,17 @@
       <div class="sd-hubb-trail"></div>
       <span class="sd-hubb-btn"><img class="sd-hubb-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Open</span>
     </button>
+    <button class="sd-hubb" id="hubGames">
+      <div class="sd-hubb-left">
+        <div class="sd-hubb-icon">🎮</div>
+        <div>
+          <div class="sd-hubb-title">Word games</div>
+          <div class="sd-hubb-sub">Memory Match, Word Pop and Word Builder with your lesson words</div>
+        </div>
+      </div>
+      <div class="sd-hubb-trail"></div>
+      <span class="sd-hubb-btn"><img class="sd-hubb-btn-logo" src="assets/logo/lumio-logo.png" alt="" onerror="this.style.display='none'"> Play</span>
+    </button>
     <button class="sd-hubb" id="hubWriting">
       <div class="sd-hubb-left">
         <div class="sd-hubb-icon">✍️</div>
@@ -1482,6 +1501,20 @@
     <div style="display:flex;gap:10px;justify-content:center;margin-top:14px">
       <button class="sd-photo-btn ghost" id="bookNo" type="button">Not now</button>
       <button class="sd-modal-close" id="bookYes" type="button" style="margin:0">Yes, book it ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- Word games chooser (the games themselves are full pages in games/) -->
+<div class="sd-modal-overlay" id="gamesPickOverlay" role="dialog" aria-modal="true" aria-labelledby="gamesPickTitle">
+  <div class="sd-modal" style="position:relative">
+    <button class="sd-modal-close-x" id="gamesPickClose" aria-label="Close">✕</button>
+    <h3 id="gamesPickTitle">Word games</h3>
+    <p style="margin:0 0 12px;font-weight:700;color:var(--sd-cocoa-soft)">Play with the words from your latest lesson. A great score can boost that lesson's stars.</p>
+    <div class="sd-gpick">
+      <a class="sd-gpick-a" data-game="memory-match"><span class="sd-gpick-ic">🧩</span><span><b>Memory Match</b><small>Flip the cards and find the pairs</small></span></a>
+      <a class="sd-gpick-a" data-game="word-pop"><span class="sd-gpick-ic">🎈</span><span><b>Word Pop</b><small>Pop the bubble with the right word</small></span></a>
+      <a class="sd-gpick-a" data-game="word-builder"><span class="sd-gpick-ic">🔡</span><span><b>Word Builder</b><small>Put the letters in order</small></span></a>
     </div>
   </div>
 </div>
@@ -3669,6 +3702,12 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
   // click handler navigated to hub-present.html instead of opening
   // that modal, so all of it was dead code. Removed rather than
   // carried forward into an equally-dead Idioms version.
+  // Word games: Memory Match / Word Pop / Word Builder open as full game pages with this level's words
+  const gamesPick = document.getElementById("gamesPickOverlay");
+  document.querySelectorAll(".sd-gpick-a").forEach(a => { a.href = `games/${a.dataset.game}.html?level=${encodeURIComponent(level)}&from=hub`; });
+  document.getElementById("hubGames").onclick = () => gamesPick.classList.add("show");
+  document.getElementById("gamesPickClose").onclick = () => gamesPick.classList.remove("show");
+  gamesPick.addEventListener("click", e => { if (e.target === gamesPick) gamesPick.classList.remove("show"); });
   document.getElementById("hubIdioms").onclick = () => { location.href = `hub-present.html?type=idioms&level=${level}`; };
 
   // ================= English Hub: Writing & Speaking =================

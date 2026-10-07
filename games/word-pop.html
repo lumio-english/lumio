@@ -98,7 +98,7 @@
 const u = Lumio.user();
 const level = Lumio.qs("level") || (u && u.level) || "pre-a";
 const TEEN = ["level3", "level4", "level5", "level6"].includes(level);
-const backHref = "../student.html";
+const backHref = "../student.html#secHub";
 // Starts as this generic fallback list; loadLessonVocabForGames() swaps it for the real lesson words.
 const FALLBACK_WORD_BANK = [
   { en: "Cat", ar: "قطة", em: "🐱" }, { en: "Dog", ar: "كلب", em: "🐶" },
