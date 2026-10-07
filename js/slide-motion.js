@@ -843,6 +843,27 @@
     ov.addEventListener("pointerdown", function () { var a = anim(ov, [{ opacity: 1 }, { opacity: 0 }], { duration: 300, fill: "forwards" }); if (a) a.onfinish = function () { ov.remove(); }; else ov.remove(); });
   }
 
+  /* ---------------- emoji on the slides -> the Lumio icon set ---------------- */
+  var EMOJI = { "\u{1F50A}": "sound", "\u{1F509}": "sound", "\u{1F508}": "sound", "\u{1F4AC}": "speech", "\u2B50": "star", "\u{1F31F}": "star", "\u{1F440}": "eye",
+    "\u{1F4A1}": "bulb", "\u{1F465}": "people", "\u{1F464}": "user", "\u{1F4DA}": "library", "\u2705": "check", "\u26A1": "bolt", "\u{1F389}": "sparkle", "\u2728": "sparkle",
+    "\u{1F3B2}": "dice", "\u{1F4DD}": "write", "\u{1F600}": "smile", "\u{1F44B}": "wave", "\u{1F3C6}": "trophy", "\u{1F4D6}": "book", "\u270F": "pencil", "\u{1F3B5}": "music",
+    "\u{1F4C5}": "calendar", "\u{1F393}": "grad", "\u2600": "sun", "\u{1F914}": "question", "\u{1F50D}": "eye" };
+  var EMOJI_RX = new RegExp("(" + Object.keys(EMOJI).join("|") + ")\\uFE0F?", "gu");
+  function iconify(rootEl) {
+    if (!window.LumioIcons) return;
+    var walker = document.createTreeWalker(rootEl, NodeFilter.SHOW_TEXT), nodes = [], t;
+    while ((t = walker.nextNode())) { EMOJI_RX.lastIndex = 0; if (EMOJI_RX.test(t.nodeValue)) nodes.push(t); }
+    nodes.forEach(function (node) {
+      var frag = document.createDocumentFragment(), parts = node.nodeValue.split(EMOJI_RX);
+      for (var i = 0; i < parts.length; i++) {
+        if (i % 2 === 1) { var sp = mk("span", "lc-ico", icon(EMOJI[parts[i]])); sp.setAttribute("aria-hidden", "true"); frag.appendChild(sp); }
+        else if (parts[i]) frag.appendChild(document.createTextNode(parts[i].replace(/^\uFE0F/, "")));
+      }
+      node.parentNode.replaceChild(frag, node);
+    });
+  }
+  (function () { var br = document.getElementById("lessonBrand"); if (br) iconify(br); })();
+
   /* ---------------- run on every slide swap ---------------- */
   function currentTitle() {
     var pt = content.querySelector(".pagetitle"); if (pt) return (pt.textContent || "").replace(/\s+/g, " ").trim();
@@ -872,6 +893,7 @@
       layer.querySelectorAll(".lc-typing,.lc-chapter").forEach(function (x) { x.remove(); });
       clearBuild(); if (nextBtn) nextBtn.classList.remove("lc-ready");
       if (isFirst) buildMap(t);
+      try { iconify(content); } catch (e) {}
       backdrop();
       host = findHost(); hostSrc = host ? host.getAttribute("src") : "";
       var title = currentTitle(), sec = sectionOf(title);
