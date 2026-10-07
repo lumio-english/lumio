@@ -160,8 +160,8 @@ async function loadLessonVocabForGames() {
 }
 // The game's own best score per lesson, kept apart from the lesson's prep
 // result (lumio_progress): it used to overwrite the prep score/percent the
-// map and the teacher show as PREP, and never reached the teacher anyway.
-// Local to this device, like the game itself.
+// map and the teacher show as PREP. Since Oct 2026 the best scores are
+// pushed to the Sheet (Lumio.pushExtras) and shown to the teacher per lesson.
 function saveGameResultToLesson(stars, score, total) {
   if (!gamesUsingRealVocab || !gamesLessonNum || !u) return { counted: false, reason: "no-lesson" };
   const KEY = "lumio_game_best";
@@ -172,6 +172,8 @@ function saveGameResultToLesson(stars, score, total) {
   if (prevBest && stars <= prevBest.stars) return { counted: false, reason: "not-better", lessonNum: gamesLessonNum };
   lv[gamesLessonNum] = Object.assign({}, lv[gamesLessonNum], { [game]: { stars, score, total, date: Lumio.tzNow().date } });
   try { localStorage.setItem(KEY, JSON.stringify(all)); } catch (e) { return { counted: false, reason: "storage-failed" }; }
+  // to the Sheet (StudentExtras), so the teacher and the student's other devices see it
+  try { if (Lumio.pushExtras) Lumio.pushExtras(u.name).catch(() => {}); } catch (e) {}
   return { counted: true, first: !prevBest, lessonNum: gamesLessonNum };
 }
 function gameResultNote(b) {

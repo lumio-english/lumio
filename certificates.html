@@ -155,6 +155,15 @@
   const stars = Object.values(prog).reduce((s, r) => s + (r.stars || 0), 0);
   const test = preview ? { pct: 92, band: "Distinction", score: 28, total: 30, date: new Date().toISOString().slice(0, 10) } : Lumio.levelTestFor(u.name, level);
   const outcomes = (window.LUMIO_OUTCOMES || {})[level];
+  // Test passed on another device but this one hasn't synced yet (opened straight from a link):
+  // pull this student's level-test result once (StudentExtras tab) and re-render if it arrived.
+  if (!preview && !(test && test.pct >= Lumio.TEST_PASS_PCT) && Lumio.pullExtras) {
+    let tried = false; try { tried = sessionStorage.getItem("lumio_cert_pulled") === "1"; sessionStorage.setItem("lumio_cert_pulled", "1"); } catch (e) {}
+    if (!tried) Lumio.pullExtras(u.name).then(r => {
+      const t = Lumio.levelTestFor(u.name, level);
+      if (r && r.changed && t && t.pct >= Lumio.TEST_PASS_PCT) location.reload();
+    }).catch(() => {});
+  }
 
   // teacher grade average (same scale as the reports) + attendance for this level
   const GP = { "A+": 4.3, "A": 4.0, "A-": 3.7, "B+": 3.3, "B": 3.0, "B-": 2.7, "C+": 2.3, "C": 2.0, "C-": 1.7, "D": 1.0, "F": 0.0 };

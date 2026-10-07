@@ -76,11 +76,20 @@
 <script src="../js/lessons-data.js"></script>
 <script src="kit/play.js"></script>
 <script>
-const level = Lumio.qs("level") || "pre-a";
-const num = parseInt(Lumio.qs("n") || "1", 10);
-// Exit/Back go to the lesson the game was launched from (or the map / the trial deck).
+const u = Lumio.user();
 const source = Lumio.qs("from");
-const backHref = source === "lesson" ? "../student.html" : source === "trial" ? `../present-trial.html?level=${level}` : `../present.html?level=${level}&n=${num}`;
+const level = Lumio.qs("level") || (source === "hub" && u && u.level) || "pre-a";
+// From the student Hub without ?n=: the student's most recently attempted lesson in this level
+// (lesson 1 before any), the same word source as Memory Match / Word Pop / Word Builder.
+const num = (() => {
+  const nq = parseInt(Lumio.qs("n") || "", 10);
+  if (nq > 0) return nq;
+  if (source !== "hub" || !u) return 1;
+  const tried = Object.keys((Lumio.progressFor(u.name) || {})[level] || {}).map(Number).filter(n => n > 0);
+  return tried.length ? Math.max(...tried) : 1;
+})();
+// Exit/Back go to where the game was launched from: the Hub, the lesson map, the trial deck or the presenter.
+const backHref = source === "hub" ? "../student.html#secHub" : source === "lesson" ? "../student.html" : source === "trial" ? `../present-trial.html?level=${level}` : `../present.html?level=${level}&n=${num}`;
 const lesson = window.LUMIO_LESSONS?.[level]?.[num];
 const vocab = lesson ? lesson.vocab : [];
 const GAME_TIME = 45, SEGS = 9;
@@ -234,9 +243,17 @@ async function endGame() {
   const left = balloons.filter(b => !b.dead);
   left.forEach((b, i) => setTimeout(() => pop(b, true), MOVE ? i * 70 : 0));
   await LP.banner("Time's up!", score + (score === 1 ? " balloon" : " balloons"));
-  LP.results({ score, total: Math.max(1, score), stars: score >= 8 ? 3 : score >= 5 ? 2 : score > 0 ? 1 : 0, title: "Time's up!",
-    scoreLabel: "Balloons popped", note: `You popped ${score} correct balloons!`, actor: { char: "lumi", pose: "celebrate" },
-    exitHref: backHref, exitLabel: source === "lesson" ? "Back to my map" : "Back to lesson" });
+  const stars = score >= 8 ? 3 : score >= 5 ? 2 : score > 0 ? 1 : 0;
+  // A student's own play (Hub or lesson map) keeps a best score per lesson like the other word games
+  // (lumio_game_best via Lumio.saveGameBest, synced to the teacher); presenter/trial plays never save.
+  let best = null;
+  if (u && u.name && (source === "hub" || source === "lesson") && lesson && Lumio.saveGameBest) {
+    try { best = Lumio.saveGameBest(u.name, level, num, "balloon-pop", { stars, score }); } catch (e) {}
+  }
+  const bestNote = best && best.counted && !best.first ? ` New best for Lesson ${num}!` : best && best.reason === "not-better" ? " Try to beat your best!" : "";
+  LP.results({ score, total: Math.max(1, score), stars, title: "Time's up!",
+    scoreLabel: "Balloons popped", note: `You popped ${score} correct balloons!${bestNote}`, actor: { char: "lumi", pose: "celebrate" },
+    exitHref: backHref, exitLabel: source === "hub" ? "Back to the Hub" : source === "lesson" ? "Back to my map" : "Back to lesson" });
   // a timed game has no "out of": show just the count
   const sc = document.querySelector(".lp-results .score");
   if (sc && sc.lastChild && sc.lastChild.nodeType === 3) sc.lastChild.textContent = "";

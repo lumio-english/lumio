@@ -68,6 +68,7 @@ const Lumio = (() => {
     if (!prev || pct >= (prev.pct || 0)) { all[name][levelId] = rec; }
     else { all[name][levelId] = Object.assign({}, prev, { attempts: rec.attempts, lastPct: pct }); }
     set("lumio_level_tests", all);
+    pushExtras(name).catch(() => {});   // best-effort; certificate gate on other devices + teacher
     return all[name][levelId];
   };
 
@@ -249,6 +250,172 @@ const Lumio = (() => {
       return { ok: true, changed };
     } catch (e) { return { ok: false, changed, error: e && e.message }; }
   };
+
+  /* ---------- Story parts, level tests, word-game bests: synced (Oct 2026) ----------
+     lumio_story     = { studentName: { levelId: { part: "YYYY-MM-DD" } } }
+     lumio_game_best = { studentName: { levelId: { lessonNum: { game: {stars, score, total, date} } } } }
+     lumio_level_tests (above). All three travel through the Sheet's
+     StudentExtras tab (pushExtras/pullExtras, Apps Script v12), merged
+     best-wins there and here, so another phone and the teacher see them.
+     The story used to be one unkeyed device value (lumio_story_progress):
+     a sibling on the same tablet inherited it and it never left the device. */
+  const STORY_KEY = "lumio_story", OLD_STORY_KEY = "lumio_story_progress", GAME_KEY = "lumio_game_best";
+  const storyAll = () => get(STORY_KEY, {}) || {};
+  const gameBestAll = () => get(GAME_KEY, {}) || {};
+  const gameBestFor = (name) => gameBestAll()[name] || {};
+  // One-time move of the old device-wide story value. It can only be
+  // attributed safely when this device has never held another student's
+  // work; otherwise nobody can tell whose reading it was, so it is dropped
+  // (the parts are quick to re-read; a sibling must never get a free tick).
+  const migrateOldStory = () => {
+    let raw = null;
+    try { raw = localStorage.getItem(OLD_STORY_KEY); } catch (e) { return; }
+    if (raw === null) return;
+    const u = user();
+    if (!u || !u.name || isTeacherSession()) return;   // wait for a real student sign-in on this device
+    const others = new Set();
+    [progressAll(), homeworkAll(), levelTestsAll(), gameBestAll(), storyAll()].forEach(t => Object.keys(t || {}).forEach(n => { if (n !== u.name) others.add(n); }));
+    if (!others.size) {
+      let old = {}; try { old = JSON.parse(raw) || {}; } catch (e) {}
+      const all = storyAll(); const mine = all[u.name] = all[u.name] || {};
+      Object.entries(old).forEach(([lv, parts]) => Object.entries(parts || {}).forEach(([p, v]) => {
+        if (v) { mine[lv] = mine[lv] || {}; if (!mine[lv][p]) mine[lv][p] = typeof v === "string" ? v : true; }
+      }));
+      set(STORY_KEY, all);
+      markExtrasPending(u.name, true);
+      setTimeout(() => { pushExtras(u.name).catch(() => {}); }, 0);
+    }
+    try { localStorage.removeItem(OLD_STORY_KEY); } catch (e) {}
+  };
+  const storyProgressFor = (name) => { migrateOldStory(); return (storyAll()[name] || {}); };
+  const saveStoryPart = (name, levelId, part) => {
+    if (!name) return;
+    migrateOldStory();
+    const all = storyAll();
+    all[name] = all[name] || {}; all[name][levelId] = all[name][levelId] || {};
+    if (!all[name][levelId][part]) all[name][levelId][part] = tzNow().date;
+    set(STORY_KEY, all);
+    pushExtras(name).catch(() => {});
+  };
+  // Best score per game per lesson (never touches the lesson's prep result).
+  const gameBetter = (inc, prev) => {
+    if (!prev) return true;
+    const n = v => Number.isFinite(Number(v)) ? Number(v) : -1;
+    if (n(inc.stars) !== n(prev.stars)) return n(inc.stars) > n(prev.stars);
+    if (n(inc.score) !== n(prev.score)) return n(inc.score) > n(prev.score);
+    return String(inc.date || "") > String(prev.date || "");
+  };
+  const saveGameBest = (name, levelId, lessonNum, game, rec) => {
+    if (!name || !levelId || !lessonNum || !game) return { counted: false };
+    const all = gameBestAll();
+    all[name] = all[name] || {}; all[name][levelId] = all[name][levelId] || {};
+    const lv = all[name][levelId], prev = lv[lessonNum] && lv[lessonNum][game];
+    const inc = Object.assign({ date: tzNow().date }, rec);
+    if (prev && !gameBetter(Object.assign({}, inc, { date: "" }), prev)) return { counted: false, reason: "not-better", lessonNum };
+    lv[lessonNum] = Object.assign({}, lv[lessonNum], { [game]: inc });
+    try { set(GAME_KEY, all); } catch (e) { return { counted: false, reason: "storage-failed" }; }
+    pushExtras(name).catch(() => {});
+    return { counted: true, first: !prev, lessonNum };
+  };
+  const GAME_NAMES = { "memory-match": "Memory Match", "word-pop": "Word Pop", "word-builder": "Word Builder", "balloon-pop": "Balloon Pop" };
+
+  // Old deployments don't know pushExtras/pullExtras (a student call would
+  // even read as "unauthorized"), so ask ?action=version once per tab and
+  // stay quiet until v12 is live; pushes wait in a pending list meanwhile.
+  let extrasCapsP = null;
+  const extrasSupported = () => {
+    try { const c = sessionStorage.getItem("lumio_srv_extras"); if (c === "1") return Promise.resolve(true); } catch (e) {}
+    if (!extrasCapsP) {
+      extrasCapsP = syncFetch("version").then(j => {
+        const ok = !!(j && j.extras);
+        if (ok) { try { sessionStorage.setItem("lumio_srv_extras", "1"); } catch (e) {} }
+        return ok;
+      }).catch(() => false).finally(() => { setTimeout(() => { extrasCapsP = null; }, 60000); });
+    }
+    return extrasCapsP;
+  };
+  const EXTRAS_PENDING_KEY = "lumio_pending_extras_push";
+  const markExtrasPending = (name, pending) => {
+    try {
+      const p = get(EXTRAS_PENDING_KEY, null) || { all: false, names: [] };
+      if (name === null || name === undefined) { p.all = !!pending; if (!pending) p.names = []; }
+      else { p.names = (p.names || []).filter(n => n !== name); if (pending) p.names.push(name); }
+      if (!p.all && !p.names.length) localStorage.removeItem(EXTRAS_PENDING_KEY); else set(EXTRAS_PENDING_KEY, p);
+    } catch (e) {}
+  };
+  const extrasTree = (name) => {
+    const names = new Set();
+    const st = storyAll(), lt = levelTestsAll(), gb = gameBestAll();
+    if (name) names.add(name); else [st, lt, gb].forEach(t => Object.keys(t).forEach(n => names.add(n)));
+    const out = {};
+    names.forEach(n => {
+      const rec = {};
+      if (st[n]) rec.story = st[n];
+      if (lt[n]) rec.levelTest = lt[n];
+      if (gb[n]) rec.games = gb[n];
+      if (Object.keys(rec).length) out[n] = rec;
+    });
+    return out;
+  };
+  const pushExtras = async (name) => {
+    const extras = extrasTree(name);
+    if (!Object.keys(extras).length) { markExtrasPending(name, false); return { ok: true, empty: true }; }
+    if (!authQuery() || !(await extrasSupported())) { markExtrasPending(name, true); return { ok: false, reason: "unsupported" }; }
+    try {
+      await syncFetch("pushExtras", { extras });
+      markExtrasPending(name, false);
+      return { ok: true };
+    } catch (e) { markExtrasPending(name, true); return { ok: false, error: e && e.message }; }
+  };
+  const retryExtrasPush = async () => {
+    const p = get(EXTRAS_PENDING_KEY, null);
+    if (!p || (!p.all && !(p.names || []).length)) return { ok: true };
+    if (p.all) return pushExtras(null);
+    let ok = true;
+    for (const n of p.names) { const r = await pushExtras(n); ok = ok && r.ok; }
+    return { ok };
+  };
+  const pullExtras = async (name) => {
+    let changed = 0;
+    try {
+      if (name) migrateOldStory();
+      if (!(await extrasSupported())) return { ok: false, changed, reason: "unsupported" };
+      const j = await syncFetch("pullExtras");
+      const st = storyAll(), lt = levelTestsAll(), gb = gameBestAll();
+      const num = v => (v === "" || v === null || v === undefined || !Number.isFinite(Number(v))) ? undefined : Number(v);
+      (j && j.rows || []).forEach(r => {
+        const n = r.studentName, lv = r.level;
+        if (!n || !lv || (name && n !== name)) return;
+        if (r.kind === "story") {
+          const part = String(r.item || "");
+          if (!part) return;
+          st[n] = st[n] || {}; st[n][lv] = st[n][lv] || {};
+          if (!st[n][lv][part]) { st[n][lv][part] = String(r.date || "") || true; changed++; }
+        } else if (r.kind === "levelTest") {
+          const inc = { score: num(r.score) || 0, total: num(r.total) || 0, pct: num(r.pct) || 0, band: String(r.band || "") || testBand(num(r.pct) || 0), date: String(r.date || ""), attempts: num(r.attempts) || 1 };
+          lt[n] = lt[n] || {};
+          const prev = lt[n][lv];
+          if (!prev || inc.pct > (Number(prev.pct) || 0) || (inc.pct === (Number(prev.pct) || 0) && inc.date > String(prev.date || ""))) {
+            lt[n][lv] = Object.assign({}, inc, { attempts: Math.max(inc.attempts, (prev && prev.attempts) || 0) }); changed++;
+          } else if (inc.attempts > (prev.attempts || 0)) { prev.attempts = inc.attempts; changed++; }
+        } else if (r.kind === "game") {
+          const m = /^(\d+):([a-z0-9-]+)$/.exec(String(r.item || ""));
+          if (!m) return;
+          const inc = { stars: num(r.stars) || 0, score: num(r.score) || 0, date: String(r.date || "") };
+          if (num(r.total) !== undefined) inc.total = num(r.total);
+          gb[n] = gb[n] || {}; gb[n][lv] = gb[n][lv] || {}; gb[n][lv][m[1]] = gb[n][lv][m[1]] || {};
+          const prev = gb[n][lv][m[1]][m[2]];
+          if (gameBetter(inc, prev)) { gb[n][lv][m[1]][m[2]] = inc; changed++; }
+        }
+      });
+      if (changed) { set(STORY_KEY, st); set("lumio_level_tests", lt); set(GAME_KEY, gb); }
+      return { ok: true, changed };
+    } catch (e) { return { ok: false, changed, error: e && e.message }; }
+  };
+  if (typeof window !== "undefined" && window.addEventListener) {
+    window.addEventListener("online", () => { retryExtrasPush().catch(() => {}); });
+    window.addEventListener("load", () => setTimeout(() => { retryExtrasPush().catch(() => {}); }, 2500));
+  }
 
   /* ---------- The ONE "lesson done" rule ----------
      A lesson is done when its prep is finished, its live class was
@@ -742,6 +909,8 @@ const Lumio = (() => {
            pushProgressAndHomework, pullProgressAndHomework, retryPendingPush,
            lessonCountFor, attendedSetFor, lessonDone, currentLesson, lessonsDoneCount, levelComplete, isTeacherSession,
            TEST_PASS_PCT, testBand, levelTestsAll, levelTestFor, saveLevelTest,
+           storyProgressFor, saveStoryPart, gameBestAll, gameBestFor, saveGameBest, GAME_NAMES,
+           pushExtras, pullExtras, retryExtrasPush,
            TZ, TZ_LABEL, TZ_LABEL_AR, TZ_OFFSET_MIN, tzNow, tzToDate, tzAddDays, tzDayOfWeek,
            deviceTz, deviceDiffersFromTz, localClassTime, fmt12, fmtClassTime };
 })();

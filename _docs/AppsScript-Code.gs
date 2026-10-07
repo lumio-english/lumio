@@ -89,6 +89,14 @@ var HOMEWORK_COLUMNS = ["studentName", "level", "lesson", "stars", "score", "tot
   // per-skill breakdown homework.html saves and report.html reads (Reading = quiz, Writing = spelling)
   "skillType", "skillCorrect", "skillTotal", "quizCorrect", "quizTotal", "spellingCorrect", "spellingTotal", "recorded", "recordedTotal"];
 
+// Story parts read, level-test results and word-game best scores (Oct 2026):
+// one row per student|kind|level|item, merged best-wins like Progress.
+//   kind "story":     item = part number ("1".."4"), score 1
+//   kind "levelTest": item = "",  score/total/pct/band/attempts of the best attempt
+//   kind "game":      item = "<lesson>:<game>" (e.g. "3:word-pop"), stars/score/total
+var EXTRAS_SHEET = "StudentExtras";
+var EXTRAS_COLUMNS = ["studentName", "kind", "level", "item", "stars", "score", "total", "pct", "band", "attempts", "date"];
+
 var LEADS_SHEET = "Leads";
 var LEADS_COLUMNS = [
   "id", "name", "phone", "age", "suggestedLevel", "testScore", "testTotal",
@@ -224,7 +232,7 @@ function repairSheetTypes() {
     [BLOCKED_DATES_SHEET, BLOCKED_DATES_COLUMNS], [PROGRESS_SHEET, PROGRESS_COLUMNS],
     [LEADS_SHEET, LEADS_COLUMNS], [REWARD_CATALOG_SHEET, REWARD_CATALOG_COLUMNS], [HOMEWORK_SHEET, HOMEWORK_COLUMNS],
     [DELETED_IDS_SHEET, DELETED_IDS_COLUMNS], [PRO_ADMINS_SHEET, PRO_ADMINS_COLUMNS],
-    [PRO_TEST_RESULTS_SHEET, PRO_TEST_RESULTS_COLUMNS],
+    [PRO_TEST_RESULTS_SHEET, PRO_TEST_RESULTS_COLUMNS], [EXTRAS_SHEET, EXTRAS_COLUMNS],
   ];
   tabs.forEach(function (t) {
     var sheet = getOrCreateSheet_(t[0], t[1]);
@@ -630,6 +638,13 @@ function applyRenames_(renames) {
       mergeRecordRows_(t[0], t[1], moving.map(function (r) { r.studentName = rn.to; return r; }));
       done++;
     });
+    var exRows = readRows_(EXTRAS_SHEET, EXTRAS_COLUMNS);
+    var exMoving = exRows.filter(function (r) { return r.studentName === rn.from; });
+    if (exMoving.length) {
+      writeRows_(EXTRAS_SHEET, EXTRAS_COLUMNS, exRows.filter(function (r) { return r.studentName !== rn.from; }));
+      mergeExtraRows_(exMoving.map(function (r) { r.studentName = rn.to; return r; }));
+      done++;
+    }
     [[SCHEDULE_SHEET, SCHEDULE_COLUMNS], [PATTERNS_SHEET, PATTERNS_COLUMNS]].forEach(function (t) {
       var rows = readRows_(t[0], t[1]), changed = false, now = new Date().toISOString();
       rows.forEach(function (r) {
@@ -991,6 +1006,79 @@ function pushHomework_(body) {
 }
 function pullHomework_() {
   return { rows: readRows_(HOMEWORK_SHEET, HOMEWORK_COLUMNS) };
+}
+
+// ---------- story / level test / word games (StudentExtras) ----------
+
+// body.extras = { studentName: { story: {level: {part: date}},
+//   levelTest: {level: {score,total,pct,band,attempts,date}},
+//   games: {level: {lesson: {game: {stars,score,total,date}}}} } }
+var EXTRA_LEVEL_RE_ = /^(pre-a|level[1-9])$/;
+function extraNum_(v) { var n = Number(v); return (v !== "" && v !== null && v !== undefined && isFinite(n)) ? n : ""; }
+function flattenExtras_(tree) {
+  var rows = [];
+  var add = function (name, kind, level, item, r) {
+    if (!EXTRA_LEVEL_RE_.test(String(level)) || rows.length >= 3000) return;
+    r = r || {};
+    rows.push({ studentName: name, kind: kind, level: String(level), item: cleanText_(item, 60),
+      stars: extraNum_(r.stars), score: extraNum_(r.score), total: extraNum_(r.total), pct: extraNum_(r.pct),
+      band: cleanText_(r.band || "", 20), attempts: extraNum_(r.attempts), date: cleanText_(r.date || "", 30) });
+  };
+  Object.keys(tree || {}).forEach(function (name) {
+    var t = tree[name] || {};
+    Object.keys(t.story || {}).forEach(function (lv) {
+      Object.keys(t.story[lv] || {}).forEach(function (part) {
+        var v = t.story[lv][part];
+        if (v && /^[1-9]$/.test(part)) add(name, "story", lv, part, { score: 1, date: typeof v === "string" ? v : "" });
+      });
+    });
+    Object.keys(t.levelTest || {}).forEach(function (lv) { var r = t.levelTest[lv]; if (r && typeof r === "object") add(name, "levelTest", lv, "", r); });
+    Object.keys(t.games || {}).forEach(function (lv) {
+      Object.keys(t.games[lv] || {}).forEach(function (n) {
+        Object.keys(t.games[lv][n] || {}).forEach(function (g) {
+          var r = t.games[lv][n][g];
+          if (r && typeof r === "object" && /^\d{1,2}$/.test(n) && /^[a-z0-9-]{1,40}$/.test(g)) add(name, "game", lv, n + ":" + g, r);
+        });
+      });
+    });
+  });
+  return rows;
+}
+// Which of two rows for the same key is better: level test by percent,
+// game by stars then score, story parts are all equal; then the newer date.
+function extraRank_(r) {
+  var n = function (v) { var x = Number(v); return (v !== "" && v !== null && v !== undefined && isFinite(x)) ? x : -1; };
+  if (r.kind === "levelTest") return [n(r.pct), 0];
+  if (r.kind === "game") return [n(r.stars), n(r.score)];
+  return [0, 0];
+}
+function mergeExtraRows_(incoming) {
+  var existing = readRows_(EXTRAS_SHEET, EXTRAS_COLUMNS);
+  var byKey = {}, changed = 0;
+  var key = function (r) { return [r.studentName, r.kind, r.level, r.item].join("|"); };
+  existing.forEach(function (r) { byKey[key(r)] = r; });
+  incoming.forEach(function (r) {
+    if (!r.studentName || !/^(story|levelTest|game)$/.test(r.kind)) return;
+    var k = key(r), prev = byKey[k];
+    if (!prev) { byKey[k] = r; changed++; return; }
+    var a = extraRank_(r), b = extraRank_(prev);
+    var better = a[0] > b[0] || (a[0] === b[0] && (a[1] > b[1] || (a[1] === b[1] && r.kind !== "story" && String(r.date || "") > String(prev.date || ""))));
+    var att = Math.max(Number(r.attempts) || 0, Number(prev.attempts) || 0);
+    if (better) { if (r.kind === "levelTest" && att) r.attempts = att; byKey[k] = r; changed++; }
+    else if (r.kind === "levelTest" && att > (Number(prev.attempts) || 0)) { prev.attempts = att; changed++; }
+  });
+  if (changed) writeRows_(EXTRAS_SHEET, EXTRAS_COLUMNS, Object.keys(byKey).map(function (k) { return byKey[k]; }));
+  return changed;
+}
+function pushExtras_(body) {
+  var lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    var rows = flattenExtras_(body.extras);
+    return { ok: true, rows: rows.length, changed: mergeExtraRows_(rows) };
+  } finally { lock.releaseLock(); }
+}
+function pullExtras_() {
+  return { ok: true, rows: readRows_(EXTRAS_SHEET, EXTRAS_COLUMNS) };
 }
 
 // ---------- leads ----------
@@ -1517,7 +1605,7 @@ function doGet(e) {
     if (!keyOk_(e)) return jsonResponse_({ ok: false, error: "unauthorized" });
     var action = (e && e.parameter) ? e.parameter.action : null;
     // Lets a page tell this version apart from older deployments.
-    if (action === "version") return jsonResponse_({ ok: true, version: 11, auth: true, merge: true, studentPhoto: true, mainOwner: true, hardened: true });
+    if (action === "version") return jsonResponse_({ ok: true, version: 12, auth: true, merge: true, studentPhoto: true, mainOwner: true, hardened: true, extras: true });
     var who = whoIs_(e);
     if (who.error) return denied_(who);
     if (who.role === "student") {
@@ -1525,6 +1613,7 @@ function doGet(e) {
       if (action === "pullScheduleV2") return jsonResponse_(studentSchedule_(who));
       if (action === "pullProgress") return jsonResponse_({ ok: true, rows: ownRows_(pullProgress_().rows, who.student) });
       if (action === "pullHomework") return jsonResponse_({ ok: true, rows: ownRows_(pullHomework_().rows, who.student) });
+      if (action === "pullExtras") return jsonResponse_({ ok: true, rows: ownRows_(pullExtras_().rows, who.student) });
       return denied_(who);
     }
     if (who.role === "public") {
@@ -1538,6 +1627,7 @@ function doGet(e) {
     if (action === "pullScheduleV2") return jsonResponse_(pullScheduleV2_());
     if (action === "pullProgress") return jsonResponse_(pullProgress_());
     if (action === "pullHomework") return jsonResponse_(pullHomework_());
+    if (action === "pullExtras") return jsonResponse_(pullExtras_());
     if (action === "pullLeads") return jsonResponse_(pullLeads_());
     if (action === "pullProAdmins") return callerIsOwner_(who) ? jsonResponse_(pullProAdmins_()) : denied_({});
     if (action === "pullProTestResults") return jsonResponse_(pullProTestResults_());
@@ -1596,6 +1686,7 @@ function doPost(e) {
       }
       if (action === "pushProgress") return jsonResponse_(pushProgress_({ progress: ownTree_(body.progress, me) }));
       if (action === "pushHomework") return jsonResponse_(pushHomework_({ homework: ownTree_(body.homework, me) }));
+      if (action === "pushExtras") return jsonResponse_(pushExtras_({ extras: ownTree_(body.extras, me) }));
       return denied_({});
     }
     if (who.role !== "teacher") return denied_({});
@@ -1607,6 +1698,7 @@ function doPost(e) {
     if (action === "rateClass") return jsonResponse_(rateClass_(body, { studentId: body.studentId, studentName: body.studentName }));
     if (action === "pushProgress") return jsonResponse_(pushProgress_(body));
     if (action === "pushHomework") return jsonResponse_(pushHomework_(body));
+    if (action === "pushExtras") return jsonResponse_(pushExtras_(body));
     if (action === "pushLeads") return jsonResponse_(pushLeads_(body));
     if (action === "pushProAdmins") return callerIsOwner_(who) ? jsonResponse_(pushProAdmins_(body)) : denied_({});
     if (action === "clearProTestResults") return callerIsOwner_(who) ? jsonResponse_(clearProTestResults_()) : denied_({});

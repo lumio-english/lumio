@@ -1544,11 +1544,12 @@
   <div class="sd-modal" style="position:relative">
     <button class="sd-modal-close-x" id="gamesPickClose" aria-label="Close">✕</button>
     <h3 id="gamesPickTitle">Word games</h3>
-    <p style="margin:0 0 12px;font-weight:700;color:var(--sd-cocoa-soft)">Play with the words from your latest lesson. A great score can boost that lesson's stars.</p>
+    <p style="margin:0 0 12px;font-weight:700;color:var(--sd-cocoa-soft)">Play with the words from your latest lesson. Your best score is saved for your teacher to see.</p>
     <div class="sd-gpick">
       <a class="sd-gpick-a" data-game="memory-match"><span class="sd-gpick-ic">🧩</span><span><b>Memory Match</b><small>Flip the cards and find the pairs</small></span></a>
       <a class="sd-gpick-a" data-game="word-pop"><span class="sd-gpick-ic">🎈</span><span><b>Word Pop</b><small>Pop the bubble with the right word</small></span></a>
       <a class="sd-gpick-a" data-game="word-builder"><span class="sd-gpick-ic">🔡</span><span><b>Word Builder</b><small>Put the letters in order</small></span></a>
+      <a class="sd-gpick-a" data-game="balloon-pop"><span class="sd-gpick-ic">🔊</span><span><b>Balloon Pop</b><small>Listen, then pop the balloon with that word</small></span></a>
     </div>
   </div>
 </div>
@@ -1883,7 +1884,8 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
       { id: 1, unlockAt: 5 }, { id: 2, unlockAt: 10 }, { id: 3, unlockAt: 15 }, { id: 4, unlockAt: 20 },
     ];
     let storyProgAll = {};
-    try { storyProgAll = JSON.parse(localStorage.getItem("lumio_story_progress") || "{}"); } catch (e) {}
+    // this student's own parts (synced; the old one-per-device value is migrated once in js/app.js)
+    try { storyProgAll = Lumio.storyProgressFor ? Lumio.storyProgressFor(u.name) : {}; } catch (e) {}
     const storyProg = storyProgAll[level] || {};
     const trail = document.getElementById("storyTrail");
     let currentPart = null;
@@ -2535,6 +2537,9 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
         schedule: read("lumio_schedule_v2"),
         progress: (read("lumio_progress") || {})[u.name] || null,
         homework: (read("lumio_homework") || {})[u.name] || null,
+        story: (read("lumio_story") || {})[u.name] || null,
+        levelTests: (read("lumio_level_tests") || {})[u.name] || null,
+        games: (read("lumio_game_best") || {})[u.name] || null,
       }));
     };
     // Never pull the page out from under an open modal, game or the parent guide.
@@ -2550,11 +2555,13 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
       // Progress + homework done on another device (or pushed by the
       // teacher) -- pull this student's records before the reload below.
       Lumio.pullProgressAndHomework ? Lumio.pullProgressAndHomework(u.name) : Promise.resolve({ ok: true }),
-    ]).then(([r1, r2, r3]) => {
+      // Story parts, level-test result and word-game bests (StudentExtras tab)
+      Lumio.pullExtras ? Lumio.pullExtras(u.name).catch(() => ({ ok: false })) : Promise.resolve({ ok: true }),
+    ]).then(([r1, r2, r3, r4]) => {
       // The PIN was changed or the account removed by the teacher: sign
       // this device out rather than keep showing an old copy.
       if (r1 && (r1.reason === "unauthorized" || r1.reason === "deleted")) { Lumio.logout(); return; }
-      if ((r1.ok || r2.ok || (r3 && r3.changed)) && snapshot() !== before) reloadWhenIdle();
+      if ((r1.ok || r2.ok || (r3 && r3.changed) || (r4 && r4.changed)) && snapshot() !== before) reloadWhenIdle();
     }).catch(() => {});
   })();
 
@@ -3751,7 +3758,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
   // click handler navigated to hub-present.html instead of opening
   // that modal, so all of it was dead code. Removed rather than
   // carried forward into an equally-dead Idioms version.
-  // Word games: Memory Match / Word Pop / Word Builder open as full game pages with this level's words
+  // Word games: Memory Match / Word Pop / Word Builder / Balloon Pop open as full game pages with this level's words
   const gamesPick = document.getElementById("gamesPickOverlay");
   document.querySelectorAll(".sd-gpick-a").forEach(a => { a.href = `games/${a.dataset.game}.html?level=${encodeURIComponent(level)}&from=hub`; });
   document.getElementById("hubGames").onclick = () => gamesPick.classList.add("show");

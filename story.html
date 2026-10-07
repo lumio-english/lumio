@@ -1274,7 +1274,8 @@ function openZoom(src) {
 function closeZoom() { const ov = $("#zoomOv"); if (!ov) return; if (!MO) { ov.remove(); return; } G.to(ov, { opacity: 0, duration: .25, onComplete: () => ov.remove() }); }
 
 /* ============================================================ story map */
-function storyProg() { try { return (JSON.parse(localStorage.getItem("lumio_story_progress") || "{}")[storyLevel]) || {}; } catch (e) { return {}; } }
+// Per student (Lumio.storyProgressFor, synced through the Sheet); was one value per device.
+function storyProg() { try { const u = Lumio.user(); return (u && u.name && Lumio.storyProgressFor) ? (Lumio.storyProgressFor(u.name)[storyLevel] || {}) : {}; } catch (e) { return {}; } }
 function partState(p) { const unlocked = previewMode || doneCount >= p.unlockLesson; return { unlocked, done: unlocked && !!storyProg()[p.id] }; }
 function partHref(id) { return `story.html?part=${id}&level=${encodeURIComponent(storyLevel)}${qs("preview") === "1" ? "&preview=1" : ""}`; }
 function goPart(id) { stopSpeech(); if (!MO) { location.href = partHref(id); return; } G.to("#bookWrap,#nav,.ov", { opacity: 0, duration: .35, onComplete: () => { location.href = partHref(id); } }); }
@@ -1410,13 +1411,8 @@ function showLock() {
 function finishPart() {
   if (finished) return;
   finished = true; stopSpeech();
-  try {
-    const key = "lumio_story_progress";
-    const prog = JSON.parse(localStorage.getItem(key) || "{}");
-    if (!prog[storyLevel]) prog[storyLevel] = {};
-    prog[storyLevel][part.id] = true;
-    localStorage.setItem(key, JSON.stringify(prog));
-  } catch (e) {}
+  // Saved for the signed-in student only (a teacher preview never counts).
+  try { const u = Lumio.user(); if (u && u.name && !previewMode && Lumio.saveStoryPart) Lumio.saveStoryPart(u.name, storyLevel, part.id); } catch (e) {}
   const nextPart = PARTS.find(p => p.id === part.id + 1);
   const nextOpen = nextPart && partState(nextPart).unlocked;
   const lastPart = !nextPart;

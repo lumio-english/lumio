@@ -2812,21 +2812,42 @@
     document.getElementById("drawerAvg").textContent = r.avg + "%";
     const body = document.getElementById("drawerBody");
     body.innerHTML = "";
-    (r.lessons || [])
-      .sort((a, b) => Number(a[0]) - Number(b[0]))
-      .forEach(([lessonId, res]) => {
+    // Story parts read + level test (synced from the student's devices, StudentExtras tab)
+    const extrasHead = drawerExtrasSummary(r.name, r.lvl);
+    if (extrasHead) { const h = document.createElement("div"); h.className = "td-dp-extras"; h.innerHTML = extrasHead; body.appendChild(h); }
+    // Word-game best scores per lesson, shown under that lesson's prep stars (never mixed into prep)
+    const gameBests = (Lumio.gameBestFor ? Lumio.gameBestFor(r.name)[r.lvl] : null) || {};
+    const lessonMap = {};
+    (r.lessons || []).forEach(([lessonId, res]) => { lessonMap[lessonId] = res; });
+    Object.keys(gameBests).forEach(n => { if (!(n in lessonMap)) lessonMap[n] = null; });
+    Object.keys(lessonMap)
+      .sort((a, b) => Number(a) - Number(b))
+      .forEach(lessonId => {
+        const res = lessonMap[lessonId];
+        const games = Object.entries(gameBests[lessonId] || {}).map(([g, b]) => `${escHtml((Lumio.GAME_NAMES || {})[g] || g)} ${b.total ? `${Number(b.score) || 0}/${Number(b.total) || 0}` : `${Number(b.score) || 0}`}`);
         const row = document.createElement("div");
         row.style.cssText = "display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--td-border-soft);font-size:.82rem";
-        row.innerHTML = `<div style="width:26px;height:26px;border-radius:8px;background:var(--td-indigo-soft);color:var(--td-indigo-dark);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.72rem;flex-shrink:0">${lessonId}</div>
-          <div style="flex:1;font-weight:600">Lesson ${lessonId}</div>
-          <div style="color:var(--td-amber);font-weight:700">★ ${res.stars || 0}</div>`;
+        row.innerHTML = `<div style="width:26px;height:26px;border-radius:8px;background:var(--td-indigo-soft);color:var(--td-indigo-dark);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.72rem;flex-shrink:0">${escHtml(lessonId)}</div>
+          <div style="flex:1;font-weight:600">Lesson ${escHtml(lessonId)}${games.length ? `<div class="td-dp-games" style="font-weight:600;font-size:.74rem;color:var(--td-ink-soft);margin-top:2px">🎮 Word games: ${games.join(" · ")}</div>` : ""}</div>
+          <div style="color:var(--td-amber);font-weight:700">${res ? `★ ${res.stars || 0}` : `<span style="color:var(--td-ink-soft);font-weight:600">no prep yet</span>`}</div>`;
         body.appendChild(row);
       });
-    if (!r.lessons || !r.lessons.length) body.innerHTML = `<div class="td-empty">No lessons recorded yet.</div>`;
+    if (!Object.keys(lessonMap).length) body.insertAdjacentHTML("beforeend", `<div class="td-empty">No lessons recorded yet.</div>`);
     renderDrawerAttendance(r);
     renderDrawerProfile(r);
     setDrawerTab("profile");
     drawerOverlay.classList.add("show");
+  }
+
+  // "Story: Part 1 ✓ Part 2 ✓ · Level test: 83% Merit" for the drawer's Progress tab.
+  function drawerExtrasSummary(name, lvl) {
+    if (typeof Lumio === "undefined" || !Lumio.storyProgressFor) return "";
+    const story = (Lumio.storyProgressFor(name) || {})[lvl] || {};
+    const parts = Object.keys(story).filter(p => story[p]).sort((a, b) => Number(a) - Number(b));
+    const lt = Lumio.levelTestFor ? Lumio.levelTestFor(name, lvl) : null;
+    const line = (ic, lbl, val) => `<div style="display:flex;gap:8px;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--td-border-soft);font-size:.82rem"><span>${ic}</span><b style="min-width:72px">${lbl}</b><span>${val}</span></div>`;
+    return line("📖", "Story", parts.length ? parts.map(p => `Part ${escHtml(p)} ✓`).join(" ") : `<i>No part read yet</i>`)
+      + line("📝", "Level test", lt ? `${Number(lt.pct) || 0}% · ${escHtml(lt.band || "")} · ${escHtml(lt.date || "")}${lt.pct >= Lumio.TEST_PASS_PCT ? " ✓ passed" : ""}` : `<i>Not taken</i>`);
   }
 
   function setDrawerTab(tab) {
@@ -5720,6 +5741,8 @@
         const pulled = await Lumio.pullProgressAndHomework(null);
         const pushed = await Lumio.pushProgressAndHomework(null);
         progressSynced = !!(pulled && pulled.ok && pushed && pushed.ok);
+        // Story parts, level tests and word-game bests (StudentExtras tab; skipped quietly on an older script)
+        if (Lumio.pullExtras) { try { await Lumio.pullExtras(null); await Lumio.pushExtras(null); } catch (e6) {} }
         rebuildRowsFromStorage(); // Overview/table/report figures from the fresh data
       }
     } catch (e2) { /* progress sync is best-effort; roster/schedule already reported below */ }
