@@ -88,6 +88,7 @@
     .cb-slot{width:56px;height:56px}
     .cb-text{font-size:34px}
   }
+  .cb-card > span:not(.ring){display:block;max-width:100%}
   .lp-stage{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
 </style>
 </head>
@@ -265,7 +266,7 @@ if (!vocab.length) {
   let currentSpeak = "", speakIsLine = false;
   const playPrompt = () => { if (!currentSpeak) return; speakIsLine ? sayLine(currentSpeak, hearBtn) : LP.say(currentSpeak, hearBtn); };
   // shrink an answer card's text until the longest word fits (never clip "counterargument")
-  function fitBtn(b) { const t = b.querySelector("span") || b; t.style.fontSize = ""; let f = parseFloat(getComputedStyle(t).fontSize); while (b.scrollWidth > b.clientWidth + 1 && f > 11) { f -= 1; t.style.fontSize = f + "px"; } }
+  function fitBtn(b) { const t = b.querySelector("span:not(.ring)"); if (!t) return; t.style.fontSize = ""; let f = parseFloat(getComputedStyle(t).fontSize); while (t.scrollWidth > t.clientWidth + 1 && f > 11) { f -= 1; t.style.fontSize = f + "px"; } }
   addEventListener("resize", () => [...opts.querySelectorAll("button")].forEach(fitBtn));
 
   // fit the text inside the ball (shrink, never break a word)

@@ -348,7 +348,6 @@ async function nextWpRound() {
   const words = distinctWords([correct, ...shuffled(bank.filter(w => w !== correct))], 4);
   wpState.correctWord = correct.en;
   LP.round(wpState.round - 1);
-  host.set(CH.think);
   // the picture swaps inside the big bubble
   if (ANIM && orb.firstChild) await new Promise(r => G.to([orb, arTxt], { scale: .2, opacity: 0, duration: .25, ease: "back.in(2)", onComplete: r }));
   orb.innerHTML = correct.em ? `<span class="emo">${LP.esc(correct.em)}</span>`
@@ -359,7 +358,7 @@ async function nextWpRound() {
   await LP.banner("Round " + wpState.round, "Pop the right word!", 700);
   if (ANIM) G.fromTo([orb, arTxt], { scale: .2, opacity: 0 }, { scale: 1, opacity: 1, duration: .6, ease: "back.out(2)", stagger: .08 });
   else { orb.style.opacity = arTxt.style.opacity = 1; }
-  host.set(CH.pose); host.nod();
+  host.nod();
   spawn(Lumio.shuffle(words), correct);
   if (ANIM) LP.sfx("rise");
   await LP.wait(ANIM ? 900 : 50);
