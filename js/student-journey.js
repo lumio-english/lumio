@@ -1,4 +1,4 @@
-/* Lumio English — student dashboard "Story Journey" (design-previews/c-journey.html), 2026.
+/* Lumio English — student dashboard "Story Journey" (owner-approved design C, drafts in git history), 2026.
    Purely presentational, added on top of the page that student.html and its scripts already built:
    - numbers the visible sections as chapters (medal, "Chapter two" kicker, alternating sides),
    - a glowing dotted path from chapter to chapter, drawn as you scroll, with a small Lumi walking along it,
