@@ -99,8 +99,9 @@ body.theme-teen .caption p b{color:#FBBF24}
 
 /* --- mode: stack (portrait phones / tablets) --- */
 .mode-stack .sheet{display:flex;flex-direction:column}
-.mode-stack .art{flex:none;aspect-ratio:16/9.6;width:100%}
-.mode-stack .textCol{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 18px 18px}
+.mode-stack .art{flex:1 0 auto;width:100%;height:calc(var(--sw) * .5625);max-height:calc(var(--sw) * .68)}
+.mode-stack .textCol{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 18px 18px;display:flex;flex-direction:column}
+.mode-stack .caption{margin:auto 0}
 .mode-stack .caption p{font-size:1.2rem}
 body.theme-teen .mode-stack .caption p{font-size:1.1rem}
 .mode-stack .caption p.ar{font-size:1rem}
@@ -232,7 +233,7 @@ body.theme-teen .ceCount{background:rgba(255,255,255,.06);border-color:rgba(255,
 .trail{display:flex;align-items:center;margin:12px 0 4px}
 .trail .stop{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;background:#fff;color:var(--muted);border:3px solid #F1E4DA;font-size:.95rem}
 body.theme-teen .trail .stop{background:#2B2119;border-color:rgba(255,255,255,.14)}
-.trail .stop.done{background:linear-gradient(135deg,#34D399,#10B981);color:#fff;border-color:#fff}
+.trail .stop.done,body.theme-teen .trail .stop.done{background:linear-gradient(135deg,#34D399,#10B981);color:#fff;border-color:#fff}
 .trail .stop.cur{box-shadow:0 0 0 5px rgba(52,211,153,.3)}
 .trail .stop.locked{opacity:.55}
 .trail .ln{width:34px;height:4px;border-radius:4px;background:rgba(138,113,96,.25);position:relative;overflow:hidden}
