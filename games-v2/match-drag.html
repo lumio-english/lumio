@@ -2,613 +2,291 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Match It — Lumio English</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@700;800&family=Tajawal:wght@700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/brand.css">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="kit/play.css">
 <style>
-/* ---------- v2 motion kit (shared look; inlined per page so each file stands alone) ---------- */
-:root{
-  --o:#F97316;--o2:#C2530A;--o3:#FB923C;--sun:#FFC93C;--sun2:#FFE7A3;--sunS:#FFF3D6;
-  --ink:#2A2118;--cocoa:#43301F;--mu:#8A7160;--ok:#22C55E;--ok2:#15803D;--okS:#EAFBEF;
-  --bad:#F43F5E;--badS:#FDE8EC;--teal:#0D9488;--tealS:#E6FAF7;--sky:#0EA5E9;--pu:#8B5CF6;
-  --sh1:0 1px 2px rgba(67,48,31,.06),0 4px 12px rgba(67,48,31,.08);
-  --sh2:0 2px 4px rgba(67,48,31,.06),0 14px 34px rgba(67,48,31,.14);
-  --sh3:0 6px 14px rgba(67,48,31,.10),0 30px 70px rgba(249,115,22,.24);
-  --fd:'Baloo 2','Nunito',system-ui,sans-serif;--fb:'Nunito',system-ui,sans-serif;
-}
-*{box-sizing:border-box}
-html,body{margin:0;padding:0}
-html{overflow-x:hidden}
-body{font-family:var(--fb);color:var(--ink);overflow-x:hidden;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
-button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
-img{-webkit-user-drag:none;user-select:none}
-:focus-visible{outline:3px solid var(--o);outline-offset:3px;border-radius:12px}
-
-/* HUD */
-.v2-hud{position:relative;z-index:30;display:flex;align-items:center;gap:8px;padding:12px 16px;max-width:1120px;margin:0 auto}
-.v2-exit{min-height:44px;min-width:44px;padding:0 16px;border-radius:999px;background:#fff;border:0;box-shadow:var(--sh1);
-  font-family:var(--fd);font-weight:800;font-size:1rem;color:var(--cocoa);text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:none}
-.v2-exit svg{width:18px;height:18px}
-.v2-pill{min-height:44px;padding:0 14px;border-radius:999px;background:#fff;box-shadow:var(--sh1);display:inline-flex;align-items:center;gap:6px;
-  font-family:var(--fd);font-weight:800;font-size:1.05rem;color:var(--cocoa);white-space:nowrap;flex:none}
-.v2-pill svg{width:24px;height:24px;flex:none}
-.v2-prog{position:relative;height:14px;border-radius:999px;background:rgba(67,48,31,.09);overflow:hidden;flex:1;min-width:40px;box-shadow:inset 0 1px 2px rgba(67,48,31,.08)}
-.v2-prog i{position:absolute;inset:0;border-radius:inherit;background:linear-gradient(90deg,#FFC93C,#FB923C 55%,#F97316);transform-origin:0 50%;transform:scaleX(0)}
-.v2-prog i::after{content:"";position:absolute;left:6px;right:6px;top:3px;height:3px;border-radius:9px;background:rgba(255,255,255,.55)}
-
-/* mascot */
-.v2-mascot{position:relative;display:inline-block;transform-origin:50% 100%}
-.v2-mascot img{display:block;width:100%;height:auto;transform-origin:50% 100%;filter:drop-shadow(0 10px 14px rgba(67,48,31,.18))}
-
-/* flying star + effects */
-.v2-fly{position:fixed;left:0;top:0;z-index:400;width:36px;height:36px;pointer-events:none;will-change:transform}
-.v2-fly svg{width:100%;height:100%;filter:drop-shadow(0 3px 6px rgba(194,83,10,.35))}
-.v2-ring{position:absolute;inset:-4px;border-radius:inherit;pointer-events:none;border:4px solid var(--ok);opacity:0}
-.v2-dot{position:fixed;left:0;top:0;z-index:350;width:10px;height:10px;border-radius:50%;pointer-events:none;will-change:transform,opacity}
-.v2-check{position:absolute;width:56px;height:56px;pointer-events:none;z-index:4}
-.v2-check svg{width:100%;height:100%}
-.v2-bad{animation:v2Bad .45s ease}
-@keyframes v2Bad{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px) rotate(-1.5deg)}40%{transform:translateX(8px) rotate(1.5deg)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
-
-/* masked letters */
-.v2-w{display:inline-block;white-space:nowrap;overflow:hidden;vertical-align:bottom;padding:.06em .02em .1em;margin:-.06em -.02em -.1em}
-.v2-ch{display:inline-block;will-change:transform}
-
-/* celebration */
-.v2-cel{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;padding:96px 16px 16px;background:rgba(43,33,24,.52)}
-.v2-cel.show{display:flex}
-.v2-cel .box{position:relative;background:#fff;border-radius:32px;padding:20px 22px 24px;max-width:430px;width:100%;text-align:center;box-shadow:var(--sh3)}
-.v2-cel .box::before{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(120% 60% at 50% 0%,#FFF3D6 0%,rgba(255,243,214,0) 60%);pointer-events:none}
-.v2-cel .v2-hero{position:relative;display:block;width:150px;height:150px;object-fit:contain;margin:-96px auto 0;filter:drop-shadow(0 14px 18px rgba(67,48,31,.25));transform-origin:50% 100%}
-.v2-cel h2{position:relative;font-family:var(--fd);font-weight:800;font-size:clamp(1.7rem,7vw,2.1rem);line-height:1.1;margin:8px 0 2px;color:var(--cocoa);letter-spacing:-.01em}
-.v2-cel .sub{position:relative;font-weight:800;font-size:1.15rem;margin:8px 0 4px;color:var(--ink)}
-.v2-cel .sub b,.v2-n{font-family:var(--fd);color:var(--o2);font-size:1.25em}
-.v2-stars{position:relative;display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin:12px auto 6px;max-width:340px}
-.v2-stars span{width:52px;height:52px;display:inline-block}
-.v2-stars.many span{width:40px;height:40px}
-.v2-stars svg{width:100%;height:100%;filter:drop-shadow(0 4px 6px rgba(194,83,10,.25))}
-.v2-big{position:relative;display:flex;align-items:center;justify-content:center;gap:8px;margin:12px 0 4px;font-family:var(--fd);font-weight:800;font-size:3rem;line-height:1;color:var(--o2)}
-.v2-big svg{width:62px;height:62px}
-.v2-btns{position:relative;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:16px}
-.v2-btn{min-height:52px;padding:0 24px;border-radius:999px;border:0;font-family:var(--fd);font-weight:800;font-size:1.08rem;
-  display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;cursor:pointer}
-.v2-btn.pri{background:linear-gradient(135deg,#FB923C,#F97316 55%,#F59E0B);color:#fff;box-shadow:0 4px 0 #C2530A,0 12px 24px rgba(249,115,22,.32)}
-.v2-btn.sec{background:#E6FAF7;color:#0F766E;box-shadow:0 4px 0 #9FE3D9}
-.v2-conf{position:fixed;left:50%;top:46%;width:min(118vw,680px);aspect-ratio:1/1;transform:translate(-50%,-50%);z-index:320;pointer-events:none}
-.v2-xp{position:relative;margin:14px 0 6px}
-.v2-xp .val{font-family:var(--fd);font-weight:800;font-size:2rem;color:var(--o)}
-.v2-xp .bar{width:200px;height:12px;border-radius:999px;background:rgba(249,115,22,.15);margin:6px auto 0;overflow:hidden}
-.v2-xp .bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#F97316,#FFC93C);transform-origin:0 50%}
-
-@media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
-}
-.v2-sp{flex:1}
-
-  body { min-height: 100vh; min-height: 100dvh; background: #FFF8EC; position: relative; }
-  .bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
-    background: radial-gradient(circle at 1px 1px, rgba(67,48,31,.07) 1.2px, transparent 1.6px) 0 0/22px 22px, linear-gradient(180deg,#FFF3D6 0%,#FFF8EC 40%,#FFFBF5 100%); }
-  .blob { position: absolute; border-radius: 50%; filter: blur(2px); opacity: .55; }
-  .blob.a { width: 320px; height: 320px; left: -120px; top: 80px; background: radial-gradient(circle,#FFD7A8,rgba(255,215,168,0) 70%); }
-  .blob.b { width: 380px; height: 380px; right: -150px; bottom: -60px; background: radial-gradient(circle,#C7F0E8,rgba(199,240,232,0) 70%); }
-  .blob.c { width: 220px; height: 220px; right: 18%; top: -60px; background: radial-gradient(circle,#FFE7A3,rgba(255,231,163,0) 70%); }
-
-  .stage { position: relative; z-index: 2; max-width: 1080px; margin: 0 auto; padding: 0 16px 28px; }
-  .lead { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 4px 0 14px; }
-  .lead .v2-mascot { width: 74px; flex: none; }
-  .lead h1 { font-family: var(--fd); font-weight: 800; color: var(--cocoa); font-size: clamp(1.35rem, 4.6vw, 2.1rem); line-height: 1.1; margin: 0; }
-  .lead .bubble { background: #fff; border-radius: 22px; padding: 10px 18px; box-shadow: var(--sh2); position: relative; }
-  .lead .bubble::before { content: ""; position: absolute; left: -9px; top: 50%; margin-top: -9px; border: 9px solid transparent; border-right-color: #fff; border-left: 0; }
-
-  .board { display: grid; grid-template-columns: 1fr; gap: 14px; }
-  .col h3 { text-align: center; font-family: var(--fd); font-weight: 800; color: var(--mu); margin: 0 0 8px; font-size: .95rem; letter-spacing: .08em; text-transform: uppercase; }
-  .pics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-  .pic-slot {
-    position: relative; aspect-ratio: 1 / 1; background: #fff; border-radius: 22px;
-    box-shadow: var(--sh1); outline: 3px dashed #EADFCE; outline-offset: -3px; touch-action: manipulation; cursor: pointer;
+  /* Match It: Lumi's playroom. Picture frames hang on the board, the words sit on a toy shelf.
+     The child picks a word up (real drag, mouse or finger), it follows the finger with a little
+     swing, gets pulled in by the nearest frame like a magnet, and snaps into the frame's name slot.
+     Tap a word, then tap a picture, works too (and is what the keyboard uses). */
+  .md{width:100%;max-width:1180px;display:grid;grid-template-columns:1fr;gap:10px;justify-items:center;align-content:start}
+  .md-top{display:flex;align-items:flex-end;gap:6px;width:100%;max-width:620px}
+  .md-lumi{position:relative;flex:none;height:clamp(104px,14vh,160px);width:clamp(86px,12vh,130px);display:flex;justify-content:center;align-items:flex-end}
+  .md-lumi .lp-actor{height:100%}
+  .md-ask{flex:1;min-width:0;padding-bottom:18px}
+  .md-ask .lp-bubble{max-width:100%;cursor:default}
+  .md-ask .lp-bubble .tail{left:-8px;bottom:22px}
+  .md-ask .lp-bubble .txt{font-size:clamp(17px,4.4vw,23px)}
+  .md-board{width:100%;max-width:600px;display:grid;gap:12px;grid-template-columns:repeat(3,1fr)}
+  .md-board.c2{grid-template-columns:repeat(2,1fr);max-width:420px}
+  /* picture frames */
+  .md-slot{padding-bottom:42px}
+  .md-slot .pic{margin:9px 9px 0}
+  .md-slot .dock{position:absolute;left:9px;right:9px;bottom:8px;height:30px;border-radius:999px;border:3px dashed #E7C9A0;
+    display:grid;place-items:center;font-family:var(--lp-display);font-weight:800;font-size:clamp(13px,3.6vw,17px);color:#B98E5E;line-height:1;
+    background:rgba(255,248,236,.9);transition:border-color .2s,background .2s;white-space:nowrap;overflow:hidden;padding:0 4px}
+  .md-slot.near .dock{border-color:var(--lp-accent);background:#FFF0D6}
+  .md-slot.near{box-shadow:0 7px 0 #FFC27A,0 0 0 5px rgba(249,115,22,.35),0 22px 30px -18px rgba(60,30,5,.7)}
+  .md-slot.filled .dock{border:none;background:linear-gradient(180deg,#34D399,#16A34A);color:#fff;box-shadow:0 3px 0 #15803D}
+  .md-slot.filled{cursor:default}
+  .md-slot.armed:not(.filled) .dock{animation:mdBlink 1s ease-in-out infinite}
+  @keyframes mdBlink{50%{border-color:var(--lp-accent);background:#FFE2B8}}
+  /* the toy shelf with the word chips */
+  .md-shelf{position:relative;width:100%;max-width:600px;padding:10px 10px 22px;border-radius:24px;
+    background:linear-gradient(180deg,rgba(255,250,240,.86),rgba(255,240,215,.86));border:1px solid rgba(255,255,255,.9);
+    box-shadow:var(--lp-shadow);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+  .md-shelf::after{content:"";position:absolute;left:10px;right:10px;bottom:6px;height:12px;border-radius:6px;
+    background:linear-gradient(180deg,#C98A4B,#9A5F2C);box-shadow:inset 0 2px 0 rgba(255,255,255,.3),0 4px 8px -3px rgba(60,30,5,.6)}
+  .md-tray{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 9px}
+  .md-chip{position:relative;border:none;cursor:grab;min-height:48px;padding:0 18px;border-radius:999px;touch-action:none;user-select:none;-webkit-user-select:none;
+    font-family:var(--lp-display);font-weight:800;font-size:clamp(18px,4.6vw,22px);color:#43301F;white-space:nowrap;
+    background:linear-gradient(180deg,#fff,#FFF4E2);box-shadow:0 5px 0 #E8C99C,0 12px 18px -10px rgba(60,30,5,.6)}
+  .md-chip::before{content:"";position:absolute;left:12px;top:50%;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:var(--c,#F97316);box-shadow:0 0 0 3px rgba(255,255,255,.8)}
+  .md-chip{padding-left:30px}
+  .md-chip.sel{background:linear-gradient(180deg,#FFD666,#FFB020);box-shadow:0 5px 0 #D98A00,0 0 0 4px rgba(255,214,102,.55),0 14px 22px -10px rgba(200,120,0,.8)}
+  .md-chip.gone{visibility:hidden}
+  .md-chip.out{display:none}
+  .md-fly{position:fixed;left:0;top:0;z-index:200;margin:0;pointer-events:none;cursor:grabbing;
+    box-shadow:0 5px 0 #D98A00,0 26px 30px -12px rgba(60,30,5,.55);background:linear-gradient(180deg,#FFE58A,#FFB020)}
+  .md-hint{font-weight:800;font-size:13px;color:#8A6A4A;text-align:center;margin:0 0 8px}
+  .md-hint+.md-tray{min-height:48px}
+  #stage{padding-bottom:calc(74px + env(safe-area-inset-bottom,0px))}
+  .md-hint .ar{font-family:'Tajawal',var(--lp-body);margin-inline-start:6px}
+  @media (min-width:900px){
+    .md{grid-template-columns:300px auto;justify-content:center;column-gap:36px;row-gap:14px;align-items:start;min-height:calc(100dvh - 110px);align-content:center}
+    .md-top{display:contents}
+    .md-lumi{grid-row:1 / span 3;align-self:center;height:min(58vh,460px);width:300px}
+    .md-ask{grid-column:2;padding:0;justify-self:start;max-width:720px;width:100%}
+    .md-board{grid-column:2;width:min(780px,calc((100dvh - 330px) * 1.3));max-width:none;gap:18px;justify-self:start}
+    .md-board.c2{width:min(540px,calc((100dvh - 330px) * .85))}
+    .md-shelf{grid-column:2;width:min(780px,calc((100dvh - 330px) * 1.3));max-width:none;justify-self:start}
+    #stage{padding-bottom:24px}
   }
-  .pic-slot .clip { position: absolute; inset: 0; border-radius: inherit; overflow: hidden; }
-  .pic-slot .pic-fill, .pic-slot img.pic { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #fff; }
-  .pic-slot .pic-fill > div { font-size: clamp(2.4rem, 9vw, 4.4rem) !important; }
-  .pic-slot img.pic { padding: 8%; }
-  .pic-slot.over { outline-color: var(--o); outline-style: solid; background: var(--sunS); }
-  .pic-slot.over img.pic { background: var(--sunS); }
-  .pic-slot.filled { outline: 4px solid var(--ok); outline-offset: -4px; cursor: default; }
-  .pic-slot .lbl { position: absolute; left: 50%; bottom: -10px; transform: translateX(-50%); z-index: 3; white-space: nowrap; max-width: 108%;
-    overflow: hidden; text-overflow: ellipsis;
-    background: var(--ok); color: #fff; border-radius: 999px; padding: 3px 12px; font-family: var(--fd); font-weight: 800; font-size: .95rem; box-shadow: 0 4px 10px rgba(21,128,61,.3); }
-  .pic-slot.hint { outline-color: var(--o3); }
-
-  .words { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-  .word-chip {
-    position: relative; min-height: 52px; background: #fff; border-radius: 999px; padding: 10px 22px; border: 0;
-    font-family: var(--fd); font-weight: 800; font-size: 1.15rem; color: var(--cocoa);
-    box-shadow: 0 4px 0 #EADFCE, var(--sh1); cursor: grab; text-align: center;
-    user-select: none; -webkit-user-select: none; touch-action: none;
-  }
-  .word-chip .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--o3); margin-right: 8px; vertical-align: middle; }
-  .word-chip.sel { background: var(--o); color: #fff; box-shadow: 0 4px 0 var(--o2), 0 10px 22px rgba(249,115,22,.35); }
-  .word-chip.sel .dot { background: #fff; }
-  .word-chip.placed { opacity: .35; cursor: default; box-shadow: none; background: #F3EADB; }
-  .word-chip.placed .dot { background: var(--ok); }
-  .word-chip.dragging { opacity: .3; }
-  .ghost {
-    position: fixed; left: 0; top: 0; z-index: 100; pointer-events: none; will-change: transform;
-    background: var(--o); color: #fff; border-radius: 999px; padding: 12px 24px; white-space: nowrap;
-    font-family: var(--fd); font-weight: 800; font-size: 1.2rem; box-shadow: 0 18px 34px rgba(194,83,10,.35);
-  }
-
-  @media (min-width: 820px) {
-    .board { grid-template-columns: 1.55fr 1fr; gap: 34px; align-items: start; }
-    .pics { gap: 18px; }
-    .words { flex-direction: column; align-items: stretch; gap: 14px; padding-top: 4px; }
-    .word-chip { font-size: 1.3rem; min-height: 60px; }
-    .lead .v2-mascot { width: 96px; }
-    .stage { padding-bottom: 40px; }
-  }
-  @media (min-width: 820px) and (max-height: 920px) { .pics { max-width: 600px; margin: 0 auto; } }
+  @media (max-height:700px) and (max-width:899px){ .md-lumi{height:96px;width:80px} .md-slot .pic{margin:6px 6px 0} }
 </style>
 </head>
 <body>
-<div class="bg" aria-hidden="true"><div class="blob a"></div><div class="blob b"></div><div class="blob c"></div></div>
-
-<header class="v2-hud" id="hud">
-  <a class="v2-exit tap" href="../present.html" id="exitBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>Exit</a>
-  <div class="v2-prog" aria-hidden="true"><i id="progFill"></i></div>
-  <span class="v2-pill" id="starCt"><span class="ic"></span><span id="matched">0</span>/<span id="total">0</span></span>
-</header>
-
-<main class="stage">
-  <div class="lead">
-    <div class="v2-mascot" id="lumi"><img src="../assets/story/characters/lumi-point.png" alt="Lumi" width="646" height="800"></div>
-    <div class="bubble" id="bubble"><h1 id="ttl">Drag the word to its picture!</h1></div>
-  </div>
-  <div class="board">
-    <section class="col"><h3>Pictures</h3><div id="pics" class="pics"></div></section>
-    <section class="col"><h3>Words</h3><div id="words" class="words"></div></section>
+<main class="lp-stage" id="stage">
+  <div class="md" id="md">
+    <div class="md-top">
+      <div class="md-lumi" id="lumiZone"></div>
+      <div class="md-ask">
+        <div class="lp-bubble" id="promptCard"><span class="txt" id="promptText">Drag the word to its picture!</span><span class="tail"></span></div>
+      </div>
+    </div>
+    <div class="md-board" id="pics" aria-label="Pictures"></div>
+    <div class="md-shelf">
+      <p class="md-hint">Drag a word, or tap it and then its picture</p>
+      <div class="md-tray" id="words" aria-label="Words"></div>
+    </div>
   </div>
 </main>
 
-<div id="endcard" class="v2-cel" role="dialog" aria-modal="true">
-  <div class="box">
-    <img class="v2-hero" src="../assets/story/characters/lumi-celebrate.png" alt="Lumi">
-    <h2>All matched!</h2>
-    <div class="v2-award"></div>
-    <p class="sub">Great job matching every word!</p>
-    <div class="v2-btns">
-      <button class="v2-btn pri tap" onclick="location.reload()">↺ Play again</button>
-      <a class="v2-btn sec tap" id="backBtn" href="../present.html">Back to lesson</a>
-    </div>
-  </div>
-</div>
-
 <script src="../vendor/gsap-3.12.5.min.js"></script>
 <script src="../vendor/lottie-light-5.12.2.min.js"></script>
-<script>
-/* ---------- v2 motion kit: GSAP + Lottie helpers (same motion language as design-previews/landing-tryit.html) ---------- */
-window.V2 = (function () {
-  var G = window.gsap, LOT = window.lottie;
-  var RM = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
-  var V = { G: G, RM: RM, teen: false };
-  var STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FFC93C" stroke="#E8A23D" stroke-width="1.3" stroke-linejoin="round" d="M12 2.6l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17l-5.7 3.1 1.2-6.4L2.8 9.3l6.4-.8z"/><path fill="#FFF" opacity=".55" d="M9.6 8.6l1.6-3.3.5 1-1.1 2.6z"/></svg>';
-  var STAR_O = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#F3EADB" stroke="#E2D3BC" stroke-width="1.3" stroke-linejoin="round" d="M12 2.6l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17l-5.7 3.1 1.2-6.4L2.8 9.3l6.4-.8z"/></svg>';
-  var CHECK = '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#22C55E"/><path d="M14 24.5l7 7 13-14" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  V.STAR = STAR; V.STAR_O = STAR_O; V.CHECK = CHECK;
-  V.anim = !!G && !RM;
-  V.$ = function (s, r) { return (r || document).querySelector(s); };
-  V.$$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
-  V.esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
-  // kids bounce, teens glide
-  V.pop = function () { return V.teen ? "power3.out" : "back.out(2)"; };
-  V.spring = function () { return V.teen ? "power3.out" : "elastic.out(1.1,.45)"; };
-
-  V.lot = function (el, name, loop, slice) {
-    if (!LOT || !el || RM) return null;
-    try {
-      return LOT.loadAnimation({ container: el, renderer: "svg", loop: !!loop, autoplay: true, path: "../assets/lottie/" + name + ".json",
-        rendererSettings: slice ? { preserveAspectRatio: "xMidYMid slice" } : {} });
-    } catch (e) { return null; }
-  };
-
-  // springy press on anything with .tap
-  if (V.anim) {
-    document.addEventListener("pointerdown", function (e) {
-      var t = e.target && e.target.closest ? e.target.closest(".tap") : null;
-      if (!t || t.disabled || t.classList.contains("no-press")) return;
-      G.to(t, { scale: .92, duration: .12, ease: "power2.out", overwrite: "auto" });
-      var up = function () {
-        window.removeEventListener("pointerup", up, true); window.removeEventListener("pointercancel", up, true);
-        if (t.isConnected) G.to(t, { scale: 1, duration: V.teen ? .35 : .6, ease: V.spring(), overwrite: "auto" });
-      };
-      window.addEventListener("pointerup", up, true); window.addEventListener("pointercancel", up, true);
-    }, true);
-  }
-
-  V.center = function (el) { var r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width, h: r.height }; };
-
-  // a star flies on a curved path into a counter, which bumps on arrival
-  V.flyStar = function (fromEl, toEl, done) {
-    if (!fromEl || !toEl || !V.anim) { if (done) done(); return; }
-    var a = V.center(fromEl), b = V.center(toEl);
-    var ax = a.x - 18, ay = a.y - 18, bx = b.x - 18, by = b.y - 18;
-    var cx = (ax + bx) / 2 + (ax < bx ? -70 : 70), cy = Math.min(ay, by) - 120;
-    var s = document.createElement("div"); s.className = "v2-fly"; s.innerHTML = STAR; document.body.appendChild(s);
-    var o = { t: 0 };
-    G.set(s, { x: ax, y: ay, scale: .4 });
-    G.to(o, { t: 1, duration: .8, ease: "power1.inOut", onUpdate: function () {
-      var t = o.t, u = 1 - t;
-      G.set(s, { x: u * u * ax + 2 * u * t * cx + t * t * bx, y: u * u * ay + 2 * u * t * cy + t * t * by, rotation: t * 320, scale: .45 + Math.sin(t * Math.PI) * 1.05 });
-    }, onComplete: function () { s.remove(); V.bump(toEl); if (done) done(); } });
-  };
-  V.bump = function (el) { if (el && V.anim) G.fromTo(el, { scale: 1.3 }, { scale: 1, duration: .7, ease: V.teen ? "power3.out" : "elastic.out(1.2,.4)", overwrite: "auto" }); };
-
-  V.shake = function (el) {
-    if (!el) return;
-    if (!V.anim) { el.classList.remove("v2-bad"); void el.offsetWidth; el.classList.add("v2-bad"); setTimeout(function () { el.classList.remove("v2-bad"); }, 500); return; }
-    G.fromTo(el, { x: 0 }, { keyframes: { x: [-9, 9, -6, 5, -2, 0], rotation: [-1.5, 1.5, -1, .5, 0, 0] }, duration: .45, ease: "none", overwrite: "auto" });
-  };
-  // expanding ring (transform/opacity only)
-  V.ring = function (el, color) {
-    if (!el || !V.anim) return;
-    var r = document.createElement("span"); r.className = "v2-ring"; if (color) r.style.borderColor = color;
-    el.appendChild(r);
-    G.fromTo(r, { scale: .96, opacity: .95 }, { scale: 1.14, opacity: 0, duration: .7, ease: "power2.out", onComplete: function () { r.remove(); } });
-  };
-  // green check (Lottie; a still check when motion is reduced)
-  V.check = function (host, css) {
-    if (!host) return;
-    var c = document.createElement("div"); c.className = "v2-check"; c.style.cssText = css || "right:-6px;top:-6px";
-    host.appendChild(c);
-    var a = V.lot(c, "check", false);
-    if (!a) c.innerHTML = CHECK;
-    return c;
-  };
-  // little confetti dots from a point
-  V.burst = function (x, y, colors, n) {
-    if (!V.anim) return;
-    colors = colors || ["#FFC93C", "#F97316", "#22C55E", "#0EA5E9", "#F472B6"];
-    for (var i = 0; i < (n || 14); i++) {
-      var d = document.createElement("div"); d.className = "v2-dot";
-      var sz = 6 + Math.random() * 8; d.style.width = d.style.height = sz + "px";
-      d.style.background = colors[i % colors.length]; if (i % 3 === 0) d.style.borderRadius = "2px";
-      document.body.appendChild(d);
-      var ang = Math.random() * Math.PI * 2, dist = 50 + Math.random() * 80;
-      G.set(d, { x: x - sz / 2, y: y - sz / 2 });
-      G.to(d, { x: x + Math.cos(ang) * dist, y: y + Math.sin(ang) * dist + 30, rotation: Math.random() * 360, opacity: 0, scale: .4, duration: .7 + Math.random() * .3, ease: "power2.out", onComplete: (function (dd) { return function () { dd.remove(); }; })(d) });
-    }
-  };
-  V.count = function (el, to, dur, from) {
-    if (!el) return;
-    if (!V.anim) { el.textContent = to; return; }
-    var o = { n: from || 0 };
-    G.to(o, { n: to, duration: dur || .8, ease: "power1.out", onUpdate: function () { el.textContent = Math.round(o.n); } });
-  };
-  V.progress = function (fill, frac) {
-    if (!fill) return;
-    frac = Math.max(0, Math.min(1, frac));
-    if (V.anim) G.to(fill, { scaleX: frac, duration: .7, ease: "power3.out" }); else fill.style.transform = "scaleX(" + frac + ")";
-  };
-  // split text into masked letters
-  V.letters = function (text) {
-    return String(text).replace(/ (?=\S*\p{Extended_Pictographic})/gu, "\u00a0").split(" ").map(function (w) {
-      return '<span class="v2-w">' + Array.from(w).map(function (c) { return '<span class="v2-ch">' + V.esc(c) + "</span>"; }).join("") + "</span>";
-    }).join(" ");
-  };
-  V.reveal = function (el, delay) {
-    if (!el || !V.anim) return null;
-    return G.from(V.$$(".v2-ch", el), { yPercent: 115, rotation: function (i) { return V.teen ? 0 : (i % 2 ? 1 : -1) * 14; }, duration: V.teen ? .5 : .55, stagger: .028, delay: delay || 0, ease: V.teen ? "power3.out" : "back.out(2.4)" });
-  };
-  // a character drops in with squash & stretch
-  V.dropIn = function (el, delay) {
-    if (!el || !V.anim) return null;
-    var tl = G.timeline({ delay: delay || 0 });
-    if (V.teen) return tl.fromTo(el, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: .6, ease: "power3.out" });
-    tl.fromTo(el, { y: -160, opacity: 0, scaleX: .85, scaleY: 1.18, transformOrigin: "50% 100%" }, { y: 0, opacity: 1, duration: .42, ease: "power2.in" })
-      .to(el, { scaleX: 1.2, scaleY: .78, duration: .08, ease: "power1.out" })
-      .to(el, { scaleX: 1, scaleY: 1, duration: .8, ease: "elastic.out(1.1,.32)" });
-    return tl;
-  };
-  // idle life: breathe, sway, blink-squash, and a wave now and then
-  V.mascot = function (box) {
-    var img = box && box.querySelector("img");
-    var api = { cheer: function () {}, sad: function () {}, kill: function () {} };
-    if (!img || !V.anim) return api;
-    var tw = [];
-    tw.push(G.to(box, { scale: 1.035, transformOrigin: "50% 100%", duration: 1.7, yoyo: true, repeat: -1, ease: "sine.inOut" }));
-    tw.push(G.to(img, { rotation: V.teen ? 1.5 : 3.5, transformOrigin: "50% 100%", duration: 1.5, yoyo: true, repeat: -1, ease: "sine.inOut" }));
-    var bl = G.timeline({ repeat: -1, repeatDelay: 3.2, delay: 1.4 });
-    bl.to(img, { scaleY: .91, scaleX: 1.06, transformOrigin: "50% 100%", duration: .09, ease: "power1.in" }).to(img, { scaleY: 1, scaleX: 1, duration: .45, ease: V.teen ? "power2.out" : "elastic.out(1,.4)" });
-    tw.push(bl);
-    var wv = G.timeline({ repeat: -1, repeatDelay: 6.5, delay: 4 });
-    wv.to(img, { rotation: -8, duration: .18, ease: "power1.out" }).to(img, { rotation: 7, duration: .18, yoyo: true, repeat: 3, ease: "sine.inOut" }).to(img, { rotation: 0, duration: .3 });
-    tw.push(wv);
-    api.cheer = function () {
-      G.timeline().to(box, { y: -26, duration: .22, ease: "power2.out" }).to(box, { y: 0, duration: .5, ease: "bounce.out" });
-      G.fromTo(img, { scaleX: 1.12, scaleY: .88 }, { scaleX: 1, scaleY: 1, duration: .6, ease: "elastic.out(1,.4)", transformOrigin: "50% 100%" });
-    };
-    api.sad = function () { G.fromTo(box, { rotation: 0 }, { keyframes: { rotation: [-5, 5, -3, 0] }, duration: .5, ease: "none" }); };
-    api.kill = function () { tw.forEach(function (t) { t.kill(); }); };
-    return api;
-  };
-  // deal a set of cards in
-  V.dealIn = function (els, opt) {
-    if (!els || !els.length || !V.anim) return null;
-    opt = opt || {};
-    return G.from(els, { y: opt.y == null ? 40 : opt.y, scale: V.teen ? .92 : .6, opacity: 0,
-      rotation: function (i) { return V.teen ? 0 : [-7, 6, -4, 5][i % 4]; },
-      duration: V.teen ? .5 : .6, stagger: opt.stagger || .07, delay: opt.delay || 0, ease: V.pop(), clearProps: opt.keep ? "" : "transform,opacity" });
-  };
-
-  // end-of-game celebration on a .v2-cel overlay
-  // o: { title, sub(html, may contain <b class="v2-n" data-to="N">), rating (1-3) | xp (rating) | tally {n, max} | big (number), confetti:true }
-  V.celebrate = function (ov, o) {
-    o = o || {};
-    var box = V.$(".box", ov), h = V.$("h2", ov);
-    if (o.title != null) h.innerHTML = V.letters(o.title);
-    if (o.sub != null) { var sb = V.$(".sub", ov); if (sb) sb.innerHTML = o.sub; }
-    var st = V.$(".v2-stars", ov) || V.$(".v2-slot", ov);
-    var area = V.$(".v2-award", ov);
-    if (area) {
-      if (o.xp) {
-        var pct = Math.round(o.xp / 3 * 100);
-        area.innerHTML = '<div class="v2-xp"><div class="val">+<span class="v2-n" data-to="' + (o.xp * 100) + '">' + (o.xp * 100) + '</span> XP</div><div class="bar"><i style="transform:scaleX(' + (pct / 100) + ')"></i></div></div>';
-      } else if (o.rating) {
-        area.innerHTML = '<div class="v2-stars">' + [0, 1, 2].map(function (i) { return "<span>" + (i < o.rating ? STAR : STAR_O) + "</span>"; }).join("") + "</div>";
-      } else if (o.tally) {
-        var mx = o.tally.max;
-        area.innerHTML = '<div class="v2-stars' + (mx > 5 ? " many" : "") + '">' + Array.from({ length: mx }, function (_, i) { return "<span>" + (i < o.tally.n ? STAR : STAR_O) + "</span>"; }).join("") + "</div>";
-      } else if (o.big != null) {
-        area.innerHTML = '<div class="v2-big">' + STAR + '<span class="v2-n" data-to="' + o.big + '">' + o.big + "</span></div>";
-      } else area.innerHTML = "";
-    }
-    ov.classList.add("show");
-    try { if (window.Lumio && Lumio.sfx) Lumio.sfx("complete"); } catch (e) {}
-    if (o.confetti !== false && V.anim) {
-      var c = document.createElement("div"); c.className = "v2-conf"; document.body.appendChild(c);
-      var a = V.lot(c, "confetti", false);
-      if (a) a.addEventListener("complete", function () { c.remove(); }); else c.remove();
-      setTimeout(function () { if (c.isConnected) c.remove(); }, 4000);
-    }
-    var nums = V.$$(".v2-n[data-to]", ov);
-    if (!V.anim) { nums.forEach(function (n) { n.textContent = n.getAttribute("data-to"); }); return; }
-    nums.forEach(function (n) { n.textContent = "0"; });
-    var hero = V.$(".v2-hero", ov);
-    var tl = G.timeline();
-    tl.fromTo(ov, { opacity: 0 }, { opacity: 1, duration: .25 })
-      .from(box, { scale: V.teen ? .94 : .7, y: 40, opacity: 0, duration: V.teen ? .5 : .6, ease: V.teen ? "power3.out" : "back.out(1.8)" }, "<.05");
-    if (hero) {
-      if (V.teen) tl.from(hero, { y: 30, opacity: 0, duration: .5, ease: "power3.out" }, "-=.35");
-      else tl.fromTo(hero, { y: -140, opacity: 0, scaleX: .85, scaleY: 1.2, transformOrigin: "50% 100%" }, { y: 0, opacity: 1, duration: .4, ease: "power2.in" }, "-=.3")
-        .to(hero, { scaleX: 1.18, scaleY: .8, duration: .08 }).to(hero, { scaleX: 1, scaleY: 1, duration: .8, ease: "elastic.out(1,.35)" });
-    }
-    tl.from(V.$$(".v2-ch", h), { yPercent: 115, rotation: function (i) { return V.teen ? 0 : (i % 2 ? 1 : -1) * 16; }, duration: .5, stagger: .03, ease: V.teen ? "power3.out" : "back.out(2.6)" }, .35);
-    var stars = V.$$(".v2-stars span", ov);
-    if (stars.length) tl.from(stars, { y: -80, x: function (i) { return (stars.length / 2 - i) * 22; }, scale: 0, rotation: -200, duration: .65, stagger: Math.min(.16, 1 / stars.length), ease: "back.out(1.8)" }, .7)
-      .fromTo(stars, { scale: 1 }, { scale: 1.22, duration: .14, yoyo: true, repeat: 1, stagger: Math.min(.16, 1 / stars.length), ease: "power2.out", immediateRender: false });
-    var big = V.$(".v2-big svg", ov);
-    if (big) tl.from(big, { scale: 0, rotation: -240, duration: .8, ease: "back.out(2)" }, .7);
-    var bar = V.$(".v2-xp .bar i", ov);
-    if (bar) tl.from(bar, { scaleX: 0, duration: 1, ease: "power3.out" }, .75);
-    tl.from(V.$$(".sub,.v2-note,.v2-ar,.moves", ov), { y: 12, opacity: 0, duration: .4, stagger: .06 }, .8);
-    tl.add(function () { nums.forEach(function (n) { V.count(n, +n.getAttribute("data-to"), Math.min(1.6, .25 + .12 * (+n.getAttribute("data-to") || 1))); }); }, .85);
-    tl.from(V.$$(".v2-btns > *", ov), { y: 22, opacity: 0, duration: .5, stagger: .08, ease: "power3.out", clearProps: "transform,opacity" }, 1.1);
-  };
-  V.hideCel = function (ov) { ov.classList.remove("show"); };
-  // soft drifting decor
-  V.drift = function (els) {
-    if (!V.anim) return;
-    els.forEach(function (el, i) {
-      G.to(el, { x: (i % 2 ? -1 : 1) * (18 + i * 6), y: (i % 3 - 1) * 10, duration: 5 + i * 1.3, yoyo: true, repeat: -1, ease: "sine.inOut" });
-    });
-  };
-  return V;
-})();
-
-</script>
 <script src="../js/app.js"></script>
 <script src="../js/lessons-data.js"></script>
+<script src="kit/play.js"></script>
 <script>
 const level = Lumio.qs("level") || "pre-a";
 const num = parseInt(Lumio.qs("n") || "1", 10);
-// Was hardcoded to "../present.html" with no query string, so Exit/Back
-// always dropped the teacher back to level=pre-a&n=1 (present.html's
-// own defaults) instead of the lesson they actually launched this game
-// from -- matches the fix already applied to every other game here.
+// Exit/Back go to the lesson the game was launched from (or the map / the trial deck).
 const source = Lumio.qs("from");
 const backHref = source === "lesson" ? "../student.html" : source === "trial" ? `../present-trial.html?level=${level}` : `../present.html?level=${level}&n=${num}`;
-// From a trial deck the game opened in its own tab: Exit just closes it (the trial is still open in the first tab).
-if (source === "trial") ["exitBtn", "backBtn"].forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener("click", e => { e.preventDefault(); try { window.close(); } catch (x) {} setTimeout(() => { location.href = backHref; }, 250); }); });
-document.getElementById("exitBtn").href = backHref;
-document.getElementById("backBtn").href = backHref;
 const lesson = window.LUMIO_LESSONS?.[level]?.[num];
 const vocab = (lesson ? Lumio.shuffle([...lesson.vocab]) : []).slice(0, 6);
-document.getElementById("total").textContent = vocab.length;
 
-const G = V2.G, anim = V2.anim;
-V2.teen = ["level3", "level4", "level5", "level6"].includes(level);
-document.querySelector("#starCt .ic").innerHTML = V2.STAR;
-const picsEl = document.getElementById("pics");
-const wordsEl = document.getElementById("words");
-const starCt = document.getElementById("starCt");
-const progFill = document.getElementById("progFill");
-let matched = 0;
+LP.init({ scene: { bg: "assets/lesson-bg-kid/playroom.jpg", particles: "motes", tint: "linear-gradient(180deg,rgba(255,236,200,.12),rgba(60,30,0,.22))" },
+  hud: { rounds: Math.max(1, vocab.length), exitHref: backHref } });
+// From a trial deck the game opened in its own tab: Exit just closes it (the trial is still open in the first tab).
+if (source === "trial") LP.hud.exit.onclick = e => { e.preventDefault(); try { window.close(); } catch (x) {} setTimeout(() => { location.href = backHref; }, 250); };
 
-const picOrder = Lumio.shuffle(vocab.map((v, i) => i));
-picOrder.forEach(i => {
-  const v = vocab[i];
-  const slot = document.createElement("div");
-  slot.className = "pic-slot";
-  slot.dataset.answer = v.en;
-  const slug = v.en.toLowerCase().replace(/ /g, "-");
-  slot.innerHTML = `<div class="clip"><div class="pic-fill">${Lumio.letterTile(v.en)}</div><img class="pic" src="../assets/vocab/${slug}.png" alt="${v.en}" draggable="false" onerror="this.remove()"></div>`;
-  picsEl.appendChild(slot);
-});
+// Words whose pictures show the same thing (e.g. "hello" and "hi" are both a wave, "hands" is a clapping
+// picture like "clap", "puppy" and "dog" are both puppies). If both are on the board, either word may go on
+// either of those pictures, so a child is never marked wrong for a picture that really does show their word.
+const SAME_PIC = [["hello", "hi"], ["hands", "clap"], ["dog", "puppy", "pet"], ["cat", "kitten"], ["big", "elephant"], ["small", "mouse"],
+  ["happy", "great"], ["boy", "sad"], ["fine", "okay"], ["draw", "picture"], ["cousin", "brother"], ["clock", "hour", "minute", "o'clock"]];
+const same = (a, b) => a === b || SAME_PIC.some(g => g.includes(a.toLowerCase()) && g.includes(b.toLowerCase()));
 
-const wordOrder = Lumio.shuffle(vocab.map((v, i) => i));
-wordOrder.forEach(i => {
-  const v = vocab[i];
-  const chip = document.createElement("button");
-  chip.type = "button";
-  chip.className = "word-chip";
-  chip.innerHTML = `<span class="dot"></span>${V2.esc(v.en)}`;
-  chip.dataset.word = v.en;
-  wordsEl.appendChild(chip);
-});
+const lumi = LP.actor(document.getElementById("lumiZone"), { char: "lumi", pose: "point", cheer: "celebrate", oops: "surprised", alt: "Lumi" });
+const picsEl = document.getElementById("pics"), wordsEl = document.getElementById("words"), promptText = document.getElementById("promptText");
+const CHIPC = ["#F97316", "#0D9488", "#3B82F6", "#E11D48", "#8B5CF6", "#F59E0B"];
 
-const mascot = V2.mascot(document.getElementById("lumi"));
+if (!vocab.length) {
+  picsEl.innerHTML = "<p class='lp-panel' style='padding:24px;grid-column:1/-1'>No lesson data found.</p>";
+} else {
+  const total = vocab.length;
+  let matched = 0, score = 0, busy = false, selected = null;
+  const missed = new Set();
+  picsEl.className = "md-board" + (total <= 4 ? " c2" : "");
 
-/* ---------- orchestrated entrance ---------- */
-(function intro() {
-  if (!anim) return;
-  const tl = G.timeline();
-  tl.from("#hud > *", { y: -30, opacity: 0, duration: .5, stagger: .06, ease: "power3.out", clearProps: "transform,opacity" })
-    .add(V2.dropIn(document.querySelector("#lumi img")), .1)
-    .from("#bubble", { scale: .4, opacity: 0, transformOrigin: "0% 50%", duration: .5, ease: V2.pop() }, .45)
-    .from(".col h3", { y: 12, opacity: 0, duration: .4, stagger: .08 }, .55)
-    .add(V2.dealIn(document.querySelectorAll(".pic-slot"), { stagger: .06 }), .6)
-    .add(V2.dealIn(document.querySelectorAll(".word-chip"), { stagger: .06, y: 30 }), .8);
-})();
+  const slots = Lumio.shuffle(vocab.map(v => v.en)).map(w => {
+    const s = LP.picCard(w, { label: false, aria: "Picture" });
+    s.classList.add("md-slot"); s.dataset.answer = w;
+    s.insertAdjacentHTML("beforeend", '<span class="dock" aria-hidden="true">?</span>');
+    s.onclick = () => { if (selected && !s.classList.contains("filled")) place(selected, s, null); else if (!selected && !s.classList.contains("filled")) nudgeChips(); };
+    picsEl.appendChild(s); return s;
+  });
+  const chips = Lumio.shuffle(vocab.map(v => v.en)).map((w, i) => {
+    const c = document.createElement("button"); c.type = "button"; c.className = "md-chip"; c.dataset.word = w; c.textContent = w;
+    c.style.setProperty("--c", CHIPC[i % CHIPC.length]); c.setAttribute("aria-label", "Word: " + w);
+    wordsEl.appendChild(c); wireChip(c); return c;
+  });
+  const setAnswer = () => { const c = chips.find(c => !c.dataset.placed); LP.answer = c ? c.dataset.word : null; };
 
-/* ---------- drag (pointer: mouse + touch) and tap-tap ---------- */
-let dragged = null, ghost = null, pid = null, sx = 0, sy = 0, moved = false, overSlot = null, selected = null, offX = 0, offY = 0;
+  function nudgeChips() {
+    const left = chips.filter(c => !c.dataset.placed);
+    if (window.gsap && !LP.RM) gsap.fromTo(left, { y: 0 }, { y: -10, duration: .18, yoyo: true, repeat: 1, stagger: .04, ease: "power2.out" });
+  }
+  function select(c) {
+    if (selected === c) { unselect(); return; }
+    unselect(); selected = c; c.classList.add("sel"); slots.forEach(s => s.classList.add("armed"));
+    LP.say(c.dataset.word); LP.sfx("tap");
+    if (window.gsap && !LP.RM) gsap.fromTo(c, { rotation: -6 }, { rotation: 0, duration: .6, ease: "elastic.out(1.2,.3)" });
+    promptText.innerHTML = `Now tap the picture of <q>${LP.esc(c.dataset.word)}</q>!`;
+  }
+  function unselect() { if (selected) selected.classList.remove("sel"); selected = null; slots.forEach(s => s.classList.remove("armed")); promptText.textContent = "Drag the word to its picture!"; }
 
-function slotAt(x, y) {
-  const el = document.elementFromPoint(x, y);
-  const s = el ? el.closest(".pic-slot") : null;
-  return s && !s.classList.contains("filled") ? s : null;
-}
-function setOver(s) {
-  if (s === overSlot) return;
-  if (overSlot) { overSlot.classList.remove("over"); if (anim) G.to(overSlot, { scale: 1, duration: .3, ease: "power2.out", overwrite: "auto" }); }
-  overSlot = s;
-  if (s) { s.classList.add("over"); if (anim) G.to(s, { scale: 1.05, duration: .3, ease: V2.pop(), overwrite: "auto" }); }
-}
-function makeGhost(chip) {
-  const r = chip.getBoundingClientRect();
-  ghost = document.createElement("div");
-  ghost.className = "ghost";
-  ghost.textContent = chip.dataset.word;
-  document.body.appendChild(ghost);
-  const g = ghost.getBoundingClientRect();
-  const x = r.left + r.width / 2 - g.width / 2, y = r.top + r.height / 2 - g.height / 2;
-  if (anim) { G.set(ghost, { x, y }); G.from(ghost, { scale: .85, duration: .25, ease: V2.pop() }); }
-  else ghost.style.transform = `translate(${x}px,${y}px)`;
-  return { gw: g.width, gh: g.height };
-}
-function moveGhost(x, y) {
-  if (!ghost) return;
-  const gx = x - ghost.offsetWidth / 2, gy = y - ghost.offsetHeight * .9;
-  if (anim) G.to(ghost, { x: gx, y: gy, rotation: Math.max(-12, Math.min(12, (x - (ghost._lx || x)) * .8)), duration: .12, ease: "power2.out", overwrite: "auto" });
-  else ghost.style.transform = `translate(${gx}px,${gy}px)`;
-  ghost._lx = x;
-}
-function returnGhost(chip) {
-  const g = ghost; ghost = null;
-  if (!g) return;
-  if (!anim) { g.remove(); return; }
-  const r = chip.getBoundingClientRect();
-  G.to(g, { x: r.left + r.width / 2 - g.offsetWidth / 2, y: r.top + r.height / 2 - g.offsetHeight / 2, rotation: 0, scale: .9, duration: .45, ease: "back.out(1.6)", onComplete: () => g.remove() });
-}
-function select(chip) {
-  if (selected) selected.classList.remove("sel");
-  selected = chip;
-  document.querySelectorAll(".pic-slot").forEach(s => s.classList.toggle("hint", !!chip && !s.classList.contains("filled")));
-  if (chip) { chip.classList.add("sel"); if (anim) G.fromTo(chip, { y: 0 }, { y: -6, duration: .3, ease: V2.pop() }); }
-}
+  // ---------- the drag: a flying copy of the chip follows the finger with lag and swing, pulled by magnets ----------
+  function makeFlyer(c) {
+    const r = c.getBoundingClientRect(), f = c.cloneNode(true);
+    f.classList.remove("sel"); f.classList.add("md-fly"); f.removeAttribute("aria-label"); f.setAttribute("aria-hidden", "true");
+    f.style.width = r.width + "px"; f.style.height = r.height + "px"; document.body.appendChild(f);
+    c.classList.add("gone");
+    const st = { x: r.left, y: r.top, w: r.width, h: r.height, el: f, rot: 0, sc: 1 };
+    const put = () => { f.style.transform = `translate(${st.x}px,${st.y}px) rotate(${st.rot}deg) scale(${st.sc})`; };
+    st.put = put; put(); return st;
+  }
+  const slotCenters = () => slots.filter(s => !s.classList.contains("filled")).map(s => {
+    const r = s.getBoundingClientRect(), d = s.querySelector(".dock").getBoundingClientRect();
+    return { s, x: r.left + r.width / 2, y: r.top + r.height / 2, dx: d.left + d.width / 2, dy: d.top + d.height / 2, R: Math.max(r.width, r.height) * .78 };
+  });
+  function nearest(px, py) {
+    let best = null;
+    for (const c of slotCenters()) { const d = Math.hypot(px - c.x, py - c.y); if (d < c.R && (!best || d < best.d)) best = Object.assign({ d }, c); }
+    return best;
+  }
 
-function attempt(chip, slot) {
-  const word = chip.dataset.word;
-  if (slot.dataset.answer === word) {
-    slot.classList.add("filled");
-    slot.classList.remove("over", "hint");
-    chip.classList.add("placed"); chip.classList.remove("sel", "dragging"); chip.disabled = true;
-    if (selected === chip) select(null);
-    matched++;
-    const lbl = document.createElement("div");
-    lbl.className = "lbl"; lbl.textContent = word;
-    // the word itself lands on the picture
-    const g = ghost; ghost = null;
-    if (g && anim) {
-      const r = slot.getBoundingClientRect();
-      G.to(g, { x: r.left + r.width / 2 - g.offsetWidth / 2, y: r.bottom - g.offsetHeight / 2 - 4, rotation: 0, scale: .7, duration: .28, ease: "power2.in", onComplete: () => g.remove() });
-    } else if (g) g.remove();
-    setTimeout(() => {
-      slot.appendChild(lbl);
-      if (anim) {
-        G.from(lbl, { scale: .3, y: 10, duration: .5, ease: "back.out(2.4)" });
-        G.fromTo(slot, { scale: 1.08 }, { scale: 1, duration: .7, ease: V2.spring(), overwrite: "auto" });
-        G.to(chip, { scale: .94, duration: .3 });
+  function wireChip(c) {
+    let start = null, drag = null, raf = 0, ptr = { x: 0, y: 0 }, grab = { x: 0, y: 0 }, hot = null, lastX = 0;
+    c.addEventListener("pointerdown", e => {
+      if (busy || c.dataset.placed || (e.pointerType === "mouse" && e.button !== 0)) return;
+      start = { x: e.clientX, y: e.clientY, id: e.pointerId }; c._dragged = false;
+      try { c.setPointerCapture(e.pointerId); } catch (x) {}
+    });
+    c.addEventListener("pointermove", e => {
+      if (!start || e.pointerId !== start.id) return;
+      ptr = { x: e.clientX, y: e.clientY };
+      if (!drag && Math.hypot(e.clientX - start.x, e.clientY - start.y) > 8) {
+        unselect(); c._dragged = true;
+        drag = makeFlyer(c); grab = { x: start.x - drag.x, y: start.y - drag.y }; lastX = drag.x;
+        LP.say(c.dataset.word); LP.sfx("flip");
+        if (window.gsap && !LP.RM) gsap.to(drag, { sc: 1.12, duration: .25, ease: "back.out(3)", onUpdate: drag.put });
+        const loop = () => {
+          // magnet: inside a frame's field the chip is pulled toward that frame's name slot
+          const n = nearest(ptr.x, ptr.y);
+          if (n !== hot && (!n || !hot || n.s !== hot.s)) {
+            slots.forEach(s => s.classList.remove("near"));
+            if (n) { n.s.classList.add("near"); LP.sfx("tick"); if (window.gsap && !LP.RM) gsap.fromTo(n.s, { scale: 1 }, { scale: 1.05, duration: .25, ease: "back.out(3)" }); }
+            if (hot && (!n || hot.s !== n.s) && window.gsap) gsap.to(hot.s, { scale: 1, duration: .3 });
+          }
+          hot = n;
+          let tx = ptr.x - grab.x, ty = ptr.y - grab.y;
+          if (n) { const k = Math.pow(1 - n.d / n.R, .7) * .75; tx += (n.dx - drag.w / 2 - tx) * k; ty += (n.dy - drag.h / 2 - ty) * k; }
+          const ease = LP.RM ? 1 : .32;
+          drag.x += (tx - drag.x) * ease; drag.y += (ty - drag.y) * ease;
+          const vx = drag.x - lastX; lastX = drag.x;
+          drag.rot += (Math.max(-18, Math.min(18, vx * 1.4)) - drag.rot) * .2;
+          drag.put(); raf = requestAnimationFrame(loop);
+        };
+        raf = requestAnimationFrame(loop);
       }
-      V2.ring(slot);
-      V2.check(slot, "right:-10px;top:-10px");
-      V2.flyStar(slot, starCt, () => { document.getElementById("matched").textContent = matched; });
-      if (!anim) document.getElementById("matched").textContent = matched;
-      V2.progress(progFill, matched / vocab.length);
-      mascot.cheer();
-    }, anim && g ? 260 : 0);
-    Lumio.beep(true);
-    if (matched === vocab.length) {
-      setTimeout(() => {
-        Lumio.speak("Amazing!"); /* "Amazing! You matched them all!" has no recording (404); amazing.mp3 does */
-        V2.celebrate(document.getElementById("endcard"), { tally: { n: matched, max: vocab.length } });
-      }, anim ? 1300 : 400);
+    });
+    const end = e => {
+      if (!start || e.pointerId !== start.id) return;
+      start = null; cancelAnimationFrame(raf);
+      if (!drag) return;
+      const d = drag; drag = null;
+      const n = e.type === "pointercancel" ? null : (hot || nearest(e.clientX, e.clientY));
+      slots.forEach(s => { s.classList.remove("near"); if (window.gsap) gsap.to(s, { scale: 1, duration: .3 }); });
+      hot = null;
+      if (n) place(c, n.s, d); else flyHome(c, d);
+    };
+    c.addEventListener("pointerup", end); c.addEventListener("pointercancel", end);
+    c.addEventListener("click", () => { if (c._dragged) { c._dragged = false; return; } if (!busy && !c.dataset.placed) select(c); });
+  }
+
+  function flyHome(c, d) {
+    const r = c.getBoundingClientRect();
+    if (!window.gsap || LP.RM) { d.el.remove(); c.classList.remove("gone"); return Promise.resolve(); }
+    LP.sfx("whoosh");
+    return new Promise(res => gsap.to(d, { x: r.left, y: r.top, rot: 0, sc: 1, duration: .55, ease: "back.out(1.6)", onUpdate: d.put,
+      onComplete: () => { d.el.remove(); c.classList.remove("gone"); gsap.fromTo(c, { scale: 1.15 }, { scale: 1, duration: .5, ease: "elastic.out(1,.4)" }); res(); } }));
+  }
+
+  async function place(c, slot, d) {
+    if (busy) return;
+    busy = true; unselect(); LP.answer = null;
+    if (!d) { // tap-tap: the chip flies over to the picture first
+      d = makeFlyer(c);
+      const dk = slot.querySelector(".dock").getBoundingClientRect();
+      if (window.gsap && !LP.RM) {
+        LP.sfx("whoosh");
+        const mid = { t: 0 }, x0 = d.x, y0 = d.y, x1 = dk.left + dk.width / 2 - d.w / 2, y1 = dk.top + dk.height / 2 - d.h / 2, cy = Math.min(y0, y1) - 90;
+        await new Promise(res => gsap.to(mid, { t: 1, duration: .55, ease: "power2.inOut", onUpdate() {
+          const t = mid.t; d.x = (1 - t) * (1 - t) * x0 + 2 * (1 - t) * t * ((x0 + x1) / 2) + t * t * x1; d.y = (1 - t) * (1 - t) * y0 + 2 * (1 - t) * t * cy + t * t * y1;
+          d.rot = Math.sin(t * Math.PI) * 14 * (x1 > x0 ? 1 : -1); d.sc = 1 + Math.sin(t * Math.PI) * .15; d.put(); }, onComplete: res }));
+      }
     }
-  } else {
-    setOver(null);
-    V2.shake(slot);
-    V2.ring(slot, "#F43F5E");
-    Lumio.beep(false);
-    mascot.sad();
-    returnGhost(chip);
-    chip.classList.remove("dragging");
-    if (selected === chip) select(null);
+    const word = c.dataset.word, ans = slot.dataset.answer;
+    if (same(word, ans)) {
+      if (word !== ans) { const other = slots.find(s => s.dataset.answer === word && !s.classList.contains("filled")); if (other) other.dataset.answer = ans; slot.dataset.answer = word; }
+      // snap: the chip shrinks into the frame's name slot with a springy click
+      const dk = slot.querySelector(".dock"), r = dk.getBoundingClientRect();
+      if (window.gsap && !LP.RM) {
+        await new Promise(res => gsap.timeline({ onComplete: res })
+          .to(d, { x: r.left + r.width / 2 - d.w / 2, y: r.top + r.height / 2 - d.h / 2, rot: 0, sc: 1.18, duration: .16, ease: "power3.in", onUpdate: d.put })
+          .to(d, { sc: Math.min(1, r.height / d.h) * .95, duration: .14, ease: "power2.out", onUpdate: d.put }));
+      }
+      d.el.remove(); c.dataset.placed = "1"; c.classList.add("out");
+      slot.classList.add("filled"); slot.setAttribute("aria-label", "Picture: " + word);
+      dk.textContent = word;
+      if (window.gsap && !LP.RM) gsap.fromTo(dk, { scale: 1.4 }, { scale: 1, duration: .6, ease: "elastic.out(1,.4)" });
+      if (!missed.has(word)) score++;
+      LP.fill(matched); matched++;
+      lumi.cheer("celebrate", "point");
+      LP.say(word);
+      await LP.good(slot);
+      if (matched === total) { busy = true; LP.answer = null; await LP.wait(500); return endGame(); }
+      LP.round(matched);
+      busy = false; setAnswer();
+    } else {
+      missed.add(word);
+      LP.bad(slot); lumi.oops("surprised", "point");
+      await flyHome(c, d);
+      busy = false; setAnswer();
+    }
   }
-}
 
-wordsEl.addEventListener("pointerdown", e => {
-  const chip = e.target.closest(".word-chip");
-  if (!chip || chip.classList.contains("placed") || dragged) return;
-  dragged = chip; pid = e.pointerId; sx = e.clientX; sy = e.clientY; moved = false;
-  try { chip.setPointerCapture(pid); } catch (x) {}
-  Lumio.speak(chip.dataset.word);
-});
-wordsEl.addEventListener("pointermove", e => {
-  if (!dragged || e.pointerId !== pid) return;
-  if (!moved && Math.hypot(e.clientX - sx, e.clientY - sy) > 8) {
-    moved = true;
-    if (selected && selected !== dragged) select(null);
-    dragged.classList.add("dragging");
-    makeGhost(dragged);
+  function endGame() {
+    LP.round(-1);
+    LP.results({ score, total, title: "All matched!", scoreLabel: "First-try matches", note: "Great job matching every word!",
+      actor: { char: "lumi", pose: "celebrate" }, exitHref: backHref, exitLabel: source === "lesson" ? "Back to my map" : "Back to lesson" });
   }
-  if (moved) { moveGhost(e.clientX, e.clientY); setOver(slotAt(e.clientX, e.clientY)); }
-});
-function endPointer(e, cancel) {
-  if (!dragged || e.pointerId !== pid) return;
-  const chip = dragged; dragged = null;
-  if (!moved) { select(selected === chip ? null : chip); return; }
-  const slot = cancel ? null : slotAt(e.clientX, e.clientY);
-  setOver(null);
-  if (slot) attempt(chip, slot);
-  else { chip.classList.remove("dragging"); returnGhost(chip); }
-}
-wordsEl.addEventListener("pointerup", e => endPointer(e, false));
-wordsEl.addEventListener("pointercancel", e => endPointer(e, true));
 
-// tap a word, then tap its picture
-picsEl.addEventListener("click", e => {
-  const slot = e.target.closest(".pic-slot");
-  if (!slot || slot.classList.contains("filled")) return;
-  if (!selected) { if (anim) G.fromTo(slot, { rotation: -3 }, { rotation: 0, duration: .5, ease: "elastic.out(1,.4)" }); V2.bump(document.querySelector(".word-chip:not(.placed)")); return; }
-  const chip = selected;
-  makeGhost(chip);
-  chip.classList.add("dragging");
-  if (anim) {
-    const r = slot.getBoundingClientRect();
-    G.to(ghost, { x: r.left + r.width / 2 - ghost.offsetWidth / 2, y: r.top + r.height / 2 - ghost.offsetHeight / 2, duration: .4, ease: "power2.inOut", overwrite: "auto", onComplete: () => attempt(chip, slot) });
-  } else attempt(chip, slot);
-});
+  LP.title({ kicker: "Drag and match", title: "Match It", sub: "Drag each word to its picture!", ar: "اسحب كل كلمة إلى صورتها",
+    actor: { char: "lumi", pose: "point", cheer: "celebrate" } }).then(async () => {
+    await LP.banner("Match It!", total + " words");
+    LP.round(0);
+    await LP.deal(slots, document.getElementById("lumiZone"));
+    if (window.gsap && !LP.RM) await new Promise(r => gsap.fromTo(chips, { y: 40, opacity: 0, scale: .6 }, { y: 0, opacity: 1, scale: 1, duration: .5, ease: "back.out(2)", stagger: .06, onStart: () => LP.sfx("deal"), onComplete: r, clearProps: "transform,opacity" }));
+    lumi.nod(); setAnswer();
+  });
+}
 </script>
 </body>
 </html>
