@@ -5,6 +5,7 @@ Single words are written as their own sentence ("Hello.", "Ice cream.") so the v
 them alone with a falling tone, not like the start of a sentence.
   python3 _docs/voice-batches.py test      -> recording/artlist/test.txt (20 Pre-A words + 20 sentences)
   python3 _docs/voice-batches.py all       -> recording/artlist/<level>.txt (every line, in teaching order)
+  python3 _docs/voice-batches.py story     -> recording/artlist/story.txt (one line per story page, for story-v2.html)
 Each line is "NNNN<TAB>text"; NNNN is the line's "n" in voice-script.json. Save each recording
 as NNNN.mp3 (or <slug>.mp3) and _docs/import-voice.py puts it in assets/audio/<slug>.mp3.
 """
@@ -28,8 +29,11 @@ def write(name, lines):
 
 if __name__ == "__main__":
     lines = json.load(open(os.path.join(ROOT, "recording", "voice-script.json"), encoding="utf-8"))["lines"]
-    if (sys.argv[1:] or ["test"])[0] == "all":
-        for lv in dict.fromkeys(l["level"] for l in lines): write(lv, [l for l in lines if l["level"] == lv])
+    mode = (sys.argv[1:] or ["test"])[0]
+    if mode == "story":
+        write("story", [l for l in lines if l["kind"] == "story"])
+    elif mode == "all":
+        for lv in dict.fromkeys(l["level"] for l in lines): write(lv, [l for l in lines if l["level"] == lv and l["kind"] != "story"])
     else:
         pre = [l for l in lines if l["level"] == "pre-a"]
         write("test", [l for l in pre if l["kind"] == "word"][:20] + [l for l in pre if l["kind"] == "sentence"][:20])

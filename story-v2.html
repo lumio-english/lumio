@@ -997,8 +997,13 @@ function pickVoice() {
   if (!synth) return;
   // voices that live on the device start instantly and work offline / inside embedded previews;
   // online voices (e.g. "Google US English") can silently fail to load, so they only win when nothing local exists
-  const score = v => (/^en/i.test(v.lang) ? 10 : 0) + (/en-US/i.test(v.lang) ? 3 : 0) + (v.localService !== false ? 20 : 0) +
-    (/natural|neural|premium|enhanced/i.test(v.name) ? 6 : 0) + (/Samantha|Microsoft (Aria|Jenny|Ana|Zira)/i.test(v.name) ? 5 : 0) + (v.default ? 2 : 0);
+  // most human-sounding first: Edge "Natural" / neural voices, Apple Premium/Enhanced and Siri voices, Google's voice;
+  // the robotic built-in desktop voices (David, Zira, eSpeak…) come last. A voice that fails to start is retried with the default.
+  const score = v => (/^en/i.test(v.lang) ? 10 : 0) + (/en-US/i.test(v.lang) ? 3 : 0) +
+    (/natural|neural/i.test(v.name) ? 40 : 0) + (/premium|enhanced|siri/i.test(v.name) ? 34 : 0) +
+    (/^(Ava|Allison|Samantha|Nicky|Joelle|Zoe|Evan|Aaron)\b/i.test(v.name) ? 14 : 0) + (/Google US English|Google UK English Female/i.test(v.name) ? 22 : 0) +
+    (/Microsoft (Aria|Jenny|Ana|Michelle|Emma)/i.test(v.name) ? 12 : 0) + (/eSpeak|David|Zira|Mark|Fred|Albert|Bad News|Bells|Boing|Bubbles|Cellos|Wobble|Whisper|Zarvox|Trinoids|Organ|Junior|Ralph|Kathy|Superstar|Jester/i.test(v.name) ? -30 : 0) +
+    (v.default ? 2 : 0);
   const vs = synth.getVoices().filter(v => v.lang && /^en/i.test(v.lang));
   voice = vs.sort((a, b) => score(b) - score(a))[0] || null;
 }
@@ -1025,6 +1030,7 @@ function hi(words, i) {
 function stopSpeech() {
   tok++; timers.forEach(clearTimeout); timers = [];
   if (synth) { try { synth.cancel(); } catch (e) {} }
+  try { narration.pause(); narration.ontimeupdate = narration.onended = narration.onerror = null; } catch (e) {}
   talking = false; clearHi(); paintReadBtn();
 }
 function toggleRead() {
@@ -1036,12 +1042,45 @@ function chunksOf(plain) {
   while ((m = re.exec(plain)) && m[0]) { if (m[0].trim()) out.push({ text: m[0], start: m.index }); if (re.lastIndex >= plain.length) break; }
   return out.length ? out : [{ text: plain, start: 0 }];
 }
+/* Recorded narration: one clip per page, assets/audio/story-<level>-part<P>-page<N>.mp3 (made with the site's
+   Artlist "Bright" voice; list in recording/artlist/story.txt, imported by _docs/import-voice.py). When the clip is
+   there it plays with the words lighting up in step; when it isn't, the device voice reads instead. */
+const narration = new Audio(); narration.preload = "auto";
+const noClip = new Set();
+const pageClip = n => `assets/audio/story-${LEVEL}-part${part.id}-page${n}.mp3`;
+function playClip(my, words, onFail) {
+  const src = pageClip(currentPage);
+  if (noClip.has(src)) { onFail(); return; }
+  let ok = false, failed = false;
+  const fail = () => { if (ok || failed) return; failed = true; noClip.add(src); if (my === tok) onFail(); };
+  // weight each word by its length plus a pause after punctuation, then light the word the clip has reached
+  const wt = words.map(w => 1 + w.word.replace(/[^A-Za-z0-9]/g, "").length * .55 + (/[.!?…]["”’]*$/.test(w.word) ? 2.4 : /[,;:—–]["”’]*$/.test(w.word) ? 1.1 : 0));
+  const total = wt.reduce((a, b) => a + b, 0); const cum = []; wt.reduce((a, b, i) => (cum[i] = a + b, a + b), 0);
+  let last = -1;
+  narration.ontimeupdate = () => {
+    if (my !== tok || !narration.duration) return;
+    const lead = .25, f = Math.min(1, Math.max(0, (narration.currentTime + lead) / narration.duration)) * total;
+    let i = cum.findIndex(c => c >= f); if (i < 0) i = words.length - 1;
+    if (i !== last) { last = i; hi(words, i); }
+  };
+  narration.onended = () => { if (my !== tok) return; talking = false; clearHi(); paintReadBtn(); readyNext(300); };
+  narration.onerror = fail;
+  narration.onplaying = () => { ok = true; };
+  narration.src = src;
+  const pr = narration.play();
+  if (pr && pr.catch) pr.catch(err => { if (err && err.name === "AbortError") return; fail(); });
+  timers.push(setTimeout(() => { if (!ok && narration.readyState < 2) { try { narration.pause(); } catch (e) {} fail(); } }, 2500));
+}
 function readPage() {
   const tp = $(".tp", pageR); if (!tp || !tp._plain || textHidden || finished || $(".ov")) return;
   stopSpeech();
-  const my = ++tok, words = tp._words, chunks = chunksOf(tp._plain);
-  const rate = TEEN ? .95 : .86;
+  const my0 = ++tok;
   talking = true; paintReadBtn(); $("#nextBtn").classList.remove("ready");
+  playClip(my0, tp._words, () => readWithVoice(tp, my0));
+}
+function readWithVoice(tp, my) {
+  const words = tp._words, chunks = chunksOf(tp._plain);
+  const rate = TEEN ? .95 : .86;
   const wordAt = idx => { for (let i = 0; i < words.length; i++) if (idx < words[i].end) return i; return words.length - 1; };
   const done = () => { if (my !== tok) return; talking = false; clearHi(); paintReadBtn(); readyNext(300); };
   // timed highlight for a chunk (used when the voice gives no word events, or there is no voice at all)

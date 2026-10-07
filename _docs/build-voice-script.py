@@ -91,11 +91,32 @@ for t in ["Amazing! Three stars!", "Great job!", "Good try! Practice makes perfe
 other = [p for p in glob.glob("*.html") + glob.glob("games/*.html") + glob.glob("js/*.js") if "vendor" not in p]
 for t in literal_speaks(other): add(t, "general", "Games & activities", "sentence" if " " in t.strip() else "word")
 
+# 3) story narration: one clip per story page, read by story-v2.html (assets/audio/story-<level>-part<P>-page<N>.mp3).
+#    Added last so the numbers of every line above stay the same.
+import html as _html
+def page_text(path):
+    src = open(path, encoding="utf-8").read()
+    m = re.search(r'<div class="caption">(.*?)</div>', src, re.S)
+    ps = re.findall(r'<p(?![^>]*class="ar")[^>]*>(.*?)</p>', m.group(1) if m else src, re.S)
+    t = _html.unescape(re.sub(r"<[^>]+>", "", " ".join(ps)))
+    t = re.sub(r"[\U0001F300-\U0001FAFF\u2600-\u27BF\uFE0F\u200D]", "", t)
+    return re.sub(r"\s+", " ", t).strip()
+for lv in LEVELS:
+    files = glob.glob("story-content/%s/part*-page*.html" % lv)
+    key = lambda f: tuple(int(x) for x in re.findall(r"part(\d+)-page(\d+)", f)[0])
+    for f in sorted(files, key=key):
+        pt, pg = key(f); text = page_text(f)
+        if not text: continue
+        slug = "story-%s-part%d-page%d" % (lv, pt, pg)
+        if slug in seen: continue
+        e = {"slug": slug, "text": text, "level": lv, "where": "Story · part %d page %d" % (pt, pg), "kind": "story", "uses": 1}
+        seen[slug] = e; entries.append(e)
+
 have = set(f[:-4] for f in os.listdir("assets/audio") if f.endswith(".mp3"))
 for i, e in enumerate(entries, 1):
     e["n"] = i; e["hasOldAudio"] = e["slug"] in have
 summary = {}
-for e in entries: summary.setdefault(e["level"], {"lines": 0, "words": 0, "sentences": 0}); s = summary[e["level"]]; s["lines"] += 1; s["words" if e["kind"] == "word" else "sentences"] += 1
+for e in entries: summary.setdefault(e["level"], {"lines": 0, "words": 0, "sentences": 0}); s = summary[e["level"]]; s["lines"] += 1; s["words" if e["kind"] == "word" else "sentences"] += 1   # story pages count as sentences
 out = {"version": 1, "levels": [{"id": k, "name": LEVEL_NAMES.get(k, k), **v} for k, v in summary.items()], "lines": entries}
 os.makedirs("recording", exist_ok=True)
 json.dump(out, open("recording/voice-script.json", "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
