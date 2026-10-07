@@ -31,8 +31,9 @@ def vimg(w):
 
 # ---------------------------------------------------------------- shared pieces
 def _bg():
-    src = T.CURRENT_LESSON_BG or DEFAULT_BG
-    return f'<div class="v3-bg" style="background-image:url(\'{src}\')"></div><div class="v3-shade"></div>'
+    # a sharp, resolution-free colour field (the lesson paintings are too small for a class screen); four warm
+    # palettes rotate by lesson so the lessons don't all look the same
+    return f'<div class="v3-bg v3-mesh m{STATE["lesson"] % 4}"></div><div class="v3-shade"></div>'
 
 
 def header(pagetitle, n, total):
@@ -493,6 +494,8 @@ def _iconify_text(txt):
 
 def finish(html):
     html = re.sub(r">([^<]+)<", lambda m: ">" + _iconify_text(m.group(1)) + "<", html)
+    import v3_glyphs
+    html = v3_glyphs.buttons(html)
     return f'<div class="v3 v3-kid">{html}</div>'
 
 

@@ -361,18 +361,14 @@
     if (!ghost) return;
     var g = ghost; ghost = null;
     if (RM) { g.remove(); return; }
-    var sh = g.querySelector(".lc-shade"), gl = g.querySelector(".lc-gloss");
-    if (TEEN) {
-      g.style.transformOrigin = dir > 0 ? "0% 50%" : "100% 50%";
-      sfx("cube");
-      var a = anim(g, [{ transform: "perspective(2000px) rotateY(0deg)", opacity: 1 }, { transform: "perspective(2000px) rotateY(" + (dir > 0 ? -90 : 90) + "deg)", opacity: .6 }], { duration: 640, easing: "cubic-bezier(.55,.05,.35,1)", fill: "forwards" });
-      anim(sh, [{ opacity: 0 }, { opacity: .85 }], { duration: 640, fill: "forwards" });
-      content.style.transformOrigin = dir > 0 ? "100% 50%" : "0% 50%";
-      anim(content, [{ transform: "perspective(2000px) rotateY(" + (dir > 0 ? 90 : -90) + "deg)", filter: "brightness(.5)" }, { transform: "perspective(2000px) rotateY(0deg)", filter: "brightness(1)" }], { duration: 640, easing: "cubic-bezier(.55,.05,.35,1)" });
-      var streak = mk("div", "lc-streak"); layer.appendChild(streak);
-      anim(streak, [{ translate: (dir > 0 ? "-120%" : "120%") + " 0", opacity: 0 }, { opacity: 1, offset: .4 }, { translate: (dir > 0 ? "120%" : "-120%") + " 0", opacity: 0 }], { duration: 760, easing: "ease-in-out" });
-      setTimeout(function () { streak.remove(); }, 800);
-      if (a) a.onfinish = function () { g.remove(); }; else g.remove();
+    var v3 = !!content.querySelector(".v3");
+    if (v3) {
+      // v3 (kids and teens): a soft cross-dissolve -- the old page drifts back and fades out slowly,
+      // the new one eases in from a little to the side; nothing snaps
+      sfx("whoosh");
+      var a1 = anim(g, [{ opacity: 1, scale: 1, translate: "0 0" }, { opacity: 0, scale: .975, translate: (-24 * dir) + "px 0" }], { duration: 700, easing: "cubic-bezier(.33,0,.2,1)", fill: "forwards" });
+      anim(content, [{ opacity: 0, scale: 1.015, translate: (36 * dir) + "px 0" }, { opacity: 1, scale: 1, translate: "0 0" }], { duration: 900, easing: "cubic-bezier(.22,1,.36,1)" });
+      if (a1) a1.onfinish = function () { g.remove(); }; else g.remove();
       return;
     }
     // kids: the old page lifts at the spine and turns over, showing the new page underneath
@@ -400,6 +396,9 @@
       var el = kids[i], st = el.getAttribute("style") || "";
       if (/inset:\s*0|width:\s*100%/.test(st) && !(el.textContent || "").trim()) { if (!bg && /url\(/.test(st)) bg = el; after = el; } else if (after) break;
     }
+    // v3 decks: frosted-glass panels re-blur whatever moves behind them on every frame, so the painting stays still
+    // and no dust floats under the glass there (that was the lag on picture slides)
+    if (v3) return;
     if (bg && !RM) anim(bg, [{ scale: 1, translate: "0 0" }, { scale: 1.07, translate: "-14px -8px" }], { duration: 16000, iterations: Infinity, direction: "alternate", easing: "ease-in-out" });
     var c = mk("canvas", "lc-motes"); c.width = SW; c.height = SH;
     if (after && after.nextSibling) after.parentNode.insertBefore(c, after.nextSibling); else content.insertBefore(c, content.firstChild);
@@ -458,7 +457,7 @@
   function enter(dir) {
     stopIdle();
     if (RM) { anim(content, [{ opacity: 0 }, { opacity: 1 }], { duration: 160 }); return; }
-    var t = 160;
+    var t = 160, soft = !!content.querySelector(".v3");
     var header = content.querySelector(".header");
     if (header) anim(header, [{ opacity: 0, translate: "0 -40px" }, { opacity: 1, translate: "0 0" }], { duration: 520, delay: 60, easing: EASE_IN, fill: "backwards" });
     content.querySelectorAll(".dots,.colorstrip").forEach(function (b) { anim(b, [{ opacity: 0, scale: "0 1" }, { opacity: 1, scale: "1 1" }], { duration: 600, delay: 200, easing: "cubic-bezier(.2,.9,.3,1)", fill: "backwards" }); });
@@ -467,19 +466,21 @@
     blocks.forEach(function (b) {
       if (chat.indexOf(b) !== -1) return;
       var d = t + k * 90; k++;
-      anim(b, TEEN
+      anim(b, soft
+        ? [{ opacity: 0, translate: "0 22px", scale: .985 }, { opacity: 1, translate: "0 0", scale: 1 }]
+        : TEEN
         ? [{ opacity: 0, translate: "0 34px", filter: "blur(6px)" }, { opacity: 1, translate: "0 0", filter: "blur(0)" }]
         : [{ opacity: 0, translate: "0 60px", scale: .86, rotate: (k % 2 ? -2 : 2) + "deg" }, { opacity: 1, translate: "0 0", scale: 1, rotate: "0deg" }],
-        { duration: TEEN ? 620 : 720, delay: d, easing: EASE_IN, fill: "backwards" });
+        { duration: soft ? 820 : (TEEN ? 620 : 720), delay: soft ? 120 + k * 70 : d, easing: soft ? "cubic-bezier(.22,1,.36,1)" : EASE_IN, fill: "backwards" });
       b.querySelectorAll("img:not([src*='logo'])").forEach(function (im, j) {
         if (im.closest(".char") || im.classList.contains("char")) return;
-        anim(im, [{ opacity: 0, scale: .5, rotate: (TEEN ? 0 : -8) + "deg" }, { opacity: 1, scale: 1, rotate: "0deg" }], { duration: 760, delay: d + 180 + j * 70, easing: EASE_IN, fill: "backwards" });
+        anim(im, soft ? [{ opacity: 0, scale: .96 }, { opacity: 1, scale: 1 }] : [{ opacity: 0, scale: .5, rotate: (TEEN ? 0 : -8) + "deg" }, { opacity: 1, scale: 1, rotate: "0deg" }], { duration: soft ? 1000 : 760, delay: d + 180 + j * 70, easing: soft ? "cubic-bezier(.22,1,.36,1)" : EASE_IN, fill: "backwards" });
         sweep(im, d + 900);
       });
       tilesIn(b).forEach(function (tile, j) {
-        anim(tile, [{ opacity: 0, translate: "0 -60px", scale: .4, rotate: "-20deg" }, { opacity: 1, translate: "0 0", scale: 1, rotate: "0deg" }], { duration: 560, delay: d + 300 + j * 70, easing: "cubic-bezier(.34,1.8,.64,1)", fill: "backwards" });
+        anim(tile, soft ? [{ opacity: 0, translate: "0 -14px" }, { opacity: 1, translate: "0 0" }] : [{ opacity: 0, translate: "0 -60px", scale: .4, rotate: "-20deg" }, { opacity: 1, translate: "0 0", scale: 1, rotate: "0deg" }], { duration: soft ? 700 : 560, delay: d + 300 + j * 60, easing: soft ? "cubic-bezier(.22,1,.36,1)" : "cubic-bezier(.34,1.8,.64,1)", fill: "backwards" });
       });
-      b.querySelectorAll("button,[onclick]").forEach(function (btn, j) { if (btn === b) return; anim(btn, [{ opacity: 0, scale: .6 }, { opacity: 1, scale: 1 }], { duration: 480, delay: d + 340 + j * 50, easing: EASE_IN, fill: "backwards" }); });
+      b.querySelectorAll("button,[onclick]").forEach(function (btn, j) { if (btn === b) return; anim(btn, soft ? [{ opacity: 0, scale: .97 }, { opacity: 1, scale: 1 }] : [{ opacity: 0, scale: .6 }, { opacity: 1, scale: 1 }], { duration: soft ? 700 : 480, delay: d + 340 + j * 50, easing: soft ? "cubic-bezier(.22,1,.36,1)" : EASE_IN, fill: "backwards" }); });
     });
     // dialogue lines arrive like chat messages, each after a short "typing…"
     chat.forEach(function (row, i) {
@@ -741,8 +742,18 @@
       return res;
     };
   }
+  // v3 decks: the options themselves change state (right = solid green / gold with a tick, wrong = red with a cross,
+  // the rest step back), instead of the classic pale tint
+  function v3Answer(el, chosen, correct) {
+    var box = el.closest(".v3-opts"); if (!box) return;
+    var right = box.querySelector('[data-quiz-option="' + String(correct).replace(/"/g, '\\"') + '"]');
+    Array.prototype.forEach.call(box.querySelectorAll(".v3-opt"), function (o) { o.style.background = ""; o.style.borderColor = ""; if (o !== el && o !== right) o.classList.add("v3-dim"); });
+    if (chosen === correct) { el.classList.add("v3-right"); }
+    else { el.classList.add("v3-wrong"); if (right) setTimeout(function () { right.classList.add("v3-right", "v3-reveal"); }, 650); }
+  }
   wrap(window, "checkQuizAnswer", function (res, answeredBefore, el, chosen, correct) {
     if (answeredBefore) return;
+    if (el && el.classList && el.classList.contains("v3-opt")) v3Answer(el, chosen, correct);
     if (chosen === correct) cheer(el, true);
     else {
       oops(el);
@@ -912,7 +923,7 @@
       moveTrail();
       var go = function () {
         enter(dir);
-        if (!revealing && sec && (newPart || isFirst)) later(function () { say(pick(sec.say)); }, 1100);
+        if (!revealing && sec && (newPart || isFirst)) later(function () { if (!bubbleEl || !bubbleEl.isConnected) say(pick(sec.say)); }, 1100);
         if (n === t && t > 1 && dir > 0) later(finale, 900);
       };
       if (newPart) {

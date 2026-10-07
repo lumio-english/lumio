@@ -34,10 +34,8 @@ def speak_js(text):
 
 # ---------------------------------------------------------------- shared pieces
 def _bg(src=None):
-    src = src or D.CURRENT_LESSON_BG
-    if src:
-        return f'<div class="v3-bg" style="background-image:url(\'{src}\')"></div><div class="v3-shade"></div>'
-    return '<div class="v3-bg v3t-nobg"></div><div class="v3-shade"></div>'
+    # a sharp, resolution-free backdrop (black, gold light) instead of the small lesson painting
+    return f'<div class="v3-bg v3-mesh m{STATE["lesson"] % 4}"></div><div class="v3-shade"></div>'
 
 
 def bg_theme(theme_key="default"):
@@ -720,6 +718,8 @@ def _iconify_text(txt):
 
 def finish(html):
     html = re.sub(r">([^<>]+)<", lambda m: ">" + _iconify_text(m.group(1)) + "<", html)
+    import v3_glyphs
+    html = v3_glyphs.buttons(html)
     return f'<div class="v3 v3-teen">{html}</div>'
 
 
