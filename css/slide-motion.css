@@ -1,42 +1,159 @@
-/* Lumio English — Slide Motion styles (js/slide-motion.js). Only active when the script adds .sfx-on to <html>. */
-.sfx-on #stageContent { position: relative; width: 1467px; height: 825px; }
-.sfx-ghost { position: absolute; left: 0; top: 0; width: 1467px; height: 825px; z-index: 40; pointer-events: none; }
-.sfx-canvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 9000; pointer-events: none; }
+/* Lumio English — Live Class styles (js/slide-motion.js). Only active when the script adds .lc-on to <html>. */
+.lc-on #stageContent { position: relative; width: 1467px; height: 825px; }
+.lc-canvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 9000; pointer-events: none; }
+.lc-layer { position: absolute; left: 0; top: 0; width: 1467px; height: 825px; z-index: 45; pointer-events: none; }
+.lc-layer > * { pointer-events: auto; }
+.lc-layer > .lc-bubble, .lc-layer > .lc-typing, .lc-layer > .lc-streak { pointer-events: none; }
+.lc-motes { position: absolute; left: 0; top: 0; width: 1467px; height: 825px; pointer-events: none; }
+.lc-ghost { position: absolute; left: 0; top: 0; width: 1467px; height: 825px; z-index: 40; pointer-events: none; overflow: hidden;
+  -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+.lc-shade { position: absolute; inset: 0; opacity: 0; pointer-events: none; z-index: 99;
+  background: linear-gradient(90deg, rgba(40,20,0,.05), rgba(40,20,0,.55)); }
+.lc-teen .lc-shade { background: linear-gradient(90deg, rgba(3,5,18,.2), rgba(3,5,18,.85)); }
+.lc-gloss { position: absolute; inset: 0; opacity: 0; pointer-events: none; z-index: 100;
+  background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.55) 48%, rgba(255,250,230,.15) 56%, transparent 70%); }
+.lc-streak { position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+  background: linear-gradient(100deg, transparent 38%, rgba(165,180,252,.0) 42%, rgba(165,243,252,.55) 50%, rgba(244,114,182,.0) 58%, transparent 62%); mix-blend-mode: screen; }
+.lc-sweep { position: absolute; inset: 0; pointer-events: none; z-index: 5; mix-blend-mode: soft-light;
+  background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.75) 48%, rgba(255,250,230,.25) 55%, transparent 66%); }
 
-/* progress along the lesson */
-.sfx-progress { position: absolute; left: 0; right: 0; top: 0; height: 6px; z-index: 60; background: rgba(255,255,255,.18); pointer-events: none; }
-.sfx-progress i { display: block; height: 100%; transform-origin: 0 50%; transform: scaleX(.01);
-  background: linear-gradient(90deg, #FFC93C, #F97316); box-shadow: 0 0 12px rgba(249,115,22,.7); transition: transform .6s cubic-bezier(.34,1.3,.64,1); }
-.sfx-teen .sfx-progress i { background: linear-gradient(90deg, #38BDF8, #A78BFA, #F472B6); box-shadow: 0 0 14px rgba(167,139,250,.8); }
+/* ---------- bottom HUD: story trail + star jar ---------- */
+.lc-on #navRow { gap: 22px; }
+.lc-hud { flex: 1; min-width: 0; height: 52px; display: flex; align-items: center; gap: 18px; padding: 0 10px; pointer-events: none; }
+.lc-trail { position: relative; flex: 1; height: 40px; margin: 0 16px; transition: opacity .4s; }
+#gameLinks:not(:empty) ~ #navRow .lc-trail { opacity: 0; }
+.lc-track { position: absolute; left: 0; right: 0; top: 50%; height: 6px; margin-top: -3px; border-radius: 6px;
+  background: rgba(255,255,255,.55); box-shadow: 0 2px 8px rgba(60,30,0,.25), inset 0 1px 2px rgba(0,0,0,.12); overflow: hidden; }
+.lc-teen .lc-track { background: rgba(255,255,255,.14); box-shadow: 0 0 0 1px rgba(255,255,255,.08); }
+.lc-fill { display: block; height: 100%; width: 0; border-radius: 6px; background: linear-gradient(90deg, #FFC93C, #F97316);
+  box-shadow: 0 0 12px rgba(249,115,22,.8); transition: width .7s cubic-bezier(.3,1.2,.5,1); }
+.lc-teen .lc-fill { background: linear-gradient(90deg, #22D3EE, #8B5CF6, #F472B6); box-shadow: 0 0 14px rgba(139,92,246,.9); }
+.lc-stops { position: absolute; inset: 0; }
+.lc-stop { position: absolute; top: 50%; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; background: #fff;
+  display: grid; place-items: center; box-shadow: 0 4px 10px rgba(60,30,0,.3); filter: grayscale(.85) opacity(.8); transition: filter .4s, transform .4s; }
+.lc-stop svg { width: 24px; height: 24px; }
+.lc-stop.done { filter: none; transform: scale(1.08); }
+.lc-teen .lc-stop { background: #1B2148; box-shadow: 0 0 0 1.5px rgba(165,180,252,.35), 0 4px 12px rgba(0,0,0,.5); }
+.lc-teen .lc-stop.done { box-shadow: 0 0 0 2px #22D3EE, 0 0 14px rgba(34,211,238,.6); }
+.lc-me { position: absolute; top: 50%; left: 0; width: 50px; height: 50px; margin: -27px 0 0 -25px; border-radius: 50%; overflow: hidden; z-index: 3;
+  background: #FDE7C8; border: 3px solid #fff; box-shadow: 0 6px 16px rgba(60,30,0,.45); transition: left .8s cubic-bezier(.3,1.4,.5,1); }
+.lc-me img { width: 100%; height: 160%; object-fit: cover; object-position: 50% 6%; display: block; }
+.lc-teen .lc-me { background: #2a3260; border-color: #22D3EE; box-shadow: 0 0 16px rgba(34,211,238,.6); }
+.lc-jar { pointer-events: auto; flex: none; height: 42px; min-width: 104px; padding: 0 14px 0 6px; border: 0; border-radius: 999px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px; font-family: 'Baloo 2', 'Nunito', sans-serif; color: #7C2D12;
+  background: linear-gradient(180deg, #FFF6D8, #FFE08A); box-shadow: 0 8px 18px rgba(120,60,0,.35), inset 0 -3px 0 rgba(180,110,0,.25); }
+.lc-jar .lc-jarIco svg { width: 34px; height: 34px; display: block; }
+.lc-jar .lc-jarN { font-size: 1.35rem; font-weight: 800; line-height: 1; }
+.lc-jar small { font-weight: 800; font-size: .74rem; opacity: .75; }
+.lc-teen .lc-jar { color: #E0F2FE; background: linear-gradient(180deg, #2B2F6B, #171A44); box-shadow: 0 0 0 1.5px rgba(34,211,238,.55), 0 0 18px rgba(34,211,238,.35); }
+.lc-flystar { position: fixed; left: 0; top: 0; width: 56px; height: 56px; margin: -28px 0 0 -28px; z-index: 9001; pointer-events: none;
+  filter: drop-shadow(0 0 12px rgba(255,214,102,.95)); }
+.lc-flystar svg { width: 100%; height: 100%; }
+.lc-teen .lc-flystar { filter: drop-shadow(0 0 14px rgba(34,211,238,.95)); }
 
-/* right / wrong glow */
-.sfx-good { box-shadow: 0 0 0 5px rgba(34,197,94,.9), 0 0 34px rgba(34,197,94,.75) !important; transition: box-shadow .25s; }
-.sfx-bad { box-shadow: 0 0 0 5px rgba(244,63,94,.85), 0 0 26px rgba(244,63,94,.55) !important; transition: box-shadow .25s; }
-.sfx-hurry { color: #fff !important; background: linear-gradient(135deg, #F43F5E, #F97316) !important; }
+/* ---------- next button: build step + ready glow ---------- */
+.lc-on .navbtn { transition: transform .15s ease, box-shadow .2s ease; }
+.lc-on .navbtn:hover { transform: translateY(-2px); }
+.lc-on .navbtn:active { transform: scale(.94); }
+.lc-on #nextBtn.lc-build { width: auto; padding: 0 22px; background: linear-gradient(135deg, #A855F7, #EC4899); animation: lcPulse 1.3s ease-in-out infinite; }
+.lc-on #nextBtn.lc-ready { animation: lcReady 1.6s ease-in-out infinite; }
+@keyframes lcPulse { 0%,100% { box-shadow: 0 10px 20px rgba(0,0,0,.25), 0 0 0 0 rgba(236,72,153,.5); } 50% { box-shadow: 0 10px 20px rgba(0,0,0,.25), 0 0 0 10px rgba(236,72,153,0); } }
+@keyframes lcReady { 0%,100% { box-shadow: 0 10px 20px rgba(0,0,0,.25), 0 0 0 0 rgba(255,201,60,0); } 50% { box-shadow: 0 10px 20px rgba(0,0,0,.25), 0 0 0 9px rgba(255,201,60,.45); } }
 
-/* listen buttons: sound waves */
-.sfx-wave { position: fixed; z-index: 8999; pointer-events: none; border-radius: 50%; transform: translate(-50%, -50%);
+/* ---------- host speech bubble ---------- */
+.lc-bubble { position: absolute; z-index: 60; padding: 14px 20px; border-radius: 24px; text-align: center; transform-origin: var(--tail, 50%) 100%;
+  font-family: 'Baloo 2', 'Nunito', sans-serif; font-weight: 800; font-size: 1.75rem; line-height: 1.15; color: #3A2716;
+  background: #FFF9EE; border: 4px solid #FFC93C; box-shadow: 0 14px 30px rgba(60,30,0,.35); }
+.lc-bubble::after { content: ""; position: absolute; left: var(--tail, 50%); bottom: -18px; margin-left: -14px; border: 14px solid transparent; border-bottom: 0; border-top: 18px solid #FFC93C; }
+.lc-bubble::before { content: ""; position: absolute; left: var(--tail, 50%); bottom: -11px; margin-left: -10px; border: 10px solid transparent; border-bottom: 0; border-top: 13px solid #FFF9EE; z-index: 1; }
+.lc-teen .lc-bubble { font-family: 'Fredoka', 'Nunito', sans-serif; font-weight: 600; font-size: 1.5rem; color: #EEF1FF;
+  background: rgba(21,27,54,.94); border: 2px solid rgba(34,211,238,.7); box-shadow: 0 0 26px rgba(34,211,238,.35), 0 14px 30px rgba(0,0,0,.5); }
+.lc-teen .lc-bubble::after { border-top-color: rgba(34,211,238,.7); }
+.lc-teen .lc-bubble::before { border-top-color: #151B36; }
+.lc-typing { position: absolute; z-index: 55; display: flex; gap: 7px; padding: 14px 18px; border-radius: 22px; background: #fff; box-shadow: 0 8px 20px rgba(0,0,0,.2); }
+.lc-typing i { width: 11px; height: 11px; border-radius: 50%; background: #F59E0B; animation: lcDot 1s ease-in-out infinite; }
+.lc-typing i:nth-child(2) { animation-delay: .15s; } .lc-typing i:nth-child(3) { animation-delay: .3s; }
+.lc-teen .lc-typing { background: #1B2148; } .lc-teen .lc-typing i { background: #22D3EE; }
+@keyframes lcDot { 0%,100% { transform: translateY(0); opacity: .45; } 50% { transform: translateY(-8px); opacity: 1; } }
+
+/* ---------- chapter card ---------- */
+.lc-chapter, .lc-finale { position: absolute; inset: 0; z-index: 80; overflow: hidden; cursor: pointer; }
+.lc-chBg { position: absolute; inset: 0; background: radial-gradient(90% 80% at 50% 45%, rgba(255,214,140,.55), rgba(120,50,0,.82));
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.lc-teen .lc-chBg { background: radial-gradient(90% 80% at 50% 45%, rgba(60,40,160,.55), rgba(3,5,18,.92)); }
+.lc-chIn { position: absolute; left: 0; right: 0; top: 150px; text-align: center; }
+.lc-chIco { width: 170px; height: 170px; margin: 0 auto; filter: drop-shadow(0 16px 26px rgba(80,30,0,.45)); }
+.lc-chIco svg { width: 100%; height: 100%; }
+.lc-teen .lc-chIco { width: 150px; height: 150px; padding: 18px; border-radius: 50%; background: rgba(255,255,255,.06); box-shadow: 0 0 0 2px rgba(34,211,238,.6), 0 0 50px rgba(34,211,238,.45); }
+.lc-chTitle { margin-top: 18px; font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 128px; line-height: 1; color: #fff; letter-spacing: .01em;
+  -webkit-text-stroke: 5px #C2410C; paint-order: stroke fill; text-shadow: 0 10px 0 #9A3412, 0 18px 40px rgba(60,20,0,.55); }
+.lc-chTitle span { display: inline-block; }
+.lc-teen .lc-chTitle { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 118px; -webkit-text-stroke: 0; color: #F5F3FF;
+  text-shadow: 0 0 2px #fff, 0 0 18px rgba(167,139,250,.95), 0 0 42px rgba(34,211,238,.75), 0 6px 0 rgba(76,29,149,.6); }
+.lc-chSub { margin-top: 18px; display: inline-block; padding: 8px 22px; border-radius: 999px; background: rgba(154,52,18,.55); border: 2px solid rgba(255,255,255,.7);
+  color: #fff; font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 1.6rem; }
+.lc-teen .lc-chSub { font-family: 'Fredoka', sans-serif; font-weight: 600; background: rgba(34,211,238,.12); border-color: rgba(34,211,238,.5); color: #CFFAFE; }
+.lc-chCast, .lc-fnCast { position: absolute; bottom: -10px; height: 380px; filter: drop-shadow(0 18px 24px rgba(0,0,0,.4)); }
+.lc-c0 { left: 70px; } .lc-c1 { right: 70px; }
+
+/* ---------- finale ---------- */
+.lc-fnIn { position: absolute; left: 50%; top: 110px; width: 760px; margin-left: -380px; padding: 30px 40px 26px; text-align: center; border-radius: 36px;
+  background: #FFF9EE; border: 6px solid #FFC93C; box-shadow: 0 30px 70px rgba(60,20,0,.55); font-family: 'Baloo 2', sans-serif; color: #3A2716; }
+.lc-fnJar { width: 150px; height: 150px; margin: -100px auto 0; filter: drop-shadow(0 14px 22px rgba(120,60,0,.45)); }
+.lc-fnJar svg { width: 100%; height: 100%; }
+.lc-fnIn h2 { font-size: 4rem; line-height: 1; margin: 6px 0 10px; color: #EA580C; }
+.lc-fnIn p { font-size: 1.9rem; font-weight: 700; }
+.lc-fnIn p b { color: #C2410C; }
+.lc-fnIn small { display: block; margin-top: 12px; font-size: 1rem; font-weight: 800; opacity: .55; }
+.lc-teen .lc-fnIn { background: #151B36; border: 2px solid rgba(34,211,238,.7); color: #EEF1FF; font-family: 'Fredoka', sans-serif; box-shadow: 0 0 60px rgba(139,92,246,.5), 0 30px 70px rgba(0,0,0,.7); }
+.lc-teen .lc-fnIn h2 { color: #67E8F9; }
+.lc-teen .lc-fnIn p b { color: #F9A8D4; }
+.lc-f0 { left: 40px; } .lc-f1 { right: 40px; } .lc-f2 { left: 50%; margin-left: -130px; height: 300px; bottom: -40px; }
+
+/* ---------- New Words: magic reveal ---------- */
+.lc-sleep { filter: grayscale(1) blur(18px) brightness(.92) contrast(.9); transition: filter .6s; }
+.lc-wake { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: contain; z-index: 4; }
+.lc-veil { position: absolute; inset: 0; z-index: 6; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+  background: radial-gradient(circle at 50% 45%, rgba(255,255,255,.35), rgba(255,236,200,.15) 60%, transparent 80%); }
+.lc-veil b { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 210px; line-height: .9; color: #fff;
+  -webkit-text-stroke: 8px #F97316; paint-order: stroke fill; text-shadow: 0 12px 0 #C2410C, 0 20px 40px rgba(120,50,0,.4); animation: lcBob 1.6s ease-in-out infinite; }
+.lc-veil span { padding: 8px 20px; border-radius: 999px; background: linear-gradient(135deg, #A855F7, #EC4899); color: #fff; font-family: 'Baloo 2', sans-serif; font-weight: 800;
+  font-size: 1.3rem; box-shadow: 0 10px 20px rgba(150,40,120,.4); animation: lcPulse 1.3s ease-in-out infinite; }
+.lc-teen .lc-veil { background: radial-gradient(circle at 50% 45%, rgba(139,92,246,.25), rgba(15,20,50,.15) 60%, transparent 80%); }
+.lc-teen .lc-veil b { font-family: 'Fredoka', sans-serif; -webkit-text-stroke: 0; color: #E0E7FF; text-shadow: 0 0 30px rgba(139,92,246,.95), 0 0 60px rgba(34,211,238,.6); }
+@keyframes lcBob { 0%,100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-16px) rotate(4deg); } }
+.lc-hide { opacity: 0 !important; }
+.lc-letter { display: inline-block; }
+.lc-glow { animation: lcGlow 1.4s ease-in-out 3; }
+@keyframes lcGlow { 0%,100% { box-shadow: 0 8px 18px rgba(249,115,22,.4); } 50% { box-shadow: 0 8px 18px rgba(249,115,22,.4), 0 0 0 12px rgba(255,201,60,.45), 0 0 30px rgba(255,201,60,.8); } }
+
+/* ---------- Listen: karaoke ---------- */
+.lc-w { display: inline-block; border-radius: .25em; transition: background-color .15s, color .15s, box-shadow .15s; }
+.lc-w.on { background: #FFE07A; color: #3A2716; box-shadow: 0 0 0 .12em #FFE07A, 0 .2em .5em rgba(0,0,0,.25); }
+.lc-teen .lc-w.on { background: #7C8CFF; color: #fff; box-shadow: 0 0 0 .12em #7C8CFF, 0 0 18px rgba(124,140,255,.8); }
+.lc-saying { animation: lcSay .9s ease-in-out infinite; }
+@keyframes lcSay { 0%,100% { text-shadow: none; transform: scale(1); } 50% { text-shadow: 0 0 22px rgba(255,201,60,.95), 0 0 6px rgba(255,160,0,.8); transform: scale(1.06); } }
+.lc-lit { filter: brightness(1.25) saturate(1.2); box-shadow: 0 0 0 4px #fff, 0 0 22px rgba(255,214,102,.95) !important; }
+.lc-wave { position: fixed; z-index: 8999; pointer-events: none; border-radius: 50%; transform: translate(-50%, -50%);
   border: 3px solid rgba(249,115,22,.75); box-shadow: 0 0 18px rgba(249,115,22,.35); }
-.sfx-teen .sfx-wave { border-color: rgba(167,139,250,.85); box-shadow: 0 0 18px rgba(56,189,248,.4); }
+.lc-teen .lc-wave { border-color: rgba(167,139,250,.85); box-shadow: 0 0 18px rgba(56,189,248,.4); }
 
-/* game links: glowing cards */
-.sfx-on #gameLinks a { position: relative; padding: 11px 20px; font-size: .88rem; color: #fff;
+/* ---------- right / wrong ---------- */
+.lc-good { box-shadow: 0 0 0 6px rgba(34,197,94,.95), 0 0 40px rgba(34,197,94,.8) !important; transition: box-shadow .25s; }
+.lc-bad { box-shadow: 0 0 0 6px rgba(244,63,94,.9), 0 0 30px rgba(244,63,94,.6) !important; transition: box-shadow .25s; }
+.lc-hurry { color: #fff !important; background: linear-gradient(135deg, #F43F5E, #F97316) !important; }
+
+/* ---------- game links: glowing cards ---------- */
+.lc-on #gameLinks a { position: relative; padding: 11px 20px; font-size: .88rem; color: #fff;
   background: linear-gradient(135deg, #FF9A3D, #F97316); box-shadow: 0 6px 0 #C2530A, 0 14px 26px -8px rgba(249,115,22,.85); }
-.sfx-on #gameLinks a::after { content: ""; position: absolute; inset: -4px; border-radius: inherit; border: 2px solid rgba(255,214,102,.8);
-  animation: sfxGlow 1.8s ease-out infinite; }
-.sfx-teen #gameLinks a { background: linear-gradient(135deg, #7C5CFF, #3BA0FF); box-shadow: 0 0 0 1px rgba(255,255,255,.2) inset, 0 14px 30px -8px rgba(90,110,255,.85); }
-@keyframes sfxGlow { 0% { opacity: .9; transform: scale(1); } 100% { opacity: 0; transform: scale(1.18); } }
+.lc-on #gameLinks a::after { content: ""; position: absolute; inset: -4px; border-radius: inherit; border: 2px solid rgba(255,214,102,.8); animation: lcRing 1.8s ease-out infinite; }
+.lc-teen #gameLinks a { background: linear-gradient(135deg, #7C5CFF, #3BA0FF); box-shadow: 0 0 0 1px rgba(255,255,255,.2) inset, 0 14px 30px -8px rgba(90,110,255,.85); }
+@keyframes lcRing { 0% { opacity: .9; transform: scale(1); } 100% { opacity: 0; transform: scale(1.18); } }
 
-/* tappable things feel tappable */
-.sfx-on #stageContent button, .sfx-on #stageContent [onclick] { cursor: pointer; }
-.sfx-on #stageContent button:hover, .sfx-on #stageContent [onclick]:hover { filter: brightness(1.04) saturate(1.05); }
-
-/* nav buttons */
-.sfx-on .navbtn { transition: transform .15s ease, box-shadow .2s ease; }
-.sfx-on .navbtn:hover { transform: translateY(-2px); }
-.sfx-on .navbtn:active { transform: scale(.94); }
+.lc-on #stageContent button, .lc-on #stageContent [onclick] { cursor: pointer; }
+.lc-on #stageContent button:hover, .lc-on #stageContent [onclick]:hover { filter: brightness(1.05) saturate(1.06); }
 
 @media (prefers-reduced-motion: reduce) {
-  .sfx-on #gameLinks a::after { animation: none; }
-  .sfx-progress i { transition: none; }
+  .lc-on #gameLinks a::after, .lc-veil b, .lc-veil span, .lc-saying, .lc-glow, .lc-on #nextBtn.lc-build, .lc-on #nextBtn.lc-ready { animation: none; }
+  .lc-fill, .lc-me { transition: none; }
 }
