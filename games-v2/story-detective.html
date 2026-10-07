@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Story Detective — Lumio English</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;700;800&family=Caveat:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/brand.css">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  :root { --sd-ink: #43301F; --sd-paper: #FFF9EE; --sd-red: #B91C1C; --sd-cork: #C9A876; }
+  html, body { overflow-x: hidden; }
+  body {
+    min-height: 100vh; margin: 0;
+    background: linear-gradient(180deg, #2B2118 0%, #3A2E20 100%);
+    position: relative; font-family: var(--font-body); -webkit-tap-highlight-color: transparent;
+  }
+  /* desk lamp + a slow flashlight beam that drifts (and follows the pointer on desktop) */
+  .spot { position: fixed; border-radius: 50%; background: radial-gradient(circle, rgba(255,220,150,.12), transparent 70%); pointer-events: none; z-index: 0; }
+  #beam { position: fixed; left: 0; top: 0; width: 520px; height: 520px; margin: -260px 0 0 -260px; border-radius: 50%; pointer-events: none; z-index: 1;
+    background: radial-gradient(circle, rgba(255,226,160,.13) 0%, rgba(255,226,160,.05) 40%, transparent 70%); }
+  .grain { position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: .5;
+    background-image: radial-gradient(rgba(255,255,255,.035) 1px, transparent 1px); background-size: 4px 4px; }
+
+  #hud { position: relative; z-index: 5; display: flex; align-items: center; gap: 8px; padding: 16px 16px 10px; flex-wrap: wrap; max-width: 820px; margin: 0 auto; }
+  #hud .pill { background: #FFF3D6; color: #43301F; border-radius: 999px; padding: 8px 14px; font-family: var(--font-display); font-weight: 800; box-shadow: var(--sh-sm); font-size: .92rem; min-height: 40px; box-sizing: border-box; display: inline-flex; align-items: center; gap: 6px; position: relative; }
+  #hud a.exit { color: #FFF3D6; background: rgba(255,255,255,.12); border-radius: 999px; padding: 0 18px; font-weight: 800; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; }
+  #hud .grow { flex: 1; }
+  .pop { position: absolute; left: 50%; top: 50%; width: 90px; height: 90px; margin: -45px 0 0 -45px; pointer-events: none; }
+  #lumioSoundBtn.hudSound { width: 44px; height: 44px; border-radius: 50%; border: none; background: rgba(255,255,255,.12); color: #FFF3D6; font-size: 18px; cursor: pointer; }
+  #progress { position: relative; z-index: 5; max-width: 780px; margin: 0 auto 14px; height: 6px; border-radius: 99px; background: rgba(255,243,214,.12); overflow: hidden; width: calc(100% - 32px); }
+  #progress i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg,#FCA5A5,#EF4444); transform-origin: 0 50%; transform: scaleX(0); transition: transform .7s cubic-bezier(.22,1,.36,1); }
+
+  #board {
+    position: relative; z-index: 5; max-width: 780px; margin: 0 auto 18px; padding: 18px 16px 22px;
+    background: #C9A876; background-image: radial-gradient(rgba(67,48,31,.13) 1px, transparent 1.5px), repeating-linear-gradient(0deg, rgba(0,0,0,.04) 0 2px, transparent 2px 40px), repeating-linear-gradient(90deg, rgba(0,0,0,.04) 0 2px, transparent 2px 40px);
+    background-size: 7px 7px, auto, auto;
+    border-radius: 18px; box-shadow: 0 0 0 8px #6B4A2B, 0 0 0 10px #4A321C, 0 24px 60px rgba(0,0,0,.45); min-height: 130px;
+    width: calc(100% - 52px); box-sizing: border-box;
+  }
+  #boardTitle { font-family: 'Caveat', cursive; font-size: 1.6rem; color: #43301F; text-align: center; margin-bottom: 10px; font-weight: 700; }
+  #boardTitle .ch { display: inline-block; }
+  #evidenceRow { display: flex; flex-wrap: wrap; gap: 16px 14px; justify-content: center; align-items: flex-start; position: relative; padding-top: 6px; }
+  #yarn { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible; }
+  #yarn path { fill: none; stroke: #DC2626; stroke-width: 2.2; stroke-linecap: round; filter: drop-shadow(0 2px 1px rgba(0,0,0,.3)); }
+  .evidence {
+    background: #fff; border-radius: 4px; padding: 12px 12px 10px; box-shadow: 0 4px 10px rgba(0,0,0,.3);
+    position: relative; min-width: 84px; max-width: 150px; text-align: center; z-index: 2;
+    --rot: -2deg; transform: rotate(var(--rot)); transform-origin: 50% 0;
+  }
+  .evidence:nth-child(even) { --rot: 2deg; }
+  .evidence.pending { background: rgba(255,255,255,.18); box-shadow: none; outline: 2px dashed rgba(67,48,31,.35); outline-offset: -2px; }
+  .evidence.pending .word { color: rgba(67,48,31,.45); }
+  .evidence .pin { position: absolute; top: -8px; left: 50%; margin-left: -7px; width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #EF4444, #B91C1C); box-shadow: 0 2px 3px rgba(0,0,0,.4); z-index: 4; }
+  .evidence.pending .pin { opacity: .35; }
+  .evidence .word { font-family: var(--font-display); font-weight: 800; color: #43301F; font-size: .95rem; margin-top: 4px; overflow-wrap: anywhere; }
+  .evidence .stamp { position: absolute; bottom: -8px; right: -12px; background: var(--green); color: #fff; font-size: .6rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; transform: rotate(8deg); opacity: 0; letter-spacing: .5px; }
+  .evidence.confirmed .stamp { opacity: 1; }
+
+  #caseFile { max-width: 560px; margin: 0 auto; position: relative; z-index: 5; padding: 0 16px 40px; }
+  #promptCard {
+    background: #FFF9EE; border-radius: 20px; padding: 18px 18px 18px; box-shadow: var(--sh-lg);
+    text-align: center; border: 3px solid #43301F; position: relative; cursor: pointer;
+    background-image: repeating-linear-gradient(180deg, transparent 0 31px, rgba(67,48,31,.06) 31px 32px);
+  }
+  #promptCard .clip { position: absolute; top: -16px; left: 28px; width: 18px; height: 42px; border: 3px solid #9CA3AF; border-radius: 10px; border-bottom-color: transparent; transform: rotate(-8deg); }
+  #promptCard .kicker { font-family: var(--font-display); font-weight: 800; color: #B91C1C; font-size: .82rem; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; min-height: 1.2em; }
+  #promptCard .kicker .ch { display: inline-block; white-space: pre; }
+  #promptCard p { font-family: var(--font-display); font-weight: 800; color: #43301F; font-size: 1.15rem; margin: 4px 0 12px; line-height: 1.35; }
+  #promptCard p .ln { display: inline-block; }
+  .sideRow { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; }
+  .lumiMini { width: 56px; height: 80px; position: relative; flex-shrink: 0; }
+  .lumiMini img { width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; display: block; }
+  #hearBtn {
+    background: var(--grad-sun); border: none; border-radius: 999px; width: 50px; height: 50px; position: relative;
+    display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+    box-shadow: 0 6px 14px rgba(255,197,61,.5);
+  }
+  #hearBtn::before { content: ""; position: absolute; inset: 0; border-radius: 50%; animation: ring 1.8s ease-out infinite; }
+  @keyframes ring { 0% { box-shadow: 0 0 0 0 rgba(245,158,11,.5); } 100% { box-shadow: 0 0 0 14px rgba(245,158,11,0); } }
+
+  #evidenceOpts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  #dialogueOpts { gap: 10px; }
+  .opt-card {
+    background: #fff; border: 3px solid #E3D6BE; border-radius: 14px; padding: 14px 8px; min-height: 56px;
+    cursor: pointer; font-family: var(--font-display); font-weight: 800; color: #43301F; font-size: .95rem;
+    transition: border-color .25s ease, opacity .35s ease, background-color .3s ease, box-shadow .3s ease; overflow-wrap: anywhere;
+    box-shadow: 0 3px 0 #E3D6BE; position: relative; overflow: hidden; touch-action: manipulation;
+  }
+  #dialogueOpts .opt-card { text-align: left; padding: 14px 16px; }
+  @media (hover: hover) and (pointer: fine) { .opt-card:hover { border-color: #C9A876; } }
+  .opt-card.correct { border-color: var(--green); background: var(--green-soft); box-shadow: 0 0 0 5px rgba(34,197,94,.2), 0 0 26px rgba(34,197,94,.35); }
+  .opt-card.wrong-dim { opacity: .35; pointer-events: none; }
+  .opt-card.locked { pointer-events: none; }
+
+  #tfOpts { display: flex; gap: 14px; justify-content: center; }
+  .tf-btn {
+    border: none; border-radius: 14px; padding: 16px 28px; min-height: 56px; font-family: var(--font-display); font-weight: 800;
+    font-size: 1.1rem; cursor: pointer; transition: opacity .3s ease, box-shadow .3s ease; color: #fff; touch-action: manipulation;
+  }
+  .tf-btn.true { background: var(--green); box-shadow: 0 4px 0 #15803D; }
+  .tf-btn.false { background: #EF4444; box-shadow: 0 4px 0 #B91C1C; }
+  .tf-btn.locked { pointer-events: none; opacity: .5; }
+  .tf-btn.chosen-right { outline: 4px solid #FDE68A; opacity: 1; box-shadow: 0 0 0 8px rgba(253,230,138,.25), 0 0 30px rgba(253,230,138,.5); }
+
+  .flyStar { position: fixed; left: 0; top: 0; width: 34px; height: 34px; z-index: 90; pointer-events: none; }
+  .slam { position: fixed; z-index: 85; pointer-events: none; font-family: var(--font-display); font-weight: 800; color: #B91C1C; border: 4px solid #B91C1C; border-radius: 10px; padding: 4px 14px; background: rgba(255,249,238,.9); font-size: 1.1rem; letter-spacing: 1px; }
+
+  /* ---- intro ---- */
+  #intro { position: fixed; inset: 0; z-index: 70; display: flex; align-items: center; justify-content: center; padding: 20px; background: rgba(20,14,8,.72); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
+  #intro .card { background: #FFF9EE; border: 3px solid #43301F; border-radius: 26px; padding: 26px 22px 24px; box-shadow: 0 30px 80px rgba(0,0,0,.5); max-width: 400px; width: 100%; text-align: center; position: relative; }
+  #intro .tab { position: absolute; top: -22px; left: 26px; background: #E8D3A8; border: 3px solid #43301F; border-bottom: none; border-radius: 12px 12px 0 0; padding: 2px 16px; font-family: 'Caveat', cursive; font-size: 1.2rem; color: #43301F; font-weight: 700; }
+  .lumiBox { position: relative; width: 140px; height: 180px; margin: 4px auto 4px; }
+  .lumiBox img { width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; position: relative; z-index: 1; }
+  .lumiBox .lt { position: absolute; inset: -20px; z-index: 0; }
+  .lumiBox .shadow { position: absolute; left: 25%; right: 25%; bottom: -4px; height: 12px; border-radius: 50%; background: rgba(67,48,31,.16); }
+  #intro h1 { font-family: var(--font-display); color: #43301F; font-size: 2rem; margin: 6px 0 4px; line-height: 1.1; }
+  #intro h1 .ch { display: inline-block; }
+  #intro p { color: #8A7160; font-weight: 700; margin: 0 0 18px; }
+  #startBtn { min-width: 180px; min-height: 52px; font-size: 1.1rem; }
+
+  /* ---- end card ---- */
+  #endcard { position: fixed; inset: 0; z-index: 60; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,.7); padding: 16px; }
+  #endcard .box { background: #FFF9EE; border-radius: 24px; padding: 28px 24px; text-align: center; box-shadow: 0 30px 80px rgba(0,0,0,.5); max-width: 460px; width: 100%; border: 3px solid #43301F; position: relative; max-height: calc(100vh - 32px); overflow-y: auto; box-sizing: border-box; }
+  #endcard .stamp2 { font-family: var(--font-display); font-weight: 800; color: #B91C1C; border: 4px solid #B91C1C; border-radius: 10px; padding: 6px 18px; display: inline-block; transform: rotate(-6deg); font-size: 1.3rem; margin-bottom: 10px; letter-spacing: 1px; }
+  #endcard .crew { display: flex; justify-content: center; margin: 8px 0; }
+  #endcard .crew img { height: 82px; margin: 0 -10px; filter: drop-shadow(0 8px 12px rgba(67,48,31,.2)); transform-origin: 50% 100%; }
+  #endcard h1 .w { display: inline-block; }
+  #endcard .btn { min-height: 48px; }
+  #fxConf { position: fixed; inset: 0; z-index: 65; pointer-events: none; }
+
+  @media (max-width: 420px) { #evidenceRow { gap: 14px 10px; } .evidence { min-width: 72px; padding: 10px 8px 8px; } .evidence .word { font-size: .85rem; } }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    #beam { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="spot" style="width:400px;height:400px;top:-100px;left:-100px"></div>
+<div class="spot" style="width:300px;height:300px;bottom:0;right:-80px"></div>
+<div id="beam"></div>
+<div class="grain"></div>
+
+<div id="hud">
+  <a class="exit" href="../present.html" id="exitBtn">Exit</a>
+  <span class="pill" id="starCt">🔎 <span id="score">0</span><span class="pop" id="starPop"></span></span>
+  <span class="pill" id="roundPill">1/6</span>
+  <span class="grow"></span>
+  <span id="soundSlot"></span>
+</div>
+<div id="progress"><i id="progFill"></i></div>
+
+<div id="board">
+  <div id="boardTitle">Case file: What Really Happened?</div>
+  <div id="evidenceRow"><svg id="yarn" aria-hidden="true"><path id="yarnPath" d=""/></svg></div>
+</div>
+
+<div id="caseFile">
+  <div id="promptCard">
+    <span class="clip" aria-hidden="true"></span>
+    <div class="kicker" id="kicker">Find the evidence</div>
+    <p id="promptText"></p>
+    <div class="sideRow">
+      <div class="lumiMini" id="lumiMini"><img id="lumiMiniImg" src="../assets/story/characters/lumi-teen-think.png" alt="Lumi"></div>
+      <button id="hearBtn" aria-label="Listen" data-tap>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="#43301F"/><path d="M16.5 8.5a5 5 0 010 7M19 6a9 9 0 010 12" stroke="#43301F" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+      </button>
+    </div>
+    <div id="evidenceOpts" style="display:none"></div>
+    <div id="dialogueOpts" style="display:none"></div>
+    <div id="tfOpts" style="display:none">
+      <button class="tf-btn true" data-v="true" data-tap>✅ TRUE</button>
+      <button class="tf-btn false" data-v="false" data-tap>❌ FALSE</button>
+    </div>
+  </div>
+</div>
+
+<div id="intro">
+  <div class="card">
+    <span class="tab">Case file</span>
+    <div class="lumiBox" id="lumiBox"><div class="lt" id="lumiLt"></div><img id="lumiImg" src="../assets/story/characters/lumi-teen-wave.png" alt="Lumi"><div class="shadow"></div></div>
+    <h1 id="introTitle">Story Detective</h1>
+    <p id="introSub">Find the evidence and crack the case!</p>
+    <button class="btn btn-primary" id="startBtn" data-tap>▶ Play</button>
+  </div>
+</div>
+
+<div id="fxConf"></div>
+<div id="endcard">
+  <div class="box">
+    <div class="stamp2" id="closedStamp">CASE CLOSED</div>
+    <div class="crew">
+      <img src="../assets/story/characters/lumi-teen-celebrate.png" alt="Lumi">
+      <img src="../assets/story/characters/omar-teen-point.png" alt="Omar">
+      <img src="../assets/story/characters/sara-teen-happy.png" alt="Sara">
+      <img src="../assets/story/characters/noor-teen-celebrate.png" alt="Noor">
+      <img src="../assets/story/characters/ziad-teen-happy.png" alt="Ziad">
+      <img src="../assets/story/characters/hamad-teen-point.png" alt="Hamad">
+    </div>
+    <h1 id="endTitle" style="font-family:var(--font-display);color:#43301F">Mystery solved!</h1>
+    <p style="font-weight:800;color:#8A7160" id="finalScore"></p>
+    <div class="row" style="justify-content:center;gap:10px;margin-top:10px">
+      <button class="btn btn-primary" onclick="location.reload()" data-tap>↺ New case</button>
+      <a class="btn btn-teal" id="backBtn" href="../present.html" data-tap>Back</a>
+    </div>
+  </div>
+</div>
+
+<script src="../js/app.js"></script>
+<script src="../js/lessons-data.js"></script>
+<script src="../vendor/gsap-3.12.5.min.js"></script>
+<script src="../vendor/lottie-light-5.12.2.min.js"></script>
+<script>
+/* ================= motion kit (GSAP + Lottie), shared look with the try-it landing page ================= */
+const G = window.gsap, LOT = window.lottie;
+const RM = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+const FX = !!G && !RM;
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const STAR_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#F97316" stroke="#C2410C" stroke-width="1.2" stroke-linejoin="round" d="M12 2.6l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17l-5.7 3.1 1.2-6.4L2.8 9.3l6.4-.8z"/></svg>';
+function lot(el, name, loop) {
+  if (!LOT || !el || RM) return null;
+  try { return LOT.loadAnimation({ container: el, renderer: "svg", loop: !!loop, autoplay: true, path: "../assets/lottie/" + name + ".json" }); } catch (e) { return null; }
+}
+function bump(el) { if (FX && el) G.fromTo(el, { scale: 1.3 }, { scale: 1, duration: .7, ease: "elastic.out(1.2,.4)", overwrite: "auto" }); }
+// curved star flight into a counter (quadratic bezier), like the landing page
+function flyStar(fromEl, toEl, done) {
+  if (!FX || !fromEl || !toEl) { if (done) done(); return; }
+  const a = fromEl.getBoundingClientRect(), b = toEl.getBoundingClientRect();
+  const ax = a.left + a.width / 2 - 17, ay = a.top + a.height / 2 - 17, bx = b.left + 4, by = b.top + b.height / 2 - 17;
+  const cx = (ax + bx) / 2 + (ax < bx ? -60 : 60), cy = Math.min(ay, by) - 140;
+  const s = document.createElement("div"); s.className = "flyStar"; s.innerHTML = STAR_SVG; document.body.appendChild(s);
+  const o = { t: 0 }; G.set(s, { x: ax, y: ay, scale: .4 });
+  G.to(o, { t: 1, duration: .85, ease: "power1.inOut", onUpdate() {
+    const t = o.t, u = 1 - t;
+    G.set(s, { x: u*u*ax + 2*u*t*cx + t*t*bx, y: u*u*ay + 2*u*t*cy + t*t*by, rotation: t * 300, scale: .4 + Math.sin(t * Math.PI) * 1.1 + t * .2 });
+  }, onComplete() { s.remove(); if (done) done(); } });
+}
+function starPop(holder) { if (!holder) return; holder.innerHTML = ""; const an = lot(holder, "star-pop", false); if (an) an.addEventListener("complete", () => { holder.innerHTML = ""; }); }
+function shake(el) { if (FX && el) G.to(el, { keyframes: { x: [0, -8, 8, -5, 4, 0] }, duration: .45, ease: "power1.inOut", overwrite: "auto" }); }
+function countTo(el, from, to, dur, delay) {
+  if (!el) return;
+  if (!FX) { el.textContent = to; return; }
+  const o = { v: from }; el.textContent = from;
+  return G.to(o, { v: to, duration: dur || 1, delay: delay || 0, ease: "power3.out", onUpdate() { el.textContent = Math.round(o.v); } });
+}
+// springy press on anything marked data-tap
+document.addEventListener("pointerdown", e => {
+  const t = e.target.closest && e.target.closest("[data-tap]");
+  if (!t || !FX) return;
+  G.to(t, { scale: .93, duration: .12, ease: "power2.out", overwrite: "auto" });
+  const up = () => { G.to(t, { scale: 1, duration: .6, ease: "elastic.out(1.1,.4)", overwrite: "auto" }); removeEventListener("pointerup", up); removeEventListener("pointercancel", up); };
+  addEventListener("pointerup", up); addEventListener("pointercancel", up);
+}, true);
+// mascot idle: breathe, sway, blink-squash
+function idleLumi(img, box) {
+  if (!FX || !img) return [];
+  const bl = G.timeline({ repeat: -1, repeatDelay: 3.2, delay: 1.4 });
+  bl.to(img, { scaleY: .92, scaleX: 1.05, transformOrigin: "50% 100%", duration: .09, ease: "power1.in" }).to(img, { scaleY: 1, scaleX: 1, duration: .45, ease: "elastic.out(1,.4)" });
+  return [
+    G.to(box || img.parentNode, { scale: 1.035, transformOrigin: "50% 100%", duration: 1.7, yoyo: true, repeat: -1, ease: "sine.inOut" }),
+    G.to(img, { rotation: 2.5, transformOrigin: "50% 100%", duration: 1.5, yoyo: true, repeat: -1, ease: "sine.inOut" }),
+    bl
+  ];
+}
+// the in-game Lumi reacts to answers with real character art
+const LUMI_POSES = { idle: "lumi-teen-think", good: "lumi-teen-thumbs", bad: "lumi-teen-shrug" };
+Object.values(LUMI_POSES).forEach(p => { const i = new Image(); i.src = `../assets/story/characters/${p}.png`; });
+let lumiTm = 0;
+function lumiReact(good) {
+  const img = $("#lumiMiniImg"); if (!img) return;
+  img.src = `../assets/story/characters/${good ? LUMI_POSES.good : LUMI_POSES.bad}.png`;
+  if (FX) G.fromTo(img, { y: 0 }, good ? { y: -14, duration: .22, yoyo: true, repeat: 1, ease: "power2.out" } : { rotation: -6, duration: .15, yoyo: true, repeat: 1, ease: "sine.inOut" });
+  clearTimeout(lumiTm); lumiTm = setTimeout(() => { img.src = `../assets/story/characters/${LUMI_POSES.idle}.png`; }, 1300);
+}
+// sound toggle (app.js only auto-adds its music button on /games/ pages)
+function soundToggle() {
+  if (document.getElementById("lumioSoundBtn") || !Lumio.setSound) return;
+  const b = document.createElement("button");
+  b.id = "lumioSoundBtn"; b.type = "button"; b.className = "hudSound"; b.setAttribute("data-tap", "");
+  b.onclick = () => Lumio.setSound(!Lumio.soundOn());
+  $("#soundSlot").appendChild(b); Lumio.setSound(Lumio.soundOn());
+  const start = () => { document.removeEventListener("pointerdown", start, true); if (Lumio.soundOn() && Lumio.music) Lumio.music("games"); };
+  document.addEventListener("pointerdown", start, true);
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => setTimeout(soundToggle, 0)); else setTimeout(soundToggle, 0);
+</script>
+<script>
+const level = Lumio.qs("level") || "level5";
+const num = parseInt(Lumio.qs("n") || "1", 10);
+const source = Lumio.qs("from");
+const backHref = source === "lesson" ? "../student.html" : source === "trial" ? `../present-trial.html?level=${level}` : `../present.html?level=${level}&n=${num}`;
+// From a trial deck the game opened in its own tab: Exit just closes it (the trial is still open in the first tab).
+if (source === "trial") ["exitBtn", "backBtn"].forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener("click", e => { e.preventDefault(); try { window.close(); } catch (x) {} setTimeout(() => { location.href = backHref; }, 250); }); });
+document.getElementById("exitBtn").href = backHref;
+document.getElementById("backBtn").href = backHref;
+
+const lesson = window.LUMIO_LESSONS?.[level]?.[num];
+const vocab = lesson ? lesson.vocab : [];
+
+// Real 4-line dialogues from this level's own lesson content, used for
+// "what did the witness say next?" rounds -- kept lesson-aware so a round
+// never draws on a conversation from a lesson not yet reached.
+const ALL_DIALOGUES = [["So what did you actually do this weekend? Anything interesting happen?", "Not really exciting, honestly. I played video games and watched a movie.", "That sounds relaxing at least. I cleaned my whole room and cooked dinner.", "Wow, productive weekend. Did anyone help you with all of that?", "My little brother helped a little, mostly by getting in the way, but still.", "That counts! We also walked to the park after, so it wasn't a total waste."], ["Guess what happened to me yesterday, you're not going to believe it.", "Okay, tell me everything. Where did you even go?", "I went downtown and saw something I never expected to see there.", "What was it? And please tell me you took a picture.", "I did! I also got a free sample and ate the weirdest snack ever.", "Honestly, your yesterday sounds way more interesting than mine."], ["Did you finish the assignment, or did you completely forget about it?", "I almost forgot, honestly, but I checked my planner last night just in time.", "Lucky. I missed the deadline last week because I forgot to check my email.", "That's rough. Did you at least call the teacher to explain what happened?", "I tried, but she didn't answer, so I just emailed an apology instead.", "Smart move. Always have a backup plan when the first one doesn't work."], ["How was the concert last night? Was it as amazing as everyone said?", "Honestly, it was incredibly crowded, but the music itself was amazing.", "That sounds exciting. Was it difficult to actually see the stage though?", "A little, but not boring at all. Worth every uncomfortable moment, honestly.", "I'm kind of jealous now. My weekend was way more quiet in comparison.", "Quiet isn't always bad though. Sometimes boring weekends are exactly what you need."], ["Remember that huge crowd we got stuck in last year? What a nightmare.", "Don't remind me. The line alone took almost an hour, and then the traffic.", "At least we ended up winning that surprise prize at the end of it all.", "True, that made the whole problem worth it, looking back now.", "Honestly, it's a funny memory now, even though it wasn't funny back then.", "That's usually how it works. Bad moments become good stories eventually."], ["What's something interesting that happened to you a while ago that you still think about?", "Honestly, something from last summer still randomly pops into my head sometimes.", "Same, but for me it was something smaller, like just two days ago actually.", "Really? What happened two days ago that was so memorable?", "Nothing huge, just a really good conversation last night that stuck with me.", "That's the thing about memories -- sometimes the small ones matter more than yesterday's."], ["Can you tell me what actually happened at practice? Start from the beginning.", "Okay, so first we warmed up, then we ran through the whole routine twice.", "What happened next? Did the coach say anything about the mistakes?", "After that, yeah, but honestly it was helpful feedback, not harsh at all.", "That's good. So how did it finally end? Did everyone feel better?", "In the end, yeah, everyone left feeling like we actually improved something real."], ["Can you explain why you were late again? I want the real reason this time.", "Honestly, since my alarm didn't go off, I just completely overslept.", "That's a valid reason, not really an excuse. Did you at least text someone?", "I did, so at least everyone knew I was on my way and not just ignoring it.", "Good, because showing up late without warning is way worse, honestly.", "I know, that's exactly why I made sure to explain myself properly this time."], ["How did you feel right after the results came out? Be honest.", "Nervous the whole time, but honestly relieved once I actually saw my score.", "That makes sense. Were you disappointed with any part of it though?", "A little, but mostly just surprised it went better than I expected at all.", "I'm proud of you either way. That took real effort, not just luck.", "Thank you, honestly. I'm grateful you were there cheering me on the whole time."], ["What were you doing when I called you last night? You never picked up.", "Sorry, I was studying and completely lost track of everything around me.", "That's fair. It was raining so hard outside, I figured you were just inside.", "Exactly, and my parents were talking in the kitchen while my mom was cooking.", "Sounds cozy, honestly. We were just waiting around for the rain to stop.", "Next time text me first, I promise I'll actually answer if I'm not buried in books."], ["Tell me your actual study story. How did you go from struggling to passing?", "Honestly, I reviewed my notes every single night, even when I didn't feel like it.", "That's dedication. Did you memorize everything, or just understand the concepts?", "A mix, but mostly I practiced explaining it out loud until it made sense.", "That actually explains why you improved so much between the two tests.", "It does. Struggling at first wasn't fun, but it made passing feel so much better."], ["So how was the trip? Tell me everything from the moment you packed.", "Honestly chaotic. We packed way too much and almost missed our flight.", "Classic. Once you flew out and arrived though, was it worth the stress?", "Completely. We explored so much more than I expected in just one week.", "That sounds amazing. How long did you actually stay before you returned?", "Only five days, but it honestly felt like a much longer trip than that."], ["Okay, what actually went wrong today? You look completely exhausted.", "Where do I even start. I spilled coffee on my notes right before class.", "That's rough. Did anything else go wrong, or was that the only disaster?", "I also lost my bus pass and showed up late because of it, honestly.", "At least tell me you fixed something today, one small win at least.", "Barely. I fixed my broken headphones, so I guess today wasn't a total mistake."], ["How was the party? Did as many guests show up as you were hoping?", "Even more, honestly. The decorations looked amazing once everyone arrived.", "Nice! Was the music good, or did someone take control of the playlist?", "Both, actually. We played games for hours before we even got to the cake.", "Sounds like a great night. Did you get any interesting gifts?", "A few, but honestly the games and the people mattered way more than the gifts."], ["Tell me about the most unforgettable day you've had this year.", "Honestly, the day I woke up and just knew something good was coming.", "That's a good feeling. What happened after you got ready and left the house?", "We ended up celebrating something completely unexpected with the whole family.", "That sounds special. Is that a day you'll actually remember for years?", "Definitely. Some days you just know you'll never forget, and that was one."], ["What were you doing during the surprise announcement? I saw your face.", "Honestly, I was thinking about something completely unrelated at that exact moment.", "That explains the confused look. What was everyone else doing while you zoned out?", "They were watching closely, but I was laughing at something on my phone instead.", "Classic you. Were you even listening when they said the actual news?", "Barely, but I caught the important part while everyone else was still talking about it."], ["If I interviewed you right now, what's your favorite memory from this year?", "Honestly, probably the challenge I overcame during that group project earlier.", "That's a good answer. What about your biggest personal achievement so far?", "Learning to speak up more, actually. That felt like a real adventure for me.", "That's a great story, honestly. More people should hear that experience.", "Thanks, maybe I'll actually tell it properly one day instead of just summarizing it."], ["How was movie night? Did you actually pick something good this time?", "I chose a comedy, and honestly we laughed way more than I expected.", "Nice. Did anyone fall asleep halfway through, like always happens?", "Of course, my brother did, while he was still texting someone the whole time.", "Classic. Would you actually recommend it, or was it just okay?", "I'd recommend it, honestly. We even shared the ending with a friend who missed it."], ["You look stressed. What happened, did you lose something important?", "My backpack, actually. I searched everywhere and started getting really worried.", "That's terrifying. Did you eventually find it, or is it still missing?", "Found it, thankfully, under a bench where I'd forgotten I sat down.", "I bet you felt so relieved. That could've ruined your entire week.", "Completely. I'm being way more careful with my stuff from now on, honestly."], ["If you told your own story from this whole level, how would it start?", "Honestly, I'd say I went from nervous to excited because I finally understood past tense.", "That's a great start. What's the most unforgettable part of your story?", "Probably realizing I could actually tell a whole story without stopping to translate.", "That's something to be proud of, genuinely. Your story really did improve a lot.", "Thanks. I can't wait to see how the next chapter of this story goes."]];
+const dialoguePool = ALL_DIALOGUES.slice(0, num);
+
+const splitChars = (el) => { el.innerHTML = el.textContent.split(" ").map(w => `<span style="display:inline-block;white-space:nowrap">${w.split("").map(c => `<span class="ch">${c}</span>`).join("")}</span>`).join(" "); };
+
+/* ---------- flashlight beam ---------- */
+(function beam() {
+  const b = $("#beam"); if (!FX || !b) return;
+  const pos = { x: innerWidth * .5, y: innerHeight * .3 };
+  G.set(b, pos);
+  const drift = () => G.to(b, { x: innerWidth * (.15 + Math.random() * .7), y: innerHeight * (.15 + Math.random() * .6), duration: 4 + Math.random() * 2, ease: "sine.inOut", onComplete: drift });
+  drift();
+  if (matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    addEventListener("pointermove", e => { G.killTweensOf(b); G.to(b, { x: e.clientX, y: e.clientY, duration: .8, ease: "power3.out" }); clearTimeout(beam.tm); beam.tm = setTimeout(drift, 2500); });
+  }
+})();
+
+/* ---------- intro ---------- */
+let introAnims = [];
+function runIntro(onStart) {
+  const intro = $("#intro"), li = $("#lumiImg"), box = $("#lumiBox");
+  splitChars($("#introTitle"));
+  if (FX) {
+    const tl = G.timeline({ delay: .15 });
+    tl.from("#intro .card", { y: 50, opacity: 0, rotation: -3, duration: .6, ease: "power3.out" }, 0)
+      .from("#intro .tab", { y: 14, opacity: 0, duration: .35 }, .3)
+      .fromTo(li, { y: -150, opacity: 0, scaleX: .85, scaleY: 1.18, transformOrigin: "50% 100%" }, { y: 0, opacity: 1, duration: .42, ease: "power2.in" }, .3)
+      .to(li, { scaleX: 1.16, scaleY: .82, duration: .08 })
+      .to(li, { scaleX: 1, scaleY: 1, duration: .8, ease: "elastic.out(1.1,.32)" })
+      .from("#introTitle .ch", { yPercent: 110, opacity: 0, duration: .45, stagger: .028, ease: "back.out(2.2)" }, "-=.8")
+      .from("#introSub", { y: 12, opacity: 0, duration: .4 }, "-=.3")
+      .from("#startBtn", { y: 18, opacity: 0, scale: .9, duration: .5, ease: "back.out(2)", clearProps: "transform,opacity" }, "-=.25")
+      .to(li, { rotation: 8, transformOrigin: "50% 100%", duration: .14, repeat: 3, yoyo: true, ease: "sine.inOut" })
+      .add(() => { introAnims = idleLumi(li, box); });
+    introAnims.push(tl);
+  }
+  $("#startBtn").onclick = () => {
+    const go = () => { intro.remove(); onStart(); };
+    introAnims.forEach(a => { try { a.kill ? a.kill() : a.destroy(); } catch (e) {} });
+    if (!FX) return go();
+    G.timeline({ onComplete: go })
+      .to("#intro .card", { y: -30, opacity: 0, rotation: 2, duration: .3, ease: "power2.in" })
+      .to(intro, { opacity: 0, duration: .25 }, "-=.1");
+  };
+}
+
+/* ---------- red yarn linking the pinned evidence ---------- */
+function drawYarn(animate) {
+  const row = $("#evidenceRow"), path = $("#yarnPath");
+  if (!row || !path) return;
+  const rb = row.getBoundingClientRect();
+  const pts = $$(".evidence.show .pin", row).map(p => { const b = p.getBoundingClientRect(); return [b.left + b.width / 2 - rb.left, b.top + b.height / 2 - rb.top]; });
+  if (pts.length < 2) { path.setAttribute("d", ""); return; }
+  let d = `M${pts[0][0]},${pts[0][1]}`;
+  for (let i = 1; i < pts.length; i++) {
+    const [x0, y0] = pts[i - 1], [x1, y1] = pts[i];
+    d += ` Q${(x0 + x1) / 2},${Math.max(y0, y1) + 26} ${x1},${y1}`;
+  }
+  path.setAttribute("d", d);
+  const len = path.getTotalLength();
+  path.style.strokeDasharray = len;
+  if (animate && FX) G.fromTo(path, { strokeDashoffset: path.dataset.len ? len - (+path.dataset.len) + 0.001 : len }, { strokeDashoffset: 0, duration: .7, ease: "power2.out" });
+  else path.style.strokeDashoffset = 0;
+  path.dataset.len = len;
+}
+addEventListener("resize", () => drawYarn(false));
+
+if (!vocab.length) {
+  document.getElementById("caseFile").innerHTML = "<p style='padding:40px;color:#FFF3D6'>No lesson data found.</p>";
+  document.getElementById("intro").remove();
+} else {
+  const ROUNDS = 6;
+  // Round plan: find-evidence and verify-clue rounds (original mechanics)
+  // plus a witness-testimony round using this lesson's real dialogue --
+  // covers dialogues/conversations alongside vocabulary judgment.
+  const PLAN = ["find", "verify", "dialogue", "find", "verify", "dialogue"];
+  const order = Lumio.shuffle([...vocab]).slice(0, ROUNDS);
+  let r = 0, score = 0, locked = false;
+  const evidenceRow = document.getElementById("evidenceRow");
+  const evidenceOpts = document.getElementById("evidenceOpts");
+  const dialogueOpts = document.getElementById("dialogueOpts");
+  const tfOpts = document.getElementById("tfOpts");
+  const kicker = document.getElementById("kicker");
+  const promptText = document.getElementById("promptText");
+
+  for (let i = 0; i < ROUNDS; i++) {
+    const card = document.createElement("div");
+    card.className = "evidence pending";
+    card.id = `ev${i}`;
+    card.innerHTML = `<div class="pin"></div><div class="word">?</div><div class="stamp">CONFIRMED</div>`;
+    evidenceRow.appendChild(card);
+  }
+
+  let currentSpeak = "";
+  function playPrompt() { Lumio.speak(currentSpeak); }
+
+  function setKicker(text) {
+    if (kicker.dataset.t === text) return;
+    kicker.dataset.t = text;
+    kicker.innerHTML = text.split("").map(c => `<span class="ch">${c}</span>`).join("");
+    if (FX) G.from($$(".ch", kicker), { opacity: 0, duration: .01, stagger: .028, ease: "none" }); // typewriter
+  }
+  function setPrompt(html) {
+    promptText.innerHTML = html;
+    if (FX) G.from(promptText, { y: 14, opacity: 0, duration: .5, ease: "power3.out", clearProps: "transform,opacity" });
+  }
+  function enterOpts(els) {
+    if (!FX || !els.length) return;
+    G.from(els, { y: 26, opacity: 0, rotation: (i) => (i % 2 ? 2 : -2), duration: .5, stagger: .07, delay: .15, ease: "back.out(1.7)", clearProps: "transform,opacity" });
+  }
+
+  function drawRound() {
+    locked = false;
+    document.getElementById("roundPill").textContent = `${r + 1}/${ROUNDS}`;
+    document.getElementById("progFill").style.transform = `scaleX(${r / ROUNDS})`;
+    const target = order[r % order.length];
+    const type = dialoguePool.length ? PLAN[r] : (r % 2 === 1 ? "verify" : "find");
+
+    evidenceOpts.style.display = "none";
+    dialogueOpts.style.display = "none";
+    tfOpts.style.display = "none";
+    // the next evidence slot pulses: this is the clue we're hunting for
+    const slot = document.getElementById(`ev${r}`);
+    if (FX && slot) G.fromTo(slot, { scale: 1 }, { scale: 1.08, duration: .5, yoyo: true, repeat: 1, ease: "sine.inOut" });
+
+    if (type === "dialogue") {
+      drawDialogueRound();
+    } else if (type === "verify") {
+      setKicker("Verify the clue");
+      tfOpts.style.display = "flex";
+      document.querySelectorAll(".tf-btn").forEach(b => { b.className = b.className.replace(" locked", "").replace(" chosen-right", ""); });
+      const showCorrect = Math.random() < 0.5;
+      const claim = showCorrect ? target.en : Lumio.shuffle(vocab.filter(v => v.en !== target.en))[0].en;
+      setPrompt(`A witness says: <br>"<b>${target.ar}</b>" means "<b>${claim}</b>"`);
+      currentSpeak = target.en;
+      document.querySelectorAll(".tf-btn").forEach(b => { b.onclick = () => verify(b, showCorrect, target); });
+      enterOpts($$(".tf-btn"));
+      setTimeout(playPrompt, 350);
+    } else {
+      setKicker("Find the evidence");
+      evidenceOpts.style.display = "grid";
+      setPrompt(`What does "<b>${target.ar}</b>" mean?`);
+      currentSpeak = target.en;
+      const distractorPool = Lumio.shuffle(vocab.filter(v => v.en !== target.en));
+      const numOptions = Math.min(3, vocab.length);
+      const opts = Lumio.shuffle([target, ...distractorPool.slice(0, numOptions - 1)]);
+      evidenceOpts.innerHTML = opts.map(o => `<button class="opt-card" data-en="${o.en}" data-tap>${o.en}</button>`).join("");
+      document.querySelectorAll(".opt-card").forEach(card => { card.onclick = () => chooseFind(card, target); });
+      enterOpts($$(".opt-card", evidenceOpts));
+      setTimeout(playPrompt, 350);
+    }
+  }
+
+  // Witness-testimony round: two lines of this lesson's real conversation
+  // are "overheard", and the detective (student) must identify what was
+  // really said next -- correct line vs. distractors from other
+  // already-taught lessons' dialogues.
+  function drawDialogueRound() {
+    setKicker("Witness testimony");
+    dialogueOpts.style.display = "grid";
+    const myDialogue = dialoguePool[num - 1] || dialoguePool[dialoguePool.length - 1];
+    setPrompt(`Overheard: <br>"<b>${myDialogue[0]}</b>" ... "<b>${myDialogue[1]}</b>" <br>What came next?`);
+    currentSpeak = myDialogue[1];
+    const correct = myDialogue[2];
+    const distractorPool = [];
+    dialoguePool.forEach((dlg, i) => {
+      if (i === num - 1) return;
+      [dlg[1], dlg[2], dlg[3]].forEach(line => { if (line !== correct) distractorPool.push(line); });
+    });
+    const opts = Lumio.shuffle([correct, ...Lumio.shuffle(distractorPool).slice(0, 2)]);
+    dialogueOpts.innerHTML = opts.map(o => `<button class="opt-card" data-key="${o.replace(/"/g, "&quot;")}" data-tap style="min-height:auto;font-size:.88rem;line-height:1.35">${o}</button>`).join("");
+    document.querySelectorAll("#dialogueOpts .opt-card").forEach(card => { card.onclick = () => chooseDialogue(card, correct); });
+    enterOpts($$("#dialogueOpts .opt-card"));
+    setTimeout(playPrompt, 350);
+  }
+
+  function nextRound(delay) {
+    setTimeout(() => {
+      const go = () => { r++; r < ROUNDS ? drawRound() : endGame(); };
+      if (!FX) return go();
+      const els = $$(".opt-card, .tf-btn").filter(e => e.offsetParent);
+      G.to(els.concat([promptText]), { y: -14, opacity: 0, duration: .22, stagger: .025, ease: "power2.in", onComplete: () => { G.set(promptText, { clearProps: "transform,opacity" }); $$(".tf-btn").forEach(b => G.set(b, { clearProps: "transform,opacity" })); go(); } });
+    }, delay);
+  }
+
+  function correctFx(el) {
+    lumiReact(true);
+    if (FX && el) G.fromTo(el, { scale: 1 }, { scale: 1.08, duration: .18, yoyo: true, repeat: 1, ease: "power2.out", overwrite: "auto" });
+    flyStar(el, $("#starCt"), () => { document.getElementById("score").textContent = score; bump($("#starCt")); starPop($("#starPop")); });
+  }
+
+  function chooseDialogue(card, correct) {
+    if (locked) return;
+    const ok = card.dataset.key === correct;
+    if (ok) {
+      locked = true;
+      score++;
+      Lumio.beep(true);
+      card.classList.add("correct");
+      document.querySelectorAll("#dialogueOpts .opt-card").forEach(c => c.classList.add("locked"));
+      correctFx(card);
+      pinEvidence(r, { en: "clue found" });
+      nextRound(1200);
+    } else {
+      Lumio.beep(false);
+      card.classList.add("wrong-dim");
+      shake(card); lumiReact(false);
+    }
+  }
+
+  function pinEvidence(idx, target) {
+    const card = document.getElementById(`ev${idx}`);
+    if (!card) return;
+    card.querySelector(".word").textContent = target.en;
+    card.classList.remove("pending");
+    card.classList.add("show");
+    if (FX) {
+      G.timeline({ onComplete: () => drawYarn(true) })
+        .fromTo(card, { y: -60, opacity: 0, rotation: -24, scale: 1.2 }, { y: 0, opacity: 1, scale: 1, rotation: 6, duration: .35, ease: "power2.in" })
+        .to(card, { rotation: getComputedStyle(card).getPropertyValue("--rot").trim() === "2deg" ? 2 : -2, duration: 1.1, ease: "elastic.out(1.2,.3)" })
+        .from(card.querySelector(".pin"), { scale: 2.4, opacity: 0, duration: .3, ease: "power3.in" }, .25);
+      G.fromTo("#board", { y: 0 }, { y: 3, duration: .06, yoyo: true, repeat: 1, delay: .35 });
+    } else drawYarn(false);
+  }
+
+  function chooseFind(card, target) {
+    if (locked) return;
+    const ok = card.dataset.en === target.en;
+    if (ok) {
+      locked = true;
+      score++;
+      Lumio.beep(true);
+      card.classList.add("correct");
+      document.querySelectorAll(".opt-card").forEach(c => c.classList.add("locked"));
+      correctFx(card);
+      pinEvidence(r, target);
+      nextRound(1200);
+    } else {
+      Lumio.beep(false);
+      card.classList.add("wrong-dim");
+      shake(card); lumiReact(false);
+    }
+  }
+
+  function verify(btn, showCorrect, target) {
+    if (locked) return;
+    const chose = btn.dataset.v === "true";
+    const ok = chose === showCorrect;
+    document.querySelectorAll(".tf-btn").forEach(b => b.classList.add("locked"));
+    if (ok) {
+      locked = true;
+      score++;
+      Lumio.beep(true);
+      btn.classList.add("chosen-right");
+      correctFx(btn);
+      pinEvidence(r, target);
+      const card = document.getElementById(`ev${r}`);
+      card.classList.add("confirmed");
+      if (FX) G.fromTo(card.querySelector(".stamp"), { scale: 3, opacity: 0, rotation: -20 }, { scale: 1, opacity: 1, rotation: 8, duration: .4, delay: .5, ease: "power4.in" });
+      nextRound(1200);
+    } else {
+      Lumio.beep(false);
+      shake(btn); lumiReact(false);
+      pinEvidence(r, target);
+      nextRound(1400);
+    }
+  }
+
+  function endGame() {
+    document.getElementById("progFill").style.transform = "scaleX(1)";
+    if (Lumio.sfx) Lumio.sfx("complete");
+    const pct = Math.round((score / ROUNDS) * 100);
+    Lumio.speak(pct >= 80 ? "Amazing!" : "Great job!"); // was "Case closed! Great detective work!" / "Good clues! Let's crack the next case soon!" -- no recordings for those (404), these two exist
+    document.getElementById("finalScore").innerHTML = `You solved the case with <b id="endN">${score}</b> out of ${ROUNDS} clues confirmed!`;
+    const ec = document.getElementById("endcard");
+    ec.style.display = "flex";
+    const h = $("#endTitle"); h.innerHTML = h.textContent.split(" ").map(w => `<span class="w">${w}</span>`).join(" ");
+    if (!FX) { if (!G) Lumio.confetti(100); return; }
+    const c = $("#fxConf"); c.innerHTML = ""; const a = lot(c, "confetti", false); if (a) a.addEventListener("complete", () => { c.innerHTML = ""; });
+    G.timeline()
+      .from(ec, { opacity: 0, duration: .3 })
+      .from("#endcard .box", { y: 50, opacity: 0, rotation: 2, duration: .55, ease: "power3.out" }, .05)
+      .fromTo("#closedStamp", { scale: 3.2, opacity: 0, rotation: -24 }, { scale: 1, opacity: 1, rotation: -6, duration: .38, ease: "power4.in" }, .45)
+      .fromTo("#endcard .box", { x: 0 }, { keyframes: { x: [0, -6, 6, -3, 0] }, duration: .3 }, .83)
+      .from("#endcard .crew img", { y: 70, opacity: 0, scaleY: 1.2, scaleX: .85, duration: .5, stagger: .07, ease: "back.out(2)" }, .9)
+      .from("#endTitle .w", { yPercent: 100, opacity: 0, duration: .5, stagger: .08, ease: "power3.out" }, 1.1)
+      .from("#finalScore", { y: 10, opacity: 0, duration: .4 }, 1.3)
+      .add(() => countTo($("#endN"), 0, score, .2 * Math.max(1, score) + .3), 1.35)
+      .from("#endcard .row .btn", { y: 16, opacity: 0, duration: .45, stagger: .08, ease: "power3.out", clearProps: "transform,opacity" }, 1.6);
+  }
+
+  document.getElementById("promptCard").onclick = playPrompt;
+  idleLumi($("#lumiMiniImg"), $("#lumiMini"));
+  splitChars($("#boardTitle"));
+  if (FX) {
+    G.from(["#hud > *", "#progress"], { y: -14, opacity: 0, duration: .45, stagger: .05, ease: "power3.out", clearProps: "transform,opacity" });
+    G.from("#board", { y: 30, opacity: 0, rotation: -1, duration: .7, ease: "power3.out", clearProps: "transform,opacity" });
+    G.from("#caseFile", { y: 40, opacity: 0, duration: .7, delay: .1, ease: "power3.out", clearProps: "transform,opacity" });
+  }
+  runIntro(() => {
+    if (FX) {
+      G.from("#boardTitle .ch", { opacity: 0, y: 6, duration: .3, stagger: .025, ease: "power2.out" });
+      G.from(".evidence", { opacity: 0, scale: .6, duration: .4, stagger: .05, ease: "back.out(2)", clearProps: "opacity,scale" });
+    }
+    drawRound();
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Treehouse Builder — Lumio English</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/brand.css">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  /* ===== v2 motion kit (shared look: springy, star flights, Lottie) ===== */
+  html, body { overflow-x: hidden; }
+  button { -webkit-tap-highlight-color: transparent; }
+  :focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
+  .flyStar { position: fixed; left: 0; top: 0; z-index: 300; width: 34px; height: 34px; pointer-events: none; will-change: transform; }
+  .flyStar svg, .starCt svg.st { width: 100%; height: 100%; display: block; }
+  .spark { position: fixed; left: 0; top: 0; z-index: 290; width: 14px; height: 14px; pointer-events: none; will-change: transform, opacity; }
+  .spark svg { width: 100%; height: 100%; display: block; }
+  .starCt { position: relative; display: inline-flex; align-items: center; gap: 6px; isolation: isolate; }
+  .starCt svg.st { width: 20px; height: 20px; flex: none; }
+  .starCt .pop { position: absolute; width: 64px; height: 64px; left: -14px; top: 50%; margin-top: -32px; pointer-events: none; z-index: -1; }
+  .v2-bar { flex: 1; min-width: 60px; height: 12px; border-radius: 99px; background: rgba(255,255,255,.75); box-shadow: inset 0 1px 3px rgba(67,48,31,.12); overflow: hidden; }
+  .v2-bar i { display: block; height: 100%; border-radius: 99px; transform-origin: 0 50%; transform: scaleX(0); transition: transform .7s cubic-bezier(.34,1.56,.64,1); }
+  .v2-conf { position: fixed; inset: 0; z-index: 70; pointer-events: none; }
+  .v2-conf svg { width: 100% !important; height: 100% !important; }
+  .mask { display: inline-block; overflow: hidden; vertical-align: bottom; padding: 0 .04em .08em; margin-bottom: -.08em; }
+  .mask > span { display: inline-block; will-change: transform; }
+  .v2-intro { position: fixed; inset: 0; z-index: 80; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 24px 16px calc(24px + env(safe-area-inset-bottom, 0px)); text-align: center; overflow: hidden; }
+  .v2-intro .mWrap { position: relative; height: min(34vh, 250px); aspect-ratio: 7 / 8; margin-bottom: 6px; }
+  .v2-intro .mWrap .halo { position: absolute; inset: -14% -20% 0; pointer-events: none; opacity: .9; }
+  .v2-intro .mWrap img { position: relative; height: 100%; width: auto; margin: 0 auto; display: block; filter: drop-shadow(0 16px 22px rgba(67,48,31,.22)); }
+  .v2-intro .shadow { width: 46%; height: 14px; margin: -8px auto 12px; border-radius: 50%; background: rgba(67,48,31,.14); filter: blur(2px); }
+  .v2-intro h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(2.1rem, 8.4vw, 3.4rem); line-height: 1.05; margin: 0 0 10px; color: var(--cocoa); }
+  .v2-intro p.sub { font-weight: 800; font-size: clamp(1rem, 4vw, 1.2rem); color: var(--cocoa-soft); max-width: 420px; margin: 0 auto 26px; }
+  .v2-play { min-height: 60px; min-width: 190px; padding: 0 36px; border: none; border-radius: 999px; cursor: pointer;
+    font-family: var(--font-display); font-weight: 800; font-size: 1.35rem; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    box-shadow: 0 8px 0 rgba(0,0,0,.12), 0 18px 34px -10px rgba(249,115,22,.6); }
+  .v2-play svg { width: 22px; height: 22px; }
+  .v2-play .ring { position: absolute; }
+  .v2-stars { display: flex; justify-content: center; gap: 6px; margin: 10px 0 4px; flex-wrap: wrap; }
+  .v2-stars span { width: 38px; height: 38px; display: block; }
+  .v2-stars span svg { width: 100%; height: 100%; display: block; }
+  .v2-stars span.off { opacity: .2; filter: grayscale(1); }
+  .ckBadge { position: absolute; top: 6px; right: 6px; width: 38px; height: 38px; border-radius: 999px; background: #fff;
+    box-shadow: 0 4px 10px rgba(22,163,74,.35); display: flex; align-items: center; justify-content: center; pointer-events: none;
+    opacity: 0; transform: scale(.4); transition: opacity .25s ease, transform .35s cubic-bezier(.34,1.56,.64,1); color: var(--green); font-weight: 800; font-size: 1.2rem; }
+  .ckBadge .lt { position: absolute; inset: -2px; }
+  .correct .ckBadge { opacity: 1; transform: scale(1); }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  }
+
+  body {
+    min-height: 100vh; min-height: 100dvh;
+    background: linear-gradient(180deg, #BEE3D4 0%, #E3F3E9 50%, #FFFBF5 100%);
+    position: relative;
+  }
+  .sky { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .cloud { position: absolute; background: #fff; border-radius: 999px; opacity: .75;
+    box-shadow: 40px 6px 0 -6px #fff, -40px 10px 0 -10px #fff; }
+  .leaf { position: absolute; font-size: 1.3rem; opacity: .5; animation: drift 3s ease-in-out infinite; }
+  @keyframes drift { 0%,100% { transform: translateY(0) rotate(-6deg); } 50% { transform: translateY(-10px) rotate(6deg); } }
+
+  #hud { position: relative; z-index: 5; display: flex; align-items: center; gap: 10px; padding: 14px 16px; max-width: 920px; margin: 0 auto; }
+  #hud .pill { background: #fff; border-radius: 999px; padding: 8px 16px; font-family: var(--font-display); font-weight: 800; box-shadow: var(--sh-sm); white-space: nowrap; min-height: 40px; display: inline-flex; align-items: center; }
+  #hud .btn { min-height: 44px; }
+  .v2-bar i { background: linear-gradient(90deg, #7DBF8E, #16A34A); }
+
+  #layout { position: relative; z-index: 5; max-width: 920px; margin: 0 auto; padding: 0 16px 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+  @media (min-width: 761px) { #layout { min-height: calc(100vh - 90px); align-content: center; align-items: center; padding-bottom: 60px; } }
+  @media (max-width: 760px) { #layout { grid-template-columns: 1fr; gap: 8px; } #treeWrap { order: 2; } #playWrap { order: 1; } }
+
+  #treeWrap { display: flex; flex-direction: column; align-items: center; padding-top: 10px; position: relative; }
+  #treeStage { position: relative; width: 100%; max-width: 340px; }
+  #treeWrap svg { width: 100%; height: auto; display: block; overflow: visible; }
+  @media (max-width: 760px) { #treeStage { max-width: min(250px, 34vh); } }
+  .piece { opacity: 0; }
+  html:not(.v2a) .piece { transform: scale(.7); transform-origin: center; transition: opacity .5s ease, transform .5s cubic-bezier(.34,1.56,.64,1); }
+  .piece.show { opacity: 1; }
+  html:not(.v2a) .piece.show { transform: scale(1); }
+  #treeLumi { position: absolute; left: -6%; bottom: 0; height: 26%; pointer-events: none; }
+  #treeLumi .mBox, #treeLumi .mHop { height: 100%; }
+  #treeLumi img { height: 100%; display: block; filter: drop-shadow(0 8px 10px rgba(67,48,31,.2)); }
+  #buildLabel { font-family: var(--font-display); font-weight: 800; color: var(--cocoa); text-align: center; margin-top: 8px; font-size: 1.1rem;
+    background: rgba(255,255,255,.75); border-radius: 999px; padding: 6px 16px; box-shadow: var(--sh-sm); }
+
+  #playWrap { text-align: center; }
+  #promptCard {
+    background: #fff; border-radius: 24px; padding: 12px 20px 12px 12px; margin: 6px auto 18px;
+    box-shadow: 0 5px 0 #CDE9DA, var(--sh-md); display: inline-flex; align-items: center; gap: 12px; max-width: 100%;
+    cursor: pointer;
+  }
+  #promptCard p { font-family: var(--font-display); font-weight: 800; color: var(--cocoa); font-size: 1.15rem; margin: 0; }
+  #hearBtn {
+    background: var(--grad-sun); border: none; border-radius: 999px; width: 54px; height: 54px; position: relative;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+    box-shadow: 0 6px 14px rgba(255,197,61,.5);
+  }
+  #hearBtn::after { content: ""; position: absolute; inset: 0; border-radius: 999px; animation: ring 1.6s ease-out infinite; }
+  @keyframes ring { 0% { box-shadow: 0 0 0 0 rgba(22,163,74,.4); } 100% { box-shadow: 0 0 0 16px rgba(22,163,74,0); } }
+
+  #optGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (max-width: 420px) { #optGrid { gap: 10px; } }
+  .opt-card {
+    background: #fff; border: 5px solid transparent; border-radius: 22px; padding: 0;
+    cursor: pointer; overflow: hidden; box-shadow: 0 6px 0 #D8ECDF, var(--sh-md);
+    transition: border-color .2s ease, opacity .3s ease, box-shadow .3s ease, background .3s ease;
+    position: relative; min-height: 44px;
+  }
+  html:not(.v2a) .opt-card { transition: transform .15s ease, border-color .2s ease, opacity .3s ease; }
+  html:not(.v2a) .opt-card:active { transform: scale(.94); }
+  .opt-card .pic { position: relative; width: 100%; aspect-ratio: 1/1; overflow: hidden; }
+  .opt-card .pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 8%; box-sizing: border-box; background: #fff; }
+  .opt-card .word { font-family: var(--font-display); font-weight: 800; font-size: .95rem; color: var(--cocoa); padding: 6px 4px 8px; }
+  .opt-card.correct { border-color: var(--green); background: var(--green-soft); box-shadow: 0 0 0 4px rgba(22,163,74,.25), 0 0 34px 8px rgba(22,163,74,.35); }
+  .opt-card.correct .pic img { background: transparent; }
+  .opt-card.wrong-dim { opacity: .35; pointer-events: none; }
+  .opt-card.locked { pointer-events: none; }
+  .v2a .ckBadge .ckT { display: none; }
+  @media (max-width: 420px) { .ckBadge { width: 30px; height: 30px; top: 4px; right: 4px; } }
+
+  #intro { background: radial-gradient(circle at 50% 30%, #F2FBF5 0%, #CDEBDC 55%, #A9D9C2 100%); }
+  #intro .v2-play { background: linear-gradient(135deg, #34C76F, #16A34A); color: #fff; box-shadow: 0 8px 0 #0E7A37, 0 18px 34px -10px rgba(22,163,74,.6); }
+
+  #endcard {
+    position: fixed; inset: 0; z-index: 60; display: none;
+    align-items: center; justify-content: center; background: rgba(67,48,31,.45); padding: 16px;
+  }
+  #endcard .box { background: #fff; border-radius: 28px; padding: 28px 22px; text-align: center; box-shadow: var(--sh-lg); max-width: 440px; width: 100%; }
+  #endcard .crew { display: flex; justify-content: center; margin: 6px 0; }
+  #endcard .crew img { height: 90px; margin: 0 -10px; filter: drop-shadow(0 8px 12px rgba(67,48,31,.2)); }
+  #endcard h1 { font-size: clamp(1.5rem, 6vw, 2rem); }
+  #endcard .row .btn { min-height: 48px; }
+</style>
+</head>
+<body>
+
+<div class="sky" aria-hidden="true">
+  <div class="cloud" style="width:64px;height:24px;top:96px;left:8%"></div>
+  <div class="cloud" style="width:50px;height:18px;top:140px;right:10%"></div>
+  <div class="leaf" style="top:18%;left:5%">🍃</div>
+  <div class="leaf" style="top:60%;right:4%;animation-delay:.9s">🍃</div>
+</div>
+
+<div id="intro" class="v2-intro" role="dialog" aria-label="Treehouse Builder">
+  <div class="mWrap"><div class="halo"></div><img src="../assets/story/characters/lumi-wave-book.png" alt="Lumi"></div>
+  <div class="shadow"></div>
+  <h1>Treehouse Builder</h1>
+  <p class="sub">Answer correctly to build the Treehouse Club, piece by piece!</p>
+  <button class="v2-play" type="button" id="playBtn"></button>
+</div>
+
+<div id="hud">
+  <a class="btn btn-ghost" href="../present.html" id="exitBtn" style="background:#fff">Exit</a>
+  <span class="pill starCt" id="starCt"><span class="pop"></span><span id="starIcon"></span><span id="score">0</span></span>
+  <span class="pill" id="roundPill">1/6</span>
+  <div class="v2-bar" aria-hidden="true"><i id="bar"></i></div>
+</div>
+
+<div id="layout">
+  <div id="treeWrap">
+    <div id="treeStage">
+    <svg viewBox="0 0 340 420" xmlns="http://www.w3.org/2000/svg">
+      <!-- piece 0: ground + trunk + branches (always visible, the starting point) -->
+      <ellipse cx="170" cy="405" rx="140" ry="14" fill="#BEE3D4"/>
+      <path d="M155 405 C150 300 148 220 160 150 C165 120 175 100 172 60 L188 60 C182 100 190 120 195 150 C202 220 200 300 195 405 Z" fill="#B5794A"/>
+      <path d="M172 170 C140 155 110 160 90 140" stroke="#B5794A" stroke-width="14" stroke-linecap="round" fill="none"/>
+      <path d="M195 190 C230 175 255 180 275 160" stroke="#B5794A" stroke-width="14" stroke-linecap="round" fill="none"/>
+      <circle class="canopy" cx="80" cy="130" r="34" fill="#7DBF8E"/>
+      <circle class="canopy" cx="270" cy="150" r="30" fill="#7DBF8E"/>
+      <circle class="canopy" cx="120" cy="90" r="26" fill="#8FCB9E"/>
+
+      <!-- piece 1: platform -->
+      <g class="piece" id="pc-platform">
+        <rect x="90" y="248" width="160" height="20" rx="4" fill="#D9A85E"/>
+        <rect x="90" y="248" width="160" height="6" rx="3" fill="#E9C08A"/>
+        <line x1="105" y1="248" x2="105" y2="268" stroke="#B5794A" stroke-width="2"/>
+        <line x1="135" y1="248" x2="135" y2="268" stroke="#B5794A" stroke-width="2"/>
+        <line x1="165" y1="248" x2="165" y2="268" stroke="#B5794A" stroke-width="2"/>
+        <line x1="195" y1="248" x2="195" y2="268" stroke="#B5794A" stroke-width="2"/>
+        <line x1="225" y1="248" x2="225" y2="268" stroke="#B5794A" stroke-width="2"/>
+      </g>
+
+      <!-- piece 2: walls + door -->
+      <g class="piece" id="pc-walls">
+        <rect x="105" y="150" width="130" height="98" rx="8" fill="#F0C48A"/>
+        <rect x="150" y="196" width="40" height="52" rx="4" fill="#B5794A"/>
+        <circle cx="182" cy="222" r="3" fill="#7A4E24"/>
+      </g>
+
+      <!-- piece 3: roof -->
+      <g class="piece" id="pc-roof">
+        <polygon points="95,152 170,95 245,152" fill="#EF6B4B"/>
+        <polygon points="95,152 170,95 170,110 108,152" fill="#F58868"/>
+        <rect x="160" y="80" width="10" height="22" fill="#8A5A34"/>
+      </g>
+
+      <!-- piece 4: window + bunting -->
+      <g class="piece" id="pc-window">
+        <circle cx="128" cy="200" r="16" fill="#BEE3F5" stroke="#8A5A34" stroke-width="3"/>
+        <line x1="128" y1="184" x2="128" y2="216" stroke="#8A5A34" stroke-width="2"/>
+        <line x1="112" y1="200" x2="144" y2="200" stroke="#8A5A34" stroke-width="2"/>
+        <path d="M108 152 Q170 172 232 152" stroke="#8A5A34" stroke-width="2" fill="none"/>
+        <polygon points="120,158 128,170 112,170" fill="#F97316"/>
+        <polygon points="150,160 158,172 142,172" fill="#0D9488"/>
+        <polygon points="180,160 188,172 172,172" fill="#F59E0B"/>
+        <polygon points="210,158 218,170 202,170" fill="#8B5CF6"/>
+      </g>
+
+      <!-- piece 5: rope ladder + flag -->
+      <g class="piece" id="pc-final">
+        <polygon points="170,60 170,80 185,70" fill="#F97316"/>
+        <line x1="150" y1="268" x2="140" y2="360" stroke="#D9A85E" stroke-width="4"/>
+        <line x1="170" y1="268" x2="165" y2="360" stroke="#D9A85E" stroke-width="4"/>
+        <line x1="142" y1="290" x2="167" y2="288" stroke="#B5794A" stroke-width="5"/>
+        <line x1="141" y1="315" x2="166" y2="313" stroke="#B5794A" stroke-width="5"/>
+        <line x1="140" y1="340" x2="165" y2="338" stroke="#B5794A" stroke-width="5"/>
+      </g>
+    </svg>
+    <div id="treeLumi"><div class="mHop" id="lumiHop"><div class="mBox" id="lumiBox"><img id="lumiImg" src="../assets/story/characters/lumi-point.png" alt="Lumi"></div></div></div>
+    </div>
+    <div id="buildLabel">Building the Treehouse Club! 🌳</div>
+  </div>
+
+  <div id="playWrap">
+    <div id="promptCard">
+      <button id="hearBtn" aria-label="Listen">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="#43301F"/><path d="M16.5 8.5a5 5 0 010 7M19 6a9 9 0 010 12" stroke="#43301F" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+      </button>
+      <p>Tap the picture you hear!</p>
+    </div>
+    <div id="optGrid"></div>
+  </div>
+</div>
+
+<div id="endcard">
+  <div class="box">
+    <div class="crew">
+      <img src="../assets/story/characters/lumi-celebrate.png" alt="Lumi">
+      <img src="../assets/story/characters/omar-celebrate.png" alt="Omar">
+      <img src="../assets/story/characters/sara-celebrate.png" alt="Sara">
+      <img src="../assets/story/characters/noor-happy.png" alt="Noor">
+    </div>
+    <h1 style="font-family:var(--font-display);margin-top:8px">The Treehouse Club is open!</h1>
+    <div class="v2-stars" id="endStars"></div>
+    <p style="font-weight:800;font-size:1.15rem;margin:10px 0" id="finalScore"></p>
+    <div class="row" style="justify-content:center;gap:10px">
+      <button class="btn btn-primary" onclick="location.reload()">↺ Build again</button>
+      <a class="btn btn-teal" id="backBtn" href="../present.html">Back</a>
+    </div>
+  </div>
+</div>
+
+<script src="../vendor/gsap-3.12.5.min.js"></script>
+<script src="../vendor/lottie-light-5.12.2.min.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/lessons-data.js"></script>
+<script>
+// ===== v2 motion kit: GSAP + Lottie, everything degrades to instant/static with reduced motion =====
+const V2 = (() => {
+  const G = window.gsap, LOT = window.lottie;
+  const RM = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  const on = !!G && !RM;
+  if (on) document.documentElement.classList.add("v2a");
+  const STAR = '<svg class="st" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z" fill="#FFC53D" stroke="#E89B0C" stroke-width="1.3" stroke-linejoin="round"/></svg>';
+  const PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.8v14.4a1 1 0 001.5.86l11.6-7.2a1 1 0 000-1.72L8.5 3.94A1 1 0 007 4.8z" fill="currentColor"/></svg>';
+  const $$ = (s, r) => Array.prototype.slice.call((r || document).querySelectorAll(s));
+
+  function lot(el, name, loop, slice) {
+    if (!LOT || !el || RM) return null;
+    try {
+      return LOT.loadAnimation({ container: el, renderer: "svg", loop: !!loop, autoplay: true, path: `../assets/lottie/${name}.json`,
+        rendererSettings: slice ? { preserveAspectRatio: "xMidYMid slice" } : {} });
+    } catch (e) { return null; }
+  }
+  function once(el, name, slice) {
+    if (!el) return null;
+    el.innerHTML = "";
+    const a = lot(el, name, false, slice);
+    if (a) a.addEventListener("complete", () => { el.innerHTML = ""; });
+    return a;
+  }
+
+  // springy press: scale down on pointerdown, elastic back on release (click logic untouched)
+  function press(root, sel) {
+    if (!on || !root) return;
+    root.addEventListener("pointerdown", e => {
+      const t = e.target.closest(sel);
+      if (!t || t.disabled || getComputedStyle(t).pointerEvents === "none") return;
+      G.to(t, { scale: .9, duration: .12, ease: "power2.out", overwrite: "auto" });
+      const up = () => {
+        window.removeEventListener("pointerup", up); window.removeEventListener("pointercancel", up);
+        G.to(t, { scale: 1, duration: .6, ease: "elastic.out(1.2,.4)", overwrite: "auto" });
+      };
+      window.addEventListener("pointerup", up); window.addEventListener("pointercancel", up);
+    });
+  }
+
+  function bump(el) { if (el && on) G.fromTo(el, { scale: 1.35 }, { scale: 1, duration: .7, ease: "elastic.out(1.2,.4)", overwrite: "auto" }); }
+
+  // a star flies on a curved path from the answer into the star counter
+  function flyStar(fromEl, toEl, done) {
+    if (!fromEl || !toEl || !on) { if (done) done(); return; }
+    const a = fromEl.getBoundingClientRect(), b = toEl.getBoundingClientRect();
+    const ax = a.left + a.width / 2 - 17, ay = a.top + a.height / 2 - 17, bx = b.left + 4, by = b.top + b.height / 2 - 17;
+    const cx = (ax + bx) / 2 + (ax < bx ? -60 : 60), cy = Math.min(ay, by) - 140;
+    const s = document.createElement("div"); s.className = "flyStar"; s.innerHTML = STAR; document.body.appendChild(s);
+    const o = { t: 0 };
+    G.set(s, { x: ax, y: ay, scale: .4 });
+    G.to(o, { t: 1, duration: .85, ease: "power1.inOut", onUpdate: () => {
+      const t = o.t, u = 1 - t;
+      G.set(s, { x: u * u * ax + 2 * u * t * cx + t * t * bx, y: u * u * ay + 2 * u * t * cy + t * t * by, rotation: t * 300, scale: .4 + Math.sin(t * Math.PI) * 1.1 + t * .2 });
+    }, onComplete: () => { s.remove(); if (done) done(); } });
+  }
+
+  // little star sparks bursting out of an element (correct answers, pieces landing)
+  function burst(el, n, colors) {
+    if (!el || !on) return;
+    const r = el.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    const cols = colors || ["#FFC53D", "#F97316", "#23B5A3", "#FF6B6B", "#7EC8F2"];
+    for (let i = 0; i < (n || 10); i++) {
+      const s = document.createElement("div"); s.className = "spark";
+      s.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 1l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" fill="${cols[i % cols.length]}"/></svg>`;
+      document.body.appendChild(s);
+      const ang = (Math.PI * 2 * i) / (n || 10) + Math.random() * .5, dist = 60 + Math.random() * Math.max(50, r.width * .5);
+      G.set(s, { x: cx - 7, y: cy - 7, scale: .2, rotation: Math.random() * 90 });
+      G.to(s, { x: cx - 7 + Math.cos(ang) * dist, y: cy - 7 + Math.sin(ang) * dist, scale: .7 + Math.random() * .8, rotation: "+=180", duration: .7, ease: "power3.out" });
+      G.to(s, { opacity: 0, duration: .35, delay: .45, onComplete: () => s.remove() });
+    }
+  }
+
+  function pop(el) {
+    if (!el || !on) return;
+    G.timeline().to(el, { scale: 1.12, duration: .16, ease: "power2.out", overwrite: "auto" }).to(el, { scale: 1, duration: .7, ease: "elastic.out(1.1,.35)" });
+  }
+  function shake(el) {
+    if (!el || !on) return;
+    G.fromTo(el, { x: 0 }, { keyframes: { x: [-9, 9, -6, 5, -2, 0] }, duration: .45, ease: "none", clearProps: "x" });
+  }
+  // round/stage content entering: springy, slightly rotated, staggered
+  function enterCards(els, opts) {
+    if (!on || !els.length) return;
+    const o = opts || {};
+    G.from(els, { scale: .55, opacity: 0, y: o.y || 0, rotation: i => [-6, 5, 4, -5][i % 4], duration: .6, stagger: o.stagger || .08, delay: o.delay || .05, ease: "back.out(2)", clearProps: "transform,opacity" });
+  }
+  // old content leaving before a new round: returns via callback
+  function leave(els, cb) {
+    if (!on || !els.length) { cb(); return; }
+    G.to(els, { scale: .7, opacity: 0, y: 14, duration: .26, stagger: .04, ease: "back.in(1.6)", onComplete: cb });
+  }
+  function enter(els, opts) {
+    if (!on || !els.length) return;
+    const o = opts || {};
+    G.from(els, { y: o.y == null ? 22 : o.y, opacity: 0, scale: o.scale || .97, duration: .6, stagger: o.stagger || .07, delay: o.delay || 0, ease: "power3.out", clearProps: "transform,opacity" });
+  }
+  // wrap each word of an element in a mask, then slide the words up into view
+  function maskText(el, text, delay) {
+    if (!el) return;
+    if (text != null) el.textContent = text;
+    if (!on) return;
+    const words = el.textContent.split(/(\s+)/);
+    el.innerHTML = words.map(w => /^\s+$/.test(w) ? w : `<span class="mask"><span>${w.replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]))}</span></span>`).join("");
+    G.from($$(".mask > span", el), { yPercent: 115, rotation: 4, duration: .6, stagger: .06, delay: delay || 0, ease: "back.out(1.6)" });
+  }
+
+  // mascot idle: breathing, a gentle sway, a blink-like squash and a little wave now and then
+  function idle(box, img) {
+    const anims = [];
+    if (!on || !box || !img) return anims;
+    anims.push(G.to(box, { scale: 1.035, transformOrigin: "50% 100%", duration: 1.7, yoyo: true, repeat: -1, ease: "sine.inOut" }));
+    anims.push(G.to(img, { rotation: 3, transformOrigin: "50% 100%", duration: 1.5, yoyo: true, repeat: -1, ease: "sine.inOut" }));
+    const bl = G.timeline({ repeat: -1, repeatDelay: 3.2, delay: 1.6 });
+    bl.to(img, { scaleY: .9, scaleX: 1.07, transformOrigin: "50% 100%", duration: .09, ease: "power1.in" })
+      .to(img, { scaleY: 1, scaleX: 1, duration: .45, ease: "elastic.out(1,.4)" });
+    anims.push(bl);
+    const wv = G.timeline({ repeat: -1, repeatDelay: 6.5, delay: 4 });
+    wv.to(box, { rotation: -6, transformOrigin: "50% 90%", duration: .16, ease: "sine.out" })
+      .to(box, { rotation: 6, duration: .2, yoyo: true, repeat: 3, ease: "sine.inOut" })
+      .to(box, { rotation: 0, duration: .5, ease: "elastic.out(1,.4)" });
+    anims.push(wv);
+    return anims;
+  }
+  // happy hop with squash-and-stretch
+  function hop(el) {
+    if (!el || !on) return;
+    G.timeline().to(el, { y: -26, scaleY: 1.08, scaleX: .94, transformOrigin: "50% 100%", duration: .22, ease: "power2.out", overwrite: "auto" })
+      .to(el, { y: 0, scaleY: 1, scaleX: 1, duration: .22, ease: "power2.in" })
+      .to(el, { scaleY: .86, scaleX: 1.12, duration: .08 })
+      .to(el, { scaleY: 1, scaleX: 1, duration: .6, ease: "elastic.out(1.1,.35)" });
+  }
+  function wobble(el) {
+    if (!el || !on) return;
+    G.fromTo(el, { rotation: 0 }, { keyframes: { rotation: [-7, 7, -4, 3, 0] }, transformOrigin: "50% 100%", duration: .55, ease: "none" });
+  }
+
+  function countUp(el, to, dur, delay, onTick) {
+    if (!el) return;
+    if (!on) { el.textContent = to; if (onTick) for (let i = 1; i <= to; i++) onTick(i); return; }
+    const o = { v: 0 }; let last = 0; el.textContent = "0";
+    G.to(o, { v: to, duration: dur || 1.2, delay: delay || 0, ease: "power2.out", onUpdate: () => {
+      const v = Math.round(o.v); el.textContent = v;
+      while (last < v) { last++; if (onTick) onTick(last); }
+    } });
+  }
+  function setBar(el, frac) { if (el) el.style.transform = `scaleX(${Math.max(0, Math.min(1, frac))})`; }
+
+  // star counter: fly a star in from an element, then bump + Lottie star pop and update the number
+  function addStar(fromEl, ctEl, numEl, value) {
+    const after = () => {
+      if (numEl) numEl.textContent = value;
+      bump(ctEl);
+      if (window.Lumio && Lumio.sfx) Lumio.sfx("star");
+      const p = ctEl && ctEl.querySelector(".pop"); if (p) once(p, "star-pop");
+    };
+    flyStar(fromEl, ctEl, after);
+  }
+
+  // intro / start screen: mascot drops in and squashes, title words rise, button springs; mascot idles
+  function intro(root, onStart) {
+    const box = root.querySelector(".mWrap"), img = box && box.querySelector("img"), title = root.querySelector("h1");
+    const btn = root.querySelector(".v2-play"), halo = root.querySelector(".halo");
+    let anims = [];
+    if (halo) { const a = lot(halo, "star-pop", true); if (a) anims.push(a); }
+    maskText(title, null, .55);
+    if (on) {
+      const tl = G.timeline({ delay: .1 });
+      tl.fromTo(img, { y: -220, opacity: 0, scaleX: .84, scaleY: 1.2, transformOrigin: "50% 100%" }, { y: 0, opacity: 1, duration: .45, ease: "power2.in" })
+        .to(img, { scaleX: 1.22, scaleY: .76, duration: .08, ease: "power1.out" })
+        .to(img, { scaleX: 1, scaleY: 1, duration: .8, ease: "elastic.out(1.1,.32)" })
+        .from(root.querySelector(".shadow"), { scaleX: .2, opacity: 0, duration: .4 }, "-=1.1")
+        .from(root.querySelectorAll("p.sub, .introExtra"), { y: 16, opacity: 0, duration: .5, stagger: .08, ease: "power3.out" }, "-=.45")
+        .from(btn, { scale: 0, rotation: -8, duration: .7, ease: "back.out(2.2)", clearProps: "transform" }, "-=.3")
+        .add(() => {
+          anims = anims.concat(idle(box, img));
+          anims.push(G.to(btn, { scale: 1.06, duration: .8, yoyo: true, repeat: -1, ease: "sine.inOut" }));
+        });
+      anims.push(tl);
+    }
+    btn.addEventListener("click", () => {
+      anims.forEach(a => { try { a.kill ? a.kill() : a.destroy(); } catch (e) {} });
+      if (!on) { root.remove(); onStart(); return; }
+      G.timeline().to(btn, { scale: .9, duration: .1 }).to(root, { opacity: 0, scale: 1.06, duration: .38, ease: "power2.in", onComplete: () => { root.remove(); onStart(); } });
+    }, { once: true });
+  }
+
+  // end-of-game: dim fades in, box springs up, Lottie confetti, crew pops in, stars light up as the count rises
+  function celebrate(endcard, box, crewImgs, starsEl, countEl, score) {
+    endcard.style.display = "flex";
+    const conf = document.createElement("div"); conf.className = "v2-conf"; document.body.appendChild(conf);
+    once(conf, "confetti", true);
+    setTimeout(() => conf.remove(), 2600);
+    const stars = starsEl ? $$("span", starsEl) : [];
+    const light = i => { const s = stars[i - 1]; if (!s) return; s.classList.remove("off"); if (on) { G.fromTo(s, { scale: .3, rotation: -40 }, { scale: 1, rotation: 0, duration: .6, ease: "back.out(3)" }); burst(s, 6); } };
+    if (!on) { countUp(countEl, score, 0, 0, light); return; }
+    G.fromTo(endcard, { opacity: 0 }, { opacity: 1, duration: .3 });
+    const tl = G.timeline();
+    tl.from(box, { y: 80, scale: .7, opacity: 0, duration: .7, ease: "back.out(1.7)", clearProps: "transform,opacity" })
+      .from(crewImgs, { y: 60, opacity: 0, scale: .5, rotation: i => (i % 2 ? 12 : -12), duration: .6, stagger: .08, ease: "back.out(2.4)", clearProps: "transform,opacity" }, "-=.35")
+      .from(box.querySelectorAll("h1, .v2-stars, p, .row"), { y: 18, opacity: 0, duration: .45, stagger: .08, ease: "power3.out", clearProps: "transform,opacity" }, "-=.4")
+      .add(() => countUp(countEl, score, Math.max(.6, score * .28), 0, light), "-=.2")
+      .add(() => crewImgs.forEach((im, i) => G.to(im, { y: -6, duration: .9 + i * .07, yoyo: true, repeat: -1, ease: "sine.inOut", delay: i * .1 })), "+=.4");
+  }
+
+  return { G, RM, on, STAR, PLAY, lot, once, press, bump, flyStar, burst, pop, shake, enterCards, leave, enter, maskText, idle, hop, wobble, countUp, setBar, addStar, intro, celebrate, $$ };
+})();
+
+</script>
+<script>
+const level = Lumio.qs("level") || "level1";
+const num = parseInt(Lumio.qs("n") || "1", 10);
+const source = Lumio.qs("from");
+const backHref = source === "lesson" ? "../student.html" : source === "trial" ? `../present-trial.html?level=${level}` : `../present.html?level=${level}&n=${num}`;
+// From a trial deck the game opened in its own tab: Exit just closes it (the trial is still open in the first tab).
+if (source === "trial") ["exitBtn", "backBtn"].forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener("click", e => { e.preventDefault(); try { window.close(); } catch (x) {} setTimeout(() => { location.href = backHref; }, 250); }); });
+document.getElementById("exitBtn").href = backHref;
+document.getElementById("backBtn").href = backHref;
+
+const lesson = window.LUMIO_LESSONS?.[level]?.[num];
+const vocab = lesson ? lesson.vocab : [];
+const slug = w => w.toLowerCase().replace(/'/g, "").replace(/ /g, "-");
+
+document.getElementById("starIcon").outerHTML = V2.STAR;
+document.getElementById("playBtn").innerHTML = V2.PLAY + "<span>Play</span>";
+if (V2.on) {
+  V2.$$(".cloud").forEach((c, i) => V2.G.to(c, { x: i ? -26 : 30, duration: 6 + i * 2, yoyo: true, repeat: -1, ease: "sine.inOut" }));
+  V2.$$(".canopy").forEach((c, i) => V2.G.to(c, { scale: 1.06, transformOrigin: "50% 50%", duration: 1.6 + i * .3, yoyo: true, repeat: -1, ease: "sine.inOut", delay: i * .4 }));
+}
+
+// One treehouse piece unlocks per correct round, in build order (base is
+// already visible, so a 6-round lesson finishes with every piece placed
+// exactly on the final correct answer).
+const PIECES = ["pc-platform", "pc-walls", "pc-roof", "pc-window", "pc-final"];
+const BUILD_LABELS = [
+  "Building the Treehouse Club! 🌳", "The platform is up! 🪵", "Walls are in place! 🏠",
+  "The roof is on! 🏡", "A window for waving! 👋", "The ladder's ready — come on up! 🎉",
+];
+
+// ---------- Curated phonics word bank (each entry has a confirmed real vocab image) ----------
+// Trimmed from phonics-hub/level1.json's own word lists down to the words that
+// have real illustrations.
+const PHONICS_UNITS = [
+  { words: ["sun", "ant"] },              // Unit 1 (lesson 1): s,a,t,p
+  { words: ["map", "dad"] },              // Unit 2 (lesson 3): i,n,m,d
+  { words: ["cat", "kite"] },             // Unit 3 (lesson 5): g,o,c,k
+  { words: ["duck", "egg", "run"] },      // Unit 4 (lesson 7): ck,e,u,r
+  { words: ["hat", "bed", "leg"] },       // Unit 5 (lesson 9): h,b,f,l
+  { words: ["cat", "dog", "sun"] },       // Unit 6 (lesson 11): CVC blending
+  null,                                    // Unit 7 (lesson 13): sight words -- no picture support, skipped
+  { words: ["cat", "dog", "sun", "hat", "run", "leg"] }, // Unit 8 (lesson 15): review
+];
+// Phonics units land on lesson 1, 3, 5, 7... (unit i unlocks at lesson 2i-1) --
+// so a round never draws on a sound group the child hasn't reached yet.
+function eligiblePhonicsWords(lessonNum) {
+  const words = new Set();
+  PHONICS_UNITS.forEach((unit, i) => {
+    if (unit && (2 * (i + 1) - 1) <= lessonNum) unit.words.forEach(w => words.add(w));
+  });
+  return [...words];
+}
+const phonicsPool = eligiblePhonicsWords(num);
+
+if (!vocab.length) {
+  document.getElementById("playWrap").innerHTML = "<p style='padding:40px'>No lesson data found.</p>";
+  document.getElementById("intro").remove();
+} else {
+  const ROUNDS = 6;
+  let r = 0, score = 0, locked = false;
+  // Target-word queue: one shared "already asked" set for the whole game, so
+  // no word repeats before every word has been asked (both pickers use it).
+  let usedThisGame = new Set();
+  function pickUnused(pool, keyFn) {
+    let avail = pool.filter(w => !usedThisGame.has(keyFn(w)));
+    if (!avail.length) { usedThisGame.clear(); avail = pool.slice(); }
+    const pick = Lumio.shuffle(avail)[0];
+    usedThisGame.add(keyFn(pick));
+    return pick;
+  }
+  function nextTarget() { return pickUnused(vocab, w => w.en); }
+  function nextPhonicsTarget() { return pickUnused(phonicsPool, w => w); }
+  const optGrid = document.getElementById("optGrid");
+  const buildLabel = document.getElementById("buildLabel");
+  const starCt = document.getElementById("starCt");
+  const bar = document.getElementById("bar");
+  const lumiImg = document.getElementById("lumiImg");
+  const lumiHop = document.getElementById("lumiHop");
+
+  // Round plan: mostly phonics rounds, with a sentence-pattern round mixed in.
+  // Phonics rounds are capped at the pool size so a word never has to repeat.
+  const plan = [];
+  let phonicsRoundsLeft = Math.min(phonicsPool.length, 4);
+  for (let i = 0; i < ROUNDS; i++) {
+    const wantsPhonics = phonicsPool.length >= 2 && i % 3 !== 2;
+    if (wantsPhonics && phonicsRoundsLeft > 0) {
+      plan.push("phonics");
+      phonicsRoundsLeft--;
+    } else {
+      plan.push("sentence");
+    }
+  }
+  if (phonicsPool.length < 2) plan.forEach((_, i) => plan[i] = "sentence");
+
+  document.getElementById("endStars").innerHTML = Array.from({ length: ROUNDS }, () => `<span class="off">${V2.STAR}</span>`).join("");
+
+  function placePiece(roundIndexJustWon) {
+    const pieceIdx = roundIndexJustWon === ROUNDS - 1 ? PIECES.length - 1
+      : Math.min(roundIndexJustWon, PIECES.length - 2);
+    const el = document.getElementById(PIECES[pieceIdx]);
+    if (el && !el.classList.contains("show")) {
+      el.classList.add("show");
+      if (V2.on) {
+        // the piece drops into place, bounces, and the whole tree gives a happy shiver
+        V2.G.fromTo(el, { opacity: 0, y: -90, scale: .6, transformOrigin: "50% 100%" }, { opacity: 1, y: 0, scale: 1, duration: .9, ease: "bounce.out",
+          onComplete: () => { V2.burst(el, 12); V2.G.fromTo("#treeStage svg", { scaleY: .97, scaleX: 1.02 }, { scaleY: 1, scaleX: 1, transformOrigin: "50% 100%", duration: .7, ease: "elastic.out(1.2,.35)" }); } });
+      }
+    }
+    V2.maskText(buildLabel, BUILD_LABELS[Math.min(roundIndexJustWon + 1, BUILD_LABELS.length - 1)], .2);
+    if (V2.on) V2.G.fromTo(buildLabel, { scale: .9 }, { scale: 1, duration: .6, ease: "back.out(2.4)" });
+  }
+
+  let currentTargetWord = "";
+  let currentSpeakText = "";
+
+  function playPrompt() {
+    Lumio.speak(currentSpeakText);
+    if (V2.on) V2.G.fromTo("#hearBtn", { scale: .85 }, { scale: 1, duration: .6, ease: "elastic.out(1.2,.4)" });
+  }
+
+  function makeCard(word, imgPath) {
+    return `
+      <button class="opt-card" data-en="${word}">
+        <div class="pic">
+          <div style="position:absolute;inset:0">${Lumio.letterTile(word)}</div>
+          <img src="${imgPath}" alt="${word}" onload="this.previousElementSibling.style.display='none'" onerror="this.remove()">
+        </div>
+        <div class="word">${word}</div>
+        <div class="check ckBadge"><span class="ckT">✓</span><span class="lt"></span></div>
+      </button>`;
+  }
+
+  function drawRound() {
+    locked = false;
+    document.getElementById("roundPill").textContent = `${r + 1}/${ROUNDS}`;
+    lumiImg.src = "../assets/story/characters/lumi-point.png";
+
+    if (plan[r] === "phonics") {
+      const target = nextPhonicsTarget();
+      const distractorPool = Lumio.shuffle(phonicsPool.filter(w => w !== target));
+      const words = Lumio.shuffle([target, ...distractorPool.slice(0, Math.min(2, distractorPool.length))]);
+      currentTargetWord = target;
+      currentSpeakText = target;
+      window.__lastTarget = target; // exposed for automated QA only
+      optGrid.innerHTML = words.map(w => makeCard(w, `../assets/vocab/${slug(w)}.png`)).join("");
+    } else {
+      const target = nextTarget();
+      const distractorPool = Lumio.shuffle(vocab.filter(v => v.en !== target.en));
+      const opts = Lumio.shuffle([target, ...distractorPool.slice(0, 2)]);
+      currentTargetWord = target.en;
+      currentSpeakText = target.example || target.en;
+      window.__lastTarget = target.en; // exposed for automated QA only
+      optGrid.innerHTML = opts.map(o => makeCard(o.en, `../assets/vocab/${slug(o.en)}.png`)).join("");
+    }
+
+    document.querySelectorAll(".opt-card").forEach(card => { card.onclick = () => choose(card); });
+    V2.enterCards(V2.$$(".opt-card"), { delay: .1 });
+    setTimeout(playPrompt, 350);
+  }
+
+  function nextRound() {
+    r++;
+    if (r < ROUNDS) V2.leave(V2.$$(".opt-card"), drawRound);
+    else endGame();
+  }
+
+  function choose(card) {
+    if (locked) return;
+    const ok = card.dataset.en === currentTargetWord;
+    if (ok) {
+      locked = true;
+      score++;
+      Lumio.beep(true);
+      card.classList.add("correct");
+      V2.pop(card);
+      V2.burst(card, 10);
+      V2.lot(card.querySelector(".ckBadge .lt"), "check", false);
+      document.querySelectorAll(".opt-card").forEach(c => { c.classList.add("locked"); if (c !== card && V2.on) V2.G.to(c, { opacity: .55, scale: .94, duration: .3 }); });
+      V2.addStar(card, starCt, document.getElementById("score"), score);
+      V2.setBar(bar, (r + 1) / ROUNDS);
+      lumiImg.src = "../assets/story/characters/lumi-celebrate.png";
+      V2.hop(lumiHop);
+      placePiece(r);
+      setTimeout(nextRound, 1200);
+    } else {
+      Lumio.beep(false);
+      card.classList.add("wrong-dim");
+      V2.shake(card);
+      V2.wobble(lumiHop);
+      // gentle -- no scoring penalty, no lockout; they simply try another card
+    }
+  }
+
+  function endGame() {
+    Lumio.confetti(100);
+    const pct = Math.round((score / ROUNDS) * 100);
+    Lumio.speak(pct >= 80 ? "Amazing!" : "Great job!"); // only these two have recordings
+    document.getElementById("finalScore").innerHTML = `You built the treehouse with <span id="endCount">0</span> out of ${ROUNDS} correct answers!`;
+    const endcard = document.getElementById("endcard");
+    V2.celebrate(endcard, endcard.querySelector(".box"), V2.$$(".crew img", endcard), document.getElementById("endStars"), document.getElementById("endCount"), score);
+  }
+
+  document.getElementById("promptCard").onclick = playPrompt;
+  V2.press(optGrid, ".opt-card");
+  V2.press(document.getElementById("endcard"), ".btn");
+  V2.press(document.getElementById("hud"), ".btn");
+
+  V2.intro(document.getElementById("intro"), () => {
+    V2.idle(document.getElementById("lumiBox"), lumiImg);
+    V2.enter(V2.$$("#hud > *"), { y: -16, stagger: .05 });
+    V2.enter(V2.$$("#promptCard, #buildLabel"), { delay: .15 });
+    if (V2.on) V2.G.from("#treeStage svg", { scale: .85, opacity: 0, transformOrigin: "50% 100%", duration: .8, ease: "back.out(1.6)", clearProps: "opacity" });
+    if (V2.on) V2.G.from("#lumiHop", { y: 60, opacity: 0, duration: .7, delay: .4, ease: "back.out(2)", clearProps: "opacity" });
+    drawRound();
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crystal Ball — Lumio English</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/brand.css">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  html, body { overflow-x: hidden; }
+  body {
+    min-height: 100vh; margin: 0;
+    background: radial-gradient(ellipse at top, #3B2A6B 0%, #201341 55%, #120A28 100%);
+    background-attachment: fixed;
+    position: relative; font-family: var(--font-body); -webkit-tap-highlight-color: transparent;
+  }
+  #sky { position: fixed; inset: -40px; pointer-events: none; z-index: 0; }
+  .star { position: absolute; background: #fff; border-radius: 50%; animation: twinkle 2.6s ease-in-out infinite; }
+  @keyframes twinkle { 0%,100% { opacity: .2; } 50% { opacity: .9; } }
+  .nebula { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; filter: blur(30px); }
+
+  #hud { position: relative; z-index: 5; display: flex; align-items: center; gap: 8px; padding: 16px 16px 8px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  #hud .pill { background: rgba(255,255,255,.12); color: #F5EFFF; border-radius: 999px; padding: 8px 14px; font-family: var(--font-display); font-weight: 800; font-size: .92rem; backdrop-filter: blur(4px); min-height: 40px; box-sizing: border-box; display: inline-flex; align-items: center; gap: 6px; position: relative; }
+  #hud .pill.power { background: linear-gradient(135deg,#A78BFA,#7C3AED); box-shadow: 0 0 18px rgba(167,139,250,.6); }
+  #hud a.exit { color: #F5EFFF; background: rgba(255,255,255,.12); border-radius: 999px; padding: 0 18px; font-weight: 800; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; }
+  #hud .grow { flex: 1; }
+  .pop { position: absolute; left: 50%; top: 50%; width: 90px; height: 90px; margin: -45px 0 0 -45px; pointer-events: none; }
+  #soundSlot { position: fixed; right: 14px; bottom: calc(14px + env(safe-area-inset-bottom,0px)); z-index: 50; }
+  #lumioSoundBtn.hudSound { width: 44px; height: 44px; border-radius: 50%; border: none; background: rgba(255,255,255,.12); color: #F5EFFF; font-size: 18px; cursor: pointer; }
+  #progress { position: relative; z-index: 5; max-width: 488px; margin: 2px auto 0; height: 6px; border-radius: 99px; background: rgba(255,255,255,.1); overflow: hidden; width: calc(100% - 32px); }
+  #progress i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg,#C4B5FD,#A78BFA,#F0ABFC); transform-origin: 0 50%; transform: scaleX(0); transition: transform .7s cubic-bezier(.22,1,.36,1); box-shadow: 0 0 10px rgba(196,181,253,.8); }
+
+  #stage { position: relative; z-index: 5; max-width: 520px; margin: 0 auto; padding: 6px 16px 40px; text-align: center; }
+
+  #orb { position: relative; width: 220px; margin: 8px auto 0; }
+  #ballWrap { position: relative; width: 200px; height: 200px; margin: 10px auto 8px; }
+  #halo { position: absolute; inset: -26px; border-radius: 50%; background: radial-gradient(circle, rgba(196,181,253,.45), rgba(167,139,250,0) 68%); pointer-events: none; }
+  #ball {
+    width: 100%; height: 100%; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.5), rgba(167,139,250,.35) 40%, rgba(76,29,149,.55) 75%, rgba(30,10,60,.7));
+    box-shadow: 0 0 40px rgba(167,139,250,.55), inset 0 0 30px rgba(255,255,255,.25);
+    position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;
+    transition: box-shadow .4s ease;
+  }
+  #ball.power2 { box-shadow: 0 0 60px rgba(167,139,250,.8), inset 0 0 40px rgba(255,255,255,.35); }
+  #ball.power3 { box-shadow: 0 0 90px rgba(196,181,253,.95), inset 0 0 55px rgba(255,255,255,.5); }
+  #ball .gloss { position: absolute; top: 12%; left: 20%; width: 34%; height: 20%; border-radius: 50%; background: radial-gradient(ellipse, rgba(255,255,255,.55), transparent 70%); transform: rotate(-25deg); pointer-events: none; z-index: 3; }
+  #ball .flash { position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.9), rgba(196,181,253,.4) 50%, transparent 75%); opacity: 0; pointer-events: none; z-index: 4; }
+  .mist { position: absolute; border-radius: 50%; background: rgba(255,255,255,.18); animation: swirl 6s linear infinite; filter: blur(4px); }
+  @keyframes swirl { from { transform: rotate(0deg) translateX(30px) rotate(0deg); } to { transform: rotate(360deg) translateX(30px) rotate(-360deg); } }
+  #ballText { position: relative; z-index: 2; font-family: var(--font-display); font-weight: 800; color: #fff; font-size: 1.3rem; text-shadow: 0 2px 8px rgba(0,0,0,.4), 0 0 18px rgba(196,181,253,.8); padding: 0 20px; line-height: 1.3; overflow-wrap: anywhere; }
+  #ballStand { width: 90px; height: 22px; margin: -6px auto 0; background: linear-gradient(180deg,#6D28D9,#4C1D95); border-radius: 0 0 40px 40px; box-shadow: 0 10px 20px rgba(0,0,0,.35); }
+  #ballShadow { width: 140px; height: 14px; margin: 4px auto 0; border-radius: 50%; background: radial-gradient(ellipse, rgba(167,139,250,.35), transparent 70%); }
+  .lumiMini { position: absolute; left: -60px; bottom: 0; width: 66px; height: 100px; }
+  .lumiMini img { width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; display: block; filter: drop-shadow(0 0 12px rgba(167,139,250,.45)); }
+  @media (max-width: 400px) { .lumiMini { left: -42px; width: 56px; height: 86px; } }
+  .spark { position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; margin: -4px; border-radius: 50%; background: #fff; box-shadow: 0 0 10px #C4B5FD, 0 0 20px #A78BFA; pointer-events: none; z-index: 6; }
+
+  #kicker { font-family: var(--font-display); font-weight: 800; color: #C4B5FD; font-size: .85rem; letter-spacing: 2px; text-transform: uppercase; margin: 14px 0 4px; min-height: 1.2em; }
+  #kicker .ch { display: inline-block; white-space: pre; }
+  #hearBtn {
+    background: linear-gradient(135deg,#FDE68A,#F59E0B); border: none; border-radius: 999px; width: 48px; height: 48px; position: relative;
+    display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+    box-shadow: 0 6px 14px rgba(245,158,11,.5); margin: 4px 0 12px;
+  }
+  #hearBtn::before { content: ""; position: absolute; inset: 0; border-radius: 50%; animation: ring 1.8s ease-out infinite; }
+  @keyframes ring { 0% { box-shadow: 0 0 0 0 rgba(253,230,138,.5); } 100% { box-shadow: 0 0 0 14px rgba(253,230,138,0); } }
+
+  #optGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  #dialogueOpts { gap: 10px; }
+  .opt-card {
+    background: linear-gradient(160deg, #2D1B5E, #1B0F3D); border: 2px solid #6D28D9; border-radius: 16px; min-height: 56px;
+    padding: 16px 8px; cursor: pointer; font-family: var(--font-display); font-weight: 800; color: #F5EFFF; font-size: .95rem;
+    transition: border-color .25s ease, opacity .35s ease, box-shadow .3s ease, background .3s ease; overflow-wrap: anywhere; position: relative; overflow: hidden; touch-action: manipulation;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 8px 20px rgba(0,0,0,.25);
+  }
+  #dialogueOpts .opt-card { text-align: left; padding: 14px 16px; }
+  @media (hover: hover) and (pointer: fine) { .opt-card:hover { border-color: #A78BFA; box-shadow: 0 0 22px rgba(167,139,250,.35); } }
+  .opt-card.correct { border-color: #34D399; background: linear-gradient(160deg,#0F3D2D,#0A2B1F); box-shadow: 0 0 0 4px rgba(52,211,153,.2), 0 0 30px rgba(52,211,153,.45); }
+  .opt-card.wrong-dim { opacity: .3; pointer-events: none; }
+  .opt-card.locked { pointer-events: none; }
+  .opt-card .shine { position: absolute; top: 0; bottom: 0; width: 40%; left: -60%; background: linear-gradient(100deg, transparent, rgba(255,255,255,.35), transparent); pointer-events: none; }
+
+  #dialogueContext .vl { display: block; margin-bottom: 6px; }
+  #tfOpts { display: flex; gap: 14px; justify-content: center; }
+  .tf-btn {
+    border: none; border-radius: 14px; padding: 15px 26px; min-height: 54px; font-family: var(--font-display); font-weight: 800;
+    font-size: 1.05rem; cursor: pointer; transition: opacity .3s ease, box-shadow .3s ease; color: #fff; touch-action: manipulation;
+  }
+  .tf-btn.right { background: linear-gradient(135deg,#34D399,#059669); box-shadow: 0 8px 20px rgba(5,150,105,.35); }
+  .tf-btn.wrong { background: linear-gradient(135deg,#F87171,#DC2626); box-shadow: 0 8px 20px rgba(220,38,38,.3); }
+  .tf-btn.locked { pointer-events: none; opacity: .5; }
+  .tf-btn.chosen-right { outline: 4px solid #FDE68A; opacity: 1; box-shadow: 0 0 30px rgba(253,230,138,.6); }
+
+  .flyStar { position: fixed; left: 0; top: 0; width: 34px; height: 34px; z-index: 90; pointer-events: none; filter: drop-shadow(0 0 8px rgba(253,230,138,.9)); }
+
+  /* ---- intro ---- */
+  #intro { position: fixed; inset: 0; z-index: 70; display: flex; align-items: center; justify-content: center; padding: 20px; background: rgba(12,6,30,.6); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  #intro .card { background: linear-gradient(160deg,#2D1B5E,#1B0F3D); border: 2px solid #7C3AED; border-radius: 28px; padding: 26px 22px 24px; box-shadow: 0 0 60px rgba(124,58,237,.5); max-width: 400px; width: 100%; text-align: center; position: relative; }
+  .lumiBox { position: relative; width: 140px; height: 180px; margin: 4px auto 4px; }
+  .lumiBox img { width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; position: relative; z-index: 1; filter: drop-shadow(0 0 16px rgba(167,139,250,.5)); }
+  .lumiBox .lt { position: absolute; inset: -20px; z-index: 0; }
+  .lumiBox .shadow { position: absolute; left: 22%; right: 22%; bottom: -4px; height: 12px; border-radius: 50%; background: radial-gradient(ellipse, rgba(167,139,250,.5), transparent 70%); }
+  #intro h1 { font-family: var(--font-display); color: #F5EFFF; font-size: 2rem; margin: 6px 0 4px; line-height: 1.1; text-shadow: 0 0 20px rgba(196,181,253,.6); }
+  #intro h1 .ch { display: inline-block; }
+  #intro p { color: #C4B5FD; font-weight: 700; margin: 0 0 18px; }
+  #startBtn { min-width: 180px; min-height: 52px; font-size: 1.1rem; background: linear-gradient(135deg,#A78BFA,#7C3AED); box-shadow: 0 10px 30px rgba(124,58,237,.5); }
+
+  /* ---- end card ---- */
+  #endcard { position: fixed; inset: 0; z-index: 60; display: none; align-items: center; justify-content: center; background: rgba(10,5,25,.75); padding: 16px; }
+  #endcard .box { background: linear-gradient(160deg,#2D1B5E,#1B0F3D); border: 2px solid #7C3AED; border-radius: 26px; padding: 28px 24px; text-align: center; box-shadow: 0 0 60px rgba(124,58,237,.5); max-width: 460px; width: 100%; max-height: calc(100vh - 32px); overflow-y: auto; box-sizing: border-box; }
+  #endcard .box h1, #endcard .box p { color: #F5EFFF; }
+  #endcard .box h1 .w { display: inline-block; }
+  #endcard .box p { font-weight: 700; color: #C4B5FD; }
+  #endcard .crew { display: flex; justify-content: center; margin: 10px 0; }
+  #endcard .crew img { height: 82px; margin: 0 -10px; filter: drop-shadow(0 8px 16px rgba(124,58,237,.5)); transform-origin: 50% 100%; }
+  #endcard .btn { min-height: 48px; }
+  #fxConf { position: fixed; inset: 0; z-index: 65; pointer-events: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  }
+</style>
+</head>
+<body>
+<div id="sky">
+  <div class="star" style="width:3px;height:3px;top:8%;left:12%"></div>
+  <div class="star" style="width:2px;height:2px;top:15%;left:80%;animation-delay:.7s"></div>
+  <div class="star" style="width:3px;height:3px;top:70%;left:6%;animation-delay:1.3s"></div>
+  <div class="star" style="width:2px;height:2px;top:60%;left:88%;animation-delay:.4s"></div>
+  <div class="star" style="width:3px;height:3px;top:40%;left:92%;animation-delay:1.8s"></div>
+  <div class="star" style="width:2px;height:2px;top:88%;left:30%;animation-delay:1s"></div>
+</div>
+<div class="nebula" style="width:340px;height:340px;top:12%;left:-140px;background:rgba(124,58,237,.22)"></div>
+<div class="nebula" style="width:300px;height:300px;top:55%;right:-120px;background:rgba(236,72,153,.12)"></div>
+
+<div id="hud">
+  <a class="exit" href="../present.html" id="exitBtn">Exit</a>
+  <span class="pill" id="starCt">🔮 <span id="score">0</span><span class="pop" id="starPop"></span></span>
+  <span class="pill power" id="powerPill" style="display:none">✨ Vision x<span id="power">1</span></span>
+  <span class="pill" id="roundPill">1/6</span>
+  <span class="grow"></span>
+  <span id="soundSlot"></span>
+</div>
+<div id="progress"><i id="progFill"></i></div>
+
+<div id="stage">
+  <div id="orb">
+    <div class="lumiMini" id="lumiMini"><img id="lumiMiniImg" src="../assets/story/characters/lumi-teen-think.png" alt="Lumi"></div>
+    <div id="ballFloat">
+      <div id="ballWrap">
+        <div id="halo"></div>
+        <div id="ball">
+          <div class="mist" style="width:60px;height:60px;top:20%;left:15%"></div>
+          <div class="mist" style="width:40px;height:40px;top:55%;left:55%;animation-duration:8s"></div>
+          <div id="ballText">🔮</div>
+          <div class="gloss"></div>
+          <div class="flash" id="flash"></div>
+        </div>
+      </div>
+    </div>
+    <div id="ballStand"></div>
+    <div id="ballShadow"></div>
+  </div>
+
+  <div id="kicker">Read the crystal ball</div>
+  <div><button id="hearBtn" aria-label="Listen" data-tap>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="#43301F"/><path d="M16.5 8.5a5 5 0 010 7M19 6a9 9 0 010 12" stroke="#43301F" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+  </button></div>
+
+  <div id="optGrid" style="display:none"></div>
+  <div id="dialogueContext" style="display:none;max-width:520px;margin:0 auto 14px;color:#F5EFFF;font-weight:700;text-align:center;line-height:1.5"></div>
+  <div id="dialogueOpts" style="display:none"></div>
+  <div id="tfOpts" style="display:none"></div>
+</div>
+
+<div id="intro">
+  <div class="card">
+    <div class="lumiBox" id="lumiBox"><div class="lt" id="lumiLt"></div><img id="lumiImg" src="../assets/story/characters/lumi-teen-wave.png" alt="Lumi"><div class="shadow"></div></div>
+    <h1 id="introTitle">Crystal Ball</h1>
+    <p id="introSub">Read the crystal ball and judge each prediction!</p>
+    <button class="btn btn-primary" id="startBtn" data-tap>▶ Play</button>
+  </div>
+</div>
+
+<div id="fxConf"></div>
+<div id="endcard">
+  <div class="box">
+    <div class="crew">
+      <img src="../assets/story/characters/lumi-teen-celebrate.png" alt="Lumi">
+      <img src="../assets/story/characters/omar-teen-thumbs.png" alt="Omar">
+      <img src="../assets/story/characters/sara-teen-celebrate.png" alt="Sara">
+      <img src="../assets/story/characters/noor-teen-thumbs.png" alt="Noor">
+      <img src="../assets/story/characters/ziad-teen-celebrate.png" alt="Ziad">
+      <img src="../assets/story/characters/hamad-teen-thumbs.png" alt="Hamad">
+    </div>
+    <h1 id="endTitle" style="font-family:var(--font-display)">The future looks bright! ✨</h1>
+    <p id="finalScore"></p>
+    <div class="row" style="justify-content:center;gap:10px;margin-top:10px">
+      <button class="btn btn-primary" onclick="location.reload()" data-tap>↺ New vision</button>
+      <a class="btn btn-teal" id="backBtn" href="../present.html" data-tap>Back</a>
+    </div>
+  </div>
+</div>
+
+<script src="../js/app.js"></script>
+<script src="../js/lessons-data.js"></script>
+<script src="../vendor/gsap-3.12.5.min.js"></script>
+<script src="../vendor/lottie-light-5.12.2.min.js"></script>
+<script>
+/* ================= motion kit (GSAP + Lottie), shared look with the try-it landing page ================= */
+const G = window.gsap, LOT = window.lottie;
+const RM = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+const FX = !!G && !RM;
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const STAR_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FDE68A" stroke="#F59E0B" stroke-width="1.2" stroke-linejoin="round" d="M12 2.6l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17l-5.7 3.1 1.2-6.4L2.8 9.3l6.4-.8z"/></svg>';
+function lot(el, name, loop) {
+  if (!LOT || !el || RM) return null;
+  try { return LOT.loadAnimation({ container: el, renderer: "svg", loop: !!loop, autoplay: true, path: "../assets/lottie/" + name + ".json" }); } catch (e) { return null; }
+}
+function bump(el) { if (FX && el) G.fromTo(el, { scale: 1.3 }, { scale: 1, duration: .7, ease: "elastic.out(1.2,.4)", overwrite: "auto" }); }
+// curved star flight into a counter (quadratic bezier), like the landing page
+function flyStar(fromEl, toEl, done) {
+  if (!FX || !fromEl || !toEl) { if (done) done(); return; }
+  const a = fromEl.getBoundingClientRect(), b = toEl.getBoundingClientRect();
+  const ax = a.left + a.width / 2 - 17, ay = a.top + a.height / 2 - 17, bx = b.left + 4, by = b.top + b.height / 2 - 17;
+  const cx = (ax + bx) / 2 + (ax < bx ? -60 : 60), cy = Math.min(ay, by) - 140;
+  const s = document.createElement("div"); s.className = "flyStar"; s.innerHTML = STAR_SVG; document.body.appendChild(s);
+  const o = { t: 0 }; G.set(s, { x: ax, y: ay, scale: .4 });
+  G.to(o, { t: 1, duration: .85, ease: "power1.inOut", onUpdate() {
+    const t = o.t, u = 1 - t;
+    G.set(s, { x: u*u*ax + 2*u*t*cx + t*t*bx, y: u*u*ay + 2*u*t*cy + t*t*by, rotation: t * 300, scale: .4 + Math.sin(t * Math.PI) * 1.1 + t * .2 });
+  }, onComplete() { s.remove(); if (done) done(); } });
+}
+function starPop(holder) { if (!holder) return; holder.innerHTML = ""; const an = lot(holder, "star-pop", false); if (an) an.addEventListener("complete", () => { holder.innerHTML = ""; }); }
+function shake(el) { if (FX && el) G.to(el, { keyframes: { x: [0, -8, 8, -5, 4, 0] }, duration: .45, ease: "power1.inOut", overwrite: "auto" }); }
+function countTo(el, from, to, dur, delay) {
+  if (!el) return;
+  if (!FX) { el.textContent = to; return; }
+  const o = { v: from }; el.textContent = from;
+  return G.to(o, { v: to, duration: dur || 1, delay: delay || 0, ease: "power3.out", onUpdate() { el.textContent = Math.round(o.v); } });
+}
+// springy press on anything marked data-tap
+document.addEventListener("pointerdown", e => {
+  const t = e.target.closest && e.target.closest("[data-tap]");
+  if (!t || !FX) return;
+  G.to(t, { scale: .93, duration: .12, ease: "power2.out", overwrite: "auto" });
+  const up = () => { G.to(t, { scale: 1, duration: .6, ease: "elastic.out(1.1,.4)", overwrite: "auto" }); removeEventListener("pointerup", up); removeEventListener("pointercancel", up); };
+  addEventListener("pointerup", up); addEventListener("pointercancel", up);
+}, true);
+// mascot idle: breathe, sway, blink-squash
+function idleLumi(img, box) {
+  if (!FX || !img) return [];
+  const bl = G.timeline({ repeat: -1, repeatDelay: 3.2, delay: 1.4 });
+  bl.to(img, { scaleY: .92, scaleX: 1.05, transformOrigin: "50% 100%", duration: .09, ease: "power1.in" }).to(img, { scaleY: 1, scaleX: 1, duration: .45, ease: "elastic.out(1,.4)" });
+  return [
+    G.to(box || img.parentNode, { scale: 1.035, transformOrigin: "50% 100%", duration: 1.7, yoyo: true, repeat: -1, ease: "sine.inOut" }),
+    G.to(img, { rotation: 2.5, transformOrigin: "50% 100%", duration: 1.5, yoyo: true, repeat: -1, ease: "sine.inOut" }),
+    bl
+  ];
+}
+// the in-game Lumi reacts to answers with real character art
+const LUMI_POSES = { idle: "lumi-teen-think", good: "lumi-teen-celebrate", bad: "lumi-teen-shrug" };
+Object.values(LUMI_POSES).forEach(p => { const i = new Image(); i.src = `../assets/story/characters/${p}.png`; });
+let lumiTm = 0;
+function lumiReact(good) {
+  const img = $("#lumiMiniImg"); if (!img) return;
+  img.src = `../assets/story/characters/${good ? LUMI_POSES.good : LUMI_POSES.bad}.png`;
+  if (FX) G.fromTo(img, { y: 0 }, good ? { y: -14, duration: .22, yoyo: true, repeat: 1, ease: "power2.out" } : { rotation: -6, duration: .15, yoyo: true, repeat: 1, ease: "sine.inOut" });
+  clearTimeout(lumiTm); lumiTm = setTimeout(() => { img.src = `../assets/story/characters/${LUMI_POSES.idle}.png`; }, 1300);
+}
+// sound toggle (app.js only auto-adds its music button on /games/ pages)
+function soundToggle() {
+  if (document.getElementById("lumioSoundBtn") || !Lumio.setSound) return;
+  const b = document.createElement("button");
+  b.id = "lumioSoundBtn"; b.type = "button"; b.className = "hudSound"; b.setAttribute("data-tap", "");
+  b.onclick = () => Lumio.setSound(!Lumio.soundOn());
+  $("#soundSlot").appendChild(b); Lumio.setSound(Lumio.soundOn());
+  const start = () => { document.removeEventListener("pointerdown", start, true); if (Lumio.soundOn() && Lumio.music) Lumio.music("games"); };
+  document.addEventListener("pointerdown", start, true);
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => setTimeout(soundToggle, 0)); else setTimeout(soundToggle, 0);
+</script>
+<script>
+const level = Lumio.qs("level") || "level6";
+const num = parseInt(Lumio.qs("n") || "1", 10);
+const source = Lumio.qs("from");
+const backHref = source === "lesson" ? "../student.html" : source === "trial" ? `../present-trial.html?level=${level}` : `../present.html?level=${level}&n=${num}`;
+// From a trial deck the game opened in its own tab: Exit just closes it (the trial is still open in the first tab).
+if (source === "trial") ["exitBtn", "backBtn"].forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener("click", e => { e.preventDefault(); try { window.close(); } catch (x) {} setTimeout(() => { location.href = backHref; }, 250); }); });
+document.getElementById("exitBtn").href = backHref;
+document.getElementById("backBtn").href = backHref;
+
+const lesson = window.LUMIO_LESSONS?.[level]?.[num];
+const vocab = lesson ? lesson.vocab : [];
+
+// Real 4-line dialogues from this level's own lesson content, used for
+// "what does the vision show next?" rounds -- kept lesson-aware so a round
+// never draws on a conversation from a lesson not yet reached.
+const ALL_DIALOGUES = [["So what's your actual plan for after this year? Have you decided anything?", "Honestly, I'm thinking about applying to a program abroad, if I'm brave enough.", "That's huge. Would you actually move, or just visit for a while first?", "Move eventually, I think, but I'd start by joining a summer program first.", "That sounds smart. Testing it out before committing to something that big.", "Exactly. No point diving in completely before I even know if I'll like it."], ["What do you predict will happen with technology in the next ten years?", "Honestly, I believe it'll probably change faster than we can even imagine.", "Definitely. Maybe we'll have things we can't even picture right now.", "That's kind of exciting, but also a little terrifying if I'm being honest.", "Same. The future is unpredictable, but I think that's what makes it interesting.", "Agreed. I'd rather not know everything -- surprises make life more interesting."], ["What are your actual plans this weekend? You seem busier than usual.", "I'm traveling Friday, then attending my cousin's graduation on Saturday.", "Wow, packed schedule. When are you even leaving to make that work?", "Early morning, honestly. I'm also hosting a small get-together Sunday night.", "That's a lot happening. Are you starting anything new after this weekend?", "Actually yes, I'm meeting with a mentor about a project I'm starting soon."], ["You'll never guess what happened while I was walking home yesterday.", "Tell me! Did something interrupt your walk, or did you just get soaked?", "Both, actually. It started raining right as I noticed I forgot my umbrella.", "Classic timing. What were you doing meanwhile, just running for shelter?", "Pretty much, until I arrived at a café and just waited it out completely soaked.", "That's rough, but honestly it sounds like a pretty funny story now."], ["Do you actually have to do chores at home, or is that optional for you?", "Required, unfortunately. My parents say it's part of my responsibility.", "Fair enough. I don't have to do much, but I choose to out of duty, honestly.", "That's a mature way to look at it. I usually complain before I even start.", "Same, honestly, but complaining doesn't actually get the dishes done either.", "True. Might as well just get it over with instead of dragging it out."], ["Do you usually work quickly, or do you take your time and go carefully?", "Carefully, always. I'd rather do something slowly than redo it because I rushed.", "That makes sense. I tend to work loudly and fast, then fix mistakes after.", "Honestly, that sounds stressful. Doesn't that make things harder eventually?", "Sometimes, but patiently redoing things quietly isn't really my style, unfortunately.", "Fair enough. I guess we both get there, just in completely different ways."], ["Which class do you think is more difficult, math or science, honestly?", "Science, definitely, but math is way more interesting to me personally.", "Fair. What about after school -- what's the most exciting part of your day?", "Probably just getting home and finally sitting in the most comfortable chair I own.", "Ha, relatable. Is comfort more important to you than something more expensive?", "Completely. I'd choose comfortable and affordable over expensive and impressive any day."], ["What's the plan for this weekend? Please say we're actually relaxing.", "Mostly, yeah. I want to sleep in and just catch up on everything I've missed.", "Same, honestly, but I also want to explore that new part of town.", "We could do both, hang out there Saturday and volunteer together Sunday.", "I like that balance. Relaxing and doing something meaningful in one weekend.", "Exactly. Best of both worlds, without completely wasting the whole two days."], ["Do you think we'll actually stay in touch after we graduate someday?", "Honestly, I believe we will. I think our friendship will only change a little.", "I hope so. I predict you'll travel a lot and probably achieve something huge.", "That's kind of you. I actually think you'll succeed at inventing something useful.", "Wow, big predictions from both of us. Let's remember this conversation someday.", "Definitely. We'll look back and see how close we actually got it right."], ["Is your curfew still early, or are your parents letting you be more independent?", "A little more independent now, honestly, since I've earned more of their trust.", "That's nice. Are you allowed to go out without asking permission every time?", "Mostly, as long as I still do my chores and let them know where I am.", "That sounds fair, actually. Trust seems to go both ways in your house.", "It does. I think that's why I don't mind the rules as much as I used to."], ["Do you usually speak confidently in front of people, or does it make you nervous?", "Honestly, nervously at first, but I try to speak clearly no matter how I feel.", "That's smart. Do you think it's better to speak politely or just be blunt?", "Politely, but still honestly. You can be kind and truthful at the same time.", "That's a good balance, actually. I struggle with saying things too bluntly sometimes.", "Practice helps. The more confidently you speak, the more naturally kindness comes through."], ["Between these two options, which one do you think is actually worth it?", "Honestly, the more expensive one seems more reliable, so probably worth it.", "That's reasonable. Is convenience important to you too, or just quality?", "Both, but the most useful option usually wins for me in the end.", "Fair point. I guess it depends on what you'll actually use it for daily.", "Exactly. No point picking something convenient if it's not useful long-term."], ["Were you actually studying earlier, or was that just background noise on a call?", "Honestly, I was studying while chatting a little, which probably wasn't smart.", "That explains it. I find it impossible to focus if I'm doing two things.", "Same, but I still try. Yesterday I was scrolling while my mom was cooking nearby.", "That sounds distracting either way. Did you actually get anything done though?", "Barely, honestly. I think tomorrow I'll actually just focus on one thing at a time."], ["Do you have an actual goal for next year, or are you not thinking that far?", "I do, honestly. My resolution is to challenge myself more instead of staying comfortable.", "That's a solid goal. What specifically do you hope to improve about yourself?", "Probably my confidence, if I'm being completely honest about it.", "I don't expect it to be easy, but I believe you can actually do it.", "Thanks, honestly. That kind of support makes the goal feel a lot more real."], ["Can you actually convince me your point of view is right, with real evidence?", "I can try. I think I have a fair point, even if you don't fully agree.", "I'll agree partly, honestly, but I still think you're missing something important.", "That's fine, I'm not trying to argue you into total agreement anyway.", "Good, because I respect a debate way more than someone forcing their opinion.", "Same here. That's honestly what makes this conversation actually worth having."], ["Do you feel ready for tomorrow, or do you still need more time to prepare?", "Honestly, I've practiced enough. I just need to organize my notes and rest.", "That's smart. Rest matters just as much as reviewing everything one more time.", "Exactly, over-preparing without resting just makes tomorrow harder, not easier.", "I completely agree. I'm going to review quickly, then actually get real sleep.", "Good plan. We'll both walk in tomorrow actually ready instead of exhausted."], ["Did everything go smoothly today, or did something go wrong again?", "Actually, pretty smoothly. I finally did the whole process correctly and efficiently.", "That's great! Did you do it safely too, or did you rush through it?", "Safely, properly, all of it, honestly. I even kept my notes neatly organized.", "Look at you, doing everything right for once. What changed?", "Practice, mostly. Doing something correctly the first time saves so much stress later."], ["Is your family's lifestyle similar to your grandparents', or completely different?", "Honestly, pretty different, but we still keep the most traditional customs alive.", "That's nice. What's the most colorful tradition your family actually celebrates?", "Probably our biggest holiday, it's genuinely the most colorful event of the year.", "That sounds amazing. I think traditions like that keep a culture alive, honestly.", "Completely agree. Even small customs matter more than people usually realize."], ["Were you excited for the field trip, or were you dreading the long bus ride?", "Excited, honestly, but something unexpected happened that made it even more memorable.", "What happened? Please tell me nobody got left behind or anything like that.", "Close, actually, but the teacher handled it so calmly it barely felt like a crisis.", "That's impressive. What's the actual lesson learned from that whole experience?", "Probably that staying calm handles unexpected problems way better than panicking does."], ["Looking ahead, what's the most exciting goal in your actual future plan?", "Honestly, I predict I'll achieve something I couldn't even imagine at the start of this level.", "That's a bold prediction. Do you have to work quickly toward it, or is there time?", "There's time, but I don't want to waste it either, if I'm being honest.", "Smart. This whole level has genuinely been memorable, watching everyone grow like this.", "Agreed. I can't wait to see how much closer we all get to these goals next year."]];
+const dialoguePool = ALL_DIALOGUES.slice(0, num);
+
+/* ---------- night sky: extra twinkling stars + slow parallax drift ---------- */
+(function sky() {
+  const sky = $("#sky");
+  for (let i = 0; i < 34; i++) {
+    const s = document.createElement("div"); s.className = "star";
+    const sz = Math.random() < .2 ? 3 : (Math.random() < .5 ? 2 : 1.5);
+    s.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random() * 100}%;left:${Math.random() * 100}%;animation-delay:${(Math.random() * 2.6).toFixed(2)}s;animation-duration:${(2 + Math.random() * 2).toFixed(2)}s`;
+    sky.appendChild(s);
+  }
+  if (!FX) return;
+  G.to(sky, { x: 24, y: -14, duration: 18, yoyo: true, repeat: -1, ease: "sine.inOut" });
+  $$(".nebula").forEach((n, i) => G.to(n, { x: i ? -40 : 40, y: i ? 30 : -20, scale: 1.15, duration: 12 + i * 3, yoyo: true, repeat: -1, ease: "sine.inOut" }));
+  // the ball floats and its halo breathes
+  G.to("#ballFloat", { y: -8, duration: 2.2, yoyo: true, repeat: -1, ease: "sine.inOut" });
+  G.to("#ballShadow", { scaleX: .82, opacity: .6, duration: 2.2, yoyo: true, repeat: -1, ease: "sine.inOut" });
+  G.fromTo("#halo", { scale: .92, opacity: .55 }, { scale: 1.06, opacity: 1, duration: 2.6, yoyo: true, repeat: -1, ease: "sine.inOut" });
+})();
+
+/* ---------- intro ---------- */
+let introAnims = [];
+function runIntro(onStart) {
+  const intro = $("#intro"), li = $("#lumiImg"), box = $("#lumiBox");
+  const h = $("#introTitle");
+  h.innerHTML = h.textContent.split(" ").map(w => `<span style="display:inline-block;white-space:nowrap">${w.split("").map(c => `<span class="ch">${c}</span>`).join("")}</span>`).join(" ");
+  if (FX) {
+    const tl = G.timeline({ delay: .15 });
+    tl.from("#intro .card", { y: 40, opacity: 0, scale: .94, duration: .6, ease: "power3.out" }, 0)
+      .fromTo(li, { y: -150, opacity: 0, scaleX: .85, scaleY: 1.18, transformOrigin: "50% 100%" }, { y: 0, opacity: 1, duration: .45, ease: "power2.in" }, .3)
+      .to(li, { scaleX: 1.16, scaleY: .82, duration: .08 })
+      .to(li, { scaleX: 1, scaleY: 1, duration: .8, ease: "elastic.out(1.1,.32)" })
+      .from("#introTitle .ch", { y: 20, opacity: 0, scale: .4, duration: .5, stagger: .04, ease: "back.out(2.2)" }, "-=.8")
+      .from("#introSub", { y: 12, opacity: 0, duration: .4 }, "-=.3")
+      .from("#startBtn", { y: 18, opacity: 0, scale: .9, duration: .5, ease: "back.out(2)", clearProps: "transform,opacity" }, "-=.25")
+      .to(li, { rotation: 8, transformOrigin: "50% 100%", duration: .14, repeat: 3, yoyo: true, ease: "sine.inOut" })
+      .add(() => { introAnims = idleLumi(li, box); const sp = lot($("#lumiLt"), "star-pop", true); if (sp) introAnims.push(sp); });
+    introAnims.push(tl);
+  }
+  $("#startBtn").onclick = () => {
+    const go = () => { intro.remove(); onStart(); };
+    introAnims.forEach(a => { try { a.kill ? a.kill() : a.destroy(); } catch (e) {} });
+    if (!FX) return go();
+    G.timeline({ onComplete: go })
+      .to("#intro .card", { scale: 1.08, opacity: 0, duration: .35, ease: "power2.in" })
+      .to(intro, { opacity: 0, duration: .25 }, "-=.15");
+  };
+}
+
+/* ---------- ball effects ---------- */
+function ballReveal() {
+  if (!FX) return;
+  G.fromTo("#flash", { opacity: .9 }, { opacity: 0, duration: .8, ease: "power2.out" });
+  G.fromTo("#ballText", { scale: .4, opacity: 0, rotation: -8 }, { scale: 1, opacity: 1, rotation: 0, duration: .8, delay: .1, ease: "back.out(1.8)", clearProps: "transform,opacity" });
+  G.fromTo("#ball", { scale: .96 }, { scale: 1, duration: .9, ease: "elastic.out(1,.4)" });
+}
+function sparkBurst() {
+  if (!FX) return;
+  const wrap = $("#ballWrap");
+  for (let i = 0; i < 14; i++) {
+    const s = document.createElement("span"); s.className = "spark"; wrap.appendChild(s);
+    const a = (i / 14) * Math.PI * 2 + Math.random() * .3, d = 110 + Math.random() * 50;
+    G.fromTo(s, { x: 0, y: 0, scale: .4 + Math.random() * .8, opacity: 1 }, { x: Math.cos(a) * d, y: Math.sin(a) * d, opacity: 0, scale: 0, duration: .8 + Math.random() * .4, ease: "power3.out", onComplete: () => s.remove() });
+  }
+  G.fromTo("#flash", { opacity: .7 }, { opacity: 0, duration: .6 });
+}
+
+if (!vocab.length) {
+  document.getElementById("stage").innerHTML = "<p style='padding:40px;color:#F5EFFF'>No lesson data found.</p>";
+  document.getElementById("intro").remove();
+} else {
+  const ROUNDS = 6;
+  // Round plan: read-the-ball and judge-the-prediction rounds (original
+  // mechanics) plus a "vision of a conversation" round using this lesson's
+  // real dialogue -- covers dialogues/conversations alongside vocabulary.
+  const PLAN = ["read", "judge", "vision", "read", "judge", "vision"];
+  const order = Lumio.shuffle([...vocab]).slice(0, ROUNDS);
+  let r = 0, score = 0, power = 0, locked = false;
+  const optGrid = document.getElementById("optGrid");
+  const dialogueOpts = document.getElementById("dialogueOpts");
+  const dialogueContext = document.getElementById("dialogueContext");
+  const tfOpts = document.getElementById("tfOpts");
+  const kicker = document.getElementById("kicker");
+  const ballText = document.getElementById("ballText");
+  const ball = document.getElementById("ball");
+
+  function updatePower(hit) {
+    power = hit ? power + 1 : 0;
+    const pill = document.getElementById("powerPill");
+    if (power >= 3) {
+      const wasHidden = pill.style.display === "none";
+      pill.style.display = "inline-flex";
+      document.getElementById("power").textContent = power;
+      if (FX) G.fromTo(pill, { scale: wasHidden ? 0 : 1.3 }, { scale: 1, duration: .8, ease: "elastic.out(1.2,.4)" });
+    } else {
+      pill.style.display = "none";
+    }
+    ball.classList.remove("power2", "power3");
+    if (power >= 5) ball.classList.add("power3");
+    else if (power >= 3) ball.classList.add("power2");
+  }
+
+  let currentSpeak = "";
+  function playPrompt() { Lumio.speak(currentSpeak); }
+
+  function setKicker(text) {
+    if (kicker.dataset.t === text) return;
+    kicker.dataset.t = text;
+    kicker.innerHTML = text.split("").map(c => `<span class="ch">${c}</span>`).join("");
+    if (FX) G.from($$(".ch", kicker), { opacity: 0, y: 6, duration: .35, stagger: .02, ease: "power2.out" });
+  }
+  function enterOpts(els, delay) {
+    if (!FX || !els.length) return;
+    G.from(els, { y: 24, opacity: 0, scale: .94, duration: .55, stagger: .08, delay: delay || .2, ease: "back.out(1.6)", clearProps: "transform,opacity" });
+  }
+
+  function drawRound() {
+    locked = false;
+    document.getElementById("roundPill").textContent = `${r + 1}/${ROUNDS}`;
+    document.getElementById("progFill").style.transform = `scaleX(${r / ROUNDS})`;
+    const target = order[r % order.length];
+    const type = dialoguePool.length ? PLAN[r] : (r % 2 === 1 ? "judge" : "read");
+
+    optGrid.style.display = "none";
+    dialogueOpts.style.display = "none";
+    dialogueContext.style.display = "none";
+    tfOpts.style.display = "none";
+
+    if (type === "vision") {
+      drawVisionRound();
+    } else if (type === "judge") {
+      setKicker("Judge the prediction");
+      tfOpts.style.display = "flex";
+      ballText.style.display = "block";
+      const showCorrect = Math.random() < 0.5;
+      const claim = showCorrect ? target.en : Lumio.shuffle(vocab.filter(v => v.en !== target.en))[0].en;
+      ballText.textContent = `"${target.ar}" = "${claim}" ?`;
+      ballText.style.fontSize = "1.05rem";
+      currentSpeak = target.en;
+      tfOpts.innerHTML = `
+        <button class="tf-btn right" data-v="true" data-tap>✅ Correct</button>
+        <button class="tf-btn wrong" data-v="false" data-tap>❌ Wrong</button>`;
+      document.querySelectorAll(".tf-btn").forEach(b => { b.onclick = () => verify(b, showCorrect); });
+      ballReveal();
+      enterOpts($$(".tf-btn", tfOpts), .35);
+      setTimeout(playPrompt, 350);
+    } else {
+      setKicker("Read the crystal ball");
+      optGrid.style.display = "grid";
+      ballText.style.display = "block";
+      ballText.style.fontSize = "";
+      ballText.textContent = target.ar;
+      currentSpeak = target.en;
+      const distractorPool = Lumio.shuffle(vocab.filter(v => v.en !== target.en));
+      const numOptions = Math.min(3, vocab.length);
+      const opts = Lumio.shuffle([target, ...distractorPool.slice(0, numOptions - 1)]);
+      optGrid.innerHTML = opts.map(o => `<button class="opt-card" data-en="${o.en}" data-tap>${o.en}</button>`).join("");
+      document.querySelectorAll(".opt-card").forEach(card => { card.onclick = () => choose(card, target); });
+      ballReveal();
+      enterOpts($$(".opt-card", optGrid), .35);
+      setTimeout(playPrompt, 350);
+    }
+  }
+
+  // Vision round: the crystal ball "shows" two lines of this lesson's real
+  // conversation, and the student must see what happens next -- the real
+  // third line vs. distractors from other already-taught lessons'
+  // dialogues.
+  function drawVisionRound() {
+    setKicker("A vision unfolds...");
+    ballText.style.display = "none";
+    dialogueContext.style.display = "block";
+    dialogueOpts.style.display = "grid";
+    const myDialogue = dialoguePool[num - 1] || dialoguePool[dialoguePool.length - 1];
+    dialogueContext.innerHTML = `<span class="vl">"${myDialogue[0]}"</span><span class="vl">"${myDialogue[1]}"</span><span class="vl" style="opacity:.7">What happens next?</span>`;
+    if (FX) {
+      G.fromTo("#flash", { opacity: .8 }, { opacity: 0, duration: 1 });
+      G.from($$(".vl", dialogueContext), { y: 14, opacity: 0, duration: .6, stagger: .4, ease: "power3.out", clearProps: "transform,opacity" });
+    }
+    currentSpeak = myDialogue[1];
+    const correct = myDialogue[2];
+    const distractorPool = [];
+    dialoguePool.forEach((dlg, i) => {
+      if (i === num - 1) return;
+      [dlg[1], dlg[2], dlg[3]].forEach(line => { if (line !== correct) distractorPool.push(line); });
+    });
+    const opts = Lumio.shuffle([correct, ...Lumio.shuffle(distractorPool).slice(0, 2)]);
+    dialogueOpts.innerHTML = opts.map(o => `<button class="opt-card" data-key="${o.replace(/"/g, "&quot;")}" data-tap style="min-height:auto;font-size:.88rem;line-height:1.35">${o}</button>`).join("");
+    document.querySelectorAll("#dialogueOpts .opt-card").forEach(card => { card.onclick = () => chooseVision(card, correct); });
+    enterOpts($$("#dialogueOpts .opt-card"), 1.1);
+    setTimeout(playPrompt, 350);
+  }
+
+  function nextRound(delay) {
+    setTimeout(() => {
+      const go = () => { r++; r < ROUNDS ? drawRound() : endGame(); };
+      if (!FX) return go();
+      const els = $$(".opt-card, .tf-btn").filter(e => e.offsetParent);
+      if (dialogueContext.style.display === "block") els.push(dialogueContext);
+      G.to(els, { y: -14, opacity: 0, duration: .22, stagger: .025, ease: "power2.in" });
+      G.to("#ballText", { scale: .5, opacity: 0, duration: .25, ease: "power2.in", onComplete: () => { G.set(dialogueContext, { clearProps: "transform,opacity" }); go(); } });
+    }, delay);
+  }
+
+  function correctFx(el) {
+    lumiReact(true);
+    sparkBurst();
+    if (FX && el) {
+      G.fromTo(el, { scale: 1 }, { scale: 1.08, duration: .18, yoyo: true, repeat: 1, ease: "power2.out", overwrite: "auto" });
+      if (el.classList.contains("opt-card")) { const sh = document.createElement("span"); sh.className = "shine"; el.appendChild(sh); G.to(sh, { left: "120%", duration: .7, ease: "power2.inOut", onComplete: () => sh.remove() }); }
+    }
+    flyStar(el, $("#starCt"), () => { document.getElementById("score").textContent = score; bump($("#starCt")); starPop($("#starPop")); });
+  }
+  function wrongFx(el) {
+    shake(el); lumiReact(false);
+    if (FX) G.fromTo("#ball", { x: 0 }, { keyframes: { x: [0, -5, 5, -3, 0] }, duration: .4 });
+  }
+
+  function chooseVision(card, correct) {
+    if (locked) return;
+    const ok = card.dataset.key === correct;
+    if (ok) {
+      locked = true;
+      score++;
+      updatePower(true);
+      Lumio.beep(true);
+      card.classList.add("correct");
+      document.querySelectorAll("#dialogueOpts .opt-card").forEach(c => c.classList.add("locked"));
+      correctFx(card);
+      nextRound(1100);
+    } else {
+      Lumio.beep(false);
+      updatePower(false);
+      card.classList.add("wrong-dim");
+      wrongFx(card);
+    }
+  }
+
+  function choose(card, target) {
+    if (locked) return;
+    const ok = card.dataset.en === target.en;
+    if (ok) {
+      locked = true;
+      score++;
+      updatePower(true);
+      Lumio.beep(true);
+      card.classList.add("correct");
+      document.querySelectorAll(".opt-card").forEach(c => c.classList.add("locked"));
+      correctFx(card);
+      nextRound(1100);
+    } else {
+      Lumio.beep(false);
+      updatePower(false);
+      card.classList.add("wrong-dim");
+      wrongFx(card);
+    }
+  }
+
+  function verify(btn, showCorrect) {
+    if (locked) return;
+    const chose = btn.dataset.v === "true";
+    const ok = chose === showCorrect;
+    document.querySelectorAll(".tf-btn").forEach(b => b.classList.add("locked"));
+    if (ok) {
+      locked = true;
+      score++;
+      updatePower(true);
+      Lumio.beep(true);
+      btn.classList.add("chosen-right");
+      correctFx(btn);
+    } else {
+      Lumio.beep(false);
+      updatePower(false);
+      wrongFx(btn);
+    }
+    nextRound(1300);
+  }
+
+  function endGame() {
+    document.getElementById("progFill").style.transform = "scaleX(1)";
+    if (Lumio.sfx) Lumio.sfx("complete");
+    const pct = Math.round((score / ROUNDS) * 100);
+    Lumio.speak(pct >= 80 ? "Amazing!" : "Great job!"); // was "The crystal ball is glowing! Your future looks amazing!" / "Good vision! Come see the crystal ball again soon!" -- no recordings for those (404), these two exist
+    document.getElementById("finalScore").innerHTML = `You read <b id="endN">${score}</b> out of ${ROUNDS} visions correctly!`;
+    const ec = document.getElementById("endcard");
+    ec.style.display = "flex";
+    const h = $("#endTitle"); h.innerHTML = h.textContent.split(" ").map(w => `<span class="w">${w}</span>`).join(" ");
+    if (!FX) { if (!G) Lumio.confetti(100); return; }
+    sparkBurst();
+    const c = $("#fxConf"); c.innerHTML = ""; const a = lot(c, "confetti", false); if (a) a.addEventListener("complete", () => { c.innerHTML = ""; });
+    G.timeline()
+      .from(ec, { opacity: 0, duration: .35 })
+      .from("#endcard .box", { scale: .8, opacity: 0, duration: .7, ease: "back.out(1.5)" }, .05)
+      .from("#endcard .crew img", { y: 70, opacity: 0, scaleY: 1.2, scaleX: .85, duration: .5, stagger: .07, ease: "back.out(2)" }, .35)
+      .from("#endTitle .w", { y: 16, opacity: 0, scale: .7, duration: .5, stagger: .08, ease: "back.out(2)" }, .7)
+      .from("#finalScore", { y: 10, opacity: 0, duration: .4 }, 1.0)
+      .add(() => countTo($("#endN"), 0, score, .2 * Math.max(1, score) + .3), 1.05)
+      .from("#endcard .row .btn", { y: 16, opacity: 0, duration: .45, stagger: .08, ease: "power3.out", clearProps: "transform,opacity" }, 1.4);
+    G.fromTo("#endcard .box", { boxShadow: "0 0 40px rgba(124,58,237,.4)" }, { boxShadow: "0 0 90px rgba(167,139,250,.75)", duration: 1.8, yoyo: true, repeat: -1, ease: "sine.inOut", delay: 1.5 });
+  }
+
+  document.getElementById("hearBtn").onclick = playPrompt;
+  idleLumi($("#lumiMiniImg"), $("#lumiMini"));
+  if (FX) {
+    G.from(["#hud > *", "#progress"], { y: -14, opacity: 0, duration: .45, stagger: .05, ease: "power3.out", clearProps: "transform,opacity" });
+    G.from("#orb", { y: 30, opacity: 0, scale: .9, duration: .9, ease: "power3.out", clearProps: "transform,opacity" });
+  }
+  runIntro(() => { drawRound(); });
+}
+</script>
+</body>
+</html>
