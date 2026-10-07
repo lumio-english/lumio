@@ -28,7 +28,7 @@
   .v2-intro { position: fixed; inset: 0; z-index: 80; display: flex; flex-direction: column; align-items: center; justify-content: center;
     padding: 24px 16px calc(24px + env(safe-area-inset-bottom, 0px)); text-align: center; overflow: hidden; }
   .v2-intro .mWrap { position: relative; height: min(34vh, 250px); aspect-ratio: 7 / 8; margin-bottom: 6px; }
-  .v2-intro .mWrap .halo { position: absolute; inset: -14% -20% 0; pointer-events: none; opacity: .9; }
+  .v2-intro .mWrap .halo { position: absolute; inset: -6% -8% 22%; pointer-events: none; opacity: .5; }
   .v2-intro .mWrap img { position: relative; height: 100%; width: auto; margin: 0 auto; display: block; filter: drop-shadow(0 16px 22px rgba(67,48,31,.22)); }
   .v2-intro .shadow { width: 46%; height: 14px; margin: -8px auto 12px; border-radius: 50%; background: rgba(67,48,31,.14); filter: blur(2px); }
   .v2-intro h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(2.1rem, 8.4vw, 3.4rem); line-height: 1.05; margin: 0 0 10px; color: var(--cocoa); }
@@ -59,7 +59,7 @@
   body::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
     background: radial-gradient(600px 400px at 15% 20%, rgba(37,211,102,.08), transparent 70%), radial-gradient(500px 400px at 85% 80%, rgba(0,92,75,.25), transparent 70%); }
 
-  #hud { position: relative; z-index: 5; display: flex; align-items: center; gap: 8px; padding: 0 14px; height: 64px; background: var(--chat-panel); }
+  #hud { position: relative; z-index: 5; display: flex; align-items: center; gap: 8px; padding: 0 max(14px, calc(50% - 240px)); height: 64px; background: var(--chat-panel); }
   #hud .pill { background: #1F2C34; color: #E9EDEF; border-radius: 999px; padding: 7px 14px; font-family: var(--font-display); font-weight: 800; font-size: .9rem; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; min-height: 36px; }
   #hud .pill.streak { background: linear-gradient(135deg,#F97316,#EF4444); position: relative; padding-left: 8px; }
   #hud .pill.streak .fl { width: 22px; height: 22px; display: inline-block; }
@@ -166,7 +166,7 @@
 <body>
 
 <div id="intro" class="v2-intro" role="dialog" aria-label="Crew Chat">
-  <div class="mWrap"><div class="halo"></div><img src="../assets/story/characters/lumi-teen-phone.png" alt="Lumi"></div>
+  <div class="mWrap"><img src="../assets/story/characters/lumi-teen-phone.png" alt="Lumi"></div>
   <div class="shadow"></div>
   <h1>Crew Chat</h1>
   <p class="sub">Reply to the crew's group chat — tap or type it back!</p>
