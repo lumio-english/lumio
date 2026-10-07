@@ -196,22 +196,25 @@ async function loadLessonVocabForGames() {
   WORD_BANK = vocab.map(v => ({ en: v.en, ar: v.ar || "", em: v.emoji || "", pic: sdVocabFile(v) }));
   gamesLessonNum = targetNum; gamesUsingRealVocab = true;
 }
-// Same "keep the best" rule as student.html; only touches a lesson already attempted.
+// The game's own best score per lesson, kept apart from the lesson's prep
+// result (lumio_progress): it used to overwrite the prep score/percent the
+// map and the teacher show as PREP, and never reached the teacher anyway.
+// Local to this device, like the game itself.
 function saveGameResultToLesson(stars, score, total) {
   if (!gamesUsingRealVocab || !gamesLessonNum || !u) return { counted: false, reason: "no-lesson" };
-  let all; try { all = JSON.parse(localStorage.getItem("lumio_progress") || "{}"); } catch (e) { all = {}; }
-  const existing = ((all[u.name] || {})[level] || {})[gamesLessonNum];
-  if (!existing) return { counted: false, reason: "not-attempted", lessonNum: gamesLessonNum };
-  if (stars < existing.stars) return { counted: false, reason: "not-better", lessonNum: gamesLessonNum };
+  const KEY = "lumio_game_best";
+  let all; try { all = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { all = {}; }
+  const game = location.pathname.split("/").pop().replace(/\.html$/, "");
   all[u.name] = all[u.name] || {}; all[u.name][level] = all[u.name][level] || {};
-  all[u.name][level][gamesLessonNum] = { stars, score, total, date: Lumio.tzNow().date };
-  try { localStorage.setItem("lumio_progress", JSON.stringify(all)); } catch (e) { return { counted: false, reason: "storage-failed" }; }
-  return { counted: true, lessonNum: gamesLessonNum };
+  const lv = all[u.name][level], prevBest = lv[gamesLessonNum] && lv[gamesLessonNum][game];
+  if (prevBest && stars <= prevBest.stars) return { counted: false, reason: "not-better", lessonNum: gamesLessonNum };
+  lv[gamesLessonNum] = Object.assign({}, lv[gamesLessonNum], { [game]: { stars, score, total, date: Lumio.tzNow().date } });
+  try { localStorage.setItem(KEY, JSON.stringify(all)); } catch (e) { return { counted: false, reason: "storage-failed" }; }
+  return { counted: true, first: !prevBest, lessonNum: gamesLessonNum };
 }
 function gameResultNote(b) {
-  if (b.counted) return `<span class="hub-note ok">🎯 Counted toward Lesson ${b.lessonNum}'s stars!</span>`;
-  if (b.reason === "not-attempted") return `<span class="hub-note">Finish Lesson ${b.lessonNum} first, then this game can boost its stars!</span>`;
-  if (b.reason === "not-better") return `<span class="hub-note">Your Lesson ${b.lessonNum} score is already this good — try beating it!</span>`;
+  if (b.counted && !b.first) return `<span class="hub-note ok">🎯 New best score for Lesson ${b.lessonNum}'s words!</span>`;
+  if (b.reason === "not-better") return `<span class="hub-note">You've done this well before on Lesson ${b.lessonNum}'s words — try beating it!</span>`;
   return "";
 }
 function gameStars(r) { if (r >= 0.85) return 3; if (r >= 0.6) return 2; return 1; } // same as lesson.js

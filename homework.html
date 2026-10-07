@@ -709,8 +709,13 @@ function submitHomework() {
     : 0;
   const said = Object.values(results.saidWords).filter(Boolean).length;
   const recorded = Object.values(results.recorded).filter(Boolean).length;
-  const totalPossible = lesson.vocab.length + qWordsCountSafe() + skillTotal;
-  const totalCorrect = spellingCorrect + quizCorrect + skillCorrect;
+  // Phonics recordings need a microphone, so (like lesson prep) they are a
+  // bonus shown on the done screen, not part of the score -- a child with
+  // no mic could otherwise never reach 3 stars. Grammar answers still count.
+  const scoredSkillTotal = isPhonics ? 0 : skillTotal;
+  const scoredSkillCorrect = isPhonics ? 0 : skillCorrect;
+  const totalPossible = lesson.vocab.length + qWordsCountSafe() + scoredSkillTotal;
+  const totalCorrect = spellingCorrect + quizCorrect + scoredSkillCorrect;
   const pct = totalPossible ? Math.round((totalCorrect / totalPossible) * 100) : 0;
   const stars = pct >= 90 ? 3 : pct >= 60 ? 2 : 1;
 
@@ -719,7 +724,7 @@ function submitHomework() {
     if (typeof Lumio !== "undefined" && Lumio.confetti) Lumio.confetti(70);
     currentStep = STEPS.length;
     renderSteps();
-    const skillLine = skillType ? ` · ${isPhonics ? "Phonics recorded" : "Grammar"}: ${skillCorrect}/${skillTotal}` : "";
+    const skillLine = skillType ? ` · ${isPhonics ? "Phonics recorded (bonus)" : "Grammar"}: ${skillCorrect}/${skillTotal}` : "";
     document.getElementById("hwSections").innerHTML = `
       <div class="hw-card hw-done-screen">
         <div style="font-size:3rem">🧪</div>
@@ -755,7 +760,7 @@ function submitHomework() {
 
   currentStep = STEPS.length;
   renderSteps();
-  const skillLine = skillType ? ` · ${isPhonics ? "Phonics recorded" : "Grammar"}: ${skillCorrect}/${skillTotal}` : "";
+  const skillLine = skillType ? ` · ${isPhonics ? "Phonics recorded (bonus)" : "Grammar"}: ${skillCorrect}/${skillTotal}` : "";
   document.getElementById("hwSections").innerHTML = `
     <div class="hw-card hw-done-screen">
       <div style="font-size:3rem">🎉</div>

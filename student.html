@@ -1911,7 +1911,10 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
       document.getElementById("storySub").textContent = allDone
         ? "You finished the whole story! 🎉"
         : (nextLocked ? `Part ${currentPart.id} unlocked! Next part after Lesson ${nextLocked.unlockAt}.` : `Part ${currentPart.id} unlocked!`);
-      btn.textContent = allDone ? "Read Again" : `Play Part ${currentPart.id}`;
+      // the newest open part already read, next one still locked: re-read it
+      const readIt = !!storyProg[currentPart.id];
+      if (readIt && !allDone && nextLocked) document.getElementById("storySub").textContent = `You read Part ${currentPart.id}! Next part after Lesson ${nextLocked.unlockAt}.`;
+      btn.textContent = (allDone || readIt) ? "Read again" : `Play Part ${currentPart.id}`;
       btn.href = `story.html?part=${currentPart.id}&level=${level}`;
     }
   }
@@ -2204,6 +2207,16 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
       if (d < today) return "past";
       return (byDay[d] || []).length ? "open" : "full";
     };
+    // A day with no open time is only "full" when some teacher actually
+    // offers a class that day; otherwise it just has no classes.
+    const allPatterns = LumioSchedule.listPatterns(), allClasses = LumioSchedule.listClasses({});
+    const offeredDay = d => {
+      if (LumioSchedule.isDateBlocked(d)) return false;
+      const dow = Lumio.tzDayOfWeek(d);
+      return allPatterns.some(p => p.active && !LumioSchedule.isLegacyPattern(p) && Number(p.dayOfWeek) === dow
+          && !(p.startDate && d < p.startDate) && !(p.endDate && d >= p.endDate))
+        || allClasses.some(c => c.date === d && c.status === "scheduled");
+    };
     if (!bookingDay || !days.includes(bookingDay) || dayState(bookingDay) !== "open") {
       bookingDay = days.find(d => dayState(d) === "open") || days.find(d => dayState(d) !== "past" && dayState(d) !== "off") || null;
       bookingHour = null;
@@ -2213,7 +2226,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
       return `<div class="sd-day ${s}${d === bookingDay ? " active" : ""}${d === today ? " today" : ""}" data-day="${d}">
         <div class="dw">${dt.toLocaleDateString("en", { weekday: "short" })}</div>
         <div class="dn">${dt.getDate()}</div>
-        <div class="ct">${s === "off" ? "off" : s === "past" ? "—" : n ? `${n} open` : "full"}</div></div>`;
+        <div class="ct">${s === "off" ? "off" : s === "past" ? "—" : n ? `${n} open` : offeredDay(d) ? "full" : "no class"}</div></div>`;
     }).join("");
     const monthLabel = `${new Date(weekStart + "T00:00:00").toLocaleDateString("en", { month: "short", day: "numeric" })} – ${new Date(days[6] + "T00:00:00").toLocaleDateString("en", { month: "short", day: "numeric" })}`;
 
@@ -2264,7 +2277,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
     card.querySelectorAll(".sd-day.open").forEach(el => el.addEventListener("click", () => { bookingDay = el.dataset.day; bookingHour = null; renderBooking(); }));
     card.querySelectorAll(".sd-day.full, .sd-day.off, .sd-day.past").forEach(el => el.addEventListener("click", () => {
       const s = dayState(el.dataset.day);
-      showToast(s === "off" ? "Lessons run Sunday to Thursday." : s === "past" ? "That day has passed." : "No open times that day — try another.", "📅");
+      showToast(s === "off" ? "Lessons run Sunday to Thursday." : s === "past" ? "That day has passed." : offeredDay(el.dataset.day) ? "No open times that day — try another." : "No classes that day — try another.", "📅");
     }));
     card.querySelectorAll(".sd-hour.open").forEach(el => el.addEventListener("click", () => { bookingHour = Number(el.dataset.hour); renderBooking(); card.querySelector(".sd-teachers") && card.querySelector(".sd-teachers").scrollIntoView({ behavior: "smooth", block: "nearest" }); }));
     card.querySelectorAll(".sd-hour.closed").forEach(el => el.addEventListener("click", () => showToast("That time is taken or not offered — pick an open one.", "⏰")));
@@ -2488,7 +2501,9 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
     // "wait a bit, then refresh" pattern -- which is exactly what a teacher
     // would tell a student to do after booking something -- now actually
     // picks up the change.
-    const SYNC_KEY = "lumio_student_last_synced_at";
+    // Keyed per student: on a shared device a second child signing in
+    // within the cooldown used to skip the pull and see an empty dashboard.
+    const SYNC_KEY = "lumio_student_last_synced_at:" + (_ownId || u.name || "");
     const MIN_INTERVAL_MS = 30 * 1000;
     let lastSync = 0;
     try { lastSync = Number(sessionStorage.getItem(SYNC_KEY)) || 0; } catch (e) {}
@@ -2696,8 +2711,8 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
         title: "سلسلة الأيام",
         titleEn: "Daily Streak",
         html: `<ul>
-          <li><span class="em">🔥</span> يزيد هذا الرقم كل يوم يمارس فيه الطالب أي نشاط تعليمي.
-            <span class="en">This number grows every day your child does any activity.</span></li>
+          <li><span class="em">🔥</span> يزيد هذا الرقم مع كل يوم متتالٍ يُكمل فيه الطالب تحضير درس (أو يعيده).
+            <span class="en">This number grows for each day in a row your child completes (or replays) a lesson prep.</span></li>
           <li><span class="em">💡</span> بضع دقائق يومياً أفضل من جلسة طويلة أسبوعياً.
             <span class="en">A few minutes daily beats one long session a week.</span></li>
         </ul>`,
@@ -3909,17 +3924,23 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
         document.getElementById("hubPhonicsSub").textContent = `${n} units \u00b7 sounds, blends, sight words`;
         renderHubTrail("hubPhonicsTrail", n, false);
       } catch (e) { renderHubTrail("hubPhonicsTrail", 0, true); }
-    } else {
-      lockHubBanner("hubPhonics", "hubPhonicsSub", "Available in Level 1-2 so far");
+    } else if (level === "pre-a") {
+      // still ahead of a Pre-A student (like Grammar's "Unlocks at Level 3")
+      lockHubBanner("hubPhonics", "hubPhonicsSub", "Unlocks at Level 1");
       document.getElementById("hubPhonicsBtn").textContent = "\ud83d\udd12 Locked";
+    } else {
+      // Level 3+ are past the phonics levels: a locked card they can never
+      // open just looked broken, so it isn't shown at all.
+      const ph = document.getElementById("hubPhonics"); if (ph) ph.style.display = "none";
     }
 
     // Spelling: only spelling-hub/pre-a.json exists, so Level 1 used to get
     // a live banner that opened "This isn't ready for your level yet".
     // Locked like Phonics/Grammar (no fetch, so no 404 in the console).
+    // Only Pre-A has spelling content, and every other level is past it, so a
+    // locked "Available in Pre-A so far" card (Level 1) is hidden instead.
     if (!SPELLING_AVAILABLE_AT.includes(level)) {
-      lockHubBanner("hubSpelling", "hubSpellingSub", "Available in Pre-A so far");
-      document.getElementById("hubSpellingBtn").textContent = "🔒 Locked";
+      const sp = document.getElementById("hubSpelling"); if (sp) sp.style.display = "none";
     }
 
     // Vocabulary
@@ -4000,10 +4021,21 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
     document.querySelectorAll(".sd-buddy-card").forEach((c, ci) => {
       c.classList.toggle("sd-buddy-active", ci === i && !c.classList.contains("sd-buddy-active"));
     });
-    if (typeof Lumio !== "undefined" && Lumio.speak) {
-      const name = document.querySelector(`#buddy-${i} .name`).textContent;
-      Lumio.speak(name);
-    }
+    const name = document.querySelector(`#buddy-${i} .name`).textContent;
+    // Lumio.speak tries assets/audio/<name>.mp3 first; no buddy name has a
+    // recording there (each tap was a 404), so names without a clip go
+    // straight to the device voice. Add a name here once its clip exists.
+    const BUDDY_CLIPS = [];
+    if (BUDDY_CLIPS.includes(name.toLowerCase()) && typeof Lumio !== "undefined" && Lumio.speak) { Lumio.speak(name); return; }
+    if (!("speechSynthesis" in window)) return;
+    try {
+      speechSynthesis.cancel();
+      const ut = new SpeechSynthesisUtterance(name);
+      const v = speechSynthesis.getVoices().find(x => /^en[-_]US/i.test(x.lang)) || speechSynthesis.getVoices().find(x => /^en/i.test(x.lang));
+      if (v) ut.voice = v;
+      ut.lang = "en-US"; ut.rate = 0.92;
+      speechSynthesis.speak(ut);
+    } catch (e) {}
   };
   renderStudyBuddies();
 

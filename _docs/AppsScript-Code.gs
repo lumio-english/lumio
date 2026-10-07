@@ -796,6 +796,25 @@ function rowToPattern_(row) {
 //     only, max `maxPerClass` students, no duplicates
 //   - an empty slot: the first booking creates the class and locks it
 function normStudent_(n) { return String(n || "").trim().toLowerCase(); }
+// The live-class link a booked class should carry: the slot's own link,
+// else the teacher's standing classroom link. Students can't look either
+// up themselves (pullScheduleV2 blanks pattern links for them, and the
+// public teacher list has no meetingLink), so the class row must hold it.
+function slotLinkFor_(patternId, teacherId) {
+  if (patternId) {
+    var pats = readRows_(PATTERNS_SHEET, PATTERNS_COLUMNS);
+    for (var i = 0; i < pats.length; i++) if (pats[i].id === patternId) {
+      if (pats[i].meetingLink) return String(pats[i].meetingLink);
+      if (!teacherId) teacherId = pats[i].teacherId;
+      break;
+    }
+  }
+  if (teacherId) {
+    var ts = readRows_(TEACHERS_SHEET, TEACHERS_COLUMNS);
+    for (var j = 0; j < ts.length; j++) if (ts[j].id === teacherId && ts[j].meetingLink) return String(ts[j].meetingLink);
+  }
+  return "";
+}
 function bookSlot_(body) {
   var cls = body && body.cls, student = body && body.student;
   if (!cls || !cls.id || !student || !student.studentName) return { ok: false, error: "missing class or student" };
@@ -819,6 +838,7 @@ function bookSlot_(body) {
       if (existing.students.length >= max) return { ok: false, error: "That class is full (" + max + "/" + max + ")." };
       var locks = [];
       if (!existing.lessonNumber) { existing.level = cls.level; existing.lessonNumber = cls.lessonNumber; existing.durationMinutes = cls.durationMinutes; locks = ["level", "lessonNumber", "durationMinutes"]; }
+      if (!existing.meetingLink) { var exLink = slotLinkFor_(existing.patternId, existing.teacherId); if (exLink) { existing.meetingLink = exLink; locks.push("meetingLink"); } }
       existing.students.push({ studentId: student.studentId || null, studentName: student.studentName, attendance: null, grade: null, teacherRatingStars: null, updatedAt: nowIso });
       touch_(existing, locks, nowIso);
       writeRows_(SCHEDULE_SHEET, SCHEDULE_COLUMNS, rows.map(classToRow_));
@@ -826,6 +846,7 @@ function bookSlot_(body) {
     }
     cls.students = [{ studentId: student.studentId || null, studentName: student.studentName, attendance: null, grade: null, teacherRatingStars: null, updatedAt: nowIso }];
     cls.status = "scheduled";
+    if (!cls.meetingLink) cls.meetingLink = slotLinkFor_(cls.patternId, cls.teacherId);
     cls.createdAt = cls.createdAt || nowIso; cls.updatedAt = nowIso;
     rows.push(cls);
     writeRows_(SCHEDULE_SHEET, SCHEDULE_COLUMNS, rows.map(classToRow_));

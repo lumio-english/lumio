@@ -135,6 +135,12 @@
     return [s && s.studentId ? "id:" + s.studentId : "", s && nn(s.studentName) ? "n:" + nn(s.studentName) : ""].filter(Boolean);
   }
   function seatSansTime(s) { const c = Object.assign({}, s); delete c.updatedAt; return JSON.stringify(c); }
+  // `now`, or 1 ms after the latest of the given times when the local
+  // clock is behind them (so an edit always beats what it edited).
+  function notBefore(now, ...prior) {
+    const t = Math.max(Date.parse(now) || 0, ...prior.map(v => { const n = v ? Date.parse(v) : NaN; return isNaN(n) ? 0 : n + 1; }));
+    return new Date(t).toISOString();
+  }
   function stampChanges(prev, data, now) {
     ["classes", "patterns"].forEach(listKey => {
       const before = {};
@@ -153,13 +159,17 @@
         };
         Object.keys(Object.assign({}, old, r)).forEach(k => {
           if (STAMP_SKIP[k] && !(k === "students" && listKey === "patterns")) return;
-          if (JSON.stringify(r[k]) !== JSON.stringify(old[k])) touch()[k] = now;
+          if (JSON.stringify(r[k]) !== JSON.stringify(old[k])) { const f = touch(); f[k] = notBefore(now, f[k], old.updatedAt); }
         });
         if (listKey === "classes") {
           const oldSeats = Array.isArray(old.students) ? old.students : [];
           (r.students || []).forEach(s => {
             const o = oldSeats.find(x => sameSeat(x, s));
-            if (!o || seatSansTime(o) !== seatSansTime(s)) { s.updatedAt = now; touch(); }
+            // never stamp a seat edit older than the copy it replaces: a
+            // teacher device whose clock runs behind the server would
+            // otherwise lose the attendance mark on the next merge while
+            // the session deduction (always kept) stays
+            if (!o || seatSansTime(o) !== seatSansTime(s)) { s.updatedAt = notBefore(now, o && o.updatedAt); touch(); }
           });
           oldSeats.forEach(o => {
             if ((r.students || []).some(s => sameSeat(o, s))) return;
@@ -787,6 +797,11 @@
         data.blockedDates = mergeBlockedDates(data.blockedDates, remote.blockedDates, tombs);
       }
       save(data, { noStamp: true }); // the Sheet's values, not a local edit
+      // A class a student booked into a teacher's slot may carry no live-class
+      // link (booked through an older script, which didn't copy it), and the
+      // student's device can't look up the slot's or teacher's link itself.
+      // The teacher's device fills it in (a stamped edit, so the push wins).
+      if (!studentOnly) { try { relinkFutureClasses({}); } catch (e) { console.warn("Lumio: relink failed", e); } }
       if (pullOnly) return { ok: true, at: new Date().toISOString(), pullOnly: true };
       // Fixed schedules: generate / apply holidays / renumber on the merged
       // data, then push the result (two devices produce the same ids).

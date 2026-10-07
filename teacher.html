@@ -2580,7 +2580,8 @@
       const row = document.createElement("div");
       row.className = "td-arow";
       const initials = a.name.slice(0, 2).toUpperCase();
-      const verb = a.type === "homework" ? "completed homework in" : "finished a lesson in";
+      // a "lesson" entry is a saved prep result (the live class and homework are separate)
+      const verb = a.type === "homework" ? `completed homework for Lesson ${escHtml(String(a.lessonId))} in` : `finished prep for Lesson ${escHtml(String(a.lessonId))} in`;
       row.innerHTML = `<div class="td-avatar">${initials}</div>
         <div><div class="who">${escHtml(a.name)}</div><div class="what">${a.type === "homework" ? "📝 " : ""}${verb} ${levelName(a.lvl)} · ★${a.stars}</div></div>
         <div class="when">${a.date}</div>`;
@@ -3584,10 +3585,16 @@
     const s = ref.studentId ? LumioProfiles.getStudent(ref.studentId) : LumioProfiles.findByName(ref.studentName);
     if (!s) return;
     const lesson = c.lessonNumber ? `Lesson ${c.lessonNumber}` : "today's lesson";
+    // Attendance opens the homework only. The level game is already open up
+    // to the current lesson, and a story part (after Lessons 5/10/15/20)
+    // opens once that lesson's homework is done too (student.html).
+    const n = Number(c.lessonNumber) || 0;
+    const storyPart = n && n % 5 === 0 && n <= 20 ? n / 5 : 0;
     LumioProfiles.addMessageOnce(s.id, `after_${c.id}`, {
       type: "content_available",
-      text: `🎉 Great work in ${lesson}! Your homework, the post-lesson game, and the next story part are now available on your dashboard.`,
-      meta: { classId: c.id, lessonNumber: c.lessonNumber || null, content: "homework,game,story" },
+      text: `🎉 Great work in ${lesson}! Your homework for ${lesson} is now open on your dashboard.`
+        + (storyPart ? ` Finish it to unlock Story Part ${storyPart}!` : ""),
+      meta: { classId: c.id, lessonNumber: c.lessonNumber || null, content: storyPart ? "homework,story" : "homework" },
     });
   }
 

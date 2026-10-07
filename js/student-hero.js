@@ -60,8 +60,21 @@
       var lessons = window.LUMIO_LESSONS && window.LUMIO_LESSONS[M.level];
       var lt = lessons ? (lessons[next] || lessons[String(next)]) : null;
       var ltTitle = lt && lt.title ? String(lt.title) : '';
+      // where the student is inside the first lesson (prep -> live class -> homework),
+      // so the cover doesn't say "Let's start" after the prep is already done
+      var step1 = '';
+      if (done === 0 && !finished) {
+        try {
+          var prepDone = !!(((L.progressFor ? L.progressFor(u.name) : {}) || {})[M.level] || {})[next];
+          var S0 = window.LumioSchedule;
+          var attended = !!(S0 && S0.attendedLessonNumbers && S0.attendedLessonNumbers(u.name, M.level).has(next));
+          if (prepDone && attended) step1 = 'Your Lesson ' + next + ' class is done. Next: your homework!';
+          else if (prepDone) step1 = 'Your Lesson ' + next + ' prep is done. Next: your live class with your teacher!';
+        } catch (e) { step1 = ''; }
+      }
       var lead = finished
         ? 'You finished ' + lvShort + '! Your level test and certificate are waiting.'
+        : step1 ? step1
         : done === 0 ? "Let's start " + lvShort + ' with Lesson 1' + (ltTitle ? ': “' + ltTitle + '”.' : '.')
         : "You're on Lesson " + next + ' of ' + total + (ltTitle ? ': “' + ltTitle + '”' : '') + '. ' + (total - done > 1 ? (total - done) + ' lessons to go.' : 'The last one!');
       var mission = $('#missionBtn');

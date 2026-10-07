@@ -690,10 +690,27 @@
           check My Schedule on your map.
         </p>
         <div class="mt" style="padding-top:14px;border-top:1.5px solid #F5EEE1">
-          ${game && !teacherPreview && (Lumio.homeworkFor(user.name)[level] || {})[num] ? `<a class="btn" style="background:#E6F7F4;color:#0D9488;margin-right:8px" href="games/${game.file}?level=${level}&n=${num}&from=lesson">${game.label}</a>` : ""}
+          ${game && !teacherPreview && gameOpenFor(num) ? `<a class="btn" style="background:#E6F7F4;color:#0D9488;margin-right:8px" href="games/${game.file}?level=${level}&n=${num}&from=lesson">${game.label}</a>` : ""}
           <a class="btn" style="background:#FFF3D6;color:#C2530A" href="homework.html?level=${level}&n=${num}">📝 Do your homework</a>
         </div>
       </div>`;
+  }
+
+  // Same rule as the game map on student.html (renderGameMap): a game part
+  // is open for every lesson up to the one the student is on now (the first
+  // lesson whose prep, live class and homework aren't all done -- Lesson 1
+  // on day 1), plus any lesson whose homework is done. Runs after this
+  // run's saveResult, so today's prep already counts.
+  function gameOpenFor(n) {
+    const hw = (Lumio.homeworkFor(user.name) || {})[level] || {};
+    if (hw[n]) return true;
+    const prog = (Lumio.progressFor(user.name) || {})[level] || {};
+    const attended = (window.LumioSchedule && LumioSchedule.attendedLessonNumbers)
+      ? LumioSchedule.attendedLessonNumbers(user.name, level) : new Set();
+    const N = ((Lumio.LEVELS || []).find(l => l.id === level) || {}).lessons || 20;
+    let current = N + 1;
+    for (let i = 1; i <= N; i++) if (!(prog[i] && attended.has(i) && hw[i])) { current = i; break; }
+    return n <= current;
   }
 
   /* ---------- Router ---------- */
