@@ -1,0 +1,54 @@
+<div class="v3 v3-teen"><div class="v3-bg" style="background-image:url('assets/lesson-bg/level3/10.jpg')"></div><div class="v3-shade"></div><div class="v3-top">
+      <div class="v3-lesson"><img src="assets/logo/lumio-logo.png" alt="Lumio English"><span><small>Level 3</small>Lesson 10</span></div>
+      <div class="pagetitle v3-ribbon"><b>Two Truths &amp; a Lie</b> &bull; <i>Speaking Game</i></div>
+      <div class="counter v3-page">56 / 62</div>
+    </div>
+    <div class="v3t-band">
+      <div class="v3-paper"><div class="v3-label"><i class="v3-ico" data-ico="people"></i> PAIRS / GROUP</div><div class="tx">Tap <b>Spin</b>: three words. Say three sentences about YOU using them &mdash; two true, one false. Your partner asks one question, then guesses the lie. Fool them = 2 points; they catch you = 1 point for them.</div></div>
+      <div class="v3-paper"><div class="v3-label"><i class="v3-ico" data-ico="user"></i> 1-ON-1 WITH YOUR TEACHER</div><div class="tx">Spin, then tell your teacher three sentences (two true, one false). The teacher asks one follow-up question and guesses. Then the teacher spins and you catch the lie!</div></div>
+    </div>
+    <div class="v3t-act">
+      <div class="v3t-tlmain">
+        <div id="tlPool" style="display:none">
+      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/guess.png" alt="" onerror="this.style.display='none'"></div>
+        <div class="w">guess</div><div class="ar">يخمن</div></div>
+      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/clue.png" alt="" onerror="this.style.display='none'"></div>
+        <div class="w">clue</div><div class="ar">دليل</div></div>
+      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/mystery.png" alt="" onerror="this.style.display='none'"></div>
+        <div class="w">mystery</div><div class="ar">لغز</div></div>
+      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/riddle.png" alt="" onerror="this.style.display='none'"></div>
+        <div class="w">riddle</div><div class="ar">أحجية</div></div>
+      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/answer.png" alt="" onerror="this.style.display='none'"></div>
+        <div class="w">answer</div><div class="ar">إجابة</div></div>
+      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/secret.png" alt="" onerror="this.style.display='none'"></div>
+        <div class="w">secret</div><div class="ar">سر</div></div>
+      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/hint.png" alt="" onerror="this.style.display='none'"></div>
+        <div class="w">hint</div><div class="ar">تلميح</div></div>
+      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/puzzle.png" alt="" onerror="this.style.display='none'"></div>
+        <div class="w">puzzle</div><div class="ar">أحجية تركيب (بازل)</div></div>
+      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/detective.png" alt="" onerror="this.style.display='none'"></div>
+        <div class="w">detective</div><div class="ar">محقق</div></div>
+      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/suspect.png" alt="" onerror="this.style.display='none'"></div>
+        <div class="w">suspect</div><div class="ar">مشتبه به</div></div></div>
+        <div id="tlPicked" class="v3t-picked">
+          <div class="v3-quote" style="font-size:1.7rem;opacity:.85">Tap Spin to get your three words &#8594;</div>
+        </div>
+        <div class="v3t-small" style="text-align:center"><span class="v3t-hl">Use: Wh- Questions</span> &mdash; every sentence must contain one of the three words.</div>
+      </div>
+      <div class="v3t-side">
+        <div class="v3-paper"><button class="v3-btn" style="width:100%" onclick="LumioAct.pick('tlPool','tlPicked',3)"><i class="v3-ico" data-ico="dice"></i> Spin</button></div>
+        <div class="v3-paper"><div class="v3-label">SCORE</div>
+      <div class="v3t-score">
+        <span class="lb">A / You</span>
+        <span data-act-score class="val">0</span>
+        <button class="v3-btn s" onclick="LumioAct.score(this,1)">+</button>
+        <button class="v3-btn s ghost" onclick="LumioAct.score(this,-1)">&minus;</button>
+      </div>
+      <div class="v3t-score">
+        <span class="lb">B / Teacher</span>
+        <span data-act-score class="val">0</span>
+        <button class="v3-btn s" onclick="LumioAct.score(this,1)">+</button>
+        <button class="v3-btn s ghost" onclick="LumioAct.score(this,-1)">&minus;</button>
+      </div></div>
+      </div>
+    </div></div>

@@ -2,6 +2,7 @@
 from the same lesson data and deck plan as the classic decks.
 
     python3.12 gen_slides_v3.py level1            # kids levels: pre-a, level1, level2
+    python3.12 gen_slides_v3.py level4            # teen levels: level3..level6 (gen_slides_v3_teen.py)
 Runs the level's own classic generator script with the v3 templates swapped in (lib/deck_v3_kid.py), writing to the
 v3 folders instead of the live slide-content/ ones, so the classic decks are never touched."""
 import sys, runpy
@@ -19,4 +20,5 @@ if LEVEL in KID:
     T.run = run
     runpy.run_path(KID[LEVEL], run_name="__main__")
 else:
-    sys.exit(f"{LEVEL}: teen levels are built by gen_slides_v3_teen.py")
+    import gen_slides_v3_teen                      # teens, level3..level6 (lib/deck_v3_teen.py)
+    gen_slides_v3_teen.main(LEVEL)

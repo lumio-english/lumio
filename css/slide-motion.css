@@ -161,3 +161,89 @@
 /* emoji on the slides drawn with the Lumio icon set */
 .lc-ico { display: inline-block; width: 1.3em; height: 1.3em; vertical-align: -.3em; line-height: 0; }
 .lc-ico svg { width: 100%; height: 100%; display: block; }
+
+/* ======================================================================
+   Premium pass (kids = iPhone, teens = Lamborghini): overrides the
+   storybook styles above for the bubble, chapter card, jar, veil, finale.
+   ====================================================================== */
+.lc-kid .lc-bubble { font-family:'Nunito',system-ui,sans-serif; font-weight:900; letter-spacing:-.02em; color:#1D1D1F; border:0; border-radius:28px;
+  background:rgba(255,255,255,.9); -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px); box-shadow:0 1px 0 #fff inset, 0 30px 50px -20px rgba(40,24,8,.55); }
+.lc-kid .lc-bubble::after { border-top-color:rgba(255,255,255,.9); bottom:-16px; }
+.lc-kid .lc-bubble::before { display:none; }
+.lc-kid .lc-chBg { background:radial-gradient(90% 80% at 50% 40%, rgba(30,18,6,.35), rgba(12,8,2,.72)); -webkit-backdrop-filter:blur(18px) saturate(1.4); backdrop-filter:blur(18px) saturate(1.4); }
+.lc-kid .lc-chTitle { font-family:'Nunito',system-ui,sans-serif; font-weight:900; font-size:132px; letter-spacing:-.05em; -webkit-text-stroke:0; color:#fff; text-shadow:0 20px 50px rgba(0,0,0,.45); }
+.lc-kid .lc-chIco { width:150px; height:150px; padding:26px; box-sizing:border-box; border-radius:44px; background:rgba(255,255,255,.18); -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px); box-shadow:inset 0 1px 0 rgba(255,255,255,.4), 0 30px 60px -20px rgba(0,0,0,.6); filter:none; }
+.lc-kid .lc-chSub { font-family:'Nunito',system-ui,sans-serif; font-weight:800; font-size:1.4rem; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.3); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); }
+.lc-kid .lc-jar { font-family:'Nunito',system-ui,sans-serif; color:#1D1D1F; background:rgba(255,255,255,.85); -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px); box-shadow:0 1px 0 #fff inset, 0 16px 26px -12px rgba(40,24,8,.5); }
+.lc-kid .lc-jar .lc-jarN { font-weight:900; }
+.lc-kid .lc-veil b { font-family:'Nunito',system-ui,sans-serif; font-weight:900; -webkit-text-stroke:0; background:linear-gradient(180deg,#FFA43A,#F2600C); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow:none; filter:drop-shadow(0 20px 26px rgba(242,96,12,.4)); }
+.lc-kid .lc-veil span { font-family:'Nunito',system-ui,sans-serif; font-weight:900; background:rgba(29,29,31,.85); box-shadow:0 14px 26px -12px rgba(0,0,0,.6); animation:none; }
+.lc-kid .lc-veil { background:radial-gradient(circle at 50% 45%, rgba(255,255,255,.55), rgba(255,255,255,.15) 60%, transparent 80%); }
+.lc-kid .lc-fnIn { font-family:'Nunito',system-ui,sans-serif; border:0; border-radius:44px; background:rgba(255,255,255,.88); -webkit-backdrop-filter:blur(24px); backdrop-filter:blur(24px); box-shadow:0 1px 0 #fff inset, 0 50px 90px -30px rgba(0,0,0,.6); color:#1D1D1F; }
+.lc-kid .lc-fnIn h2 { font-weight:900; letter-spacing:-.04em; color:#1D1D1F; }
+.lc-kid .lc-fnIn p b { color:#F2600C; }
+.lc-kid .lc-stop { background:rgba(255,255,255,.9); }
+.lc-on #nextBtn.lc-build { background:linear-gradient(180deg,#1D1D1F,#000); }
+
+.lc-teen .lc-bubble { font-family:'Michroma','Bricolage Grotesque',system-ui,sans-serif; font-weight:400; font-size:1.05rem; letter-spacing:.08em; text-transform:uppercase; color:#fff;
+  background:#0E0E11; border:0; border-bottom:2px solid #FFC000; border-radius:0; clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px); box-shadow:none; }
+.lc-teen .lc-bubble::after, .lc-teen .lc-bubble::before { display:none; }
+.lc-teen .lc-chBg { background:linear-gradient(180deg, rgba(0,0,0,.82), rgba(0,0,0,.92)); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); }
+.lc-teen .lc-chTitle { font-family:'Michroma','Bricolage Grotesque',system-ui,sans-serif; font-weight:400; font-size:84px; letter-spacing:.16em; text-transform:uppercase; color:#fff; text-shadow:0 0 40px rgba(255,192,0,.25); }
+.lc-teen .lc-chIco { border-radius:0; clip-path:polygon(20px 0,100% 0,100% calc(100% - 20px),calc(100% - 20px) 100%,0 100%,0 20px); background:#FFC000; box-shadow:none; padding:24px; box-sizing:border-box; }
+.lc-teen .lc-chSub { font-family:'Michroma',system-ui,sans-serif; font-size:.9rem; letter-spacing:.3em; text-transform:uppercase; border-radius:0; background:transparent; border:0; border-top:1px solid #FFC000; color:#FFC000; padding:12px 0 0; }
+.lc-teen .lc-jar { border-radius:0; clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%); background:#0E0E11; color:#fff; box-shadow:inset 0 -2px 0 #FFC000; font-family:'Michroma',system-ui,sans-serif; }
+.lc-teen .lc-veil b { font-family:'Michroma',system-ui,sans-serif; color:#FFC000; text-shadow:0 0 40px rgba(255,192,0,.5); }
+.lc-teen .lc-veil span { border-radius:0; background:#0E0E11; color:#FFC000; font-family:'Michroma',system-ui,sans-serif; font-size:.8rem; letter-spacing:.2em; text-transform:uppercase; animation:none; box-shadow:inset 0 -2px 0 #FFC000; }
+.lc-teen .lc-veil { background:radial-gradient(circle at 50% 45%, rgba(0,0,0,.35), rgba(0,0,0,.1) 60%, transparent 80%); }
+.lc-teen .lc-fnIn { border-radius:0; border:0; clip-path:polygon(30px 0,100% 0,100% calc(100% - 30px),calc(100% - 30px) 100%,0 100%,0 30px); background:#0E0E11; box-shadow:none; color:#fff; }
+.lc-teen .lc-fnIn h2 { font-family:'Michroma',system-ui,sans-serif; font-weight:400; font-size:2.4rem; letter-spacing:.12em; text-transform:uppercase; color:#FFC000; }
+.lc-teen .lc-fnIn p b { color:#FFC000; }
+.lc-teen .lc-fill { background:linear-gradient(90deg,#FFC000,#FFE27A); box-shadow:0 0 14px rgba(255,192,0,.6); }
+.lc-teen .lc-me { border-color:#FFC000; box-shadow:0 0 14px rgba(255,192,0,.5); }
+.lc-teen .lc-stop { border-radius:0; background:#0E0E11; box-shadow:inset 0 0 0 1px rgba(255,255,255,.2); }
+.lc-teen .lc-stop.done { box-shadow:inset 0 0 0 2px #FFC000; }
+.lc-teen .lc-w.on { background:#FFC000; color:#111; box-shadow:0 0 0 .12em #FFC000; }
+.lc-teen #nextBtn.lc-build { background:#FFC000; color:#111; }
+
+/* ---------- premium pass for the kids (iPhone-quality polish): bubble, chapter card, jar, veil, finale ---------- */
+.lc-kid .lc-bubble { font-family:'Nunito',system-ui,sans-serif; font-weight:900; letter-spacing:-.02em; color:#1D1D1F; border:0; border-radius:28px;
+  background:rgba(255,255,255,.9); -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px); box-shadow:0 1px 0 #fff inset, 0 30px 50px -20px rgba(40,24,8,.55); }
+.lc-kid .lc-bubble::after { border-top-color:rgba(255,255,255,.9); bottom:-16px; }
+.lc-kid .lc-bubble::before { display:none; }
+.lc-kid .lc-chBg { background:radial-gradient(90% 80% at 50% 40%, rgba(30,18,6,.35), rgba(12,8,2,.72)); -webkit-backdrop-filter:blur(18px) saturate(1.4); backdrop-filter:blur(18px) saturate(1.4); }
+.lc-kid .lc-chTitle { font-family:'Nunito',system-ui,sans-serif; font-weight:900; font-size:132px; letter-spacing:-.05em; -webkit-text-stroke:0; color:#fff; text-shadow:0 20px 50px rgba(0,0,0,.45); }
+.lc-kid .lc-chIco { width:150px; height:150px; padding:26px; box-sizing:border-box; border-radius:44px; background:rgba(255,255,255,.18); -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px); box-shadow:inset 0 1px 0 rgba(255,255,255,.4), 0 30px 60px -20px rgba(0,0,0,.6); filter:none; }
+.lc-kid .lc-chSub { font-family:'Nunito',system-ui,sans-serif; font-weight:800; font-size:1.4rem; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.3); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); }
+.lc-kid .lc-jar { font-family:'Nunito',system-ui,sans-serif; color:#1D1D1F; background:rgba(255,255,255,.85); -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px); box-shadow:0 1px 0 #fff inset, 0 16px 26px -12px rgba(40,24,8,.5); }
+.lc-kid .lc-jar .lc-jarN { font-weight:900; }
+.lc-kid .lc-veil b { font-family:'Nunito',system-ui,sans-serif; font-weight:900; -webkit-text-stroke:0; background:linear-gradient(180deg,#FFA43A,#F2600C); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow:none; filter:drop-shadow(0 20px 26px rgba(242,96,12,.4)); }
+.lc-kid .lc-veil span { font-family:'Nunito',system-ui,sans-serif; font-weight:900; background:rgba(29,29,31,.85); box-shadow:0 14px 26px -12px rgba(0,0,0,.6); animation:none; }
+.lc-kid .lc-veil { background:radial-gradient(circle at 50% 45%, rgba(255,255,255,.55), rgba(255,255,255,.15) 60%, transparent 80%); }
+.lc-kid .lc-fnIn { font-family:'Nunito',system-ui,sans-serif; border:0; border-radius:44px; background:rgba(255,255,255,.88); -webkit-backdrop-filter:blur(24px); backdrop-filter:blur(24px); box-shadow:0 1px 0 #fff inset, 0 50px 90px -30px rgba(0,0,0,.6); color:#1D1D1F; }
+.lc-kid .lc-fnIn h2 { font-weight:900; letter-spacing:-.04em; color:#1D1D1F; }
+.lc-kid .lc-fnIn p b { color:#F2600C; }
+.lc-kid .lc-stop { background:rgba(255,255,255,.9); }
+.lc-kid #nextBtn.lc-build { background:linear-gradient(180deg,#1D1D1F,#000); }
+
+/* ---------- premium pass for the teens (matte black, cut corners, one gold accent) ---------- */
+.lc-teen .lc-bubble { font-family:'Michroma','Bricolage Grotesque',system-ui,sans-serif; font-weight:400; font-size:1.05rem; letter-spacing:.08em; text-transform:uppercase; color:#fff;
+  background:#0E0E11; border:0; border-bottom:2px solid #FFC000; border-radius:0; clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px); box-shadow:none; }
+.lc-teen .lc-bubble::after, .lc-teen .lc-bubble::before { display:none; }
+.lc-teen .lc-chBg { background:linear-gradient(180deg, rgba(0,0,0,.82), rgba(0,0,0,.92)); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); }
+.lc-teen .lc-chTitle { font-family:'Michroma','Bricolage Grotesque',system-ui,sans-serif; font-weight:400; font-size:84px; letter-spacing:.16em; text-transform:uppercase; color:#fff; text-shadow:0 0 40px rgba(255,192,0,.25); }
+.lc-teen .lc-chIco { border-radius:0; clip-path:polygon(20px 0,100% 0,100% calc(100% - 20px),calc(100% - 20px) 100%,0 100%,0 20px); background:#FFC000; box-shadow:none; padding:24px; box-sizing:border-box; }
+.lc-teen .lc-chSub { font-family:'Michroma',system-ui,sans-serif; font-size:.9rem; letter-spacing:.3em; text-transform:uppercase; border-radius:0; background:transparent; border:0; border-top:1px solid #FFC000; color:#FFC000; padding:12px 0 0; }
+.lc-teen .lc-jar { border-radius:0; clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%); background:#0E0E11; color:#fff; box-shadow:inset 0 -2px 0 #FFC000; font-family:'Michroma',system-ui,sans-serif; }
+.lc-teen .lc-veil b { font-family:'Michroma',system-ui,sans-serif; color:#FFC000; text-shadow:0 0 40px rgba(255,192,0,.5); }
+.lc-teen .lc-veil span { border-radius:0; background:#0E0E11; color:#FFC000; font-family:'Michroma',system-ui,sans-serif; font-size:.8rem; letter-spacing:.2em; text-transform:uppercase; animation:none; box-shadow:inset 0 -2px 0 #FFC000; }
+.lc-teen .lc-veil { background:radial-gradient(circle at 50% 45%, rgba(0,0,0,.35), rgba(0,0,0,.1) 60%, transparent 80%); }
+.lc-teen .lc-fnIn { border-radius:0; border:0; clip-path:polygon(30px 0,100% 0,100% calc(100% - 30px),calc(100% - 30px) 100%,0 100%,0 30px); background:#0E0E11; box-shadow:none; color:#fff; }
+.lc-teen .lc-fnIn h2 { font-family:'Michroma',system-ui,sans-serif; font-weight:400; font-size:2.4rem; letter-spacing:.12em; text-transform:uppercase; color:#FFC000; }
+.lc-teen .lc-fnIn p b { color:#FFC000; }
+.lc-teen .lc-fill { background:linear-gradient(90deg,#FFC000,#FFE27A); box-shadow:0 0 14px rgba(255,192,0,.6); }
+.lc-teen .lc-me { border-color:#FFC000; box-shadow:0 0 14px rgba(255,192,0,.5); }
+.lc-teen .lc-stop { border-radius:0; background:#0E0E11; box-shadow:inset 0 0 0 1px rgba(255,255,255,.2); }
+.lc-teen .lc-stop.done { box-shadow:inset 0 0 0 2px #FFC000; }
+.lc-teen .lc-w.on { background:#FFC000; color:#111; box-shadow:0 0 0 .12em #FFC000; }
+.lc-teen #nextBtn.lc-build { background:#FFC000; color:#111; }

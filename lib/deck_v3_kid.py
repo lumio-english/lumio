@@ -104,7 +104,7 @@ def slide_lets_learn(lesson, n, total, num_words):
       <div class="v3-quote" style="font-size:2.6rem;margin:14px 0 22px">{esc(lesson.get("goal", ""))}</div>
       <span class="v3-chip">{ico("cards")}{num_words} new words &bull; {esc(lesson.get("grammarFocus", ""))}</span>
     </div>
-    <div class="v3-paper" style="left:740px;top:200px;width:380px;padding:30px 32px;transform:rotate(1.5deg)">
+    <div class="v3-paper" style="left:740px;top:200px;width:380px;padding:30px 32px">
       <div class="v3-label t">{ico("flame")} Warm-up</div>
       <div class="v3-quote" style="font-size:1.75rem;margin-top:12px">Stand up, stretch, and say hello to a friend! &#10024;</div>
     </div>
@@ -326,8 +326,8 @@ def your_turn_html(w, idx, total_rounds, teen, chars_html=""):
     en, ar = w["en"], w.get("ar", "")
     steps = "".join(f'<span class="v3-chip" style="background:#fff">{t}</span>' for t in ("1 Play the word", "2 Say the Arabic", "3 Reveal"))
     return f'''
-    <div class="v3-photo" style="left:150px;top:160px;width:420px;height:420px"><div class="pic" id="ytCard{idx}" style="display:grid;place-items:center;background:linear-gradient(135deg,#FFF3D6,#FFD9A8)">
-      <div id="ytMystery{idx}" style="font-family:var(--display);font-weight:800;font-size:12rem;line-height:1;color:#fff;-webkit-text-stroke:8px var(--orange);paint-order:stroke fill;text-shadow:0 10px 0 #C2410C">?</div>
+    <div class="v3-photo" style="left:150px;top:160px;width:420px;height:420px"><div class="pic" id="ytCard{idx}" style="display:grid;place-items:center">
+      <div id="ytMystery{idx}" style="font-family:var(--display);font-weight:800;font-size:13rem;line-height:1;background:linear-gradient(180deg,#FFA43A,#F2600C);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 20px 24px rgba(242,96,12,.35))">?</div>
       <img id="ytImg{idx}" src="{vimg(w)}" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;padding:14px" alt="" onerror="this.style.display='none'">
     </div></div>
     <div class="v3-paper" style="left:640px;top:170px;width:520px;padding:30px 34px;text-align:center">
@@ -458,8 +458,8 @@ def slide_reward_homework(lesson_num, n, total, has_story=False):
 def _a_card(kid, extra=""):
     if not kid:
         return _orig_a_card(kid, extra)
-    return ("background:radial-gradient(120% 80% at 90% 0%,rgba(255,255,255,.85),transparent 55%),#FFF9EE;border-radius:24px;"
-            "box-shadow:0 0 0 5px rgba(255,255,255,.9),0 22px 40px -16px rgba(70,35,8,.55);" + extra)
+    return ("background:rgba(255,255,255,.76);-webkit-backdrop-filter:blur(24px) saturate(1.7);backdrop-filter:blur(24px) saturate(1.7);border-radius:28px;"
+            "border:1px solid rgba(255,255,255,.85);box-shadow:0 30px 60px -30px rgba(40,24,8,.55),0 10px 24px -12px rgba(40,24,8,.25);" + extra)
 
 
 def _a_btn(label, onclick, color="#F97316", color2="#EA580C", extra=""):
@@ -472,8 +472,8 @@ def _a_band(kid, title, pairs, solo, top=128):
         return _orig_a_band(kid, title, pairs, solo, top)
     return f'''
     <div style="position:absolute;left:60px;right:60px;top:{top - 6}px;z-index:6;display:flex;gap:18px">
-      <div class="v3-note" style="position:relative;width:auto;flex:1;transform:rotate(-1deg)"><b class="k">{ico("people")}Pairs / group</b>{pairs}</div>
-      <div class="v3-note" style="position:relative;width:auto;flex:1;transform:rotate(1deg);background:linear-gradient(180deg,#DDF7F2,#BDEDE3);color:#0B4F48"><b class="k" style="color:#0B7A6F">{ico("user")}1-on-1 with your teacher</b>{solo}</div>
+      <div class="v3-note" style="position:relative;width:auto;flex:1"><b class="k">{ico("people")}Pairs / group</b>{pairs}</div>
+      <div class="v3-note" style="position:relative;width:auto;flex:1;background:linear-gradient(180deg,rgba(214,244,250,.9),rgba(190,234,244,.84));color:#0B4F5C"><b class="k" style="color:#0B7A6F">{ico("user")}1-on-1 with your teacher</b>{solo}</div>
     </div>'''
 
 
