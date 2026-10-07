@@ -106,6 +106,9 @@ LETTER_COLORS = ["#F97316", "#0D9488", "#F59E0B", "#2DD4BF", "#DC5C33"]
 
 def esc(s):
     return (s or "").replace("&", "&amp;").replace('"', "&quot;")
+def jsq(s):
+    # text inside a JS string in an onclick="…('…')" attribute: escape the apostrophe too ("It's", "o'clock")
+    return esc(s).replace("\\", "\\\\").replace("'", "\\'")
 
 def slug(w):
     return w.lower().replace("'", "").replace(" ", "-")
@@ -307,11 +310,11 @@ def slide_vocab(w, idx, n, total, num_words, ch):
       <div style="border-top:1.5px solid #F5EEE1;margin:24px 0 18px"></div>
       <div style="font-size:.82rem;font-weight:800;color:#F97316;letter-spacing:1.8px;margin-bottom:8px">SAY IT</div>
       <div style="font-family:'Baloo 2',sans-serif;font-style:italic;font-weight:700;font-size:1.4rem;color:#43301F;margin-bottom:24px">&ldquo;{esc(quote)}&rdquo;</div>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(w["en"])}')" style="cursor:pointer;border:none;display:inline-block;
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{jsq(w["en"])}')" style="cursor:pointer;border:none;display:inline-block;
                   background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;font-family:inherit;
                   padding:15px 32px;border-radius:999px;font-size:1.05rem;box-shadow:0 8px 18px rgba(249,115,22,.4)">&#9654; Listen &rarr; Repeat &times;3</button>
     </div>
-    <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(w["en"])}')" style="position:absolute;left:46px;bottom:32px;z-index:20;
+    <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{jsq(w["en"])}')" style="position:absolute;left:46px;bottom:32px;z-index:20;
                 cursor:pointer;border:none;background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;font-family:inherit;
                 padding:13px 28px;border-radius:999px;font-size:1.02rem;box-shadow:0 8px 18px rgba(249,115,22,.35)">&#9654; Listen</button>
     ''' + char_img(ch, right=84, bottom=28, height=250))
@@ -436,7 +439,7 @@ def slide_your_turn(w, idx, total_rounds, n, total, ch):
         <div style="font-size:1rem;color:#8A7160;font-weight:700;margin-top:14px">Ask your student to say it, then tap below to hear it.</div>
       </div>
     </div>
-    <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(w["en"])}'); if(typeof Lumio !== 'undefined' && Lumio.confetti) Lumio.confetti(40); this.textContent='{esc(w["en"])} \\u2014 {w["ar"]}'; this.style.background='linear-gradient(135deg,#4ADE80,#16A34A)'"
+    <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{jsq(w["en"])}'); if(typeof Lumio !== 'undefined' && Lumio.confetti) Lumio.confetti(40); this.textContent='{esc(w["en"])} \\u2014 {w["ar"]}'; this.style.background='linear-gradient(135deg,#4ADE80,#16A34A)'"
             style="position:absolute;left:46px;bottom:32px;z-index:20;cursor:pointer;border:none;font-family:inherit;
             background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;padding:13px 28px;border-radius:999px;
             font-size:1.02rem;box-shadow:0 8px 18px rgba(249,115,22,.35)">&#9654; Reveal answer</button>
@@ -450,7 +453,7 @@ def slide_quiz(target, distractors, idx, total_q, n, total):
     buttons = ""
     for o, (l, t) in zip(opts, positions):
         buttons += f'''
-      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{esc(o["en"])}', '{esc(target["en"])}')"
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{jsq(o["en"])}', '{jsq(target["en"])}')"
               style="position:absolute;left:{l}px;top:{t}px;width:260px;height:84px;
                   background:#fff;border:2.5px solid #F0E9DD;border-radius:16px;display:flex;align-items:center;justify-content:center;
                   font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.25rem;color:#43301F;cursor:pointer" data-quiz-option="{esc(o["en"])}">{esc(o["en"])}</button>'''

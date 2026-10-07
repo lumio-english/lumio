@@ -15,6 +15,9 @@ CHAR = "assets/story/characters"
 
 def esc(s):
     return (s or "").replace("&", "&amp;").replace('"', "&quot;")
+def jsq(s):
+    # text inside a JS string in an onclick="…('…')" attribute: escape the apostrophe too ("It's", "o'clock")
+    return esc(s).replace("\\", "\\\\").replace("'", "\\'")
 def slug(w):
     return w.lower().replace("'", "").replace(" ", "-")
 
@@ -228,7 +231,7 @@ def slide_vocab(w, idx, n, total, num_words, ch, verb_count=0):
       <div style="border-top:1.5px solid #F5EEE1;margin:24px 0 18px"></div>
       <div style="font-size:.82rem;font-weight:800;color:#F97316;letter-spacing:1.8px;margin-bottom:8px">SAY IT</div>
       <div style="font-family:'Baloo 2',sans-serif;font-style:italic;font-weight:700;font-size:1.4rem;color:#43301F;margin-bottom:24px">&ldquo;{esc(quote)}&rdquo;</div>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(w["en"])}')" style="cursor:pointer;border:none;display:inline-block;
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{jsq(w["en"])}')" style="cursor:pointer;border:none;display:inline-block;
                   background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;font-family:inherit;
                   padding:15px 32px;border-radius:999px;font-size:1.05rem;box-shadow:0 8px 18px rgba(249,115,22,.4)">&#9654; Listen &rarr; Repeat &times;3</button>
     </div>
@@ -306,7 +309,7 @@ def slide_letter_word(w, letter, n, total, ch):
       <div style="border-top:1.5px solid #F5EEE1;margin:24px 0 18px"></div>
       <div style="font-size:.82rem;font-weight:800;color:#F97316;letter-spacing:1.8px;margin-bottom:8px">SAY IT</div>
       <div style="font-family:'Baloo 2',sans-serif;font-style:italic;font-weight:700;font-size:1.4rem;color:#43301F;margin-bottom:24px">&ldquo;{esc(quote)}&rdquo;</div>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(w["en"])}')" style="cursor:pointer;border:none;display:inline-block;
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{jsq(w["en"])}')" style="cursor:pointer;border:none;display:inline-block;
                   background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;font-family:inherit;
                   padding:15px 32px;border-radius:999px;font-size:1.05rem;box-shadow:0 8px 18px rgba(249,115,22,.4)">&#9654; Listen &rarr; Repeat &times;3</button>
     </div>
@@ -616,7 +619,7 @@ def slide_sound_spot(vocab, n, total, ch):
     cards = ""
     for w in vocab:
         cards += f'''
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(w["en"])}')"
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{jsq(w["en"])}')"
               style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
                     box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
         <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/{slug(w.get('image') or w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
@@ -721,7 +724,7 @@ def slide_quick_check(target, distractors, idx, total_q, n, total, seed, tier="p
         buttons = ""
         for o, (l, t) in zip(opts, positions):
             buttons += f'''
-          <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{esc(o["en"])}', '{esc(target["en"])}')"
+          <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{jsq(o["en"])}', '{jsq(target["en"])}')"
                   style="position:absolute;left:{l}px;top:{t}px;width:180px;height:100px;background:#fff;border:3px solid #F0E9DD;border-radius:16px;
                       padding:8px;cursor:pointer;display:flex;align-items:center;justify-content:center" data-quiz-option="{esc(o["en"])}">
             <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.15rem;color:#43301F;text-align:center">{esc(o["en"])}</div>
@@ -732,7 +735,7 @@ def slide_quick_check(target, distractors, idx, total_q, n, total, seed, tier="p
         buttons = ""
         for o, (l, t) in zip(opts, positions):
             buttons += f'''
-          <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{esc(o["en"])}', '{esc(target["en"])}')"
+          <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{jsq(o["en"])}', '{jsq(target["en"])}')"
                   style="position:absolute;left:{l}px;top:{t}px;width:260px;height:84px;background:#fff;border:2.5px solid #F0E9DD;border-radius:16px;
                       display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.25rem;
                       color:#43301F;cursor:pointer" data-quiz-option="{esc(o["en"])}">{esc(o["en"])}</button>'''
@@ -912,7 +915,7 @@ def slide_quiz(target, distractors, idx, total_q, n, total, seed):
     buttons = ""
     for o, (l, t) in zip(opts, positions):
         buttons += f'''
-      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{esc(o["en"])}', '{esc(target["en"])}')"
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{jsq(o["en"])}', '{jsq(target["en"])}')"
               style="position:absolute;left:{l}px;top:{t}px;width:260px;height:84px;background:#fff;border:2.5px solid #F0E9DD;border-radius:16px;
                   display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.25rem;
                   color:#43301F;cursor:pointer" data-quiz-option="{esc(o["en"])}">{esc(o["en"])}</button>'''
@@ -947,7 +950,7 @@ def slide_phonics_rule(unit, n, total, ch):
         tiles = ""
         for w in unit.get("words", []):
             tiles += f'''
-          <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(w["en"])}')"
+          <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{jsq(w["en"])}')"
                   style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:14px;padding:12px 18px;min-width:96px;
                         text-align:center;box-shadow:0 8px 16px rgba(67,48,31,.14)">
             <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;color:#F97316">{esc(w["en"])}</div>
@@ -970,7 +973,7 @@ def slide_phonics_practice(unit, n, total, ch):
     cards = ""
     for w in words[:6]:
         cards += f'''
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(w["en"])}')"
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{jsq(w["en"])}')"
               style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:14px 10px;
                     box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:8px;width:160px">
         {letter_tiles(w["en"]) or f'<div style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:1.4rem;color:#43301F">{esc(w["en"])}</div>'}
@@ -998,13 +1001,13 @@ def slide_sound_match(target_word, distractor_words, idx, total_q, n, total, see
     buttons = ""
     for o, (l, t) in zip(opts, positions):
         buttons += f'''
-      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{esc(o["en"])}', '{esc(target_word["en"])}')"
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{jsq(o["en"])}', '{jsq(target_word["en"])}')"
               style="position:absolute;left:{l}px;top:{t}px;width:230px;height:96px;background:#fff;border:2.5px solid #F0E9DD;border-radius:16px;
                   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer" data-quiz-option="{esc(o["en"])}">
         {letter_tiles(o["en"]) or f'<div style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:1.15rem;color:#43301F">{esc(o["en"])}</div>'}
       </button>'''
     return (bg_plain() + header(f"Sound Match &bull; {idx}/{total_q}", n, total) + COLORSTRIP + f'''
-    <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(target_word["en"])}')"
+    <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{jsq(target_word["en"])}')"
             style="position:absolute;left:80px;top:280px;width:180px;height:180px;border:none;cursor:pointer;background:linear-gradient(135deg,#0D9488,#0B7A6F);
                    border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#fff">
       <span style="font-size:2.2rem">&#128266;</span>
@@ -1030,7 +1033,7 @@ def slide_teacher_game(vocab, n, total, ch, tier="preA", mode="teacher"):
     for w in vocab:
         show_word = tier != "preA"
         tiles += f'''
-      <button onclick="this.style.transform='scale(0.92)'; this.style.borderColor='#0D9488'; setTimeout(() => {{ this.style.transform='scale(1)'; }}, 180); typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(w["en"])}')"
+      <button onclick="this.style.transform='scale(0.92)'; this.style.borderColor='#0D9488'; setTimeout(() => {{ this.style.transform='scale(1)'; }}, 180); typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{jsq(w["en"])}')"
               style="flex:0 0 auto;width:{tile_w}px;height:{tile_h}px;background:#fff;border:3px solid #F0E9DD;border-radius:18px;
                   padding:8px;cursor:pointer;transition:transform .15s ease, border-color .15s ease;display:flex;flex-direction:column;align-items:center;gap:4px">
         <div style="width:100%;flex:1;overflow:hidden"><img src="assets/vocab/{slug(w.get('image') or w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>

@@ -9,6 +9,9 @@ import json
 
 def esc(s):
     return (s or "").replace("&", "&amp;").replace('"', "&quot;")
+def jsq(s):
+    # text inside a JS string in an onclick="…('…')" attribute: escape the apostrophe too ("It's", "o'clock")
+    return esc(s).replace("\\", "\\\\").replace("'", "\\'")
 
 
 def match_grammar_by_lesson_focus(level, lessons):
@@ -160,7 +163,7 @@ def slide_grammar_mcq(topic, q, idx, total_q, n, total, ch, header_fn, colorstri
     correct = q["answer"]
     positions = [(120, 300), (470, 300), (120, 400), (470, 400)]
     buttons = "".join(f'''
-      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{esc(o)}', '{esc(correct)}')"
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{jsq(o)}', '{jsq(correct)}')"
               style="position:absolute;left:{l}px;top:{t}px;width:330px;height:80px;background:#fff;border:3px solid #F0E9DD;border-radius:16px;
                      padding:8px 14px;cursor:pointer;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.05rem;color:#43301F;text-align:center" data-quiz-option="{esc(o)}">{esc(o)}</button>'''
         for o, (l, t) in zip(q["options"], positions))

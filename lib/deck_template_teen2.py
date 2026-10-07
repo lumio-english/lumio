@@ -9,7 +9,7 @@ adds new slide types + per-lesson visual theming + larger characters.
 """
 import deck_template_teen as v1
 from deck_template_teen import (
-    esc, slug, INK, INK_DIM, BG_DARK, BG_DARKER, CARD_BG, CARD_TEXT,
+    esc, jsq, slug, INK, INK_DIM, BG_DARK, BG_DARKER, CARD_BG, CARD_TEXT,
     PURPLE, PURPLE_DEEP, ORANGE, ORANGE_DEEP, TEAL, TEAL_DEEP, BORDER,
     CHAR, card_open, xp_pill, VOCAB_CHARS, DOT_GRID,
     slide_vocab, slide_quiz, slide_today_i_learned, slide_reward_homework,
@@ -253,7 +253,7 @@ def slide_vocab_mcq(vocab_list, mode, idx, total_q, n, total, theme_key="default
     buttons = ""
     for o, (l, t) in zip(opts, positions):
         buttons += f'''
-      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{esc(o["en"])}', '{esc(target["en"])}')"
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{jsq(o["en"])}', '{jsq(target["en"])}')"
               style="position:absolute;left:{l}px;top:{t}px;width:250px;height:76px;background:{CARD_BG};border:1px solid #EEF0F4;border-radius:10px;
                   display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.05rem;
                   color:{CARD_TEXT};cursor:pointer" data-quiz-option="{esc(o["en"])}">{esc(o["en"])}</button>'''
@@ -403,7 +403,7 @@ def slide_grammar_mcq(sentences, idx, total_q, n, total, theme_key="default"):
         attempts += 1
     opts = distractors + [correct_word]
     rng.shuffle(opts)
-    opt_buttons = "".join(f'''<button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{esc(o)}', '{esc(correct_word)}')"
+    opt_buttons = "".join(f'''<button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{jsq(o)}', '{jsq(correct_word)}')"
         data-quiz-option="{esc(o)}" style="border:2px solid #EEF0F4;background:#fff;border-radius:10px;padding:14px;
         font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.05rem;color:{CARD_TEXT};cursor:pointer">{esc(o)}</button>''' for o in opts)
     sentence_display = f"{esc(before)} ___ {esc(after)}".strip() if before else f"___ {esc(after)}".strip()

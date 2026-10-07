@@ -35,6 +35,9 @@ BORDER = "#4A3B7A"
 
 def esc(s):
     return (s or "").replace("&", "&amp;").replace('"', "&quot;")
+def jsq(s):
+    # text inside a JS string in an onclick="…('…')" attribute: escape the apostrophe too ("It's", "o'clock")
+    return esc(s).replace("\\", "\\\\").replace("'", "\\'")
 def slug(w):
     return w.lower().replace("'", "").replace(" ", "-")
 
@@ -257,7 +260,7 @@ def slide_vocab(w, idx, n, total, num_words, ch, verb_count=0):
         <div style="border-top:1px solid #EEF0F4;margin:20px 0 16px"></div>
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:{ORANGE_DEEP};font-size:.75rem;letter-spacing:1.5px;margin-bottom:8px">EXAMPLE</div>
         <div style="font-family:'Nunito',sans-serif;font-style:italic;font-weight:700;font-size:1.15rem;color:{CARD_TEXT};margin-bottom:20px">&ldquo;{esc(quote)}&rdquo;</div>
-        <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(w["en"])}')" style="cursor:pointer;border:none;
+        <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{jsq(w["en"])}')" style="cursor:pointer;border:none;
                   background:linear-gradient(135deg,{ORANGE},{ORANGE_DEEP});color:#fff;font-weight:600;font-family:'Fredoka',sans-serif;
                   padding:12px 26px;border-radius:10px;font-size:.9rem">&#9654; Listen</button>
       </div>
@@ -397,7 +400,7 @@ def slide_sentence_trio(sentences, n, total, ch, seed):
 
 def slide_sound_spot(vocab, n, total, ch):
     cards = "".join(f'''
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(w["en"])}')"
+      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{jsq(w["en"])}')"
               style="border:none;cursor:pointer;font-family:inherit;background:{CARD_BG};border-radius:10px;padding:10px;
                     box-shadow:0 8px 16px rgba(0,0,0,.2);display:flex;flex-direction:column;align-items:center;gap:6px;width:140px">
         <div style="width:100px;height:100px;border-radius:8px;overflow:hidden;background:#F8FAFC"><img src="assets/vocab/{slug(w.get('image') or w['en'])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
@@ -463,7 +466,7 @@ def slide_quiz(target, distractors, idx, total_q, n, total, seed):
     buttons = ""
     for o, (l, t) in zip(opts, positions):
         buttons += f'''
-      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{esc(o["en"])}', '{esc(target["en"])}')"
+      <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, '{jsq(o["en"])}', '{jsq(target["en"])}')"
               style="position:absolute;left:{l}px;top:{t}px;width:250px;height:76px;background:{CARD_BG};border:1px solid #EEF0F4;border-radius:10px;
                   display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.05rem;
                   color:{CARD_TEXT};cursor:pointer" data-quiz-option="{esc(o["en"])}">{esc(o["en"])}</button>'''
