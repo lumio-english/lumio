@@ -371,7 +371,7 @@ if (!vocab.length) {
       const parts = [...dialogueContext.children];
       G.set(dialogueContext, { opacity: 1 });
       await Promise.race([LP.wait(3500), new Promise(res => G.timeline({ onComplete: res }).fromTo(parts, { opacity: 0, y: (i, el) => b.y - LP.center(el).y, scale: .4, filter: "blur(12px)" },
-        { opacity: 1, y: 0, scale: 1, filter: "blur(0px)", duration: .9, ease: "power2.out", stagger: .35 }));
+        { opacity: 1, y: 0, scale: 1, filter: "blur(0px)", duration: .9, ease: "power2.out", stagger: .35 }))]);
     }
     return { cards, answer: correct };
   }
@@ -397,7 +397,7 @@ if (!vocab.length) {
     await Promise.race([LP.wait(3500), new Promise(res => G.timeline({ onComplete: res })
       .fromTo(orb, { x: a.x, y: a.y, scale: .15, opacity: 0 }, { x: a.x + 10, y: upY, scale: 1, opacity: 1, duration: .8, ease: "power2.out" })
       .to(orb, { x: a.x - 8, duration: .35, ease: "sine.inOut" })
-      .to(orb, { x: s.x, y: s.y, scale: (slot.offsetWidth / 118), duration: .6, ease: "power3.in" }));
+      .to(orb, { x: s.x, y: s.y, scale: (slot.offsetWidth / 118), duration: .6, ease: "power3.in" }))]);
     orb.remove(); LP.sfx("coin"); fill();
     LP.burst(s.x, s.y, { n: 14, shape: "star", colors: ["#E9D5FF", "#C4B5FD", "#FFE27A"], ringColor: "#C4B5FD", speed: 4 });
   }
