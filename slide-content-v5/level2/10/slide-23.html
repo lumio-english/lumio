@@ -39,7 +39,7 @@
         </div></div></div>
         <div style="display:flex;gap:10px;align-items:center">
           <button class="v3-btn s ghost" onclick="LumioAct.cycle('frPanels',-1)" style=""><span class="v3-bl">&#9664; Back</span></button>
-          <span data-act-counter="frPanels" style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#8A7160">1 / 9</span>
+          <span data-act-counter="frPanels" style="font-family:'Nunito',system-ui,sans-serif;font-weight:800;color:#6E6E73">1 / 9</span>
           <button class="v3-btn s " onclick="LumioAct.cycle('frPanels',1)" style=""><span class="v3-gl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor" stroke="none"/></svg></span><span class="v3-bl">Next</span></button>
           <button class="v3-btn s teal" onclick="LumioAct.random('frPanels')" style=""><span class="v3-gl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="9" cy="9" r="1.4" fill="currentColor" stroke="none"/><circle cx="15" cy="15" r="1.4" fill="currentColor" stroke="none"/><circle cx="15" cy="9" r="1.4" fill="currentColor" stroke="none"/><circle cx="9" cy="15" r="1.4" fill="currentColor" stroke="none"/></svg></span><span class="v3-bl">Random</span></button>
         </div>
@@ -49,14 +49,14 @@
           <div style="font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#0D9488;margin-bottom:6px">TEAM SCORES</div>
           <div style="display:flex;flex-direction:column;gap:8px">
       <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.76);-webkit-backdrop-filter:blur(24px) saturate(1.7);backdrop-filter:blur(24px) saturate(1.7);border-radius:28px;border:1px solid rgba(255,255,255,.85);box-shadow:0 30px 60px -30px rgba(40,24,8,.55),0 10px 24px -12px rgba(40,24,8,.25);padding:6px 10px 6px 14px">
-        <span style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#F97316;font-size:.9rem">Team A</span>
-        <span data-act-score style="display:inline-block;min-width:34px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;color:#43301F;transition:transform .15s">0</span>
+        <span style="font-family:'Nunito',system-ui,sans-serif;font-weight:800;color:#F97316;font-size:.9rem">Team A</span>
+        <span data-act-score style="display:inline-block;min-width:34px;text-align:center;font-family:'Nunito',system-ui,sans-serif;font-weight:800;font-size:1.3rem;color:#1D1D1F;transition:transform .15s">0</span>
         <button onclick="LumioAct.score(this,1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#F97316;color:#fff;font-weight:900;font-size:1rem">+</button>
         <button onclick="LumioAct.score(this,-1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#E5E7EB;color:#6B7280;font-weight:900;font-size:1rem">&minus;</button>
       </div>
       <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.76);-webkit-backdrop-filter:blur(24px) saturate(1.7);backdrop-filter:blur(24px) saturate(1.7);border-radius:28px;border:1px solid rgba(255,255,255,.85);box-shadow:0 30px 60px -30px rgba(40,24,8,.55),0 10px 24px -12px rgba(40,24,8,.25);padding:6px 10px 6px 14px">
-        <span style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#0D9488;font-size:.9rem">Team B</span>
-        <span data-act-score style="display:inline-block;min-width:34px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;color:#43301F;transition:transform .15s">0</span>
+        <span style="font-family:'Nunito',system-ui,sans-serif;font-weight:800;color:#0D9488;font-size:.9rem">Team B</span>
+        <span data-act-score style="display:inline-block;min-width:34px;text-align:center;font-family:'Nunito',system-ui,sans-serif;font-weight:800;font-size:1.3rem;color:#1D1D1F;transition:transform .15s">0</span>
         <button onclick="LumioAct.score(this,1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#0D9488;color:#fff;font-weight:900;font-size:1rem">+</button>
         <button onclick="LumioAct.score(this,-1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#E5E7EB;color:#6B7280;font-weight:900;font-size:1rem">&minus;</button>
       </div></div>
@@ -65,7 +65,7 @@
           <div style="font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#F97316;margin-bottom:6px">1-ON-1 STARS</div>
           <div id="frStars" style="display:flex;gap:4px;justify-content:center"><span data-star="0" style="font-size:2rem;opacity:.25;transition:transform .2s"><i class="v3-ico" data-ico="star"></i></span><span data-star="0" style="font-size:2rem;opacity:.25;transition:transform .2s"><i class="v3-ico" data-ico="star"></i></span><span data-star="0" style="font-size:2rem;opacity:.25;transition:transform .2s"><i class="v3-ico" data-ico="star"></i></span><span data-star="0" style="font-size:2rem;opacity:.25;transition:transform .2s"><i class="v3-ico" data-ico="star"></i></span><span data-star="0" style="font-size:2rem;opacity:.25;transition:transform .2s"><i class="v3-ico" data-ico="star"></i></span></div>
           <div style="display:flex;justify-content:center;margin-top:8px"><button class="v3-btn s gold" onclick="LumioAct.star('frStars')" style=""><span class="v3-gl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8 6.8 19.6l1-5.8-4.3-4.1 5.9-.8z" fill="currentColor" stroke="none"/></svg></span><span class="v3-bl">Got it!</span></button></div>
-          <div data-act-stars-done="frStars" style="display:none;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:800;color:#0D9488;margin-top:8px"><i class="v3-ico" data-ico="sparkle"></i> Five stars &mdash; you win!</div>
+          <div data-act-stars-done="frStars" style="display:none;text-align:center;font-family:'Nunito',system-ui,sans-serif;font-weight:800;color:#0D9488;margin-top:8px"><i class="v3-ico" data-ico="sparkle"></i> Five stars &mdash; you win!</div>
         </div>
       </div>
     </div>
