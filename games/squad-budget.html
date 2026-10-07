@@ -199,15 +199,14 @@ const G = window.gsap, RM = LP.RM, esc = LP.esc;
 const $ = id => document.getElementById(id);
 $("hearBtn").innerHTML = LP.ICON.speaker;
 
-// Real 4-line dialogues from this level's own lesson content (one per
-// lesson, each built around that lesson's grammar pattern) -- used for
-// "what comes next in the conversation?" rounds, kept lesson-aware so a
-// round never draws on a dialogue from a lesson not yet reached.
-const ALL_DIALOGUES = [["What is your daily routine?", "I wake up, brush my teeth, and have breakfast.", "Then I go to school. What about you?", "The same! Then I come home and go to bed."], ["What does your brother do every day?", "He wakes up early and eats breakfast fast.", "Does he play football?", "Yes, he plays every afternoon and reads at night."], ["How often do you read?", "I always read before bed. What about you?", "I sometimes read. I usually watch TV.", "I rarely watch TV, but I never skip reading!"], ["Let's go to the supermarket.", "Okay! I want to buy an apple.", "What is the price?", "It's cheap, not expensive at all!"], ["How many apples do you want?", "I want five apples. How much bread do we need?", "We need two. Do we have any eggs?", "Yes, here is your receipt!"], ["Is there any milk?", "Yes, and we have some rice too.", "Do we have any juice?", "No, we don't have any. Let's buy some water."], ["How much does this cost?", "It costs one dollar. Do you have a coin?", "Yes, here. Can I pay now?", "Sure, here is your change from my wallet."], ["Can I see the menu, please?", "Of course! What would you like to order?", "I would like pizza, please.", "The waiter will bring your plate and spoon."], ["I am so hungry!", "Me too, and thirsty! Let's order food.", "This food is delicious!", "Can we have more, please? Then the bill."], ["You should eat more vegetables.", "I know, and fruit has vitamins too.", "You shouldn't eat junk food every day.", "You're right, healthy food makes me strong!"], ["What do you do on Monday?", "On Monday, I go to school. What about Friday?", "I love Fridays! It's almost the weekend.", "What is your weekly schedule like?"], ["What do you do after school?", "I do my homework, then I practice piano.", "I go to art club and rest a little.", "I love my free time!"], ["Give it to me, please.", "Here you go! I see him at school.", "I like her too. She helps us a lot.", "I play with them every day."], ["Whose book is this?", "This book is mine. Is this pen yours?", "Yes, it's mine. That bag is hers.", "And this classroom is ours!"], ["I can see a bird in the tree.", "I can hear it singing too!", "I can smell the flowers here.", "And I can taste this delicious cake!"], ["What does your sister look like?", "She is tall and has curly hair.", "My brother is short with straight hair.", "And my grandpa has a beard!"], ["What is your teacher like?", "She is kind and very smart.", "My friend is funny and friendly too.", "Being honest and polite is important too!"], ["Who is your best friend?", "She is my best friend. She is very generous.", "We share our toys and help each other.", "I trust her, and we play together every day."], ["I read a story about Lumi today.", "What happens in the morning?", "Lumi wakes up happy and plays in the afternoon.", "And reads in the evening. What a nice day!"], ["Let's write in our week diary!", "Good idea! I bought vegetables at the market.", "I saw the menu at a new restaurant.", "And I played with my best friend all weekend!"]];
-const dialoguePool = ALL_DIALOGUES.slice(0, num); // only lessons up to and including this one
-// Only these dialogue lines have a recording in assets/audio; the rest are read by the browser voice
-// directly (going through Lumio.speak first made every one of them a 404 before the fallback).
-const RECORDED = new Set([[3, 2], [4, 0], [5, 0], [7, 0], [8, 2], [9, 2], [13, 0]].map(([d, l]) => ALL_DIALOGUES[d][l]));
+// Each Level 4 lesson's own Crew Talk chat (the same one the class slides use: lib/crew_talk_level4.py,
+// written around that lesson's words). [speaker, line, recorded?]. The chat round shows the first two
+// lines and asks for the third; the wrong replies are lines from earlier lessons' chats.
+const CREW_TALK = [[["Sara","Does Noor even sleep? She wakes up at five to study.",0],["Ziad","Then she practices piano, then she hangs out with us.",0],["Sara","When does she relax?",0],["Ziad","She takes a nap after school. Ten minutes exactly.",0],["Sara","That's not a hobby, that's a schedule.",0],["Ziad","Don't tell her that. She'll chill even less.",0]],[["Omar","My mom set a new bedtime and a screen-time limit.",0],["Hamad","Same. My schedule is: homework, workout, sleep.",0],["Omar","When's your deadline for the science project?",0],["Hamad","Friday. My rule: finish it before the weekend.",0],["Omar","My rule is different. I finish it Sunday night.",0],["Hamad","That's not a rule, that's panic.",0]],[["Noor","How often do you actually clean your room?",0],["Sara","Weekly. Okay, occasionally. Fine, rarely.",0],["Noor","I do it daily. It takes five minutes.",0],["Sara","You constantly say that, but I never see you do it.",0],["Noor","Because you never visit, you're always gaming.",0],["Sara","Fair. Rarely visiting is also a habit.",0]],[["Hamad","Do you have any plans before the holiday?",0],["Sara","A dentist appointment, then a deadline, then freedom.",0],["Hamad","After the break, the new semester starts already.",0],["Sara","Don't say that. I'm still in weekend mode.",0],["Hamad","It's Tuesday.",0],["Sara","Exactly. Two days before the weekend.",0]],[["Omar","I texted you three times. Why no reply?",0],["Noor","I was on a video chat with my cousin. What's up?",0],["Omar","Ziad wants to invite everyone to meet at the park.",0],["Noor","Call him and say yes. I'll add the contact to the group.",0],["Omar","Done. He replied with twelve emojis.",0],["Noor","That's Ziad for 'great'.",0]],[["Ziad","Whose earbuds are these? They're in my jacket.",0],["Hamad","Those are mine! I left them in your bike basket.",0],["Ziad","And this notebook? And this wallet?",0],["Hamad","The notebook is Sara's. The wallet is yours, look.",0],["Ziad","Oh. That explains the missing sneakers too.",0],["Hamad","Your sneakers are on your feet, Ziad.",0]],[["Sara","Got any snacks? I'm starving.",0],["Omar","There are leftovers in the fridge and chips in the pantry.",0],["Sara","Leftovers of what?",0],["Omar","Pasta. My dad bought the groceries and cooked it.",0],["Sara","What ingredients? I'm not allergic to anything, just curious.",0],["Omar","Tomato, cheese, and a secret. Eat.",0]],[["Noor","How much is that hoodie? I don't see a price tag.",0],["Ziad","Eighty, but there's a discount today. Sixty.",0],["Noor","My allowance is fifty. My budget says no.",0],["Ziad","Use your savings. It's a good deal.",0],["Noor","Savings are for emergencies.",0],["Ziad","A cold day without a hoodie IS an emergency. Keep the receipt.",0]],[["Hamad","I'm saving up for a new bike. Forty coins so far.",0],["Sara","In a moneybox? Seriously?",0],["Hamad","Yes. I earn ten a week helping my uncle.",0],["Sara","Don't spend it on snacks. Or lend it to Ziad.",0],["Hamad","I never lend. I only borrow.",0],["Sara","That's why your wallet is empty.",0]],[["Omar","Noor's drawing won. It was outstanding.",0],["Ziad","Honestly, all the drawings were impressive.",0],["Omar","Hers was unique though. Nobody drew the city at night.",0],["Ziad","She's so talented and she never brags.",0],["Omar","That's why she's popular.",0],["Ziad","And skilled. Don't forget skilled.",0]],[["Noor","I'd like the chicken, please. What do you recommend?",0],["Hamad","I suggest the rice with it. It's the best on the menu.",0],["Noor","I prefer salad. Can I request that instead?",0],["Hamad","Of course. Good choice, this restaurant does great salads.",0],["Noor","And you? What's your order?",0],["Hamad","Everything. I'll decide when it arrives.",0]],[["Sara","Can I give you some advice about the exam?",0],["Ziad","Only if it's a good tip.",0],["Sara","You should try studying in the morning. It's a habit that works.",0],["Ziad","My opinion? Mornings are a warning sign.",0],["Sara","My suggestion is free, take it or leave it.",0],["Ziad","Fine. One morning. Then we'll see.",0]],[["Omar","Did you see Hamad's post? Two hundred likes.",0],["Noor","I commented and shared it. The hashtag is genius.",0],["Omar","My notifications won't stop. Everyone's online.",0],["Noor","Check his profile. He changed the picture again.",0],["Omar","Third time this week.",0],["Noor","That's the group chat's favourite topic now.",0]],[["Hamad","The captain says we need to cooperate more.",0],["Ziad","I contribute! I encourage everyone from the bench.",0],["Hamad","Support is good. Playing is better.",0],["Ziad","Teamwork means everyone has a role. Mine is the loud one.",0],["Hamad","The trophy needs goals, not noise.",0],["Ziad","A true leader accepts both.",0]],[["Sara","I have to decide: art club or robotics.",0],["Omar","Consider the consequence. Robotics has a Saturday class.",0],["Sara","Then the option is clear... but art is my favourite.",0],["Omar","Compromise: robotics now, art next semester.",0],["Sara","That's a real choice. How are you so calm about this?",0],["Omar","Because it's your decision, not mine.",0]],[["Noor","I'm so nervous about the speech tomorrow.",0],["Hamad","You'll be fine. Stay calm and breathe.",0],["Noor","Easy for you, you're always confident.",0],["Hamad","I was anxious last week. Then I practised ten times.",0],["Noor","And after?",0],["Hamad","Relieved. And a little proud. You will be too.",0]],[["Ziad","What's your dream job? Be honest.",0],["Sara","My goal is to be an architect. Buildings are my passion.",0],["Ziad","That's a serious ambition. What career for me?",0],["Sara","Something with games. You'd achieve a lot.",0],["Ziad","Game designer. My future self will thank me.",0],["Sara","Only if your present self starts studying.",0]],[["Omar","I want to explore Japan one day. The culture is fascinating.",0],["Noor","Every country has a custom that surprises you.",0],["Omar","Like what?",0],["Noor","In Japan you take off your shoes inside. That's a tradition.",0],["Omar","We do that too! Same custom, different language.",0],["Noor","That's the point of a journey. You find what's shared.",0]],[["Hamad","The group project deadline is Friday and we disagree on everything.",0],["Sara","Then we compromise. You do the research, I do the design.",0],["Hamad","And Ziad?",0],["Sara","Ziad presents. He loves an audience.",0],["Hamad","That's real teamwork. I'm almost proud.",0],["Sara","Be proud on Friday, after we submit.",0]],[["Noor","Future plans project: what's yours?",0],["Ziad","Wake up late, chill, and never have a bedtime.",0],["Noor","That's a holiday, not a plan.",0],["Ziad","Fine: a schedule with an appointment every day.",0],["Noor","Rarely realistic, but constantly funny.",0],["Ziad","Put that on my profile.",0]]];
+const dialoguePool = level === "level4" ? CREW_TALK.slice(0, num) : [];   // only lessons up to and including this one
+// lines with a recording in assets/audio play it; the others are read by the browser voice directly
+const RECORDED = new Set();
+CREW_TALK.forEach(d => d.forEach(l => { if (l[2]) RECORDED.add(l[1]); }));
 vocab.forEach(v => { if (v.example) RECORDED.add(v.example); });   // every lesson example sentence has a recording
 function speakLine(text, btn) {
   if (RECORDED.has(text)) return LP.say(text, btn);
@@ -243,18 +242,20 @@ if (!vocab.length) {
   // next?" conversation round using this lesson's own real dialogue --
   // covers dialogues/conversations alongside vocabulary, not vocabulary
   // alone.
-  const myDialogue = dialoguePool[num - 1] || dialoguePool[dialoguePool.length - 1];
+  const myDialogue = dialoguePool[num - 1] || null;
   const dlgDistractors = [];
   dialoguePool.forEach((dlg, i) => {
     if (i === num - 1) return;
-    [dlg[1], dlg[2], dlg[3]].forEach(line => { if (myDialogue && line !== myDialogue[2]) dlgDistractors.push(line); });
+    dlg.slice(1).forEach(l => { if (myDialogue && l[1] !== myDialogue[2][1]) dlgDistractors.push(l[1]); });
   });
-  // a conversation round needs two wrong lines from earlier lessons; Lesson 1 has none, so it shops instead
-  // These dialogues come from an older course order and only fit a lesson when they actually use its
-  // words (Level 4 lessons 1 and 3). A dialogue round also needs two wrong lines from earlier lessons.
-  // Otherwise the conversation round is built from this lesson's own example sentences.
-  const fits = !!myDialogue && vocab.filter(v => hasWord(myDialogue.join(" "), v.en)).length >= 2;
-  const canTalk = fits && dlgDistractors.length >= 2;
+  // a wrong reply must not sound like a fair answer: drop lines that share a key word (5+ letters) with the
+  // two chat lines shown, so e.g. "That's not a hobby, that's a schedule." never follows "My schedule is…"
+  if (myDialogue) {
+    const keys = new Set((myDialogue[0][1] + " " + myDialogue[1][1]).toLowerCase().match(/[a-z]{5,}/g) || []);
+    for (let i = dlgDistractors.length - 1; i >= 0; i--) if ((dlgDistractors[i].toLowerCase().match(/[a-z]{5,}/g) || []).some(w => keys.has(w))) dlgDistractors.splice(i, 1);
+  }
+  // a chat round needs two wrong lines from earlier lessons; Lesson 1 has none, so it uses a sentence round
+  const canTalk = !!myDialogue && dlgDistractors.length >= 2;
   const PLAN = ["shop", "shop", canTalk ? "dialogue" : "sentence", "shop", "shop", "sentence"];
   const shopRounds = PLAN.filter(t => t === "shop").length;
 
@@ -332,14 +333,15 @@ if (!vocab.length) {
   // Dialogue round: shows the first two lines of this lesson's real
   // conversation and asks what comes next -- the correct third line vs.
   // two distractor lines drawn from other already-taught lessons' dialogues.
-  const omarHead = `<span class="who"><img alt="" src="${LP.char("omar-teen", "happy")}" style="height:385%;top:4%;left:-29%"></span>`;
+  const head = who => `<span class="who"><img alt="" src="${LP.char(who.toLowerCase() + "-teen", "happy")}" style="height:385%;top:4%;left:-29%"></span>`;
   const lineHtml = (who, html, id) => who === "you"
     ? `<div class="sb-line you${id ? " q" : ""}"${id ? ` id="${id}"` : ""}><span class="who you">YOU</span><div class="b"><small>You</small>${html}</div></div>`
-    : `<div class="sb-line${id ? " q" : ""}"${id ? ` id="${id}"` : ""}>${omarHead}<div class="b"><small>Omar</small>${html}</div></div>`;
+    : `<div class="sb-line${id ? " q" : ""}"${id ? ` id="${id}"` : ""}>${head(who)}<div class="b"><small>${esc(who)}</small>${html}</div></div>`;
   function drawDialogueRound() {
+    const [l1, l2, l3] = myDialogue;
     showChat("What comes next in the chat?",
-      lineHtml("omar", esc(myDialogue[0])) + lineHtml("you", esc(myDialogue[1])) + lineHtml("omar", "…", "dlgSlot"),
-      myDialogue[1], myDialogue[2], Lumio.shuffle(dlgDistractors).slice(0, 2));
+      lineHtml(l1[0], esc(l1[1])) + lineHtml(l2[0], esc(l2[1])) + lineHtml(l3[0], "…", "dlgSlot"),
+      l2[1], l3[1], Lumio.shuffle(dlgDistractors).slice(0, 2));
   }
   // Sentence round (from this lesson's own example sentences): Omar asks for a sentence about a word
   // given in Arabic; the right reply is that word's example sentence, the others are examples of other words.
@@ -350,7 +352,7 @@ if (!vocab.length) {
       if (!clash(v, target) && !hasWord(v.example, target.en) && !wrong.some(w => clash(w, v))) wrong.push(v);
     }
     showChat("Which sentence fits the chat?",
-      lineHtml("omar", `Text me a sentence about <b class="ar" dir="rtl" lang="ar" style="font-family:Tajawal,var(--lp-body);color:#FFD666">«${esc(target.ar)}»</b> 👇`) + lineHtml("you", "…", "dlgSlot"),
+      lineHtml("Omar", `Text me a sentence about <b class="ar" dir="rtl" lang="ar" style="font-family:Tajawal,var(--lp-body);color:#FFD666">«${esc(target.ar)}»</b> 👇`) + lineHtml("you", "…", "dlgSlot"),
       "Which sentence fits the chat?", target.example, wrong.map(v => v.example));
   }
   function showChat(prompt, html, speak, correct, wrongLines) {
