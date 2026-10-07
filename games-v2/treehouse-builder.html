@@ -381,6 +381,8 @@ if (!vocab.length) {
     window.__lastTarget = currentTargetWord; // exposed for automated QA only
     await LP.banner(r === ROUNDS - 1 ? "Last piece!" : "Listen!", "Round " + (r + 1) + " of " + ROUNDS);
     optGrid.className = "lp-cards th-cards " + (words.length === 2 ? "c2" : "c3");
+    // load the pictures first so a card never flashes its letter-tile placeholder
+    await Promise.race([Promise.all(words.map(w => new Promise(ok => { const im = new Image(); im.onload = im.onerror = ok; im.src = pics[w] || LP.vocabImg(w); }))), LP.wait(1500)]);
     const cards = words.map(w => { const c = LP.picCard(w, { img: pics[w] || LP.vocabImg(w) }); if (w.length > 9) c.classList.add("long"); c.onclick = () => choose(c); optGrid.appendChild(c); return c; });
     if (G && !RM) G.fromTo("#promptCard", { scale: .6, opacity: 0 }, { scale: 1, opacity: 1, duration: .5, ease: "back.out(2)" });
     lumi.nod();

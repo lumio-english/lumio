@@ -171,7 +171,7 @@ if (!vocab.length && !eligibleLetters.length) {
       card.disabled = true; setTimeout(() => card.classList.add("dim"), 350);
       return;
     }
-    locked = true; score++;
+    locked = true; score++; LP.answer = null;
     const cards = [...optGrid.children];
     cards.forEach(c => c.disabled = true);
     lumi.cheer("celebrate", false);

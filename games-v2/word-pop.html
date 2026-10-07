@@ -287,6 +287,14 @@ function spawn(words, correct) {
     el.onclick = () => pick(b, w.en === correct.en);
     bubs.push(b); fitText(b); place(b, 0);
   });
+  if (!ANIM) { // reduced motion: no floating, but still never overlapping
+    for (let k = 0; k < 120; k++) for (let i = 0; i < bubs.length; i++) for (let j = i + 1; j < bubs.length; j++) {
+      const p = bubs[i], q = bubs[j], dx = q.x - p.x, dy = q.y - p.y, d = Math.hypot(dx, dy) || 1, min = p.r + q.r + 4;
+      if (d < min) { const m = (min - d) / 2; p.x -= dx / d * m; p.y -= dy / d * m; q.x += dx / d * m; q.y += dy / d * m; }
+      [p, q].forEach(o => { o.x = Math.min(FW - o.r, Math.max(o.r, o.x)); o.y = Math.min(FH - o.r, Math.max(o.r, o.y)); });
+    }
+    bubs.forEach(o => place(o, 0));
+  }
   run();
 }
 function popFx(b, good) {
