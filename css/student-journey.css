@@ -148,7 +148,7 @@ body.theme-teen-light .sj-chips{background:rgba(11,18,38,.95);box-shadow:0 10px 
 }
 
 /* ---------- chapters ---------- */
-.s26-sec{position:relative;z-index:1;margin-top:76px!important}
+.s26-sec{position:relative;margin-top:76px!important} /* no z-index: the parent tour spotlight (z-index 9001) must reach the root stacking context */
 .s26-sec:first-of-type{margin-top:26px!important}
 .s26-sec[hidden]{display:none!important}
 .s26-sech.sj-plate{display:flex;flex-direction:column;align-items:stretch;gap:0}
@@ -189,7 +189,7 @@ body.theme-teen-light .sj-medal b{color:#FDBA74}
 @keyframes sjStep{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg) translateY(-3px)}}
 
 /* ending card */
-.sj-end{position:relative;z-index:1;margin:70px auto 10px;max-width:560px;text-align:center;padding:28px 20px 26px;border-radius:30px;background:var(--j-card);border:1px solid var(--j-line);box-shadow:var(--j-shadow);color:var(--j-ink)}
+.sj-end{position:relative;margin:70px auto 10px;max-width:560px;text-align:center;padding:28px 20px 26px;border-radius:30px;background:var(--j-card);border:1px solid var(--j-line);box-shadow:var(--j-shadow);color:var(--j-ink)}
 .sj-end img{width:140px;height:auto;display:block;margin:0 auto 8px}
 .sj-end h2{margin:0;font-family:var(--j-display);font-weight:800;font-size:30px;letter-spacing:-.02em;color:var(--j-ink)}
 .sj-end p{margin:6px 0 0;color:var(--j-mut);font-weight:700}

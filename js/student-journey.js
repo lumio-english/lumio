@@ -96,7 +96,7 @@
         nav.addEventListener('click', function (e) {
           var a = e.target.closest('a[href^="#"]'); if (!a) return;
           var t = document.getElementById(a.getAttribute('href').slice(1)); if (!t) return;
-          e.preventDefault();
+          e.preventDefault(); measureTop();
           t.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'start' });
           setActive(+a.dataset.ch, true);
         });
@@ -333,6 +333,7 @@
         var mo = new MutationObserver(refresh);
         $$(':scope > .s26-sec', main).forEach(function (s) { mo.observe(s, { attributes: true, attributeFilter: ['hidden'] }); });
         ['myProfileBtn', 'messagesBtn', 'referralsBtn', 'parentGuideBtn', 'msgBadge'].forEach(function (id) { var el = document.getElementById(id); if (el) mo.observe(el, { attributes: true, attributeFilter: ['style'], childList: true }); });
+        if (bar) mo.observe(bar, { attributes: true, attributeFilter: ['class'] }); // the parent tour spotlights the top bar
       }
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(refresh);
       var later = function () { refresh(); setTimeout(loadGsap, 300); };
