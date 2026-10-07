@@ -255,14 +255,14 @@ html[data-lp="teen"] .btnG{background:rgba(255,255,255,.08);color:var(--ink)}
 #cover .cvShade{position:absolute;inset:0;background:radial-gradient(100% 80% at 50% 40%,rgba(30,15,0,.15),rgba(20,8,0,.72))}
 html[data-lp="teen"] #cover .cvShade{background:radial-gradient(100% 80% at 50% 40%,rgba(5,8,25,.25),rgba(3,5,18,.85))}
 .cvIn{position:relative;display:grid;gap:14px;justify-items:center;align-items:center;width:100%;max-width:1200px;padding:calc(var(--hdr) + 4px) 16px 22px;
-  grid-template-columns:1fr;grid-template-areas:"card" "cast" "txt" "go"}
+  grid-template-columns:minmax(0,1fr);grid-template-areas:"card" "cast" "txt" "go"}
 .cvCardW{grid-area:card;position:relative;width:min(100%,calc((100dvh - 330px) * 16 / 9),760px);transform-style:preserve-3d}
 .cvCard{position:relative;aspect-ratio:16/9;border-radius:18px;overflow:hidden;transform-origin:0 50%;
   box-shadow:0 0 0 5px #FFE2A8,0 0 0 9px #C7832E,0 30px 60px -18px rgba(0,0,0,.85)}
 html[data-lp="teen"] .cvCard{box-shadow:0 0 0 1.5px rgba(255,255,255,.35),0 0 50px -6px rgba(109,124,255,.8),0 30px 60px -18px rgba(0,0,0,.9)}
 .cvCard img{width:100%;height:100%;object-fit:contain;display:block}
 .cvCard .sweep{position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.45) 48%,transparent 62%);transform:translateX(-120%)}
-.cvCast{grid-area:cast;position:relative;width:100%;height:clamp(110px,19vh,190px);margin-top:-22px;display:flex;justify-content:center;align-items:flex-end;pointer-events:none;z-index:4}
+.cvCast{grid-area:cast;position:relative;width:100%;max-width:100%;height:clamp(110px,19vh,190px);margin-top:-22px;display:flex;justify-content:center;align-items:flex-end;pointer-events:none;z-index:4}
 .cvCast::after{content:"";position:absolute;left:12%;right:12%;bottom:-4px;height:18px;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.45),transparent);z-index:-1}
 .cvCast .slotA{height:100%;flex:0 1 auto;margin:0 -4px;display:flex;align-items:flex-end}
 .cvCast .lp-actor{height:100%}
@@ -314,7 +314,7 @@ html[data-lp="teen"] #celebrate .dim{background:radial-gradient(90% 80% at 50% 4
 html[data-lp="teen"] #celebrate .rays{background:repeating-conic-gradient(from 0deg,rgba(140,160,255,.5) 0 7deg,transparent 7deg 18deg)}
 .ceCard{position:relative;z-index:2;width:min(560px,100%);max-height:100%;overflow:auto;border-radius:30px;padding:0 20px 20px;text-align:center;color:var(--ink);
   background:var(--paper);box-shadow:0 34px 80px -20px rgba(0,0,0,.85),inset 0 0 0 1px var(--edge);margin-top:70px;overflow:visible}
-.ceCast{height:170px;margin:-96px auto 0;display:flex;justify-content:center;align-items:flex-end;pointer-events:none}
+.ceCast{height:170px;max-width:100%;margin:-96px auto 0;display:flex;justify-content:center;align-items:flex-end;pointer-events:none}
 .ceCast .slotA{height:100%;margin:0 -10px;display:flex;align-items:flex-end}
 .ceCast .lp-actor{height:100%}
 .ceCard h2{font-family:var(--display);font-weight:800;font-size:clamp(1.7rem,6vw,2.3rem);margin:6px 0 2px;line-height:1.05;color:var(--acc-d)}
@@ -386,7 +386,7 @@ html[data-lp="teen"] .mpItem{background:rgba(255,255,255,.05)}
 /* zoom */
 #zoomOv{background:rgba(5,3,0,.94);display:grid;place-items:center}
 #zoomOv img{max-width:calc(100vw - 20px);max-height:calc(100dvh - 90px);object-fit:contain;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
-#zoomOv.rot img{max-width:none;max-height:none;width:calc(100dvh - 90px);height:auto;transform:rotate(90deg)}
+#zoomOv.rot img{max-width:none;max-height:none;width:min(calc(100dvh - 90px),calc((100vw - 20px) * 16 / 9));height:auto;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(90deg)}
 #zoomOv .chip{position:absolute;top:max(10px,env(safe-area-inset-top));right:12px}
 #zoomOv .hint{position:absolute;bottom:18px;left:0;right:0;text-align:center;color:rgba(255,255,255,.75);font-weight:800;font-size:.85rem}
 
@@ -1203,7 +1203,7 @@ function openZoom(src) {
   ov.innerHTML = `<img src="${esc(src)}" alt="Story picture"><button type="button" class="chip ico" aria-label="Close picture">${IC.close}</button><div class="hint">${rot ? "Turn your phone sideways" : "Tap anywhere to close"}</div>`;
   document.body.appendChild(ov);
   ov.onclick = closeZoom; sfx("whoosh");
-  if (MO) G.from($("img", ov), { scale: .6, opacity: 0, duration: .45, ease: "back.out(1.6)", rotation: rot ? 90 : 0 });
+  if (MO) G.from($("img", ov), { opacity: 0, duration: .35 });
   setTimeout(() => $(".chip", ov).focus({ preventScroll: true }), 50);
 }
 function closeZoom() { const ov = $("#zoomOv"); if (!ov) return; if (!MO) { ov.remove(); return; } G.to(ov, { opacity: 0, duration: .25, onComplete: () => ov.remove() }); }
@@ -1268,6 +1268,17 @@ function addActors(host, kind, h) {
     return act;
   }).filter(Boolean);
 }
+// shrink a row of characters until it fits its box (6 friends on a narrow phone)
+function fitCast(host) {
+  const go = () => {
+    if (!host.isConnected) return;
+    host.style.height = ""; let h = host.clientHeight, guard = 0;
+    const need = () => Array.from(host.children).reduce((t, c) => t + c.getBoundingClientRect().width, 0);
+    while (need() > host.clientWidth - 4 && h > 60 && guard++ < 40) { h -= 6; host.style.height = h + "px"; }
+  };
+  $$("img", host).forEach(i => { if (!i.complete) i.addEventListener("load", go, { once: true }); });
+  go(); addEventListener("resize", go);
+}
 function showCover(d) {
   return new Promise(resolve => {
     const ov = document.createElement("section"); ov.id = "cover"; ov.className = "ov"; ov.setAttribute("aria-label", `Part ${part.id}: ${part.name}`);
@@ -1277,7 +1288,7 @@ function showCover(d) {
       <button type="button" class="btnP" id="cvGo" data-press>${IC.play}<span>Start reading</span></button></div>`;
     document.body.appendChild(ov);
     splitTitle($("#cvH", ov), part.name);
-    const actors = addActors($(".cvCast", ov), "wave");
+    const actors = addActors($(".cvCast", ov), "wave"); fitCast($(".cvCast", ov));
     const go = $("#cvGo", ov);
     go.onclick = async () => {
       go.onclick = null; started = true; sfx("whoosh"); startMusic();
@@ -1362,7 +1373,7 @@ function finishPart() {
   if (nextOpen) $("#ceNext").onclick = () => goPart(nextPart.id);
   $("#ceAgain").onclick = () => goPart(part.id);
   splitTitle($("#ceH", ov), $("#ceH", ov).textContent);
-  const actors = addActors($(".ceCast", ov), "celebrate");
+  const actors = addActors($(".ceCast", ov), "celebrate"); fitCast($(".ceCast", ov));
   // story trail path between the part stops
   const trail = $(".ptrail", ov), stops = $$(".stop", trail), tokEl = $(".tok", trail);
   const myStop = stops[part.id - 1], nextStop = stops[part.id];
