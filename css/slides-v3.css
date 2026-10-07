@@ -453,3 +453,11 @@ html.deck-v3.deck-teen .navbtn.next { color:#111; background:linear-gradient(180
 .v3-teen .v3-opt.v3-wrong::before { background:#111 !important; color:#FF5A50; }
 .v3-teen .v3-opt.v3-right::after, .v3-teen .v3-opt.v3-wrong::after { display:none; }
 .v3 .v3-opt.lc-good, .v3 .v3-opt.lc-bad { box-shadow:none; }
+/* kids: squad plates and grammar panels in the glass theme */
+.v3-kid .v3t-plate .nm { font-family:var(--display); font-weight:900; font-size:1.3rem; letter-spacing:-.01em; text-transform:none; color:var(--ink); }
+.v3-kid .v3t-rr .k, .v3-kid .v3t-step .k, .v3-kid .v3t-pt .k, .v3-kid .v3t-mist .k { clip-path:none; border-radius:50%; color:#fff; font-family:var(--display); font-weight:900; font-size:1.05rem; background:linear-gradient(180deg,#FFA43A,#F2600C); }
+.v3-kid .v3t-rule, .v3-kid .v3t-ex, .v3-kid .v3t-rr { border-radius:18px; border-left:0; background:rgba(255,255,255,.7); }
+.v3-kid .v3t-rule .ex { color:var(--orange-d); }
+.v3-kid .v3t-now { border-radius:18px; border-left:0; background:rgba(48,176,199,.14); }
+.v3-kid .v3t-mist .wrong { color:#D92D20; } .v3-kid .v3t-mist .right { color:#1E9E46; }
+.v3-kid .v3t-bar > div { background:linear-gradient(90deg,#FFA43A,#F2600C); }

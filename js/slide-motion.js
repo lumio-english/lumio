@@ -217,7 +217,7 @@
   function slideUrl(n) {
     var trialM = location.pathname.match(/present-trial/);
     if (trialM) return null;   // trial decks: read titles from the live slide only
-    return "slide-content" + (qs("deck") === "3" ? "-v3" : "") + "/" + LEVEL + "/" + String(NUM).padStart(2, "0") + "/slide-" + String(n).padStart(2, "0") + ".html";
+    return "slide-content" + (qs("deck") === "5" ? "-v5" : "") + "/" + LEVEL + "/" + String(NUM).padStart(2, "0") + "/slide-" + String(n).padStart(2, "0") + ".html";
   }
   function buildMap(total) {
     if (deckMap || !total || !slideUrl(1)) return;
@@ -646,7 +646,7 @@
   var lastAudio = null;
   try {
     var origPlay = HTMLMediaElement.prototype.play;
-    HTMLMediaElement.prototype.play = function () { if (this instanceof HTMLAudioElement && /assets\/audio\//.test(this.src || "")) lastAudio = this; return origPlay.apply(this, arguments); };
+    HTMLMediaElement.prototype.play = function () { if (this instanceof HTMLAudioElement && /assets\/audio\/|^blob:/.test(this.src || "")) lastAudio = this; return origPlay.apply(this, arguments); };
   } catch (e) {}
   var lastTap = null;
   function karaoke(text) {

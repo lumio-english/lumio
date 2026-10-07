@@ -109,8 +109,8 @@ const qs = k => new URLSearchParams(location.search).get(k);
 const level = qs("level") || "pre-a";
 const num = parseInt(qs("n") || "1", 10);
 const nn = String(num).padStart(2, "0");
-// ?deck=3: the new-design decks (slide-content-v3/, same content) -- preview until released
-const DECK = qs("deck") === "3" ? "-v3" : "";
+// ?deck=5: the new-design decks, version 5 (slide-content-v5/, same content) -- preview until released
+const DECK = qs("deck") === "5" ? "-v5" : "";
 if (DECK) document.documentElement.classList.add("deck-v3", /^level[3-6]$/.test(qs("level") || "") ? "deck-teen" : "deck-kid");
 
 let cur = 1;

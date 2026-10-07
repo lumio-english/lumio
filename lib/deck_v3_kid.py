@@ -502,6 +502,7 @@ def finish(html):
 # ---------------------------------------------------------------- install
 _orig_your_turn = T.your_turn_html
 _orig_a_card, _orig_a_band = A._card, A.mode_band
+_orig_font, _orig_ink, _orig_muted = A._font, A._ink, A._muted
 
 
 def install(level):
@@ -517,6 +518,15 @@ def install(level):
     T.COLORSTRIP = ""
     T.dots = lambda active_i, count: ""
     A._card, A._btn, A.mode_band = _a_card, _a_btn, _a_band
+    A._font = lambda kid: "'Nunito',system-ui,sans-serif" if kid else _orig_font(kid)
+    A._ink = lambda kid: "#1D1D1F" if kid else _orig_ink(kid)
+    A._muted = lambda kid: "#6E6E73" if kid else _orig_muted(kid)
+    import grammar_slides as G
+    import deck_v3_kid_extra as X
+    G.slide_grammar_rule, G.slide_grammar_practice, G.slide_grammar_mcq = X.g_rule, X.g_practice, X.g_mcq
+    for name in ("slide_common_mistakes_kid", "slide_review_break", "slide_describing_time", "slide_meet_the_team",
+                 "slide_skills_check", "slide_tpr_activity"):
+        setattr(T, name, getattr(X, name))
     orig_build = T.build_deck
 
     def build_deck(lesson_num, *args, **kw):
