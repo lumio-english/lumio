@@ -338,12 +338,12 @@
   }, true);
 
   /* ---------------- transitions: a real page turn (kids) / a cube turn (teens) ---------------- */
-  var ghost = null, lastDir = 1, firstLoad = true, prevN = 0;
+  var ghost = null, lastDir = 1, firstLoad = true, prevN = 0, turnSeq = 0;
   function makeGhost(dir) {
     if (!content.firstChild || firstLoad || content.querySelector("#loadingMsg")) return;
     if (ghost) ghost.remove();
     ghost = content.cloneNode(true);
-    ghost.removeAttribute("id"); ghost.className = "lc-ghost";
+    ghost.removeAttribute("id"); ghost.className = "lc-ghost"; ghost.style.visibility = "visible";   // even when copied while a chapter card hid the page
     ghost.querySelectorAll("[id]").forEach(function (n) { n.removeAttribute("id"); });
     ghost.appendChild(mk("div", "lc-shade"));
     ghost.appendChild(mk("div", "lc-gloss"));
@@ -363,12 +363,14 @@
     if (RM) { g.remove(); return; }
     var v3 = !!content.querySelector(".v3");
     if (v3) {
-      // v3 (kids and teens): a soft cross-dissolve -- the old page drifts back and fades out slowly,
-      // the new one eases in from a little to the side; nothing snaps
+      // v3 (kids and teens): a soft cross-dissolve -- the new page eases in ON TOP of the old one, which stays
+      // solid underneath (only drifting back a touch), so the frame behind them never shows through mid-fade
       sfx("whoosh");
-      var a1 = anim(g, [{ opacity: 1, scale: 1, translate: "0 0" }, { opacity: 0, scale: .975, translate: (-24 * dir) + "px 0" }], { duration: 700, easing: "cubic-bezier(.33,0,.2,1)", fill: "forwards" });
-      anim(content, [{ opacity: 0, scale: 1.015, translate: (36 * dir) + "px 0" }, { opacity: 1, scale: 1, translate: "0 0" }], { duration: 900, easing: "cubic-bezier(.22,1,.36,1)" });
-      if (a1) a1.onfinish = function () { g.remove(); }; else g.remove();
+      content.style.zIndex = "41";   // above the old page (.lc-ghost is 40), below the host layer (45)
+      anim(g, [{ scale: 1, translate: "0 0" }, { scale: .985, translate: (-18 * dir) + "px 0" }], { duration: 900, easing: "cubic-bezier(.33,0,.2,1)", fill: "forwards" });
+      var a2 = anim(content, [{ opacity: 0, scale: 1.015, translate: (36 * dir) + "px 0" }, { opacity: 1, scale: 1, translate: "0 0" }], { duration: 900, easing: "cubic-bezier(.22,1,.36,1)" });
+      var myTurn = ++turnSeq, done = function () { g.remove(); if (myTurn === turnSeq) content.style.zIndex = ""; };   // a quicker next turn keeps its own layering
+      if (a2) a2.onfinish = a2.oncancel = done; else done();
       return;
     }
     // kids: the old page lifts at the spine and turns over, showing the new page underneath
@@ -919,7 +921,7 @@
       if (isFirst && !RM) {
         anim(content, [{ clipPath: "circle(0% at 50% 50%)" }, { clipPath: "circle(75% at 50% 50%)" }], { duration: 1100, easing: "cubic-bezier(.6,0,.2,1)" });
         sfx("magic");
-      } else turnPage(dir);
+      } else if (!newPart) turnPage(dir);   // a new part: the old page stays behind the chapter card, then dissolves (below)
       moveTrail();
       var go = function () {
         enter(dir);
@@ -930,7 +932,7 @@
         shownSections[sec.k] = 1; try { sessionStorage.setItem("lumio_lc_parts_" + DECK, JSON.stringify(shownSections)); } catch (e) {}
         content.style.visibility = "hidden";
         var tk = slideTok;
-        setTimeout(function () { if (tk !== slideTok) { content.style.visibility = ""; return; } chapterCard(sec).then(function () { content.style.visibility = ""; if (tk === slideTok) go(); }); }, TEEN ? 520 : 600);
+        setTimeout(function () { if (tk !== slideTok) { content.style.visibility = ""; return; } chapterCard(sec).then(function () { content.style.visibility = ""; if (tk === slideTok) { if (!isFirst) turnPage(dir); go(); } }); }, TEEN ? 520 : 600);
       } else go();
     }));
   }).observe(content, { childList: true });
