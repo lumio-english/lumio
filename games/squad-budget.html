@@ -207,9 +207,11 @@ const dialoguePool = level === "level4" ? CREW_TALK.slice(0, num) : [];   // onl
 // lines with a recording in assets/audio play it; the others are read by the browser voice directly
 const RECORDED = new Set();
 CREW_TALK.forEach(d => d.forEach(l => { if (l[2]) RECORDED.add(l[1]); }));
+const CREW_LINES = new Set(CREW_TALK.flat().map(l => l[1]));
 vocab.forEach(v => { if (v.example) RECORDED.add(v.example); });   // every lesson example sentence has a recording
 function speakLine(text, btn) {
-  if (RECORDED.has(text)) return LP.say(text, btn);
+  // recorded lines, and the Crew Talk chat lines (assets/audio/<slug>.mp3 once recorded; the site voice falls back by itself)
+  if (RECORDED.has(text) || CREW_LINES.has(text)) return LP.say(text, btn);
   try { if (window.speechSynthesis) { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = "en-US"; u.rate = .92; speechSynthesis.speak(u); } } catch (e) {}
   if (btn) { btn.classList.add("talking"); clearTimeout(btn._t); btn._t = setTimeout(() => btn.classList.remove("talking"), 1800); }
 }
