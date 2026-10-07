@@ -29,12 +29,17 @@
   }
   function gradeTone(g) { return !g ? '' : g[0] === 'A' ? 'good' : g[0] === 'B' ? 'ok' : g[0] === 'C' ? 'mid' : 'low'; }
   function scoreTone(p) { return p === null ? '' : p >= 85 ? 'good' : p >= 70 ? 'ok' : p >= 50 ? 'mid' : 'low'; }
-  function starsHtml(n) { n = Math.max(0, Math.min(3, Number(n) || 0)); return '<span class="spg-stars" aria-label="' + n + ' of 3 stars">' + '★'.repeat(n) + '<i>' + '★'.repeat(3 - n) + '</i></span>'; }
+  var TEEN = ['level3', 'level4', 'level5', 'level6'];
+  var teenXP = false;  // teens see XP (100 per star) everywhere else on the page
+  function starsHtml(n) {
+    if (teenXP) { n = Math.max(0, Math.min(3, Number(n) || 0)); return '<span class="spg-stars spg-xp" aria-label="' + (n * 100) + ' XP">⚡ ' + (n * 100) + ' XP</span>'; }
+    n = Math.max(0, Math.min(3, Number(n) || 0)); return '<span class="spg-stars" aria-label="' + n + ' of 3 stars">' + '★'.repeat(n) + '<i>' + '★'.repeat(3 - n) + '</i></span>'; }
 
   function collect() {
     var u = window.Lumio && Lumio.user && Lumio.user();
     if (!u || !u.name) return null;
     var level = u.level || 'pre-a';
+    teenXP = TEEN.indexOf(level) !== -1;
     var meta = (Lumio.LEVELS || []).filter(function (l) { return l.id === level; })[0] || { name: level, lessons: 20 };
     var total = meta.lessons || 20;
     var prog = (Lumio.progressFor(u.name) || {})[level] || {};
