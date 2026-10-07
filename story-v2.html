@@ -993,12 +993,27 @@ const synth = ("speechSynthesis" in window) ? window.speechSynthesis : null;
 let voice = null, talking = false, tok = 0, timers = [];
 function pickVoice() {
   if (!synth) return;
-  const score = v => (/^en/i.test(v.lang) ? 10 : 0) + (/en-US/i.test(v.lang) ? 3 : 0) + (/natural|neural|online|premium/i.test(v.name) ? 12 : 0) +
-    (/Samantha|Google US English|Google UK English Female|Microsoft (Aria|Jenny|Ana)/i.test(v.name) ? 8 : 0) + (v.localService === false ? 4 : 0);
+  // voices that live on the device start instantly and work offline / inside embedded previews;
+  // online voices (e.g. "Google US English") can silently fail to load, so they only win when nothing local exists
+  const score = v => (/^en/i.test(v.lang) ? 10 : 0) + (/en-US/i.test(v.lang) ? 3 : 0) + (v.localService !== false ? 20 : 0) +
+    (/natural|neural|premium|enhanced/i.test(v.name) ? 6 : 0) + (/Samantha|Microsoft (Aria|Jenny|Ana|Zira)/i.test(v.name) ? 5 : 0) + (v.default ? 2 : 0);
   const vs = synth.getVoices().filter(v => v.lang && /^en/i.test(v.lang));
   voice = vs.sort((a, b) => score(b) - score(a))[0] || null;
 }
 if (synth) { pickVoice(); try { synth.addEventListener("voiceschanged", pickVoice); } catch (e) {} }
+let speechUnlocked = false, badVoice = null;
+const unlockSpeech = () => {
+  if (speechUnlocked || !synth) return; speechUnlocked = true;
+  try { const u = new SpeechSynthesisUtterance(" "); u.volume = 0; synth.speak(u); } catch (e) {}
+};
+["pointerdown", "keydown", "touchend"].forEach(ev => document.addEventListener(ev, unlockSpeech, { capture: true, passive: true }));
+function voiceNote() {
+  if (document.querySelector(".voiceNote")) return;
+  const n = document.createElement("div"); n.className = "voiceNote"; n.setAttribute("role", "status");
+  n.textContent = "This browser has no reading voice turned on, so the words light up without sound. Try Chrome, Safari or Edge, or turn on a voice in your device's text-to-speech settings.";
+  n.style.cssText = "position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:500;max-width:min(92vw,460px);padding:12px 16px;border-radius:16px;background:rgba(30,20,10,.92);color:#fff;font:700 14px/1.4 var(--body,system-ui);box-shadow:0 14px 30px -10px rgba(0,0,0,.6)";
+  document.body.appendChild(n); setTimeout(() => n.remove(), 7000);
+}
 function clearHi() { $$(".w.on", book).forEach(w => w.classList.remove("on")); }
 function hi(words, i) {
   clearHi(); const w = words[i]; if (!w) return; w.el.classList.add("on");
@@ -1038,9 +1053,10 @@ function readPage() {
     if (my !== tok) return;
     if (ci >= chunks.length) { done(); return; }
     const c = chunks[ci];
-    if (!synth) { timed(c, () => run(ci + 1)); return; }
+    if (!synth) { if (ci === 0) voiceNote(); timed(c, () => run(ci + 1)); return; }
+    if (!speechUnlocked) { timed(c, () => run(ci + 1)); return; }   // no tap yet: the browser would block the voice
     const u = new SpeechSynthesisUtterance(c.text.replace(/[“”]/g, '"'));
-    if (voice) u.voice = voice; u.lang = "en-US"; u.rate = rate; u.pitch = TEEN ? 1 : 1.05;
+    if (voice && voice !== badVoice) u.voice = voice; u.lang = "en-US"; u.rate = rate; u.pitch = TEEN ? 1 : 1.05;
     let startedU = false, gotB = false, fellBack = false, ended = false;
     const finish = () => { if (ended) return; ended = true; run(ci + 1); };
     u.onstart = () => {
@@ -1049,9 +1065,13 @@ function readPage() {
     };
     u.onboundary = e => { if (my !== tok) return; if (e.name && e.name !== "word") return; gotB = true; if (!fellBack) hi(words, wordAt(c.start + (e.charIndex || 0))); };
     u.onend = () => { if (my !== tok) return; timers.forEach(clearTimeout); timers = []; finish(); };
-    u.onerror = ev => { if (my !== tok) return; if (ev && (ev.error === "interrupted" || ev.error === "canceled")) return; if (!startedU) { timed(c, finish); } else finish(); };
-    // no voice on this device (or the browser is still waking): fall back to a timed read-along
-    timers.push(setTimeout(() => { if (my === tok && !startedU && !ended) { try { synth.cancel(); } catch (e) {} timed(c, finish); } }, 1800));
+    // a voice that never starts: try once more with the browser's default voice, then read along silently and say why
+    const giveUp = () => {
+      if (voice && badVoice !== voice) { badVoice = voice; ended = true; try { synth.cancel(); } catch (e) {} setTimeout(() => { if (my === tok) run(ci); }, 60); return; }
+      voiceNote(); timed(c, finish);
+    };
+    u.onerror = ev => { if (my !== tok) return; if (ev && (ev.error === "interrupted" || ev.error === "canceled")) return; if (!startedU) giveUp(); else finish(); };
+    timers.push(setTimeout(() => { if (my === tok && !startedU && !ended) { try { synth.cancel(); } catch (e) {} giveUp(); } }, 2500));
     try { synth.resume(); } catch (e) {}
     synth.speak(u);
   };
