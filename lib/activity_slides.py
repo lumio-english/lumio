@@ -17,6 +17,7 @@ Kids (Pre-A, L1, L2):   flash_race, memory_match, mystery_picture
 Teens (L3-L6):          describe_guess, story_chain, truth_or_lie
 """
 import html as _html
+import re
 import json as _json
 
 
@@ -25,7 +26,11 @@ def esc(s):
 
 
 def slug(w):
-    return str(w).strip().lower().replace(" ", "-")
+    # Shared site rule (matches the files in assets/vocab/): drop
+    # apostrophes, collapse any other non-alphanumeric run to "-", trim
+    # dashes -- so "don't have to" -> dont-have-to, "o'clock" -> oclock.
+    s = str(w).strip().lower().replace("'", "").replace("\u2019", "")
+    return re.sub(r"[^a-z0-9]+", "-", s).strip("-")
 
 
 def _img(w):

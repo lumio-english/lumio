@@ -5,7 +5,12 @@
    ============================================================ */
 
 (async () => {
-  const user = Lumio.requireUser();
+  // A teacher previewing a lesson on their own device (lumio_teacher = "1",
+  // set by teacher-portal.html) usually has no student signed in -- don't
+  // bounce them to login.html; run the lesson as a preview that saves
+  // nothing. Students without a session still go to login as before.
+  const teacherPreview = Lumio.isTeacherSession() && !Lumio.user();
+  const user = teacherPreview ? { name: "", level: "", preview: true } : Lumio.requireUser();
   if (!user) return; // requireUser is already sending us to login.html
   const level = Lumio.qs("level") || user.level || "pre-a";
   const num = parseInt(Lumio.qs("n") || "1", 10);
@@ -661,7 +666,7 @@
     announce();
     const pct = total ? Math.round((score / total) * 100) : 100;
     const stars = pct >= 85 ? 3 : pct >= 60 ? 2 : 1;
-    Lumio.saveResult(user.name, level, num, stars, score, total);
+    if (!teacherPreview) Lumio.saveResult(user.name, level, num, stars, score, total);
     Lumio.confetti(90);
     Lumio.speak(stars === 3 ? "Amazing! Three stars!" : stars === 2 ? "Great job!" : "Good try! Practice makes perfect!");
     const game = LEVEL_GAMES[level];
@@ -685,7 +690,7 @@
           check My Schedule on your map.
         </p>
         <div class="mt" style="padding-top:14px;border-top:1.5px solid #F5EEE1">
-          ${game && (Lumio.homeworkFor(user.name)[level] || {})[num] ? `<a class="btn" style="background:#E6F7F4;color:#0D9488;margin-right:8px" href="games/${game.file}?level=${level}&n=${num}&from=lesson">${game.label}</a>` : ""}
+          ${game && !teacherPreview && (Lumio.homeworkFor(user.name)[level] || {})[num] ? `<a class="btn" style="background:#E6F7F4;color:#0D9488;margin-right:8px" href="games/${game.file}?level=${level}&n=${num}&from=lesson">${game.label}</a>` : ""}
           <a class="btn" style="background:#FFF3D6;color:#C2530A" href="homework.html?level=${level}&n=${num}">📝 Do your homework</a>
         </div>
       </div>`;

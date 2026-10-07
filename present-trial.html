@@ -233,8 +233,9 @@ if (SOLO) {
 // Must match the number of files in slide-content/trial/<level>/ -- the
 // Pre-A / L1 / L2 decks had grown (48/43/41) but these stale counts made
 // the player stop early, so the closing slides were never reachable.
-const TRIAL_TOTALS = { "pre-a": 55, "level1": 46, "level2": 45, "level3": 50, "level4": 45, "level5": 43, "level6": 43 };
-const SOLO_TOTALS = { "pre-a": 55, "level1": 46, "level2": 45, "level3": 50, "level4": 45, "level5": 43, "level6": 43 };
+// (Re-checked: the closing slide is slide-NN = the file count below.)
+const TRIAL_TOTALS = { "pre-a": 56, "level1": 47, "level2": 46, "level3": 51, "level4": 46, "level5": 44, "level6": 44 };
+const SOLO_TOTALS = { "pre-a": 56, "level1": 47, "level2": 46, "level3": 51, "level4": 46, "level5": 44, "level6": 44 };
 total = (SOLO ? SOLO_TOTALS : TRIAL_TOTALS)[level] || 1;
 
 if (roster.length) {

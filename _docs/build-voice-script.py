@@ -51,7 +51,11 @@ def literal_speaks(paths):
         try: src = open(p, encoding="utf-8", errors="ignore").read()
         except Exception: continue
         for m in re.finditer(r"""(?:Lumio\.)?speak\(\s*(['"])((?:\\.|(?!\1).){2,200}?)\1""", src):
-            out.append(m.group(2).replace("\\'", "'").replace('\\"', '"'))
+            t = m.group(2)
+            # skip code, not speech: onclick="Lumio.speak('${esc(w.en).replace(/'/g, ...)}')" built
+            # inside a JS template literal captures "${esc(w.en).replace(/" -- never a spoken line
+            if "${" in t or "`" in t: continue
+            out.append(t.replace("\\'", "'").replace('\\"', '"'))
     return out
 
 for lv in LEVELS:
@@ -113,8 +117,17 @@ for lv in LEVELS:
         seen[slug] = e; entries.append(e)
 
 have = set(f[:-4] for f in os.listdir("assets/audio") if f.endswith(".mp3"))
-for i, e in enumerate(entries, 1):
-    e["n"] = i; e["hasOldAudio"] = e["slug"] in have
+# Line numbers are the recordings' file names (NNNN in voice-batches/import-voice), so they never
+# move: a line already in the script keeps its number, a new line gets the next free one, and a
+# line that is gone leaves a gap rather than renumbering everything after it.
+try: prev_n = {l["slug"]: l["n"] for l in json.load(open("recording/voice-script.json", encoding="utf-8"))["lines"]}
+except Exception: prev_n = {}
+next_n = max(prev_n.values(), default=0)
+for e in entries:
+    if e["slug"] in prev_n: e["n"] = prev_n[e["slug"]]
+    else: next_n += 1; e["n"] = next_n
+    e["hasOldAudio"] = e["slug"] in have
+entries.sort(key=lambda e: e["n"])
 summary = {}
 for e in entries: summary.setdefault(e["level"], {"lines": 0, "words": 0, "sentences": 0}); s = summary[e["level"]]; s["lines"] += 1; s["words" if e["kind"] == "word" else "sentences"] += 1   # story pages count as sentences
 out = {"version": 1, "levels": [{"id": k, "name": LEVEL_NAMES.get(k, k), **v} for k, v in summary.items()], "lines": entries}

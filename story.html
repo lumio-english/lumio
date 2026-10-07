@@ -483,8 +483,12 @@ const STORIES = {
 function currentUserLevel() {
   try { const u = Lumio.user(); return (u && u.level) || "pre-a"; } catch (e) { return "pre-a"; }
 }
-const storyLevel = STORIES[qs("level")] ? qs("level") : (STORIES[currentUserLevel()] ? currentUserLevel() : (qs("level") || currentUserLevel()));
+const storyLevel = qs("level") || currentUserLevel();   // an asked-for level wins, even one without a story yet
 const TEEN = ["level3", "level4", "level5", "level6"].includes(storyLevel);
+// Only the levels in STORIES have a story yet (Pre-A, L1, L2, L3). Any other
+// level used to fall back silently to the Pre-A story; now start() shows a
+// "not available yet" card instead (STORY_AVAILABLE false).
+const STORY_AVAILABLE = !!STORIES[storyLevel];
 const story = STORIES[storyLevel] || STORIES["pre-a"];
 const LEVEL = STORIES[storyLevel] ? storyLevel : "pre-a";   // folder that really exists
 const PARTS = story.parts;
@@ -1485,6 +1489,16 @@ function finishPart() {
 
 /* ============================================================ start */
 (async function start() {
+  if (!STORY_AVAILABLE) {
+    nav.hidden = true; $("#bookWrap").hidden = true;
+    const lvName = ((window.Lumio && Lumio.LEVELS) || []).filter(l => l.id === storyLevel).map(l => l.name)[0] || storyLevel;
+    const back = isTeacherSession() && !(window.Lumio && Lumio.user && Lumio.user()) ? "teacher.html" : "student.html";
+    document.title = "Story not available yet — Lumio English";
+    $("#ttlStory").textContent = "Story time";
+    $("#exitBtn").setAttribute("href", back);
+    document.body.insertAdjacentHTML("beforeend", `<section class="ov" id="noStory" style="display:flex;align-items:center;justify-content:center"><div class="ovBg" style="background:#2a1c10"></div><div class="ovCard"><h2>Story not available for this level yet</h2><p>${esc(lvName)} doesn't have a story yet — it's still being written. Check back soon!</p><div class="btns"><a class="btnP" href="${back}">${IC.home}<span>Back to my lessons</span></a></div></div></section>`);
+    return;
+  }
   if (!part) {
     nav.hidden = true; $("#bookWrap").hidden = true;
     document.body.insertAdjacentHTML("beforeend", `<section class="ov" style="display:flex;align-items:center;justify-content:center"><div class="ovBg" style="background:#2a1c10"></div><div class="ovCard"><h2>Story part not found</h2><p>This part of the story doesn't exist.</p><div class="btns"><a class="btnP" href="student.html">${IC.home}<span>Back to my lessons</span></a></div></div></section>`);
