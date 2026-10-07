@@ -10,7 +10,7 @@
     '🔒': 'lock', '🔐': 'lock', '🎥': 'video', '🟣': 'video', '📹': 'video', '📖': 'book', '📘': 'book', '📔': 'cards', '📇': 'cards',
     '📝': 'pencil', '✏': 'pencil', '✎': 'pencil', '✍': 'write', '📅': 'calendar', '🗓': 'calendar', '🔁': 'retry', '🔄': 'retry',
     '⏰': 'clock', '🕐': 'clock', '⏳': 'clock', '⭐': 'star', '🌟': 'star', '✨': 'sparkle', '🎉': 'sparkle', '🎈': 'sparkle', '🎂': 'gift',
-    '🎁': 'gift', '🎟': 'gift', '👋': 'wave', '📷': 'camera', '📄': 'sheet', '📋': 'sheet', '📬': 'mail', '📨': 'mail', '📤': 'mail', '💬': 'speech', '🗣': 'speech',
+    '🎁': 'gift', '🎟': 'ticket', '🎫': 'ticket', '🪙': 'coin', '💰': 'coin', '🌳': 'tree', '🌲': 'tree', '🏡': 'tree', '👋': 'wave', '📷': 'camera', '📄': 'sheet', '📋': 'sheet', '📬': 'mail', '📨': 'mail', '📤': 'mail', '💬': 'speech', '🗣': 'speech',
     '🤝': 'people', '👥': 'people', '🧑‍🤝‍🧑': 'people', '▶': 'play', '⏺': 'mic', '🎤': 'mic', '🎙': 'mic', '🔊': 'sound', '🔤': 'sound', '🔡': 'blocks', '🧩': 'puzzle',
     '📐': 'ruler', '🏆': 'trophy', '🥇': 'trophy', '🏅': 'trophy', '🎖': 'trophy', '🎓': 'grad', '🧑‍🎓': 'grad', '📚': 'library', '🔥': 'flame', '⚡': 'bolt',
     '✅': 'check', '💡': 'bulb', '🧠': 'bulb', '🎮': 'pad', '🎲': 'dice', '🎵': 'music', '🎶': 'music', '🧭': 'compass', '🎯': 'medal-target', '🚀': 'bolt', '💯': 'medal-100',

@@ -88,12 +88,12 @@
         '<div class="sj-stats">' +
           '<div class="sj-stat" data-chip="streak" hidden><span class="ico" aria-hidden="true">🔥</span><span><b></b><small></small></span></div>' +
           '<div class="sj-stat" data-chip="stars" hidden><span class="ico" aria-hidden="true">' + (teen ? '⚡' : '⭐') + '</span><span><b></b><small></small></span></div>' +
-          '<div class="sj-stat" data-chip="points" hidden><span class="ico" aria-hidden="true">🏆</span><span><b></b><small></small></span></div>' +
+          '<div class="sj-stat" data-chip="points" hidden><span class="ico" aria-hidden="true">🪙</span><span><b></b><small></small></span></div>' +
           '<div class="sj-stat" data-chip="sessions" hidden><span class="ico" aria-hidden="true">🎟️</span><span><b></b><small></small></span></div>' +
         '</div>' +
         '<div class="sj-ctas"><a class="sj-btn p" id="s26Go" href="' + esc(go) + '"><span>' + esc(goText) + '</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>' +
         '<button type="button" class="sj-btn g" id="s26Sched">My schedule</button>' +
-        (p && p.subscribed === true ? '<span class="sj-pill ok">✓ Subscribed</span>' : '') + '</div>';
+        (p && p.subscribed === true ? '<span class="sj-pill ok"><span class="ic" aria-hidden="true">✅</span>Subscribed</span>' : '') + '</div>';
       hero.parentNode.insertBefore(card, hero);
       chips(card, teen);
 

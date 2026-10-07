@@ -73,6 +73,7 @@
     chs.forEach(function (s, i) {
       s.classList.toggle('sj-flip', i % 2 === 1);
       var b = $('.sj-medal b', s); if (b) b.textContent = String(i + 1);
+      var st = $('.sj-star', s); if (st && window.LumioIcons && !st.dataset.lm) { var ico = LumioIcons.svg('star'); if (ico) { st.innerHTML = ico; st.dataset.lm = '1'; } }
       var k = $('.sj-no', s); if (k) k.textContent = 'Chapter ' + (WORDS[i] || i + 1);
       s.dataset.sjN = String(i + 1);
     });

@@ -87,9 +87,10 @@ body.theme-teen-light .sj-cover{background:linear-gradient(160deg,rgba(26,38,78,
 .sj-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}
 .sj-stat{display:flex;align-items:center;gap:9px;padding:10px;min-width:0;border-radius:18px;background:var(--j-card2);border:1px solid var(--j-line);min-height:58px}
 .sj-stat[hidden]{display:none}
-.sj-stat .ico{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:var(--j-chip);font-size:18px;flex:none}
-.sj-stat .ico img,.sj-stat .ico svg{width:26px;height:26px}
-body.theme-teen-light .sj-stat .ico{background:rgba(255,255,255,.92)}
+.sj-stat .ico,.sj-row .ri{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;flex:none;font-size:20px;
+  background:linear-gradient(180deg,#FFFFFF 0%,#FFF1E6 100%);border:1px solid #F6D9C2;box-shadow:inset 0 1px 0 #fff,inset 0 -2px 0 rgba(249,115,22,.08),0 6px 12px -8px rgba(194,65,12,.55)}
+.sj-stat .ico svg,.sj-row .ri svg,.sj-stat .ico img,.sj-row .ri img{width:34px;height:34px;display:block}
+body.theme-teen-light .sj-stat .ico,body.theme-teen-light .sj-row .ri{background:linear-gradient(180deg,#26356A 0%,#18244C 100%);border-color:#3A4C86;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 16px -6px rgba(249,115,22,.55)}
 .sj-stat b{font-family:var(--j-display);font-size:19px;display:block;line-height:1.05;white-space:nowrap;color:var(--j-ink)}
 .sj-stat small{color:var(--j-mut);font-weight:700;font-size:12px;white-space:nowrap}
 .sj-ctas{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;align-items:center}
@@ -101,6 +102,8 @@ body.theme-teen-light .sj-stat .ico{background:rgba(255,255,255,.92)}
 .sj-btn.g{background:transparent}
 .sj-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;font-weight:800;font-size:13.5px;white-space:nowrap}
 .sj-pill.ok{background:#E8F7EC;color:#15803d}
+.sj-pill .ic{display:inline-grid;width:22px;height:22px;margin:-4px 0}.sj-pill .ic svg{width:22px;height:22px}
+.sj-star svg{width:22px;height:22px;display:block}
 body.theme-teen-light .sj-pill.ok{background:rgba(74,222,128,.12);color:#4ade80}
 /* the next-class countdown row (kept from the 2026 card) */
 .sj-cover .s26-next{margin-top:16px;background:var(--j-chip);border-color:var(--j-line);color:var(--j-ink)}
@@ -161,7 +164,7 @@ body.theme-teen-light .sj-chips{background:rgba(11,18,38,.95);box-shadow:0 10px 
 body.theme-teen-light .sj-medal{background:radial-gradient(circle at 35% 30%,#3b4a85,#1a2550 70%);border-color:#FDBA74}
 body.theme-teen-light .sj-medal b{color:#FDBA74}
 .sj-medal.reached{box-shadow:0 0 0 4px var(--j-o),0 0 30px 6px rgba(249,115,22,.55)}
-.sj-star{position:absolute;right:-8px;top:-8px;width:26px;height:26px;border-radius:50%;background:var(--j-o);color:#fff;font-style:normal;font-size:14px;line-height:1;display:grid;place-items:center;border:2px solid #fff;transform:scale(0);transition:transform .45s cubic-bezier(.34,1.56,.64,1)}
+.sj-star{position:absolute;right:-9px;top:-9px;width:30px;height:30px;border-radius:50%;background:linear-gradient(180deg,#fff,#FFF1E6);color:var(--j-o);font-style:normal;font-size:14px;line-height:1;display:grid;place-items:center;border:2px solid #FDBA74;box-shadow:0 4px 10px -4px rgba(194,65,12,.6);transform:scale(0);transition:transform .45s cubic-bezier(.34,1.56,.64,1)}
 .sj-medal.reached .sj-star{transform:scale(1)}
 .sj-pt{min-width:0;text-shadow:0 0 14px var(--j-bg),0 0 4px var(--j-bg)}
 .sj-no{margin:0;font-size:12px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--j-oText)}
@@ -203,9 +206,6 @@ body.theme-teen-light .sj-medal b{color:#FDBA74}
 .sj-row{display:flex;align-items:center;gap:12px;padding:10px 12px;min-height:56px;border-radius:16px;background:var(--j-card2);border:1px solid var(--j-line);font:800 15px 'Nunito',sans-serif;color:var(--j-ink);text-align:left;width:100%;cursor:pointer;text-decoration:none}
 .sj-row[hidden]{display:none}
 .sj-row:hover{border-color:var(--j-o)}
-.sj-row .ri{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:var(--j-chip);font-size:18px;flex:none}
-body.theme-teen-light .sj-row .ri{background:rgba(255,255,255,.92)}
-.sj-row .ri img,.sj-row .ri svg{width:26px;height:26px}
 .sj-row small{display:block;font-weight:700;color:var(--j-mut);font-size:12.5px}
 .sj-row .cnt{margin-left:auto;min-width:22px;height:22px;padding:0 6px;border-radius:99px;background:var(--j-o);color:#fff;font-size:12px;display:grid;place-items:center}
 .sj-row .cnt[hidden]{display:none}
@@ -260,3 +260,7 @@ body.theme-teen-light .sd-hero-card{background:linear-gradient(150deg,rgba(40,52
   .sj-sky span,.sj-mascot img,.sj-walker .wb{animation:none!important}
   .sj-star,.sj-medal,.sj-chips a,.sj-btn{transition:none!important}
 }
+
+/* Lumio icons (js/lumio-icons.js via js/lumio-emoji.js) inside the journey tiles: full tile size, no extra disc */
+.sj-stat .ico .lm-inl,.sj-row .ri .lm-inl{width:34px!important;height:34px!important;margin:0!important;padding:0!important;background:none!important;box-shadow:none!important;vertical-align:0}
+.sj-pill .lm-inl{width:22px;height:22px;margin:0;vertical-align:0;background:none;box-shadow:none;padding:0}
