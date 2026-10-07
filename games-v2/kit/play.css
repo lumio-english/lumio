@@ -1,0 +1,215 @@
+/* ============================================================
+   Lumio Play kit: the shared look for every game (games-v2/).
+   A painted scene behind everything, a glass HUD, real character
+   art that acts, chunky cards, an FX layer, title and result screens.
+   Kids (default) are warm and bouncy; <html data-lp="teen"> is dark glass.
+   Paired with kit/play.js (window.LP). Animate transform/opacity only.
+   ============================================================ */
+:root{
+  --lp-ink:#2B1D10; --lp-ink-soft:#6B5040; --lp-card:#fff; --lp-card-edge:#F0DCC0;
+  --lp-accent:#F97316; --lp-accent-2:#FFC93C; --lp-good:#22C55E; --lp-bad:#F43F5E;
+  --lp-glass:rgba(255,255,255,.82); --lp-glass-line:rgba(255,255,255,.9); --lp-glass-ink:#43301F;
+  --lp-shadow:0 18px 40px -18px rgba(60,30,5,.55);
+  --lp-display:'Baloo 2','Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --lp-body:'Nunito','Segoe UI',system-ui,sans-serif;
+  --lp-hud-h:64px;
+  color-scheme:light;
+}
+html[data-lp="teen"]{
+  --lp-ink:#F4F6FF; --lp-ink-soft:#B9C2E4; --lp-card:rgba(22,28,52,.86); --lp-card-edge:rgba(130,150,255,.28);
+  --lp-glass:rgba(14,18,36,.62); --lp-glass-line:rgba(255,255,255,.14); --lp-glass-ink:#F4F6FF;
+  --lp-shadow:0 22px 50px -20px rgba(0,0,0,.8);
+  --lp-display:'Bricolage Grotesque','Baloo 2','Segoe UI',system-ui,sans-serif;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;min-height:100%;overflow-x:hidden}
+body.lp{min-height:100vh;min-height:100dvh;font-family:var(--lp-body);color:var(--lp-ink);background:#2a1c10;
+  -webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+html[data-lp="teen"] body.lp{background:#070a18}
+.lp button{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
+.lp :focus-visible{outline:3px solid var(--lp-accent-2);outline-offset:3px}
+.lp-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- Scene: painted background, depth, light, particles ---------- */
+.lp-scene{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:#1b130b}
+.lp-scene .bg{position:absolute;inset:-6%;background-size:cover;background-position:center;will-change:transform;transform:scale(1.04)}
+.lp-scene .bg.b{opacity:0}
+.lp-scene .tint{position:absolute;inset:0}
+.lp-scene .light{position:absolute;inset:-20%;background:radial-gradient(40% 35% at 70% 10%,rgba(255,236,190,.55),transparent 70%);mix-blend-mode:soft-light;will-change:transform,opacity}
+.lp-scene .vig{position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 40%,transparent 55%,rgba(25,12,0,.45) 100%)}
+html[data-lp="teen"] .lp-scene .vig{background:radial-gradient(120% 90% at 50% 40%,transparent 40%,rgba(2,4,14,.75) 100%)}
+.lp-scene canvas{position:absolute;inset:0;width:100%;height:100%}
+.lp-fx{position:fixed;inset:0;z-index:250;pointer-events:none;width:100%;height:100%}
+
+/* ---------- HUD ---------- */
+.lp-hud{position:fixed;left:0;right:0;top:0;z-index:60;display:flex;align-items:center;gap:10px;
+  padding:calc(10px + env(safe-area-inset-top,0px)) 14px 10px;pointer-events:none}
+.lp-hud > *{pointer-events:auto}
+.lp-chip{display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:0 14px;border-radius:999px;
+  background:var(--lp-glass);border:1px solid var(--lp-glass-line);color:var(--lp-glass-ink);
+  -webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);
+  box-shadow:0 10px 24px -14px rgba(0,0,0,.55);font-family:var(--lp-display);font-weight:800;font-size:16px;white-space:nowrap;text-decoration:none}
+.lp-chip svg{width:20px;height:20px;flex:none}
+a.lp-chip,button.lp-chip{cursor:pointer;border-style:solid}
+.lp-exit{padding:0 14px 0 10px}
+.lp-prog{flex:1;min-width:0;display:flex;gap:5px;align-items:center;height:44px;padding:0 12px;border-radius:999px;
+  background:var(--lp-glass);border:1px solid var(--lp-glass-line);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.lp-prog i{flex:1;height:10px;border-radius:99px;background:rgba(120,90,60,.18);overflow:hidden;position:relative}
+html[data-lp="teen"] .lp-prog i{background:rgba(255,255,255,.12)}
+.lp-prog i b{position:absolute;inset:0;border-radius:inherit;background:linear-gradient(90deg,var(--lp-accent-2),var(--lp-accent));transform-origin:0 50%;transform:scaleX(0)}
+.lp-prog i.now{box-shadow:0 0 0 2px rgba(249,115,22,.35)}
+.lp-stars .ico{width:26px;height:26px}
+.lp-stars .n{min-width:1.2em;text-align:center;display:inline-block}
+@media (max-width:420px){.lp-exit .t{display:none}.lp-exit{padding:0 10px}.lp-chip{padding:0 11px}}
+
+/* ---------- Layout helpers ---------- */
+.lp-stage{position:relative;z-index:10;min-height:100vh;min-height:100dvh;padding:calc(var(--lp-hud-h) + 12px + env(safe-area-inset-top,0px)) 14px calc(24px + env(safe-area-inset-bottom,0px));
+  display:flex;flex-direction:column;align-items:center}
+.lp-panel{background:var(--lp-glass);border:1px solid var(--lp-glass-line);border-radius:26px;box-shadow:var(--lp-shadow);
+  -webkit-backdrop-filter:blur(16px) saturate(1.3);backdrop-filter:blur(16px) saturate(1.3);color:var(--lp-glass-ink)}
+
+/* ---------- Actor (real character art) ---------- */
+.lp-actor{position:relative;display:inline-block;pointer-events:none}
+.lp-actor .body,.lp-actor .act{position:relative;height:100%;transform-origin:50% 100%;will-change:transform}
+.lp-actor img{display:block;height:100%;width:auto;filter:drop-shadow(0 14px 18px rgba(30,15,0,.35));user-select:none;-webkit-user-drag:none}
+.lp-actor img.next{position:absolute;left:0;top:0;opacity:0}
+.lp-actor .shadow{position:absolute;left:18%;right:18%;bottom:-6px;height:16px;border-radius:50%;background:rgba(20,10,0,.35);filter:blur(5px);transform-origin:50% 50%}
+
+/* speech bubble */
+.lp-bubble{position:relative;display:inline-flex;align-items:center;gap:12px;max-width:min(560px,100%);
+  padding:12px 18px 12px 12px;border-radius:24px;background:var(--lp-card);color:var(--lp-ink);
+  border:none;cursor:pointer;text-align:start;box-shadow:0 6px 0 var(--lp-card-edge),var(--lp-shadow);transform-origin:20% 100%}
+html[data-lp="teen"] .lp-bubble{box-shadow:0 0 0 1px var(--lp-card-edge),var(--lp-shadow);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.lp-bubble .txt{min-width:0;overflow-wrap:anywhere;font-family:var(--lp-display);font-weight:800;font-size:clamp(18px,4.6vw,24px);line-height:1.15}
+.lp-bubble .txt q{quotes:"\201C" "\201D";color:var(--lp-accent)}
+.lp-bubble .tail{position:absolute;width:22px;height:22px;background:inherit;bottom:-9px;left:34px;transform:rotate(45deg);border-radius:4px;box-shadow:6px 6px 0 -2px var(--lp-card-edge)}
+.lp-speak{position:relative;flex:none;width:52px;height:52px;border-radius:50%;border:none;display:grid;place-items:center;cursor:pointer;
+  background:linear-gradient(135deg,#FFD666,#FFB020);box-shadow:0 5px 0 #E08A00,0 10px 20px -6px rgba(255,170,0,.7);color:#43301F}
+.lp-speak svg{width:24px;height:24px}
+.lp-speak::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:3px solid rgba(255,190,40,.7);animation:lpRing 1.8s ease-out infinite}
+@keyframes lpRing{0%{transform:scale(.9);opacity:.9}100%{transform:scale(1.45);opacity:0}}
+.lp-speak.talking svg path:last-child{animation:lpWave .5s ease-in-out infinite alternate}
+@keyframes lpWave{from{opacity:.3}to{opacity:1}}
+
+/* ---------- Cards ---------- */
+.lp-cards{display:grid;gap:14px;width:100%;max-width:640px;perspective:900px;align-content:start;align-items:start}
+.lp-cards.c2{grid-template-columns:repeat(2,1fr)} .lp-cards.c3{grid-template-columns:repeat(3,1fr)} .lp-cards.c4{grid-template-columns:repeat(4,1fr)}
+/* phones: 3 picture cards sit 2 + 1 (centred) so each picture stays big */
+@media (max-width:560px){.lp-cards.c3.wrap2{display:flex;flex-wrap:wrap;justify-content:center}.lp-cards.c3.wrap2 > *{width:calc(50% - 7px)}.lp-cards.c4{grid-template-columns:repeat(2,1fr)}}
+.lp-card{position:relative;border:none;padding:0;cursor:pointer;border-radius:26px;background:var(--lp-card);color:var(--lp-ink);
+  box-shadow:0 7px 0 var(--lp-card-edge),0 22px 30px -18px rgba(60,30,5,.7);transform-style:preserve-3d;will-change:transform;touch-action:manipulation;
+  display:flex;flex-direction:column;align-items:stretch;overflow:visible;min-height:44px}
+html[data-lp="teen"] .lp-card{box-shadow:0 0 0 1px var(--lp-card-edge),0 24px 40px -18px rgba(0,0,0,.85);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.lp-card .pic{position:relative;aspect-ratio:1/1;margin:10px 10px 0;border-radius:18px;overflow:hidden;
+  background:radial-gradient(80% 80% at 50% 35%,#FFFDF7,#FFF1DA)}
+html[data-lp="teen"] .lp-card .pic{background:radial-gradient(80% 80% at 50% 35%,#2a3460,#141a35)}
+.lp-card .pic img{position:absolute;inset:7%;width:86%;height:86%;object-fit:contain;filter:drop-shadow(0 6px 8px rgba(60,30,5,.18))}
+.lp-card .pic .tile{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--lp-display);font-weight:800;font-size:clamp(40px,12vw,72px);color:#fff}
+.lp-card .lbl{font-family:var(--lp-display);font-weight:800;font-size:clamp(16px,4.2vw,20px);padding:8px 8px 12px;text-align:center;line-height:1.1}
+.lp-card.nolbl .pic{margin-bottom:10px}
+.lp-card .shine{position:absolute;inset:0;border-radius:inherit;pointer-events:none;overflow:hidden}
+.lp-card .shine::before{content:"";position:absolute;top:-60%;left:-60%;width:50%;height:220%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);transform:rotate(20deg) translateX(-200%)}
+.lp-card.glint .shine::before{animation:lpGlint .9s ease-out}
+@keyframes lpGlint{to{transform:rotate(20deg) translateX(520%)}}
+.lp-card .ring{position:absolute;inset:-4px;border-radius:30px;pointer-events:none;opacity:0;border:5px solid var(--lp-good);box-shadow:0 0 0 6px rgba(34,197,94,.25),0 0 30px rgba(34,197,94,.6)}
+.lp-card.good .ring{opacity:1}
+.lp-card.bad .ring{opacity:1;border-color:var(--lp-bad);box-shadow:0 0 0 6px rgba(244,63,94,.18)}
+.lp-card .badge{position:absolute;top:-10px;right:-10px;width:42px;height:42px;border-radius:50%;background:var(--lp-good);color:#fff;display:grid;place-items:center;
+  box-shadow:0 6px 14px -4px rgba(22,120,60,.7);opacity:0;transform:scale(0)}
+.lp-card .badge svg{width:24px;height:24px}
+.lp-card.dim{filter:saturate(.4);opacity:.55}
+.lp-card[disabled]{cursor:default}
+
+/* word chips (no picture) */
+.lp-word{border:none;cursor:pointer;min-height:56px;padding:12px 18px;border-radius:18px;background:var(--lp-card);color:var(--lp-ink);
+  font-family:var(--lp-display);font-weight:800;font-size:clamp(17px,4.4vw,21px);box-shadow:0 5px 0 var(--lp-card-edge),0 16px 24px -16px rgba(60,30,5,.6);position:relative}
+html[data-lp="teen"] .lp-word{box-shadow:0 0 0 1px var(--lp-card-edge),0 16px 30px -16px rgba(0,0,0,.8)}
+.lp-word.good{background:var(--lp-good);color:#fff;box-shadow:0 5px 0 #15803D}
+.lp-word.bad{background:var(--lp-bad);color:#fff;box-shadow:0 5px 0 #BE123C}
+
+/* ---------- Buttons ---------- */
+.lp-btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:58px;padding:0 30px;border:none;border-radius:999px;cursor:pointer;
+  font-family:var(--lp-display);font-weight:800;font-size:21px;color:#fff;text-decoration:none;
+  background:linear-gradient(180deg,#FF9A3D,#F97316);box-shadow:0 6px 0 #C2530A,0 18px 30px -12px rgba(249,115,22,.8)}
+.lp-btn svg{width:22px;height:22px}
+.lp-btn::after{content:"";position:absolute;top:0;bottom:0;left:-40%;width:30%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(-20deg);animation:lpSheen 3.2s ease-in-out infinite}
+@keyframes lpSheen{0%,60%{left:-40%}100%{left:130%}}
+.lp-btn.alt{background:linear-gradient(180deg,#fff,#FFF4E4);color:#43301F;box-shadow:0 6px 0 #EAD3B3,0 16px 26px -14px rgba(60,30,5,.6)}
+.lp-btn.alt::after{display:none}
+.lp-btn.teal{background:linear-gradient(180deg,#2DD4BF,#0D9488);box-shadow:0 6px 0 #0A6F66,0 18px 30px -12px rgba(13,148,136,.7)}
+html[data-lp="teen"] .lp-btn{background:linear-gradient(135deg,#7C5CFF,#3BA0FF);box-shadow:0 0 0 1px rgba(255,255,255,.18) inset,0 18px 36px -12px rgba(90,110,255,.8)}
+html[data-lp="teen"] .lp-btn.alt{background:rgba(255,255,255,.1);color:#fff;box-shadow:0 0 0 1px rgba(255,255,255,.22) inset}
+
+/* ---------- Title screen ---------- */
+.lp-title{position:fixed;inset:0;z-index:120;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  padding:calc(20px + env(safe-area-inset-top,0px)) 18px calc(28px + env(safe-area-inset-bottom,0px));overflow:hidden}
+.lp-title .veil{position:absolute;inset:0;background:radial-gradient(70% 55% at 50% 45%,rgba(255,250,240,.0),rgba(30,15,0,.55))}
+html[data-lp="teen"] .lp-title .veil{background:radial-gradient(70% 55% at 50% 45%,rgba(10,10,30,.2),rgba(3,4,14,.85))}
+.lp-title .inner{position:relative;display:flex;flex-direction:column;align-items:center;max-width:620px}
+.lp-title .hero{height:min(36vh,300px);position:relative;margin-bottom:4px}
+.lp-title .hero .lp-actor{height:100%}
+.lp-title .kick{font-family:var(--lp-display);font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:13px;color:#fff;
+  background:rgba(0,0,0,.28);padding:6px 14px;border-radius:999px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);margin-bottom:10px}
+.lp-title h1{margin:0;font-family:var(--lp-display);font-weight:800;line-height:.95;font-size:clamp(44px,12vw,86px);letter-spacing:-.02em;color:#fff;
+  text-shadow:0 4px 0 rgba(120,50,0,.55),0 14px 30px rgba(40,15,0,.55)}
+html[data-lp="teen"] .lp-title h1{text-shadow:0 0 30px rgba(120,140,255,.55),0 10px 30px rgba(0,0,0,.7)}
+.lp-title h1 .ch{display:inline-block;will-change:transform}
+.lp-title h1 .w{display:inline-block;white-space:nowrap}
+.lp-title p{margin:12px 0 22px;font-weight:800;font-size:clamp(16px,4.4vw,20px);color:#FFF6E6;text-shadow:0 2px 10px rgba(0,0,0,.5);max-width:30em}
+.lp-title .ar{display:block;font-family:'Tajawal',var(--lp-body);font-size:.92em;opacity:.9;margin-top:4px}
+
+/* the game waits, hidden, under the title screen */
+body.lp-intro .lp-stage,body.lp-intro .lp-hud{opacity:0;pointer-events:none}
+.lp-stage,.lp-hud{transition:opacity .5s ease}
+
+/* ---------- Round banner ---------- */
+.lp-banner{position:fixed;left:50%;top:42%;z-index:140;transform:translate(-50%,-50%);pointer-events:none;text-align:center;opacity:0}
+.lp-banner b{display:block;font-family:var(--lp-display);font-weight:800;font-size:clamp(40px,11vw,74px);color:#fff;line-height:1;
+  text-shadow:0 4px 0 rgba(150,60,0,.6),0 16px 40px rgba(0,0,0,.45);white-space:nowrap}
+.lp-banner small{display:inline-block;margin-top:8px;font-family:var(--lp-display);font-weight:800;font-size:18px;color:#43301F;background:#FFD666;padding:5px 16px;border-radius:999px;box-shadow:0 4px 0 #E0A400}
+html[data-lp="teen"] .lp-banner b{text-shadow:0 0 30px rgba(120,140,255,.7),0 10px 30px rgba(0,0,0,.7)}
+html[data-lp="teen"] .lp-banner small{background:rgba(255,255,255,.14);color:#fff;box-shadow:none;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+
+/* streak chip */
+.lp-streak{position:fixed;left:50%;top:calc(var(--lp-hud-h) + 14px + env(safe-area-inset-top,0px));z-index:70;transform:translateX(-50%);display:flex;align-items:center;gap:4px;
+  padding:4px 16px 4px 6px;border-radius:999px;background:linear-gradient(135deg,#FF7A18,#FF3D6E);color:#fff;font-family:var(--lp-display);font-weight:800;font-size:17px;
+  box-shadow:0 12px 26px -10px rgba(255,60,80,.8);opacity:0;pointer-events:none}
+.lp-streak .fl{width:34px;height:34px}
+
+/* ---------- Results ---------- */
+.lp-results{position:fixed;inset:0;z-index:160;display:flex;align-items:center;justify-content:center;padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));visibility:hidden}
+.lp-results .dim{position:absolute;inset:0;background:radial-gradient(80% 70% at 50% 45%,rgba(40,20,0,.35),rgba(20,8,0,.78))}
+html[data-lp="teen"] .lp-results .dim{background:radial-gradient(80% 70% at 50% 45%,rgba(10,10,40,.5),rgba(2,3,12,.88))}
+.lp-results .rays{position:absolute;left:50%;top:38%;width:900px;height:900px;margin:-450px 0 0 -450px;opacity:.35;
+  background:repeating-conic-gradient(from 0deg,rgba(255,220,120,.55) 0 8deg,transparent 8deg 22deg);-webkit-mask:radial-gradient(circle,#000 10%,transparent 62%);mask:radial-gradient(circle,#000 10%,transparent 62%)}
+html[data-lp="teen"] .lp-results .rays{background:repeating-conic-gradient(from 0deg,rgba(130,150,255,.4) 0 8deg,transparent 8deg 22deg)}
+.lp-results .card{position:relative;width:min(440px,100%);padding:96px 22px 24px;border-radius:32px;text-align:center;background:linear-gradient(180deg,#FFFDF8,#FFF1DC);color:#43301F;
+  box-shadow:0 10px 0 #EBCB9E,0 40px 80px -30px rgba(0,0,0,.8)}
+html[data-lp="teen"] .lp-results .card{background:linear-gradient(180deg,rgba(30,36,72,.96),rgba(16,20,44,.96));color:#F4F6FF;box-shadow:0 0 0 1px rgba(140,160,255,.3),0 40px 80px -30px rgba(0,0,0,.9)}
+.lp-results .hero{position:absolute;left:50%;top:-110px;height:200px;transform:translateX(-50%)}
+.lp-results .hero .lp-actor{height:100%}
+.lp-results .stars{display:flex;justify-content:center;align-items:flex-end;gap:6px;margin:0 0 6px}
+.lp-results .stars span{width:66px;height:66px;display:block;position:relative}
+.lp-results .stars span:nth-child(2){width:84px;height:84px;margin-bottom:12px}
+.lp-results .stars svg{width:100%;height:100%;display:block}
+.lp-results .stars .off{position:absolute;inset:0}
+.lp-results .stars .on{position:absolute;inset:0;opacity:0}
+.lp-results h2{margin:4px 0 2px;font-family:var(--lp-display);font-weight:800;font-size:clamp(30px,8vw,40px);line-height:1.05}
+.lp-results .score{font-family:var(--lp-display);font-weight:800;font-size:19px;opacity:.85;margin:0 0 4px}
+.lp-results .score b{font-size:1.3em;color:var(--lp-accent)}
+.lp-results .note{margin:2px 0 18px;font-weight:700;opacity:.8}
+.lp-results .acts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.lp-results .acts .lp-btn{flex:1 1 150px;font-size:18px;padding:0 16px;white-space:nowrap}
+@media (max-width:420px){.lp-results .acts{flex-direction:column-reverse}.lp-results .acts .lp-btn{flex:none;width:100%}}
+body.lp-done .lp-stage{opacity:0;pointer-events:none}
+.lp-results .conf{position:absolute;inset:0;pointer-events:none}
+
+/* sound toggle (kit-owned, replaces app.js's) */
+#lumioSoundBtn{display:none!important}
+.lp-sound{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:90;width:48px;height:48px;padding:0;justify-content:center}
+
+@media (prefers-reduced-motion:reduce){
+  .lp-speak::after,.lp-btn::after{animation:none}
+  .lp-card.glint .shine::before{animation:none}
+}
