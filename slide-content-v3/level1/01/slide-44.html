@@ -1,0 +1,73 @@
+<div class="v3 v3-kid"><div class="v3-bg" style="background-image:url('assets/lesson-bg-kid/classroom.jpg')"></div><div class="v3-shade"></div><div class="v3-top">
+      <div class="v3-lesson"><img src="assets/logo/lumio-logo.png" alt="Lumio English"><span><small>Level 1</small>Lesson 1</span></div>
+      <div class="pagetitle v3-ribbon"><b>Mystery Picture</b> &bull; <i>Game</i></div>
+      <div class="counter v3-page"><i class="v3-ico" data-ico="book"></i>44 / 51</div>
+    </div>
+    <div style="position:absolute;left:60px;right:60px;top:122px;z-index:6;display:flex;gap:18px">
+      <div class="v3-note" style="position:relative;width:auto;flex:1;transform:rotate(-1deg)"><b class="k"><i class="v3-ico" data-ico="people"></i>Pairs / group</b>Teams take turns tapping ONE tile each. Guess the word any time: 4 tiles still hidden = 4 points, 1 tile = 1 point. Wrong guess? Other team's turn.</div>
+      <div class="v3-note" style="position:relative;width:auto;flex:1;transform:rotate(1deg);background:linear-gradient(180deg,#DDF7F2,#BDEDE3);color:#0B4F48"><b class="k" style="color:#0B7A6F"><i class="v3-ico" data-ico="user"></i>1-on-1 with your teacher</b>Tap one tile and guess. Early guess = more points. Say the word in English, then your teacher asks: <i>What colour is it? Do you like it?</i></div>
+    </div>
+    <div style="position:absolute;left:0;right:0;top:214px;bottom:56px;z-index:6;display:flex;align-items:center;justify-content:center;gap:40px">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+        <div id="mpPanels" data-idx="0">
+        <div id="mpPanel0" data-say="boy" style="display:block"><div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+          <div style="position:relative;width:320px;height:320px;border-radius:24px;overflow:hidden;background:#fff;background:radial-gradient(120% 80% at 90% 0%,rgba(255,255,255,.85),transparent 55%),#FFF9EE;border-radius:24px;box-shadow:0 0 0 5px rgba(255,255,255,.9),0 22px 40px -16px rgba(70,35,8,.55);">
+            <img src="assets/vocab/boy.png" style="position:absolute;inset:12px;width:calc(100% - 24px);height:calc(100% - 24px);object-fit:contain" onerror="this.style.display='none'">
+            <div style="position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3px"><div data-act-tile onclick="LumioAct.uncover(this)" style="background:linear-gradient(135deg,#F97316,#FB923C);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:2.4rem;transition:opacity .3s">1</div><div data-act-tile onclick="LumioAct.uncover(this)" style="background:linear-gradient(135deg,#0D9488,#2DD4BF);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:2.4rem;transition:opacity .3s">2</div><div data-act-tile onclick="LumioAct.uncover(this)" style="background:linear-gradient(135deg,#8B5CF6,#A78BFA);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:2.4rem;transition:opacity .3s">3</div><div data-act-tile onclick="LumioAct.uncover(this)" style="background:linear-gradient(135deg,#FBBF24,#FCD34D);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:2.4rem;transition:opacity .3s">4</div></div>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="v3-btn s teal" onclick="LumioAct.uncoverAll('mpPanel0'); typeof Lumio!=='undefined' && Lumio.speak && Lumio.speak(&quot;boy&quot;)" style=""><i class="v3-ico" data-ico="bulb"></i> I know!</button>
+          </div>
+        </div></div>
+        <div id="mpPanel1" data-say="teacher" style="display:none"><div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+          <div style="position:relative;width:320px;height:320px;border-radius:24px;overflow:hidden;background:#fff;background:radial-gradient(120% 80% at 90% 0%,rgba(255,255,255,.85),transparent 55%),#FFF9EE;border-radius:24px;box-shadow:0 0 0 5px rgba(255,255,255,.9),0 22px 40px -16px rgba(70,35,8,.55);">
+            <img src="assets/vocab/teacher.png" style="position:absolute;inset:12px;width:calc(100% - 24px);height:calc(100% - 24px);object-fit:contain" onerror="this.style.display='none'">
+            <div style="position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3px"><div data-act-tile onclick="LumioAct.uncover(this)" style="background:linear-gradient(135deg,#F97316,#FB923C);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:2.4rem;transition:opacity .3s">1</div><div data-act-tile onclick="LumioAct.uncover(this)" style="background:linear-gradient(135deg,#0D9488,#2DD4BF);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:2.4rem;transition:opacity .3s">2</div><div data-act-tile onclick="LumioAct.uncover(this)" style="background:linear-gradient(135deg,#8B5CF6,#A78BFA);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:2.4rem;transition:opacity .3s">3</div><div data-act-tile onclick="LumioAct.uncover(this)" style="background:linear-gradient(135deg,#FBBF24,#FCD34D);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:2.4rem;transition:opacity .3s">4</div></div>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="v3-btn s teal" onclick="LumioAct.uncoverAll('mpPanel1'); typeof Lumio!=='undefined' && Lumio.speak && Lumio.speak(&quot;teacher&quot;)" style=""><i class="v3-ico" data-ico="bulb"></i> I know!</button>
+          </div>
+        </div></div>
+        <div id="mpPanel2" data-say="friend" style="display:none"><div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+          <div style="position:relative;width:320px;height:320px;border-radius:24px;overflow:hidden;background:#fff;background:radial-gradient(120% 80% at 90% 0%,rgba(255,255,255,.85),transparent 55%),#FFF9EE;border-radius:24px;box-shadow:0 0 0 5px rgba(255,255,255,.9),0 22px 40px -16px rgba(70,35,8,.55);">
+            <img src="assets/vocab/friend.png" style="position:absolute;inset:12px;width:calc(100% - 24px);height:calc(100% - 24px);object-fit:contain" onerror="this.style.display='none'">
+            <div style="position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3px"><div data-act-tile onclick="LumioAct.uncover(this)" style="background:linear-gradient(135deg,#F97316,#FB923C);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:2.4rem;transition:opacity .3s">1</div><div data-act-tile onclick="LumioAct.uncover(this)" style="background:linear-gradient(135deg,#0D9488,#2DD4BF);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:2.4rem;transition:opacity .3s">2</div><div data-act-tile onclick="LumioAct.uncover(this)" style="background:linear-gradient(135deg,#8B5CF6,#A78BFA);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:2.4rem;transition:opacity .3s">3</div><div data-act-tile onclick="LumioAct.uncover(this)" style="background:linear-gradient(135deg,#FBBF24,#FCD34D);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:2.4rem;transition:opacity .3s">4</div></div>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="v3-btn s teal" onclick="LumioAct.uncoverAll('mpPanel2'); typeof Lumio!=='undefined' && Lumio.speak && Lumio.speak(&quot;friend&quot;)" style=""><i class="v3-ico" data-ico="bulb"></i> I know!</button>
+          </div>
+        </div></div>
+        <div id="mpPanel3" data-say="dad" style="display:none"><div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+          <div style="position:relative;width:320px;height:320px;border-radius:24px;overflow:hidden;background:#fff;background:radial-gradient(120% 80% at 90% 0%,rgba(255,255,255,.85),transparent 55%),#FFF9EE;border-radius:24px;box-shadow:0 0 0 5px rgba(255,255,255,.9),0 22px 40px -16px rgba(70,35,8,.55);">
+            <img src="assets/vocab/dad.png" style="position:absolute;inset:12px;width:calc(100% - 24px);height:calc(100% - 24px);object-fit:contain" onerror="this.style.display='none'">
+            <div style="position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3px"><div data-act-tile onclick="LumioAct.uncover(this)" style="background:linear-gradient(135deg,#F97316,#FB923C);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:2.4rem;transition:opacity .3s">1</div><div data-act-tile onclick="LumioAct.uncover(this)" style="background:linear-gradient(135deg,#0D9488,#2DD4BF);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:2.4rem;transition:opacity .3s">2</div><div data-act-tile onclick="LumioAct.uncover(this)" style="background:linear-gradient(135deg,#8B5CF6,#A78BFA);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:2.4rem;transition:opacity .3s">3</div><div data-act-tile onclick="LumioAct.uncover(this)" style="background:linear-gradient(135deg,#FBBF24,#FCD34D);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:2.4rem;transition:opacity .3s">4</div></div>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="v3-btn s teal" onclick="LumioAct.uncoverAll('mpPanel3'); typeof Lumio!=='undefined' && Lumio.speak && Lumio.speak(&quot;dad&quot;)" style=""><i class="v3-ico" data-ico="bulb"></i> I know!</button>
+          </div>
+        </div></div></div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button class="v3-btn s ghost" onclick="LumioAct.cycle('mpPanels',-1)" style="">&#9664;</button>
+          <span data-act-counter="mpPanels" style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#8A7160">1 / 4</span>
+          <button class="v3-btn s " onclick="LumioAct.cycle('mpPanels',1)" style="">Next picture <i class="v3-ico" data-ico="play"></i></button>
+        </div>
+      </div>
+      <div style="width:260px;background:radial-gradient(120% 80% at 90% 0%,rgba(255,255,255,.85),transparent 55%),#FFF9EE;border-radius:24px;box-shadow:0 0 0 5px rgba(255,255,255,.9),0 22px 40px -16px rgba(70,35,8,.55);padding:14px 16px">
+        <div style="font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#0D9488;margin-bottom:8px">POINTS</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;gap:8px;background:radial-gradient(120% 80% at 90% 0%,rgba(255,255,255,.85),transparent 55%),#FFF9EE;border-radius:24px;box-shadow:0 0 0 5px rgba(255,255,255,.9),0 22px 40px -16px rgba(70,35,8,.55);padding:6px 10px 6px 14px">
+        <span style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#F97316;font-size:.9rem">Team A</span>
+        <span data-act-score style="display:inline-block;min-width:34px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;color:#43301F;transition:transform .15s">0</span>
+        <button onclick="LumioAct.score(this,1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#F97316;color:#fff;font-weight:900;font-size:1rem">+</button>
+        <button onclick="LumioAct.score(this,-1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#E5E7EB;color:#6B7280;font-weight:900;font-size:1rem">&minus;</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;background:radial-gradient(120% 80% at 90% 0%,rgba(255,255,255,.85),transparent 55%),#FFF9EE;border-radius:24px;box-shadow:0 0 0 5px rgba(255,255,255,.9),0 22px 40px -16px rgba(70,35,8,.55);padding:6px 10px 6px 14px">
+        <span style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#0D9488;font-size:.9rem">Team B</span>
+        <span data-act-score style="display:inline-block;min-width:34px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;color:#43301F;transition:transform .15s">0</span>
+        <button onclick="LumioAct.score(this,1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#0D9488;color:#fff;font-weight:900;font-size:1rem">+</button>
+        <button onclick="LumioAct.score(this,-1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#E5E7EB;color:#6B7280;font-weight:900;font-size:1rem">&minus;</button>
+      </div></div>
+        <div style="font-family:'Baloo 2',sans-serif;font-size:.8rem;color:#8A7160;font-weight:700;margin-top:10px">Tip: tap <b>+</b> once per hidden tile when the guess is right.</div>
+      </div>
+    </div>
+    </div>
