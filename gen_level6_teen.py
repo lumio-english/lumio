@@ -189,7 +189,7 @@ LESSONS = [
    "goal": "I can give instructions describing how something should be done.",
    "grammarFocus": "Adverbs of Manner (instructions)",
    "vocab": [
-     {"en": "properly", "ar": "بشكل صحيح", "example": "Do it properly the first time."},
+     {"en": "properly", "ar": "كما ينبغي", "example": "Do it properly the first time."},
      {"en": "safely", "ar": "بأمان", "example": "Cross the street safely."},
      {"en": "neatly", "ar": "بترتيب", "example": "Write your name neatly."},
      {"en": "smoothly", "ar": "بسلاسة", "example": "The project went smoothly."},
