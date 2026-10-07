@@ -482,6 +482,8 @@ if (!vocab.length) {
 
   async function endGame() {
     LP.round(-1); LP.answer = null; witness(false);
+    $("sd").classList.remove("dlg"); redrawYarn();
+    if (scrollY > 0) { window.scrollTo({ top: 0, behavior: RM ? "auto" : "smooth" }); await LP.wait(450); }
     det.cheer("celebrate", false);
     const st = $("closed");
     if (G && !RM) {
