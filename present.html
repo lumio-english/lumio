@@ -18,6 +18,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@600;700;800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/slide-styles.css">
 <link rel="stylesheet" href="css/slide-motion.css">
+<link rel="stylesheet" href="css/slides-v3.css">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700&display=swap" rel="stylesheet">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-font-smoothing:antialiased; }
   html,body { height:100%; background:#2B2118; font-family:'Nunito',sans-serif; overflow:hidden; }
@@ -107,6 +109,8 @@ const qs = k => new URLSearchParams(location.search).get(k);
 const level = qs("level") || "pre-a";
 const num = parseInt(qs("n") || "1", 10);
 const nn = String(num).padStart(2, "0");
+// ?deck=3: the new-design decks (slide-content-v3/, same content) -- preview until released
+const DECK = qs("deck") === "3" ? "-v3" : "";
 
 let cur = 1;
 let total = 1;
@@ -114,7 +118,7 @@ let gameStartSlide = null;
 
 document.getElementById("lessonBrand").textContent = `📖 ${level.toUpperCase()} · Lesson ${num}`;
 
-fetch(`assets/slides/${level}/manifest.json`).then(r => r.json()).then(manifest => {
+fetch(`assets/slides${DECK}/${level}/manifest.json`).then(r => r.json()).then(manifest => {
   total = manifest[nn] || 20;
   const lesson = (window.LUMIO_LESSONS && window.LUMIO_LESSONS[level] && window.LUMIO_LESSONS[level][num]) || { vocab: [] };
   const vocabN = lesson.vocab.length;
@@ -153,11 +157,12 @@ fetch(`assets/slides/${level}/manifest.json`).then(r => r.json()).then(manifest 
 
 function loadSlide(n) {
   cur = n;
-  fetch(`slide-content/${level}/${nn}/slide-${String(n).padStart(2,"0")}.html`)
+  fetch(`slide-content${DECK}/${level}/${nn}/slide-${String(n).padStart(2,"0")}.html`)
     .then(r => { if (!r.ok) throw new Error("missing"); return r.text(); })
     .then(html => {
       const stageContent = document.getElementById("stageContent");
       stageContent.innerHTML = html;
+      if (window.LumioIcons) stageContent.querySelectorAll("[data-ico]").forEach(e => { e.innerHTML = LumioIcons.svg(e.dataset.ico); });
       delete stageContent.dataset.quizAnswered; // reset per-slide -- this container persists across slide loads
       document.getElementById("prevBtn").disabled = n === 1;
       document.getElementById("nextBtn").disabled = n === total;
@@ -172,7 +177,7 @@ function loadSlide(n) {
 // batches -- that round sits 6-58 slides from the end -- and remember the
 // answer for this tab. null = no round found (caller uses the estimate).
 async function findGameStartSlide(total) {
-  const key = `lumio_game_start_${level}_${nn}_${total}`;
+  const key = `lumio_game_start${DECK}_${level}_${nn}_${total}`;
   try { const c = sessionStorage.getItem(key); if (c) return Number(c); } catch (e) {}
   const yourTurnRx = />\s*Your Turn\s*(?:&bull;|&middot;|·|•)/;
   const BATCH = 8;
@@ -180,7 +185,7 @@ async function findGameStartSlide(total) {
     const nums = [];
     for (let k = hi; k > Math.max(0, hi - BATCH); k--) nums.push(k);
     const texts = await Promise.all(nums.map(k =>
-      fetch(`slide-content/${level}/${nn}/slide-${String(k).padStart(2, "0")}.html`)
+      fetch(`slide-content${DECK}/${level}/${nn}/slide-${String(k).padStart(2, "0")}.html`)
         .then(r => r.ok ? r.text() : "").catch(() => "")));
     const idx = texts.findIndex(t => yourTurnRx.test(t));
     if (idx !== -1) {

@@ -216,7 +216,7 @@
   function slideUrl(n) {
     var trialM = location.pathname.match(/present-trial/);
     if (trialM) return null;   // trial decks: read titles from the live slide only
-    return "slide-content/" + LEVEL + "/" + String(NUM).padStart(2, "0") + "/slide-" + String(n).padStart(2, "0") + ".html";
+    return "slide-content" + (qs("deck") === "3" ? "-v3" : "") + "/" + LEVEL + "/" + String(NUM).padStart(2, "0") + "/slide-" + String(n).padStart(2, "0") + ".html";
   }
   function buildMap(total) {
     if (deckMap || !total || !slideUrl(1)) return;
@@ -392,13 +392,16 @@
   var motesRaf = 0;
   function backdrop() {
     var kids = Array.prototype.slice.call(content.children), bg = null, after = null;
+    var v3 = content.querySelector(".v3");
+    if (v3) { kids = Array.prototype.slice.call(v3.children); bg = v3.querySelector(".v3-bg"); after = v3.querySelector(".v3-shade") || bg; }
+    else
     for (var i = 0; i < kids.length && i < 6; i++) {
       var el = kids[i], st = el.getAttribute("style") || "";
       if (/inset:\s*0|width:\s*100%/.test(st) && !(el.textContent || "").trim()) { if (!bg && /url\(/.test(st)) bg = el; after = el; } else if (after) break;
     }
     if (bg && !RM) anim(bg, [{ scale: 1, translate: "0 0" }, { scale: 1.07, translate: "-14px -8px" }], { duration: 16000, iterations: Infinity, direction: "alternate", easing: "ease-in-out" });
     var c = mk("canvas", "lc-motes"); c.width = SW; c.height = SH;
-    if (after && after.nextSibling) content.insertBefore(c, after.nextSibling); else content.insertBefore(c, content.firstChild);
+    if (after && after.nextSibling) after.parentNode.insertBefore(c, after.nextSibling); else content.insertBefore(c, content.firstChild);
     if (RM) return;
     var g = c.getContext("2d"), N = TEEN ? 46 : 34, ms = [];
     for (var j = 0; j < N; j++) ms.push({ x: Math.random() * SW, y: Math.random() * SH, r: TEEN ? .6 + Math.random() * 1.6 : 1.2 + Math.random() * 2.8, vx: (Math.random() - .5) * .25, vy: TEEN ? (Math.random() - .5) * .1 : -.12 - Math.random() * .3, ph: Math.random() * 6.28, sp: .01 + Math.random() * .03 });
@@ -562,7 +565,7 @@
     return best;
   }
   function wordParts(word, pic) {
-    var card = pic.closest(".card") || pic.parentElement.parentElement;
+    var card = pic.closest(".card, .v3-paper, .v3-photo") || pic.parentElement.parentElement;
     var L = leaves(content), w = norm(word), out = { big: null, ar: [], tiles: [], ex: [] };
     var bigFs = 0;
     L.forEach(function (el) {
@@ -575,6 +578,7 @@
       if (/^[“"].*[”"]$/.test(tx) && tx.length < 120) out.ex.push(el);
     });
     if (card) out.tiles = tilesIn(card);
+    if (!out.tiles.length && content.querySelector(".v3")) out.tiles = tilesIn(content);
     return out;
   }
   function setupReveal(sec, dir) {
@@ -652,8 +656,8 @@
       if (!match) return;
       if (spoken.length === 1) {
         match.classList.add("lc-saying"); setTimeout(function () { match.classList.remove("lc-saying"); }, Math.max(900, dur));
-        var tl = []; var card = match.closest(".card"); if (card) tl = tilesIn(card);
-        if (!tl.length) { var pic = vocabPicture(); if (pic) { var c2 = pic.closest(".card"); if (c2) tl = tilesIn(c2); } }
+        var tl = []; var card = match.closest(".card, .v3-paper"); if (card) tl = tilesIn(card);
+        if (!tl.length) { var pic = vocabPicture(); if (pic) { var c2 = pic.closest(".card"); if (c2) tl = tilesIn(c2); else tl = tilesIn(content); } }
         tl.forEach(function (t, i) { setTimeout(function () { anim(t, [{ translate: "0 0", scale: 1 }, { translate: "0 -14px", scale: 1.15 }, { translate: "0 0", scale: 1 }], { duration: 380, easing: "ease-out" }); t.classList.add("lc-lit"); setTimeout(function () { t.classList.remove("lc-lit"); }, 420); }, i * Math.min(160, dur / Math.max(1, tl.length))); });
         return;
       }
