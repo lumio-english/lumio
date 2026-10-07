@@ -161,6 +161,11 @@ html[data-lp="teen"] .theEnd{color:var(--acc2)}
 p.ar{margin:0;direction:rtl;text-align:right;font-family:var(--arf);font-weight:500;font-size:calc(var(--fs)*.86);line-height:1.75;color:var(--ink2);user-select:text;-webkit-user-select:text}
 p.ar b{font-weight:700;color:var(--q);opacity:.9}
 .tp.hideAr .orn,.tp.hideAr p.ar{display:none}
+.arBtn{display:none;height:44px;min-width:44px;border-radius:999px;border:1.5px solid var(--edge);background:transparent;color:var(--ink2);font-family:var(--arf);font-weight:700;font-size:.95rem;padding:0 10px;flex:none}
+.arBtn[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#fff}
+.mode-short .arBtn{display:inline-flex;align-items:center;justify-content:center}
+.mode-short .tp.arOff .orn,.mode-short .tp.arOff p.ar{display:none}
+.mode-short .cast{display:none}
 /* word reveal */
 .tp.veil .w,.tp.veil p.ar,.tp.veil .orn{opacity:0}
 
@@ -778,13 +783,17 @@ function buildText(d, n) {
   const cast = castOf(en.plain);
   tp.innerHTML = `<div class="tpHead"><span class="pgLbl">Page ${n} <i>/ ${part.pages}</i></span>` +
     `<span class="cast">${cast.slice(0, 4).map(c => `<img src="${avatar(c)}" alt="" title="${c[0].toUpperCase() + c.slice(1)}">`).join("")}</span>` +
-    `<button type="button" class="readBtn" aria-label="Read to me" data-press>${IC.spk}<span class="lbl">Read to me</span></button></div>` +
+    `<button type="button" class="arBtn" lang="ar" aria-label="Arabic translation" data-press>عربي</button><button type="button" class="readBtn" aria-label="Read to me" data-press>${IC.spk}<span class="lbl">Read to me</span></button></div>` +
     `<div class="tpBody"><div class="tpIn"><p class="en" lang="en"></p><div class="orn" aria-hidden="true">${IC.orn}</div><p class="ar" dir="rtl" lang="ar"></p></div></div>`;
   $("p.en", tp).append(...Array.from(en.host.childNodes));
   $("p.ar", tp).innerHTML = d.ar;
   if (!d.ar) tp.classList.add("hideAr");
   tp._plain = en.plain; tp._words = en.words;
   $(".readBtn", tp).onclick = e => { e.stopPropagation(); toggleRead(); };
+  const arOn = () => store.get("lumio_story_ar_short", "0") === "1";
+  const paintAr = () => { tp.classList.toggle("arOff", !arOn()); $(".arBtn", tp).setAttribute("aria-pressed", String(arOn())); };
+  paintAr();
+  $(".arBtn", tp).onclick = e => { e.stopPropagation(); store.set("lumio_story_ar_short", arOn() ? "0" : "1"); $$(".tp", book).forEach(t => { t.classList.toggle("arOff", !arOn()); const b = $(".arBtn", t); if (b) b.setAttribute("aria-pressed", String(arOn())); fitText(t); }); sfx("tap"); };
   $("p.en", tp).addEventListener("click", e => { const w = e.target.closest(".w"); if (w) sayWord(w); });
   pap.appendChild(tp);
   return pap;

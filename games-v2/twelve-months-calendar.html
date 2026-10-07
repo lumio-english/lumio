@@ -381,7 +381,7 @@ if (!vocab.length) {
   let usedThisGame = new Set();
   function pickUnused(pool, keyFn) {
     let avail = pool.filter(w => !usedThisGame.has(keyFn(w)));
-    if (!avail.length) { usedThisGame.clear(); avail = pool.slice(); }
+    if (!avail.length) { pool.forEach(w => usedThisGame.delete(keyFn(w))); avail = pool.slice(); }   // only this pool starts over
     const pick = Lumio.shuffle(avail)[0];
     usedThisGame.add(keyFn(pick));
     return pick;

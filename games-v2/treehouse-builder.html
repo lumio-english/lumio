@@ -133,8 +133,8 @@
         </g>
         <!-- 5: rope ladder -->
         <g class="piece" id="pc-ladder">
-          <path d="M250 252 L236 386 M290 252 L282 386" stroke="#C9935A" stroke-width="7" stroke-linecap="round"/>
-          <g stroke="url(#thWoodD)" stroke-width="8" stroke-linecap="round"><line x1="247" y1="278" x2="288" y2="278"/><line x1="245" y1="304" x2="287" y2="304"/><line x1="242" y1="330" x2="285" y2="330"/><line x1="239" y1="356" x2="284" y2="356"/></g>
+          <path d="M250 252 L236 386 M290 252 L282 386" stroke="#C9935A" stroke-width="8" stroke-linecap="round"/>
+          <g stroke="#8A5A2B" stroke-width="8" stroke-linecap="round"><line x1="247" y1="278" x2="288" y2="278"/><line x1="245" y1="304" x2="287" y2="304"/><line x1="242" y1="330" x2="285" y2="330"/><line x1="239" y1="356" x2="284" y2="356"/></g>
         </g>
         <!-- 6: flag on the roof -->
         <g class="piece" id="pc-flag">
@@ -334,7 +334,7 @@ if (!vocab.length) {
   let usedThisGame = new Set();
   function pickUnused(pool, keyFn) {
     let avail = pool.filter(w => !usedThisGame.has(keyFn(w)));
-    if (!avail.length) { usedThisGame.clear(); avail = pool.slice(); }
+    if (!avail.length) { pool.forEach(w => usedThisGame.delete(keyFn(w))); avail = pool.slice(); }   // only this pool starts over
     const pick = Lumio.shuffle(avail)[0];
     usedThisGame.add(keyFn(pick));
     return pick;
