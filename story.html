@@ -1052,8 +1052,8 @@ function chunksOf(plain) {
 const narration = new Audio(); narration.preload = "auto";
 const noClip = new Set();
 const pageClip = n => `assets/audio/story-${LEVEL}-part${part.id}-page${n}.mp3`;
-function playClip(my, words, onFail) {
-  const src = pageClip(currentPage);
+function playClip(my, tp, onFail) {
+  const words = tp._words, src = tp._clip || pageClip(currentPage);
   if (noClip.has(src)) { onFail(); return; }
   let ok = false, failed = false;
   const fail = () => { if (ok || failed) return; failed = true; noClip.add(src); if (my === tok) onFail(); };
@@ -1080,7 +1080,7 @@ function readPage() {
   stopSpeech();
   const my0 = ++tok;
   talking = true; paintReadBtn(); $("#nextBtn").classList.remove("ready");
-  playClip(my0, tp._words, () => readWithVoice(tp, my0));
+  playClip(my0, tp, () => readWithVoice(tp, my0));
 }
 function readWithVoice(tp, my) {
   const words = tp._words, chunks = chunksOf(tp._plain);
@@ -1127,6 +1127,8 @@ function sayWord(w) {
   const word = w.textContent.replace(/[^A-Za-z’'-]/g, "").replace(/’/g, "'");
   if (!word) return;
   w.classList.remove("pop"); void w.offsetWidth; w.classList.add("pop", "on"); setTimeout(() => w.classList.remove("on"), 700);
+  // the recorded word when there is one (Lumio.speak falls back to the device voice by itself)
+  if (window.Lumio && Lumio.speak) { try { Lumio.speak(word); return; } catch (e) {} }
   if (synth) { try { synth.cancel(); const u = new SpeechSynthesisUtterance(word); if (voice) u.voice = voice; u.lang = "en-US"; u.rate = .8; synth.speak(u); } catch (e) {} }
 }
 
@@ -1237,6 +1239,7 @@ function setWonText(anim) {
   const d = curData; d.en = DONE_EN; d.ar = DONE_AR;
   const tp = game.tp; const fresh = wrapWords(DONE_EN);
   const pe = $("p.en", tp); pe.replaceChildren(...Array.from(fresh.host.childNodes)); tp._plain = fresh.plain; tp._words = fresh.words;
+  tp._clip = `assets/audio/story-${LEVEL}-part${part.id}-page${currentPage}-done.mp3`;   // the "You did it!" line has its own clip (not the instructions)
   $("p.ar", tp).textContent = DONE_AR;
   fitText(tp);
   if (anim && MO) G.from($$(".w", pe), { opacity: 0, y: 10, scale: .6, stagger: .03, duration: .4, ease: "back.out(2.4)" });
