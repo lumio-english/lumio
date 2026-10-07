@@ -1103,7 +1103,7 @@
   // 2026 look (white + orange), versioned like every shared file via js/version.json.
   var v = "20261004f";
   try { var x = new XMLHttpRequest(); x.open("GET", "js/version.json?_=" + Date.now(), false); x.send(null); if (x.status === 200) { var p = JSON.parse(x.responseText); if (p && p.v) v = p.v; } } catch (e) {}
-  document.write('<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/student-2026.css?v=' + v + '"><link rel="stylesheet" href="css/student-teen-night.css?v=' + v + '">');
+  document.write('<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/student-2026.css?v=' + v + '"><link rel="stylesheet" href="css/student-teen-night.css?v=' + v + '"><link rel="stylesheet" href="css/student-journey.css?v=' + v + '">');
 })();
 </script>
 <script>if("serviceWorker"in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script>
@@ -1208,7 +1208,10 @@
        (same ids), only regrouped; the welcome card is added above "Today" by js/student-hero.js. -->
 
   <section class="s26-sec" id="secToday">
-    <header class="s26-sech"><span class="s26-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="4"/></svg></span><div><h2>Today's lesson</h2><p>What to do next, and your homework for this lesson.</p></div></header>
+    <header class="s26-sech sj-plate">
+      <div class="sj-pl"><span class="sj-medal" aria-hidden="true"><b>1</b><i class="sj-star">★</i></span><div class="sj-pt"><p class="sj-no">Chapter one</p><h2>Today's mission</h2><p class="sj-narr">What to do next, and your homework for this lesson.</p><p class="sj-ar" dir="rtl" lang="ar">مهمة اليوم: الخطوة التالية لطفلك</p></div></div>
+      <div class="sj-art" aria-hidden="true"><img class="sj-k" src="assets/story/characters/lumi-point.png" alt="" loading="lazy" onerror="this.remove()"><img class="sj-t" src="assets/story/characters/lumi-teen-point.png" alt="" loading="lazy" onerror="this.remove()"></div>
+    </header>
   <!-- Hero: today's mission + quick stats -->
   <div class="sd-hero">
     <div class="sd-hero-card sd-fade-up">
@@ -1238,8 +1241,11 @@
   </div>
   </section>
 
-  <section class="s26-sec" id="secMap">
-    <header class="s26-sech"><span class="s26-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg></span><div><h2>My adventure</h2><p>Every finished lesson lights the next step of your map.</p></div></header>
+  <section class="s26-sec sj-flip" id="secMap">
+    <header class="s26-sech sj-plate">
+      <div class="sj-pl"><span class="sj-medal" aria-hidden="true"><b>2</b><i class="sj-star">★</i></span><div class="sj-pt"><p class="sj-no">Chapter two</p><h2>My adventure</h2><p class="sj-narr">Every finished lesson lights the next step of your map.</p><p class="sj-ar" dir="rtl" lang="ar">خريطة الدروس ومستوى التقدم</p></div></div>
+      <div class="sj-art" aria-hidden="true"><img class="sj-k" src="assets/story/characters/hamad-wave.png" alt="" loading="lazy" onerror="this.remove()"><img class="sj-t" src="assets/story/characters/hamad-teen-wave.png" alt="" loading="lazy" onerror="this.remove()"></div>
+    </header>
   <!-- Level progress -->
   <div class="sd-level-card sd-fade-up sd-anim-d2">
     <div class="sd-level-top">
@@ -1281,12 +1287,18 @@
   </section>
 
   <section class="s26-sec" id="secProgress">
-    <header class="s26-sech"><span class="s26-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></span><div><h2>My progress</h2><p>Classes attended, your scores and every lesson you can go back to.</p></div></header>
+    <header class="s26-sech sj-plate">
+      <div class="sj-pl"><span class="sj-medal" aria-hidden="true"><b>3</b><i class="sj-star">★</i></span><div class="sj-pt"><p class="sj-no">Chapter three</p><h2>My progress</h2><p class="sj-narr">Classes attended, your scores and every lesson you can go back to.</p><p class="sj-ar" dir="rtl" lang="ar">النتائج: الحضور والتحضير والواجبات وتقييم المعلم</p></div></div>
+      <div class="sj-art" aria-hidden="true"><img class="sj-k" src="assets/story/characters/sara-point.png" alt="" loading="lazy" onerror="this.remove()"><img class="sj-t" src="assets/story/characters/sara-teen-point.png" alt="" loading="lazy" onerror="this.remove()"></div>
+    </header>
     <div class="spg" id="progressBody"></div>
   </section>
 
-  <section class="s26-sec" id="secUnlocked">
-    <header class="s26-sech"><span class="s26-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8v13M3 12h18M12 8S10.5 3 7.5 4.5 9 8 12 8zm0 0s1.5-5 4.5-3.5S15 8 12 8z"/></svg></span><div><h2>Unlocked for you</h2><p>Your story and your level game open as you finish lessons.</p></div></header>
+  <section class="s26-sec sj-flip" id="secUnlocked">
+    <header class="s26-sech sj-plate">
+      <div class="sj-pl"><span class="sj-medal" aria-hidden="true"><b>4</b><i class="sj-star">★</i></span><div class="sj-pt"><p class="sj-no">Chapter four</p><h2>Unlocked for you</h2><p class="sj-narr">Your story and your level game open as you finish lessons.</p><p class="sj-ar" dir="rtl" lang="ar">قصة ولعبة تُفتح مع تقدم الدروس</p></div></div>
+      <div class="sj-art" aria-hidden="true"><img class="sj-k" src="assets/story/characters/noor-jump.png" alt="" loading="lazy" onerror="this.remove()"><img class="sj-t" src="assets/story/characters/noor-teen-happy.png" alt="" loading="lazy" onerror="this.remove()"></div>
+    </header>
   <div class="s26-duo">
   <!-- Lumi's Magic Map story banner -->
   <div class="sd-story-banner sd-fade-up sd-anim-d2" id="storyBanner">
@@ -1311,7 +1323,10 @@
   </section>
 
   <section class="s26-sec" id="secClasses">
-    <header class="s26-sech"><span class="s26-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span><div><h2>My classes</h2><p>Your next live class, booking, and rating your teacher.</p></div></header>
+    <header class="s26-sech sj-plate">
+      <div class="sj-pl"><span class="sj-medal" aria-hidden="true"><b>5</b><i class="sj-star">★</i></span><div class="sj-pt"><p class="sj-no">Chapter five</p><h2>My classes</h2><p class="sj-narr">Your next live class, booking, and rating your teacher.</p><p class="sj-ar" dir="rtl" lang="ar">الحصص المباشرة والحجز (بتوقيت السعودية وتوقيتك)</p></div></div>
+      <div class="sj-art" aria-hidden="true"><img class="sj-k" src="assets/story/characters/omar-thumbs.png" alt="" loading="lazy" onerror="this.remove()"><img class="sj-t" src="assets/story/characters/omar-teen-thumbs.png" alt="" loading="lazy" onerror="this.remove()"></div>
+    </header>
   <!-- My Schedule -->
   <div class="sd-section-title" id="scheduleCard">
     <h3>My schedule</h3>
@@ -1328,8 +1343,11 @@
   <div id="rateTeacherCard" style="display:none"></div>
   </section>
 
-  <section class="s26-sec" id="secHub">
-    <header class="s26-sech"><span class="s26-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 016.5 3H20v15H6.5A2.5 2.5 0 004 20.5z"/><path d="M4 20.5A2.5 2.5 0 006.5 23H20v-5"/></svg></span><div><h2>English Hub</h2><p>Words, idioms, songs and more, open any time.</p></div></header>
+  <section class="s26-sec sj-flip" id="secHub">
+    <header class="s26-sech sj-plate">
+      <div class="sj-pl"><span class="sj-medal" aria-hidden="true"><b>6</b><i class="sj-star">★</i></span><div class="sj-pt"><p class="sj-no">Chapter six</p><h2>English Hub</h2><p class="sj-narr">Words, idioms, songs and more, open any time.</p><p class="sj-ar" dir="rtl" lang="ar">مركز الإنجليزية: مفتوح دائماً للتدريب الإضافي</p></div></div>
+      <div class="sj-art" aria-hidden="true"><img class="sj-k" src="assets/story/characters/ziad-headphones.png" alt="" loading="lazy" onerror="this.remove()"><img class="sj-t" src="assets/story/characters/ziad-teen-headphones.png" alt="" loading="lazy" onerror="this.remove()"></div>
+    </header>
   <!-- English Hub -->
   <div class="sd-hub-banners">
     <button class="sd-hubb" id="hubVocab">
@@ -1424,7 +1442,10 @@
   </section>
 
   <section class="s26-sec" id="secRewards">
-    <header class="s26-sech"><span class="s26-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0V4z"/><path d="M17 5h3a3 3 0 01-3 4M7 5H4a3 3 0 003 4"/></svg></span><div><h2>My rewards</h2><p>Points, badges and your study buddies.</p></div></header>
+    <header class="s26-sech sj-plate">
+      <div class="sj-pl"><span class="sj-medal" aria-hidden="true"><b>7</b><i class="sj-star">★</i></span><div class="sj-pt"><p class="sj-no">Chapter seven</p><h2>Rewards</h2><p class="sj-narr">Points, badges and your study buddies.</p><p class="sj-ar" dir="rtl" lang="ar">النقاط والأوسمة: كل 50 نقطة = ساعة إضافية</p></div></div>
+      <div class="sj-art" aria-hidden="true"><img class="sj-k" src="assets/story/characters/lumi-celebrate.png" alt="" loading="lazy" onerror="this.remove()"><img class="sj-t" src="assets/story/characters/lumi-teen-celebrate.png" alt="" loading="lazy" onerror="this.remove()"></div>
+    </header>
   <!-- My Rewards -->
   <div class="sd-schedule-card" id="rewardsCard" style="display:none">
     <div class="row" style="gap:12px;margin-bottom:12px">
@@ -1453,8 +1474,11 @@
   <div class="sd-buddies-grid" id="buddiesGrid"></div>
   </section>
 
-  <section class="s26-sec" id="secMore">
-    <header class="s26-sech"><span class="s26-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></span><div><h2>More</h2><p>Your level manual.</p></div></header>
+  <section class="s26-sec sj-flip" id="secMore">
+    <header class="s26-sech sj-plate">
+      <div class="sj-pl"><span class="sj-medal" aria-hidden="true"><b>8</b><i class="sj-star">★</i></span><div class="sj-pt"><p class="sj-no">Chapter eight</p><h2>More</h2><p class="sj-narr">Your level manual, your account and help.</p><p class="sj-ar" dir="rtl" lang="ar">دليل المستوى والحساب والمساعدة</p></div></div>
+      <div class="sj-art" aria-hidden="true"><img class="sj-k" src="assets/story/characters/sara-books.png" alt="" loading="lazy" onerror="this.remove()"><img class="sj-t" src="assets/story/characters/sara-teen-read.png" alt="" loading="lazy" onerror="this.remove()"></div>
+    </header>
   <!-- My Level Manual -->
   <div id="manualSection">
   <h3 class="s26-subhead">My level manual</h3>
@@ -1472,6 +1496,15 @@
   </div>
   </div>
   </section>
+
+  <!-- Story Journey ending (css/student-journey.css) -->
+  <aside class="sj-end" aria-label="To be continued">
+    <img class="sj-k" src="assets/story/characters/lumi-wave-book.png" alt="" loading="lazy" onerror="this.remove()">
+    <img class="sj-t" src="assets/story/characters/lumi-teen-wave.png" alt="" loading="lazy" onerror="this.remove()">
+    <h2>To be continued…</h2>
+    <p>Come back tomorrow for the next page of your story.</p>
+    <p class="sj-ar" dir="rtl" lang="ar">عودوا غداً لقراءة الصفحة التالية من القصة.</p>
+  </aside>
 
 </main>
 
@@ -4375,6 +4408,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
   document.write('<script src="js/student-map3d.js?v=' + v + '"><' + '/script>');
   document.write('<script src="js/student-progress.js?v=' + v + '"><' + '/script>');
   document.write('<script src="js/lumio-emoji.js?v=' + v + '"><' + '/script>');
+  document.write('<script src="js/student-journey.js?v=' + v + '"><' + '/script>');
 })();
 </script>
 </body>

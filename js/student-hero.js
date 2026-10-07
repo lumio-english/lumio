@@ -1,7 +1,11 @@
-/* Lumio English — student dashboard welcome card (2026 redesign).
-   Adds a greeting card above "Today's mission" built only from data the page already has:
+/* Lumio English — student dashboard cover ("Story Journey" design, 2026).
+   Adds the storybook cover above chapter 1 ("<Name>'s story, chapter <current lesson>"), built only from
+   data the page already has:
    - lesson progress from js/dashboard.js (window.LumioMapState: done / current / total),
    - the "Continue" link that student.html already computed (#missionBtn),
+   - streak, stars/XP, reward points and sessions left, read from the page's own counters
+     (#streakVal, #starCount, #rwPointsVal, #sessionsRemainingPill) and kept in step with them;
+     a chip only shows when the page has that number (no made-up values),
    - the next live class from LumioSchedule.upcomingForStudent (Saudi time, like the rest of the page).
    It never changes the page's own elements, so if anything here fails the dashboard is untouched. */
 (function () {
@@ -10,6 +14,33 @@
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   var STORY = { 'pre-a': "Lumi's Magic Map", level1: 'The Treehouse Club', level2: 'The Twelve Months Club', level3: 'The Crew' };
   var built = false, timer = null;
+
+  function visible(el) { return !!el && el.style.display !== 'none' && !!(el.offsetParent || el.getClientRects().length); }
+
+  // stat chips mirror the page's own counters
+  function chips(box, teen) {
+    function setChip(key, show, val, label) {
+      var c = box.querySelector('[data-chip="' + key + '"]'); if (!c) return;
+      c.hidden = !show; if (!show) return;
+      c.querySelector('b').textContent = val; c.querySelector('small').textContent = label;
+    }
+    function read() {
+      var st = $('#streakVal'), sc = $('#starCount'), pts = $('#rwPointsVal'), rw = $('#rewardsCard'), pill = $('#sessionsRemainingPill');
+      var sv = st ? parseInt(st.textContent, 10) || 0 : null;
+      setChip('streak', sv !== null, sv + (sv === 1 ? ' day' : ' days'), 'Streak');
+      setChip('stars', !!sc, (sc ? sc.textContent.trim() : '') + (teen ? ' XP' : ''), teen ? 'Experience' : 'Stars earned');
+      setChip('points', !!(pts && rw && rw.style.display !== 'none'), (pts ? pts.textContent.trim() : '') + ' pts', 'Reward points');
+      var m = pill && pill.style.display !== 'none' ? String(pill.textContent).match(/\d+/) : null;
+      setChip('sessions', !!m, (m ? m[0] : '') + ' left', 'Sessions');
+    }
+    read();
+    if (window.MutationObserver) {
+      var mo = new MutationObserver(read);
+      ['#streakVal', '#starCount', '#rwPointsVal', '#rewardsCard', '#sessionsRemainingPill'].forEach(function (s) {
+        var el = $(s); if (el) mo.observe(el, { childList: true, characterData: true, subtree: true, attributes: true, attributeFilter: ['style'] });
+      });
+    }
+  }
 
   function build() {
     if (built) return;
@@ -22,46 +53,60 @@
       var teen = /^level([3-9]|10)$/.test(M.level);
       var first = String(u.name || '').trim().split(/\s+/)[0] || '';
       var h = Number(String((L.tzNow ? L.tzNow().hm : '') || new Date().getHours() + ':00').split(':')[0]);
-      var greet = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-      var greetAr = h < 12 ? 'صباح الخير' : 'مساء الخير';
+      var part = h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening';
       var total = M.total || 20, done = Math.min(M.done || 0, total), pct = Math.round(done / total * 100);
       var finished = done >= total, next = Math.min(total, (M.current || done + 1));
+      var lvShort = String(lv.name || '').split(' · ')[0];
+      var lessons = window.LUMIO_LESSONS && window.LUMIO_LESSONS[M.level];
+      var lt = lessons ? (lessons[next] || lessons[String(next)]) : null;
+      var ltTitle = lt && lt.title ? String(lt.title) : '';
       var lead = finished
-        ? 'You finished ' + lv.name.split(' · ')[0] + '! Your level test and certificate are waiting.'
-        : done === 0 ? "Let's start " + lv.name.split(' · ')[0] + ' with Lesson 1.'
-        : 'You have finished ' + done + ' of ' + total + ' lessons. Lesson ' + next + ' is next' + (total - done > 1 ? ', ' + (total - done) + ' to go.' : ', the last one!');
+        ? 'You finished ' + lvShort + '! Your level test and certificate are waiting.'
+        : done === 0 ? "Let's start " + lvShort + ' with Lesson 1' + (ltTitle ? ': “' + ltTitle + '”.' : '.')
+        : "You're on Lesson " + next + ' of ' + total + (ltTitle ? ': “' + ltTitle + '”' : '') + '. ' + (total - done > 1 ? (total - done) + ' lessons to go.' : 'The last one!');
       var mission = $('#missionBtn');
       var go = mission && mission.getAttribute('href') && mission.getAttribute('href') !== '#' ? mission.getAttribute('href') : 'lesson.html?level=' + encodeURIComponent(M.level) + '&n=' + next;
-      var goText = finished ? (mission ? mission.textContent.trim() : 'Open') : 'Continue lesson ' + next;
+      var goText = finished ? (mission ? mission.textContent.trim() : 'Open') : "Open today's chapter";
       var buddy = 'assets/story/characters/' + (teen ? 'lumi-teen-welcome-hero.png' : 'lumi-welcome-hero.png');
-      var kicker = lv.name + (STORY[M.level] ? ' · ' + STORY[M.level] : '');
+      var day = new Intl.DateTimeFormat('en-US', { weekday: 'long', timeZone: 'Asia/Riyadh' }).format(new Date());
+      var kicker = "Today's page · " + day + ' ' + (teen && part === 'evening' ? 'night' : part);
+      var sub = lv.name + (STORY[M.level] ? ' · ' + STORY[M.level] : '');
+      var p = window.LumioProfiles && LumioProfiles.findByName ? LumioProfiles.findByName(u.name) : null;
 
       var card = document.createElement('section');
-      card.className = 's26-hello';
-      card.setAttribute('aria-label', 'Welcome');
+      card.className = 'sj-cover';
+      card.setAttribute('aria-labelledby', 'sjCoverTitle');
       card.innerHTML =
-        '<div><span class="s26-kicker">' + esc(kicker) + '</span>' +
-        '<h1>' + esc(greet + (first ? ', ' + first : '') + '!') + '</h1>' +
-        '<div style="font-family:Tajawal,sans-serif;font-weight:700;font-size:17px;color:#FFE3CC;margin-top:4px" dir="rtl" lang="ar">' + esc(greetAr + (first ? ' يا ' + first : '')) + '</div>' +
-        '<p class="s26-lead">' + esc(lead) + '</p>' +
-        '<div class="s26-ctas"><a class="s26-btn p" id="s26Go" href="' + esc(go) + '">' + esc(goText) + ' →</a>' +
-        '<button type="button" class="s26-btn g" id="s26Sched">My schedule</button></div></div>' +
-        '<div class="s26-ring" role="img" aria-label="' + esc(done + ' of ' + total + ' lessons done') + '"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="4.5"/>' +
-        '<circle id="s26Ring" cx="20" cy="20" r="16" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="' + (100 - pct) + '"/></svg>' +
-        '<div class="c"><b>' + pct + '%</b><span>' + esc(done + ' of ' + total + ' lessons') + '</span></div></div>' +
-        '<div class="s26-buddy"><img src="' + buddy + '" alt=""></div>';
+        '<div class="sj-mascot" aria-hidden="true"><img src="' + buddy + '" alt="" onerror="this.remove()"></div>' +
+        '<p class="sj-kicker">' + esc(kicker) + '</p>' +
+        '<h1 id="sjCoverTitle">' + esc(first ? first + '’s story, ' : 'Your story, ') +
+          '<em>' + (finished ? 'the last page' : 'chapter ' + next) + '</em></h1>' +
+        '<p class="sj-sub">' + esc(sub) + '</p>' +
+        '<p class="sj-lede">' + esc(lead) + ' Follow the glowing path: every stop is a chapter of your English adventure.</p>' +
+        '<p class="sj-ar" dir="rtl" lang="ar">للأهل: هذه صفحة طفلكم. انزلوا مع المسار لرؤية مهمة اليوم والتقدم والحصص.</p>' +
+        '<div class="sj-book" role="img" aria-label="' + esc(done + ' of ' + total + ' lessons done') + '"><span class="sj-book-bar"><i id="s26Ring" style="width:' + pct + '%"></i></span><span class="sj-book-t"><b>' + pct + '%</b> · ' + esc(done + ' of ' + total + ' lessons') + '</span></div>' +
+        '<div class="sj-stats">' +
+          '<div class="sj-stat" data-chip="streak" hidden><span class="ico" aria-hidden="true">🔥</span><span><b></b><small></small></span></div>' +
+          '<div class="sj-stat" data-chip="stars" hidden><span class="ico" aria-hidden="true">' + (teen ? '⚡' : '⭐') + '</span><span><b></b><small></small></span></div>' +
+          '<div class="sj-stat" data-chip="points" hidden><span class="ico" aria-hidden="true">🏆</span><span><b></b><small></small></span></div>' +
+          '<div class="sj-stat" data-chip="sessions" hidden><span class="ico" aria-hidden="true">🎟️</span><span><b></b><small></small></span></div>' +
+        '</div>' +
+        '<div class="sj-ctas"><a class="sj-btn p" id="s26Go" href="' + esc(go) + '"><span>' + esc(goText) + '</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>' +
+        '<button type="button" class="sj-btn g" id="s26Sched">My schedule</button>' +
+        (p && p.subscribed === true ? '<span class="sj-pill ok">✓ Subscribed</span>' : '') + '</div>';
       hero.parentNode.insertBefore(card, hero);
+      chips(card, teen);
 
       var sched = $('#scheduleCard');
       $('#s26Sched').onclick = function () { if (sched) sched.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
 
-      // next live class: a live countdown (the Join button and its rules stay in "My schedule")
+      // next live class: a live countdown (the Join button and its rules stay in "My classes")
       var S = window.LumioSchedule, cls = null;
       try { cls = S && S.upcomingForStudent ? (S.upcomingForStudent(u.name, 5) || [])[0] : null; } catch (e) { cls = null; }
       if (cls && L.tzToDate) {
         var start = L.tzToDate(cls.date, cls.startTime);
-        var day = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'short', day: 'numeric', timeZone: 'Asia/Riyadh' }).format(start);
-        var when = day + ' · ' + (L.fmtClassTime ? L.fmtClassTime(cls.date, cls.startTime) : cls.startTime);
+        var dayStr = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'short', day: 'numeric', timeZone: 'Asia/Riyadh' }).format(start);
+        var when = dayStr + ' · ' + (L.fmtClassTime ? L.fmtClassTime(cls.date, cls.startTime) : cls.startTime);
         var row = document.createElement('div');
         row.className = 's26-next';
         row.innerHTML = '<div><div class="lbl">Next live class' + (cls.lessonNumber ? ' · Lesson ' + esc(cls.lessonNumber) : '') + '</div><div class="when">' + esc(when) + '</div></div>' +
@@ -76,12 +121,14 @@
         tick(); timer = setInterval(tick, 30000);
       }
 
-      // gentle entrance (skipped for reduced motion)
+      // gentle entrance (skipped for reduced motion); opacity/transform only, never left hidden
       var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (!still && card.animate) {
-        card.animate([{ opacity: 0, transform: 'translateY(18px)' }, { opacity: 1, transform: 'none' }], { duration: 600, easing: 'cubic-bezier(.22,1,.36,1)' });
-        var ring = card.querySelector('#s26Ring');
-        if (ring && ring.animate) ring.animate([{ strokeDashoffset: 100 }, { strokeDashoffset: 100 - pct }], { duration: 1300, easing: 'cubic-bezier(.22,1,.36,1)' });
+        card.animate([{ opacity: 0, transform: 'translateY(18px)' }, { opacity: 1, transform: 'none' }], { duration: 650, easing: 'cubic-bezier(.22,1,.36,1)' });
+        var kids = card.querySelectorAll('h1, .sj-lede, .sj-stat, .sj-ctas');
+        Array.prototype.forEach.call(kids, function (el, i) { el.animate([{ opacity: 0, transform: 'translateY(14px)' }, { opacity: 1, transform: 'none' }], { duration: 600, delay: 150 + i * 60, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' }); });
+        var mas = card.querySelector('.sj-mascot');
+        if (mas) mas.animate([{ opacity: 0, transform: 'translateX(50px) rotate(10deg)' }, { opacity: 1, transform: 'none' }], { duration: 1000, delay: 250, easing: 'cubic-bezier(.34,1.56,.64,1)', fill: 'backwards' });
       }
     } catch (e) {
       if (window.console) console.warn('Lumio welcome card skipped:', e);
