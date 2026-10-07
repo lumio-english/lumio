@@ -62,7 +62,7 @@ img{-webkit-user-drag:none;user-select:none}
 .v2-cel .box{position:relative;background:#fff;border-radius:32px;padding:20px 22px 24px;max-width:430px;width:100%;text-align:center;box-shadow:var(--sh3)}
 .v2-cel .box::before{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(120% 60% at 50% 0%,#FFF3D6 0%,rgba(255,243,214,0) 60%);pointer-events:none}
 .v2-cel .v2-hero{position:relative;display:block;width:150px;height:150px;object-fit:contain;margin:-96px auto 0;filter:drop-shadow(0 14px 18px rgba(67,48,31,.25));transform-origin:50% 100%}
-.v2-cel h2{position:relative;font-family:var(--fd);font-weight:800;font-size:2.1rem;line-height:1.1;margin:8px 0 2px;color:var(--cocoa);letter-spacing:-.01em}
+.v2-cel h2{position:relative;font-family:var(--fd);font-weight:800;font-size:clamp(1.7rem,7vw,2.1rem);line-height:1.1;margin:8px 0 2px;color:var(--cocoa);letter-spacing:-.01em}
 .v2-cel .sub{position:relative;font-weight:800;font-size:1.15rem;margin:8px 0 4px;color:var(--ink)}
 .v2-cel .sub b,.v2-n{font-family:var(--fd);color:var(--o2);font-size:1.25em}
 .v2-stars{position:relative;display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin:12px auto 6px;max-width:340px}
@@ -292,7 +292,7 @@ window.V2 = (function () {
   };
   // split text into masked letters
   V.letters = function (text) {
-    return String(text).split(" ").map(function (w) {
+    return String(text).replace(/ (?=\S*\p{Extended_Pictographic})/gu, "\u00a0").split(" ").map(function (w) {
       return '<span class="v2-w">' + Array.from(w).map(function (c) { return '<span class="v2-ch">' + V.esc(c) + "</span>"; }).join("") + "</span>";
     }).join(" ");
   };
@@ -391,7 +391,7 @@ window.V2 = (function () {
     if (big) tl.from(big, { scale: 0, rotation: -240, duration: .8, ease: "back.out(2)" }, .7);
     var bar = V.$(".v2-xp .bar i", ov);
     if (bar) tl.from(bar, { scaleX: 0, duration: 1, ease: "power3.out" }, .75);
-    tl.from(V.$$(".sub,.v2-note,.v2-ar", ov), { y: 12, opacity: 0, duration: .4, stagger: .06 }, .8);
+    tl.from(V.$$(".sub,.v2-note,.v2-ar,.moves", ov), { y: 12, opacity: 0, duration: .4, stagger: .06 }, .8);
     tl.add(function () { nums.forEach(function (n) { V.count(n, +n.getAttribute("data-to"), Math.min(1.6, .25 + .12 * (+n.getAttribute("data-to") || 1))); }); }, .85);
     tl.from(V.$$(".v2-btns > *", ov), { y: 22, opacity: 0, duration: .5, stagger: .08, ease: "power3.out", clearProps: "transform,opacity" }, 1.1);
   };
