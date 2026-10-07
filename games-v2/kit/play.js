@@ -274,8 +274,11 @@
     A.set = (p) => {
       if (!p || p === cur) return; cur = p; const s = src(p);
       if (!G || RM) { img.src = s; return; }
+      // quick pose changes: only the latest request may land, older crossfades are dropped
+      const tok = A._tok = (A._tok || 0) + 1;
+      body.querySelectorAll("img.next").forEach(n => n.remove());
       const nx = el("img", "next"); nx.src = s; nx.alt = ""; nx.style.height = "100%";
-      nx.onload = () => { body.appendChild(nx); G.to(nx, { opacity: 1, duration: .14, onComplete: () => { img.src = s; nx.remove(); } }); };
+      nx.onload = () => { if (tok !== A._tok) return; body.appendChild(nx); G.to(nx, { opacity: 1, duration: .14, onComplete: () => { if (tok === A._tok) img.src = s; nx.remove(); } }); };
       nx.onerror = () => nx.remove();
     };
     A.idle = () => {
