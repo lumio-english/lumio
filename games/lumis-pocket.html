@@ -24,8 +24,8 @@
   .lpk-ask .lp-bubble{max-width:100%}
   .lpk-ask .lp-bubble .tail{left:-8px;bottom:22px}
   .lpk-cards{margin-top:4px}
-  .lpk-cards .lp-card{max-width:200px;justify-self:center}
-  .lpk-cards.c3:not(.wrap2) .lp-card,.lpk-cards.c2 .lp-card{width:100%}
+  /* every card always has a width: a card whose picture has no intrinsic size would otherwise collapse to a thin bar */
+  .lpk-cards .lp-card{width:100%;max-width:200px;justify-self:center}
   .lpk-pocket{position:absolute;left:50%;bottom:28%;width:2px;height:2px}
   @media (min-width:900px){
     .lpk{max-width:1180px;grid-template-columns:340px 1fr;align-items:center;column-gap:36px;row-gap:18px;min-height:calc(100dvh - 120px);align-content:center}
@@ -98,6 +98,12 @@ function knownLetters(lessonNum) {
   if (lessonNum >= 3) return "ABCDEFGHI".split("");
   return []; // ABC hasn't started yet -- fall back to vocabulary rounds only
 }
+// Words whose pictures show the same thing (same list as Match It): never shown together.
+const SAME_PIC = [["hello", "hi"], ["i", "you", "boy", "hi", "he", "sad"], ["hands", "clap"], ["dog", "puppy", "pet"], ["cat", "kitten"],
+  ["big", "elephant"], ["big", "mouse"], ["small", "mouse"], ["small", "ball"], ["happy", "great"], ["fine", "okay"], ["draw", "picture"], ["cousin", "brother"],
+  ["clock", "hour", "minute", "o'clock", "half past", "quarter past", "quarter to", "alarm clock"]];
+const lookAlike = (a, b) => (a.image || a.en) === (b.image || b.en) || (a.ar && a.ar === b.ar) ||
+  SAME_PIC.some(g => g.includes(a.en.toLowerCase()) && g.includes(b.en.toLowerCase()));
 const eligibleLetters = knownLetters(num).filter(L => (LETTER_BANK[L] || []).length >= 2);
 
 const lumi = LP.actor(document.getElementById("lumiZone"), { char: "lumi", pose: "magnify", cheer: "celebrate", oops: "surprised", alt: "Lumi" });
@@ -142,7 +148,13 @@ if (!vocab.length && !eligibleLetters.length) {
       // never offer a distractor that the spoken sentence also names ("You are my friend." → not "friend")
       const said = (target.example || "").toLowerCase();
       const pool = vocab.filter(v => v.en !== target.en && v.image !== target.image && !new RegExp("\\b" + v.en.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b").test(said));
-      const opts = Lumio.shuffle([target, ...Lumio.shuffle(pool.length >= 2 ? pool : vocab.filter(v => v.en !== target.en)).slice(0, 2)]);
+      // never two cards with the same-looking picture (e.g. Pre-A Lesson 2 draws "I", "you" and "boy" as the same Omar)
+      const picked = [target];
+      for (const v of Lumio.shuffle(pool.length >= 2 ? pool : vocab.filter(v => v.en !== target.en))) {
+        if (picked.length >= 3) break;
+        if (!picked.some(x => lookAlike(x, v))) picked.push(v);
+      }
+      const opts = Lumio.shuffle(picked);
       pics = Object.fromEntries(opts.map(o => [o.en, LP.vocabImg(o.image || o.en)]));
       currentTargetWord = target.en;
       currentSpeakText = target.example || `This is a ${target.en}`;
