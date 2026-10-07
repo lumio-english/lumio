@@ -27,7 +27,7 @@ html,body{margin:0;min-height:100%;overflow-x:hidden}
 body.lp{min-height:100vh;min-height:100dvh;font-family:var(--lp-body);color:var(--lp-ink);background:#2a1c10;
   -webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
 html[data-lp="teen"] body.lp{background:#070a18}
-.lp button{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
+:where(.lp) button{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
 .lp :focus-visible{outline:3px solid var(--lp-accent-2);outline-offset:3px}
 .lp-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
