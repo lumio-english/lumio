@@ -126,7 +126,7 @@ if (!vocab.length && !eligibleLetters.length) {
     LP.round(r);
     lumi.set("magnify");
     optGrid.innerHTML = "";
-    let words;
+    let words, pics = {};
     if (plan[r].type === "letter") {
       const L = Lumio.shuffle(eligibleLetters)[0];
       words = Lumio.shuffle(LETTER_BANK[L]).slice(0, Math.min(3, LETTER_BANK[L].length));
@@ -139,7 +139,11 @@ if (!vocab.length && !eligibleLetters.length) {
       // Sentence/vocabulary round: this lesson's own real vocab + sentence pattern
       letterBadge.hidden = true;
       const target = Lumio.shuffle(vocab)[0];
-      const opts = Lumio.shuffle([target, ...Lumio.shuffle(vocab.filter(v => v.en !== target.en)).slice(0, 2)]);
+      // never offer a distractor that the spoken sentence also names ("You are my friend." → not "friend")
+      const said = (target.example || "").toLowerCase();
+      const pool = vocab.filter(v => v.en !== target.en && v.image !== target.image && !new RegExp("\\b" + v.en.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b").test(said));
+      const opts = Lumio.shuffle([target, ...Lumio.shuffle(pool.length >= 2 ? pool : vocab.filter(v => v.en !== target.en)).slice(0, 2)]);
+      pics = Object.fromEntries(opts.map(o => [o.en, LP.vocabImg(o.image || o.en)]));
       currentTargetWord = target.en;
       currentSpeakText = target.example || `This is a ${target.en}`;
       promptText.textContent = "Which one is it?";
@@ -148,7 +152,7 @@ if (!vocab.length && !eligibleLetters.length) {
     }
     optGrid.className = "lp-cards c3 lpk-cards" + (words.length === 3 ? " wrap2" : "");
     if (words.length === 2) optGrid.className = "lp-cards c2 lpk-cards";
-    const cards = words.map(w => { const c = LP.picCard(w, { label: false, aria: "Picture" }); c.onclick = () => choose(c); optGrid.appendChild(c); return c; });
+    const cards = words.map(w => { const c = LP.picCard(w, { label: false, aria: "Picture", img: pics[w] }); c.onclick = () => choose(c); optGrid.appendChild(c); return c; });
     if (window.gsap && !LP.RM) gsap.fromTo([letterBadge, document.getElementById("promptCard")], { scale: .6, opacity: 0 }, { scale: 1, opacity: 1, duration: .5, ease: "back.out(2)", stagger: .08 });
     lumi.nod();
     await LP.deal(cards, document.getElementById("pocket"));

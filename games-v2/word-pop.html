@@ -2,429 +2,104 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Word Pop — Lumio English</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@700;800&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Bricolage+Grotesque:wght@700;800&family=Nunito:wght@700;800&family=Tajawal:wght@700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/brand.css">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="kit/play.css">
 <style>
-/* ---------- v2 motion kit (shared look; inlined per page so each file stands alone) ---------- */
-:root{
-  --o:#F97316;--o2:#C2530A;--o3:#FB923C;--sun:#FFC93C;--sun2:#FFE7A3;--sunS:#FFF3D6;
-  --ink:#2A2118;--cocoa:#43301F;--mu:#8A7160;--ok:#22C55E;--ok2:#15803D;--okS:#EAFBEF;
-  --bad:#F43F5E;--badS:#FDE8EC;--teal:#0D9488;--tealS:#E6FAF7;--sky:#0EA5E9;--pu:#8B5CF6;
-  --sh1:0 1px 2px rgba(67,48,31,.06),0 4px 12px rgba(67,48,31,.08);
-  --sh2:0 2px 4px rgba(67,48,31,.06),0 14px 34px rgba(67,48,31,.14);
-  --sh3:0 6px 14px rgba(67,48,31,.10),0 30px 70px rgba(249,115,22,.24);
-  --fd:'Baloo 2','Nunito',system-ui,sans-serif;--fb:'Nunito',system-ui,sans-serif;
-}
-*{box-sizing:border-box}
-html,body{margin:0;padding:0}
-html{overflow-x:hidden}
-body{font-family:var(--fb);color:var(--ink);overflow-x:hidden;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
-button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
-img{-webkit-user-drag:none;user-select:none}
-:focus-visible{outline:3px solid var(--o);outline-offset:3px;border-radius:12px}
+  /* Word Pop: Noor holds up a picture in a big bubble; word bubbles rise into the sky, drift and bump
+     into each other (a small physics sim). Pop the bubble with the right English word. */
+  .wp{width:100%;max-width:1240px;display:grid;grid-template-columns:1fr;gap:6px;justify-items:center;align-content:start}
+  .wp-side{width:100%;max-width:440px;display:flex;align-items:flex-end;justify-content:center;gap:10px}
+  .wp-host{position:relative;flex:none;height:150px;width:104px;display:flex;justify-content:center;align-items:flex-end}
+  .wp-host .lp-actor{height:100%}
+  .wp-target{position:relative;flex:none;display:flex;flex-direction:column;align-items:center;gap:0}
+  .wp-orb{position:relative;width:150px;height:150px;border-radius:50%;display:grid;place-items:center;overflow:hidden;
+    background:radial-gradient(circle at 50% 45%,#fff 0 58%,#EAF7FF 75%,#CDEBFF 100%);
+    box-shadow:0 0 0 5px rgba(255,255,255,.85),0 0 0 9px rgba(120,200,255,.35),0 20px 36px -14px rgba(20,60,120,.6)}
+  .wp-orb::after{content:"";position:absolute;left:16%;top:9%;width:30%;height:16%;border-radius:50%;background:rgba(255,255,255,.85);transform:rotate(-28deg);filter:blur(1px)}
+  .wp-orb img{width:76%;height:76%;object-fit:contain;filter:drop-shadow(0 6px 8px rgba(20,40,80,.22))}
+  .wp-orb .emo{font-size:72px;line-height:1}
+  .wp-orb .noimg{font-family:'Tajawal',var(--lp-body);font-weight:800;font-size:30px;color:#1E3A5F;text-align:center;padding:0 14px;line-height:1.25}
+  .wp-ar{margin-top:-14px;position:relative;z-index:2;max-width:220px;padding:6px 16px 7px;border-radius:999px;background:linear-gradient(180deg,#FFD666,#FFB020);color:#43301F;
+    font-family:'Tajawal',var(--lp-body);font-weight:800;font-size:20px;line-height:1.2;text-align:center;box-shadow:0 5px 0 #E08A00,0 12px 20px -10px rgba(120,60,0,.6)}
+  .wp-ar:empty{display:none}
+  html[data-lp="teen"] .wp-orb{background:radial-gradient(circle at 50% 45%,#F6F8FF 0 58%,#DCE3FF 76%,#B9C6FF 100%);box-shadow:0 0 0 3px rgba(190,200,255,.8),0 0 30px rgba(120,140,255,.7),0 20px 40px -14px rgba(0,0,0,.8)}
+  html[data-lp="teen"] .wp-ar{background:rgba(20,24,52,.85);color:#fff;box-shadow:0 0 0 1px rgba(150,160,255,.4),0 12px 24px -10px rgba(0,0,0,.8);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+  .wp-hint{display:none;font-family:var(--lp-display);font-weight:800;font-size:15px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.55);margin-top:8px;text-align:center}
 
-/* HUD */
-.v2-hud{position:relative;z-index:30;display:flex;align-items:center;gap:8px;padding:12px 16px;max-width:1120px;margin:0 auto}
-.v2-exit{min-height:44px;min-width:44px;padding:0 16px;border-radius:999px;background:#fff;border:0;box-shadow:var(--sh1);
-  font-family:var(--fd);font-weight:800;font-size:1rem;color:var(--cocoa);text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:none}
-.v2-exit svg{width:18px;height:18px}
-.v2-pill{min-height:44px;padding:0 14px;border-radius:999px;background:#fff;box-shadow:var(--sh1);display:inline-flex;align-items:center;gap:6px;
-  font-family:var(--fd);font-weight:800;font-size:1.05rem;color:var(--cocoa);white-space:nowrap;flex:none}
-.v2-pill svg{width:24px;height:24px;flex:none}
-.v2-prog{position:relative;height:14px;border-radius:999px;background:rgba(67,48,31,.09);overflow:hidden;flex:1;min-width:40px;box-shadow:inset 0 1px 2px rgba(67,48,31,.08)}
-.v2-prog i{position:absolute;inset:0;border-radius:inherit;background:linear-gradient(90deg,#FFC93C,#FB923C 55%,#F97316);transform-origin:0 50%;transform:scaleX(0)}
-.v2-prog i::after{content:"";position:absolute;left:6px;right:6px;top:3px;height:3px;border-radius:9px;background:rgba(255,255,255,.55)}
+  .wp-field{position:relative;width:100%;max-width:640px;height:max(330px,calc(100dvh - 330px));border-radius:30px;overflow:hidden;touch-action:manipulation}
+  .wp-field::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.02));border:2px solid rgba(255,255,255,.35)}
+  html[data-lp="teen"] .wp-field::before{background:linear-gradient(180deg,rgba(120,140,255,.08),rgba(0,0,0,.12));border-color:rgba(160,170,255,.2)}
 
-/* mascot */
-.v2-mascot{position:relative;display:inline-block;transform-origin:50% 100%}
-.v2-mascot img{display:block;width:100%;height:auto;transform-origin:50% 100%;filter:drop-shadow(0 10px 14px rgba(67,48,31,.18))}
+  /* a soap bubble */
+  .wp-bub{position:absolute;left:0;top:0;border:0;padding:0;border-radius:50%;cursor:pointer;display:grid;place-items:center;will-change:transform;
+    background:
+      radial-gradient(circle at 30% 24%,rgba(255,255,255,.95) 0 5%,rgba(255,255,255,0) 6%),
+      radial-gradient(circle at 70% 78%,rgba(255,255,255,.55) 0 3%,rgba(255,255,255,0) 4%),
+      radial-gradient(circle at 50% 50%,rgba(255,255,255,.42) 0 52%,rgba(160,225,255,.45) 66%,rgba(255,170,235,.5) 79%,rgba(255,240,170,.55) 89%,rgba(255,255,255,.9) 100%);
+    box-shadow:inset 0 -8px 18px rgba(80,160,255,.25),inset 0 8px 14px rgba(255,255,255,.5),0 14px 26px -12px rgba(20,60,120,.45);
+    -webkit-backdrop-filter:blur(3px) saturate(1.3);backdrop-filter:blur(3px) saturate(1.3);touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+  .wp-bub .t{display:block;max-width:80%;font-family:var(--lp-display);font-weight:800;color:#12355B;line-height:1.02;text-align:center;overflow-wrap:normal;word-break:normal;
+    text-shadow:0 1px 0 rgba(255,255,255,.9),0 0 12px rgba(255,255,255,.9);pointer-events:none}
+  html[data-lp="teen"] .wp-bub{background:
+      radial-gradient(circle at 30% 24%,rgba(255,255,255,.85) 0 5%,rgba(255,255,255,0) 6%),
+      radial-gradient(circle at 50% 50%,rgba(30,30,80,.42) 0 55%,rgba(110,120,255,.45) 70%,rgba(255,110,220,.5) 84%,rgba(140,240,255,.85) 100%);
+    box-shadow:inset 0 -10px 20px rgba(120,140,255,.3),0 0 26px -4px rgba(130,150,255,.6),0 16px 30px -12px rgba(0,0,0,.7)}
+  html[data-lp="teen"] .wp-bub .t{color:#fff;text-shadow:0 0 14px rgba(140,160,255,.9),0 2px 4px rgba(0,0,0,.6)}
+  .wp-bub.bad,html[data-lp] .wp-bub.bad{box-shadow:inset 0 0 0 4px rgba(244,63,94,.85),0 0 24px rgba(244,63,94,.6)}
+  .wp-bub.show,html[data-lp] .wp-bub.show{box-shadow:inset 0 0 0 4px rgba(34,197,94,.9),0 0 30px rgba(34,197,94,.8)}
+  .wp-bub:focus-visible{outline:3px solid var(--lp-accent-2);outline-offset:4px}
 
-/* flying star + effects */
-.v2-fly{position:fixed;left:0;top:0;z-index:400;width:36px;height:36px;pointer-events:none;will-change:transform}
-.v2-fly svg{width:100%;height:100%;filter:drop-shadow(0 3px 6px rgba(194,83,10,.35))}
-.v2-ring{position:absolute;inset:-4px;border-radius:inherit;pointer-events:none;border:4px solid var(--ok);opacity:0}
-.v2-dot{position:fixed;left:0;top:0;z-index:350;width:10px;height:10px;border-radius:50%;pointer-events:none;will-change:transform,opacity}
-.v2-check{position:absolute;width:56px;height:56px;pointer-events:none;z-index:4}
-.v2-check svg{width:100%;height:100%}
-.v2-bad{animation:v2Bad .45s ease}
-@keyframes v2Bad{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px) rotate(-1.5deg)}40%{transform:translateX(8px) rotate(1.5deg)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
+  .wp-hearts{gap:2px;padding:0 10px}
+  .wp-hearts svg{width:24px;height:24px;display:block}
+  .wp-hearts span{display:block}
+  .wp-hearts .off path{fill:rgba(140,140,160,.35);stroke:rgba(140,140,160,.5)}
 
-/* masked letters */
-.v2-w{display:inline-block;white-space:nowrap;overflow:hidden;vertical-align:bottom;padding:.06em .02em .1em;margin:-.06em -.02em -.1em}
-.v2-ch{display:inline-block;will-change:transform}
-
-/* celebration */
-.v2-cel{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;padding:96px 16px 16px;background:rgba(43,33,24,.52)}
-.v2-cel.show{display:flex}
-.v2-cel .box{position:relative;background:#fff;border-radius:32px;padding:20px 22px 24px;max-width:430px;width:100%;text-align:center;box-shadow:var(--sh3)}
-.v2-cel .box::before{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(120% 60% at 50% 0%,#FFF3D6 0%,rgba(255,243,214,0) 60%);pointer-events:none}
-.v2-cel .v2-hero{position:relative;display:block;width:150px;height:150px;object-fit:contain;margin:-96px auto 0;filter:drop-shadow(0 14px 18px rgba(67,48,31,.25));transform-origin:50% 100%}
-.v2-cel h2{position:relative;font-family:var(--fd);font-weight:800;font-size:clamp(1.7rem,7vw,2.1rem);line-height:1.1;margin:8px 0 2px;color:var(--cocoa);letter-spacing:-.01em}
-.v2-cel .sub{position:relative;font-weight:800;font-size:1.15rem;margin:8px 0 4px;color:var(--ink)}
-.v2-cel .sub b,.v2-n{font-family:var(--fd);color:var(--o2);font-size:1.25em}
-.v2-stars{position:relative;display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin:12px auto 6px;max-width:340px}
-.v2-stars span{width:52px;height:52px;display:inline-block}
-.v2-stars.many span{width:40px;height:40px}
-.v2-stars svg{width:100%;height:100%;filter:drop-shadow(0 4px 6px rgba(194,83,10,.25))}
-.v2-big{position:relative;display:flex;align-items:center;justify-content:center;gap:8px;margin:12px 0 4px;font-family:var(--fd);font-weight:800;font-size:3rem;line-height:1;color:var(--o2)}
-.v2-big svg{width:62px;height:62px}
-.v2-btns{position:relative;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:16px}
-.v2-btn{min-height:52px;padding:0 24px;border-radius:999px;border:0;font-family:var(--fd);font-weight:800;font-size:1.08rem;
-  display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;cursor:pointer}
-.v2-btn.pri{background:linear-gradient(135deg,#FB923C,#F97316 55%,#F59E0B);color:#fff;box-shadow:0 4px 0 #C2530A,0 12px 24px rgba(249,115,22,.32)}
-.v2-btn.sec{background:#E6FAF7;color:#0F766E;box-shadow:0 4px 0 #9FE3D9}
-.v2-conf{position:fixed;left:50%;top:46%;width:min(118vw,680px);aspect-ratio:1/1;transform:translate(-50%,-50%);z-index:320;pointer-events:none}
-.v2-xp{position:relative;margin:14px 0 6px}
-.v2-xp .val{font-family:var(--fd);font-weight:800;font-size:2rem;color:var(--o)}
-.v2-xp .bar{width:200px;height:12px;border-radius:999px;background:rgba(249,115,22,.15);margin:6px auto 0;overflow:hidden}
-.v2-xp .bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#F97316,#FFC93C);transform-origin:0 50%}
-
-@media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
-}
-.v2-sp{flex:1}
-
-  /* ---------- Hub mini games: shared page look ---------- */
-  body { min-height: 100vh; min-height: 100dvh; position: relative;
-    background: radial-gradient(circle at 1px 1px, rgba(67,48,31,.06) 1.2px, transparent 1.6px) 0 0/22px 22px, linear-gradient(170deg, #FFF1DD 0%, #FFF8EC 45%, #F1FBF7 100%); }
-  .deco { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-  .deco i { position: absolute; border-radius: 50%; opacity: .5; }
-  .deco i:nth-child(1) { width: 300px; height: 300px; left: -110px; top: 90px; background: radial-gradient(circle, #FFD7A8, rgba(255,215,168,0) 70%); }
-  .deco i:nth-child(2) { width: 360px; height: 360px; right: -140px; bottom: -80px; background: radial-gradient(circle, #C7F0E8, rgba(199,240,232,0) 70%); }
-  .deco i:nth-child(3) { width: 200px; height: 200px; right: 22%; top: -70px; background: radial-gradient(circle, #E3DBFF, rgba(227,219,255,0) 70%); }
-
-  .wrapM { position: relative; z-index: 2; max-width: 640px; margin: 0 auto; padding: 0 16px 28px;
-    display: flex; flex-direction: column; justify-content: center; min-height: calc(100vh - 68px); min-height: calc(100dvh - 68px); }
-  .wrapM > * { width: 100%; }
-  .titleRow { display: flex; align-items: flex-end; justify-content: center; gap: 10px; margin: 0 0 10px; }
-  .titleRow .v2-mascot { width: 78px; flex: none; }
-  .titleRow h1 { font-family: var(--fd); font-weight: 800; color: var(--cocoa); font-size: clamp(1.7rem, 6vw, 2.4rem); line-height: 1; margin: 0 0 10px; letter-spacing: -.01em; }
-  .panel { position: relative; background: #fff; border-radius: 30px; padding: 18px; box-shadow: var(--sh2); }
-  .hudRow { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 14px; }
-  .chip { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border-radius: 999px; background: #FFF6EA;
-    font-family: var(--fd); font-weight: 800; color: var(--cocoa); font-size: 1rem; white-space: nowrap; }
-  .chip svg { width: 22px; height: 22px; }
-  .target { position: relative; background: linear-gradient(160deg, #FFF8EC, #FFF1DD); border-radius: 24px; padding: 14px; text-align: center; margin-bottom: 16px; font-weight: 800; overflow: hidden; }
-  .target .em { font-size: 3.4rem; line-height: 1; min-height: 110px; display: flex; align-items: center; justify-content: center; }
-  .target .em .sd-word-pic { width: 112px; height: 112px; object-fit: contain; display: block; filter: drop-shadow(0 8px 10px rgba(67,48,31,.15)); }
-  .target .ar { font-size: 1.25rem; color: var(--mu); direction: rtl; margin-top: 4px; font-family: 'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif; }
-  .v2-note { position: relative; font-weight: 800; font-size: .9rem; color: var(--mu); margin: 8px 0 0; }
-  .v2-note.ok { color: #0F766E; }
-  .v2-cel .moves { position: relative; font-weight: 800; color: var(--mu); margin: 6px 0 0; }
-  .sd-word-pic { display: block; width: 78%; height: 78%; object-fit: contain; margin: auto; }
-
-  /* teens (L3-L6): same light orange/white skin as their dashboard, grown-up type, calmer surfaces */
-  body.teen { background: linear-gradient(180deg, #FFFFFF 0%, #FBF7F2 100%); }
-  body.teen .deco i { opacity: .28; }
-  body.teen .titleRow h1, body.teen .v2-cel h2 { font-family: 'Bricolage Grotesque', var(--fd); letter-spacing: -.02em; }
-  body.teen .panel { border-radius: 22px; box-shadow: 0 1px 0 rgba(67,48,31,.06), 0 18px 40px rgba(67,48,31,.08); border: 1px solid #F1E8DC; }
-  body.teen .target { background: #FBF7F2; border-radius: 18px; }
-
-  @media (min-width: 760px) {
-    .wrapM { padding-top: 6px; }
-    .titleRow .v2-mascot { width: 100px; }
-    .panel { padding: 24px; }
+  @media (min-width:900px){
+    .wp{grid-template-columns:340px minmax(0,1fr);column-gap:36px;align-items:center;min-height:calc(100dvh - 120px);align-content:center}
+    .wp-side{flex-direction:column;align-items:center;max-width:340px;gap:4px}
+    .wp-target{order:1}
+    .wp-hint{display:block;order:2;margin:6px 0 4px;font-size:20px}
+    .wp-host{order:3;height:min(36vh,300px);width:230px}
+    .wp-orb{width:230px;height:230px}
+    .wp-orb .emo{font-size:110px}
+    .wp-orb .noimg{font-size:40px}
+    .wp-ar{font-size:24px;max-width:300px}
+    .wp-field{max-width:none;height:calc(100dvh - 130px)}
   }
-
-  .wp-hearts { display: inline-flex; gap: 2px; font-size: 1.15rem; }
-  .wp-hearts span { display: inline-block; }
-  .wp-bubbles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .wp-cell { position: relative; }
-  .wp-bubble {
-    position: relative; width: 100%; min-height: 76px; border: 0; border-radius: 999px; padding: 12px 10px;
-    background: radial-gradient(circle at 28% 25%, rgba(255,255,255,.65) 0 9%, rgba(255,255,255,0) 30%), linear-gradient(140deg, #38BDF8, #0EA5E9 55%, #0284C7);
-    color: #fff; font-family: var(--fd); font-weight: 800; font-size: 1.25rem; line-height: 1.1; text-shadow: 0 2px 0 rgba(3,105,161,.35);
-    box-shadow: inset 0 -6px 0 rgba(3,105,161,.25), 0 10px 22px rgba(14,165,233,.3); cursor: pointer; overflow-wrap: anywhere;
-  }
-  .wp-cell:nth-child(2) .wp-bubble { background: radial-gradient(circle at 28% 25%, rgba(255,255,255,.65) 0 9%, rgba(255,255,255,0) 30%), linear-gradient(140deg, #A78BFA, #8B5CF6 55%, #7C3AED); box-shadow: inset 0 -6px 0 rgba(91,33,182,.25), 0 10px 22px rgba(139,92,246,.3); }
-  .wp-cell:nth-child(3) .wp-bubble { background: radial-gradient(circle at 28% 25%, rgba(255,255,255,.65) 0 9%, rgba(255,255,255,0) 30%), linear-gradient(140deg, #FB923C, #F97316 55%, #EA580C); box-shadow: inset 0 -6px 0 rgba(194,65,12,.25), 0 10px 22px rgba(249,115,22,.3); }
-  .wp-cell:nth-child(4) .wp-bubble { background: radial-gradient(circle at 28% 25%, rgba(255,255,255,.65) 0 9%, rgba(255,255,255,0) 30%), linear-gradient(140deg, #F472B6, #EC4899 55%, #DB2777); box-shadow: inset 0 -6px 0 rgba(157,23,77,.25), 0 10px 22px rgba(236,72,153,.3); }
-  .wp-bubble.correct { background: linear-gradient(140deg, #2DD4BF, #0D9488) !important; box-shadow: 0 0 0 4px #99F6E4, 0 10px 22px rgba(13,148,136,.35) !important; }
-  .wp-bubble.wrong { background: linear-gradient(140deg, #FB7185, #E14F4F) !important; box-shadow: 0 0 0 4px #FECDD3 !important; }
-  .wp-bubble:disabled { cursor: default; }
-  body.teen .wp-bubble { border-radius: 18px; background: #fff !important; color: var(--cocoa); text-shadow: none; border: 2px solid #F1E8DC; box-shadow: 0 3px 0 #EADFCE !important; }
-  body.teen .wp-bubble.correct { background: #E6FAF7 !important; border-color: #0D9488; color: #0F766E; }
-  body.teen .wp-bubble.wrong { background: #FDE8EC !important; border-color: #F43F5E; color: #BE123C; }
-  @media (min-width: 760px) { .wp-bubble { min-height: 90px; font-size: 1.45rem; } .wp-bubbles { gap: 16px; } .target .em .sd-word-pic { width: 140px; height: 140px; } .target .em { min-height: 140px; font-size: 4.2rem; } }
+  @media (max-width:899px) and (max-height:720px){ .wp-host{height:118px;width:84px} .wp-orb{width:120px;height:120px} .wp-field{height:max(300px,calc(100dvh - 290px))} }
 </style>
 </head>
 <body>
-<div class="deco" aria-hidden="true"><i></i><i></i><i></i></div>
-
-<header class="v2-hud" id="hud">
-  <a class="v2-exit tap" href="../student.html" id="exitBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>Exit</a>
-  <div class="v2-prog" aria-hidden="true"><i id="progFill"></i></div>
-</header>
-
-<main class="wrapM">
-  <div class="titleRow">
-    <div class="v2-mascot" id="lumi"><img src="../assets/site/lumi-hero.png" alt="Lumi" width="525" height="600"></div>
-    <h1 id="gTitle">Word Pop</h1>
-  </div>
-  <section class="panel">
-    <div class="hudRow"><span class="chip" id="wpScoreChip"><span class="js-star"></span><span id="wpScore">Score: 0</span></span><span class="chip wp-hearts" id="wpHearts"></span></div>
-    <div id="wpPlayArea">
-      <div class="target" id="wpTarget"></div>
-      <div class="wp-bubbles" id="wpBubbles"></div>
+<main class="lp-stage" id="stage">
+  <div class="wp">
+    <div class="wp-side">
+      <div class="wp-host" id="host"></div>
+      <div class="wp-target" id="target" aria-live="polite">
+        <div class="wp-orb" id="orb"></div>
+        <div class="wp-ar" id="arTxt" dir="rtl" lang="ar"></div>
+      </div>
+      <div class="wp-hint" id="hint">Pop the right word!</div>
     </div>
-  </section>
+    <div class="wp-field" id="field" aria-label="Word bubbles"></div>
+  </div>
 </main>
-
-<div id="endcard" class="v2-cel" role="dialog" aria-modal="true">
-  <div class="box">
-    <img class="v2-hero" src="../assets/story/characters/lumi-celebrate.png" alt="Lumi">
-    <h2>Nice popping! 🎈</h2>
-    <div class="v2-award"></div>
-    <p class="moves" id="wpEndScore"></p>
-    <div id="wpNote"></div>
-    <div class="v2-btns">
-      <button class="v2-btn pri tap" id="wpAgain" type="button">Play again</button>
-      <a class="v2-btn sec tap" href="../student.html">Back</a>
-    </div>
-  </div>
-</div>
 
 <script src="../vendor/gsap-3.12.5.min.js"></script>
 <script src="../vendor/lottie-light-5.12.2.min.js"></script>
-<script>
-/* ---------- v2 motion kit: GSAP + Lottie helpers (same motion language as design-previews/landing-tryit.html) ---------- */
-window.V2 = (function () {
-  var G = window.gsap, LOT = window.lottie;
-  var RM = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
-  var V = { G: G, RM: RM, teen: false };
-  var STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FFC93C" stroke="#E8A23D" stroke-width="1.3" stroke-linejoin="round" d="M12 2.6l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17l-5.7 3.1 1.2-6.4L2.8 9.3l6.4-.8z"/><path fill="#FFF" opacity=".55" d="M9.6 8.6l1.6-3.3.5 1-1.1 2.6z"/></svg>';
-  var STAR_O = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#F3EADB" stroke="#E2D3BC" stroke-width="1.3" stroke-linejoin="round" d="M12 2.6l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17l-5.7 3.1 1.2-6.4L2.8 9.3l6.4-.8z"/></svg>';
-  var CHECK = '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#22C55E"/><path d="M14 24.5l7 7 13-14" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  V.STAR = STAR; V.STAR_O = STAR_O; V.CHECK = CHECK;
-  V.anim = !!G && !RM;
-  V.$ = function (s, r) { return (r || document).querySelector(s); };
-  V.$$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
-  V.esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
-  // kids bounce, teens glide
-  V.pop = function () { return V.teen ? "power3.out" : "back.out(2)"; };
-  V.spring = function () { return V.teen ? "power3.out" : "elastic.out(1.1,.45)"; };
-
-  V.lot = function (el, name, loop, slice) {
-    if (!LOT || !el || RM) return null;
-    try {
-      return LOT.loadAnimation({ container: el, renderer: "svg", loop: !!loop, autoplay: true, path: "../assets/lottie/" + name + ".json",
-        rendererSettings: slice ? { preserveAspectRatio: "xMidYMid slice" } : {} });
-    } catch (e) { return null; }
-  };
-
-  // springy press on anything with .tap
-  if (V.anim) {
-    document.addEventListener("pointerdown", function (e) {
-      var t = e.target && e.target.closest ? e.target.closest(".tap") : null;
-      if (!t || t.disabled || t.classList.contains("no-press")) return;
-      G.to(t, { scale: .92, duration: .12, ease: "power2.out", overwrite: "auto" });
-      var up = function () {
-        window.removeEventListener("pointerup", up, true); window.removeEventListener("pointercancel", up, true);
-        if (t.isConnected) G.to(t, { scale: 1, duration: V.teen ? .35 : .6, ease: V.spring(), overwrite: "auto" });
-      };
-      window.addEventListener("pointerup", up, true); window.addEventListener("pointercancel", up, true);
-    }, true);
-  }
-
-  V.center = function (el) { var r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width, h: r.height }; };
-
-  // a star flies on a curved path into a counter, which bumps on arrival
-  V.flyStar = function (fromEl, toEl, done) {
-    if (!fromEl || !toEl || !V.anim) { if (done) done(); return; }
-    var a = V.center(fromEl), b = V.center(toEl);
-    var ax = a.x - 18, ay = a.y - 18, bx = b.x - 18, by = b.y - 18;
-    var cx = (ax + bx) / 2 + (ax < bx ? -70 : 70), cy = Math.min(ay, by) - 120;
-    var s = document.createElement("div"); s.className = "v2-fly"; s.innerHTML = STAR; document.body.appendChild(s);
-    var o = { t: 0 };
-    G.set(s, { x: ax, y: ay, scale: .4 });
-    G.to(o, { t: 1, duration: .8, ease: "power1.inOut", onUpdate: function () {
-      var t = o.t, u = 1 - t;
-      G.set(s, { x: u * u * ax + 2 * u * t * cx + t * t * bx, y: u * u * ay + 2 * u * t * cy + t * t * by, rotation: t * 320, scale: .45 + Math.sin(t * Math.PI) * 1.05 });
-    }, onComplete: function () { s.remove(); V.bump(toEl); if (done) done(); } });
-  };
-  V.bump = function (el) { if (el && V.anim) G.fromTo(el, { scale: 1.3 }, { scale: 1, duration: .7, ease: V.teen ? "power3.out" : "elastic.out(1.2,.4)", overwrite: "auto" }); };
-
-  V.shake = function (el) {
-    if (!el) return;
-    if (!V.anim) { el.classList.remove("v2-bad"); void el.offsetWidth; el.classList.add("v2-bad"); setTimeout(function () { el.classList.remove("v2-bad"); }, 500); return; }
-    G.fromTo(el, { x: 0 }, { keyframes: { x: [-9, 9, -6, 5, -2, 0], rotation: [-1.5, 1.5, -1, .5, 0, 0] }, duration: .45, ease: "none", overwrite: "auto" });
-  };
-  // expanding ring (transform/opacity only)
-  V.ring = function (el, color) {
-    if (!el || !V.anim) return;
-    var r = document.createElement("span"); r.className = "v2-ring"; if (color) r.style.borderColor = color;
-    el.appendChild(r);
-    G.fromTo(r, { scale: .96, opacity: .95 }, { scale: 1.14, opacity: 0, duration: .7, ease: "power2.out", onComplete: function () { r.remove(); } });
-  };
-  // green check (Lottie; a still check when motion is reduced)
-  V.check = function (host, css) {
-    if (!host) return;
-    var c = document.createElement("div"); c.className = "v2-check"; c.style.cssText = css || "right:-6px;top:-6px";
-    host.appendChild(c);
-    var a = V.lot(c, "check", false);
-    if (!a) c.innerHTML = CHECK;
-    return c;
-  };
-  // little confetti dots from a point
-  V.burst = function (x, y, colors, n) {
-    if (!V.anim) return;
-    colors = colors || ["#FFC93C", "#F97316", "#22C55E", "#0EA5E9", "#F472B6"];
-    for (var i = 0; i < (n || 14); i++) {
-      var d = document.createElement("div"); d.className = "v2-dot";
-      var sz = 6 + Math.random() * 8; d.style.width = d.style.height = sz + "px";
-      d.style.background = colors[i % colors.length]; if (i % 3 === 0) d.style.borderRadius = "2px";
-      document.body.appendChild(d);
-      var ang = Math.random() * Math.PI * 2, dist = 50 + Math.random() * 80;
-      G.set(d, { x: x - sz / 2, y: y - sz / 2 });
-      G.to(d, { x: x + Math.cos(ang) * dist, y: y + Math.sin(ang) * dist + 30, rotation: Math.random() * 360, opacity: 0, scale: .4, duration: .7 + Math.random() * .3, ease: "power2.out", onComplete: (function (dd) { return function () { dd.remove(); }; })(d) });
-    }
-  };
-  V.count = function (el, to, dur, from) {
-    if (!el) return;
-    if (!V.anim) { el.textContent = to; return; }
-    var o = { n: from || 0 };
-    G.to(o, { n: to, duration: dur || .8, ease: "power1.out", onUpdate: function () { el.textContent = Math.round(o.n); } });
-  };
-  V.progress = function (fill, frac) {
-    if (!fill) return;
-    frac = Math.max(0, Math.min(1, frac));
-    if (V.anim) G.to(fill, { scaleX: frac, duration: .7, ease: "power3.out" }); else fill.style.transform = "scaleX(" + frac + ")";
-  };
-  // split text into masked letters
-  V.letters = function (text) {
-    return String(text).replace(/ (?=\S*\p{Extended_Pictographic})/gu, "\u00a0").split(" ").map(function (w) {
-      return '<span class="v2-w">' + Array.from(w).map(function (c) { return '<span class="v2-ch">' + V.esc(c) + "</span>"; }).join("") + "</span>";
-    }).join(" ");
-  };
-  V.reveal = function (el, delay) {
-    if (!el || !V.anim) return null;
-    return G.from(V.$$(".v2-ch", el), { yPercent: 115, rotation: function (i) { return V.teen ? 0 : (i % 2 ? 1 : -1) * 14; }, duration: V.teen ? .5 : .55, stagger: .028, delay: delay || 0, ease: V.teen ? "power3.out" : "back.out(2.4)" });
-  };
-  // a character drops in with squash & stretch
-  V.dropIn = function (el, delay) {
-    if (!el || !V.anim) return null;
-    var tl = G.timeline({ delay: delay || 0 });
-    if (V.teen) return tl.fromTo(el, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: .6, ease: "power3.out" });
-    tl.fromTo(el, { y: -160, opacity: 0, scaleX: .85, scaleY: 1.18, transformOrigin: "50% 100%" }, { y: 0, opacity: 1, duration: .42, ease: "power2.in" })
-      .to(el, { scaleX: 1.2, scaleY: .78, duration: .08, ease: "power1.out" })
-      .to(el, { scaleX: 1, scaleY: 1, duration: .8, ease: "elastic.out(1.1,.32)" });
-    return tl;
-  };
-  // idle life: breathe, sway, blink-squash, and a wave now and then
-  V.mascot = function (box) {
-    var img = box && box.querySelector("img");
-    var api = { cheer: function () {}, sad: function () {}, kill: function () {} };
-    if (!img || !V.anim) return api;
-    var tw = [];
-    tw.push(G.to(box, { scale: 1.035, transformOrigin: "50% 100%", duration: 1.7, yoyo: true, repeat: -1, ease: "sine.inOut" }));
-    tw.push(G.to(img, { rotation: V.teen ? 1.5 : 3.5, transformOrigin: "50% 100%", duration: 1.5, yoyo: true, repeat: -1, ease: "sine.inOut" }));
-    var bl = G.timeline({ repeat: -1, repeatDelay: 3.2, delay: 1.4 });
-    bl.to(img, { scaleY: .91, scaleX: 1.06, transformOrigin: "50% 100%", duration: .09, ease: "power1.in" }).to(img, { scaleY: 1, scaleX: 1, duration: .45, ease: V.teen ? "power2.out" : "elastic.out(1,.4)" });
-    tw.push(bl);
-    var wv = G.timeline({ repeat: -1, repeatDelay: 6.5, delay: 4 });
-    wv.to(img, { rotation: -8, duration: .18, ease: "power1.out" }).to(img, { rotation: 7, duration: .18, yoyo: true, repeat: 3, ease: "sine.inOut" }).to(img, { rotation: 0, duration: .3 });
-    tw.push(wv);
-    api.cheer = function () {
-      G.timeline().to(box, { y: -26, duration: .22, ease: "power2.out" }).to(box, { y: 0, duration: .5, ease: "bounce.out" });
-      G.fromTo(img, { scaleX: 1.12, scaleY: .88 }, { scaleX: 1, scaleY: 1, duration: .6, ease: "elastic.out(1,.4)", transformOrigin: "50% 100%" });
-    };
-    api.sad = function () { G.fromTo(box, { rotation: 0 }, { keyframes: { rotation: [-5, 5, -3, 0] }, duration: .5, ease: "none" }); };
-    api.kill = function () { tw.forEach(function (t) { t.kill(); }); };
-    return api;
-  };
-  // deal a set of cards in
-  V.dealIn = function (els, opt) {
-    if (!els || !els.length || !V.anim) return null;
-    opt = opt || {};
-    return G.from(els, { y: opt.y == null ? 40 : opt.y, scale: V.teen ? .92 : .6, opacity: 0,
-      rotation: function (i) { return V.teen ? 0 : [-7, 6, -4, 5][i % 4]; },
-      duration: V.teen ? .5 : .6, stagger: opt.stagger || .07, delay: opt.delay || 0, ease: V.pop(), clearProps: opt.keep ? "" : "transform,opacity" });
-  };
-
-  // end-of-game celebration on a .v2-cel overlay
-  // o: { title, sub(html, may contain <b class="v2-n" data-to="N">), rating (1-3) | xp (rating) | tally {n, max} | big (number), confetti:true }
-  V.celebrate = function (ov, o) {
-    o = o || {};
-    var box = V.$(".box", ov), h = V.$("h2", ov);
-    if (o.title != null) h.innerHTML = V.letters(o.title);
-    if (o.sub != null) { var sb = V.$(".sub", ov); if (sb) sb.innerHTML = o.sub; }
-    var st = V.$(".v2-stars", ov) || V.$(".v2-slot", ov);
-    var area = V.$(".v2-award", ov);
-    if (area) {
-      if (o.xp) {
-        var pct = Math.round(o.xp / 3 * 100);
-        area.innerHTML = '<div class="v2-xp"><div class="val">+<span class="v2-n" data-to="' + (o.xp * 100) + '">' + (o.xp * 100) + '</span> XP</div><div class="bar"><i style="transform:scaleX(' + (pct / 100) + ')"></i></div></div>';
-      } else if (o.rating) {
-        area.innerHTML = '<div class="v2-stars">' + [0, 1, 2].map(function (i) { return "<span>" + (i < o.rating ? STAR : STAR_O) + "</span>"; }).join("") + "</div>";
-      } else if (o.tally) {
-        var mx = o.tally.max;
-        area.innerHTML = '<div class="v2-stars' + (mx > 5 ? " many" : "") + '">' + Array.from({ length: mx }, function (_, i) { return "<span>" + (i < o.tally.n ? STAR : STAR_O) + "</span>"; }).join("") + "</div>";
-      } else if (o.big != null) {
-        area.innerHTML = '<div class="v2-big">' + STAR + '<span class="v2-n" data-to="' + o.big + '">' + o.big + "</span></div>";
-      } else area.innerHTML = "";
-    }
-    ov.classList.add("show");
-    try { if (window.Lumio && Lumio.sfx) Lumio.sfx("complete"); } catch (e) {}
-    if (o.confetti !== false && V.anim) {
-      var c = document.createElement("div"); c.className = "v2-conf"; document.body.appendChild(c);
-      var a = V.lot(c, "confetti", false);
-      if (a) a.addEventListener("complete", function () { c.remove(); }); else c.remove();
-      setTimeout(function () { if (c.isConnected) c.remove(); }, 4000);
-    }
-    var nums = V.$$(".v2-n[data-to]", ov);
-    if (!V.anim) { nums.forEach(function (n) { n.textContent = n.getAttribute("data-to"); }); return; }
-    nums.forEach(function (n) { n.textContent = "0"; });
-    var hero = V.$(".v2-hero", ov);
-    var tl = G.timeline();
-    tl.fromTo(ov, { opacity: 0 }, { opacity: 1, duration: .25 })
-      .from(box, { scale: V.teen ? .94 : .7, y: 40, opacity: 0, duration: V.teen ? .5 : .6, ease: V.teen ? "power3.out" : "back.out(1.8)" }, "<.05");
-    if (hero) {
-      if (V.teen) tl.from(hero, { y: 30, opacity: 0, duration: .5, ease: "power3.out" }, "-=.35");
-      else tl.fromTo(hero, { y: -140, opacity: 0, scaleX: .85, scaleY: 1.2, transformOrigin: "50% 100%" }, { y: 0, opacity: 1, duration: .4, ease: "power2.in" }, "-=.3")
-        .to(hero, { scaleX: 1.18, scaleY: .8, duration: .08 }).to(hero, { scaleX: 1, scaleY: 1, duration: .8, ease: "elastic.out(1,.35)" });
-    }
-    tl.from(V.$$(".v2-ch", h), { yPercent: 115, rotation: function (i) { return V.teen ? 0 : (i % 2 ? 1 : -1) * 16; }, duration: .5, stagger: .03, ease: V.teen ? "power3.out" : "back.out(2.6)" }, .35);
-    var stars = V.$$(".v2-stars span", ov);
-    if (stars.length) tl.from(stars, { y: -80, x: function (i) { return (stars.length / 2 - i) * 22; }, scale: 0, rotation: -200, duration: .65, stagger: Math.min(.16, 1 / stars.length), ease: "back.out(1.8)" }, .7)
-      .fromTo(stars, { scale: 1 }, { scale: 1.22, duration: .14, yoyo: true, repeat: 1, stagger: Math.min(.16, 1 / stars.length), ease: "power2.out", immediateRender: false });
-    var big = V.$(".v2-big svg", ov);
-    if (big) tl.from(big, { scale: 0, rotation: -240, duration: .8, ease: "back.out(2)" }, .7);
-    var bar = V.$(".v2-xp .bar i", ov);
-    if (bar) tl.from(bar, { scaleX: 0, duration: 1, ease: "power3.out" }, .75);
-    tl.from(V.$$(".sub,.v2-note,.v2-ar,.moves", ov), { y: 12, opacity: 0, duration: .4, stagger: .06 }, .8);
-    tl.add(function () { nums.forEach(function (n) { V.count(n, +n.getAttribute("data-to"), Math.min(1.6, .25 + .12 * (+n.getAttribute("data-to") || 1))); }); }, .85);
-    tl.from(V.$$(".v2-btns > *", ov), { y: 22, opacity: 0, duration: .5, stagger: .08, ease: "power3.out", clearProps: "transform,opacity" }, 1.1);
-  };
-  V.hideCel = function (ov) { ov.classList.remove("show"); };
-  // soft drifting decor
-  V.drift = function (els) {
-    if (!V.anim) return;
-    els.forEach(function (el, i) {
-      G.to(el, { x: (i % 2 ? -1 : 1) * (18 + i * 6), y: (i % 3 - 1) * 10, duration: 5 + i * 1.3, yoyo: true, repeat: -1, ease: "sine.inOut" });
-    });
-  };
-  return V;
-})();
-
-</script>
 <script src="../js/app.js"></script>
 <script src="../js/lessons-data.js"></script>
+<script src="kit/play.js"></script>
 <script>
-/* ---------- Hub mini games: the same word source, faces, stars and saving rule as student.html ---------- */
-function sdEsc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch])); }
+/* ================= Hub mini games: same word source, faces and saving rule as student.html ================= */
 const u = Lumio.user();
 const level = Lumio.qs("level") || (u && u.level) || "pre-a";
 const TEEN = ["level3", "level4", "level5", "level6"].includes(level);
-V2.teen = TEEN;
-if (TEEN) document.body.classList.add("teen");
-const G = V2.G, anim = V2.anim;
-
-// Starts as this generic fallback list so games are playable right
-// away; loadLessonVocabForGames() below swaps it for the real words
-// from the lesson (?level=&n=, or the student's latest attempted lesson).
+const backHref = "../student.html";
+// Starts as this generic fallback list; loadLessonVocabForGames() swaps it for the real lesson words.
 const FALLBACK_WORD_BANK = [
   { en: "Cat", ar: "قطة", em: "🐱" }, { en: "Dog", ar: "كلب", em: "🐶" },
   { en: "Sun", ar: "شمس", em: "☀️" }, { en: "Moon", ar: "قمر", em: "🌙" },
@@ -437,194 +112,281 @@ const FALLBACK_WORD_BANK = [
   { en: "Tree", ar: "شجرة", em: "🌳" }, { en: "Car", ar: "سيارة", em: "🚗" },
 ];
 let WORD_BANK = FALLBACK_WORD_BANK;
-// Lesson vocab has no emoji: show the word's picture instead (same file rule
-// as student.html). If the picture is missing: Memory falls back to the word
-// itself; Word Pop / Builder keep only the Arabic (the English would give the answer away).
-function sdVocabFile(v) { return String(v.image || v.en).toLowerCase().trim().replace(/'/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""); }
-function wordFaceHtml(w, wordFallback) {
-  if (w.em) return sdEsc(w.em);
-  const onErr = wordFallback
-    ? "var s=document.createElement('span');s.className='mm-word';s.textContent=this.alt;this.replaceWith(s)"
-    : "this.remove()";
-  return `<img class="sd-word-pic" src="../assets/vocab/${sdEsc(w.pic || sdVocabFile(w))}.png" alt="${sdEsc(w.en)}" draggable="false" onerror="${onErr}">`;
+// Photo fix: these lesson words have no picture under their own name, but the same picture exists
+// under its base form (visited -> visit.png ...). Without this they fell back to plain text.
+const PIC_ALIAS = { visited: "visit", baked: "bake", rested: "rest", bought: "buy", met: "meet", forgot: "forget",
+  balloons: "balloon", invitation: "invite", slowly: "slow", cheaper: "cheap", affordable: "cheap", healthier: "healthy-food",
+  rehearsal: "rehearse", efficient: "efficiently", "double-check": "check" };
+function sdVocabFile(v) {
+  if (!v.image) { const k = String(v.en).toLowerCase().trim(); if (PIC_ALIAS[k]) return PIC_ALIAS[k]; }
+  return String(v.image || v.en).toLowerCase().trim().replace(/'/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 }
-let gamesLessonNum = null;   // which lesson's vocab is currently loaded, if any
-let gamesUsingRealVocab = false;
-
+const picSrc = w => `../assets/vocab/${w.pic || sdVocabFile(w)}.png`;
+// Lesson words that have no picture file in assets/vocab (checked against the folder): treated exactly like
+// a failed picture (the student.html fallback) but without asking the server for a file that isn't there.
+const NO_PIC = new Set("accurately ago anniversary apologized as-soon-as at-last attend backup-plan board-game boarding-pass body-language booking brunch by-the-time cause certain chaperone conclusion counterargument credits cuisine daydreaming delay deliver discover distraction dropped durable earlier effort eye-contact forecast gently giggling guest-list headcount heritage hospitality instructions internship itinerary label landmark lost-and-found mandatory milestone motivation noisy panic peaceful photo-album playlist plot-twist privacy productive progress queue recently result revision road-trip scene scholarship shelter statistic step-by-step suddenly technology the-best therefore thrilled thunder timeline timer tone turning-point unlikely whispering".split(" "));
+const hasPic = w => !w.em && !NO_PIC.has(w.pic || sdVocabFile(w));
+let gamesLessonNum = null, gamesUsingRealVocab = false;
 function shuffled(arr) { return [...arr].sort(() => Math.random() - 0.5); }
 function pickWords(n, source) { const bank = source || WORD_BANK; return shuffled(bank).slice(0, Math.min(n, bank.length)); }
-
 async function loadLessonVocabForGames() {
-  // ?n= picks the lesson; without it, the student's most recently ATTEMPTED
-  // lesson in this level (lesson 1 before any attempt) -- same as student.html.
+  // ?n= picks the lesson; without it, the student's most recently ATTEMPTED lesson in this level (lesson 1 before any).
   const prog = u ? ((Lumio.progressFor(u.name) || {})[level] || {}) : {};
   const attemptedNums = Object.keys(prog).map(Number);
   const nq = parseInt(Lumio.qs("n") || "", 10);
   const targetNum = nq > 0 ? nq : (attemptedNums.length ? Math.max(...attemptedNums) : 1);
-  let lessonData = (typeof window.LUMIO_LESSONS !== "undefined" && window.LUMIO_LESSONS[level])
-    ? window.LUMIO_LESSONS[level][targetNum]
-    : null;
+  let lessonData = (window.LUMIO_LESSONS && window.LUMIO_LESSONS[level]) ? window.LUMIO_LESSONS[level][targetNum] : null;
   if (!lessonData) {
-    try {
-      const nn = String(targetNum).padStart(2, "0");
-      const res = await fetch(`../lessons/${level}/lesson${nn}.json`);
-      if (res.ok) lessonData = await res.json();
-    } catch (e) { /* fine — falls back to the generic word bank below */ }
+    try { const res = await fetch(`../lessons/${level}/lesson${String(targetNum).padStart(2, "0")}.json`); if (res.ok) lessonData = await res.json(); } catch (e) {}
   }
   const vocab = lessonData && Array.isArray(lessonData.vocab) ? lessonData.vocab : [];
-  if (vocab.length < 3) return; // too few real words to make a decent game — keep the fallback bank
+  if (vocab.length < 3) return; // too few real words: keep the fallback bank
   WORD_BANK = vocab.map(v => ({ en: v.en, ar: v.ar || "", em: v.emoji || "", pic: sdVocabFile(v) }));
-  gamesLessonNum = targetNum;
-  gamesUsingRealVocab = true;
+  gamesLessonNum = targetNum; gamesUsingRealVocab = true;
 }
-
-// Blends a mini-game result into that lesson's saved progress with the same
-// "keep the best" rule as student.html -- only for a lesson already attempted.
+// Same "keep the best" rule as student.html; only touches a lesson already attempted.
 function saveGameResultToLesson(stars, score, total) {
   if (!gamesUsingRealVocab || !gamesLessonNum || !u) return { counted: false, reason: "no-lesson" };
-  let all;
-  try { all = JSON.parse(localStorage.getItem("lumio_progress") || "{}"); } catch (e) { all = {}; }
+  let all; try { all = JSON.parse(localStorage.getItem("lumio_progress") || "{}"); } catch (e) { all = {}; }
   const existing = ((all[u.name] || {})[level] || {})[gamesLessonNum];
   if (!existing) return { counted: false, reason: "not-attempted", lessonNum: gamesLessonNum };
   if (stars < existing.stars) return { counted: false, reason: "not-better", lessonNum: gamesLessonNum };
-  all[u.name] = all[u.name] || {};
-  all[u.name][level] = all[u.name][level] || {};
+  all[u.name] = all[u.name] || {}; all[u.name][level] = all[u.name][level] || {};
   all[u.name][level][gamesLessonNum] = { stars, score, total, date: Lumio.tzNow().date };
   try { localStorage.setItem("lumio_progress", JSON.stringify(all)); } catch (e) { return { counted: false, reason: "storage-failed" }; }
   return { counted: true, lessonNum: gamesLessonNum };
 }
-function gameResultNote(blended) {
-  if (blended.counted) return `<p class="v2-note ok">🎯 Counted toward Lesson ${blended.lessonNum}'s stars!</p>`;
-  if (blended.reason === "not-attempted") return `<p class="v2-note">Finish Lesson ${blended.lessonNum} first, then this game can boost its stars!</p>`;
-  if (blended.reason === "not-better") return `<p class="v2-note">Your Lesson ${blended.lessonNum} score is already this good — try beating it!</p>`;
+function gameResultNote(b) {
+  if (b.counted) return `<span class="hub-note ok">🎯 Counted toward Lesson ${b.lessonNum}'s stars!</span>`;
+  if (b.reason === "not-attempted") return `<span class="hub-note">Finish Lesson ${b.lessonNum} first, then this game can boost its stars!</span>`;
+  if (b.reason === "not-better") return `<span class="hub-note">Your Lesson ${b.lessonNum} score is already this good — try beating it!</span>`;
   return "";
 }
-function gameStars(scoreRatio) {
-  // Same thresholds as lesson.js (>= 85% -> 3, >= 60% -> 2, else 1).
-  if (scoreRatio >= 0.85) return 3;
-  if (scoreRatio >= 0.6) return 2;
-  return 1;
+function gameStars(r) { if (r >= 0.85) return 3; if (r >= 0.6) return 2; return 1; } // same as lesson.js
+// Results card: kit card + the hub's own lines (teens see XP, like student.html)
+function hubResults(o, lines, quiet) {
+  const keepRain = LP.rain, keepLottie = window.lottie;
+  if (quiet) { LP.rain = () => {}; window.lottie = null; }
+  LP.results(o);
+  if (quiet) setTimeout(() => { LP.rain = keepRain; window.lottie = keepLottie; }, 1500);
+  const note = document.querySelector(".lp-results .note");
+  if (note) note.innerHTML = lines.filter(Boolean).join("") + (TEEN ? `<span class="hub-xp"><b>+${o.stars * 100} XP</b><i><s style="transform:scaleX(${o.stars / 3})"></s></i></span>` : "");
 }
-// stars for kids, XP bar for teen levels (display only -- same 1-3 rating underneath)
-function starsAward(st) { return TEEN ? { xp: st } : { rating: st }; }
-
-// shared page bits
-document.getElementById("exitBtn").href = "../student.html";
-document.querySelectorAll(".js-star").forEach(e => { e.innerHTML = V2.STAR; });
-const mascot = V2.mascot(document.getElementById("lumi"));
-if (TEEN) { const li = document.querySelector("#lumi img"); if (li) li.src = "../assets/story/characters/lumi-teen-wave.png"; const ch = document.querySelector("#endcard .v2-hero"); if (ch) ch.src = "../assets/story/characters/lumi-teen-celebrate.png"; }
-function pageIntro() {
-  if (!anim) return;
-  const h = document.getElementById("gTitle");
-  h.innerHTML = V2.letters(h.textContent);
-  G.timeline()
-    .from("#hud > *", { y: -30, opacity: 0, duration: .5, stagger: .06, ease: "power3.out", clearProps: "transform,opacity" })
-    .add(V2.dropIn(document.querySelector("#lumi img")), .1)
-    .add(V2.reveal(h), .35)
-    .from(".panel", { y: 40, opacity: 0, scale: .97, duration: .6, ease: "power3.out", clearProps: "transform,opacity" }, .3)
-    .from(".hudRow > *", { y: 10, opacity: 0, duration: .4, stagger: .07, clearProps: "transform,opacity" }, .55);
-}
+const hubCss = document.createElement("style");
+hubCss.textContent = `.lp-results .note{display:flex;flex-direction:column;align-items:center;gap:6px}
+.hub-line{font-family:var(--lp-display);font-weight:800;font-size:18px}
+.hub-note{font-size:14px;opacity:.85;max-width:30em}.hub-note.ok{color:#0D9488;opacity:1}
+html[data-lp="teen"] .hub-note.ok{color:#5EEAD4}
+.hub-xp{display:flex;align-items:center;gap:10px;margin-top:4px}.hub-xp b{font-family:var(--lp-display);font-size:20px;color:#A78BFA}
+.hub-xp i{display:block;width:140px;height:10px;border-radius:99px;background:rgba(255,255,255,.14);overflow:hidden}
+.hub-xp s{display:block;height:100%;background:linear-gradient(90deg,#7C5CFF,#3BA0FF);transform-origin:0 50%;text-decoration:none}`;
+document.head.appendChild(hubCss);
 
 
-// ================= Word Pop (rules from student.html) =================
-const wpTarget = document.getElementById("wpTarget");
-const wpBubbles = document.getElementById("wpBubbles");
-const wpScoreEl = document.getElementById("wpScore");
-const wpHeartsEl = document.getElementById("wpHearts");
-const progFill = document.getElementById("progFill");
-const endcard = document.getElementById("endcard");
-let wpState = null;
+/* ================= Word Pop (rules from student.html) ================= */
 const WP_ROUNDS = 8;
-let bobs = [];
+const HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 7.9 3.6 4.5 7 4.5c2 0 3.6 1.1 5 2.9 1.4-1.8 3-2.9 5-2.9 3.4 0 5.6 3.4 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z" fill="#FF4D6D" stroke="#C9184A" stroke-width="1.4" stroke-linejoin="round"/><path d="M6.5 8.2c.5-1 1.4-1.6 2.4-1.6" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".8"/></svg>';
+const heartsChip = LP.el("div", "lp-chip wp-hearts", [0, 1, 2].map(() => `<span>${HEART}</span>`).join(""));
+heartsChip.setAttribute("aria-label", "3 hearts left");
+LP.init({
+  theme: TEEN ? "teen" : "kid",
+  scene: TEEN
+    ? { bg: "assets/lesson-bg/level5/09.jpg", particles: "bubbles", tint: "linear-gradient(180deg,rgba(14,10,40,.25),rgba(6,8,24,.5))" }
+    : { bg: "assets/lesson-bg-kid/weather-sky.jpg", particles: "bubbles", tint: "linear-gradient(180deg,rgba(255,255,255,0),rgba(30,80,160,.18))" },
+  hud: { rounds: WP_ROUNDS, exitHref: backHref, extra: heartsChip }
+});
+const G = window.gsap, ANIM = !!G && !LP.RM;
+const CH = TEEN ? { char: "noor-teen", pose: "point", cheer: "celebrate", oops: "surprised", think: "think" } : { char: "noor", pose: "point", cheer: "celebrate", oops: "surprised", think: "think" };
+[CH.pose, CH.cheer, CH.oops, CH.think, "thumbs"].forEach(p => { const i = new Image(); i.src = LP.char(CH.char, p); });
+const host = LP.actor(document.getElementById("host"), Object.assign({ alt: "Noor" }, CH));
+const field = document.getElementById("field"), orb = document.getElementById("orb"), arTxt = document.getElementById("arTxt"), hint = document.getElementById("hint");
+let wpState = null;
+
+/* ---------- bubble physics: spring to a drifting home, wander, soft collisions, walls ---------- */
+let bubs = [], raf = 0, lastT = 0, FW = 0, FH = 0, ptr = null;
+function measure() { FW = field.clientWidth; FH = field.clientHeight; }
+addEventListener("resize", () => { measure(); bubs.forEach(b => { b.hx = b.cx * FW; b.hy = b.cy * FH; }); if (!ANIM) bubs.forEach(place); });
+field.addEventListener("pointermove", e => { if (e.pointerType !== "mouse") return; const r = field.getBoundingClientRect(); ptr = { x: e.clientX - r.left, y: e.clientY - r.top }; });
+field.addEventListener("pointerleave", () => { ptr = null; });
+function place(b, t) {
+  const s = ANIM ? Math.sin((t || 0) * .004 + b.p) * .035 : 0;
+  b.el.style.transform = `translate3d(${b.x - b.r}px,${b.y - b.r}px,0) scale(${(1 + s) * b.k},${(1 - s) * b.k})`;
+}
+function tick(t) {
+  const dt = Math.min(2.2, (t - (lastT || t)) / 16.67 || 1); lastT = t;
+  for (const b of bubs) {
+    if (b.dead) continue;
+    if (b.free) { b.vy -= .35 * dt; b.y += b.vy * dt; b.x += b.vx * dt; b.k *= 1; place(b, t); continue; }
+    const hx = b.hx + Math.sin(t * .00045 + b.p) * FW * .07, hy = b.hy + Math.cos(t * .0005 + b.p * 1.7) * FH * .05;
+    b.vx += ((hx - b.x) * .0016 + Math.sin(t * .0011 + b.p) * .012) * dt;
+    b.vy += ((hy - b.y) * .0016 + Math.cos(t * .0013 + b.p) * .012) * dt;
+    if (ptr) { const dx = b.x - ptr.x, dy = b.y - ptr.y, d = Math.hypot(dx, dy); if (d < b.r + 40 && d > 1) { b.vx += dx / d * .25; b.vy += dy / d * .25; } }
+  }
+  // soft collisions
+  for (let i = 0; i < bubs.length; i++) for (let j = i + 1; j < bubs.length; j++) {
+    const a = bubs[i], c = bubs[j]; if (a.dead || c.dead || a.free || c.free) continue;
+    const dx = c.x - a.x, dy = c.y - a.y, d = Math.hypot(dx, dy) || 1, min = (a.r + c.r) * .98;
+    if (d < min) {
+      const nx = dx / d, ny = dy / d, push = (min - d) / 2;
+      a.x -= nx * push; a.y -= ny * push; c.x += nx * push; c.y += ny * push;
+      const rel = (c.vx - a.vx) * nx + (c.vy - a.vy) * ny;
+      if (rel < 0) { const imp = -rel * .9; a.vx -= nx * imp / 2; a.vy -= ny * imp / 2; c.vx += nx * imp / 2; c.vy += ny * imp / 2; }
+    }
+  }
+  for (const b of bubs) {
+    if (b.dead || b.free) continue;
+    b.vx *= Math.pow(.975, dt); b.vy *= Math.pow(.975, dt);
+    b.x += b.vx * dt; b.y += b.vy * dt;
+    if (b.x < b.r) { b.x = b.r; b.vx = Math.abs(b.vx) * .6; }
+    if (b.x > FW - b.r) { b.x = FW - b.r; b.vx = -Math.abs(b.vx) * .6; }
+    if (b.y < b.r) { b.y = b.r; b.vy = Math.abs(b.vy) * .6; }
+    if (b.in && b.y > FH - b.r) { b.y = FH - b.r; b.vy = -Math.abs(b.vy) * .6; }
+    if (!b.in && b.y < FH - b.r) b.in = true;
+    place(b, t);
+  }
+  bubs = bubs.filter(b => { const gone = b.free && b.y < -b.r * 2.5; if (gone) b.el.remove(); return !gone; });
+  raf = bubs.length ? requestAnimationFrame(tick) : 0;
+}
+function run() { if (ANIM && !raf) { lastT = 0; raf = requestAnimationFrame(tick); } }
+
+function fitText(b) {
+  const t = b.el.firstChild; let fs = b.r * (b.word.length <= 5 ? .5 : b.word.length <= 8 ? .4 : .32);
+  t.style.fontSize = fs + "px";
+  while (fs > 11 && (t.scrollWidth > t.clientWidth + 1 || t.scrollHeight > b.r * 1.45)) { fs -= 1; t.style.fontSize = fs + "px"; }
+}
+const HOMES = [[.26, .28], [.74, .32], [.3, .72], [.72, .7]];
+function spawn(words, correct) {
+  measure();
+  const n = words.length, R = Math.max(50, Math.min(FW / (n > 2 ? 4.3 : 3.4), FH / 4.4, innerWidth >= 900 ? 128 : 98));
+  const homes = Lumio.shuffle(HOMES.slice(0, Math.max(n, 3))).slice(0, n);
+  words.forEach((w, i) => {
+    const el = document.createElement("button");
+    el.type = "button"; el.className = "wp-bub"; el.dataset.word = w.en; el.dataset.press = "";
+    el.innerHTML = `<span class="t">${LP.esc(w.en)}</span>`;
+    const r = R * (1 + (w.en.length > 9 ? .08 : 0)) * (.94 + Math.random() * .1);
+    el.style.width = el.style.height = r * 2 + "px";
+    field.appendChild(el);
+    const b = { el, word: w.en, r, k: 1, p: Math.random() * 6.28, cx: homes[i][0] + (Math.random() - .5) * .06, cy: homes[i][1] + (Math.random() - .5) * .06 };
+    b.hx = b.cx * FW; b.hy = b.cy * FH;
+    if (ANIM) { b.x = b.hx + (Math.random() - .5) * 40; b.y = FH + r + 30 + i * 70; b.vx = (Math.random() - .5) * 2; b.vy = -6 - Math.random() * 3; }
+    else { b.x = Math.min(FW - r, Math.max(r, b.hx)); b.y = Math.min(FH - r, Math.max(r, b.hy)); b.vx = b.vy = 0; b.in = true; }
+    el.onclick = () => pick(b, w.en === correct.en);
+    bubs.push(b); fitText(b); place(b, 0);
+  });
+  run();
+}
+function popFx(b, good) {
+  const r = b.el.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
+  LP.burst(x, y, good
+    ? { n: 30, colors: TEEN ? ["#fff", "#A5B4FC", "#F0ABFC", "#67E8F9"] : ["#fff", "#BAE6FD", "#FBCFE8", "#FDE68A"], shape: "dot", ringColor: "#fff", r0: b.r * .9, ringSpeed: 2.4, speed: 9 }
+    : { n: 14, colors: ["#FDA4AF", "#fff"], shape: "dot", ringColor: "#F43F5E", r0: b.r * .6, speed: 4, up: -1 });
+}
+function popBubble(b, good) {
+  b.dead = true; b.el.disabled = true; LP.sfx("pop");
+  popFx(b, good);
+  if (!ANIM) { b.el.remove(); return Promise.resolve(); }
+  return new Promise(res => G.timeline({ onComplete: () => { b.el.remove(); res(); } })
+    .to(b.el, { scale: good ? 1.3 : .8, duration: good ? .1 : .3, ease: good ? "power2.out" : "power2.in" })
+    .to(b.el, { opacity: 0, scale: good ? 1.6 : .2, duration: .1 }));
+}
+function flyAway() {
+  // the rest float off the top of the sky
+  bubs.forEach(b => { b.el.disabled = true; if (!b.dead) { b.free = true; b.vy = -2 - Math.random() * 2; b.vx = (Math.random() - .5) * 3; } });
+  if (!ANIM) { bubs.forEach(b => b.el.remove()); bubs = []; }
+  run();
+}
+
+function hearts(lost) {
+  [...heartsChip.children].forEach((h, i) => h.classList.toggle("off", i >= wpState.lives));
+  heartsChip.setAttribute("aria-label", wpState.lives + " hearts left");
+  if (lost && ANIM) {
+    const h = heartsChip.children[wpState.lives];
+    if (h) { G.fromTo(h, { scale: 1.8, rotation: -25 }, { scale: 1, rotation: 0, duration: .7, ease: "elastic.out(1,.4)" }); const c = LP.center(h); LP.burst(c.x, c.y, { n: 10, colors: ["#FF4D6D", "#fff"], shape: "dot", ring: false, speed: 4 }); }
+    G.fromTo(heartsChip, { x: -6 }, { x: 0, duration: .5, ease: "elastic.out(1,.3)" });
+  }
+}
+function resetHud() { LP.setStars(0); document.querySelectorAll(".lp-prog i b").forEach(b => { if (G) G.set(b, { scaleX: 0 }); else b.style.transform = "scaleX(0)"; }); }
 
 function startWordPop(source) {
-  V2.hideCel(endcard);
   wpState = { round: 0, score: 0, lives: 3, total: WP_ROUNDS, source };
-  wpScoreEl.textContent = "Score: 0";
-  V2.progress(progFill, 0);
-  updateHearts();
-  nextWpRound(true);
+  bubs.forEach(b => b.el.remove()); bubs = [];
+  resetHud(); hearts();
+  nextWpRound();
 }
-function updateHearts(lost) {
-  wpHeartsEl.innerHTML = [0, 1, 2].map(i => `<span>${i < wpState.lives ? "❤️" : "🤍"}</span>`).join("");
-  if (lost && anim) {
-    const h = wpHeartsEl.children[wpState.lives];
-    if (h) G.fromTo(h, { scale: 1.6, rotation: -20 }, { scale: 1, rotation: 0, duration: .6, ease: "back.out(2)" });
-    V2.shake(wpHeartsEl);
-  }
-}
-function drawRound(words, correct, first) {
-  wpTarget.innerHTML = `<div class="em"><span>${wordFaceHtml(correct, false)}</span></div><div class="ar">${sdEsc(correct.ar)}</div>`;
-  wpBubbles.innerHTML = "";
-  bobs.forEach(t => t.kill()); bobs = [];
-  shuffled(words).forEach((w, i) => {
-    const cell = document.createElement("div");
-    cell.className = "wp-cell";
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "wp-bubble tap";
-    btn.textContent = w.en;
-    btn.onclick = () => handleWpPick(btn, w.en === correct.en);
-    cell.appendChild(btn);
-    wpBubbles.appendChild(cell);
-    // bubbles float gently while you think
-    if (anim && !TEEN) bobs.push(G.to(cell, { y: -6, duration: 1.3 + i * .17, yoyo: true, repeat: -1, ease: "sine.inOut", delay: i * .2 }));
-  });
-  if (anim) {
-    G.from(".target .em > *", { scale: .4, rotation: TEEN ? 0 : -12, opacity: 0, duration: .55, delay: first ? .8 : 0, ease: V2.pop() });
-    G.from(".target .ar", { y: 12, opacity: 0, duration: .4, delay: first ? .95 : .12 });
-    V2.dealIn(wpBubbles.querySelectorAll(".wp-bubble"), { delay: first ? .9 : .1, stagger: .07, y: 26 });
-  }
-}
-function nextWpRound(first) {
+async function nextWpRound() {
+  LP.answer = null;
   if (wpState.round >= wpState.total || wpState.lives <= 0) { endWordPop(); return; }
-  wpState.round++;
+  wpState.round++; wpState.locked = true;
   const words = pickWords(4, wpState.source);
   const correct = words[0];
-  if (!first && anim) {
-    G.to(".wp-bubble", { scale: .6, opacity: 0, duration: .18, stagger: .03, ease: "power2.in" });
-    G.to(".target .em > *, .target .ar", { y: -14, opacity: 0, duration: .18, ease: "power2.in", onComplete: () => drawRound(words, correct) });
-  } else drawRound(words, correct, first);
+  wpState.correctWord = correct.en;
+  LP.round(wpState.round - 1);
+  host.set(CH.think);
+  // the picture swaps inside the big bubble
+  if (ANIM && orb.firstChild) await new Promise(r => G.to([orb, arTxt], { scale: .2, opacity: 0, duration: .25, ease: "back.in(2)", onComplete: r }));
+  orb.innerHTML = correct.em ? `<span class="emo">${LP.esc(correct.em)}</span>`
+    : hasPic(correct) ? `<img src="${LP.esc(picSrc(correct))}" alt="" draggable="false" onerror="this.remove()">`
+    : `<span class="noimg" dir="rtl" lang="ar">${LP.esc(correct.ar)}</span>`;
+  // the Arabic stays as the helper (when the picture is missing, it is the whole clue, as in student.html)
+  arTxt.textContent = hasPic(correct) || correct.em ? correct.ar : "";
+  await LP.banner("Round " + wpState.round, "Pop the right word!", 700);
+  if (ANIM) G.fromTo([orb, arTxt], { scale: .2, opacity: 0 }, { scale: 1, opacity: 1, duration: .6, ease: "back.out(2)", stagger: .08 });
+  else { orb.style.opacity = arTxt.style.opacity = 1; }
+  host.set(CH.pose); host.nod();
+  spawn(Lumio.shuffle(words), correct);
+  if (ANIM) LP.sfx("rise");
+  await LP.wait(ANIM ? 900 : 50);
+  wpState.locked = false;
+  LP.answer = correct.en;   // read by the automated play-through tests
 }
-function handleWpPick(btn, isCorrect) {
-  [...wpBubbles.querySelectorAll(".wp-bubble")].forEach(b => b.disabled = true);
+async function pick(b, isCorrect) {
+  if (wpState.locked || b.dead) return;
+  wpState.locked = true; LP.answer = null;
+  LP.fill(wpState.round - 1);
   if (isCorrect) {
-    btn.classList.add("correct");
     wpState.score++;
-    Lumio.beep(true);
-    const c = V2.center(btn);
-    V2.burst(c.x, c.y, ["#2DD4BF", "#FFC93C", "#fff", "#38BDF8"], 18);
-    V2.ring(btn, "#2DD4BF");
-    if (anim) G.timeline().to(btn, { scale: 1.12, duration: .12, ease: "power2.out" }).to(btn, { scale: 1, duration: .45, ease: V2.spring() });
-    const sc = wpState.score;
-    V2.flyStar(btn, document.getElementById("wpScoreChip"), () => { wpScoreEl.textContent = "Score: " + sc; });
-    if (!anim) wpScoreEl.textContent = "Score: " + wpState.score;
-    mascot.cheer();
+    const c = LP.center(b.el), mark = LP.el("span", ""); mark.style.cssText = `position:fixed;left:${c.x}px;top:${c.y}px;width:2px;height:2px`; document.body.appendChild(mark);
+    LP.sfx("correct"); LP.streak(true);
+    popBubble(b, true);
+    LP.say(b.word);
+    host.cheer(CH.cheer, CH.pose);
+    if (ANIM) G.fromTo(orb, { scale: 1.12 }, { scale: 1, duration: .7, ease: "elastic.out(1,.4)" });
+    hint.textContent = b.word + "!";
+    await LP.addStar(mark); mark.remove();
   } else {
-    btn.classList.add("wrong");
     wpState.lives--;
-    Lumio.beep(false);
-    V2.shake(btn);
-    updateHearts(true);
-    mascot.sad();
+    LP.sfx("wrong"); LP.streak(false);
+    b.el.classList.add("bad");
+    host.oops(CH.oops, CH.pose);
+    hearts(true);
+    if (ANIM) await new Promise(r => G.timeline({ onComplete: r }).to(b.el, { rotation: -10, duration: .07 }).to(b.el, { rotation: 9, duration: .09 }).to(b.el, { rotation: 0, duration: .2 }));
+    popBubble(b, false);
+    // show which one it was
+    const rb = bubs.find(x => !x.dead && x.el.dataset.word === wpState.correctWord);
+    if (rb) rb.el.classList.add("show");
+    hint.textContent = "Oops!";
+    await LP.wait(700);
   }
-  V2.progress(progFill, wpState.round / wpState.total);
-  setTimeout(nextWpRound, anim && isCorrect ? 900 : 550);
+  flyAway();
+  await LP.wait(ANIM ? 450 : 100);
+  hint.textContent = "Pop the right word!";
+  nextWpRound();
 }
 function endWordPop() {
-  bobs.forEach(t => t.kill()); bobs = [];
+  LP.answer = null; LP.round(-1);
   const ratio = wpState.score / wpState.total;
   const st = gameStars(ratio);
   const won = wpState.lives > 0;
-  document.getElementById("wpNote").innerHTML = gameResultNote(saveGameResultToLesson(st, wpState.score, wpState.total));
-  document.getElementById("wpEndScore").innerHTML = `Score: <b class="v2-n" data-to="${wpState.score}">${wpState.score}</b>/${wpState.total}`;
-  endcard.querySelector(".v2-hero").src = "../assets/story/characters/" + (TEEN ? (won ? "lumi-teen-celebrate" : "lumi-teen-thumbs") : (won ? "lumi-celebrate" : "lumi-thumbs")) + ".png";
-  V2.celebrate(endcard, Object.assign({ title: won ? "Nice popping! 🎈" : "Out of hearts!", confetti: won }, starsAward(st)));
+  const note = gameResultNote(saveGameResultToLesson(st, wpState.score, wpState.total));
+  hubResults({ score: wpState.score, total: wpState.total, stars: st, title: won ? "Nice popping! 🎈" : "Out of hearts!", scoreLabel: "Score",
+    actor: { char: CH.char, pose: won ? "celebrate" : "thumbs" }, exitHref: backHref, exitLabel: "Back to the Hub",
+    onReplay: () => startWordPop(wpState.source) }, [note], !won);
 }
-document.getElementById("wpAgain").onclick = () => startWordPop(wpState.source);
 
-pageIntro();
-loadLessonVocabForGames().catch(() => {}).then(() => startWordPop());
+const ready = loadLessonVocabForGames().catch(() => {});
+LP.title({ kicker: TEEN ? "English Hub · Mini game" : "English Hub · Play", title: "Word Pop", sub: "Look at the picture, then pop the bubble with the right word!",
+  ar: "انظر إلى الصورة، ثم افقع الفقاعة التي فيها الكلمة الصحيحة", actor: TEEN ? { char: "noor-teen", pose: "wave", cheer: "laugh" } : { char: "noor", pose: "wave", cheer: "jump" }
+}).then(() => ready).then(() => startWordPop());
 </script>
 </body>
 </html>

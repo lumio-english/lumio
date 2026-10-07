@@ -2,318 +2,202 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Squad Budget — Lumio English</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Nunito:wght@600;700;800&family=Tajawal:wght@500;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/brand.css">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="kit/play.css">
 <style>
-  :root { --mk-orange: #F97316; --mk-deep: #C2410C; --mk-cream: #FFF3D6; --mk-ink: #43301F; --mk-gold: #F59E0B; }
-  html, body { overflow-x: hidden; }
-  body {
-    min-height: 100vh; margin: 0;
-    background: radial-gradient(120% 60% at 50% 0%, #FFE4C2 0%, rgba(255,228,194,0) 60%), linear-gradient(180deg, #FFF1E0 0%, #FFF8EE 45%, #FFFBF5 100%);
-    position: relative; -webkit-tap-highlight-color: transparent;
+  /* Squad Budget: market day at dusk. The shopping list (Arabic) is pinned on the left, the stall
+     with its striped awning sells the words, Omar shops with you. Pay and the coins really leave the
+     wallet and drop into the stall's till, the item flies onto the list and ticks off, and the
+     receipt prints a new line. */
+  .sb{width:100%;max-width:1280px;display:grid;gap:10px;grid-template-columns:92px 1fr 1fr;
+    grid-template-areas:"list list wallet" "list list receipt" "actor ask ask" "stall stall stall";align-items:start}
+  .sb [hidden]{display:none!important}
+  .sb-list{grid-area:list}.sb-wallet{grid-area:wallet}.sb-receipt{grid-area:receipt}.sb-actor{grid-area:actor}.sb-ask{grid-area:ask}.sb-stall{grid-area:stall}
+
+  /* shopping list: a paper note */
+  .sb-list{position:relative;padding:12px 12px 10px;border-radius:6px 6px 14px 14px;color:#3a2a1a;
+    background:linear-gradient(180deg,#FFFDF5,#F6EDD6);box-shadow:0 18px 30px -18px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.6) inset;transform:rotate(-1.2deg)}
+  .sb-list::before{content:"";position:absolute;left:50%;top:-9px;width:64px;height:20px;margin-left:-32px;background:rgba(255,214,102,.75);transform:rotate(3deg);border-radius:2px;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+  .sb-list h3{margin:0 0 6px;font-family:var(--lp-display);font-weight:800;font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:#7a4b1e;display:flex;align-items:center;gap:6px}
+  .sb-list h3 svg{width:18px;height:18px}
+  .sb-items{display:grid;grid-template-columns:1fr;gap:3px;list-style:none;margin:0;padding:0}
+  .sb-item{position:relative;display:flex;align-items:center;gap:8px;min-height:26px;padding:2px 6px;border-radius:8px;font-weight:700;font-size:15px;line-height:1.15;transition:background .3s}
+  .sb-item .box{flex:none;width:20px;height:20px;border-radius:5px;border:2px solid #b89f7a;position:relative;background:#fff}
+  .sb-item .box svg{position:absolute;inset:-4px;width:26px;height:26px;color:#16A34A;overflow:visible}
+  .sb-item .box svg path{stroke-dasharray:30;stroke-dashoffset:30}
+  .sb-item.bought .box svg path{stroke-dashoffset:0}
+  .sb-item .lbl{min-width:0;flex:1;font-family:'Tajawal',var(--lp-body);font-size:16px;overflow-wrap:anywhere}
+  .sb-item .lbl .en{font-family:var(--lp-body);font-weight:800;color:#166534}
+  .sb-item.bought .lbl{color:#6b5a45}
+  .sb-item .strike{position:absolute;left:32px;right:6px;top:50%;height:2px;background:#16A34A;border-radius:2px;transform:scaleX(0);transform-origin:100% 50%}
+  .sb-item.bought .strike{transform:scaleX(1)}
+  .sb-item.now{background:rgba(255,193,61,.35);box-shadow:0 0 0 2px #F59E0B inset}
+  .sb-item.now::after{content:"";position:absolute;left:-14px;top:50%;margin-top:-6px;border:6px solid transparent;border-left:8px solid #F59E0B;animation:sbNudge .9s ease-in-out infinite}
+  @keyframes sbNudge{50%{transform:translateX(4px)}}
+
+  /* wallet */
+  .sb-wallet{display:flex;align-items:center;justify-content:center;gap:8px;min-height:56px;padding:6px 12px;border-radius:18px;
+    background:linear-gradient(180deg,#5b3a1e,#3d2412);border:1px solid rgba(255,214,140,.35);box-shadow:0 14px 26px -16px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.15);color:#FFE7A8}
+  .sb-wallet .lab{font-family:var(--lp-body);font-weight:800;font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.75;display:block;line-height:1}
+  .sb-wallet b{font-family:var(--lp-display);font-weight:800;font-size:28px;line-height:1;color:#FFD666;font-variant-numeric:tabular-nums}
+  .sb-wallet .coinbig{width:34px;height:34px;flex:none}
+  .coin{display:inline-block;width:18px;height:18px;border-radius:50%;flex:none;vertical-align:-3px;
+    background:radial-gradient(circle at 35% 30%,#FFF3B0 0 18%,#FFD33D 40%,#E9A300 75%,#B97800 100%);box-shadow:inset 0 0 0 2px rgba(150,95,0,.55),0 1px 2px rgba(0,0,0,.35)}
+  .coin.fly{position:fixed;left:0;top:0;width:24px;height:24px;margin:-12px 0 0 -12px;z-index:220;pointer-events:none}
+
+  /* receipt printer */
+  .sb-receipt{position:relative;padding-top:12px}
+  .sb-receipt .slot{position:absolute;left:-4px;right:-4px;top:0;height:14px;border-radius:8px;background:linear-gradient(180deg,#2b2f45,#151827);box-shadow:inset 0 -3px 0 rgba(0,0,0,.6),0 6px 12px -6px rgba(0,0,0,.8)}
+  .sb-paper{position:relative;margin:0 4px;padding:8px 10px 12px;background:#FFFEF8;color:#2b2b2b;font-family:'Courier Prime','Courier New',monospace;font-size:13px;line-height:1.35;
+    box-shadow:0 12px 22px -14px rgba(0,0,0,.9);-webkit-mask:linear-gradient(#000,#000) top/100% calc(100% - 6px) no-repeat,radial-gradient(circle at 5px 0,transparent 4px,#000 4.5px) bottom/10px 6px repeat-x;
+    mask:linear-gradient(#000,#000) top/100% calc(100% - 6px) no-repeat,radial-gradient(circle at 5px 0,transparent 4px,#000 4.5px) bottom/10px 6px repeat-x}
+  .sb-paper h4{margin:0 0 4px;text-align:center;font-size:12px;letter-spacing:.2em;font-weight:700;border-bottom:1px dashed #bbb;padding-bottom:3px}
+  .sb-lines{display:flex;flex-direction:column;min-height:18px}
+  .sb-lines .ln{display:flex;justify-content:space-between;gap:6px;white-space:nowrap}
+  .sb-lines .ln span:first-child{overflow:hidden;text-overflow:ellipsis}
+  .sb-lines .empty{color:#aaa;text-align:center;font-size:12px}
+
+  /* Omar + prompt */
+  .sb-actor{position:relative;height:118px;display:flex;justify-content:center;align-items:flex-end}
+  .sb-actor .lp-actor{height:100%}
+  .sb-ask{align-self:center;min-width:0}
+  .sb-ask .lp-bubble{width:100%;max-width:100%}
+  .sb-ask .lp-bubble .tail{left:-8px;bottom:26px}
+  .sb-ask .lp-bubble .txt{font-size:clamp(17px,4.4vw,22px)}
+
+  /* the stall */
+  .sb-stall{position:relative;padding-top:34px;width:100%}
+  .sb-awning{position:absolute;left:-6px;right:-6px;top:0;height:42px;z-index:2;border-radius:10px 10px 0 0;
+    background:repeating-linear-gradient(90deg,#E8452C 0 34px,#FFF3E0 34px 68px);box-shadow:0 10px 18px -10px rgba(0,0,0,.7);
+    -webkit-mask:radial-gradient(17px 12px at 17px 30px,#000 99%,transparent) 0 0/34px 42px repeat-x,linear-gradient(#000,#000) 0 0/100% 30px no-repeat;
+    mask:radial-gradient(17px 12px at 17px 30px,#000 99%,transparent) 0 0/34px 42px repeat-x,linear-gradient(#000,#000) 0 0/100% 30px no-repeat;transform-origin:50% 0}
+  .sb-awning::after{content:"";position:absolute;inset:0 0 auto;height:8px;background:rgba(0,0,0,.18)}
+  .sb-counter{position:relative;padding:18px 12px 16px;border-radius:0 0 20px 20px;background:linear-gradient(180deg,rgba(32,20,10,.55),rgba(20,12,6,.72));
+    border:1px solid rgba(255,214,140,.18);border-top:none;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 30px 50px -30px rgba(0,0,0,.9)}
+  .sb-counter::after{content:"";position:absolute;left:-6px;right:-6px;bottom:-10px;height:16px;border-radius:6px;background:linear-gradient(180deg,#9a6534,#6d4220);box-shadow:0 8px 14px -6px rgba(0,0,0,.8)}
+  .sb-till{position:absolute;right:10px;bottom:-24px;z-index:3;display:flex;align-items:center;gap:6px;height:30px;padding:0 10px;border-radius:10px;background:linear-gradient(180deg,#3f4560,#23273a);color:#FFD666;font-family:var(--lp-display);font-weight:800;font-size:14px;box-shadow:0 8px 14px -8px #000}
+  .sb-till .coin{width:14px;height:14px}
+  .sb-cards{margin:0 auto;max-width:860px}
+  .sb-cards.c4 .lp-card .pic{aspect-ratio:4/3}
+  .sb-cards .lp-card .lbl{padding:6px 6px 10px;font-size:clamp(15px,4vw,19px)}
+  .sb-tag{position:absolute;top:-10px;left:-6px;z-index:2;display:flex;align-items:center;gap:4px;padding:3px 10px 3px 6px;border-radius:999px;
+    background:linear-gradient(180deg,#FFE27A,#FFB300);color:#5a3500;font-family:var(--lp-display);font-weight:800;font-size:15px;box-shadow:0 4px 0 #C98500,0 8px 14px -6px rgba(0,0,0,.6);transform:rotate(-6deg)}
+  .sb-tag .coin{width:16px;height:16px}
+
+  /* dialogue round */
+  .sb-chat{max-width:620px;margin:0 auto 12px;display:flex;flex-direction:column;gap:8px}
+  .sb-line{display:flex;gap:8px;align-items:flex-end;max-width:92%}
+  .sb-line.you{align-self:flex-end;flex-direction:row-reverse}
+  .sb-line .who{flex:none;width:34px;height:34px;border-radius:50%;overflow:hidden;position:relative;background:#14B8A6}
+  .sb-line .who img{position:absolute;max-width:none;width:auto}
+  .sb-line .who.you{display:grid;place-items:center;background:linear-gradient(135deg,#7C5CFF,#3BA0FF);color:#fff;font-family:var(--lp-display);font-weight:800;font-size:13px}
+  .sb-line .b{padding:9px 14px;border-radius:18px;font-weight:700;font-size:16.5px;line-height:1.35;color:#F4F6FF;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.14);border-bottom-left-radius:6px}
+  .sb-line .b small{display:block;font-size:12px;font-weight:800;color:#5EEAD4;margin-bottom:1px}
+  .sb-line.you .b{background:linear-gradient(135deg,#7C5CFF,#3BA0FF);border-color:transparent;border-bottom-left-radius:18px;border-bottom-right-radius:6px}
+  .sb-line.you .b small{color:#E0E7FF}
+  .sb-line.q .b{border-style:dashed;color:#C9D2F5;min-width:120px;text-align:center}
+  .sb-opts{display:flex;flex-direction:column;gap:10px;max-width:620px;margin:0 auto}
+  .lp .sb-opts .lp-word{text-align:start;font-family:var(--lp-body);font-size:17px;line-height:1.3;min-height:52px}
+
+  @media (min-width:900px){
+    .sb{grid-template-columns:270px minmax(0,1fr) 230px;column-gap:24px;row-gap:14px;
+      grid-template-areas:"list ask wallet" "list stall actor" "receipt stall actor";grid-template-rows:auto auto auto;min-height:calc(100dvh - 110px);align-content:center}
+    .sb-items{gap:5px}
+    .sb-item{min-height:32px;font-size:16px}
+    .sb-item .lbl{font-size:18px}
+    .sb-list{padding:16px 16px 14px}
+    .sb-list h3{font-size:17px}
+    .sb-actor{height:min(48vh,420px);align-self:end}
+    .sb-ask{align-self:end}
+    .sb-ask .lp-bubble .tail{display:none}
+    .sb-stall{align-self:start}
+    .sb-counter{padding:24px 18px 22px}
+    .sb-wallet{align-self:end;min-height:72px}
+    .sb-wallet b{font-size:36px}
+    .sb-wallet .coinbig{width:44px;height:44px}
+    .sb-paper{font-size:15px}
+    .sb-cards .lp-card{max-width:230px;justify-self:center;width:100%}
+    .sb-cards.c4 .lp-card .pic{aspect-ratio:1/1}
+    .sb-cards .lp-card .lbl{font-size:21px}
+    .sb-receipt{align-self:start}
+    .sb-list{align-self:end}
   }
-  /* ---- market awning: stripes + scalloped edge, drops in on load ---- */
-  .awning { position: absolute; top: 0; left: 0; right: 0; height: 26px; z-index: 2; transform-origin: 50% 0;
-    background: repeating-linear-gradient(90deg, var(--mk-orange) 0 40px, var(--mk-cream) 40px 80px);
-    -webkit-mask: radial-gradient(circle at 20px 0, #000 0 30px, transparent 31px) 0 -4px / 40px 100% repeat-x;
-            mask: radial-gradient(circle at 20px 0, #000 0 30px, transparent 31px) 0 -4px / 40px 100% repeat-x;
-    filter: drop-shadow(0 4px 6px rgba(194,65,12,.18)); }
-  .bokeh { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; filter: blur(2px);
-    background: radial-gradient(circle, rgba(251,191,36,.28), rgba(251,191,36,0) 70%); }
-
-  #hud { position: relative; z-index: 5; display: flex; align-items: center; gap: 8px; padding: 30px 16px 8px; flex-wrap: wrap; max-width: 1020px; margin: 0 auto; }
-  #hud .pill { background: #fff; border-radius: 999px; padding: 8px 14px; font-family: var(--font-display); font-weight: 800; box-shadow: var(--sh-sm); font-size: .92rem; color: var(--mk-ink); display: inline-flex; align-items: center; gap: 6px; min-height: 40px; box-sizing: border-box; position: relative; }
-  #hud .pill svg { width: 20px; height: 20px; }
-  #hud .coins { background: linear-gradient(135deg,#FDE68A,#F59E0B); color: #6B3E00; }
-  #hud .grow { flex: 1; }
-  #exitBtn { background: #fff; min-height: 44px; }
-  .pop { position: absolute; left: 50%; top: 50%; width: 90px; height: 90px; margin: -45px 0 0 -45px; pointer-events: none; }
-  #lumioSoundBtn.hudSound { width: 44px; height: 44px; border-radius: 50%; border: none; background: #fff; box-shadow: var(--sh-sm); font-size: 18px; cursor: pointer; }
-
-  #progress { position: relative; z-index: 5; max-width: 988px; margin: 0 auto 14px; height: 8px; border-radius: 99px; background: rgba(194,65,12,.12); overflow: hidden; width: calc(100% - 32px); }
-  #progress i { display: block; height: 100%; width: 100%; border-radius: inherit; background: linear-gradient(90deg,#FDBA74,#F97316); transform-origin: 0 50%; transform: scaleX(0); transition: transform .7s cubic-bezier(.22,1,.36,1); }
-
-  #layout { position: relative; z-index: 5; max-width: 1020px; margin: 0 auto; padding: 0 16px 110px; display: grid; grid-template-columns: 250px 1fr; gap: 22px; align-items: start; }
-  @media (max-width: 780px) { #layout { grid-template-columns: 1fr; gap: 14px; } }
-
-  /* ---- shopping list / receipt panel ---- */
-  #listPanel { background: #fff; border-radius: 22px; padding: 16px; box-shadow: var(--sh-md); position: relative; overflow: hidden; }
-  #listPanel::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 6px; background: repeating-linear-gradient(90deg, var(--mk-orange) 0 16px, var(--mk-cream) 16px 32px); }
-  #listPanel h3 { font-family: var(--font-display); color: var(--cocoa); font-size: 1rem; margin: 4px 0 10px; display: flex; align-items: center; gap: 6px; }
-  #shopList { display: flex; flex-direction: column; gap: 8px; }
-  @media (max-width: 780px) { #shopList { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; } }
-  .list-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 12px; background: var(--cream, #FFF8EE); font-weight: 700; color: var(--cocoa-soft); font-size: .92rem; transition: background-color .4s ease, color .4s ease; position: relative; min-width: 0; }
-  .list-item .lbl { min-width: 0; overflow-wrap: anywhere; }
-  .list-item .box { width: 20px; height: 20px; border-radius: 6px; border: 2px solid #D9C9AE; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: .7rem; color: #fff; position: relative; transition: background-color .3s ease, border-color .3s ease; }
-  .list-item .box .ck { position: absolute; inset: -9px; pointer-events: none; }
-  .list-item.bought { background: var(--green-soft); color: var(--cocoa); }
-  .list-item.bought .box { background: var(--green); border-color: var(--green); }
-
-  #receiptWrap { margin-top: 14px; border-top: 2px dashed #E3D6BE; padding-top: 10px; }
-  #receiptWrap h4 { font-family: var(--font-display); font-size: .82rem; color: var(--cocoa-soft); margin: 0 0 6px; letter-spacing: 1.5px; }
-  #receiptLines { font-family: "Courier New", monospace; font-size: .8rem; color: var(--cocoa); display: flex; flex-direction: column; gap: 3px; min-height: 20px; }
-  #receiptLines div { display: flex; justify-content: space-between; }
-
-  /* ---- market ---- */
-  #marketWrap { text-align: center; min-width: 0; }
-  #promptRow { display: flex; align-items: flex-end; justify-content: center; gap: 4px; margin: 0 auto 16px; }
-  .lumiMini { width: 74px; height: 104px; flex-shrink: 0; position: relative; }
-  .lumiMini img { width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; display: block; filter: drop-shadow(0 6px 8px rgba(67,48,31,.18)); }
-  #promptCard {
-    background: #fff; border-radius: 24px; padding: 12px 18px 12px 12px; margin: 0 0 14px;
-    box-shadow: var(--sh-md); display: inline-flex; align-items: center; gap: 12px; max-width: 100%;
-    cursor: pointer; position: relative; text-align: left;
+  @media (max-width:899px){
+    .sb{gap:8px}
+    .sb-receipt .sb-lines .ln:nth-last-child(n+4){display:none}
+    .sb-actor{height:100px}
+    .sb-cards.c4 .lp-card .pic,.sb-cards.c2 .lp-card .pic{aspect-ratio:16/10}
+    .sb-cards{gap:12px}
+    .sb-counter{padding:16px 10px 14px}
+    .sb-list.many .sb-item{min-height:23px;padding:1px 6px}
+    .sb-list.many .sb-item .lbl{font-size:15px}
+    .sb-item.bought .lbl .en{font-size:13px}
+    .sb.talk{grid-template-areas:"actor ask ask" "stall stall stall"}
+    .sb.talk .sb-list,.sb.talk .sb-wallet,.sb.talk .sb-receipt{display:none}
+    .sb.talk .sb-line .b{font-size:15.5px;padding:8px 12px}
+    .lp .sb.talk .sb-opts .lp-word{font-size:16px;min-height:48px;padding:10px 14px}
   }
-  #promptCard::after { content: ""; position: absolute; left: -7px; bottom: 18px; width: 16px; height: 16px; background: #fff; transform: rotate(45deg); border-radius: 3px; }
-  #promptCard p { font-family: var(--font-display); font-weight: 800; color: var(--cocoa); font-size: 1.1rem; margin: 0; overflow: hidden; }
-  #promptCard p span { display: inline-block; }
-  #hearBtn {
-    background: var(--grad-sun); border: none; border-radius: 999px; width: 52px; height: 52px; position: relative;
-    display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
-    box-shadow: 0 6px 14px rgba(255,197,61,.5);
-  }
-  #hearBtn::before { content: ""; position: absolute; inset: 0; border-radius: 50%; box-shadow: 0 0 0 0 rgba(249,115,22,.45); animation: ring 1.8s ease-out infinite; }
-  @keyframes ring { 0% { box-shadow: 0 0 0 0 rgba(249,115,22,.45); } 100% { box-shadow: 0 0 0 14px rgba(249,115,22,0); } }
-
-  #dialogueContext { display: none; max-width: 540px; margin: 0 auto 14px; text-align: left; }
-  .bub { display: flex; align-items: flex-end; gap: 8px; margin-bottom: 8px; }
-  .bub.me { flex-direction: row-reverse; }
-  .bub img { width: 40px; height: 40px; border-radius: 50%; background: #FFE4C2; flex-shrink: 0; object-fit: cover; }
-  .bub .in { background: #fff; border-radius: 18px 18px 18px 6px; padding: 12px 16px; box-shadow: var(--sh-sm); max-width: 82%; }
-  .bub.me .in { background: var(--teal-soft); border-radius: 18px 18px 6px 18px; }
-  .bub .who { font-weight: 800; color: var(--muted); font-size: .8rem; margin-bottom: 3px; }
-  .bub.me .who { text-align: right; }
-  .bub .me-dot { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg,#2DD4BF,#14B8A6); flex-shrink: 0; }
-
-  #stallGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; perspective: 900px; }
-  @media (min-width: 560px) { #stallGrid { grid-template-columns: repeat(4, 1fr); } }
-  #stallGrid.lines { grid-template-columns: 1fr; max-width: 540px; margin: 0 auto; gap: 10px; }
-  .stall {
-    background: #fff; border: 3px solid transparent; border-radius: 20px; padding: 26px 10px 16px; min-height: 120px;
-    cursor: pointer; box-shadow: var(--sh-md); transition: border-color .25s ease, opacity .35s ease, background-color .3s ease, box-shadow .3s ease;
-    position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; overflow: hidden;
-    font: inherit; color: inherit; touch-action: manipulation;
-  }
-  .stall::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 12px;
-    background: repeating-linear-gradient(90deg, #FDBA74 0 14px, #FFF3D6 14px 28px); }
-  #stallGrid.lines .stall { min-height: 64px; padding: 16px 16px 14px; text-align: left; align-items: flex-start; }
-  #stallGrid.lines .stall::before { left: 0; top: 0; bottom: 0; right: auto; width: 8px; height: auto; background: repeating-linear-gradient(180deg, #FDBA74 0 10px, #FFF3D6 10px 20px); }
-  @media (hover: hover) and (pointer: fine) { .stall:hover { box-shadow: 0 4px 8px rgba(67,48,31,.06), 0 20px 40px rgba(249,115,22,.22); } }
-  .stall .tag { background: var(--grad-sun); color: #6B3E00; font-family: var(--font-display); font-weight: 800; font-size: .82rem; padding: 4px 12px; border-radius: 999px; transform-origin: 50% -6px; box-shadow: 0 3px 8px rgba(245,158,11,.35); }
-  .stall .word { font-family: var(--font-display); font-weight: 800; color: var(--cocoa); font-size: 1.02rem; }
-  .stall.correct { border-color: var(--green); background: var(--green-soft); box-shadow: 0 0 0 6px rgba(34,197,94,.18), 0 18px 40px rgba(34,197,94,.25); }
-  .stall.wrong-dim { opacity: .35; pointer-events: none; }
-  .stall.locked { pointer-events: none; }
-  .stall .shine { position: absolute; top: 0; bottom: 0; width: 40%; left: -60%; background: linear-gradient(100deg, transparent, rgba(255,255,255,.75), transparent); pointer-events: none; }
-
-  .coinFloat { position: fixed; z-index: 80; pointer-events: none; font-family: var(--font-display); font-weight: 800; color: #B45309; font-size: 1.05rem; text-shadow: 0 2px 0 #fff; }
-  .flyStar { position: fixed; left: 0; top: 0; width: 34px; height: 34px; z-index: 90; pointer-events: none; }
-  .flyChip { position: fixed; left: 0; top: 0; z-index: 85; pointer-events: none; background: #fff; border-radius: 999px; padding: 6px 12px; font-family: var(--font-display); font-weight: 800; color: var(--mk-ink); box-shadow: var(--sh-md); white-space: nowrap; }
-
-  #cart { position: fixed; bottom: calc(18px + env(safe-area-inset-bottom,0px)); right: 18px; z-index: 40; background: #fff; border-radius: 999px;
-    width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; box-shadow: var(--sh-lg); font-size: 1.7rem; }
-  #cart b { position: absolute; top: -4px; right: -4px; min-width: 24px; height: 24px; border-radius: 12px; background: var(--mk-orange); color: #fff; font-size: .78rem; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); padding: 0 6px; box-sizing: border-box; }
-
-  /* ---- intro ---- */
-  #intro { position: fixed; inset: 0; z-index: 70; display: flex; align-items: center; justify-content: center; padding: 20px; background: rgba(255,241,224,.78); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-  #intro .card { background: #fff; border-radius: 30px; padding: 26px 24px 24px; box-shadow: var(--sh-lg); max-width: 400px; width: 100%; text-align: center; position: relative; overflow: hidden; }
-  #intro .card::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 16px; background: repeating-linear-gradient(90deg, var(--mk-orange) 0 30px, var(--mk-cream) 30px 60px); }
-  .lumiBox { position: relative; width: 150px; height: 190px; margin: 6px auto 4px; }
-  .lumiBox img { width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; position: relative; z-index: 1; }
-  .lumiBox .lt { position: absolute; inset: -20px; z-index: 0; }
-  .lumiBox .shadow { position: absolute; left: 25%; right: 25%; bottom: -4px; height: 12px; border-radius: 50%; background: rgba(67,48,31,.14); }
-  #intro h1 { font-family: var(--font-display); color: var(--mk-ink); font-size: 2rem; margin: 6px 0 4px; line-height: 1.1; overflow: hidden; }
-  #intro h1 .ch { display: inline-block; }
-  #intro p { color: var(--muted); font-weight: 700; margin: 0 0 18px; }
-  #startBtn { min-width: 180px; min-height: 52px; font-size: 1.1rem; }
-
-  /* ---- end card ---- */
-  #endcard { position: fixed; inset: 0; z-index: 60; display: none; align-items: center; justify-content: center; background: rgba(67,48,31,.45); padding: 16px; }
-  #endcard .box { background: #fff; border-radius: 28px; padding: 26px 24px; text-align: center; box-shadow: var(--sh-lg); max-width: 460px; width: 100%; max-height: calc(100vh - 32px); overflow-y: auto; box-sizing: border-box; position: relative; }
-  #endcard .crew { display: flex; justify-content: center; margin: 4px 0 6px; }
-  #endcard .crew img { height: 84px; margin: 0 -10px; filter: drop-shadow(0 8px 12px rgba(67,48,31,.2)); transform-origin: 50% 100%; }
-  #endcard h1 { font-family: var(--font-display); font-size: 1.6rem; line-height: 1.15; margin: 6px 0; }
-  #endcard h1 .w { display: inline-block; }
-  .endStars { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-display); font-weight: 800; color: #B45309; background: #FFF3D6; border-radius: 999px; padding: 6px 14px; }
-  .endStars svg { width: 22px; height: 22px; }
-  #endcard .receiptFinal { font-family: "Courier New", monospace; background: #FFF8EE; border-radius: 12px; padding: 12px 16px; text-align: left; margin: 12px 0; font-size: .85rem; position: relative; }
-  #endcard .receiptFinal::after { content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 8px;
-    background: radial-gradient(circle at 6px 0, #FFF8EE 5px, transparent 6px) 0 0 / 12px 8px repeat-x; }
-  #endcard .receiptFinal .tot { border-top: 1px dashed #D9C9AE; margin-top: 6px; padding-top: 6px; font-weight: 800; display: flex; justify-content: space-between; }
-  #endcard .btn { min-height: 48px; }
-  #fxConf { position: fixed; inset: 0; z-index: 65; pointer-events: none; }
-
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-  }
+  @media (max-width:380px){ .sb{grid-template-columns:80px 1fr 1fr} .sb-item .lbl{font-size:15px} }
 </style>
 </head>
 <body>
-<div class="awning"></div>
-<div class="bokeh" style="width:320px;height:320px;top:8%;left:-120px"></div>
-<div class="bokeh" style="width:260px;height:260px;top:52%;right:-90px"></div>
-
-<div id="hud">
-  <a class="btn btn-ghost" href="../present.html" id="exitBtn">Exit</a>
-  <span class="pill" id="starCt"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#F97316" stroke="#C2410C" stroke-width="1.2" stroke-linejoin="round" d="M12 2.6l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17l-5.7 3.1 1.2-6.4L2.8 9.3l6.4-.8z"/></svg><span id="score">0</span><span class="pop" id="starPop"></span></span>
-  <span class="pill coins" id="coinsPill">🪙 <span id="coins">0</span></span>
-  <span class="pill" id="roundPill">1/6</span>
-  <span class="grow"></span>
-  <span id="soundSlot"></span>
-</div>
-<div id="progress"><i id="progFill"></i></div>
-
-<div id="layout">
-  <div id="listPanel">
-    <h3>🛍️ Shopping List</h3>
-    <div id="shopList"></div>
-    <div id="receiptWrap">
-      <h4>RECEIPT</h4>
-      <div id="receiptLines"></div>
+<main class="lp-stage" id="stage">
+  <div class="sb">
+    <section class="sb-list" aria-label="Shopping list">
+      <h3><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z" fill="#F97316"/><path d="M9 7a3 3 0 016 0" stroke="#7a4b1e" stroke-width="2" stroke-linecap="round"/></svg>Shopping List</h3>
+      <ul class="sb-items" id="shopList"></ul>
+    </section>
+    <div class="sb-wallet" id="wallet" aria-live="polite">
+      <span class="coin coinbig" aria-hidden="true"></span>
+      <span><span class="lab">Wallet</span><b id="coins">0</b></span>
     </div>
-  </div>
-
-  <div id="marketWrap">
-    <div id="promptRow">
-      <div class="lumiMini" id="lumiMini"><img id="lumiMiniImg" src="../assets/story/characters/lumi-teen-happy.png" alt="Lumi"></div>
-      <div id="promptCard">
-        <button id="hearBtn" aria-label="Listen" data-tap>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="#43301F"/><path d="M16.5 8.5a5 5 0 010 7M19 6a9 9 0 010 12" stroke="#43301F" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
-        </button>
-        <p id="promptText">Find this on the list!</p>
+    <div class="sb-receipt" aria-label="Receipt">
+      <div class="slot"></div>
+      <div class="sb-paper" id="paper"><h4>RECEIPT</h4><div class="sb-lines" id="receiptLines"><div class="empty">— — —</div></div></div>
+    </div>
+    <div class="sb-actor" id="omarZone"></div>
+    <div class="sb-ask">
+      <button class="lp-bubble" id="promptCard" type="button" aria-label="Hear it again">
+        <span class="lp-speak" id="hearBtn" aria-hidden="true"></span>
+        <span class="txt" id="promptText">Find this on the list!</span>
+        <span class="tail"></span>
+      </button>
+    </div>
+    <section class="sb-stall" aria-label="Market stall">
+      <div class="sb-awning" id="awning"></div>
+      <div class="sb-counter">
+        <div id="dialogueContext" class="sb-chat" hidden></div>
+        <div class="lp-cards c4 sb-cards" id="stallGrid" aria-live="polite"></div>
+        <div class="sb-till" id="till" aria-hidden="true"><span class="coin"></span><span id="tillN">0</span></div>
       </div>
-    </div>
-    <div id="dialogueContext"></div>
-    <div id="stallGrid"></div>
+    </section>
   </div>
-</div>
+</main>
 
-<div id="cart">🛒<b id="cartN">0</b></div>
-
-<div id="intro">
-  <div class="card">
-    <div class="lumiBox" id="lumiBox"><div class="lt" id="lumiLt"></div><img id="lumiImg" src="../assets/story/characters/lumi-teen-wave.png" alt="Lumi"><div class="shadow"></div></div>
-    <h1 id="introTitle">Squad Budget</h1>
-    <p id="introSub">Shop the list, watch your budget, print the receipt!</p>
-    <button class="btn btn-primary" id="startBtn" data-tap>▶ Play</button>
-  </div>
-</div>
-
-<div id="fxConf"></div>
-<div id="endcard">
-  <div class="box">
-    <div class="crew">
-      <img src="../assets/story/characters/lumi-teen-thumbs.png" alt="Lumi">
-      <img src="../assets/story/characters/omar-teen-backpack.png" alt="Omar">
-      <img src="../assets/story/characters/sara-teen-happy.png" alt="Sara">
-      <img src="../assets/story/characters/noor-teen-backpack.png" alt="Noor">
-      <img src="../assets/story/characters/ziad-teen-thumbs.png" alt="Ziad">
-      <img src="../assets/story/characters/hamad-teen-happy.png" alt="Hamad">
-    </div>
-    <h1 id="endTitle">Best squad shopping trip ever!</h1>
-    <div class="endStars" id="endStars"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#F97316" stroke="#C2410C" stroke-width="1.2" stroke-linejoin="round" d="M12 2.6l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17l-5.7 3.1 1.2-6.4L2.8 9.3l6.4-.8z"/></svg><span id="endScore">0</span> / <span id="endTotal">6</span></div>
-    <div class="receiptFinal" id="finalReceipt"></div>
-    <div class="row" style="justify-content:center;gap:10px">
-      <button class="btn btn-primary" onclick="location.reload()" data-tap>↺ Shop again</button>
-      <a class="btn btn-teal" id="backBtn" href="../present.html" data-tap>Back</a>
-    </div>
-  </div>
-</div>
-
-<script src="../js/app.js"></script>
-<script src="../js/lessons-data.js"></script>
 <script src="../vendor/gsap-3.12.5.min.js"></script>
 <script src="../vendor/lottie-light-5.12.2.min.js"></script>
-<script>
-/* ================= motion kit (GSAP + Lottie), shared look with the try-it landing page ================= */
-const G = window.gsap, LOT = window.lottie;
-const RM = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
-const FX = !!G && !RM;
-const $ = (s, r) => (r || document).querySelector(s);
-const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
-const STAR_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#F97316" stroke="#C2410C" stroke-width="1.2" stroke-linejoin="round" d="M12 2.6l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17l-5.7 3.1 1.2-6.4L2.8 9.3l6.4-.8z"/></svg>';
-function lot(el, name, loop) {
-  if (!LOT || !el || RM) return null;
-  try { return LOT.loadAnimation({ container: el, renderer: "svg", loop: !!loop, autoplay: true, path: "../assets/lottie/" + name + ".json" }); } catch (e) { return null; }
-}
-function bump(el) { if (FX && el) G.fromTo(el, { scale: 1.3 }, { scale: 1, duration: .7, ease: "elastic.out(1.2,.4)", overwrite: "auto" }); }
-// curved star flight into a counter (quadratic bezier), like the landing page
-function flyStar(fromEl, toEl, done) {
-  if (!FX || !fromEl || !toEl) { if (done) done(); return; }
-  const a = fromEl.getBoundingClientRect(), b = toEl.getBoundingClientRect();
-  const ax = a.left + a.width / 2 - 17, ay = a.top + a.height / 2 - 17, bx = b.left + 4, by = b.top + b.height / 2 - 17;
-  const cx = (ax + bx) / 2 + (ax < bx ? -60 : 60), cy = Math.min(ay, by) - 140;
-  const s = document.createElement("div"); s.className = "flyStar"; s.innerHTML = STAR_SVG; document.body.appendChild(s);
-  const o = { t: 0 }; G.set(s, { x: ax, y: ay, scale: .4 });
-  G.to(o, { t: 1, duration: .85, ease: "power1.inOut", onUpdate() {
-    const t = o.t, u = 1 - t;
-    G.set(s, { x: u*u*ax + 2*u*t*cx + t*t*bx, y: u*u*ay + 2*u*t*cy + t*t*by, rotation: t * 300, scale: .4 + Math.sin(t * Math.PI) * 1.1 + t * .2 });
-  }, onComplete() { s.remove(); if (done) done(); } });
-}
-function starPop(holder) { if (!holder) return; holder.innerHTML = ""; const an = lot(holder, "star-pop", false); if (an) an.addEventListener("complete", () => { holder.innerHTML = ""; }); }
-function shake(el) { if (FX && el) G.to(el, { keyframes: { x: [0, -8, 8, -5, 4, 0] }, duration: .45, ease: "power1.inOut", overwrite: "auto" }); }
-function countTo(el, from, to, dur, delay) {
-  if (!el) return;
-  if (!FX) { el.textContent = to; return; }
-  const o = { v: from }; el.textContent = from;
-  return G.to(o, { v: to, duration: dur || 1, delay: delay || 0, ease: "power3.out", onUpdate() { el.textContent = Math.round(o.v); } });
-}
-// springy press on anything marked data-tap
-document.addEventListener("pointerdown", e => {
-  const t = e.target.closest && e.target.closest("[data-tap]");
-  if (!t || !FX) return;
-  G.to(t, { scale: .93, duration: .12, ease: "power2.out", overwrite: "auto" });
-  const up = () => { G.to(t, { scale: 1, duration: .6, ease: "elastic.out(1.1,.4)", overwrite: "auto" }); removeEventListener("pointerup", up); removeEventListener("pointercancel", up); };
-  addEventListener("pointerup", up); addEventListener("pointercancel", up);
-}, true);
-// mascot idle: breathe, sway, blink-squash
-function idleLumi(img, box) {
-  if (!FX || !img) return [];
-  const bl = G.timeline({ repeat: -1, repeatDelay: 3.2, delay: 1.4 });
-  bl.to(img, { scaleY: .92, scaleX: 1.05, transformOrigin: "50% 100%", duration: .09, ease: "power1.in" }).to(img, { scaleY: 1, scaleX: 1, duration: .45, ease: "elastic.out(1,.4)" });
-  return [
-    G.to(box || img.parentNode, { scale: 1.035, transformOrigin: "50% 100%", duration: 1.7, yoyo: true, repeat: -1, ease: "sine.inOut" }),
-    G.to(img, { rotation: 2.5, transformOrigin: "50% 100%", duration: 1.5, yoyo: true, repeat: -1, ease: "sine.inOut" }),
-    bl
-  ];
-}
-// the in-game Lumi reacts to answers with real character art
-const LUMI_POSES = { idle: "lumi-teen-happy", good: "lumi-teen-thumbs", bad: "lumi-teen-think" };
-Object.values(LUMI_POSES).forEach(p => { const i = new Image(); i.src = `../assets/story/characters/${p}.png`; });
-let lumiTm = 0;
-function lumiReact(good) {
-  const img = $("#lumiMiniImg"); if (!img) return;
-  img.src = `../assets/story/characters/${good ? LUMI_POSES.good : LUMI_POSES.bad}.png`;
-  if (FX) G.fromTo(img, { y: 0 }, good ? { y: -14, duration: .22, yoyo: true, repeat: 1, ease: "power2.out" } : { rotation: -6, duration: .15, yoyo: true, repeat: 1, ease: "sine.inOut" });
-  clearTimeout(lumiTm); lumiTm = setTimeout(() => { img.src = `../assets/story/characters/${LUMI_POSES.idle}.png`; }, 1300);
-}
-// sound toggle (app.js only auto-adds its music button on /games/ pages)
-function soundToggle() {
-  if (document.getElementById("lumioSoundBtn") || !Lumio.setSound) return;
-  const b = document.createElement("button");
-  b.id = "lumioSoundBtn"; b.type = "button"; b.className = "hudSound"; b.setAttribute("data-tap", "");
-  b.onclick = () => Lumio.setSound(!Lumio.soundOn());
-  $("#soundSlot").appendChild(b); Lumio.setSound(Lumio.soundOn());
-  const start = () => { document.removeEventListener("pointerdown", start, true); if (Lumio.soundOn() && Lumio.music) Lumio.music("games"); };
-  document.addEventListener("pointerdown", start, true);
-}
-if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => setTimeout(soundToggle, 0)); else setTimeout(soundToggle, 0);
-</script>
+<script src="../js/app.js"></script>
+<script src="../js/lessons-data.js"></script>
+<script src="kit/play.js"></script>
 <script>
 const level = Lumio.qs("level") || "level4";
 const num = parseInt(Lumio.qs("n") || "1", 10);
 const source = Lumio.qs("from");
 const backHref = source === "lesson" ? "../student.html" : source === "trial" ? `../present-trial.html?level=${level}` : `../present.html?level=${level}&n=${num}`;
+
+LP.init({ theme: "teen", scene: { bg: "assets/lesson-bg-kid/market.jpg", pos: "center 35%", particles: "motes", tint: "linear-gradient(180deg,rgba(70,30,80,.38),rgba(12,6,20,.62))" }, hud: { rounds: 6, exitHref: backHref } });
 // From a trial deck the game opened in its own tab: Exit just closes it (the trial is still open in the first tab).
-if (source === "trial") ["exitBtn", "backBtn"].forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener("click", e => { e.preventDefault(); try { window.close(); } catch (x) {} setTimeout(() => { location.href = backHref; }, 250); }); });
-document.getElementById("exitBtn").href = backHref;
-document.getElementById("backBtn").href = backHref;
+if (source === "trial") LP.hud.exit.onclick = e => { e.preventDefault(); try { window.close(); } catch (x) {} setTimeout(() => { location.href = backHref; }, 250); };
 
 const lesson = window.LUMIO_LESSONS?.[level]?.[num];
 const vocab = lesson ? lesson.vocab : [];
+const G = window.gsap, RM = LP.RM, esc = LP.esc;
+const $ = id => document.getElementById(id);
+$("hearBtn").innerHTML = LP.ICON.speaker;
 
 // Real 4-line dialogues from this level's own lesson content (one per
 // lesson, each built around that lesson's grammar pattern) -- used for
@@ -321,281 +205,261 @@ const vocab = lesson ? lesson.vocab : [];
 // round never draws on a dialogue from a lesson not yet reached.
 const ALL_DIALOGUES = [["What is your daily routine?", "I wake up, brush my teeth, and have breakfast.", "Then I go to school. What about you?", "The same! Then I come home and go to bed."], ["What does your brother do every day?", "He wakes up early and eats breakfast fast.", "Does he play football?", "Yes, he plays every afternoon and reads at night."], ["How often do you read?", "I always read before bed. What about you?", "I sometimes read. I usually watch TV.", "I rarely watch TV, but I never skip reading!"], ["Let's go to the supermarket.", "Okay! I want to buy an apple.", "What is the price?", "It's cheap, not expensive at all!"], ["How many apples do you want?", "I want five apples. How much bread do we need?", "We need two. Do we have any eggs?", "Yes, here is your receipt!"], ["Is there any milk?", "Yes, and we have some rice too.", "Do we have any juice?", "No, we don't have any. Let's buy some water."], ["How much does this cost?", "It costs one dollar. Do you have a coin?", "Yes, here. Can I pay now?", "Sure, here is your change from my wallet."], ["Can I see the menu, please?", "Of course! What would you like to order?", "I would like pizza, please.", "The waiter will bring your plate and spoon."], ["I am so hungry!", "Me too, and thirsty! Let's order food.", "This food is delicious!", "Can we have more, please? Then the bill."], ["You should eat more vegetables.", "I know, and fruit has vitamins too.", "You shouldn't eat junk food every day.", "You're right, healthy food makes me strong!"], ["What do you do on Monday?", "On Monday, I go to school. What about Friday?", "I love Fridays! It's almost the weekend.", "What is your weekly schedule like?"], ["What do you do after school?", "I do my homework, then I practice piano.", "I go to art club and rest a little.", "I love my free time!"], ["Give it to me, please.", "Here you go! I see him at school.", "I like her too. She helps us a lot.", "I play with them every day."], ["Whose book is this?", "This book is mine. Is this pen yours?", "Yes, it's mine. That bag is hers.", "And this classroom is ours!"], ["I can see a bird in the tree.", "I can hear it singing too!", "I can smell the flowers here.", "And I can taste this delicious cake!"], ["What does your sister look like?", "She is tall and has curly hair.", "My brother is short with straight hair.", "And my grandpa has a beard!"], ["What is your teacher like?", "She is kind and very smart.", "My friend is funny and friendly too.", "Being honest and polite is important too!"], ["Who is your best friend?", "She is my best friend. She is very generous.", "We share our toys and help each other.", "I trust her, and we play together every day."], ["I read a story about Lumi today.", "What happens in the morning?", "Lumi wakes up happy and plays in the afternoon.", "And reads in the evening. What a nice day!"], ["Let's write in our week diary!", "Good idea! I bought vegetables at the market.", "I saw the menu at a new restaurant.", "And I played with my best friend all weekend!"]];
 const dialoguePool = ALL_DIALOGUES.slice(0, num); // only lessons up to and including this one
-
-/* ---------- intro: orchestrated entrance, Lumi waves then idles ---------- */
-let introAnims = [];
-function runIntro(onStart) {
-  const intro = $("#intro"), li = $("#lumiImg"), box = $("#lumiBox");
-  const h = $("#introTitle");
-  h.innerHTML = h.textContent.split(" ").map(w => `<span style="display:inline-block;white-space:nowrap">${w.split("").map(c => `<span class="ch">${c}</span>`).join("")}</span>`).join(" ");
-  if (FX) {
-    const tl = G.timeline({ delay: .15 });
-    tl.from(".awning", { scaleY: 0, duration: .6, ease: "back.out(2)" }, 0)
-      .from("#intro .card", { y: 40, opacity: 0, scale: .94, duration: .55, ease: "power3.out" }, .1)
-      .fromTo(li, { y: -160, opacity: 0, scaleX: .85, scaleY: 1.18, transformOrigin: "50% 100%" }, { y: 0, opacity: 1, duration: .42, ease: "power2.in" }, .3)
-      .to(li, { scaleX: 1.18, scaleY: .8, duration: .08 })
-      .to(li, { scaleX: 1, scaleY: 1, duration: .8, ease: "elastic.out(1.1,.32)" })
-      .from("#introTitle .ch", { yPercent: 110, opacity: 0, rotation: i => (i % 2 ? 1 : -1) * 14, duration: .5, stagger: .03, ease: "back.out(2.4)" }, "-=.8")
-      .from("#introSub", { y: 12, opacity: 0, duration: .4 }, "-=.3")
-      .from("#startBtn", { y: 18, opacity: 0, scale: .9, duration: .5, ease: "back.out(2)", clearProps: "transform,opacity" }, "-=.25")
-      .to(li, { rotation: 8, transformOrigin: "50% 100%", duration: .14, repeat: 3, yoyo: true, ease: "sine.inOut" })
-      .add(() => { introAnims = idleLumi(li, box); const sp = lot($("#lumiLt"), "star-pop", true); if (sp) introAnims.push(sp); });
-    introAnims.push(tl);
-  }
-  $("#startBtn").onclick = () => {
-    const go = () => { intro.remove(); onStart(); };
-    introAnims.forEach(a => { try { a.kill ? a.kill() : a.destroy(); } catch (e) {} });
-    if (!FX) return go();
-    G.timeline({ onComplete: go })
-      .to("#intro .card", { y: -30, opacity: 0, scale: .96, duration: .3, ease: "power2.in" })
-      .to(intro, { opacity: 0, duration: .25 }, "-=.1");
-  };
+// Only these dialogue lines have a recording in assets/audio; the rest are read by the browser voice
+// directly (going through Lumio.speak first made every one of them a 404 before the fallback).
+const RECORDED = new Set([[3, 2], [4, 0], [5, 0], [7, 0], [8, 2], [9, 2], [13, 0]].map(([d, l]) => ALL_DIALOGUES[d][l]));
+function speakLine(text, btn) {
+  if (RECORDED.has(text)) return LP.say(text, btn);
+  try { if (window.speechSynthesis) { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = "en-US"; u.rate = .92; speechSynthesis.speak(u); } } catch (e) {}
+  if (btn) { btn.classList.add("talking"); clearTimeout(btn._t); btn._t = setTimeout(() => btn.classList.remove("talking"), 1800); }
 }
 
+// ---------- content guards ----------
+// Some Level 4 lessons give two words the very same Arabic, so the shopping list showed the same
+// Arabic twice and a round could have two right answers. The list shows a clearer Arabic for these,
+// and an option is never offered next to a word that shares its Arabic.
+const AR_FIX = { occasionally: "من حين لآخر", cheer: "يهتف (للفريق)", choice: "اختيار" };
+const arOf = v => (level === "level4" && AR_FIX[v.en]) || v.ar;
+const normAr = s => String(s || "").replace(/\(.*?\)/g, "").replace(/[ً-ْ]/g, "").replace(/[أإآ]/g, "ا").replace(/ة/g, "ه").replace(/ى/g, "ي").replace(/\s+/g, " ").trim();
+function clash(a, b) {
+  if (a.en.toLowerCase() === b.en.toLowerCase()) return true;
+  const x = normAr(a.ar), y = normAr(b.ar); if (!x || !y) return false;
+  return x === y || (" " + x + " ").includes(" " + y + " ") || (" " + y + " ").includes(" " + x + " ");
+}
+// "goal" here means an aim ("My goal is to learn coding.") but its picture is a football in a net.
+const PIC_FIX = { level4: { goal: "future" } };
+const picOf = w => LP.vocabImg((PIC_FIX[level] || {})[w.toLowerCase()] || w);
+
+const CHECK = '<svg viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="M5 13.5l5 5L21 7" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const omar = LP.actor($("omarZone"), { char: "omar-teen", pose: "point", cheer: "celebrate", oops: "surprised", alt: "Omar" });
+["celebrate", "surprised", "think", "happy", "explain"].forEach(p => { const i = new Image(); i.src = LP.char("omar-teen", p); });
+
 if (!vocab.length) {
-  document.getElementById("marketWrap").innerHTML = "<p style='padding:40px'>No lesson data found.</p>";
-  document.getElementById("intro").remove();
+  $("stallGrid").innerHTML = "<p class='lp-panel' style='padding:24px;grid-column:1/-1'>No lesson data found.</p>";
 } else {
   const ROUNDS = 6;
   // Round plan mixes the shopping vocab-match rounds with a "what comes
   // next?" conversation round using this lesson's own real dialogue --
   // covers dialogues/conversations alongside vocabulary, not vocabulary
   // alone.
-  const PLAN = ["shop", "shop", "dialogue", "shop", "shop", "dialogue"];
+  const myDialogue = dialoguePool[num - 1] || dialoguePool[dialoguePool.length - 1];
+  const dlgDistractors = [];
+  dialoguePool.forEach((dlg, i) => {
+    if (i === num - 1) return;
+    [dlg[1], dlg[2], dlg[3]].forEach(line => { if (myDialogue && line !== myDialogue[2]) dlgDistractors.push(line); });
+  });
+  // a conversation round needs two wrong lines from earlier lessons; Lesson 1 has none, so it shops instead
+  const canTalk = !!myDialogue && dlgDistractors.length >= 2;
+  const PLAN = ["shop", "shop", "dialogue", "shop", "shop", "dialogue"].map(t => t === "dialogue" && !canTalk ? "shop" : t);
+  const shopRounds = PLAN.filter(t => t === "shop").length;
 
-  const order = Lumio.shuffle([...vocab]).slice(0, ROUNDS);
+  // the list holds exactly what the shop rounds buy, so every item gets ticked off
+  const order = Lumio.shuffle([...vocab]).slice(0, shopRounds);
   const prices = {};
-  order.forEach(w => { prices[w.en] = [10, 15, 20, 25][Math.floor(Math.random() * 4)]; });
-  let coins = Object.values(prices).reduce((a, b) => a + b, 0) + 40;
-  document.getElementById("coins").textContent = coins;
-  document.getElementById("endTotal").textContent = ROUNDS;
+  const priceOf = en => prices[en] || (prices[en] = [10, 15, 20, 25][Math.floor(Math.random() * 4)]);
+  order.forEach(w => priceOf(w.en));
+  const startCoins = order.reduce((a, w) => a + prices[w.en], 0) + 40;
+  let coins = startCoins, spent = 0, shopIdx = 0;
+  const bought = [];
+  $("coins").textContent = coins;
 
-  let r = 0, score = 0, locked = false, bought = 0;
-  const stallGrid = document.getElementById("stallGrid");
-  const shopList = document.getElementById("shopList");
-  const receiptLines = document.getElementById("receiptLines");
-  const dialogueContext = document.getElementById("dialogueContext");
-  const promptText = document.getElementById("promptText");
+  let r = 0, score = 0, locked = true;
+  const stallGrid = $("stallGrid"), shopList = $("shopList"), receiptLines = $("receiptLines"), dialogueContext = $("dialogueContext");
 
-  shopList.innerHTML = order.map((w, i) => `
-    <div class="list-item" id="item${i}"><span class="box"></span><span class="lbl">${w.ar}</span></div>`).join("");
+  if (order.length > 4) document.querySelector(".sb-list").classList.add("many");
+  shopList.innerHTML = order.map((w, i) => `<li class="sb-item" id="item${i}"><span class="box">${CHECK}</span><span class="lbl" dir="rtl" lang="ar">${esc(arOf(w))}</span><span class="strike"></span></li>`).join("");
 
-  let currentSpeakText = "";
-  function playPrompt() { Lumio.speak(currentSpeakText); }
+  let currentSpeakText = "", talkRound = false;
+  const playPrompt = () => talkRound ? speakLine(currentSpeakText, $("hearBtn")) : LP.say(currentSpeakText, $("hearBtn"));
 
-  function setPrompt(text) {
-    if (promptText.dataset.t === text) return;
-    promptText.dataset.t = text;
-    promptText.innerHTML = `<span>${text}</span>`;
-    if (FX) G.from(promptText.firstChild, { yPercent: 100, opacity: 0, duration: .5, ease: "power3.out" });
-  }
-  function setProgress() {
-    document.getElementById("roundPill").textContent = `${r + 1}/${ROUNDS}`;
-    document.getElementById("progFill").style.transform = `scaleX(${r / ROUNDS})`;
-  }
-  function enterStalls() {
-    if (!FX) return;
-    G.from($$(".stall", stallGrid), { y: 34, opacity: 0, rotationX: -35, scale: .92, transformOrigin: "50% 0%", duration: .6, stagger: .07, ease: "back.out(1.6)", clearProps: "transform,opacity" });
-    G.from($$(".stall .tag", stallGrid), { rotation: (i) => (i % 2 ? 24 : -24), duration: 1.2, stagger: .07, delay: .25, ease: "elastic.out(1,.3)", clearProps: "transform" });
-  }
-
-  function drawRound() {
-    locked = false;
-    setProgress();
-    if (PLAN[r] === "dialogue" && dialoguePool.length) {
+  async function drawRound() {
+    locked = true; LP.answer = null;
+    LP.round(r);
+    stallGrid.innerHTML = "";
+    omar.set("point");
+    if (PLAN[r] === "dialogue") {
+      await LP.banner("What's next?", "Round " + (r + 1) + " of " + ROUNDS);
       drawDialogueRound();
     } else {
-      drawShopRound();
+      await LP.banner("Shop!", "Round " + (r + 1) + " of " + ROUNDS);
+      await drawShopRound();
     }
   }
 
-  function drawShopRound() {
-    dialogueContext.style.display = "none";
-    stallGrid.classList.remove("lines");
-    setPrompt("Find this on the list!");
-    const shopOrderIdx = order[r % order.length];
-    const target = shopOrderIdx;
+  async function drawShopRound() {
+    dialogueContext.hidden = true; stallGrid.hidden = false; talkRound = false;
+    document.querySelector(".sb").classList.remove("talk");
+    $("promptText").textContent = "Find this on the list!";
+    const k = shopIdx % order.length;
+    const target = order[k];
     currentSpeakText = target.en;
-    const distractorPool = Lumio.shuffle(vocab.filter(v => v.en !== target.en));
+    document.querySelectorAll(".sb-item").forEach(li => li.classList.toggle("now", li.id === "item" + k));
+    if (G && !RM) G.fromTo($("item" + k), { scale: 1.12 }, { scale: 1, duration: .6, ease: "elastic.out(1,.4)" });
     const numOptions = Math.min(4, vocab.length);
-    const opts = Lumio.shuffle([target, ...distractorPool.slice(0, numOptions - 1)]);
-
-    stallGrid.innerHTML = opts.map(o => `
-      <button class="stall" data-key="${o.en}" data-tap>
-        <span class="tag">${prices[o.en] || [10,15,20,25][Math.floor(Math.random()*4)]}🪙</span>
-        <span class="word">${o.en}</span>
-      </button>`).join("");
-
-    document.querySelectorAll(".stall").forEach(card => { card.onclick = () => choose(card, target.en, r, true); });
-    enterStalls();
-    setTimeout(playPrompt, 350);
+    const opts = [target];
+    for (const v of Lumio.shuffle(vocab.filter(v => v.en !== target.en))) {
+      if (opts.length >= numOptions) break;
+      if (!opts.some(o => clash(o, v))) opts.push(v);
+    }
+    stallGrid.className = "lp-cards sb-cards " + (opts.length >= 4 ? "c4" : opts.length === 3 ? "c3 wrap2" : "c2");
+    const cards = Lumio.shuffle(opts).map(o => {
+      const c = LP.picCard(o.en, { img: picOf(o.en) });
+      c.dataset.key = o.en;
+      c.insertAdjacentHTML("afterbegin", `<span class="sb-tag"><span class="coin"></span>${priceOf(o.en)}</span>`);
+      c.onclick = () => choose(c, target.en, true, k);
+      stallGrid.appendChild(c); return c;
+    });
+    if (G && !RM) G.fromTo($("awning"), { scaleY: .6 }, { scaleY: 1, duration: .7, ease: "elastic.out(1,.35)" });
+    omar.nod();
+    await LP.deal(cards, $("awning"));
+    locked = false;
+    LP.answer = target.en;   // read by the automated play-through tests
+    setTimeout(playPrompt, 150);
   }
 
   // Dialogue round: shows the first two lines of this lesson's real
   // conversation and asks what comes next -- the correct third line vs.
   // two distractor lines drawn from other already-taught lessons' dialogues.
   function drawDialogueRound() {
-    setPrompt("What comes next in the chat?");
-    const myDialogue = dialoguePool[num - 1] || dialoguePool[dialoguePool.length - 1];
-    dialogueContext.style.display = "block";
+    document.querySelectorAll(".sb-item").forEach(li => li.classList.remove("now"));
+    $("promptText").textContent = "What comes next in the chat?";
+    stallGrid.hidden = true; dialogueContext.hidden = false; talkRound = true;
+    document.querySelector(".sb").classList.add("talk");
+    const omarHead = `<span class="who"><img alt="" src="${LP.char("omar-teen", "happy")}" style="height:385%;top:4%;left:-29%"></span>`;
     dialogueContext.innerHTML = `
-      <div class="bub"><img src="../assets/avatars/omar-teen.png" alt=""><div class="in">
-        <div class="who">Omar</div>
-        <div>${myDialogue[0]}</div>
-      </div></div>
-      <div class="bub me"><span class="me-dot" aria-hidden="true"></span><div class="in">
-        <div class="who">You</div>
-        <div>${myDialogue[1]}</div>
-      </div></div>`;
-    if (FX) {
-      G.from($$(".bub", dialogueContext), { opacity: 0, y: 16, scale: .9, transformOrigin: (i) => i ? "100% 100%" : "0% 100%", duration: .5, stagger: .35, ease: "back.out(1.8)", clearProps: "transform,opacity" });
-    }
+      <div class="sb-line">${omarHead}<div class="b"><small>Omar</small>${esc(myDialogue[0])}</div></div>
+      <div class="sb-line you"><span class="who you">YOU</span><div class="b"><small>You</small>${esc(myDialogue[1])}</div></div>
+      <div class="sb-line q" id="dlgSlot">${omarHead}<div class="b"><small>Omar</small>…</div></div>
+      <div class="sb-opts" id="dlgOpts"></div>`;
     currentSpeakText = myDialogue[1];
     const correct = myDialogue[2];
-    const distractorPool = [];
-    dialoguePool.forEach((dlg, i) => {
-      if (i === num - 1) return;
-      [dlg[1], dlg[2], dlg[3]].forEach(line => { if (line !== correct) distractorPool.push(line); });
-    });
-    const opts = Lumio.shuffle([correct, ...Lumio.shuffle(distractorPool).slice(0, 2)]);
-    stallGrid.classList.add("lines");
-    stallGrid.innerHTML = opts.map(o => `
-      <button class="stall" data-key="${o.replace(/"/g, "&quot;")}" data-tap>
-        <span class="word" style="font-size:.92rem;line-height:1.35">${o}</span>
-      </button>`).join("");
-    document.querySelectorAll(".stall").forEach(card => { card.onclick = () => choose(card, correct, r, false); });
-    if (FX) G.from($$(".stall", stallGrid), { x: -30, opacity: 0, duration: .5, stagger: .08, delay: .55, ease: "power3.out", clearProps: "transform,opacity" });
+    const opts = Lumio.shuffle([correct, ...Lumio.shuffle(dlgDistractors).slice(0, 2)]);
+    const wrap = $("dlgOpts");
+    const btns = opts.map(o => { const b = document.createElement("button"); b.type = "button"; b.className = "lp-word"; b.dataset.key = o; b.textContent = o; b.onclick = () => choose(b, correct, false); wrap.appendChild(b); return b; });
+    omar.set("think");
+    if (G && !RM) {
+      G.fromTo(dialogueContext.querySelectorAll(".sb-line"), { y: 20, opacity: 0, scale: .8 }, { y: 0, opacity: 1, scale: 1, duration: .5, ease: "back.out(2)", stagger: .25, onStart: () => LP.sfx("pop") });
+      G.fromTo(btns, { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: .45, ease: "back.out(1.6)", stagger: .08, delay: .7 });
+    }
+    locked = false;
+    LP.answer = correct;   // read by the automated play-through tests
     setTimeout(playPrompt, 350);
   }
 
-  function nextRound() {
-    const go = () => { r++; r < ROUNDS ? drawRound() : endGame(); };
-    if (!FX) return go();
-    const els = $$(".stall", stallGrid).concat(dialogueContext.style.display === "block" ? $$(".bub", dialogueContext) : []);
-    G.to(els, { y: -18, opacity: 0, scale: .96, duration: .25, stagger: .03, ease: "power2.in", onComplete: go });
+  async function choose(card, targetKey, isShop, k) {
+    if (locked || card.disabled) return;
+    const ok = card.dataset.key === targetKey;
+    if (!ok) {
+      // gentle -- no penalty, no coins lost, they simply try another option
+      LP.bad(card); omar.oops("surprised", isShop ? "point" : "think");
+      card.disabled = true; setTimeout(() => card.classList.add("dim"), 350);
+      if (!isShop) { card.classList.add("bad"); setTimeout(() => card.classList.remove("bad"), 650); }
+      return;
+    }
+    locked = true; LP.answer = null; score++;
+    const all = isShop ? [...stallGrid.children] : [...$("dlgOpts").children];
+    all.forEach(c => c.disabled = true);
+    omar.cheer("celebrate", "point");
+    LP.fill(r);
+    if (isShop) {
+      const star = LP.good(card);
+      LP.clear(all, card);
+      await pay(prices[targetKey]);
+      await flyToList(card, k);
+      tick(k, targetKey);
+      await printLine(targetKey, prices[targetKey]);
+      bought.push(targetKey);
+      shopIdx++;
+      await star;
+    } else {
+      card.classList.add("good");
+      const star = LP.good(card);
+      // Omar's next line lands in the chat
+      const slot = $("dlgSlot"); slot.classList.remove("q"); slot.querySelector(".b").innerHTML = `<small>Omar</small>${esc(targetKey)}`;
+      if (G && !RM) G.fromTo(slot, { scale: .5, opacity: 0 }, { scale: 1, opacity: 1, duration: .5, ease: "back.out(2.2)", transformOrigin: "0% 100%" });
+      LP.sfx("pop"); speakLine(targetKey);
+      await star; await LP.wait(900);
+    }
+    await LP.wait(300);
+    r++;
+    r < ROUNDS ? drawRound() : endGame();
   }
 
-  function choose(card, targetKey, roundIdx, isShop) {
-    if (locked) return;
-    const ok = card.dataset.key === targetKey;
-    if (ok) {
-      locked = true;
-      score++;
-      Lumio.beep(true);
-      card.classList.add("correct");
-      document.querySelectorAll(".stall").forEach(c => c.classList.add("locked"));
-      lumiReact(true);
-      if (FX) {
-        G.fromTo(card, { scale: 1 }, { scale: 1.08, duration: .18, yoyo: true, repeat: 1, ease: "power2.out", overwrite: "auto" });
-        const sh = document.createElement("span"); sh.className = "shine"; card.appendChild(sh);
-        G.to(sh, { left: "120%", duration: .7, ease: "power2.inOut", onComplete: () => sh.remove() });
-        $$(".stall:not(.correct)", stallGrid).forEach(c => G.to(c, { opacity: .45, scale: .97, duration: .3 }));
+  // coins leave the wallet one by one and drop into the stall's till
+  async function pay(price) {
+    const n = Math.max(2, Math.round(price / 5)), from = LP.center($("wallet")), to = LP.center($("till"));
+    const per = price / n; let left = coins;
+    coins -= price; spent += price;
+    const counter = $("coins"), tillN = $("tillN");
+    if (!G || RM) { counter.textContent = coins; tillN.textContent = spent; LP.sfx("coin"); return; }
+    G.fromTo($("wallet"), { scale: 1.08 }, { scale: 1, duration: .5, ease: "elastic.out(1,.4)" });
+    await new Promise(res => {
+      let done = 0;
+      for (let i = 0; i < n; i++) {
+        const c = document.createElement("span"); c.className = "coin fly"; document.body.appendChild(c);
+        const midX = (from.x + to.x) / 2 + (Math.random() - .5) * 80, peak = Math.min(from.y, to.y) - 90 - Math.random() * 50, o = { t: 0 };
+        G.to(o, { t: 1, duration: .62, delay: i * .11, ease: "power1.in", onUpdate() {
+          const t = o.t, x = (1 - t) * (1 - t) * from.x + 2 * (1 - t) * t * midX + t * t * to.x, y = (1 - t) * (1 - t) * from.y + 2 * (1 - t) * t * peak + t * t * to.y;
+          G.set(c, { x, y, rotationY: t * 720, scale: 1.1 - t * .3 });
+        }, onComplete() {
+          c.remove(); LP.sfx("coin"); left -= per; counter.textContent = Math.round(left); tillN.textContent = Math.round(spent - price + per * (done + 1));
+          G.fromTo($("till"), { y: 3, scale: 1.1 }, { y: 0, scale: 1, duration: .35, ease: "back.out(3)" });
+          if (++done === n) { counter.textContent = coins; tillN.textContent = spent; res(); }
+        } });
       }
-      flyStar(card, $("#starCt"), () => { document.getElementById("score").textContent = score; bump($("#starCt")); starPop($("#starPop")); });
+    });
+  }
 
-      if (isShop) {
-        const price = prices[targetKey];
-        const was = coins;
-        coins -= price;
-        countTo(document.getElementById("coins"), was, coins, .9);
-        bump($("#coinsPill"));
-        // "-price" floats up from the stall
-        const cr = card.getBoundingClientRect();
-        const fl = document.createElement("div"); fl.className = "coinFloat"; fl.textContent = `-${price}🪙`;
-        fl.style.left = (cr.left + cr.width / 2 - 24) + "px"; fl.style.top = (cr.top + 6) + "px";
-        document.body.appendChild(fl);
-        if (FX) G.to(fl, { y: -50, opacity: 0, duration: 1.1, ease: "power2.out", onComplete: () => fl.remove() }); else setTimeout(() => fl.remove(), 600);
-
-        const item = document.getElementById(`item${roundIdx % order.length}`);
-        if (item) {
-          item.classList.add("bought");
-          const bx = item.querySelector(".box");
-          bx.textContent = "✓";
-          item.querySelector(".lbl").textContent = `${targetKey} — ${order.find(w => w.en === targetKey)?.ar || ""}`;
-          if (FX) {
-            G.fromTo(item, { scale: 1 }, { scale: 1.05, duration: .16, yoyo: true, repeat: 1, ease: "power2.out" });
-            G.from(bx, { scale: 0, rotation: -90, duration: .6, ease: "back.out(3)" });
-            const ck = document.createElement("span"); ck.className = "ck"; bx.appendChild(ck);
-            const an = lot(ck, "check", false); if (an) an.addEventListener("complete", () => ck.remove()); else ck.remove();
-          }
-        }
-        const line = document.createElement("div");
-        line.innerHTML = `<span>${targetKey}</span><span>${price}🪙</span>`;
-        receiptLines.appendChild(line);
-        if (FX) G.from(line, { clipPath: "inset(0 0 100% 0)", y: -6, opacity: 0, duration: .45, delay: .2, ease: "power2.out", clearProps: "all" });
-
-        // the word chip drops into the cart
-        flyChip(card, targetKey);
-      } else {
-        bumpCart();
-      }
-
-      setTimeout(nextRound, 1300);
-    } else {
-      Lumio.beep(false);
-      card.classList.add("wrong-dim");
-      shake(card);
-      lumiReact(false);
-      // gentle -- no penalty, no coins lost, they simply try another option
+  async function flyToList(card, k) {
+    const li = $("item" + k);
+    if (!G || RM || !li) return;
+    const a = LP.center(card), b = LP.center(li);
+    await new Promise(res => G.to(card, { x: b.x - a.x, y: b.y - a.y, scale: .18, rotation: -12, opacity: .3, duration: .6, ease: "power2.in", onComplete: res }));
+    LP.sfx("pop");
+  }
+  function tick(k, en) {
+    const li = $("item" + k); if (!li) return;
+    li.classList.remove("now"); li.classList.add("bought");
+    const w = order[k];
+    li.querySelector(".lbl").innerHTML = `<span class="en" dir="ltr">${esc(en)}</span> — ${esc(arOf(w))}`;
+    if (G && !RM) {
+      G.fromTo(li.querySelector("path"), { strokeDashoffset: 30 }, { strokeDashoffset: 0, duration: .35, ease: "power2.out" });
+      G.fromTo(li.querySelector(".strike"), { scaleX: 0 }, { scaleX: 1, duration: .4, delay: .2, ease: "power2.out" });
+      G.fromTo(li, { scale: 1.1 }, { scale: 1, duration: .5, ease: "elastic.out(1,.4)" });
+    }
+  }
+  // the receipt printer feeds a new line
+  async function printLine(en, price) {
+    const empty = receiptLines.querySelector(".empty"); if (empty) empty.remove();
+    const ln = document.createElement("div"); ln.className = "ln";
+    ln.innerHTML = `<span>${esc(en)}</span><span>${price}</span>`;
+    receiptLines.appendChild(ln);
+    if (G && !RM) {
+      for (let i = 0; i < 4; i++) setTimeout(() => LP.sfx("tick"), i * 70);
+      await new Promise(res => G.fromTo($("paper"), { y: -ln.offsetHeight }, { y: 0, duration: .45, ease: "steps(5)", onComplete: res }));
+      G.fromTo(ln, { opacity: 0 }, { opacity: 1, duration: .2 });
     }
   }
 
-  function bumpCart() {
-    const cart = document.getElementById("cart");
-    if (FX) G.fromTo(cart, { scale: 1.25, rotation: -8 }, { scale: 1, rotation: 0, duration: .7, ease: "elastic.out(1.2,.4)", overwrite: "auto" });
-  }
-  function flyChip(fromEl, text) {
-    const cart = document.getElementById("cart");
-    const done = () => { bought++; document.getElementById("cartN").textContent = bought; bumpCart(); if (FX) bump($("#cartN")); };
-    if (!FX) return done();
-    const a = fromEl.getBoundingClientRect(), b = cart.getBoundingClientRect();
-    const chip = document.createElement("div"); chip.className = "flyChip"; chip.textContent = text; document.body.appendChild(chip);
-    const w = chip.offsetWidth, hgt = chip.offsetHeight;
-    G.set(chip, { x: a.left + a.width / 2 - w / 2, y: a.top + a.height / 2 - hgt / 2 });
-    G.timeline({ onComplete: () => { chip.remove(); done(); } })
-      .to(chip, { scale: 1.1, duration: .15, ease: "power2.out" })
-      .to(chip, { x: b.left + b.width / 2 - w / 2, duration: .7, ease: "power2.in" }, .2)
-      .to(chip, { y: b.top + b.height / 2 - hgt / 2, duration: .7, ease: "back.in(1.4)" }, .2)
-      .to(chip, { scale: .2, opacity: 0, duration: .25 }, .7);
-  }
-
   function endGame() {
-    document.getElementById("progFill").style.transform = "scaleX(1)";
-    if (Lumio.sfx) Lumio.sfx("complete");
-    const spent = Object.keys(prices).reduce((s, en) => s + prices[en], 0);
-    const pct = Math.round((score / ROUNDS) * 100);
-    Lumio.speak(pct >= 80 ? "Amazing!" : "Great job!"); // was "What a haul! Best squad shopping trip ever!" / "Great shopping! Let's fill the list again soon!" -- no recordings for those (404), these two exist
-    document.getElementById("finalReceipt").innerHTML =
-      order.map(w => `<div class="rl" style="display:flex;justify-content:space-between"><span>${w.en}</span><span>${prices[w.en]}🪙</span></div>`).join("") +
-      `<div class="tot"><span>Total spent</span><span><b id="totSpent">${spent}</b>🪙</span></div>
-       <div class="tot" style="color:var(--green);border-top:none"><span>Coins left</span><span><b id="totLeft">${coins}</b>🪙</span></div>`;
-    const ec = document.getElementById("endcard");
-    ec.style.display = "flex";
-    const h = $("#endTitle"); h.innerHTML = h.textContent.split(" ").map(w => `<span class="w">${w}</span>`).join(" ");
-    $("#endScore").textContent = RM || !G ? score : 0;
-    if (!FX) { if (!G) Lumio.confetti(100); return; }
-    const c = $("#fxConf"); c.innerHTML = ""; const a = lot(c, "confetti", false); if (a) a.addEventListener("complete", () => { c.innerHTML = ""; });
-    G.timeline()
-      .from(ec, { opacity: 0, duration: .3 })
-      .from("#endcard .box", { y: 60, scale: .9, opacity: 0, duration: .6, ease: "back.out(1.6)" }, .05)
-      .from("#endcard .crew img", { y: 70, opacity: 0, scaleY: 1.2, scaleX: .85, duration: .5, stagger: .07, ease: "back.out(2)" }, .3)
-      .from("#endTitle .w", { yPercent: 100, opacity: 0, duration: .5, stagger: .06, ease: "power3.out" }, .55)
-      .from("#endStars", { scale: 0, duration: .6, ease: "back.out(2.5)" }, .8)
-      .add(() => countTo($("#endScore"), 0, score, .2 * Math.max(1, score) + .3), .9)
-      .from("#finalReceipt", { clipPath: "inset(0 0 100% 0)", duration: .7, ease: "power2.out" }, 1.0)
-      .from("#finalReceipt .rl, #finalReceipt .tot", { x: -12, opacity: 0, duration: .3, stagger: .08 }, 1.05)
-      .add(() => { countTo($("#totSpent"), 0, spent, 1); countTo($("#totLeft"), 0, coins, 1.2); }, 1.4)
-      .from("#endcard .row .btn", { y: 16, opacity: 0, duration: .45, stagger: .08, ease: "power3.out", clearProps: "transform,opacity" }, 1.6);
-    G.to("#endcard .crew img", { y: -6, duration: 1.4, yoyo: true, repeat: -1, ease: "sine.inOut", stagger: { each: .2, repeat: -1, yoyo: true }, delay: 2.2 });
+    LP.round(-1); LP.answer = null;
+    LP.results({ score, total: ROUNDS, scoreLabel: "Correct picks", note: "Best squad shopping trip ever!",
+      actor: { char: "omar-teen", pose: "celebrate" }, exitHref: backHref, exitLabel: source === "lesson" ? "Back to my map" : "Done" });
+    // the final receipt, under the score
+    const note = document.querySelector(".lp-results .note");
+    if (note) {
+      const rc = document.createElement("div"); rc.className = "sb-paper"; rc.style.cssText = "margin:0 auto 16px;max-width:300px;text-align:left";
+      rc.innerHTML = `<h4>RECEIPT</h4>` + bought.map(en => `<div class="ln" style="display:flex;justify-content:space-between"><span>${esc(en)}</span><span>${prices[en]}</span></div>`).join("") +
+        `<div style="display:flex;justify-content:space-between;border-top:1px dashed #bbb;margin-top:4px;padding-top:4px;font-weight:700"><span>Total spent</span><span>${spent}</span></div>` +
+        `<div style="display:flex;justify-content:space-between;font-weight:700;color:#15803D"><span>Coins left</span><span>${coins}</span></div>`;
+      note.after(rc);
+      if (G && !RM) G.from(rc, { y: -20, opacity: 0, duration: .6, delay: 1.2, ease: "steps(8)" });
+    }
   }
 
-  document.getElementById("promptCard").onclick = playPrompt;
-  idleLumi($("#lumiMiniImg"), $("#lumiMini"));
-  if (FX) G.from(["#hud > *", "#listPanel", "#promptRow", "#cart"], { y: 18, opacity: 0, duration: .5, stagger: .05, ease: "power3.out", clearProps: "transform,opacity" });
-  runIntro(() => {
-    if (FX) G.from(".list-item", { x: -16, opacity: 0, duration: .4, stagger: .05, ease: "power3.out", clearProps: "transform,opacity" });
-    drawRound();
-  });
+  $("promptCard").onclick = playPrompt;
+  LP.title({ kicker: "Level 4 · Market day", title: "Squad Budget", sub: "Shop the list with Omar, pay with your coins and keep the receipt!", ar: "تسوّق من القائمة وادفع بعملاتك",
+    button: "Let's shop", actor: { char: "omar-teen", pose: "point", cheer: "celebrate" } }).then(drawRound);
 }
 </script>
 </body>

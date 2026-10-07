@@ -2,546 +2,253 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Balloon Pop — Lumio English</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@700;800&family=Tajawal:wght@700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/brand.css">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="kit/play.css">
 <style>
-/* ---------- v2 motion kit (shared look; inlined per page so each file stands alone) ---------- */
-:root{
-  --o:#F97316;--o2:#C2530A;--o3:#FB923C;--sun:#FFC93C;--sun2:#FFE7A3;--sunS:#FFF3D6;
-  --ink:#2A2118;--cocoa:#43301F;--mu:#8A7160;--ok:#22C55E;--ok2:#15803D;--okS:#EAFBEF;
-  --bad:#F43F5E;--badS:#FDE8EC;--teal:#0D9488;--tealS:#E6FAF7;--sky:#0EA5E9;--pu:#8B5CF6;
-  --sh1:0 1px 2px rgba(67,48,31,.06),0 4px 12px rgba(67,48,31,.08);
-  --sh2:0 2px 4px rgba(67,48,31,.06),0 14px 34px rgba(67,48,31,.14);
-  --sh3:0 6px 14px rgba(67,48,31,.10),0 30px 70px rgba(249,115,22,.24);
-  --fd:'Baloo 2','Nunito',system-ui,sans-serif;--fb:'Nunito',system-ui,sans-serif;
-}
-*{box-sizing:border-box}
-html,body{margin:0;padding:0}
-html{overflow-x:hidden}
-body{font-family:var(--fb);color:var(--ink);overflow-x:hidden;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
-button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
-img{-webkit-user-drag:none;user-select:none}
-:focus-visible{outline:3px solid var(--o);outline-offset:3px;border-radius:12px}
-
-/* HUD */
-.v2-hud{position:relative;z-index:30;display:flex;align-items:center;gap:8px;padding:12px 16px;max-width:1120px;margin:0 auto}
-.v2-exit{min-height:44px;min-width:44px;padding:0 16px;border-radius:999px;background:#fff;border:0;box-shadow:var(--sh1);
-  font-family:var(--fd);font-weight:800;font-size:1rem;color:var(--cocoa);text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:none}
-.v2-exit svg{width:18px;height:18px}
-.v2-pill{min-height:44px;padding:0 14px;border-radius:999px;background:#fff;box-shadow:var(--sh1);display:inline-flex;align-items:center;gap:6px;
-  font-family:var(--fd);font-weight:800;font-size:1.05rem;color:var(--cocoa);white-space:nowrap;flex:none}
-.v2-pill svg{width:24px;height:24px;flex:none}
-.v2-prog{position:relative;height:14px;border-radius:999px;background:rgba(67,48,31,.09);overflow:hidden;flex:1;min-width:40px;box-shadow:inset 0 1px 2px rgba(67,48,31,.08)}
-.v2-prog i{position:absolute;inset:0;border-radius:inherit;background:linear-gradient(90deg,#FFC93C,#FB923C 55%,#F97316);transform-origin:0 50%;transform:scaleX(0)}
-.v2-prog i::after{content:"";position:absolute;left:6px;right:6px;top:3px;height:3px;border-radius:9px;background:rgba(255,255,255,.55)}
-
-/* mascot */
-.v2-mascot{position:relative;display:inline-block;transform-origin:50% 100%}
-.v2-mascot img{display:block;width:100%;height:auto;transform-origin:50% 100%;filter:drop-shadow(0 10px 14px rgba(67,48,31,.18))}
-
-/* flying star + effects */
-.v2-fly{position:fixed;left:0;top:0;z-index:400;width:36px;height:36px;pointer-events:none;will-change:transform}
-.v2-fly svg{width:100%;height:100%;filter:drop-shadow(0 3px 6px rgba(194,83,10,.35))}
-.v2-ring{position:absolute;inset:-4px;border-radius:inherit;pointer-events:none;border:4px solid var(--ok);opacity:0}
-.v2-dot{position:fixed;left:0;top:0;z-index:350;width:10px;height:10px;border-radius:50%;pointer-events:none;will-change:transform,opacity}
-.v2-check{position:absolute;width:56px;height:56px;pointer-events:none;z-index:4}
-.v2-check svg{width:100%;height:100%}
-.v2-bad{animation:v2Bad .45s ease}
-@keyframes v2Bad{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px) rotate(-1.5deg)}40%{transform:translateX(8px) rotate(1.5deg)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
-
-/* masked letters */
-.v2-w{display:inline-block;white-space:nowrap;overflow:hidden;vertical-align:bottom;padding:.06em .02em .1em;margin:-.06em -.02em -.1em}
-.v2-ch{display:inline-block;will-change:transform}
-
-/* celebration */
-.v2-cel{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;padding:96px 16px 16px;background:rgba(43,33,24,.52)}
-.v2-cel.show{display:flex}
-.v2-cel .box{position:relative;background:#fff;border-radius:32px;padding:20px 22px 24px;max-width:430px;width:100%;text-align:center;box-shadow:var(--sh3)}
-.v2-cel .box::before{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(120% 60% at 50% 0%,#FFF3D6 0%,rgba(255,243,214,0) 60%);pointer-events:none}
-.v2-cel .v2-hero{position:relative;display:block;width:150px;height:150px;object-fit:contain;margin:-96px auto 0;filter:drop-shadow(0 14px 18px rgba(67,48,31,.25));transform-origin:50% 100%}
-.v2-cel h2{position:relative;font-family:var(--fd);font-weight:800;font-size:clamp(1.7rem,7vw,2.1rem);line-height:1.1;margin:8px 0 2px;color:var(--cocoa);letter-spacing:-.01em}
-.v2-cel .sub{position:relative;font-weight:800;font-size:1.15rem;margin:8px 0 4px;color:var(--ink)}
-.v2-cel .sub b,.v2-n{font-family:var(--fd);color:var(--o2);font-size:1.25em}
-.v2-stars{position:relative;display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin:12px auto 6px;max-width:340px}
-.v2-stars span{width:52px;height:52px;display:inline-block}
-.v2-stars.many span{width:40px;height:40px}
-.v2-stars svg{width:100%;height:100%;filter:drop-shadow(0 4px 6px rgba(194,83,10,.25))}
-.v2-big{position:relative;display:flex;align-items:center;justify-content:center;gap:8px;margin:12px 0 4px;font-family:var(--fd);font-weight:800;font-size:3rem;line-height:1;color:var(--o2)}
-.v2-big svg{width:62px;height:62px}
-.v2-btns{position:relative;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:16px}
-.v2-btn{min-height:52px;padding:0 24px;border-radius:999px;border:0;font-family:var(--fd);font-weight:800;font-size:1.08rem;
-  display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;cursor:pointer}
-.v2-btn.pri{background:linear-gradient(135deg,#FB923C,#F97316 55%,#F59E0B);color:#fff;box-shadow:0 4px 0 #C2530A,0 12px 24px rgba(249,115,22,.32)}
-.v2-btn.sec{background:#E6FAF7;color:#0F766E;box-shadow:0 4px 0 #9FE3D9}
-.v2-conf{position:fixed;left:50%;top:46%;width:min(118vw,680px);aspect-ratio:1/1;transform:translate(-50%,-50%);z-index:320;pointer-events:none}
-.v2-xp{position:relative;margin:14px 0 6px}
-.v2-xp .val{font-family:var(--fd);font-weight:800;font-size:2rem;color:var(--o)}
-.v2-xp .bar{width:200px;height:12px;border-radius:999px;background:rgba(249,115,22,.15);margin:6px auto 0;overflow:hidden}
-.v2-xp .bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#F97316,#FFC93C);transform-origin:0 50%}
-
-@media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
-}
-.v2-sp{flex:1}
-
-  html, body { height: 100%; }
-  body { overflow: hidden; height: 100vh; height: 100dvh; touch-action: manipulation;
-    background: linear-gradient(180deg, #6EC1F0 0%, #A9DAF6 50%, #DDF1FD 85%, #EEF8FF 100%); }
-  .sun { position: fixed; right: -60px; top: -60px; width: 260px; height: 260px; border-radius: 50%; z-index: 0; pointer-events: none;
-    background: radial-gradient(circle, #FFF6C9 0%, #FFE58A 30%, rgba(255,229,138,.0) 68%); }
-  .cloud { position: fixed; z-index: 1; height: 34px; background: #fff; border-radius: 999px; opacity: .85; pointer-events: none; }
-  .cloud::before, .cloud::after { content: ""; position: absolute; background: #fff; border-radius: 50%; }
-  .cloud::before { width: 48%; aspect-ratio: 1; left: 14%; bottom: 30%; }
-  .cloud::after { width: 34%; aspect-ratio: 1; right: 14%; bottom: 22%; }
-  .hills { position: fixed; left: 0; right: 0; bottom: 0; height: 110px; z-index: 1; pointer-events: none;
-    background: radial-gradient(60% 120px at 20% 100%, #9BDCAE 0 70%, transparent 71%), radial-gradient(70% 140px at 85% 100%, #8AD3A0 0 70%, transparent 71%); }
-
-  .v2-hud { position: fixed; top: 0; left: 0; right: 0; z-index: 30; }
-  #timePill { position: relative; overflow: hidden; }
-  #timePill .tbar { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: linear-gradient(90deg,#22C55E,#FFC93C); transform-origin: 0 50%; }
-  #timePill.low { color: #fff; background: var(--bad); }
-  #timePill.low .tbar { background: rgba(255,255,255,.7); }
-  #timePill svg { width: 22px; height: 22px; }
-
-  #prompt { position: fixed; top: 72px; left: 0; right: 0; z-index: 30; display: flex; justify-content: center; padding: 0 16px; pointer-events: none; }
-  #prompt .card { pointer-events: auto; background: #fff; border-radius: 26px; padding: 8px 8px 8px 20px; box-shadow: var(--sh2);
-    display: flex; align-items: center; gap: 10px; font-weight: 800; color: var(--mu); font-size: 1rem; max-width: 100%; }
-  #prompt .word { display: inline-block; font-family: var(--fd); font-weight: 800; font-size: 1.7rem; line-height: 1.1; color: var(--o); min-width: 2ch; }
-  #prompt .speak { width: 50px; height: 50px; border-radius: 50%; border: 0; flex: none; display: flex; align-items: center; justify-content: center;
-    background: linear-gradient(135deg,#FFD666,#FFC93C); color: var(--cocoa); box-shadow: 0 4px 0 #E8A23D; }
-  #prompt .speak svg { width: 22px; height: 22px; }
-
-  .sky { position: absolute; inset: 0; overflow: hidden; z-index: 10; }
-  .balloon {
-    position: absolute; left: 0; top: 100%; width: var(--bw); cursor: pointer; will-change: transform;
-    display: flex; flex-direction: column; align-items: center; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
-  }
-  .balloon .sway { display: flex; flex-direction: column; align-items: center; transform-origin: 50% 0; }
-  .balloon .body {
-    position: relative; width: var(--bw); height: calc(var(--bw) * 1.18); border-radius: 50% 50% 50% 50% / 55% 55% 45% 45%;
-    display: flex; align-items: center; justify-content: center; text-align: center;
-    background: radial-gradient(circle at 32% 28%, rgba(255,255,255,.55) 0 8%, rgba(255,255,255,0) 26%), radial-gradient(circle at 50% 45%, var(--c) 0 60%, var(--cd) 100%);
-    box-shadow: inset -10px -14px 0 rgba(0,0,0,.07), 0 12px 24px rgba(20,60,90,.18);
-    font-family: var(--fd); font-weight: 800; color: #fff; font-size: 1.1rem; line-height: 1.1; padding: 10px; text-shadow: 0 2px 0 rgba(0,0,0,.15);
-  }
-  .balloon .body span { position: relative; z-index: 1; overflow-wrap: anywhere; }
-  .balloon .tie { width: 14px; height: 10px; margin-top: -2px; background: var(--cd); clip-path: polygon(0 100%, 50% 0, 100% 100%); transform: rotate(180deg); }
-  .balloon .string { width: 2px; height: 56px; background: linear-gradient(rgba(255,255,255,.9), rgba(255,255,255,.2)); }
-  .balloon.pop { pointer-events: none; }
-  .balloon.good .body { --c: #34D399; --cd: #15803D; }
-  .balloon.bad .body { --c: #FB7185; --cd: #BE123C; }
-  .pop-label { position: fixed; left: 0; top: 0; z-index: 40; pointer-events: none; font-family: var(--fd); font-weight: 800; font-size: 1.6rem; color: #fff;
-    text-shadow: 0 3px 0 rgba(21,128,61,.6), 0 6px 14px rgba(0,0,0,.2); }
-
-  #endcard { background: rgba(20,60,90,.5); }
+  /* Balloon Pop: a garden party. Glossy balloons drift up from the grass on their strings, swaying,
+     nudging each other and leaning into the breeze. Listen, then pop the balloon with that word
+     before the 45-second clock runs out. Lumi cheers from the corner. */
+  body.lp{overflow:hidden;height:100dvh}
+  .bp-sky{position:fixed;inset:0;z-index:20;overflow:hidden;touch-action:manipulation}
+  .bp-lumi{position:fixed;left:-6px;bottom:-4px;z-index:15;height:clamp(140px,22vh,280px);pointer-events:none}
+  .bp-lumi .lp-actor{height:100%}
+  .bp-ask{position:fixed;left:0;right:0;top:calc(var(--lp-hud-h) + 8px + env(safe-area-inset-top,0px));z-index:40;display:flex;justify-content:center;padding:0 14px;pointer-events:none}
+  .bp-ask .lp-bubble{pointer-events:auto;padding:10px 20px 10px 10px}
+  .bp-ask .lp-bubble .tail{display:none}
+  .bp-ask .txt{font-size:clamp(17px,4.4vw,22px)}
+  .bp-ask .txt b{display:inline-block;color:var(--lp-accent);font-size:1.3em;line-height:1}
+  /* timer chip in the HUD */
+  .bp-timer{position:relative;padding:0 14px 0 6px;gap:6px}
+  .bp-timer svg{width:34px;height:34px;transform:rotate(-90deg)}
+  .bp-timer circle{fill:none;stroke-width:5}
+  .bp-timer .bg{stroke:rgba(120,90,60,.18)}
+  .bp-timer .fg{stroke:#22C55E;stroke-linecap:round;transition:stroke .3s}
+  .bp-timer.low .fg{stroke:#F43F5E}
+  .bp-timer.low{color:#E11D48}
+  .bp-timer .s{min-width:2.1em;text-align:right;font-variant-numeric:tabular-nums}
+  /* a balloon: glossy body, knot, string (svg), word */
+  .bl{position:absolute;left:0;top:0;width:var(--bw);height:calc(var(--bw) * 1.2 + 90px);will-change:transform;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .bl .body{position:absolute;left:0;top:0;width:var(--bw);height:calc(var(--bw) * 1.2);border-radius:50% 50% 48% 48% / 56% 56% 44% 44%;
+    background:
+      radial-gradient(28% 22% at 30% 24%,rgba(255,255,255,.95),rgba(255,255,255,0) 70%),
+      radial-gradient(70% 70% at 70% 80%,rgba(0,0,0,.28),rgba(0,0,0,0) 70%),
+      radial-gradient(120% 120% at 35% 30%,var(--c2),var(--c) 55%,var(--c3));
+    box-shadow:inset -6px -10px 18px rgba(0,0,0,.18),inset 6px 6px 14px rgba(255,255,255,.25),0 16px 26px -14px rgba(0,0,0,.45);
+    display:grid;place-items:center;text-align:center;padding:14% 10% 18%}
+  .bl .body::after{content:"";position:absolute;left:18%;top:12%;width:16%;height:9%;border-radius:50%;background:rgba(255,255,255,.75);transform:rotate(-30deg);filter:blur(.5px)}
+  .bl .knot{position:absolute;left:50%;top:calc(var(--bw) * 1.2 - 3px);width:16px;height:12px;margin-left:-8px;background:var(--c3);clip-path:polygon(15% 0,85% 0,100% 100%,0 100%);border-radius:3px}
+  .bl svg{position:absolute;left:50%;top:calc(var(--bw) * 1.2 + 8px);width:60px;height:84px;margin-left:-30px;overflow:visible;pointer-events:none}
+  .bl path{fill:none;stroke:rgba(255,255,255,.9);stroke-width:2;stroke-linecap:round;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
+  .bl .w{position:relative;z-index:1;display:block;width:86%;margin:0 auto;min-width:0;overflow:hidden;font-family:var(--lp-display);font-weight:800;color:#fff;line-height:1.02;overflow-wrap:normal;word-break:normal;hyphens:none;
+    text-shadow:0 2px 0 rgba(0,0,0,.28),0 0 10px rgba(0,0,0,.25);font-size:var(--fs,22px)}
+  .bl.popped{pointer-events:none}
+  .bp-tag{position:fixed;left:0;top:0;z-index:260;pointer-events:none;font-family:var(--lp-display);font-weight:800;font-size:30px;color:#fff;white-space:nowrap;
+    text-shadow:0 3px 0 rgba(0,0,0,.3),0 8px 20px rgba(0,0,0,.35)}
+  .bp-tag.good{color:#FFE27A}
+  .bp-tag.bad{color:#fff;font-size:24px}
+  body.lp-intro .bp-ask,body.lp-intro .bp-lumi,body.lp-done .bp-ask,body.lp-done .bp-sky{opacity:0;pointer-events:none}
+  .bp-ask,.bp-lumi,.bp-sky{transition:opacity .4s}
+  /* the kit's streak chip sits under the prompt instead of on top of it */
+  .lp-streak{top:calc(var(--lp-hud-h) + 92px + env(safe-area-inset-top,0px))}
+  :root{--bw:104px}
+  @media (min-width:700px){:root{--bw:132px}}
+  @media (min-width:1100px){:root{--bw:156px} .bp-lumi{height:clamp(200px,32vh,320px)}}
 </style>
 </head>
 <body>
-<div class="sun" aria-hidden="true"></div>
-<div class="cloud" style="width:110px;top:22%;left:6%" aria-hidden="true"></div>
-<div class="cloud" style="width:80px;top:46%;right:8%" aria-hidden="true"></div>
-<div class="cloud" style="width:140px;top:68%;left:40%" aria-hidden="true"></div>
-<div class="hills" aria-hidden="true"></div>
-
-<header class="v2-hud" id="hud">
-  <a class="v2-exit tap" href="../present.html" id="exitBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>Exit</a>
-  <span class="v2-sp"></span>
-  <span class="v2-pill" id="starCt"><span class="ic"></span><span id="score">0</span></span>
-  <span class="v2-pill" id="timePill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/></svg><span id="time">45</span>s<i class="tbar" id="tbar"></i></span>
-</header>
-<div id="prompt"><div class="card">Listen and pop: <span class="word" id="promptWord">...</span> <button class="speak tap" id="speakBtn" onclick="Lumio.speak(currentTarget.en)" aria-label="Listen"><svg viewBox="0 0 24 24" fill="none"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 010 7M19 6a9 9 0 010 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg></button></div></div>
-
-<div class="sky" id="sky"></div>
-
-<div id="endcard" class="v2-cel" role="dialog" aria-modal="true">
-  <div class="box">
-    <img class="v2-hero" src="../assets/story/characters/lumi-celebrate.png" alt="Lumi">
-    <h2>Time's up!</h2>
-    <div class="v2-award"></div>
-    <p class="sub" id="finalScore"></p>
-    <div class="v2-btns">
-      <button class="v2-btn pri tap" onclick="location.reload()">↺ Play again</button>
-      <a class="v2-btn sec tap" id="backBtn" href="../present.html">Back to lesson</a>
-    </div>
-  </div>
+<div class="bp-lumi" id="lumiZone"></div>
+<div class="bp-sky" id="sky" aria-label="Balloons"></div>
+<div class="bp-ask">
+  <button class="lp-bubble" id="promptCard" type="button" aria-label="Hear it again">
+    <span class="lp-speak" id="hearBtn" aria-hidden="true"></span>
+    <span class="txt">Listen and pop: <b id="promptWord">...</b></span>
+  </button>
 </div>
 
 <script src="../vendor/gsap-3.12.5.min.js"></script>
 <script src="../vendor/lottie-light-5.12.2.min.js"></script>
-<script>
-/* ---------- v2 motion kit: GSAP + Lottie helpers (same motion language as design-previews/landing-tryit.html) ---------- */
-window.V2 = (function () {
-  var G = window.gsap, LOT = window.lottie;
-  var RM = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
-  var V = { G: G, RM: RM, teen: false };
-  var STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FFC93C" stroke="#E8A23D" stroke-width="1.3" stroke-linejoin="round" d="M12 2.6l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17l-5.7 3.1 1.2-6.4L2.8 9.3l6.4-.8z"/><path fill="#FFF" opacity=".55" d="M9.6 8.6l1.6-3.3.5 1-1.1 2.6z"/></svg>';
-  var STAR_O = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#F3EADB" stroke="#E2D3BC" stroke-width="1.3" stroke-linejoin="round" d="M12 2.6l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17l-5.7 3.1 1.2-6.4L2.8 9.3l6.4-.8z"/></svg>';
-  var CHECK = '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#22C55E"/><path d="M14 24.5l7 7 13-14" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  V.STAR = STAR; V.STAR_O = STAR_O; V.CHECK = CHECK;
-  V.anim = !!G && !RM;
-  V.$ = function (s, r) { return (r || document).querySelector(s); };
-  V.$$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
-  V.esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
-  // kids bounce, teens glide
-  V.pop = function () { return V.teen ? "power3.out" : "back.out(2)"; };
-  V.spring = function () { return V.teen ? "power3.out" : "elastic.out(1.1,.45)"; };
-
-  V.lot = function (el, name, loop, slice) {
-    if (!LOT || !el || RM) return null;
-    try {
-      return LOT.loadAnimation({ container: el, renderer: "svg", loop: !!loop, autoplay: true, path: "../assets/lottie/" + name + ".json",
-        rendererSettings: slice ? { preserveAspectRatio: "xMidYMid slice" } : {} });
-    } catch (e) { return null; }
-  };
-
-  // springy press on anything with .tap
-  if (V.anim) {
-    document.addEventListener("pointerdown", function (e) {
-      var t = e.target && e.target.closest ? e.target.closest(".tap") : null;
-      if (!t || t.disabled || t.classList.contains("no-press")) return;
-      G.to(t, { scale: .92, duration: .12, ease: "power2.out", overwrite: "auto" });
-      var up = function () {
-        window.removeEventListener("pointerup", up, true); window.removeEventListener("pointercancel", up, true);
-        if (t.isConnected) G.to(t, { scale: 1, duration: V.teen ? .35 : .6, ease: V.spring(), overwrite: "auto" });
-      };
-      window.addEventListener("pointerup", up, true); window.addEventListener("pointercancel", up, true);
-    }, true);
-  }
-
-  V.center = function (el) { var r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width, h: r.height }; };
-
-  // a star flies on a curved path into a counter, which bumps on arrival
-  V.flyStar = function (fromEl, toEl, done) {
-    if (!fromEl || !toEl || !V.anim) { if (done) done(); return; }
-    var a = V.center(fromEl), b = V.center(toEl);
-    var ax = a.x - 18, ay = a.y - 18, bx = b.x - 18, by = b.y - 18;
-    var cx = (ax + bx) / 2 + (ax < bx ? -70 : 70), cy = Math.min(ay, by) - 120;
-    var s = document.createElement("div"); s.className = "v2-fly"; s.innerHTML = STAR; document.body.appendChild(s);
-    var o = { t: 0 };
-    G.set(s, { x: ax, y: ay, scale: .4 });
-    G.to(o, { t: 1, duration: .8, ease: "power1.inOut", onUpdate: function () {
-      var t = o.t, u = 1 - t;
-      G.set(s, { x: u * u * ax + 2 * u * t * cx + t * t * bx, y: u * u * ay + 2 * u * t * cy + t * t * by, rotation: t * 320, scale: .45 + Math.sin(t * Math.PI) * 1.05 });
-    }, onComplete: function () { s.remove(); V.bump(toEl); if (done) done(); } });
-  };
-  V.bump = function (el) { if (el && V.anim) G.fromTo(el, { scale: 1.3 }, { scale: 1, duration: .7, ease: V.teen ? "power3.out" : "elastic.out(1.2,.4)", overwrite: "auto" }); };
-
-  V.shake = function (el) {
-    if (!el) return;
-    if (!V.anim) { el.classList.remove("v2-bad"); void el.offsetWidth; el.classList.add("v2-bad"); setTimeout(function () { el.classList.remove("v2-bad"); }, 500); return; }
-    G.fromTo(el, { x: 0 }, { keyframes: { x: [-9, 9, -6, 5, -2, 0], rotation: [-1.5, 1.5, -1, .5, 0, 0] }, duration: .45, ease: "none", overwrite: "auto" });
-  };
-  // expanding ring (transform/opacity only)
-  V.ring = function (el, color) {
-    if (!el || !V.anim) return;
-    var r = document.createElement("span"); r.className = "v2-ring"; if (color) r.style.borderColor = color;
-    el.appendChild(r);
-    G.fromTo(r, { scale: .96, opacity: .95 }, { scale: 1.14, opacity: 0, duration: .7, ease: "power2.out", onComplete: function () { r.remove(); } });
-  };
-  // green check (Lottie; a still check when motion is reduced)
-  V.check = function (host, css) {
-    if (!host) return;
-    var c = document.createElement("div"); c.className = "v2-check"; c.style.cssText = css || "right:-6px;top:-6px";
-    host.appendChild(c);
-    var a = V.lot(c, "check", false);
-    if (!a) c.innerHTML = CHECK;
-    return c;
-  };
-  // little confetti dots from a point
-  V.burst = function (x, y, colors, n) {
-    if (!V.anim) return;
-    colors = colors || ["#FFC93C", "#F97316", "#22C55E", "#0EA5E9", "#F472B6"];
-    for (var i = 0; i < (n || 14); i++) {
-      var d = document.createElement("div"); d.className = "v2-dot";
-      var sz = 6 + Math.random() * 8; d.style.width = d.style.height = sz + "px";
-      d.style.background = colors[i % colors.length]; if (i % 3 === 0) d.style.borderRadius = "2px";
-      document.body.appendChild(d);
-      var ang = Math.random() * Math.PI * 2, dist = 50 + Math.random() * 80;
-      G.set(d, { x: x - sz / 2, y: y - sz / 2 });
-      G.to(d, { x: x + Math.cos(ang) * dist, y: y + Math.sin(ang) * dist + 30, rotation: Math.random() * 360, opacity: 0, scale: .4, duration: .7 + Math.random() * .3, ease: "power2.out", onComplete: (function (dd) { return function () { dd.remove(); }; })(d) });
-    }
-  };
-  V.count = function (el, to, dur, from) {
-    if (!el) return;
-    if (!V.anim) { el.textContent = to; return; }
-    var o = { n: from || 0 };
-    G.to(o, { n: to, duration: dur || .8, ease: "power1.out", onUpdate: function () { el.textContent = Math.round(o.n); } });
-  };
-  V.progress = function (fill, frac) {
-    if (!fill) return;
-    frac = Math.max(0, Math.min(1, frac));
-    if (V.anim) G.to(fill, { scaleX: frac, duration: .7, ease: "power3.out" }); else fill.style.transform = "scaleX(" + frac + ")";
-  };
-  // split text into masked letters
-  V.letters = function (text) {
-    return String(text).replace(/ (?=\S*\p{Extended_Pictographic})/gu, "\u00a0").split(" ").map(function (w) {
-      return '<span class="v2-w">' + Array.from(w).map(function (c) { return '<span class="v2-ch">' + V.esc(c) + "</span>"; }).join("") + "</span>";
-    }).join(" ");
-  };
-  V.reveal = function (el, delay) {
-    if (!el || !V.anim) return null;
-    return G.from(V.$$(".v2-ch", el), { yPercent: 115, rotation: function (i) { return V.teen ? 0 : (i % 2 ? 1 : -1) * 14; }, duration: V.teen ? .5 : .55, stagger: .028, delay: delay || 0, ease: V.teen ? "power3.out" : "back.out(2.4)" });
-  };
-  // a character drops in with squash & stretch
-  V.dropIn = function (el, delay) {
-    if (!el || !V.anim) return null;
-    var tl = G.timeline({ delay: delay || 0 });
-    if (V.teen) return tl.fromTo(el, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: .6, ease: "power3.out" });
-    tl.fromTo(el, { y: -160, opacity: 0, scaleX: .85, scaleY: 1.18, transformOrigin: "50% 100%" }, { y: 0, opacity: 1, duration: .42, ease: "power2.in" })
-      .to(el, { scaleX: 1.2, scaleY: .78, duration: .08, ease: "power1.out" })
-      .to(el, { scaleX: 1, scaleY: 1, duration: .8, ease: "elastic.out(1.1,.32)" });
-    return tl;
-  };
-  // idle life: breathe, sway, blink-squash, and a wave now and then
-  V.mascot = function (box) {
-    var img = box && box.querySelector("img");
-    var api = { cheer: function () {}, sad: function () {}, kill: function () {} };
-    if (!img || !V.anim) return api;
-    var tw = [];
-    tw.push(G.to(box, { scale: 1.035, transformOrigin: "50% 100%", duration: 1.7, yoyo: true, repeat: -1, ease: "sine.inOut" }));
-    tw.push(G.to(img, { rotation: V.teen ? 1.5 : 3.5, transformOrigin: "50% 100%", duration: 1.5, yoyo: true, repeat: -1, ease: "sine.inOut" }));
-    var bl = G.timeline({ repeat: -1, repeatDelay: 3.2, delay: 1.4 });
-    bl.to(img, { scaleY: .91, scaleX: 1.06, transformOrigin: "50% 100%", duration: .09, ease: "power1.in" }).to(img, { scaleY: 1, scaleX: 1, duration: .45, ease: V.teen ? "power2.out" : "elastic.out(1,.4)" });
-    tw.push(bl);
-    var wv = G.timeline({ repeat: -1, repeatDelay: 6.5, delay: 4 });
-    wv.to(img, { rotation: -8, duration: .18, ease: "power1.out" }).to(img, { rotation: 7, duration: .18, yoyo: true, repeat: 3, ease: "sine.inOut" }).to(img, { rotation: 0, duration: .3 });
-    tw.push(wv);
-    api.cheer = function () {
-      G.timeline().to(box, { y: -26, duration: .22, ease: "power2.out" }).to(box, { y: 0, duration: .5, ease: "bounce.out" });
-      G.fromTo(img, { scaleX: 1.12, scaleY: .88 }, { scaleX: 1, scaleY: 1, duration: .6, ease: "elastic.out(1,.4)", transformOrigin: "50% 100%" });
-    };
-    api.sad = function () { G.fromTo(box, { rotation: 0 }, { keyframes: { rotation: [-5, 5, -3, 0] }, duration: .5, ease: "none" }); };
-    api.kill = function () { tw.forEach(function (t) { t.kill(); }); };
-    return api;
-  };
-  // deal a set of cards in
-  V.dealIn = function (els, opt) {
-    if (!els || !els.length || !V.anim) return null;
-    opt = opt || {};
-    return G.from(els, { y: opt.y == null ? 40 : opt.y, scale: V.teen ? .92 : .6, opacity: 0,
-      rotation: function (i) { return V.teen ? 0 : [-7, 6, -4, 5][i % 4]; },
-      duration: V.teen ? .5 : .6, stagger: opt.stagger || .07, delay: opt.delay || 0, ease: V.pop(), clearProps: opt.keep ? "" : "transform,opacity" });
-  };
-
-  // end-of-game celebration on a .v2-cel overlay
-  // o: { title, sub(html, may contain <b class="v2-n" data-to="N">), rating (1-3) | xp (rating) | tally {n, max} | big (number), confetti:true }
-  V.celebrate = function (ov, o) {
-    o = o || {};
-    var box = V.$(".box", ov), h = V.$("h2", ov);
-    if (o.title != null) h.innerHTML = V.letters(o.title);
-    if (o.sub != null) { var sb = V.$(".sub", ov); if (sb) sb.innerHTML = o.sub; }
-    var st = V.$(".v2-stars", ov) || V.$(".v2-slot", ov);
-    var area = V.$(".v2-award", ov);
-    if (area) {
-      if (o.xp) {
-        var pct = Math.round(o.xp / 3 * 100);
-        area.innerHTML = '<div class="v2-xp"><div class="val">+<span class="v2-n" data-to="' + (o.xp * 100) + '">' + (o.xp * 100) + '</span> XP</div><div class="bar"><i style="transform:scaleX(' + (pct / 100) + ')"></i></div></div>';
-      } else if (o.rating) {
-        area.innerHTML = '<div class="v2-stars">' + [0, 1, 2].map(function (i) { return "<span>" + (i < o.rating ? STAR : STAR_O) + "</span>"; }).join("") + "</div>";
-      } else if (o.tally) {
-        var mx = o.tally.max;
-        area.innerHTML = '<div class="v2-stars' + (mx > 5 ? " many" : "") + '">' + Array.from({ length: mx }, function (_, i) { return "<span>" + (i < o.tally.n ? STAR : STAR_O) + "</span>"; }).join("") + "</div>";
-      } else if (o.big != null) {
-        area.innerHTML = '<div class="v2-big">' + STAR + '<span class="v2-n" data-to="' + o.big + '">' + o.big + "</span></div>";
-      } else area.innerHTML = "";
-    }
-    ov.classList.add("show");
-    try { if (window.Lumio && Lumio.sfx) Lumio.sfx("complete"); } catch (e) {}
-    if (o.confetti !== false && V.anim) {
-      var c = document.createElement("div"); c.className = "v2-conf"; document.body.appendChild(c);
-      var a = V.lot(c, "confetti", false);
-      if (a) a.addEventListener("complete", function () { c.remove(); }); else c.remove();
-      setTimeout(function () { if (c.isConnected) c.remove(); }, 4000);
-    }
-    var nums = V.$$(".v2-n[data-to]", ov);
-    if (!V.anim) { nums.forEach(function (n) { n.textContent = n.getAttribute("data-to"); }); return; }
-    nums.forEach(function (n) { n.textContent = "0"; });
-    var hero = V.$(".v2-hero", ov);
-    var tl = G.timeline();
-    tl.fromTo(ov, { opacity: 0 }, { opacity: 1, duration: .25 })
-      .from(box, { scale: V.teen ? .94 : .7, y: 40, opacity: 0, duration: V.teen ? .5 : .6, ease: V.teen ? "power3.out" : "back.out(1.8)" }, "<.05");
-    if (hero) {
-      if (V.teen) tl.from(hero, { y: 30, opacity: 0, duration: .5, ease: "power3.out" }, "-=.35");
-      else tl.fromTo(hero, { y: -140, opacity: 0, scaleX: .85, scaleY: 1.2, transformOrigin: "50% 100%" }, { y: 0, opacity: 1, duration: .4, ease: "power2.in" }, "-=.3")
-        .to(hero, { scaleX: 1.18, scaleY: .8, duration: .08 }).to(hero, { scaleX: 1, scaleY: 1, duration: .8, ease: "elastic.out(1,.35)" });
-    }
-    tl.from(V.$$(".v2-ch", h), { yPercent: 115, rotation: function (i) { return V.teen ? 0 : (i % 2 ? 1 : -1) * 16; }, duration: .5, stagger: .03, ease: V.teen ? "power3.out" : "back.out(2.6)" }, .35);
-    var stars = V.$$(".v2-stars span", ov);
-    if (stars.length) tl.from(stars, { y: -80, x: function (i) { return (stars.length / 2 - i) * 22; }, scale: 0, rotation: -200, duration: .65, stagger: Math.min(.16, 1 / stars.length), ease: "back.out(1.8)" }, .7)
-      .fromTo(stars, { scale: 1 }, { scale: 1.22, duration: .14, yoyo: true, repeat: 1, stagger: Math.min(.16, 1 / stars.length), ease: "power2.out", immediateRender: false });
-    var big = V.$(".v2-big svg", ov);
-    if (big) tl.from(big, { scale: 0, rotation: -240, duration: .8, ease: "back.out(2)" }, .7);
-    var bar = V.$(".v2-xp .bar i", ov);
-    if (bar) tl.from(bar, { scaleX: 0, duration: 1, ease: "power3.out" }, .75);
-    tl.from(V.$$(".sub,.v2-note,.v2-ar,.moves", ov), { y: 12, opacity: 0, duration: .4, stagger: .06 }, .8);
-    tl.add(function () { nums.forEach(function (n) { V.count(n, +n.getAttribute("data-to"), Math.min(1.6, .25 + .12 * (+n.getAttribute("data-to") || 1))); }); }, .85);
-    tl.from(V.$$(".v2-btns > *", ov), { y: 22, opacity: 0, duration: .5, stagger: .08, ease: "power3.out", clearProps: "transform,opacity" }, 1.1);
-  };
-  V.hideCel = function (ov) { ov.classList.remove("show"); };
-  // soft drifting decor
-  V.drift = function (els) {
-    if (!V.anim) return;
-    els.forEach(function (el, i) {
-      G.to(el, { x: (i % 2 ? -1 : 1) * (18 + i * 6), y: (i % 3 - 1) * 10, duration: 5 + i * 1.3, yoyo: true, repeat: -1, ease: "sine.inOut" });
-    });
-  };
-  return V;
-})();
-
-</script>
 <script src="../js/app.js"></script>
 <script src="../js/lessons-data.js"></script>
+<script src="kit/play.js"></script>
 <script>
 const level = Lumio.qs("level") || "pre-a";
 const num = parseInt(Lumio.qs("n") || "1", 10);
-// Was hardcoded to "../present.html" with no query string -- see the
-// same fix in match-drag.html for why that silently drops the teacher
-// back to lesson 1 instead of wherever they actually launched this from.
+// Exit/Back go to the lesson the game was launched from (or the map / the trial deck).
 const source = Lumio.qs("from");
 const backHref = source === "lesson" ? "../student.html" : source === "trial" ? `../present-trial.html?level=${level}` : `../present.html?level=${level}&n=${num}`;
-// From a trial deck the game opened in its own tab: Exit just closes it (the trial is still open in the first tab).
-if (source === "trial") ["exitBtn", "backBtn"].forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener("click", e => { e.preventDefault(); try { window.close(); } catch (x) {} setTimeout(() => { location.href = backHref; }, 250); }); });
-document.getElementById("exitBtn").href = backHref;
-document.getElementById("backBtn").href = backHref;
 const lesson = window.LUMIO_LESSONS?.[level]?.[num];
 const vocab = lesson ? lesson.vocab : [];
-if (!vocab.length) document.body.innerHTML = "<p style='padding:40px;color:#fff'>No lesson data found.</p>";
+const GAME_TIME = 45, SEGS = 9;
 
-const G = V2.G, anim = V2.anim;
-V2.teen = ["level3", "level4", "level5", "level6"].includes(level);
-const COLORS = ["#F97316","#0D9488","#F43F5E","#8B5CF6","#F59E0B","#22C55E","#3B82F6","#EC4899"];
-const DARK = { "#F97316": "#C2410C", "#0D9488": "#0F5E57", "#F43F5E": "#BE123C", "#8B5CF6": "#6D28D9", "#F59E0B": "#B45309", "#22C55E": "#15803D", "#3B82F6": "#1D4ED8", "#EC4899": "#BE185D" };
-const TOTAL = 45;
-let score = 0, timeLeft = TOTAL, currentTarget = null, spawnTimer = null, tickTimer = null, running = true;
+// timer chip in the HUD: a ring that drains, seconds counting down
+const timerEl = document.createElement("div");
+timerEl.className = "lp-chip bp-timer"; timerEl.setAttribute("aria-label", "Time left");
+timerEl.innerHTML = '<svg viewBox="0 0 40 40" aria-hidden="true"><circle class="bg" cx="20" cy="20" r="16"/><circle class="fg" cx="20" cy="20" r="16" stroke-dasharray="100.5" stroke-dashoffset="0"/></svg><span class="s" aria-live="off">45</span>';
+LP.init({ scene: { bg: "assets/story/backgrounds/celebration.jpg", particles: "motes", tint: "linear-gradient(180deg,rgba(120,200,255,.28),rgba(255,255,255,0) 45%,rgba(40,20,0,.12))" },
+  hud: { rounds: SEGS, exitHref: backHref, extra: timerEl } });
+// From a trial deck the game opened in its own tab: Exit just closes it (the trial is still open in the first tab).
+if (source === "trial") LP.hud.exit.onclick = e => { e.preventDefault(); try { window.close(); } catch (x) {} setTimeout(() => { location.href = backHref; }, 250); };
+document.getElementById("hearBtn").innerHTML = LP.ICON.speaker;
+const lumi = LP.actor(document.getElementById("lumiZone"), { char: "lumi", pose: "point", cheer: "celebrate", oops: "surprised", alt: "Lumi" });
+const G = window.gsap, MOVE = G && !LP.RM;
 
-const sky = document.getElementById("sky");
-const starCt = document.getElementById("starCt");
-if (vocab.length) {
-  starCt.querySelector(".ic").innerHTML = V2.STAR;
-  V2.drift([...document.querySelectorAll(".cloud")]);
-}
+const COLORS = ["#F97316", "#0D9488", "#F43F5E", "#8B5CF6", "#F59E0B", "#22C55E", "#3B82F6", "#EC4899"];
+const shade = (hex, k) => { const n = parseInt(hex.slice(1), 16); let r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+  const f = v => Math.max(0, Math.min(255, Math.round(k > 0 ? v + (255 - v) * k : v * (1 + k)))); return `rgb(${f(r)},${f(g)},${f(b)})`; };
+
+const sky = document.getElementById("sky"), promptWord = document.getElementById("promptWord"), hearBtn = document.getElementById("hearBtn");
+let score = 0, timeLeft = GAME_TIME, currentTarget = null, spawnTimer = null, tickTimer = null, running = false;
+const balloons = [], filled = new Set();
 
 function pickTarget() {
   currentTarget = vocab[Math.floor(Math.random() * vocab.length)];
-  const w = document.getElementById("promptWord");
-  w.innerHTML = V2.letters(currentTarget.en);
-  V2.reveal(w);
-  if (anim) G.fromTo("#prompt .card", { scale: .94 }, { scale: 1, duration: .6, ease: V2.spring() });
-  setTimeout(() => Lumio.speak(currentTarget.en), 200);
+  promptWord.textContent = currentTarget.en;
+  if (MOVE) G.fromTo(promptWord, { scale: .4, rotation: -10 }, { scale: 1, rotation: 0, duration: .6, ease: "elastic.out(1,.4)" });
+  LP.answer = running ? currentTarget.en : null;
+  setTimeout(() => LP.say(currentTarget.en, hearBtn), 200);
 }
 
 function spawnBalloon() {
   if (!running) return;
-  const isTarget = Math.random() < 0.35 || !document.querySelector('.balloon[data-ok="1"]');
+  // Correctness is checked against the word asked *now* (see pop), so this only asks whether one is up there.
+  const hasTarget = balloons.some(b => !b.dead && b.word === currentTarget.en && b.y > 60);
+  const isTarget = Math.random() < 0.35 || !hasTarget;
   const word = isTarget ? currentTarget : vocab[Math.floor(Math.random() * vocab.length)];
-  const ok = word.en === currentTarget.en;
-  const el = document.createElement("div");
-  el.className = "balloon";
-  el.dataset.ok = ok ? "1" : "0";
   const color = COLORS[Math.floor(Math.random() * COLORS.length)];
-  const duration = 6 + Math.random() * 3;
-  const W = innerWidth, bw = W < 600 ? 104 : 130;
-  const left = 4 + Math.random() * 84;              // same spread as before, kept inside the screen
-  const x = Math.min(W - bw - 6, Math.max(6, left / 100 * W));
-  el.style.setProperty("--bw", bw + "px");
-  el.style.setProperty("--c", color); el.style.setProperty("--cd", DARK[color]);
-  el.innerHTML = `<div class="sway"><div class="body"><span>${V2.esc(word.en)}</span></div><div class="tie"></div><div class="string"></div></div>`;
-  el.addEventListener("pointerdown", e => { e.preventDefault(); pop(el, ok); });
+  const el = document.createElement("div"); el.className = "bl"; el.dataset.word = word.en;
+  el.style.setProperty("--c", color); el.style.setProperty("--c2", shade(color, .45)); el.style.setProperty("--c3", shade(color, -.3));
+  const len = word.en.length;
+  el.innerHTML = `<div class="body"><span class="w">${LP.esc(word.en)}</span></div><div class="knot"></div><svg viewBox="0 0 60 84"><path d="M30 0 C30 30 30 50 30 84"/></svg>`;
+  el.setAttribute("role", "button"); el.setAttribute("aria-label", "Balloon: " + word.en);
+  el.style.transform = "translate(-999px,-999px)";
   sky.appendChild(el);
-  const rise = innerHeight + el.offsetHeight + 40;
-  if (G) {
-    G.set(el, { x, y: 0 });
-    el._rise = G.to(el, { y: -rise, duration, ease: "none", onComplete: () => el.remove() });
-    if (anim) {
-      const sway = el.querySelector(".sway");
-      el._sway = G.fromTo(sway, { rotation: -5, x: -10 }, { rotation: 5, x: 10, duration: 1.4 + Math.random(), yoyo: true, repeat: -1, ease: "sine.inOut" });
-      G.from(el.querySelector(".body"), { scale: .6, duration: .5, ease: "back.out(2)" });
-    }
-  } else {
-    el.style.transform = `translate(${x}px,0)`;
-    el.animate([{ transform: `translate(${x}px,0)` }, { transform: `translate(${x}px,${-rise}px)` }], { duration: duration * 1000, easing: "linear" }).onfinish = () => el.remove();
+  // fit the word inside the balloon: never break a word in the middle, shrink instead
+  const wEl = el.querySelector(".w"), bwPx = el.offsetWidth, maxH = bwPx * .62;
+  let fs = Math.round(bwPx * .22);
+  do { el.style.setProperty("--fs", fs + "px"); fs--; } while (fs > 11 && (wEl.scrollWidth > wEl.clientWidth + 1 || wEl.offsetHeight > maxH));
+  const bw = el.offsetWidth, H = innerHeight, W = innerWidth;
+  const duration = 6 + Math.random() * 3;               // same rise time as the original: 6 to 9 seconds
+  const b = { el, word: word.en, color, w: bw, h: bw * 1.2, x: 8 + Math.random() * Math.max(10, W - bw - 16), y: H + 20,
+    vy: -(H * 1.15 + 120) / duration, vx: 0, ph: Math.random() * 6.28, sw: 18 + Math.random() * 22, fr: .5 + Math.random() * .5, rot: 0, t: 0, dead: false,
+    path: el.querySelector("path") };
+  b.x0 = b.x;
+  el.addEventListener("pointerdown", e => { e.preventDefault(); pop(b); });
+  el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") pop(b); });
+  balloons.push(b);
+}
+
+// ---------- floaty physics: rise, sway, a breeze, soft nudges between balloons, strings that lag behind ----------
+let last = 0;
+function frame(ts) {
+  const dt = Math.min(.05, last ? (ts - last) / 1000 : .016); last = ts;
+  const wind = MOVE ? Math.sin(ts / 2600) * 10 : 0;
+  for (const b of balloons) {
+    if (b.dead) continue;
+    b.t += dt; b.y += b.vy * dt;
+    let push = 0;
+    for (const o of balloons) { if (o === b || o.dead) continue; const dx = b.x - o.x, dy = b.y - o.y; if (Math.abs(dx) < b.w * .85 && Math.abs(dy) < b.h * .8) push += (dx >= 0 ? 1 : -1) * 90 * (1 - Math.abs(dx) / (b.w * .85)); }
+    b.x0 += (push + wind * .4) * dt; b.x0 = Math.max(4, Math.min(innerWidth - b.w - 4, b.x0));
+    const sway = MOVE ? Math.sin(b.t * b.fr * 2 + b.ph) * b.sw : 0;
+    const nx = b.x0 + sway; b.vx = (nx - b.x) / dt; b.x = nx;
+    const rot = MOVE ? Math.max(-12, Math.min(12, b.vx * .25)) : 0; b.rot += (rot - b.rot) * .1;
+    b.el.style.transform = `translate(${b.x}px,${b.y}px) rotate(${b.rot}deg)`;
+    if (MOVE) { const lag = -b.vx * .35, wob = Math.sin(b.t * 3 + b.ph) * 6; b.path.setAttribute("d", `M30 0 C${30 + lag * .4} 28 ${30 + lag + wob} 52 ${30 + lag * .8 - wob * .5} 84`); }
+    if (b.y < -b.h - 100) { b.dead = true; b.el.remove(); }
   }
+  for (let i = balloons.length - 1; i >= 0; i--) if (balloons[i].dead && !balloons[i].el.isConnected) balloons.splice(i, 1);
+  requestAnimationFrame(frame);
 }
 
-function burstPop(el, colors) {
-  const body = el.querySelector(".body");
-  if (el._rise) el._rise.kill();
-  if (el._sway) el._sway.kill();
-  const c = V2.center(body);
-  V2.burst(c.x, c.y, colors, 16);
-  if (anim) {
-    G.timeline().to(body, { scale: 1.22, duration: .09, ease: "power2.out" })
-      .to(el, { scale: 1.5, opacity: 0, duration: .2, ease: "power2.out", onComplete: () => el.remove() });
-  } else setTimeout(() => el.remove(), 250);
+function tag(x, y, text, cls) {
+  const t = document.createElement("div"); t.className = "bp-tag " + cls; t.textContent = text; document.body.appendChild(t);
+  const w = t.offsetWidth;
+  if (!MOVE) { t.style.transform = `translate(${x - w / 2}px,${y - 20}px)`; setTimeout(() => t.remove(), 600); return; }
+  G.fromTo(t, { x: x - w / 2, y: y - 10, scale: .4, opacity: 0 }, { y: y - 70, scale: 1, opacity: 1, duration: .45, ease: "back.out(2.5)",
+    onComplete: () => G.to(t, { opacity: 0, y: "-=20", duration: .35, delay: .2, onComplete: () => t.remove() }) });
 }
 
-function pop(el, ok) {
-  if (el.classList.contains("pop") || !running) return;
-  el.classList.add("pop");
+function pop(b, quiet) {
+  if (b.dead || b.el.classList.contains("popped")) return;
+  b.el.classList.add("popped");
+  const body = b.el.querySelector(".body"), r = body.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  // pop! the skin snaps into rubber shreds, the string drops away
+  LP.sfx("pop");
+  LP.burst(cx, cy, { n: quiet ? 14 : 22, colors: [b.color, shade(b.color, .45), "#fff"], shape: "rect", speed: 9, up: 1, ring: true, ringColor: "#fff", r0: r.width * .3, ringSpeed: 4 });
+  const finish = () => { b.dead = true; b.el.remove(); };
+  if (MOVE) {
+    G.timeline({ onComplete: finish })
+      .to(body, { scale: 1.18, duration: .06, ease: "power1.out" })
+      .to([body, b.el.querySelector(".knot")], { scale: 0, opacity: 0, duration: .08 })
+      .to(b.el.querySelector("svg"), { y: 120, rotation: 25, opacity: 0, duration: .6, ease: "power2.in" }, .05);
+    b.vy = 0;
+  } else finish();
+  if (quiet || !running) return;
+  const ok = b.word === currentTarget.en;   // checked against the word asked right now
   if (ok) {
     score++;
-    Lumio.beep(true);
-    el.classList.add("good");
-    // a star flies from the balloon to the score
-    V2.flyStar(el.querySelector(".body"), starCt, () => { document.getElementById("score").textContent = score; });
-    if (!anim) document.getElementById("score").textContent = score;
-    if (anim) {
-      const c = V2.center(el.querySelector(".body"));
-      const lb = document.createElement("div"); lb.className = "pop-label"; lb.textContent = "+1"; document.body.appendChild(lb);
-      G.fromTo(lb, { x: c.x - 14, y: c.y - 20, scale: .5, opacity: 1 }, { y: c.y - 90, scale: 1.2, opacity: 0, duration: .9, ease: "power2.out", onComplete: () => lb.remove() });
-    }
-    burstPop(el, ["#34D399", "#FFC93C", "#fff", "#22C55E"]);
-    setTimeout(() => { pickTarget(); }, 250);
+    LP.sfx("correct"); LP.streak(true); tag(cx, cy, "+1 " + b.word, "good");
+    lumi.cheer("celebrate", "point");
+    const star = document.createElement("div"); star.style.cssText = `position:fixed;left:${cx}px;top:${cy}px;width:1px;height:1px`; document.body.appendChild(star);
+    LP.addStar(star).then(() => star.remove());
+    LP.answer = null;
+    setTimeout(() => { if (running) pickTarget(); }, 250);
   } else {
-    Lumio.beep(false);
-    el.classList.add("bad");
-    if (anim) {
-      // a wrong balloon wobbles and drifts away instead of a big pop
-      if (el._sway) el._sway.kill();
-      G.timeline().to(el.querySelector(".sway"), { keyframes: { rotation: [-14, 12, -8, 4, 0] }, duration: .4, ease: "none" })
-        .add(() => burstPop(el, ["#FB7185", "#FECDD3"]));
-    } else burstPop(el, []);
+    LP.sfx("wrong"); LP.streak(false); tag(cx, cy, b.word, "bad");
+    lumi.oops("surprised", "point");
   }
 }
 
 function tick() {
   timeLeft--;
-  document.getElementById("time").textContent = timeLeft;
-  const tp = document.getElementById("timePill");
-  V2.progress(document.getElementById("tbar"), timeLeft / TOTAL);
-  if (timeLeft <= 10) { tp.classList.add("low"); if (anim) G.fromTo(tp, { scale: 1.12 }, { scale: 1, duration: .5, ease: "power2.out" }); }
+  paintTimer();
+  const seg = Math.floor((GAME_TIME - timeLeft) / (GAME_TIME / SEGS)) - 1;
+  for (let i = 0; i <= seg; i++) if (!filled.has(i)) { filled.add(i); LP.fill(i); }
+  LP.round(Math.min(SEGS - 1, seg + 1));
+  if (timeLeft <= 10 && timeLeft > 0) { LP.sfx("tick"); if (MOVE) G.fromTo(timerEl, { scale: 1.2 }, { scale: 1, duration: .4, ease: "elastic.out(1,.4)" }); }
   if (timeLeft <= 0) endGame();
 }
-
-function endGame() {
-  running = false;
-  clearInterval(spawnTimer); clearInterval(tickTimer);
-  document.querySelectorAll(".balloon").forEach(b => {
-    if (b._rise) b._rise.kill(); if (b._sway) b._sway.kill();
-    if (anim) G.to(b, { y: "-=" + (innerHeight * .6), opacity: 0, duration: .8, ease: "power2.in", onComplete: () => b.remove() }); else b.remove();
-  });
-  document.getElementById("finalScore").innerHTML = `You popped <b class="v2-n" data-to="${score}">${score}</b> correct balloons!`;
-  setTimeout(() => {
-    V2.celebrate(document.getElementById("endcard"), { big: score });
-    Lumio.speak(score >= 8 ? "Amazing!" : "Great job!"); // was "Amazing! You are a balloon pop champion!" / "Great job! Try again to pop even more!" -- no recordings for those (404), these two exist
-  }, anim ? 500 : 0);
+function paintTimer() {
+  timerEl.querySelector(".s").textContent = Math.max(0, timeLeft);
+  timerEl.querySelector(".fg").setAttribute("stroke-dashoffset", String(100.5 * (1 - Math.max(0, timeLeft) / GAME_TIME)));
+  timerEl.classList.toggle("low", timeLeft <= 10);
 }
 
-if (vocab.length) {
-  if (G) G.set("#tbar", { scaleX: 1 });
-  if (anim) {
-    G.timeline()
-      .from("#hud > *", { y: -40, opacity: 0, duration: .5, stagger: .07, ease: "power3.out", clearProps: "transform,opacity" })
-      .from("#prompt .card", { y: -30, scale: .7, opacity: 0, duration: .6, ease: "back.out(2)", clearProps: "opacity" }, .15)
-      .from(".hills", { y: 60, duration: .8, ease: "power3.out" }, 0)
-      .from(".sun", { scale: .4, opacity: 0, duration: 1, ease: "power3.out" }, 0);
-  }
-  pickTarget();
-  spawnTimer = setInterval(spawnBalloon, 900);
-  tickTimer = setInterval(tick, 1000);
+async function endGame() {
+  running = false; LP.answer = null;
+  clearInterval(spawnTimer); clearInterval(tickTimer);
+  LP.round(-1);
+  // every balloon still in the sky pops in a quick ripple
+  const left = balloons.filter(b => !b.dead);
+  left.forEach((b, i) => setTimeout(() => pop(b, true), MOVE ? i * 70 : 0));
+  await LP.banner("Time's up!", score + (score === 1 ? " balloon" : " balloons"));
+  LP.results({ score, total: Math.max(1, score), stars: score >= 8 ? 3 : score >= 5 ? 2 : score > 0 ? 1 : 0, title: "Time's up!",
+    scoreLabel: "Balloons popped", note: `You popped ${score} correct balloons!`, actor: { char: "lumi", pose: "celebrate" },
+    exitHref: backHref, exitLabel: source === "lesson" ? "Back to my map" : "Back to lesson" });
+  // a timed game has no "out of": show just the count
+  const sc = document.querySelector(".lp-results .score");
+  if (sc && sc.lastChild && sc.lastChild.nodeType === 3) sc.lastChild.textContent = "";
+}
+
+if (!vocab.length) {
+  sky.innerHTML = "<p class='lp-panel' style='padding:24px;margin:120px 20px'>No lesson data found.</p>";
+} else {
+  document.getElementById("promptCard").onclick = () => currentTarget && LP.say(currentTarget.en, hearBtn);
+  paintTimer();
+  requestAnimationFrame(frame);
+  LP.title({ kicker: "Listen and pop", title: "Balloon Pop", sub: "Pop the balloon with the word you hear. Be quick: 45 seconds!", ar: "فرقع البالون الذي يحمل الكلمة التي تسمعها",
+    actor: { char: "lumi", pose: "celebrate", cheer: "celebrate" } }).then(async () => {
+    await LP.banner("Ready?", "45 seconds");
+    await LP.banner("Pop!", "");
+    running = true; LP.round(0);
+    pickTarget();
+    spawnBalloon();
+    spawnTimer = setInterval(spawnBalloon, 900);
+    tickTimer = setInterval(tick, 1000);
+  });
 }
 </script>
 </body>

@@ -2,451 +2,148 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Twelve Months Calendar — Lumio English</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@700;800&family=Tajawal:wght@700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/brand.css">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="kit/play.css">
 <style>
-  /* ===== v2 motion kit (shared look: springy, star flights, Lottie) ===== */
-  html, body { overflow-x: hidden; }
-  button { -webkit-tap-highlight-color: transparent; }
-  :focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
-  .flyStar { position: fixed; left: 0; top: 0; z-index: 300; width: 34px; height: 34px; pointer-events: none; will-change: transform; }
-  .flyStar svg, .starCt svg.st { width: 100%; height: 100%; display: block; }
-  .spark { position: fixed; left: 0; top: 0; z-index: 290; width: 14px; height: 14px; pointer-events: none; will-change: transform, opacity; }
-  .spark svg { width: 100%; height: 100%; display: block; }
-  .starCt { position: relative; display: inline-flex; align-items: center; gap: 6px; isolation: isolate; }
-  .starCt svg.st { width: 20px; height: 20px; flex: none; }
-  .starCt .pop { position: absolute; width: 64px; height: 64px; left: -14px; top: 50%; margin-top: -32px; pointer-events: none; z-index: -1; }
-  .v2-bar { flex: 1; min-width: 60px; height: 12px; border-radius: 99px; background: rgba(255,255,255,.75); box-shadow: inset 0 1px 3px rgba(67,48,31,.12); overflow: hidden; }
-  .v2-bar i { display: block; height: 100%; border-radius: 99px; transform-origin: 0 50%; transform: scaleX(0); transition: transform .7s cubic-bezier(.34,1.56,.64,1); }
-  .v2-conf { position: fixed; inset: 0; z-index: 70; pointer-events: none; }
-  .v2-conf svg { width: 100% !important; height: 100% !important; }
-  .mask { display: inline-block; overflow: hidden; vertical-align: bottom; padding: 0 .04em .08em; margin-bottom: -.08em; }
-  .mask > span { display: inline-block; will-change: transform; }
-  .v2-intro { position: fixed; inset: 0; z-index: 80; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 24px 16px calc(24px + env(safe-area-inset-bottom, 0px)); text-align: center; overflow: hidden; }
-  .v2-intro .mWrap { position: relative; height: min(34vh, 250px); aspect-ratio: 7 / 8; margin-bottom: 6px; }
-  .v2-intro .mWrap .halo { position: absolute; inset: -6% -8% 22%; pointer-events: none; opacity: .5; }
-  .v2-intro .mWrap img { position: relative; height: 100%; width: auto; margin: 0 auto; display: block; filter: drop-shadow(0 16px 22px rgba(67,48,31,.22)); }
-  .v2-intro .shadow { width: clamp(120px, 26vh, 220px); height: 14px; margin: -8px auto 12px; border-radius: 50%; background: rgba(67,48,31,.14); filter: blur(2px); }
-  .v2-intro h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(2.1rem, 8.4vw, 3.4rem); line-height: 1.05; margin: 0 0 10px; color: var(--cocoa); }
-  .v2-intro p.sub { font-weight: 800; font-size: clamp(1rem, 4vw, 1.2rem); color: var(--cocoa-soft); max-width: 420px; margin: 0 auto 26px; }
-  .v2-play { min-height: 60px; min-width: 190px; padding: 0 36px; border: none; border-radius: 999px; cursor: pointer;
-    font-family: var(--font-display); font-weight: 800; font-size: 1.35rem; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-    box-shadow: 0 8px 0 rgba(0,0,0,.12), 0 18px 34px -10px rgba(249,115,22,.6); }
-  .v2-play svg { width: 22px; height: 22px; }
-  .v2-play .ring { position: absolute; }
-  .v2-stars { display: flex; justify-content: center; gap: 6px; margin: 10px 0 4px; flex-wrap: wrap; }
-  .v2-stars span { width: 38px; height: 38px; display: block; }
-  .v2-stars span svg { width: 100%; height: 100%; display: block; }
-  .v2-stars span.off { opacity: .2; filter: grayscale(1); }
-  .ckBadge { position: absolute; top: 6px; right: 6px; width: 38px; height: 38px; border-radius: 999px; background: #fff;
-    box-shadow: 0 4px 10px rgba(22,163,74,.35); display: flex; align-items: center; justify-content: center; pointer-events: none;
-    opacity: 0; transform: scale(.4); transition: opacity .25s ease, transform .35s cubic-bezier(.34,1.56,.64,1); color: var(--green); font-weight: 800; font-size: 1.2rem; }
-  .ckBadge .lt { position: absolute; inset: -2px; }
-  .correct .ckBadge { opacity: 1; transform: scale(1); }
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  /* Twelve Months Calendar: a big wall calendar hangs on a nail. Each right answer slaps a star
+     sticker on this month's page, the page tears off along the binding, flips over and falls away,
+     the calendar swings, and the whole scene changes to the next month's mood (snow, hearts,
+     spring petals, April rain, May sunshine, summer). */
+  .lp-scene .bg{filter:blur(2.5px) saturate(1.08)}
+  .lp-stage{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+  .tm-mood{position:fixed;inset:0;z-index:1;pointer-events:none;transition:background-color 1s ease}
+  .tm-fx{position:fixed;inset:0;z-index:2;pointer-events:none;width:100%;height:100%}
+  .tm{width:100%;max-width:1260px;display:grid;grid-template-columns:1fr;gap:12px;justify-items:center;align-content:center;flex:1}
+
+  /* ---- the wall calendar ---- */
+  .tm-calcol{position:relative;display:flex;flex-direction:column;align-items:center;width:100%}
+  .tm-hang{position:relative;width:min(330px,88vw);padding-top:22px;transform-origin:50% 0}
+  .tm-nail{position:absolute;left:50%;top:0;width:16px;height:16px;margin-left:-8px;border-radius:50%;z-index:3;
+    background:radial-gradient(circle at 35% 35%,#fff,#B8BEC9 45%,#6B7280);box-shadow:0 3px 5px rgba(0,0,0,.4)}
+  .tm-hang::before{content:"";position:absolute;left:50%;top:8px;width:46%;height:26px;transform:translateX(-50%);z-index:2;
+    border:3px solid #6B4A2E;border-bottom:none;border-radius:50% 50% 0 0/100% 100% 0 0;opacity:.9}
+  .tm-cal{position:relative;border-radius:16px;background:#7A5230;padding:10px 0 0;box-shadow:0 30px 50px -24px rgba(30,15,0,.85),0 8px 0 rgba(60,35,15,.35)}
+  .tm-bind{position:absolute;left:0;right:0;top:-8px;height:24px;display:flex;justify-content:space-evenly;z-index:6;pointer-events:none}
+  .tm-bind i{width:8px;height:24px;border-radius:5px;background:linear-gradient(90deg,#8A8F99,#F4F6FA 45%,#9BA1AB);box-shadow:0 2px 3px rgba(0,0,0,.35)}
+  .tm-stack{position:relative;perspective:1100px;margin:0 6px 0}
+  .tm-under{position:absolute;left:4px;right:4px;bottom:-5px;height:12px;border-radius:0 0 10px 10px;background:#EFE6D6;box-shadow:0 4px 0 #DCCDB4}
+  .tm-page{position:relative;background:transparent;border-radius:10px 10px 12px 12px;transform-style:preserve-3d;
+    box-shadow:0 1px 0 rgba(0,0,0,.06),0 6px 14px -8px rgba(60,30,5,.45)}
+  .tm-page.under{position:absolute;inset:0}
+  .tm-page .face{position:relative;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:#FFFDF8;border-radius:inherit}
+  .tm-page .back{position:absolute;inset:0;transform:rotateX(180deg);backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:inherit;
+    background:repeating-linear-gradient(180deg,#F7F1E6 0 22px,#EFE6D6 22px 23px)}
+  .tm-perf{height:10px;background:radial-gradient(circle at 50% 0,rgba(120,90,60,.35) 2px,transparent 2.5px) 0 2px/12px 10px repeat-x,var(--mc)}
+  .tm-photo{position:relative;aspect-ratio:2.2/1;background-color:var(--mc);background-repeat:no-repeat}
+  .tm-photo::after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 -18px 18px -14px rgba(0,0,0,.25)}
+  .tm-head{display:flex;align-items:center;gap:8px;padding:8px 12px 2px;color:var(--mc-ink)}
+  .tm-head svg{width:30px;height:30px;flex:none}
+  .tm-head b{font-family:var(--lp-display);font-weight:800;font-size:clamp(28px,8vw,40px);line-height:1;letter-spacing:-.01em}
+  .tm-head .yr{margin-left:auto;font-family:var(--lp-display);font-weight:800;font-size:15px;opacity:.6}
+  .tm-sub{padding:0 12px 6px;font-weight:800;font-size:14px;color:#7B6352}
+  .tm-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:0 10px 12px}
+  .tm-grid .dh{font-family:var(--lp-display);font-weight:800;font-size:11px;text-align:center;color:#fff;background:var(--mc);border-radius:5px;padding:1px 0}
+  .tm-grid .dh.we{opacity:.75}
+  .tm-grid span{font-family:var(--lp-display);font-weight:800;font-size:12.5px;line-height:1;text-align:center;padding:4px 0 3px;color:#5B4636;border-radius:6px}
+  .tm-grid span.we{color:var(--mc-ink)}
+  .tm-grid span.one{background:var(--mc);color:#fff}
+  .tm-stamp{position:absolute;right:10px;bottom:-34px;width:76px;height:76px;z-index:5;opacity:0;pointer-events:none}
+  .tm-stamp svg{width:100%;height:100%;filter:drop-shadow(0 6px 8px rgba(60,30,5,.35))}
+  .tm-strip{display:flex;gap:6px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+  .tm-tab{display:inline-flex;align-items:center;gap:4px;height:30px;padding:0 9px 0 6px;border-radius:999px;background:rgba(255,255,255,.55);
+    font-family:var(--lp-display);font-weight:800;font-size:13px;color:#6B5040;box-shadow:0 4px 10px -6px rgba(0,0,0,.5);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+  .tm-tab svg{width:18px;height:18px}
+  .tm-tab.now{background:#fff;box-shadow:0 0 0 3px var(--mc),0 6px 12px -6px rgba(0,0,0,.5);color:var(--mc-ink)}
+  .tm-tab.done{background:var(--mc);color:#fff}
+  .tm-tab.done svg{filter:brightness(0) invert(1)}
+  .tm-noor{display:none}
+  @media (max-width:899px){
+    .tm-hang{width:min(300px,82vw);padding-top:18px}
+    .tm-head{padding:5px 10px 0} .tm-head svg{width:24px;height:24px} .tm-head b{font-size:28px} .tm-head .yr{font-size:13px}
+    .tm-sub{font-size:12.5px;padding:0 10px 4px}
+    .tm-grid{padding:0 8px 8px;gap:1px} .tm-grid span{font-size:11px;padding:2px 0 1px} .tm-grid .dh{font-size:10px}
+    .tm-stamp{width:60px;height:60px;bottom:-26px}
+    .tm-strip{margin-top:12px;gap:5px;flex-wrap:nowrap} .tm-tab{height:28px;padding:0 6px;font-size:0;gap:0} .tm-tab svg{width:18px;height:18px}
   }
 
-  body {
-    min-height: 100vh; min-height: 100dvh;
-    background: linear-gradient(180deg, #FFE0EC 0%, #FFF1E8 45%, #FFFBF5 100%);
-    position: relative;
-  }
-  .sky { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-  .sparkle { position: absolute; font-size: 1.3rem; opacity: .5; animation: twinkle 2.4s ease-in-out infinite; }
-  @keyframes twinkle { 0%,100% { opacity: .25; transform: scale(.85); } 50% { opacity: .65; transform: scale(1.1); } }
+  /* ---- prompt + cards ---- */
+  .tm-play{width:100%;max-width:600px;display:flex;flex-direction:column;align-items:center;gap:10px}
+  .tm-ask{display:flex;align-items:flex-end;gap:8px;width:100%;justify-content:center}
+  .tm-lumi{flex:none;height:92px;width:80px;display:flex;justify-content:center;align-items:flex-end}
+  .tm-lumi .lp-actor{height:100%}
+  .tm-ask .lp-bubble{flex:0 1 auto;margin-bottom:10px}
+  .tm-ask .lp-bubble .tail{left:-8px;bottom:20px}
+  .tm-cards{max-width:600px}
+  .tm-cards.c3 .lp-card,.tm-cards.c2 .lp-card{width:100%;max-width:210px;justify-self:center}
+  .tm-cards.c2{max-width:440px}
+  .tm-cards .lp-card .lbl{font-size:clamp(14px,3.8vw,19px);overflow-wrap:anywhere;hyphens:auto}
+  .lp-card .pic img{border-radius:12px}
+  @media (max-width:420px){ .tm-cards{gap:10px} .tm-cards .lp-card .pic{margin:7px 7px 0;border-radius:14px} .tm-cards .lp-card .lbl{padding:6px 4px 9px} }
 
-  #hud { position: relative; z-index: 5; display: flex; align-items: center; gap: 10px; padding: 14px 16px; max-width: 940px; margin: 0 auto; }
-  #hud .pill { background: #fff; border-radius: 999px; padding: 8px 16px; font-family: var(--font-display); font-weight: 800; box-shadow: var(--sh-sm); white-space: nowrap; min-height: 40px; display: inline-flex; align-items: center; }
-  #hud .btn { min-height: 44px; }
-  .v2-bar i { background: linear-gradient(90deg, #F9A8D4, #EC4899); }
-
-  #layout { position: relative; z-index: 5; max-width: 940px; margin: 0 auto; padding: 0 16px 40px; display: grid; grid-template-columns: 280px 1fr; gap: 26px; align-items: start; }
-  @media (max-width: 760px) { #layout { grid-template-columns: 1fr; gap: 14px; } }
-  @media (min-width: 761px) { #layout { min-height: calc(100vh - 90px); align-content: center; padding-bottom: 70px; } }
-
-  /* ---- calendar ---- */
-  #calWrap { text-align: center; position: relative; }
-  #calBook {
-    background: #fff; border-radius: 18px; padding: 14px; box-shadow: 0 6px 0 #F7D3E2, var(--sh-lg);
-    position: relative; min-height: 260px;
+  @media (min-width:900px){
+    .tm{grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:40px;align-items:center;min-height:calc(100dvh - 170px)}
+    .tm-calcol{justify-self:end;width:auto;padding-left:150px}
+    .tm-hang{width:430px}
+    .tm-grid span{font-size:15px;padding:6px 0 5px}
+    .tm-grid .dh{font-size:12.5px}
+    .tm-sub{font-size:16px}
+    .tm-noor{display:block;position:absolute;left:0;bottom:30px;height:330px;width:170px;z-index:7;pointer-events:none}
+    .tm-noor .lp-actor{height:100%}
+    .tm-play{justify-self:start;gap:18px}
+    .tm-ask{justify-content:flex-start}
+    .tm-lumi{height:180px;width:150px}
+    .tm-cards{gap:18px}
   }
-  #calRing { display: flex; justify-content: center; gap: 8px; margin-bottom: -8px; position: relative; z-index: 2; }
-  #calRing span { width: 14px; height: 22px; background: #D9A85E; border-radius: 5px; box-shadow: var(--sh-sm); }
-  #calPages { perspective: 700px; position: relative; }
-  .calPage {
-    border-radius: 12px; padding: 22px 14px 18px; min-height: 220px; background: linear-gradient(180deg, #FFF6FA, #fff);
-    display: none; flex-direction: column; align-items: center; justify-content: center; backface-visibility: hidden;
-  }
-  html:not(.v2a) .calPage { animation: flipIn .5s cubic-bezier(.34,1.56,.64,1); }
-  .calPage.show { display: flex; }
-  @keyframes flipIn { from { transform: rotateX(90deg); opacity: 0; } to { transform: rotateX(0); opacity: 1; } }
-  .calPage .icon { font-size: 2.8rem; margin-bottom: 6px; display: inline-block; }
-  .calPage .month { font-family: var(--font-display); font-weight: 800; font-size: 1.45rem; color: var(--cocoa); }
-  .calPage .sub { font-weight: 700; color: var(--cocoa-soft); font-size: .9rem; margin-top: 4px; }
-  #calStrip { display: flex; justify-content: center; gap: 6px; margin-top: 14px; flex-wrap: wrap; }
-  #calStrip .dot { width: 34px; height: 34px; border-radius: 10px; background: #F5EEE1; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; opacity: .4; transition: opacity .3s ease, background .3s ease, box-shadow .3s; position: relative; }
-  #calStrip .dot.won { opacity: 1; background: #fff; box-shadow: 0 3px 0 #F7D3E2, var(--sh-sm); }
-  #calStrip .dot .pop { position: absolute; inset: -16px; pointer-events: none; }
-  #calLumi { position: absolute; right: -10px; bottom: 38px; height: 96px; pointer-events: none; z-index: 3; }
-  #calLumi .mBox, #calLumi .mHop { height: 100%; }
-  #calLumi img { height: 100%; display: block; filter: drop-shadow(0 8px 10px rgba(67,48,31,.2)); }
-  @media (max-width: 760px) {
-    #calBook { min-height: 0; padding: 10px 12px; }
-    .calPage { min-height: 0; padding: 16px 12px 12px 18px; flex-direction: row; justify-content: flex-start; gap: 14px; }
-    .calPage .icon { font-size: 2.4rem; margin: 0; }
-    .calPage .txt { text-align: left; }
-    #calStrip { margin-top: 10px; }
-    #calLumi { height: 80px; right: 0; bottom: 44px; }
-  }
-
-  /* ---- play area ---- */
-  #playWrap { text-align: center; }
-  #promptCard {
-    background: #fff; border-radius: 24px; padding: 12px 20px 12px 12px; margin: 6px auto 18px;
-    box-shadow: 0 5px 0 #F7D3E2, var(--sh-md); display: inline-flex; align-items: center; gap: 12px; max-width: 100%;
-    cursor: pointer;
-  }
-  #promptCard p { font-family: var(--font-display); font-weight: 800; color: var(--cocoa); font-size: 1.15rem; margin: 0; }
-  #hearBtn {
-    background: var(--grad-sun); border: none; border-radius: 999px; width: 54px; height: 54px; position: relative;
-    display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
-    box-shadow: 0 6px 14px rgba(255,197,61,.5);
-  }
-  #hearBtn::after { content: ""; position: absolute; inset: 0; border-radius: 999px; animation: ring 1.6s ease-out infinite; }
-  @keyframes ring { 0% { box-shadow: 0 0 0 0 rgba(236,72,153,.4); } 100% { box-shadow: 0 0 0 16px rgba(236,72,153,0); } }
-
-  #optGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-  @media (max-width: 420px) { #optGrid { gap: 10px; } }
-  .opt-card {
-    background: #fff; border: 5px solid transparent; border-radius: 22px; padding: 0;
-    cursor: pointer; overflow: hidden; box-shadow: 0 6px 0 #F5DCE6, var(--sh-md);
-    transition: border-color .2s ease, opacity .3s ease, box-shadow .3s ease, background .3s ease; position: relative; min-height: 44px;
-  }
-  html:not(.v2a) .opt-card { transition: transform .15s ease, border-color .2s ease, opacity .3s ease; }
-  html:not(.v2a) .opt-card:active { transform: scale(.94); }
-  .opt-card .pic { position: relative; width: 100%; aspect-ratio: 1/1; overflow: hidden; }
-  .opt-card .pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 8%; box-sizing: border-box; background: #fff; }
-  .opt-card .word { font-family: var(--font-display); font-weight: 800; font-size: .95rem; color: var(--cocoa); padding: 6px 4px 8px; }
-  .opt-card.correct { border-color: var(--green); background: var(--green-soft); box-shadow: 0 0 0 4px rgba(22,163,74,.25), 0 0 34px 8px rgba(22,163,74,.35); }
-  .opt-card.correct .pic img { background: transparent; }
-  .opt-card.wrong-dim { opacity: .35; pointer-events: none; }
-  .opt-card.locked { pointer-events: none; }
-  .v2a .ckBadge .ckT { display: none; }
-  @media (max-width: 420px) { .ckBadge { width: 30px; height: 30px; top: 4px; right: 4px; } }
-
-  #intro { background: radial-gradient(circle at 50% 30%, #FFF5FA 0%, #FFE0EC 55%, #FBC2D9 100%); }
-  #intro .v2-play { background: linear-gradient(135deg, #F472B6, #EC4899); color: #fff; box-shadow: 0 8px 0 #BE185D, 0 18px 34px -10px rgba(236,72,153,.6); }
-
-  #endcard {
-    position: fixed; inset: 0; z-index: 60; display: none;
-    align-items: center; justify-content: center; background: rgba(67,48,31,.45); padding: 16px;
-  }
-  #endcard .box { background: #fff; border-radius: 28px; padding: 28px 20px; text-align: center; box-shadow: var(--sh-lg); max-width: 480px; width: 100%; }
-  #endcard .crew { display: flex; justify-content: center; margin: 6px 0; }
-  #endcard .crew img { height: 82px; margin: 0 -10px; filter: drop-shadow(0 8px 12px rgba(67,48,31,.2)); }
-  @media (max-width: 420px) { #endcard .crew img { height: 66px; margin: 0 -9px; } }
-  #endcard h1 { font-size: clamp(1.5rem, 6vw, 2rem); }
-  #endcard .row .btn { min-height: 48px; }
+  @media (min-width:900px) and (max-height:780px){ .tm-hang{width:360px} .tm-grid span{font-size:13px;padding:4px 0 3px} .tm-noor{height:270px} .tm-lumi{height:140px;width:120px} }
+  @media (max-height:740px) and (max-width:899px){ .tm-hang{width:min(250px,70vw)} .tm-grid span{padding:1px 0 0;font-size:10.5px} .tm-lumi{height:72px;width:62px} .tm-strip{margin-top:8px} }
 </style>
 </head>
 <body>
+<div class="tm-mood" id="mood"></div>
+<canvas class="tm-fx" id="fx" aria-hidden="true"></canvas>
+<main class="lp-stage" id="stage">
+  <div class="tm">
+    <section class="tm-calcol" aria-label="Wall calendar">
+      <div class="tm-noor" id="noorZone"></div>
+      <div class="tm-hang" id="hang">
+        <span class="tm-nail"></span>
+        <div class="tm-cal" id="cal">
+          <div class="tm-bind" id="bind"></div>
+          <div class="tm-stack" id="stack"><div class="tm-under"></div></div>
+        </div>
+      </div>
+      <div class="tm-strip" id="calStrip"></div>
+    </section>
 
-<div class="sky" aria-hidden="true">
-  <div class="sparkle" style="top:10%;left:5%">✨</div>
-  <div class="sparkle" style="top:70%;right:6%;animation-delay:.9s">✨</div>
-</div>
-
-<div id="intro" class="v2-intro" role="dialog" aria-label="Twelve Months Calendar">
-  <div class="mWrap"><div class="halo"></div><img src="../assets/story/characters/lumi-point.png" alt="Lumi"></div>
-  <div class="shadow"></div>
-  <h1>Twelve Months Calendar</h1>
-  <p class="sub">Flip through the year with the Twelve Months Club!</p>
-  <button class="v2-play" type="button" id="playBtn"></button>
-</div>
-
-<div id="hud">
-  <a class="btn btn-ghost" href="../present.html" id="exitBtn" style="background:#fff">Exit</a>
-  <span class="pill starCt" id="starCt"><span class="pop"></span><span id="starIcon"></span><span id="score">0</span></span>
-  <span class="pill" id="roundPill">1/6</span>
-  <div class="v2-bar" aria-hidden="true"><i id="bar"></i></div>
-</div>
-
-<div id="layout">
-  <div id="calWrap">
-    <div id="calBook">
-      <div id="calRing"><span></span><span></span><span></span><span></span><span></span><span></span></div>
-      <div id="calPages"></div>
-    </div>
-    <div id="calStrip"></div>
-    <div id="calLumi"><div class="mHop" id="lumiHop"><div class="mBox" id="lumiBox"><img id="lumiImg" src="../assets/story/characters/lumi-point.png" alt="Lumi"></div></div></div>
+    <section class="tm-play">
+      <div class="tm-ask">
+        <div class="tm-lumi" id="lumiZone"></div>
+        <button class="lp-bubble" id="promptCard" type="button" aria-label="Hear it again">
+          <span class="lp-speak" id="hearBtn" aria-hidden="true"></span>
+          <span class="txt" id="promptText">Tap the picture you hear!</span>
+          <span class="tail"></span>
+        </button>
+      </div>
+      <div class="lp-cards c3 tm-cards" id="optGrid" aria-live="polite"></div>
+    </section>
   </div>
-
-  <div id="playWrap">
-    <div id="promptCard">
-      <button id="hearBtn" aria-label="Listen">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="#43301F"/><path d="M16.5 8.5a5 5 0 010 7M19 6a9 9 0 010 12" stroke="#43301F" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
-      </button>
-      <p>Tap the picture you hear!</p>
-    </div>
-    <div id="optGrid"></div>
-  </div>
-</div>
-
-<div id="endcard">
-  <div class="box">
-    <div class="crew">
-      <img src="../assets/story/characters/lumi-celebrate.png" alt="Lumi">
-      <img src="../assets/story/characters/omar-celebrate.png" alt="Omar">
-      <img src="../assets/story/characters/sara-celebrate.png" alt="Sara">
-      <img src="../assets/story/characters/noor-celebrate.png" alt="Noor">
-      <img src="../assets/story/characters/ziad-celebrate.png" alt="Ziad">
-      <img src="../assets/story/characters/hamad-celebrate.png" alt="Hamad">
-    </div>
-    <h1 style="font-family:var(--font-display);margin-top:8px">Another page in the book!</h1>
-    <div class="v2-stars" id="endStars"></div>
-    <p style="font-weight:800;font-size:1.15rem;margin:10px 0" id="finalScore"></p>
-    <div class="row" style="justify-content:center;gap:10px">
-      <button class="btn btn-primary" onclick="location.reload()">↺ Flip again</button>
-      <a class="btn btn-teal" id="backBtn" href="../present.html">Back</a>
-    </div>
-  </div>
-</div>
+</main>
 
 <script src="../vendor/gsap-3.12.5.min.js"></script>
 <script src="../vendor/lottie-light-5.12.2.min.js"></script>
 <script src="../js/app.js"></script>
 <script src="../js/lessons-data.js"></script>
-<script>
-// ===== v2 motion kit: GSAP + Lottie, everything degrades to instant/static with reduced motion =====
-const V2 = (() => {
-  const G = window.gsap, LOT = window.lottie;
-  const RM = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
-  const on = !!G && !RM;
-  if (on) document.documentElement.classList.add("v2a");
-  const STAR = '<svg class="st" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z" fill="#FFC53D" stroke="#E89B0C" stroke-width="1.3" stroke-linejoin="round"/></svg>';
-  const PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.8v14.4a1 1 0 001.5.86l11.6-7.2a1 1 0 000-1.72L8.5 3.94A1 1 0 007 4.8z" fill="currentColor"/></svg>';
-  const $$ = (s, r) => Array.prototype.slice.call((r || document).querySelectorAll(s));
-
-  function lot(el, name, loop, slice) {
-    if (!LOT || !el || RM) return null;
-    try {
-      return LOT.loadAnimation({ container: el, renderer: "svg", loop: !!loop, autoplay: true, path: `../assets/lottie/${name}.json`,
-        rendererSettings: slice ? { preserveAspectRatio: "xMidYMid slice" } : {} });
-    } catch (e) { return null; }
-  }
-  function once(el, name, slice) {
-    if (!el) return null;
-    el.innerHTML = "";
-    const a = lot(el, name, false, slice);
-    if (a) a.addEventListener("complete", () => { el.innerHTML = ""; });
-    return a;
-  }
-
-  // springy press: scale down on pointerdown, elastic back on release (click logic untouched)
-  function press(root, sel) {
-    if (!on || !root) return;
-    root.addEventListener("pointerdown", e => {
-      const t = e.target.closest(sel);
-      if (!t || t.disabled || getComputedStyle(t).pointerEvents === "none") return;
-      G.to(t, { scale: .9, duration: .12, ease: "power2.out", overwrite: "auto" });
-      const up = () => {
-        window.removeEventListener("pointerup", up); window.removeEventListener("pointercancel", up);
-        G.to(t, { scale: 1, duration: .6, ease: "elastic.out(1.2,.4)", overwrite: "auto" });
-      };
-      window.addEventListener("pointerup", up); window.addEventListener("pointercancel", up);
-    });
-  }
-
-  function bump(el) { if (el && on) G.fromTo(el, { scale: 1.35 }, { scale: 1, duration: .7, ease: "elastic.out(1.2,.4)", overwrite: "auto" }); }
-
-  // a star flies on a curved path from the answer into the star counter
-  function flyStar(fromEl, toEl, done) {
-    if (!fromEl || !toEl || !on) { if (done) done(); return; }
-    const a = fromEl.getBoundingClientRect(), b = toEl.getBoundingClientRect();
-    const ax = a.left + a.width / 2 - 17, ay = a.top + a.height / 2 - 17, bx = b.left + 4, by = b.top + b.height / 2 - 17;
-    const cx = (ax + bx) / 2 + (ax < bx ? -60 : 60), cy = Math.min(ay, by) - 140;
-    const s = document.createElement("div"); s.className = "flyStar"; s.innerHTML = STAR; document.body.appendChild(s);
-    const o = { t: 0 };
-    G.set(s, { x: ax, y: ay, scale: .4 });
-    G.to(o, { t: 1, duration: .85, ease: "power1.inOut", onUpdate: () => {
-      const t = o.t, u = 1 - t;
-      G.set(s, { x: u * u * ax + 2 * u * t * cx + t * t * bx, y: u * u * ay + 2 * u * t * cy + t * t * by, rotation: t * 300, scale: .4 + Math.sin(t * Math.PI) * 1.1 + t * .2 });
-    }, onComplete: () => { s.remove(); if (done) done(); } });
-  }
-
-  // little star sparks bursting out of an element (correct answers, pieces landing)
-  function burst(el, n, colors) {
-    if (!el || !on) return;
-    const r = el.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-    const cols = colors || ["#FFC53D", "#F97316", "#23B5A3", "#FF6B6B", "#7EC8F2"];
-    for (let i = 0; i < (n || 10); i++) {
-      const s = document.createElement("div"); s.className = "spark";
-      s.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 1l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" fill="${cols[i % cols.length]}"/></svg>`;
-      document.body.appendChild(s);
-      const ang = (Math.PI * 2 * i) / (n || 10) + Math.random() * .5, dist = 60 + Math.random() * Math.max(50, r.width * .5);
-      G.set(s, { x: cx - 7, y: cy - 7, scale: .2, rotation: Math.random() * 90 });
-      G.to(s, { x: cx - 7 + Math.cos(ang) * dist, y: cy - 7 + Math.sin(ang) * dist, scale: .7 + Math.random() * .8, rotation: "+=180", duration: .7, ease: "power3.out" });
-      G.to(s, { opacity: 0, duration: .35, delay: .45, onComplete: () => s.remove() });
-    }
-  }
-
-  function pop(el) {
-    if (!el || !on) return;
-    G.timeline().to(el, { scale: 1.12, duration: .16, ease: "power2.out", overwrite: "auto" }).to(el, { scale: 1, duration: .7, ease: "elastic.out(1.1,.35)" });
-  }
-  function shake(el) {
-    if (!el || !on) return;
-    G.fromTo(el, { x: 0 }, { keyframes: { x: [-9, 9, -6, 5, -2, 0] }, duration: .45, ease: "none", clearProps: "x" });
-  }
-  // round/stage content entering: springy, slightly rotated, staggered
-  function enterCards(els, opts) {
-    if (!on || !els.length) return;
-    const o = opts || {};
-    G.from(els, { scale: .55, opacity: 0, y: o.y || 0, rotation: i => [-6, 5, 4, -5][i % 4], duration: .6, stagger: o.stagger || .08, delay: o.delay || .05, ease: "back.out(2)", clearProps: "transform,opacity" });
-  }
-  // old content leaving before a new round: returns via callback
-  function leave(els, cb) {
-    if (!on || !els.length) { cb(); return; }
-    G.to(els, { scale: .7, opacity: 0, y: 14, duration: .26, stagger: .04, ease: "back.in(1.6)", onComplete: cb });
-  }
-  function enter(els, opts) {
-    if (!on || !els.length) return;
-    const o = opts || {};
-    G.from(els, { y: o.y == null ? 22 : o.y, opacity: 0, scale: o.scale || .97, duration: .6, stagger: o.stagger || .07, delay: o.delay || 0, ease: "power3.out", clearProps: "transform,opacity" });
-  }
-  // wrap each word of an element in a mask, then slide the words up into view
-  function maskText(el, text, delay) {
-    if (!el) return;
-    if (text != null) el.textContent = text;
-    if (!on) return;
-    const words = el.textContent.split(/(\s+)/);
-    el.innerHTML = words.map(w => /^\s+$/.test(w) ? w : `<span class="mask"><span>${w.replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]))}</span></span>`).join("");
-    G.from($$(".mask > span", el), { yPercent: 115, rotation: 4, duration: .6, stagger: .06, delay: delay || 0, ease: "back.out(1.6)" });
-  }
-
-  // mascot idle: breathing, a gentle sway, a blink-like squash and a little wave now and then
-  function idle(box, img) {
-    const anims = [];
-    if (!on || !box || !img) return anims;
-    anims.push(G.to(box, { scale: 1.035, transformOrigin: "50% 100%", duration: 1.7, yoyo: true, repeat: -1, ease: "sine.inOut" }));
-    anims.push(G.to(img, { rotation: 3, transformOrigin: "50% 100%", duration: 1.5, yoyo: true, repeat: -1, ease: "sine.inOut" }));
-    const bl = G.timeline({ repeat: -1, repeatDelay: 3.2, delay: 1.6 });
-    bl.to(img, { scaleY: .9, scaleX: 1.07, transformOrigin: "50% 100%", duration: .09, ease: "power1.in" })
-      .to(img, { scaleY: 1, scaleX: 1, duration: .45, ease: "elastic.out(1,.4)" });
-    anims.push(bl);
-    const wv = G.timeline({ repeat: -1, repeatDelay: 6.5, delay: 4 });
-    wv.to(box, { rotation: -6, transformOrigin: "50% 90%", duration: .16, ease: "sine.out" })
-      .to(box, { rotation: 6, duration: .2, yoyo: true, repeat: 3, ease: "sine.inOut" })
-      .to(box, { rotation: 0, duration: .5, ease: "elastic.out(1,.4)" });
-    anims.push(wv);
-    return anims;
-  }
-  // happy hop with squash-and-stretch
-  function hop(el) {
-    if (!el || !on) return;
-    G.timeline().to(el, { y: -26, scaleY: 1.08, scaleX: .94, transformOrigin: "50% 100%", duration: .22, ease: "power2.out", overwrite: "auto" })
-      .to(el, { y: 0, scaleY: 1, scaleX: 1, duration: .22, ease: "power2.in" })
-      .to(el, { scaleY: .86, scaleX: 1.12, duration: .08 })
-      .to(el, { scaleY: 1, scaleX: 1, duration: .6, ease: "elastic.out(1.1,.35)" });
-  }
-  function wobble(el) {
-    if (!el || !on) return;
-    G.fromTo(el, { rotation: 0 }, { keyframes: { rotation: [-7, 7, -4, 3, 0] }, transformOrigin: "50% 100%", duration: .55, ease: "none" });
-  }
-
-  function countUp(el, to, dur, delay, onTick) {
-    if (!el) return;
-    if (!on) { el.textContent = to; if (onTick) for (let i = 1; i <= to; i++) onTick(i); return; }
-    const o = { v: 0 }; let last = 0; el.textContent = "0";
-    G.to(o, { v: to, duration: dur || 1.2, delay: delay || 0, ease: "power2.out", onUpdate: () => {
-      const v = Math.round(o.v); el.textContent = v;
-      while (last < v) { last++; if (onTick) onTick(last); }
-    } });
-  }
-  function setBar(el, frac) { if (el) el.style.transform = `scaleX(${Math.max(0, Math.min(1, frac))})`; }
-
-  // star counter: fly a star in from an element, then bump + Lottie star pop and update the number
-  function addStar(fromEl, ctEl, numEl, value) {
-    const after = () => {
-      if (numEl) numEl.textContent = value;
-      bump(ctEl);
-      if (window.Lumio && Lumio.sfx) Lumio.sfx("star");
-      const p = ctEl && ctEl.querySelector(".pop"); if (p) once(p, "star-pop");
-    };
-    flyStar(fromEl, ctEl, after);
-  }
-
-  // intro / start screen: mascot drops in and squashes, title words rise, button springs; mascot idles
-  function intro(root, onStart) {
-    const box = root.querySelector(".mWrap"), img = box && box.querySelector("img"), title = root.querySelector("h1");
-    const btn = root.querySelector(".v2-play"), halo = root.querySelector(".halo");
-    let anims = [];
-    if (halo) { const a = lot(halo, "star-pop", true); if (a) anims.push(a); }
-    maskText(title, null, .55);
-    if (on) {
-      const tl = G.timeline({ delay: .1 });
-      tl.fromTo(img, { y: -220, opacity: 0, scaleX: .84, scaleY: 1.2, transformOrigin: "50% 100%" }, { y: 0, opacity: 1, duration: .45, ease: "power2.in" })
-        .to(img, { scaleX: 1.22, scaleY: .76, duration: .08, ease: "power1.out" })
-        .to(img, { scaleX: 1, scaleY: 1, duration: .8, ease: "elastic.out(1.1,.32)" })
-        .from(root.querySelector(".shadow"), { scaleX: .2, opacity: 0, duration: .4 }, "-=1.1")
-        .from(root.querySelectorAll("p.sub, .introExtra"), { y: 16, opacity: 0, duration: .5, stagger: .08, ease: "power3.out" }, "-=.45")
-        .from(btn, { scale: 0, rotation: -8, duration: .7, ease: "back.out(2.2)", clearProps: "transform" }, "-=.3")
-        .add(() => {
-          anims = anims.concat(idle(box, img));
-          anims.push(G.to(btn, { scale: 1.06, duration: .8, yoyo: true, repeat: -1, ease: "sine.inOut" }));
-        });
-      anims.push(tl);
-    }
-    btn.addEventListener("click", () => {
-      anims.forEach(a => { try { a.kill ? a.kill() : a.destroy(); } catch (e) {} });
-      if (!on) { root.remove(); onStart(); return; }
-      G.timeline().to(btn, { scale: .9, duration: .1 }).to(root, { opacity: 0, scale: 1.06, duration: .38, ease: "power2.in", onComplete: () => { root.remove(); onStart(); } });
-    }, { once: true });
-  }
-
-  // end-of-game: dim fades in, box springs up, Lottie confetti, crew pops in, stars light up as the count rises
-  function celebrate(endcard, box, crewImgs, starsEl, countEl, score) {
-    endcard.style.display = "flex";
-    const conf = document.createElement("div"); conf.className = "v2-conf"; document.body.appendChild(conf);
-    once(conf, "confetti", true);
-    setTimeout(() => conf.remove(), 2600);
-    const stars = starsEl ? $$("span", starsEl) : [];
-    const light = i => { const s = stars[i - 1]; if (!s) return; s.classList.remove("off"); if (on) { G.fromTo(s, { scale: .3, rotation: -40 }, { scale: 1, rotation: 0, duration: .6, ease: "back.out(3)" }); burst(s, 6); } };
-    if (!on) { countUp(countEl, score, 0, 0, light); return; }
-    G.fromTo(endcard, { opacity: 0 }, { opacity: 1, duration: .3 });
-    const tl = G.timeline();
-    tl.from(box, { y: 80, scale: .7, opacity: 0, duration: .7, ease: "back.out(1.7)", clearProps: "transform,opacity" })
-      .from(crewImgs, { y: 60, opacity: 0, scale: .5, rotation: i => (i % 2 ? 12 : -12), duration: .6, stagger: .08, ease: "back.out(2.4)", clearProps: "transform,opacity" }, "-=.35")
-      .from(box.querySelectorAll("h1, .v2-stars, p, .row"), { y: 18, opacity: 0, duration: .45, stagger: .08, ease: "power3.out", clearProps: "transform,opacity" }, "-=.4")
-      .add(() => countUp(countEl, score, Math.max(.6, score * .28), 0, light), "-=.2")
-      .add(() => crewImgs.forEach((im, i) => G.to(im, { y: -6, duration: .9 + i * .07, yoyo: true, repeat: -1, ease: "sine.inOut", delay: i * .1 })), "+=.4");
-  }
-
-  return { G, RM, on, STAR, PLAY, lot, once, press, bump, flyStar, burst, pop, shake, enterCards, leave, enter, maskText, idle, hop, wobble, countUp, setBar, addStar, intro, celebrate, $$ };
-})();
-
-</script>
+<script src="kit/play.js"></script>
 <script>
 const level = Lumio.qs("level") || "level2";
 const num = parseInt(Lumio.qs("n") || "1", 10);
 const source = Lumio.qs("from");
 const backHref = source === "lesson" ? "../student.html" : source === "trial" ? `../present-trial.html?level=${level}` : `../present.html?level=${level}&n=${num}`;
-// From a trial deck the game opened in its own tab: Exit just closes it (the trial is still open in the first tab).
-if (source === "trial") ["exitBtn", "backBtn"].forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener("click", e => { e.preventDefault(); try { window.close(); } catch (x) {} setTimeout(() => { location.href = backHref; }, 250); }); });
-document.getElementById("exitBtn").href = backHref;
-document.getElementById("backBtn").href = backHref;
-
-const lesson = window.LUMIO_LESSONS?.[level]?.[num];
-const vocab = lesson ? lesson.vocab : [];
-const slug = w => w.toLowerCase().replace(/'/g, "").replace(/ /g, "-");
-
-document.getElementById("starIcon").outerHTML = V2.STAR;
-document.getElementById("playBtn").innerHTML = V2.PLAY + "<span>Play</span>";
+const G = window.gsap, RM = LP.RM;
 
 // One calendar page per round -- always the same 6 months in the same
 // order regardless of lesson, so the "Twelve Months Club" theme reads
@@ -459,10 +156,39 @@ const MONTHS = [
   { name: "May", icon: "☀️", sub: "Warm and sunny" },
   { name: "June", icon: "🏖️", sub: "Summer begins!" },
 ];
+// How each month looks: page colour, the month's own picture (assets/vocab/<month>.png, cropped to
+// its illustration), the painting behind, the weather in the air and the light.
+const LOOK = [
+  { c: "#2F6FDB", ink: "#1E4FA8", crop: [75, 128, 460], bg: "assets/story/backgrounds/family-interior.jpg", fx: "snow",   mood: "rgba(80,120,230,.20)" },
+  { c: "#E8476F", ink: "#C02853", crop: [78, 135, 460], bg: "assets/lesson-bg-kid/party.jpg",             fx: "hearts", mood: "rgba(255,120,170,.12)" },
+  { c: "#4FA83D", ink: "#2F7D22", crop: [72, 128, 460], bg: "assets/lesson-bg-kid/park.jpg",              fx: "petals", mood: "rgba(140,230,120,.06)" },
+  { c: "#3D86C6", ink: "#23608F", crop: [90, 105, 460], bg: "assets/story/backgrounds/village.jpg",        fx: "rain",   mood: "rgba(30,50,95,.34)" },
+  { c: "#F59E0B", ink: "#B76E00", crop: [110, 165, 400], bg: "assets/story/backgrounds/forest.jpg",        fx: "sun",    mood: "rgba(255,225,130,.10)" },
+  { c: "#F2B705", ink: "#A87400", crop: [72, 128, 460], bg: "assets/story/backgrounds/forest-stream.jpg",  fx: "summer", mood: "rgba(255,170,60,.10)" },
+];
+const ICONS = [
+  '<svg viewBox="0 0 32 32" aria-hidden="true"><g stroke="#3B82F6" stroke-width="2.6" stroke-linecap="round"><path d="M16 3v26M4.7 9.5l22.6 13M4.7 22.5l22.6-13"/><path d="M12 5l4 3 4-3M12 27l4-3 4 3M4 14l4.5 1-1.5 4.5M28 18l-4.5-1 1.5-4.5" fill="none"/></g></svg>',
+  '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 28S3 20.5 3 11.5A6.5 6.5 0 0116 8a6.5 6.5 0 0113 3.5C29 20.5 16 28 16 28z" fill="#FF5C8A" stroke="#D63366" stroke-width="2"/><path d="M8.5 10.5a3 3 0 013-2" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"/></svg>',
+  '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 18v11" stroke="#3E9B2F" stroke-width="2.6" stroke-linecap="round"/><path d="M16 25c-4 0-7-3-8-6 4 0 7 2 8 6zM16 23c3 0 6-2 7-5-3 0-6 1-7 5z" fill="#4FA83D"/><path d="M9 6l3.5 4L16 4l3.5 6L23 6v6a7 7 0 01-14 0z" fill="#FF6FA0" stroke="#D63366" stroke-width="1.8" stroke-linejoin="round"/></svg>',
+  '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 18a6 6 0 01.6-11.9A8 8 0 0124 9a5 5 0 01-1 9.9z" fill="#B9C6D8" stroke="#7C8BA3" stroke-width="1.8"/><g stroke="#3BA0FF" stroke-width="2.4" stroke-linecap="round"><path d="M10 22l-1.5 4M16 22l-1.5 4M22 22l-1.5 4"/></g></svg>',
+  '<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="6.5" fill="#FFC93C" stroke="#E08A00" stroke-width="2"/><g stroke="#F59E0B" stroke-width="2.4" stroke-linecap="round"><path d="M16 2.5v4M16 25.5v4M2.5 16h4M25.5 16h4M6.5 6.5l2.8 2.8M22.7 22.7l2.8 2.8M6.5 25.5l2.8-2.8M22.7 9.3l2.8-2.8"/></g></svg>',
+  '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 15v14" stroke="#8A5A2B" stroke-width="2.4" stroke-linecap="round"/><path d="M3 15a13 10 0 0126 0z" fill="#FF7A3D" stroke="#C2530A" stroke-width="1.8"/><path d="M11.7 15a4.3 10 0 018.6 0" fill="#FFE27A"/><path d="M4 29c4-2 20-2 24 0" stroke="#F2C46A" stroke-width="3" stroke-linecap="round" fill="none"/></svg>',
+];
+const STAMP = '<svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="36" fill="#fff" stroke="#22C55E" stroke-width="5" stroke-dasharray="6 4"/><path d="M40 14l7.4 15 16.6 2.4-12 11.7 2.8 16.5L40 51.8l-14.8 7.8 2.8-16.5-12-11.7 16.6-2.4z" fill="#FFC93C" stroke="#E08A00" stroke-width="2.6" stroke-linejoin="round"/></svg>';
+
+LP.init({ scene: { bg: LOOK[0].bg, tint: "linear-gradient(180deg,rgba(255,240,220,.06),rgba(40,20,0,.22))" }, hud: { rounds: 6, exitHref: backHref } });
+document.getElementById("hearBtn").innerHTML = LP.ICON.speaker;
+// From a trial deck the game opened in its own tab: Exit just closes it (the trial is still open in the first tab).
+if (source === "trial") LP.hud.exit.onclick = e => { e.preventDefault(); try { window.close(); } catch (x) {} setTimeout(() => { location.href = backHref; }, 250); };
+
+const lesson = window.LUMIO_LESSONS?.[level]?.[num];
+const vocab = lesson ? lesson.vocab : [];
 
 // ---------- Curated phonics word bank (each entry has a confirmed real vocab image) ----------
 // Trimmed from phonics-hub/level2.json's own word lists down to the words that
-// have real illustrations.
+// have real illustrations -- several phonics-only words (e.g. "jam", "frog")
+// and all the sight-word units don't have picture support, so those are left
+// out here rather than shown as a broken image.
 const PHONICS_UNITS = [
   { words: ["van", "box", "zoo"] },          // Unit 1 (lesson 1): j,v,w,x,y,z
   { words: ["ship", "fish", "chair"] },      // Unit 2 (lesson 3): sh, ch
@@ -485,173 +211,236 @@ function eligiblePhonicsWords(lessonNum) {
 }
 const phonicsPool = eligiblePhonicsWords(num);
 
+// Sentence rounds speak the target's example sentence. A distractor that is ALSO named in that
+// sentence ("It is three o'clock" -> clock, "Those are your shoes so these must be mine" -> these)
+// or that shows the same picture (age / years old / birthday are all cakes) would be a second
+// right answer, so it is never offered.
+const mentions = (sentence, w) => new RegExp("\\b" + w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(s|es)?\\b", "i").test(sentence || "");
+const SAME_PICTURE = [["big", "elephant"], ["small", "mouse"], ["pet", "dog"], ["age", "years old", "birthday"]];
+const samePicture = (a, b) => SAME_PICTURE.some(g => g.includes(a.toLowerCase()) && g.includes(b.toLowerCase()));
+function pickDistractors(target, n) {
+  const others = Lumio.shuffle(vocab.filter(v => v.en !== target.en));
+  const say = target.example || target.en;
+  const safe = others.filter(v => !mentions(say, v.en) && !mentions(v.en, target.en) && !mentions(target.en, v.en) && !samePicture(v.en, target.en));
+  const out = safe.slice(0, n);
+  if (out.length < Math.min(n, 2)) others.forEach(v => { if (out.length < n && !out.includes(v) && !mentions(say, v.en)) out.push(v); });
+  return out;
+}
+
+/* ---------- the calendar ---------- */
+const stack = document.getElementById("stack"), hang = document.getElementById("hang"), calStrip = document.getElementById("calStrip");
+document.getElementById("bind").innerHTML = "<i></i>".repeat(9);
+const now = new Date(), YEAR = now.getFullYear() + (now.getMonth() >= 6 ? 1 : 0);   // the coming January-June
+const DAYS = ["S", "M", "T", "W", "T", "F", "S"];
+function pageHTML(i) {
+  const m = MONTHS[i], L = LOOK[i], first = new Date(YEAR, i, 1).getDay(), len = new Date(YEAR, i + 1, 0).getDate();
+  const [x0, y0, cw] = L.crop, ch = cw / 2.2;
+  const bgSize = (600 / cw * 100).toFixed(2), px = (x0 / (600 - cw) * 100).toFixed(2), py = (y0 / (600 - ch) * 100).toFixed(2);
+  let grid = DAYS.map((d, k) => `<span class="dh${k === 0 || k === 6 ? " we" : ""}">${d}</span>`).join("");
+  for (let k = 0; k < first; k++) grid += "<span></span>";
+  for (let d = 1; d <= len; d++) { const wd = (first + d - 1) % 7; grid += `<span class="${d === 1 ? "one" : (wd === 0 || wd === 6) ? "we" : ""}">${d}</span>`; }
+  for (let k = first + len; k < 42; k++) grid += "<span>&nbsp;</span>";   // always 6 weeks, so every page is the same height
+  return `<div class="face"><div class="tm-perf"></div>` +
+    `<div class="tm-photo" style="background-image:url('${LP.vocabImg(m.name)}');background-size:${bgSize}% auto;background-position:${px}% ${py}%"><div class="tm-stamp">${STAMP}</div></div>` +
+    `<div class="tm-head">${ICONS[i]}<b>${m.name}</b><span class="yr">${YEAR}</span></div><div class="tm-sub">${LP.esc(m.sub)}</div>` +
+    `<div class="tm-grid">${grid}</div></div><div class="back"></div>`;
+}
+const pages = MONTHS.map((m, i) => {
+  const p = document.createElement("div"); p.className = "tm-page" + (i ? " under" : ""); p.id = `calPage${i}`;
+  p.style.setProperty("--mc", LOOK[i].c); p.style.setProperty("--mc-ink", LOOK[i].ink); p.style.zIndex = String(10 - i);
+  p.innerHTML = pageHTML(i);
+  if (i > 1) p.style.visibility = "hidden";               // only the top page and the one right under it are drawn
+  stack.appendChild(p);
+  const tab = document.createElement("div"); tab.className = "tm-tab" + (i === 0 ? " now" : ""); tab.id = `dot${i}`;
+  tab.style.setProperty("--mc", LOOK[i].c); tab.style.setProperty("--mc-ink", LOOK[i].ink);
+  tab.innerHTML = ICONS[i] + m.name.slice(0, 3); tab.setAttribute("aria-label", m.name);
+  calStrip.appendChild(tab);
+  return p;
+});
+
+/* ---------- the month's mood: painting, light and weather ---------- */
+const mood = document.getElementById("mood"), cv = document.getElementById("fx"), cx = cv.getContext("2d");
+let fxType = null, fxList = [], fxW = 0, fxH = 0, fxRaf = 0;
+const rnd = (a, b) => a + Math.random() * (b - a);
+function fxSize() { const d = Math.min(2, devicePixelRatio || 1); fxW = cv.clientWidth; fxH = cv.clientHeight; cv.width = fxW * d; cv.height = fxH * d; cx.setTransform(d, 0, 0, d, 0, 0); }
+fxSize(); addEventListener("resize", fxSize);
+const FXN = { snow: 70, hearts: 18, petals: 26, rain: 110, sun: 34, summer: 30 };
+function mkP(init) {
+  const t = fxType, p = { x: rnd(0, fxW), y: init ? rnd(0, fxH) : -20, r: rnd(0, 6.28), vr: rnd(-.03, .03), ph: rnd(0, 6.28) };
+  if (t === "snow") Object.assign(p, { s: rnd(1.5, 4.2), vx: rnd(-.3, .3), vy: rnd(.5, 1.3) });
+  if (t === "hearts") Object.assign(p, { s: rnd(6, 13), vx: rnd(-.2, .2), vy: -rnd(.4, .9), y: init ? rnd(0, fxH) : fxH + 20, c: ["#FF5C8A", "#FF8FB1", "#FFC2D4"][Math.floor(rnd(0, 3))] });
+  if (t === "petals") Object.assign(p, { s: rnd(4, 8), vx: rnd(-.6, .1), vy: rnd(.5, 1.1), c: ["255,170,200", "255,214,228", "255,240,200"][Math.floor(rnd(0, 3))] });
+  if (t === "rain") Object.assign(p, { s: rnd(10, 22), vx: -1.6, vy: rnd(9, 14), y: init ? rnd(0, fxH) : rnd(-60, -10) });
+  if (t === "sun") Object.assign(p, { s: rnd(1.5, 3.5), vx: rnd(-.15, .15), vy: -rnd(.08, .3), y: init ? rnd(0, fxH) : fxH + 10 });
+  if (t === "summer") Object.assign(p, { s: rnd(4, 12), vx: rnd(-.15, .15), vy: -rnd(.3, .8), y: init ? rnd(0, fxH) : fxH + 20 });
+  return p;
+}
+function heart(s) { cx.beginPath(); cx.moveTo(0, s * .35); cx.bezierCurveTo(-s * 1.1, -s * .35, -s * .45, -s * 1.05, 0, -s * .45); cx.bezierCurveTo(s * .45, -s * 1.05, s * 1.1, -s * .35, 0, s * .35); cx.fill(); }
+function fxDraw() {
+  cx.clearRect(0, 0, fxW, fxH);
+  for (const p of fxList) {
+    if (!RM) { p.x += p.vx + (fxType === "petals" || fxType === "snow" ? Math.sin(p.ph) * .4 : 0); p.y += p.vy; p.ph += .02; p.r += p.vr; }
+    if (p.y > fxH + 30 || p.y < -40 || p.x < -40 || p.x > fxW + 40) Object.assign(p, mkP(false));
+    cx.save(); cx.translate(p.x, p.y);
+    if (fxType === "snow") { cx.fillStyle = "rgba(255,255,255,.9)"; cx.beginPath(); cx.arc(0, 0, p.s, 0, 6.28); cx.fill(); }
+    else if (fxType === "hearts") { cx.rotate(Math.sin(p.ph) * .3); cx.globalAlpha = .75; cx.fillStyle = p.c; heart(p.s); }
+    else if (fxType === "petals") { cx.rotate(p.r); cx.fillStyle = `rgba(${p.c},.9)`; cx.beginPath(); cx.ellipse(0, 0, p.s, p.s * .5, 0, 0, 6.28); cx.fill(); }
+    else if (fxType === "rain") { cx.strokeStyle = "rgba(210,230,255,.55)"; cx.lineWidth = 1.6; cx.beginPath(); cx.moveTo(0, 0); cx.lineTo(-p.s * .15, p.s); cx.stroke(); }
+    else if (fxType === "sun") { const a = .4 + .6 * Math.abs(Math.sin(p.ph * 1.3)); const g = cx.createRadialGradient(0, 0, 0, 0, 0, p.s * 4); g.addColorStop(0, `rgba(255,236,150,${a})`); g.addColorStop(1, "rgba(255,236,150,0)"); cx.fillStyle = g; cx.beginPath(); cx.arc(0, 0, p.s * 4, 0, 6.28); cx.fill(); }
+    else if (fxType === "summer") { cx.strokeStyle = "rgba(255,255,255,.7)"; cx.lineWidth = 1.4; cx.beginPath(); cx.arc(0, 0, p.s, 0, 6.28); cx.stroke(); cx.fillStyle = "rgba(255,255,255,.55)"; cx.beginPath(); cx.arc(-p.s * .35, -p.s * .35, p.s * .22, 0, 6.28); cx.fill(); }
+    cx.restore();
+  }
+  fxRaf = RM ? 0 : requestAnimationFrame(fxDraw);
+}
+function setMood(i, first) {
+  const L = LOOK[i];
+  if (!first) LP.sceneTo(L.bg);
+  mood.style.backgroundColor = L.mood;
+  const swap = () => { fxType = L.fx; fxList = []; const n = RM ? Math.round(FXN[L.fx] / 3) : FXN[L.fx]; for (let k = 0; k < n; k++) fxList.push(mkP(true)); cancelAnimationFrame(fxRaf); fxDraw(); };
+  if (G && !RM && !first) G.to(cv, { opacity: 0, duration: .4, onComplete: () => { swap(); G.to(cv, { opacity: 1, duration: .8 }); } });
+  else swap();
+}
+document.addEventListener("visibilitychange", () => { cancelAnimationFrame(fxRaf); if (!document.hidden && !RM) fxRaf = requestAnimationFrame(fxDraw); });
+setMood(0, true);
+
+/* ---------- the characters ---------- */
+const lumi = LP.actor(document.getElementById("lumiZone"), { char: "lumi", pose: "pencil", cheer: "celebrate", oops: "surprised", alt: "Lumi" });
+const noor = LP.actor(document.getElementById("noorZone"), { char: "noor", pose: "point", cheer: "celebrate", oops: "surprised", alt: "Noor" });
+
+/* sticker, tear, flip, fall, swing */
+function stampPage(i) {
+  const st = pages[i].querySelector(".tm-stamp");
+  if (!G || RM) { st.style.opacity = 1; LP.sfx("pop"); return Promise.resolve(); }
+  return new Promise(res => G.timeline({ onComplete: res })
+    .fromTo(st, { opacity: 0, scale: 2.6, rotation: -40 }, { opacity: 1, scale: 1, rotation: -12, duration: .32, ease: "power3.in", onComplete: () => {
+      LP.sfx("pop"); const c = LP.center(st); LP.burst(c.x, c.y, { n: 14, speed: 5, shape: "star", colors: ["#FFD666", "#FFB300", "#22C55E", "#fff"] }); } })
+    .to(st, { scale: 1.08, duration: .08, yoyo: true, repeat: 1 }));
+}
+function swing(power) {
+  if (!G || RM) return;
+  G.fromTo(hang, { rotation: power }, { rotation: 0, duration: 1.8, ease: "elastic.out(1,.18)", transformOrigin: "50% 0" });
+}
+function tearPage(i) {
+  const p = pages[i], next = pages[i + 1];
+  if (next) { next.style.visibility = "visible"; if (pages[i + 2]) pages[i + 2].style.visibility = "visible"; }
+  if (!G || RM) { p.style.display = "none"; if (next) next.classList.remove("under"); return Promise.resolve(); }
+  const r = p.getBoundingClientRect();
+  // lift it free of the stack so it can fly off over everything
+  const fly = p; const keepH = r.height;
+  stack.style.minHeight = keepH + "px";
+  return new Promise(res => {
+    const tl = G.timeline({ onComplete: () => { fly.remove(); if (next) { next.classList.remove("under"); } stack.style.minHeight = ""; res(); } });
+    tl.to(fly, { rotation: -3, y: 6, duration: .14, ease: "power2.out", transformOrigin: "100% 0%", onStart: () => LP.sfx("tick") })
+      .to(fly, { rotation: 4, y: 10, duration: .12, ease: "power2.inOut", transformOrigin: "0% 0%" })
+      .add(() => { LP.sfx("flip"); LP.burst(r.left + r.width / 2, r.top + 6, { n: 18, speed: 5, up: 1, colors: ["#FFFDF8", "#EFE6D6", LOOK[i].c], ring: false }); swing(-4); })
+      .to(fly, { rotationX: 150, y: -40, z: 120, duration: .5, ease: "power2.out", transformOrigin: "50% 0%" })
+      .to(fly, { y: innerHeight * .9, x: rnd(-140, 140), rotation: rnd(-40, 40), rotationX: 230, z: 220, opacity: 0, duration: .85, ease: "power2.in", onStart: () => LP.sfx("whoosh") }, "-=.05");
+    if (next) G.fromTo(next, { scale: .985, y: 3 }, { scale: 1, y: 0, duration: .5, delay: .35, ease: "back.out(2)" });
+  });
+}
+function showTab(i) {
+  calStrip.querySelectorAll(".tm-tab").forEach((t, k) => t.classList.toggle("now", k === i));
+  const t = document.getElementById(`dot${i}`); if (t && G && !RM) G.fromTo(t, { scale: .6 }, { scale: 1, duration: .5, ease: "back.out(3)" });
+}
+
 if (!vocab.length) {
-  document.getElementById("playWrap").innerHTML = "<p style='padding:40px'>No lesson data found.</p>";
-  document.getElementById("intro").remove();
+  document.getElementById("optGrid").innerHTML = "<p class='lp-panel' style='padding:24px;grid-column:1/-1'>No lesson data found.</p>";
 } else {
   const ROUNDS = 6;
-  let r = 0, score = 0, locked = false;
-  const optGrid = document.getElementById("optGrid");
-  const calPages = document.getElementById("calPages");
-  const calStrip = document.getElementById("calStrip");
-  const starCt = document.getElementById("starCt");
-  const bar = document.getElementById("bar");
-  const lumiImg = document.getElementById("lumiImg");
-  const lumiHop = document.getElementById("lumiHop");
-
-  MONTHS.forEach((m, i) => {
-    const page = document.createElement("div");
-    page.className = "calPage" + (i === 0 ? " show" : "");
-    page.id = `calPage${i}`;
-    page.innerHTML = `<div class="icon">${m.icon}</div><div class="txt"><div class="month">${m.name}</div><div class="sub">${m.sub}</div></div>`;
-    calPages.appendChild(page);
-    const dot = document.createElement("div");
-    dot.className = "dot" + (i === 0 ? " won" : "");
-    dot.id = `dot${i}`;
-    dot.innerHTML = `${m.icon}<span class="pop"></span>`;
-    calStrip.appendChild(dot);
-  });
-
-  function showMonth(i) {
-    const page = document.getElementById(`calPage${i}`);
-    const old = document.querySelector(".calPage.show");
-    const dot = document.getElementById(`dot${i}`);
-    const swap = () => {
-      document.querySelectorAll(".calPage").forEach(p => p.classList.remove("show"));
-      if (page) page.classList.add("show");
-      if (V2.on && page) {
-        // new month flips down from the rings, its icon springs in
-        V2.G.fromTo(page, { rotationX: 95, opacity: 0, transformOrigin: "50% 0%" }, { rotationX: 0, opacity: 1, duration: .75, ease: "back.out(1.5)", clearProps: "transform,opacity" });
-        V2.G.fromTo(page.querySelector(".icon"), { scale: 0, rotation: -30 }, { scale: 1, rotation: 0, duration: .7, delay: .25, ease: "back.out(2.6)" });
-        V2.burst(page.querySelector(".icon"), 8, ["#F472B6", "#FFC53D", "#7EC8F2", "#23B5A3"]);
-      }
-      if (dot) {
-        dot.classList.add("won");
-        if (V2.on) V2.G.fromTo(dot, { scale: .4 }, { scale: 1, duration: .6, ease: "back.out(3)", clearProps: "transform" });
-        V2.once(dot.querySelector(".pop"), "star-pop");
-      }
-    };
-    // the old page tears off upwards first
-    if (V2.on && old && old !== page) V2.G.to(old, { rotationX: -100, opacity: 0, transformOrigin: "50% 0%", duration: .35, ease: "power2.in", onComplete: () => { V2.G.set(old, { clearProps: "transform,opacity" }); swap(); } });
-    else swap();
+  let r = 0, score = 0, locked = true;
+  const optGrid = document.getElementById("optGrid"), hearBtn = document.getElementById("hearBtn");
+  // One shared "already asked" set for the whole game (the old page picked every target at random,
+  // so the same word often came up two or three times in one game while others never did).
+  let usedThisGame = new Set();
+  function pickUnused(pool, keyFn) {
+    let avail = pool.filter(w => !usedThisGame.has(keyFn(w)));
+    if (!avail.length) { usedThisGame.clear(); avail = pool.slice(); }
+    const pick = Lumio.shuffle(avail)[0];
+    usedThisGame.add(keyFn(pick));
+    return pick;
   }
 
   // Round plan: mostly phonics rounds (this level's main focus), with a
   // sentence-pattern round mixed in so vocabulary and the lesson's own
   // grammar pattern get covered too, not only sounds.
   const plan = [];
-  for (let i = 0; i < ROUNDS; i++) {
-    plan.push((phonicsPool.length >= 2 && i % 3 !== 2) ? "phonics" : "sentence");
-  }
+  for (let i = 0; i < ROUNDS; i++) plan.push((phonicsPool.length >= 2 && i % 3 !== 2) ? "phonics" : "sentence");
   if (phonicsPool.length < 2) plan.forEach((_, i) => plan[i] = "sentence");
 
-  document.getElementById("endStars").innerHTML = Array.from({ length: ROUNDS }, () => `<span class="off">${V2.STAR}</span>`).join("");
+  let currentTargetWord = "", currentSpeakText = "";
+  const playPrompt = () => LP.say(currentSpeakText, hearBtn);
 
-  let currentTargetWord = "";
-  let currentSpeakText = "";
-
-  function playPrompt() {
-    Lumio.speak(currentSpeakText);
-    if (V2.on) V2.G.fromTo("#hearBtn", { scale: .85 }, { scale: 1, duration: .6, ease: "elastic.out(1.2,.4)" });
-  }
-
-  function makeCard(word, imgPath) {
-    return `
-      <button class="opt-card" data-en="${word}">
-        <div class="pic">
-          <div style="position:absolute;inset:0">${Lumio.letterTile(word)}</div>
-          <img src="${imgPath}" alt="${word}" onload="this.previousElementSibling.style.display='none'" onerror="this.remove()">
-        </div>
-        <div class="word">${word}</div>
-        <div class="check ckBadge"><span class="ckT">✓</span><span class="lt"></span></div>
-      </button>`;
-  }
-
-  function drawRound() {
-    locked = false;
-    document.getElementById("roundPill").textContent = `${r + 1}/${ROUNDS}`;
-    lumiImg.src = "../assets/story/characters/lumi-point.png";
-
+  async function drawRound() {
+    locked = true; LP.answer = null;
+    LP.round(r);
+    lumi.set("pencil");
+    optGrid.innerHTML = "";
+    let words;
     if (plan[r] === "phonics") {
-      const words = Lumio.shuffle(phonicsPool).slice(0, Math.min(3, phonicsPool.length));
-      const target = words[0];
-      currentTargetWord = target;
-      currentSpeakText = target;
-      optGrid.innerHTML = Lumio.shuffle(words).map(w => makeCard(w, `../assets/vocab/${slug(w)}.png`)).join("");
+      const target = pickUnused(phonicsPool, w => w);
+      words = Lumio.shuffle([target, ...Lumio.shuffle(phonicsPool.filter(w => w !== target)).slice(0, Math.min(2, phonicsPool.length - 1))]);
+      currentTargetWord = currentSpeakText = target;
     } else {
-      const target = Lumio.shuffle(vocab)[0];
-      const distractorPool = Lumio.shuffle(vocab.filter(v => v.en !== target.en));
-      const opts = Lumio.shuffle([target, ...distractorPool.slice(0, 2)]);
+      const target = pickUnused(vocab, w => w.en);
+      words = Lumio.shuffle([target, ...pickDistractors(target, 2)]).map(o => o.en);
       currentTargetWord = target.en;
       currentSpeakText = target.example || target.en;
-      optGrid.innerHTML = opts.map(o => makeCard(o.en, `../assets/vocab/${slug(o.en)}.png`)).join("");
     }
     window.__lastTarget = currentTargetWord; // exposed for automated QA only
-
-    document.querySelectorAll(".opt-card").forEach(card => { card.onclick = () => choose(card); });
-    V2.enterCards(V2.$$(".opt-card"), { delay: .1 });
-    setTimeout(playPrompt, 350);
+    await LP.banner(MONTHS[r].name, "Round " + (r + 1) + " of " + ROUNDS);
+    optGrid.className = "lp-cards tm-cards " + (words.length === 2 ? "c2" : "c3");
+    const cards = words.map(w => { const c = LP.picCard(w); c.onclick = () => choose(c); optGrid.appendChild(c); return c; });
+    if (G && !RM) G.fromTo("#promptCard", { scale: .6, opacity: 0 }, { scale: 1, opacity: 1, duration: .5, ease: "back.out(2)" });
+    lumi.nod();
+    await LP.deal(cards, document.getElementById("cal"));
+    locked = false;
+    LP.answer = currentTargetWord;   // read by the automated play-through tests
+    playPrompt();
   }
 
-  function nextRound() {
-    r++;
-    if (r < ROUNDS) V2.leave(V2.$$(".opt-card"), drawRound);
-    else endGame();
-  }
-
-  function choose(card) {
+  async function choose(card) {
     if (locked) return;
-    const ok = card.dataset.en === currentTargetWord;
-    if (ok) {
-      locked = true;
-      score++;
-      Lumio.beep(true);
-      card.classList.add("correct");
-      V2.pop(card);
-      V2.burst(card, 10);
-      V2.lot(card.querySelector(".ckBadge .lt"), "check", false);
-      document.querySelectorAll(".opt-card").forEach(c => { c.classList.add("locked"); if (c !== card && V2.on) V2.G.to(c, { opacity: .55, scale: .94, duration: .3 }); });
-      V2.addStar(card, starCt, document.getElementById("score"), score);
-      V2.setBar(bar, (r + 1) / ROUNDS);
-      lumiImg.src = "../assets/story/characters/lumi-celebrate.png";
-      V2.hop(lumiHop);
-      if (r + 1 < ROUNDS) showMonth(r + 1);
-      setTimeout(nextRound, 1200);
-    } else {
-      Lumio.beep(false);
-      card.classList.add("wrong-dim");
-      V2.shake(card);
-      V2.wobble(lumiHop);
+    const ok = card.dataset.word === currentTargetWord;
+    if (!ok) {
       // gentle -- no scoring penalty, no lockout; they simply try another card
+      LP.bad(card); lumi.oops("surprised", "pencil"); noor.oops("surprised", "point");
+      card.disabled = true; setTimeout(() => card.classList.add("dim"), 350);
+      return;
+    }
+    locked = true; score++; LP.answer = null;
+    const cards = [...optGrid.children];
+    cards.forEach(c => c.disabled = true);
+    lumi.cheer("celebrate", false); noor.cheer("celebrate");
+    LP.fill(r);
+    document.getElementById(`dot${r}`).classList.add("done");
+    await LP.good(card);
+    LP.clear(cards);
+    await stampPage(r);
+    await LP.wait(250);
+    if (r + 1 < ROUNDS) {
+      await tearPage(r);
+      setMood(r + 1);
+      showTab(r + 1);
+      await LP.wait(350);
+      r++; drawRound();
+    } else {
+      swing(5); LP.sfx("win");
+      const c = LP.center(document.getElementById("cal")); LP.burst(c.x, c.y, { n: 50, speed: 10 });
+      await LP.wait(1300);
+      endGame();
     }
   }
 
   function endGame() {
-    Lumio.confetti(100);
-    const pct = Math.round((score / ROUNDS) * 100);
-    Lumio.speak(pct >= 80 ? "Amazing!" : "Great job!"); // only these two have recordings
-    document.getElementById("finalScore").innerHTML = `You filled <span id="endCount">0</span> out of ${ROUNDS} calendar pages!`;
-    const endcard = document.getElementById("endcard");
-    V2.celebrate(endcard, endcard.querySelector(".box"), V2.$$(".crew img", endcard), document.getElementById("endStars"), document.getElementById("endCount"), score);
+    LP.round(-1);
+    LP.results({ score, total: ROUNDS, title: "Another page in the book!", scoreLabel: "Pages filled",
+      note: `You filled ${score} out of ${ROUNDS} calendar pages!`, actor: { char: "lumi", pose: "celebrate" },
+      exitHref: backHref, exitLabel: source === "lesson" ? "Back to my map" : "Done" });
   }
 
   document.getElementById("promptCard").onclick = playPrompt;
-  V2.press(optGrid, ".opt-card");
-  V2.press(document.getElementById("endcard"), ".btn");
-  V2.press(document.getElementById("hud"), ".btn");
-
-  V2.intro(document.getElementById("intro"), () => {
-    V2.idle(document.getElementById("lumiBox"), lumiImg);
-    V2.enter(V2.$$("#hud > *"), { y: -16, stagger: .05 });
-    if (V2.on) {
-      V2.G.from("#calBook", { y: 30, opacity: 0, rotation: -3, duration: .7, ease: "back.out(1.8)", clearProps: "transform,opacity" });
-      V2.G.from("#calPage0", { rotationX: 95, opacity: 0, transformOrigin: "50% 0%", duration: .8, delay: .3, ease: "back.out(1.5)", clearProps: "transform,opacity" });
-      V2.G.from("#calStrip .dot", { scale: 0, duration: .5, stagger: .05, delay: .4, ease: "back.out(2.4)", clearProps: "transform" });
-      V2.G.from("#lumiHop", { x: 40, opacity: 0, duration: .7, delay: .6, ease: "back.out(2)", clearProps: "opacity" });
-    }
-    V2.enter(V2.$$("#promptCard"), { delay: .15 });
-    drawRound();
-  });
+  LP.title({ kicker: "Level 2 · Listen and flip", title: "Twelve Months Calendar", sub: "Listen, tap the right picture and tear off the next month!",
+    ar: "استمع واختر الصورة الصحيحة لتقلب صفحة التقويم", actor: { char: "lumi", pose: "wave-book", cheer: "celebrate" } }).then(() => { noor.enter("bottom"); drawRound(); });
 }
 </script>
 </body>

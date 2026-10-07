@@ -50,7 +50,7 @@
   html[data-lp="teen"] .mm-front.word{background:linear-gradient(160deg,#2b2f66,#1a1d44)}
   .mm-front.word::before{content:"";position:absolute;inset:7px;border-radius:13px;border:2px solid rgba(249,115,22,.25)}
   html[data-lp="teen"] .mm-front.word::before{border-color:rgba(140,160,255,.35)}
-  .mm-wordtxt{position:relative;padding:0 10px;text-align:center;font-family:var(--lp-display);font-weight:800;color:#3B2A17;line-height:1.05;overflow-wrap:anywhere;font-size:calc(var(--k,1) * 26px)}
+  .mm-wordtxt{position:relative;display:block;max-width:100%;padding:0 9px;text-align:center;overflow-wrap:normal;word-break:normal;hyphens:none;font-family:var(--lp-display);font-weight:800;color:#3B2A17;line-height:1.05;font-size:calc(var(--k,1) * 26px)}
   html[data-lp="teen"] .mm-wordtxt{color:#F4F6FF;text-shadow:0 0 18px rgba(130,150,255,.5)}
   .mm-wordtxt.l2{font-size:calc(var(--k,1) * 21px)} .mm-wordtxt.l3{font-size:calc(var(--k,1) * 17px)} .mm-wordtxt.l4{font-size:calc(var(--k,1) * 14px)}
   .mm-pip{position:absolute;width:16px;height:16px;opacity:.55}
@@ -93,7 +93,7 @@
     .mm-say{order:1;align-items:center;padding:0}
     .mm-say .lp-bubble .tail{left:50%;bottom:-9px;margin-left:-11px}
     .mm-tray{order:3;width:96px;height:120px;margin:4px 0 26px}
-    .mm-mat{max-width:min(880px,calc((100dvh - 176px) * 1.0667 + 72px));padding:18px}
+    .mm-mat{width:min(880px,calc((100dvh - 176px) * 1.0667 + 72px),calc(100vw - 400px));max-width:none;padding:18px}
     .mm-grid{grid-template-columns:repeat(4,1fr);gap:16px}
     .mm-card{--k:1.35}
   }
@@ -153,6 +153,10 @@ function sdVocabFile(v) {
   return String(v.image || v.en).toLowerCase().trim().replace(/'/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 }
 const picSrc = w => `../assets/vocab/${w.pic || sdVocabFile(w)}.png`;
+// Lesson words that have no picture file in assets/vocab (checked against the folder): treated exactly like
+// a failed picture (the student.html fallback) but without asking the server for a file that isn't there.
+const NO_PIC = new Set("accurately ago anniversary apologized as-soon-as at-last attend backup-plan board-game boarding-pass body-language booking brunch by-the-time cause certain chaperone conclusion counterargument credits cuisine daydreaming delay deliver discover distraction dropped durable earlier effort eye-contact forecast gently giggling guest-list headcount heritage hospitality instructions internship itinerary label landmark lost-and-found mandatory milestone motivation noisy panic peaceful photo-album playlist plot-twist privacy productive progress queue recently result revision road-trip scene scholarship shelter statistic step-by-step suddenly technology the-best therefore thrilled thunder timeline timer tone turning-point unlikely whispering".split(" "));
+const hasPic = w => !w.em && !NO_PIC.has(w.pic || sdVocabFile(w));
 let gamesLessonNum = null, gamesUsingRealVocab = false;
 function shuffled(arr) { return [...arr].sort(() => Math.random() - 0.5); }
 function pickWords(n, source) { const bank = source || WORD_BANK; return shuffled(bank).slice(0, Math.min(n, bank.length)); }
@@ -211,7 +215,7 @@ document.head.appendChild(hubCss);
 
 /* ================= Memory Match (rules from student.html) ================= */
 const PAIRS = 6;
-const movesChip = LP.el("div", "lp-chip mm-moves", '<span class="k">Moves</span><span class="n" id="mmMoves">0</span>');
+const movesChip = LP.el("div", "lp-chip mm-moves", '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="11" height="15" rx="2.5" stroke="currentColor" stroke-width="2.2"/><path d="M10 4.2l1-.3a2.5 2.5 0 013 1.8l2.9 10.6a2.5 2.5 0 01-1.8 3l-2.3.6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span class="k">Moves</span><span class="n" id="mmMoves">0</span>');
 movesChip.setAttribute("aria-label", "Moves");
 LP.init({
   theme: TEEN ? "teen" : "kid",
@@ -222,6 +226,7 @@ LP.init({
 });
 document.getElementById("speakIco").innerHTML = LP.ICON.speaker;
 const CH = TEEN ? { char: "lumi-teen", pose: "think", cheer: "laugh", oops: "surprised" } : { char: "lumi", pose: "magnify", cheer: "celebrate", oops: "surprised" };
+[CH.pose, CH.cheer, CH.oops].forEach(p => { const i = new Image(); i.src = LP.char(CH.char, p); });
 const host = LP.actor(document.getElementById("host"), Object.assign({ alt: "Lumi" }, CH));
 const mmGrid = document.getElementById("mmGrid"), tray = document.getElementById("tray"), trayLbl = document.getElementById("trayLbl");
 const sayTxt = document.getElementById("sayTxt"), sayBtn = document.getElementById("sayBtn"), movesN = document.getElementById("mmMoves");
@@ -245,10 +250,21 @@ function frontHtml(c) {
   if (c.kind === "word") return `<div class="mm-face mm-front word">${pip}<span class="mm-wordtxt ${lenClass(c.w.en)}">${LP.esc(c.w.en)}</span></div>`;
   // picture face (emoji in the fallback bank); a missing picture falls back to the word itself (as in student.html)
   const inner = c.w.em ? `<span class="emo">${LP.esc(c.w.em)}</span>`
+    : !hasPic(c.w) ? `<span class="mm-wordtxt ${lenClass(c.w.en)}">${LP.esc(c.w.en)}</span>`
     : `<img src="${LP.esc(picSrc(c.w))}" alt="${LP.esc(c.w.en)}" draggable="false" onerror="var s=document.createElement('span');s.className='mm-wordtxt ${lenClass(c.w.en)}';s.textContent=this.alt;this.replaceWith(s)">`;
   return `<div class="mm-face mm-front pic"><div class="plate">${inner}</div></div>`;
 }
 
+// shrink long words/phrases until every word fits its card on one line (no mid-word breaks)
+function fitWords() {
+  document.querySelectorAll(".mm-wordtxt").forEach(t => {
+    t.style.fontSize = "";
+    const box = t.closest(".mm-face"); if (!box || !box.clientWidth) return;
+    let fs = parseFloat(getComputedStyle(t).fontSize);
+    while (fs > 10 && (t.scrollWidth > t.clientWidth + 1 || t.scrollHeight > box.clientHeight * .86)) { fs -= 1; t.style.fontSize = fs + "px"; }
+  });
+}
+addEventListener("resize", () => { clearTimeout(fitWords._t); fitWords._t = setTimeout(fitWords, 150); });
 function resetHud() {
   LP.setStars(0);
   document.querySelectorAll(".lp-prog i b").forEach(b => { if (G) G.set(b, { scaleX: 0 }); else b.style.transform = "scaleX(0)"; });
@@ -279,6 +295,7 @@ async function startMemory(source) {
   say("Find the pairs!");
   mmGrid.innerHTML = "";
   trayDeck(true);
+  requestAnimationFrame(fitWords);
   const els = cards.map((c, i) => {
     const b = document.createElement("button");
     b.type = "button"; b.className = "mm-card"; b.dataset.key = c.key; b.dataset.kind = c.kind; b.dataset.press = "";

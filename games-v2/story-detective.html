@@ -13,7 +13,7 @@
      case board fills with pinned evidence linked by red yarn, and CASE CLOSED slams down. */
   :root{--sd-type:'Special Elite','Courier New',ui-monospace,monospace;--sd-hand:'Caveat','Segoe Print','Comic Sans MS',cursive;--sd-red:#C81D25;--sd-paper:#F7EEDB}
   .sd-dark{position:fixed;inset:0;z-index:1;pointer-events:none;--x:50vw;--y:35vh;
-    background:radial-gradient(circle at var(--x) var(--y),rgba(255,226,160,.16) 0,rgba(255,214,140,.06) 80px,rgba(5,4,12,.30) 170px,rgba(5,4,12,.84) 360px)}
+    background:radial-gradient(circle at var(--x) var(--y),rgba(255,226,160,.16) 0,rgba(255,214,140,.06) 80px,rgba(5,4,12,.22) 190px,rgba(5,4,12,.66) 420px)}
   .sd-beam{position:fixed;left:0;top:0;width:12px;height:12px;margin:-6px;border-radius:50%;z-index:2;pointer-events:none;background:rgba(255,236,190,.9);box-shadow:0 0 30px 12px rgba(255,220,150,.35);opacity:.55}
   .sd{position:relative;width:100%;max-width:1240px;display:flex;flex-direction:column;gap:12px;align-items:stretch}
 
@@ -26,9 +26,9 @@
     box-shadow:0 0 0 7px #3B2416,0 0 0 9px #5A3A22,inset 0 0 40px rgba(30,12,0,.6),0 30px 60px -20px rgba(0,0,0,.9)}
   .sd-board::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
     background:radial-gradient(circle at var(--bx) var(--by),rgba(255,236,190,.42),rgba(255,236,190,.08) 160px,rgba(0,0,0,.22) 320px);mix-blend-mode:soft-light}
-  .sd-head{position:relative;display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 2px 10px}
-  .sd-head h2{margin:0;font-family:var(--sd-hand);font-weight:700;font-size:clamp(22px,5.6vw,32px);color:#FFF4DC;line-height:1;text-shadow:0 2px 0 rgba(0,0,0,.35);transform:rotate(-1.5deg)}
-  .sd-tag{flex:none;font-family:var(--sd-type);font-size:12px;color:#2B1D10;background:var(--sd-paper);padding:4px 8px;border-radius:3px;transform:rotate(2deg);box-shadow:0 4px 8px -3px rgba(0,0,0,.5);max-width:48%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sd-head{position:relative;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 8px;margin:0 2px 8px}
+  .sd-head h2{margin:0;font-family:var(--sd-hand);font-weight:700;font-size:clamp(21px,5.4vw,34px);color:#FFF4DC;line-height:1;text-shadow:0 2px 0 rgba(0,0,0,.35);transform:rotate(-1.5deg)}
+  .sd-tag{flex:none;font-family:var(--sd-type);font-size:12px;color:#2B1D10;background:var(--sd-paper);padding:4px 8px;border-radius:3px;transform:rotate(2deg);box-shadow:0 4px 8px -3px rgba(0,0,0,.5);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .sd-yarn{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3;overflow:visible}
   .sd-yarn path{fill:none;stroke:#D7262E;stroke-width:2.6;stroke-linecap:round;filter:drop-shadow(0 3px 2px rgba(0,0,0,.45))}
   .sd-slots{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:14px 10px;justify-items:center;padding:6px 2px 0}
@@ -45,26 +45,26 @@
   .sd-ev .ph.note{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px;text-align:center;
     background:repeating-linear-gradient(180deg,transparent 0 13px,rgba(70,110,170,.22) 13px 14px),linear-gradient(180deg,#FFFBEF,#F3E9D2)}
   .sd-ev .ph.note::before{content:"";position:absolute;right:-14px;bottom:-14px;width:46px;height:46px;border-radius:50%;border:4px solid rgba(120,70,20,.16)}
-  .sd-ev .ph.note .tw{font-family:var(--sd-type);color:#1E1A16;font-size:clamp(12px,3.4vw,19px);line-height:1.05;overflow-wrap:anywhere}
+  .sd-ev .ph.note .tw{display:block;max-width:100%;font-family:var(--sd-type);color:#1E1A16;font-size:19px;line-height:1.05;overflow-wrap:normal;word-break:keep-all}
   .sd-ev .ph.note .ar{font-family:'Tajawal',sans-serif;font-weight:800;font-size:clamp(10px,2.8vw,14px);color:#8A3B12}
   .sd-ev .ph.note svg{width:38%;color:#8A3B12}
   .sd-ev .cap{font-family:var(--sd-hand);font-weight:700;color:#2B1D10;font-size:clamp(14px,3.8vw,20px);text-align:center;line-height:1;padding:4px 2px 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .sd-ev .pin{position:absolute;left:50%;top:-9px;width:18px;height:18px;margin-left:-9px;border-radius:50%;z-index:4;opacity:0;
     background:radial-gradient(circle at 35% 30%,#FF8A8A,#D7262E 45%,#7A0D12);box-shadow:0 4px 4px rgba(0,0,0,.5)}
   .sd-ev.filled .pin{opacity:1}
-  .sd-ev .stamp{position:absolute;right:-10px;bottom:16px;z-index:5;font-family:var(--sd-type);font-size:11px;color:#15803D;border:2px solid #15803D;border-radius:4px;padding:1px 5px;background:rgba(240,255,240,.85);transform:rotate(-12deg);opacity:0}
+  .sd-ev .stamp{position:absolute;right:-16px;bottom:-10px;z-index:5;font-family:var(--sd-type);font-size:11px;color:#15803D;border:2px solid #15803D;border-radius:4px;padding:1px 5px;background:rgba(240,255,240,.85);transform:rotate(-12deg);opacity:0}
   .sd-closed{position:absolute;left:50%;top:52%;z-index:6;transform:translate(-50%,-50%) rotate(-9deg);opacity:0;pointer-events:none;white-space:nowrap;
     font-family:var(--sd-type);font-size:clamp(34px,10vw,64px);letter-spacing:.06em;color:var(--sd-red);padding:6px 22px;border:6px double var(--sd-red);border-radius:12px;
-    background:rgba(255,240,230,.12);text-shadow:0 0 1px rgba(0,0,0,.2);
+    background:rgba(255,244,232,.88);box-shadow:0 10px 30px rgba(0,0,0,.5);
     -webkit-mask:repeating-radial-gradient(circle at 30% 40%,#000 0 3px,rgba(0,0,0,.72) 4px 5px);mask:repeating-radial-gradient(circle at 30% 40%,#000 0 3px,rgba(0,0,0,.72) 4px 5px)}
 
   /* ---------- the desk: detective, witness and the case file ---------- */
   .sd-desk{display:flex;align-items:flex-end;gap:8px}
-  .sd-cast{position:relative;flex:none;width:118px;height:156px}
+  .sd-cast{position:relative;flex:none;width:124px;height:178px;transition:width .4s,height .4s}
   .sd-cast .det{position:absolute;left:0;bottom:0;height:100%;transition:transform .5s ease}
   .sd-cast .wit{position:absolute;right:-6px;bottom:0;height:88%;opacity:0}
   .sd-cast .lp-actor{height:100%}
-  .sd-cast.duo .det{transform:translateX(-14px) scale(.9);transform-origin:50% 100%}
+  .sd-cast.duo .det{transform:translateX(-22px) scale(.9);transform-origin:50% 100%}
   .sd-file{position:relative;flex:1;min-width:0;cursor:pointer;border-radius:6px 16px 16px 16px;padding:14px 14px 12px;
     background:linear-gradient(180deg,#E9C989,#D9B06A);color:#2B1D10;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 18px 30px -14px rgba(0,0,0,.85)}
   .sd-file::before{content:"";position:absolute;left:0;top:-14px;width:42%;height:16px;border-radius:8px 10px 0 0;background:#E9C989}
@@ -84,21 +84,21 @@
   .sd-opts{display:grid;gap:10px;width:100%;perspective:900px}
   .sd-opts.find{grid-template-columns:repeat(3,1fr)}
   .sd-opts.tf{grid-template-columns:1fr 1fr;max-width:520px;justify-self:center;margin:0 auto}
-  .sd-card{position:relative;border:none;cursor:pointer;min-height:64px;padding:16px 10px 12px;border-radius:4px;color:#1E1A16;touch-action:manipulation;
+  .lp .sd-card{position:relative;border:none;cursor:pointer;min-height:64px;padding:16px 10px 12px;border-radius:4px;color:#1E1A16;touch-action:manipulation;
     background:linear-gradient(180deg,transparent 0 13px,rgba(215,38,46,.55) 13px 15px,transparent 15px) ,repeating-linear-gradient(180deg,transparent 0 21px,rgba(70,110,170,.18) 21px 22px),var(--sd-paper);
     box-shadow:0 12px 20px -10px rgba(0,0,0,.85);font-family:var(--sd-type);font-size:clamp(16px,4.3vw,21px);line-height:1.15;overflow-wrap:anywhere;transition:filter .3s,opacity .3s}
-  .sd-card:nth-child(1){transform:rotate(-1.2deg)}.sd-card:nth-child(2){transform:rotate(.8deg)}.sd-card:nth-child(3){transform:rotate(-.6deg)}
-  .sd-card.line{text-align:left;font-family:var(--lp-body);font-weight:800;font-size:clamp(14px,3.7vw,17px);line-height:1.3;padding:18px 14px 12px}
+  .lp .sd-card:nth-child(1){transform:rotate(-1.2deg)}.lp .sd-card:nth-child(2){transform:rotate(.8deg)}.lp .sd-card:nth-child(3){transform:rotate(-.6deg)}
+  .lp .sd-card.line{text-align:left;font-family:var(--lp-body);font-weight:800;font-size:clamp(14px,3.7vw,17px);line-height:1.3;padding:18px 14px 12px}
   .sd-card .ring{position:absolute;inset:-4px;border-radius:8px;border:4px solid var(--lp-good);opacity:0;pointer-events:none;box-shadow:0 0 22px rgba(34,197,94,.6)}
   .sd-card.good .ring{opacity:1}
   .sd-card.bad .ring{opacity:1;border-color:var(--lp-bad);box-shadow:0 0 18px rgba(244,63,94,.5)}
   .sd-card.dim{opacity:.4;filter:grayscale(.7)}
   .sd-card[disabled]{cursor:default}
-  .sd-stampbtn{position:relative;border:none;cursor:pointer;min-height:66px;border-radius:10px;background:var(--sd-paper);display:flex;align-items:center;justify-content:center;gap:8px;
+  .lp .sd-stampbtn{position:relative;border:none;cursor:pointer;min-height:66px;border-radius:10px;background:var(--sd-paper);display:flex;align-items:center;justify-content:center;gap:8px;
     box-shadow:0 12px 20px -10px rgba(0,0,0,.85);font-family:var(--sd-type);font-size:clamp(20px,5.4vw,26px);letter-spacing:.08em;touch-action:manipulation}
   .sd-stampbtn .ink{display:inline-flex;align-items:center;gap:8px;padding:4px 14px;border:3px solid currentColor;border-radius:8px;transform:rotate(-4deg)}
   .sd-stampbtn .ink svg{width:22px;height:22px}
-  .sd-stampbtn.t{color:#15803D}.sd-stampbtn.f{color:var(--sd-red)}
+  .lp .sd-stampbtn.t{color:#15803D}.lp .sd-stampbtn.f{color:var(--sd-red)}
   .sd-stampbtn .ring{position:absolute;inset:-4px;border-radius:14px;border:4px solid #FDE68A;opacity:0;pointer-events:none}
   .sd-stampbtn.good .ring{opacity:1}.sd-stampbtn.bad .ring{opacity:1;border-color:var(--lp-bad)}
   .sd-stampbtn[disabled]{cursor:default}.sd-stampbtn.dim{opacity:.45}
@@ -107,8 +107,16 @@
   .sd-crew{position:fixed;left:0;right:0;bottom:0;z-index:150;display:flex;justify-content:center;align-items:flex-end;pointer-events:none;padding-bottom:env(safe-area-inset-bottom,0px)}
   .sd-crew img{height:clamp(110px,22vh,220px);margin:0 -12px;filter:drop-shadow(0 10px 16px rgba(0,0,0,.6));opacity:0}
 
-  @media (max-width:420px){ .sd-opts.find .sd-card{font-size:15px;padding:16px 6px 10px} }
-  @media (max-height:760px) and (max-width:959px){ .sd-cast{width:100px;height:128px} .sd-ev{width:min(100%,80px)} .sd-slots{gap:10px 8px} }
+  @media (max-width:420px){ .lp .sd-opts.find .sd-card{font-size:15px;padding:16px 6px 10px;min-height:84px} }
+  @media (max-width:959px){
+    .sd-ev{width:min(100%,82px)} .sd-slots{gap:8px 10px;padding-top:2px}
+    .sd.dlg .sd-cast{width:92px;height:128px}
+    .sd.dlg .sd-file .prompt.dlg{font-size:14px;line-height:1.3}
+    .lp .sd.dlg .sd-card.line{font-size:14px;padding:16px 12px 10px;min-height:56px}
+    .sd.dlg .sd-ev{width:min(100%,60px)} .sd.dlg .sd-head h2{font-size:19px} .sd.dlg .sd-slots{gap:4px 10px}
+    .sd.dlg .sd-ev .cap{font-size:12px} .sd.dlg .sd-ev .stamp{display:none}
+  }
+  @media (max-height:760px) and (max-width:959px){ .sd-cast{width:100px;height:128px} .sd-ev{width:min(100%,70px)} }
   @media (min-width:960px){
     .sd{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:18px 34px;align-items:center;min-height:calc(100dvh - 120px);align-content:center}
     .sd-board{grid-row:1 / span 2;padding:18px 22px 26px}
@@ -126,7 +134,7 @@
 <body>
 <div class="sd-dark" id="dark" aria-hidden="true"></div>
 <main class="lp-stage" id="stage">
-  <div class="sd">
+  <div class="sd" id="sd">
     <section class="sd-board" id="board" aria-label="Case board">
       <div class="sd-head"><h2>Case file: What Really Happened?</h2><span class="sd-tag" id="caseTag">CASE #1</span></div>
       <div class="sd-slots" id="slots"></div>
@@ -281,7 +289,8 @@ if (!vocab.length) {
       card.innerHTML = img ? `<div class="ph pf">${img}</div><div class="cap">${LP.esc(item.en)}</div>`
         : `<div class="ph note"><span class="tw">${LP.esc(item.en)}</span><span class="ar" dir="rtl" lang="ar">${LP.esc(item.ar)}</span></div><div class="cap">exhibit ${"ABCDEF"[idx]}</div>`;
     }
-    ev.classList.add("filled"); filledN = Math.max(filledN, idx + 1);
+    ev.classList.add("filled"); fitCard(card);
+    filledN = Math.max(filledN, idx + 1);
     const pin = ev.querySelector(".pin"), stamp = ev.querySelector(".stamp");
     if (!G || RM) { if (confirmed) stamp.style.opacity = 1; drawYarnTo(idx); return; }
     if (fromEl) {
@@ -296,6 +305,21 @@ if (!vocab.length) {
     if (confirmed) { LP.sfx("pop"); G.fromTo(stamp, { scale: 2.6, opacity: 0, rotation: -40 }, { scale: 1, opacity: 1, rotation: -12, duration: .35, ease: "power3.in", delay: .25 }); }
   }
 
+  // shrink typed words / captions until they fit the polaroid (never break a word mid-letter)
+  function fitCard(card) {
+    card.querySelectorAll(".tw,.cap").forEach(el => {
+      el.style.fontSize = ""; let f = parseFloat(getComputedStyle(el).fontSize);
+      const wide = () => el.scrollWidth > el.clientWidth + 1;
+      while (wide() && f > 8) { f -= 1; el.style.fontSize = f + "px"; }
+    });
+  }
+  addEventListener("resize", () => document.querySelectorAll(".sd-ev.filled .card").forEach(fitCard));
+  // phones: make sure all the answer cards are in view
+  function reveal() {
+    const last = opts.lastElementChild; if (!last) return;
+    const b = last.getBoundingClientRect().bottom, lim = innerHeight - 74;
+    if (b > lim) window.scrollBy({ top: b - lim, behavior: RM ? "auto" : "smooth" });
+  }
   function setKicker(t) { kicker.textContent = t; if (G && !RM) G.fromTo(kicker, { scale: 1.6, opacity: 0, rotation: -12 }, { scale: 1, opacity: 1, rotation: -1.5, duration: .35, ease: "power3.in" }); }
   function typeIn(el, html) {
     // reveal the overheard lines like a typewriter (instant for reduced motion)
@@ -328,10 +352,13 @@ if (!vocab.length) {
     const target = order[r % order.length];
     const type = dialoguePool.length ? PLAN[r] : (r % 2 === 1 ? "verify" : "find");
     opts.innerHTML = ""; opts.className = "sd-opts";
+    if (scrollY > 0) window.scrollTo({ top: 0, behavior: RM ? "auto" : "smooth" });
     const label = type === "dialogue" ? "Witness testimony" : type === "verify" ? "Verify the clue" : "Find the evidence";
     await LP.banner("Clue " + (r + 1), label);
     setKicker(label);
     let cards = [], answer;
+    $("sd").classList.toggle("dlg", type === "dialogue");
+    document.querySelectorAll(".sd-ev.filled .card").forEach(fitCard); redrawYarn();
     if (type === "dialogue") {
       witness(true); det.set("think");
       ({ cards, answer } = await drawDialogueRound());
@@ -365,6 +392,7 @@ if (!vocab.length) {
     if (G && !RM) G.fromTo($("promptCard"), { y: 30, opacity: 0, rotation: -2 }, { y: 0, opacity: 1, rotation: 0, duration: .45, ease: "back.out(1.8)" });
     det.nod();
     await LP.deal(cards, $("promptCard"));
+    reveal();
     locked = false;
     LP.answer = answer;   // read by the automated play-through tests
     playPrompt();
@@ -401,7 +429,7 @@ if (!vocab.length) {
   const next = async (ms) => { await LP.wait(ms); r++; r < ROUNDS ? drawRound() : endGame(); };
 
   async function solved(card, item, confirmed) {
-    locked = true; score++;
+    locked = true; score++; LP.answer = null;
     [...opts.children].forEach(c => c.disabled = true);
     det.cheer("celebrate", false); if (witOn) wit.cheer("thumbs", false);
     LP.fill(r);
@@ -432,6 +460,7 @@ if (!vocab.length) {
     if (locked) return;
     const ok = (btn.dataset.key === "true") === showCorrect;
     locked = true;
+    LP.answer = null;
     [...opts.children].forEach(b => b.disabled = true);
     if (ok) { solved(btn, target, true); return; }
     // wrong: the clue is still pinned (unconfirmed) and the file shows what it really means
