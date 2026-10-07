@@ -76,8 +76,10 @@ body.theme-teen #ambient i{background:#FFE7B8;box-shadow:0 0 10px 2px rgba(255,2
   background:var(--paper);border-radius:20px;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;
   box-shadow:0 30px 70px -20px rgba(0,0,0,.6),0 2px 0 rgba(255,255,255,.05) inset;will-change:transform}
 .art{position:relative;overflow:hidden;background:#d9c7a8}
-.kb{position:absolute;inset:-3%;will-change:transform}
-.scene{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;will-change:transform;transform-origin:50% 50%}
+/* The whole picture always shows (contain); a blurred copy fills any space around it. */
+.sceneFill{position:absolute;inset:-8%;width:116%;height:116%;object-fit:cover;filter:blur(18px) saturate(1.15) brightness(.9);transform:scale(1.05)}
+.kb{position:absolute;inset:0;will-change:transform}
+.scene{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;will-change:transform;transform-origin:50% 50%}
 .artShade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.18) 0%,transparent 22%,transparent 62%,rgba(0,0,0,.22) 100%)}
 .partbadge{position:absolute;left:16px;top:14px;z-index:4;color:#fff;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.86rem;
   padding:6px 14px;border-radius:999px;background:linear-gradient(135deg,#F97316,#EA580C);box-shadow:0 8px 18px rgba(0,0,0,.25);
@@ -100,7 +102,7 @@ body.theme-teen .caption p b{color:#FBBF24}
 
 /* --- mode: stack (portrait phones / tablets) --- */
 .mode-stack .sheet{display:flex;flex-direction:column}
-.mode-stack .art{flex:1 0 auto;width:100%;height:calc(var(--sw) * .5625);max-height:calc(var(--sw) * .68)}
+.mode-stack .art{flex:0 0 auto;width:100%;height:calc(var(--sw) * .5625)}
 .mode-stack .textCol{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 18px 18px;display:flex;flex-direction:column}
 .mode-stack .caption{margin:auto 0}
 .mode-stack .caption p{font-size:1.2rem}
@@ -535,7 +537,7 @@ function buildSheet(d, n) {
   el.className = "sheet"; el.dataset.page = n;
   el.setAttribute("aria-label", `Page ${n} of ${part.pages}`);
   el.innerHTML =
-    `<div class="art"><div class="kb"><img class="scene" src="${esc(d.src)}" alt="" draggable="false"></div><div class="artShade"></div>` +
+    `<div class="art"><img class="sceneFill" src="${esc(d.src)}" alt="" aria-hidden="true" draggable="false"><div class="kb"><img class="scene" src="${esc(d.src)}" alt="" draggable="false"></div><div class="artShade"></div>` +
     `<div class="partbadge" style="${esc(d.badgeStyle)}">${d.badgeHTML}</div></div>` +
     `<div class="textCol">${d.colorGame ? '<div id="colorGame"></div>' : ""}<div class="caption"><div class="capIn">${d.ps.join("")}</div></div></div>` +
     `<div class="turnShade"></div><div class="glare"></div>`;
@@ -601,8 +603,9 @@ function onRevealed() { $("#nextBtn").classList.add("ready"); }
 function kenBurns(sheet, n) {
   if (!MO) return;
   const img = $("img.scene", sheet); const dir = n % 2 ? 1 : -1;
-  sheet._kb = G.fromTo(img, { scale: TEEN ? 1.02 : 1.04, xPercent: 0, yPercent: 0 },
-    { scale: TEEN ? 1.08 : 1.12, xPercent: dir * (TEEN ? 1 : 1.6), yPercent: TEEN ? -.6 : -1.2, duration: TEEN ? 24 : 16, ease: "sine.inOut", yoyo: true, repeat: -1 });
+  // Gentle: the picture stays fully in view (owner: "the photo didn't fit").
+  sheet._kb = G.fromTo(img, { scale: 1, xPercent: 0, yPercent: 0 },
+    { scale: TEEN ? 1.02 : 1.035, xPercent: dir * .4, yPercent: -.3, duration: TEEN ? 24 : 16, ease: "sine.inOut", yoyo: true, repeat: -1 });
 }
 let curSheet = null;
 if (MO && matchMedia("(pointer:fine)").matches) {
@@ -611,7 +614,7 @@ if (MO && matchMedia("(pointer:fine)").matches) {
     const r = book.getBoundingClientRect();
     const nx = (e.clientX - r.left) / r.width - .5, ny = (e.clientY - r.top) / r.height - .5;
     const k = TEEN ? .6 : 1;
-    G.to($(".kb", curSheet), { x: -nx * 18 * k, y: -ny * 10 * k, duration: 1.1, ease: "power3.out", overwrite: "auto" });
+    G.to($(".kb", curSheet), { x: -nx * 5 * k, y: -ny * 3 * k, duration: 1.1, ease: "power3.out", overwrite: "auto" });
     const b = $(".partbadge", curSheet); if (b && b.style.opacity !== "0") G.to(b, { x: nx * 6 * k, y: ny * 4 * k, duration: 1.1, ease: "power3.out", overwrite: "auto" });
   });
 }
