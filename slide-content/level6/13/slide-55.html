@@ -15,42 +15,37 @@
         <div style="height:60px;padding:4px 10px;border-radius:14px;background:#fff;display:flex;align-items:center;box-shadow:0 4px 12px rgba(0,0,0,.18)"><img src="assets/logo/lumio-logo.png" alt="Lumio English" style="height:100%;width:auto;object-fit:contain"></div>
       </div>
       <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#EDE9FB;font-size:.95rem;background:rgba(139,92,246,.14);
-                  padding:6px 16px;border-radius:8px">Session Complete</div>
-      <div style="font-family:'Nunito',sans-serif;font-weight:800;color:#C6BBF2;font-size:.8rem">55 / 55</div>
+                  padding:6px 16px;border-radius:8px">Your Turn &middot; 4/5</div>
+      <div style="font-family:'Nunito',sans-serif;font-weight:800;color:#C6BBF2;font-size:.8rem">55 / 63</div>
     </div>
     <div style="position:relative;z-index:5;margin:14px 40px 0;height:3px;background:#4A3B7A;border-radius:2px">
-      <div style="height:100%;width:100%;background:linear-gradient(90deg,#8B5CF6,#F97316);border-radius:2px"></div>
+      <div style="height:100%;width:87%;background:linear-gradient(90deg,#8B5CF6,#F97316);border-radius:2px"></div>
     </div>
-    <div style="position:relative;z-index:5;display:flex;gap:20px;padding:50px 40px 0">
-      <div style="background:#FFFFFF;border-radius:12px;border:1px solid rgba(0,0,0,.06);border-top:4px solid #8B5CF6;box-shadow:0 12px 26px rgba(0,0,0,.28);width:400px;padding:30px;text-align:center">
-        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.3rem;color:#2B2640;margin-bottom:14px">Nice work.</div>
-        <span style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#F97316,#EA580C);
-                color:#fff;font-family:'Fredoka',sans-serif;font-weight:600;font-size:.85rem;padding:6px 16px;border-radius:999px;font-size:1.1rem;padding:10px 22px">
-      &#9889; +110 XP</span>
+    <div style="position:absolute;left:0;right:0;top:140px;bottom:150px;display:flex;align-items:center;justify-content:center;gap:34px;z-index:5">
+      <div id="ytCard4" style="width:300px;height:300px;border-radius:24px;background:#232038;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;box-shadow:0 14px 30px rgba(0,0,0,.2)">
+        <div id="ytMystery4" style="font-size:4rem">&#128266;</div>
+        <img id="ytImg4" src="assets/vocab/distraction.png" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;padding:14px" onerror="this.style.display='none'">
       </div>
-      <div style="background:#FFFFFF;border-radius:12px;border:1px solid rgba(0,0,0,.06);border-top:4px solid #8B5CF6;box-shadow:0 12px 26px rgba(0,0,0,.28);width:400px;padding:26px 30px">
-        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1rem;color:#2B2640;margin-bottom:10px">Before next time</div>
-        
-      <div style="display:flex;align-items:center;gap:12px;padding:8px 0">
-        <span style="width:22px;height:22px;border-radius:6px;background:#E6FBF8;color:#0D9488;font-weight:800;
-                     display:flex;align-items:center;justify-content:center;font-size:.78rem;flex-shrink:0">1</span>
-        <span style="font-family:'Nunito',sans-serif;font-weight:700;font-size:.95rem;color:#2B2640">Do the interactive homework on your dashboard first</span>
+      <div style="width:470px;background:#FFFFFF;border-radius:24px;padding:26px 30px;box-shadow:0 14px 30px rgba(0,0,0,.18);text-align:center">
+        <div id="ytAsk4">
+          <div style="font-family:'Fredoka',sans-serif;font-weight:800;font-size:1.5rem;color:#2B2640">Listen &mdash; say it in Arabic!</div>
+          <div style="direction:rtl;font-weight:800;font-size:1.15rem;color:#6B6580;margin-top:4px">استمعوا ثم قولوا الكلمة بالعربية</div>
+          <div style="display:flex;justify-content:center;gap:10px;margin-top:16px;flex-wrap:wrap">
+            <span style="background:#7C5CFC18;color:#7C5CFC;font-weight:800;font-size:.8rem;padding:6px 12px;border-radius:999px">1 Play the word</span><span style="background:#7C5CFC18;color:#7C5CFC;font-weight:800;font-size:.8rem;padding:6px 12px;border-radius:999px">2 Say the Arabic</span><span style="background:#7C5CFC18;color:#7C5CFC;font-weight:800;font-size:.8rem;padding:6px 12px;border-radius:999px">3 Reveal</span>
+          </div>
+          <div style="margin-top:14px;font-size:.8rem;font-weight:700;color:#6B6580;line-height:1.45">Pairs: the first to say the Arabic wins the point.<br>1-on-1: your teacher plays the word, you answer.</div>
+        </div>
+        <div id="ytAns4" style="display:none">
+          <div style="direction:rtl;font-weight:900;font-size:2.4rem;color:#2B2640;line-height:1.2">إلهاء</div>
+          <div style="font-family:'Fredoka',sans-serif;font-weight:800;font-size:1.5rem;color:#7C5CFC;margin-top:6px">distraction</div>
+          <div style="font-size:.95rem;font-weight:700;color:#6B6580;margin-top:8px">&ldquo;My phone is a big distraction while I study.&rdquo;</div>
+        </div>
       </div>
-      <div style="display:flex;align-items:center;gap:12px;padding:8px 0">
-        <span style="width:22px;height:22px;border-radius:6px;background:#E6FBF8;color:#0D9488;font-weight:800;
-                     display:flex;align-items:center;justify-content:center;font-size:.78rem;flex-shrink:0">2</span>
-        <span style="font-family:'Nunito',sans-serif;font-weight:700;font-size:.95rem;color:#2B2640">Print your worksheet, writing-practice sheet and flashcards</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:12px;padding:8px 0">
-        <span style="width:22px;height:22px;border-radius:6px;background:#E6FBF8;color:#0D9488;font-weight:800;
-                     display:flex;align-items:center;justify-content:center;font-size:.78rem;flex-shrink:0">3</span>
-        <span style="font-family:'Nunito',sans-serif;font-weight:700;font-size:.95rem;color:#2B2640">Memorise this lesson's words with your flashcards</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:12px;padding:8px 0">
-        <span style="width:22px;height:22px;border-radius:6px;background:#E6FBF8;color:#0D9488;font-weight:800;
-                     display:flex;align-items:center;justify-content:center;font-size:.78rem;flex-shrink:0">4</span>
-        <span style="font-family:'Nunito',sans-serif;font-weight:700;font-size:.95rem;color:#2B2640">Play this lesson's bonus game</span>
-      </div>
-      </div>
+    </div>
+    <div style="position:absolute;left:0;right:0;bottom:84px;display:flex;justify-content:center;gap:18px;z-index:20">
+      <button onclick="typeof Lumio!=='undefined' && Lumio.speak && Lumio.speak(&quot;distraction&quot;)"
+              style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,#0D9488,#0B7A6F);color:#fff;font-weight:800;padding:13px 28px;border-radius:999px;font-size:1.02rem;box-shadow:0 8px 18px rgba(13,148,136,.35)">&#9654; Play the word</button>
+      <button onclick="document.getElementById('ytMystery4').style.display='none';document.getElementById('ytImg4').style.display='block';document.getElementById('ytAsk4').style.display='none';document.getElementById('ytAns4').style.display='block';this.disabled=true;this.style.opacity=.55"
+              style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,#7C5CFC,#5B3FD9);color:#fff;font-weight:800;padding:13px 28px;border-radius:999px;font-size:1.02rem;box-shadow:0 8px 18px rgba(0,0,0,.25)">&#128064; Reveal</button>
     </div>
     

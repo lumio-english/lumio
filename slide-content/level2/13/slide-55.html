@@ -1,110 +1,73 @@
 <div style="position:absolute;inset:0;background:url('assets/lesson-bg-kid/bedroom.jpg') center/cover no-repeat"></div><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,251,245,.2) 0%,rgba(255,243,214,.28) 62%,rgba(232,197,143,.4) 100%)"></div><div class="spark" style="left:375px;top:135px;font-size:1.6rem">&#10022;</div><div class="spark" style="left:415px;top:105px;font-size:1.1rem">&#10022;</div><div class="spark" style="left:392px;top:178px;font-size:1.3rem">&#10022;</div><div class="header">
       <div class="brand"><img src="assets/logo/lumio-logo.png" alt="Lumio English" style="height:70px"></div>
-      <div class="pagetitle">Sound &amp; Spot</div>
-      <div class="counter">55 / 79</div>
+      <div class="pagetitle">Build the Sentences</div>
+      <div class="counter">55 / 85</div>
     </div><div class="colorstrip"><div class="c1"></div><div class="c2"></div><div class="c3"></div><div class="c4"></div><div class="c5"></div></div>
-    <div style="position:absolute;left:0;right:0;top:158px;text-align:center">
-      <div style="display:inline-block;background:#fff;padding:8px 20px;border-radius:14px;box-shadow:0 6px 14px rgba(67,48,31,.1);font-family:'Baloo 2',sans-serif;font-weight:700;
-                font-size:1.05rem;color:#8A7160">Tap any word to hear it &mdash; can you say it before it plays?</div>
+    <div style="position:absolute;left:0;right:0;top:118px;text-align:center">
+      <div style="display:inline-block;background:#fff;padding:8px 24px;border-radius:16px;box-shadow:0 6px 14px rgba(67,48,31,.1)">
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.15rem;color:#43301F">Put the words in the right order &mdash; drag the tiles!</div>
+      </div>
     </div>
-    <!-- Review lessons can carry 40+ words -- a plain flex-wrap with no
-         height limit let extra rows run past the bottom nav bar,
-         invisible and unreachable rather than just off-screen. Capping
-         the box height and adding its own scroll keeps every word
-         reachable regardless of how many there are, without changing
-         card size lesson to lesson. -->
-    <div style="position:absolute;left:0;right:400px;top:210px;bottom:96px;overflow-y:auto;display:flex;flex-wrap:wrap;align-content:flex-start;gap:16px;justify-content:center;padding:4px 30px 12px">
-      
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('clock')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/clock.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">clock</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">ساعة حائط</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('hour')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/hour.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">hour</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">ساعة (٦٠ دقيقة)</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('minute')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/minute.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">minute</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">دقيقة</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('o'clock')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/oclock.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">o'clock</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">تمام الساعة</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('half past')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/half-past.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">half past</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">والنصف</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('quarter past')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/quarter-past.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">quarter past</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">والربع</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('quarter to')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/quarter-to.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">quarter to</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">إلا ربع</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('morning')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/morning.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">morning</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">الصباح</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('noon')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/noon.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">noon</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">الظهر</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('afternoon')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/afternoon.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">afternoon</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">بعد الظهر</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('evening')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/evening.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">evening</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">المساء</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('night')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/night.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">night</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">الليل</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('midnight')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/midnight.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">midnight</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">منتصف الليل</div>
-      </button>
-    </div>
-    <div class="floorshadow" style="right:90px;bottom:33px;width:230px;height:36px"></div><img class="char" src="assets/story/characters/hamad-explain.png" style="right:90px;bottom:40px;height:320px" onerror="this.style.display='none'; this.previousElementSibling.style.display='none'">
+    
+        <div style="position:absolute;left:46px;right:46px;top:148px;background:#fff;border-radius:16px;padding:12px 20px;
+                    box-shadow:0 4px 12px rgba(67,48,31,.08)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <div style="font-size:.85rem;font-weight:800;color:#F97316;min-width:16px">1.</div>
+            <div id="sbSlots0" data-correct="Look at the clock." style="display:flex;gap:7px;flex-wrap:wrap;min-height:40px;flex:1">
+              <div class="sb-slot sbg-slot" data-group="0" data-index="0"></div><div class="sb-slot sbg-slot" data-group="0" data-index="1"></div><div class="sb-slot sbg-slot" data-group="0" data-index="2"></div><div class="sb-slot sbg-slot" data-group="0" data-index="3"></div><div class="sbg-tile sbg-punct" style="cursor:default">.</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div id="sbTray0" style="display:flex;gap:7px;flex-wrap:wrap;flex:1;padding-left:26px">
+              <div class="sb-tile sbg-tile" draggable="false" data-group="0" data-word="Look">Look</div><div class="sb-tile sbg-tile" draggable="false" data-group="0" data-word="clock">clock</div><div class="sb-tile sbg-tile" draggable="false" data-group="0" data-word="at">at</div><div class="sb-tile sbg-tile" draggable="false" data-group="0" data-word="the">the</div>
+            </div>
+            <button onclick="window.checkSentenceBuilder && checkSentenceBuilder('0')"
+                    style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,#F97316,#EA580C);
+                           color:#fff;font-weight:800;padding:8px 16px;border-radius:999px;font-size:.82rem;white-space:nowrap;flex-shrink:0">&#10003; Check</button>
+          </div>
+          <div id="sbFeedback0" style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem;min-height:20px;margin-top:4px"></div>
+        </div>
+        <div style="position:absolute;left:46px;right:46px;top:302px;background:#fff;border-radius:16px;padding:12px 20px;
+                    box-shadow:0 4px 12px rgba(67,48,31,.08)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <div style="font-size:.85rem;font-weight:800;color:#F97316;min-width:16px">2.</div>
+            <div id="sbSlots1" data-correct="One hour has sixty minutes." style="display:flex;gap:7px;flex-wrap:wrap;min-height:40px;flex:1">
+              <div class="sb-slot sbg-slot" data-group="1" data-index="0"></div><div class="sb-slot sbg-slot" data-group="1" data-index="1"></div><div class="sb-slot sbg-slot" data-group="1" data-index="2"></div><div class="sb-slot sbg-slot" data-group="1" data-index="3"></div><div class="sb-slot sbg-slot" data-group="1" data-index="4"></div><div class="sbg-tile sbg-punct" style="cursor:default">.</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div id="sbTray1" style="display:flex;gap:7px;flex-wrap:wrap;flex:1;padding-left:26px">
+              <div class="sb-tile sbg-tile" draggable="false" data-group="1" data-word="has">has</div><div class="sb-tile sbg-tile" draggable="false" data-group="1" data-word="One">One</div><div class="sb-tile sbg-tile" draggable="false" data-group="1" data-word="hour">hour</div><div class="sb-tile sbg-tile" draggable="false" data-group="1" data-word="minutes">minutes</div><div class="sb-tile sbg-tile" draggable="false" data-group="1" data-word="sixty">sixty</div>
+            </div>
+            <button onclick="window.checkSentenceBuilder && checkSentenceBuilder('1')"
+                    style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,#F97316,#EA580C);
+                           color:#fff;font-weight:800;padding:8px 16px;border-radius:999px;font-size:.82rem;white-space:nowrap;flex-shrink:0">&#10003; Check</button>
+          </div>
+          <div id="sbFeedback1" style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem;min-height:20px;margin-top:4px"></div>
+        </div>
+        <div style="position:absolute;left:46px;right:46px;top:456px;background:#fff;border-radius:16px;padding:12px 20px;
+                    box-shadow:0 4px 12px rgba(67,48,31,.08)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <div style="font-size:.85rem;font-weight:800;color:#F97316;min-width:16px">3.</div>
+            <div id="sbSlots2" data-correct="Wait one minute, please." style="display:flex;gap:7px;flex-wrap:wrap;min-height:40px;flex:1">
+              <div class="sb-slot sbg-slot" data-group="2" data-index="0"></div><div class="sb-slot sbg-slot" data-group="2" data-index="1"></div><div class="sb-slot sbg-slot" data-group="2" data-index="2"></div><div class="sb-slot sbg-slot" data-group="2" data-index="3"></div><div class="sbg-tile sbg-punct" style="cursor:default">.</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div id="sbTray2" style="display:flex;gap:7px;flex-wrap:wrap;flex:1;padding-left:26px">
+              <div class="sb-tile sbg-tile" draggable="false" data-group="2" data-word="minute,">minute,</div><div class="sb-tile sbg-tile" draggable="false" data-group="2" data-word="one">one</div><div class="sb-tile sbg-tile" draggable="false" data-group="2" data-word="Wait">Wait</div><div class="sb-tile sbg-tile" draggable="false" data-group="2" data-word="please">please</div>
+            </div>
+            <button onclick="window.checkSentenceBuilder && checkSentenceBuilder('2')"
+                    style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,#F97316,#EA580C);
+                           color:#fff;font-weight:800;padding:8px 16px;border-radius:999px;font-size:.82rem;white-space:nowrap;flex-shrink:0">&#10003; Check</button>
+          </div>
+          <div id="sbFeedback2" style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem;min-height:20px;margin-top:4px"></div>
+        </div>
+    <style>
+      .sbg-slot { width:78px; height:44px; border:2.5px dashed #E5DDD0; border-radius:10px; background:rgba(255,255,255,.5); }
+      .sbg-tile { min-width:56px; height:44px; padding:0 12px; background:#FFF8EC; border-radius:10px; display:flex; align-items:center;
+                   justify-content:center; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:.88rem; color:#43301F;
+                   box-shadow:0 2px 6px rgba(67,48,31,.1); cursor:grab; touch-action:none; user-select:none; }
+      .sbg-tile.sb-dragging { opacity:.4; }
+      .sbg-punct { background:transparent !important; box-shadow:none !important; font-size:1.3rem; min-width:12px; padding:0; height:44px; }
+    </style>

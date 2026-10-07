@@ -1,82 +1,69 @@
 <div style="position:absolute;inset:0;background:url('assets/lesson-bg-kid/classroom.jpg') center/cover no-repeat"></div><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,251,245,.2) 0%,rgba(255,243,214,.28) 62%,rgba(232,197,143,.4) 100%)"></div><div class="spark" style="left:375px;top:135px;font-size:1.6rem">&#10022;</div><div class="spark" style="left:415px;top:105px;font-size:1.1rem">&#10022;</div><div class="spark" style="left:392px;top:178px;font-size:1.3rem">&#10022;</div><div class="header">
       <div class="brand"><img src="assets/logo/lumio-logo.png" alt="Lumio English" style="height:70px"></div>
-      <div class="pagetitle">Sound &amp; Spot</div>
-      <div class="counter">54 / 74</div>
+      <div class="pagetitle">Memory Match &bull; Game</div>
+      <div class="counter">54 / 78</div>
     </div><div class="colorstrip"><div class="c1"></div><div class="c2"></div><div class="c3"></div><div class="c4"></div><div class="c5"></div></div>
-    <div style="position:absolute;left:0;right:0;top:158px;text-align:center">
-      <div style="display:inline-block;background:#fff;padding:8px 20px;border-radius:14px;box-shadow:0 6px 14px rgba(67,48,31,.1);font-family:'Baloo 2',sans-serif;font-weight:700;
-                font-size:1.05rem;color:#8A7160">Tap any word to hear it &mdash; can you say it before it plays?</div>
+    <div style="position:absolute;left:46px;right:46px;top:128px;z-index:6;display:flex;gap:14px">
+      <div style="flex:1;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);padding:10px 16px">
+        <div style="font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#0D9488">&#128101; PAIRS / GROUP</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.92rem;color:#43301F;line-height:1.3">Take turns: tap two cards. A match? Say the word and keep going. No match? Next player. Most pairs wins.</div>
+      </div>
+      <div style="flex:1;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);padding:10px 16px">
+        <div style="font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#F97316">&#128100; 1-ON-1 WITH YOUR TEACHER</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.92rem;color:#43301F;line-height:1.3">You vs your teacher! Tap two cards; say the word when you find a pair. Count your pairs &mdash; can you beat the teacher?</div>
+      </div>
     </div>
-    <!-- Review lessons can carry 40+ words -- a plain flex-wrap with no
-         height limit let extra rows run past the bottom nav bar,
-         invisible and unreachable rather than just off-screen. Capping
-         the box height and adding its own scroll keeps every word
-         reachable regardless of how many there are, without changing
-         card size lesson to lesson. -->
-    <div style="position:absolute;left:0;right:400px;top:210px;bottom:96px;overflow-y:auto;display:flex;flex-wrap:wrap;align-content:flex-start;gap:16px;justify-content:center;padding:4px 30px 12px">
-      
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('juice')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/juice.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">juice</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">عصير</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('kite')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/kite.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">kite</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">طائرة ورقية</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('lion')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/lion.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">lion</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">أسد</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('moon')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/moon.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">moon</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">قمر</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('nose')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/nose.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">nose</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">أنف</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('orange')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/orange.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">orange</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">برتقالة</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('pen')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/pen.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">pen</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">قلم</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('queen')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/queen.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">queen</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">ملكة</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('rabbit')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/rabbit.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">rabbit</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">أرنب</div>
-      </button>
+    <div style="position:absolute;left:0;right:0;top:214px;bottom:56px;z-index:6;display:flex;align-items:center;justify-content:center;gap:40px">
+      <div id="mmBoard" style="display:grid;grid-template-columns:repeat(4,150px);gap:14px">
+      <div data-pair="1" data-say="moon" onclick="LumioAct.memory(this)" style="position:relative;width:150px;height:150px;border-radius:18px;overflow:hidden;cursor:pointer;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff;padding:8px"><img src="assets/vocab/moon.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F97316,#FBBF24);color:#fff;font-size:3rem;font-weight:900">?</div>
+      </div>
+      <div data-pair="1" data-say="moon" onclick="LumioAct.memory(this)" style="position:relative;width:150px;height:150px;border-radius:18px;overflow:hidden;cursor:pointer;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff;padding:8px"><img src="assets/vocab/moon.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F97316,#FBBF24);color:#fff;font-size:3rem;font-weight:900">?</div>
+      </div>
+      <div data-pair="0" data-say="juice" onclick="LumioAct.memory(this)" style="position:relative;width:150px;height:150px;border-radius:18px;overflow:hidden;cursor:pointer;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff;padding:8px"><img src="assets/vocab/juice.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F97316,#FBBF24);color:#fff;font-size:3rem;font-weight:900">?</div>
+      </div>
+      <div data-pair="0" data-say="juice" onclick="LumioAct.memory(this)" style="position:relative;width:150px;height:150px;border-radius:18px;overflow:hidden;cursor:pointer;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff;padding:8px"><img src="assets/vocab/juice.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F97316,#FBBF24);color:#fff;font-size:3rem;font-weight:900">?</div>
+      </div>
+      <div data-pair="3" data-say="rabbit" onclick="LumioAct.memory(this)" style="position:relative;width:150px;height:150px;border-radius:18px;overflow:hidden;cursor:pointer;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff;padding:8px"><img src="assets/vocab/rabbit.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F97316,#FBBF24);color:#fff;font-size:3rem;font-weight:900">?</div>
+      </div>
+      <div data-pair="3" data-say="rabbit" onclick="LumioAct.memory(this)" style="position:relative;width:150px;height:150px;border-radius:18px;overflow:hidden;cursor:pointer;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff;padding:8px"><img src="assets/vocab/rabbit.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F97316,#FBBF24);color:#fff;font-size:3rem;font-weight:900">?</div>
+      </div>
+      <div data-pair="2" data-say="orange" onclick="LumioAct.memory(this)" style="position:relative;width:150px;height:150px;border-radius:18px;overflow:hidden;cursor:pointer;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff;padding:8px"><img src="assets/vocab/orange-fruit.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F97316,#FBBF24);color:#fff;font-size:3rem;font-weight:900">?</div>
+      </div>
+      <div data-pair="2" data-say="orange" onclick="LumioAct.memory(this)" style="position:relative;width:150px;height:150px;border-radius:18px;overflow:hidden;cursor:pointer;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff;padding:8px"><img src="assets/vocab/orange-fruit.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F97316,#FBBF24);color:#fff;font-size:3rem;font-weight:900">?</div>
+      </div></div>
+      <div style="width:260px;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);padding:14px 16px">
+        <div style="font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#0D9488;margin-bottom:8px">WORDS TO FIND</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"><span style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#43301F;background:#fff;padding:4px 10px;border-radius:999px;font-size:.85rem">juice</span><span style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#43301F;background:#fff;padding:4px 10px;border-radius:999px;font-size:.85rem">moon</span><span style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#43301F;background:#fff;padding:4px 10px;border-radius:999px;font-size:.85rem">orange</span><span style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#43301F;background:#fff;padding:4px 10px;border-radius:999px;font-size:.85rem">rabbit</span></div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;gap:8px;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);padding:6px 10px 6px 14px">
+        <span style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#F97316;font-size:.9rem">Player 1</span>
+        <span data-act-score style="display:inline-block;min-width:34px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;color:#43301F;transition:transform .15s">0</span>
+        <button onclick="LumioAct.score(this,1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#F97316;color:#fff;font-weight:900;font-size:1rem">+</button>
+        <button onclick="LumioAct.score(this,-1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#E5E7EB;color:#6B7280;font-weight:900;font-size:1rem">&minus;</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);padding:6px 10px 6px 14px">
+        <span style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#0D9488;font-size:.9rem">Player 2</span>
+        <span data-act-score style="display:inline-block;min-width:34px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;color:#43301F;transition:transform .15s">0</span>
+        <button onclick="LumioAct.score(this,1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#0D9488;color:#fff;font-weight:900;font-size:1rem">+</button>
+        <button onclick="LumioAct.score(this,-1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#E5E7EB;color:#6B7280;font-weight:900;font-size:1rem">&minus;</button>
+      </div></div>
+        <div data-act-memory-done="mmBoard" style="display:none;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:800;color:#0D9488;margin-top:10px">&#127881; All pairs found!</div>
+      </div>
     </div>
-    <div class="floorshadow" style="right:90px;bottom:33px;width:230px;height:36px"></div><img class="char" src="assets/story/characters/sara-explain.png" style="right:90px;bottom:40px;height:320px" onerror="this.style.display='none'; this.previousElementSibling.style.display='none'">
+    

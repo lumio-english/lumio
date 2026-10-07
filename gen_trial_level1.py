@@ -208,6 +208,9 @@ def _build():
     pet_words = [load_word("level1", 16, w) for w in ["dog", "cat", "fish", "bird", "rabbit", "turtle"]]
     for w in pet_words:
         slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
+    # Activity slide (lib/activity_slides.py): Flash Race on the words just taught -- group and 1-on-1 modes on the slide.
+    import activity_slides as _AS
+    slides.append(_AS.slide_flash_race(pet_words, bg_study(), header("Flash Race &bull; Speaking Game", len(slides) + 1, TOTAL) + COLORSTRIP))
     slides.append(slide_vocab_scene("assets/vocab-scenes/level1/46.jpg", "My dog and my cat play together.", ["dog", "cat"], len(slides) + 1, TOTAL, 1))
 
     slides.append(slide_buzzer_challenge(pet_words[0], len(slides) + 1, TOTAL))

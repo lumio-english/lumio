@@ -179,13 +179,18 @@
     // reviewed so far) get verbCount=0, so isVerb is always false and
     // this produces the exact original "New words · i/total" label --
     // zero behavior change unless a lesson actually opts in.
-    const verbCount = words.filter(w => w.pos === "verb").length;
+    // Three groups, matching the teacher deck and the recap: verbs /
+    // words / grammar words (time expressions, connectors, function
+    // words). Index is within the group, whatever the order.
+    const groupOf = w => w.pos === "verb" ? "verbs" : (["time", "connector", "grammar"].includes(w.pos) ? "grammar" : "words");
+    const groupLabel = { verbs: "New Verbs", words: "New Words", grammar: "Grammar Words" };
     const draw = () => {
       const w = words[i];
-      const isVerb = w.pos === "verb";
-      const chipLabel = isVerb ? "New Verbs" : "New words";
-      const chipIndex = isVerb ? (i + 1) : (i - verbCount + 1);
-      const chipTotal = isVerb ? verbCount : (words.length - verbCount);
+      const g = groupOf(w);
+      const chipLabel = groupLabel[g];
+      const inGroup = words.filter(x => groupOf(x) === g);
+      const chipIndex = inGroup.indexOf(w) + 1;
+      const chipTotal = inGroup.length;
       stage.innerHTML = `
         <div class="card center">
           <span class="chip chip-orange">${chipLabel} · ${chipIndex}/${chipTotal}</span>

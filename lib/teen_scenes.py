@@ -10,7 +10,7 @@ def _s(en, bold, ar): return {"en": en, "bold": bold, "ar": ar}
 
 SCENES = {
  "level3": {
-  1: _s("We hang out after school.", ["hang out", "after school"], "نتسكع معاً بعد المدرسة."),
+  1: _s("We hang out after school.", ["hang out", "after school"], "نقضي وقتاً معاً بعد المدرسة."),
   2: _s("She studies every evening.", ["studies", "every evening"], "تدرس كل مساء."),
   3: _s("I don't like scary movies.", ["don't like", "scary"], "لا أحب الأفلام المخيفة."),
   4: _s("There is a poster on the wall.", ["There is", "poster"], "هناك ملصق على الحائط."),
@@ -18,7 +18,7 @@ SCENES = {
   6: _s("My teammates are the best.", ["teammates", "best"], "زملائي في الفريق هم الأفضل."),
   7: _s("That is her charger.", ["That", "her charger"], "ذلك شاحنها."),
   8: _s("The gym is next to the cafeteria.", ["next to", "cafeteria"], "الصالة الرياضية بجانب الكافتيريا."),
-  9: _s("I can skate, but I can't dance.", ["can", "can't"], "أستطيع التزلج، لكن لا أستطيع الرقص."),
+  9: _s("I can skate, but I can't swim.", ["can", "can't"], "أستطيع التزلج، لكن لا أستطيع السباحة."),
   10: _s("Is it an animal?", ["Is it"], "هل هو حيوان؟"),
   11: _s("Hamad is faster than Ziad.", ["faster than"], "حمد أسرع من زياد."),
   12: _s("This is Ziad. He is new here.", ["This is", "new"], "هذا زياد. إنه جديد هنا."),
@@ -28,7 +28,7 @@ SCENES = {
   16: _s("Ziad is the champion tonight.", ["champion", "tonight"], "زياد هو البطل الليلة."),
   17: _s("This movie is better than that one.", ["better than"], "هذا الفيلم أفضل من ذاك."),
   18: _s("Do you agree or disagree?", ["agree", "disagree"], "هل توافق أم تعارض؟"),
-  19: _s("We were nervous, then proud.", ["nervous", "proud"], "كنا متوترين، ثم فخورين."),
+  19: _s("We are nervous, then proud.", ["nervous", "proud"], "نحن متوترون، ثم فخورون."),
   20: _s("We put our memories in a box.", ["memories", "box"], "وضعنا ذكرياتنا في صندوق."),
  },
  "level4": {
@@ -41,7 +41,7 @@ SCENES = {
   7: _s("Do we have any snacks?", ["any", "snacks"], "هل لدينا أي وجبات خفيفة؟"),
   8: _s("Check the price tag.", ["price tag"], "تحقق من بطاقة السعر."),
   9: _s("I save some money every week.", ["save", "money"], "أوفر بعض المال كل أسبوع."),
-  10: _s("She is the most talented singer.", ["most talented"], "هي المغنية الأكثر موهبة."),
+  10: _s("She is the most talented artist.", ["most talented"], "هي الفنانة الأكثر موهبة."),
   11: _s("I would like to order a pizza.", ["would like", "order"], "أود أن أطلب بيتزا."),
   12: _s("You should try it.", ["should", "try"], "يجب أن تجربها."),
   13: _s("She posts every day.", ["posts", "every day"], "تنشر كل يوم."),
@@ -68,7 +68,7 @@ SCENES = {
   12: _s("We flew to a new city.", ["flew", "city"], "سافرنا بالطائرة إلى مدينة جديدة."),
   13: _s("I broke my phone because I dropped it.", ["broke", "dropped"], "كسرت هاتفي لأنني أسقطته."),
   14: _s("There were so many gifts.", ["gifts"], "كان هناك الكثير من الهدايا."),
-  15: _s("It was an unforgettable day.", ["unforgettable"], "كان يوماً لا يُنسى."),
+  15: _s("It was a special day.", ["special"], "كان يوماً مميزاً."),
   16: _s("I was texting while I was walking.", ["texting", "walking"], "كنت أراسل بينما كنت أمشي."),
   17: _s("Tell me about your experience.", ["experience"], "أخبرني عن تجربتك."),
   18: _s("She fell asleep before the end.", ["fell asleep", "end"], "نامت قبل النهاية."),
@@ -88,7 +88,7 @@ SCENES = {
   10: _s("I have to be home by curfew.", ["have to", "curfew"], "يجب أن أكون في البيت قبل موعد العودة."),
   11: _s("She explained it clearly.", ["explained", "clearly"], "شرحتها بوضوح."),
   12: _s("This is the most useful.", ["most useful"], "هذا هو الأكثر فائدة."),
-  13: _s("I was cooking while listening to music.", ["cooking", "listening"], "كنت أطبخ بينما أستمع إلى الموسيقى."),
+  13: _s("I was cooking while listening to the news.", ["cooking", "listening"], "كنت أطبخ بينما أستمع إلى الأخبار."),
   14: _s("I will improve my grades.", ["improve", "grades"], "سأحسّن درجاتي."),
   15: _s("That's a fair point.", ["fair point"], "هذه نقطة عادلة."),
   16: _s("I'm going to prepare for the exam.", ["prepare", "exam"], "سأستعد للامتحان."),

@@ -6,7 +6,7 @@ from deck_template_v2 import run
 DIALOGUES = {
   1: [("L", "Good morning! Hello!", "صباح الخير! مرحبا!"),
       ("R", "Hi! Thank you for saying hello!", "أهلا! شكرا لك على الترحيب!"),
-      ("L", "You are welcome, my friend!", "عفوا يا صديقي!"),
+      ("L", "You are welcome, my friend!", "عفوا يا صديقتي!"),
       ("R", "Goodbye! Good night!", "مع السلامة! تصبح على خير!")],
   2: [("L", "Hi! What is your name?", "أهلا! ما اسمك؟"),
       ("R", "My name is Noor. I am a girl. What is your name?", "اسمي نور. أنا فتاة. ما اسمك أنت؟"),
@@ -60,8 +60,8 @@ DIALOGUES = {
        ("R", "Yes! Do you want bread too?", "نعم! هل تريد خبزا أيضا؟"),
        ("L", "Yes, please! And some milk.", "نعم، من فضلك! وبعض الحليب."),
        ("R", "Here is your water and egg too!", "وهذا ماؤك وبيضتك أيضا!")],
-  15: [("L", "I am hungry! Can we eat rice and chicken?", "أنا جائع! هل يمكننا أكل الأرز والدجاج؟"),
-       ("R", "Yes! Do you want cheese too?", "نعم! هل تريد جبنا أيضا؟"),
+  15: [("L", "I am hungry! Can we eat rice and chicken?", "أنا جائعة! هل يمكننا أكل الأرز والدجاج؟"),
+       ("R", "Yes! Do you want cheese too?", "نعم! هل تريدين جبنا أيضا؟"),
        ("L", "Yum! And juice, please.", "لذيذ! وعصير، من فضلك."),
        ("R", "After that, cake and ice cream!", "بعد ذلك، كعكة وآيس كريم!")],
   16: [("L", "I love going to school!", "أحب الذهاب إلى المدرسة!"),
@@ -73,14 +73,14 @@ DIALOGUES = {
        ("L", "Sure! I also have a doll and a robot.", "بالطبع! لدي أيضا دمية وروبوت."),
        ("R", "I love your blocks and teddy bear!", "أحب مكعباتك ودبك المحشو!")],
   18: [("L", "Let's run and jump at the playground!", "لنجرِ ونقفز في الملعب!"),
-       ("R", "Yes! Then let's sit and stand.", "نعم! ثم لنجلس ونقف."),
+       ("R", "Yes! Then let's sit down and stand up!", "نعم! ثم لنجلس ونقف!"),
        ("L", "Can you clap and sing with me?", "هل يمكنك التصفيق والغناء معي؟"),
        ("R", "Yes! I know a fun song!", "نعم! أعرف أغنية ممتعة!")],
   19: [("L", "I am so happy today!", "أنا سعيد جدا اليوم!"),
        ("R", "I am a little tired and hungry.", "أنا متعب وجائع قليلا."),
        ("L", "Are you sad or scared?", "هل أنت حزين أم خائف؟"),
        ("R", "No, just hungry! Let's eat!", "لا، جائع فقط! لنأكل!")],
-  20: [("L", "Hello, my friend! Thank you for coming!", "مرحبا يا صديقي! شكرا لك على قدومك!"),
+  20: [("L", "Hello, my friend! Thank you for coming!", "مرحبا يا صديقتي! شكرا لك على قدومك!"),
        ("R", "Hi! I brought my teddy bear and a kite!", "أهلا! أحضرت دبي المحشو وطائرة ورقية!"),
        ("L", "I have a red umbrella and a happy cat!", "لدي مظلة حمراء وقطة سعيدة!"),
        ("R", "Let's count! One, two, three... to ten!", "لنعد! واحد، اثنان، ثلاثة... حتى عشرة!")],
@@ -150,7 +150,7 @@ SCENE_DATA = [
     (4, 10, ["moon", "nose"], "Noor points to her nose under the moon."),
     (4, 11, ["pen", "rabbit"], "The queen holds a pen. Hop, hop! The rabbit hops by."),
     (5, 12, ["sun", "tree"], "The sun is up! Omar rests under the tree."),
-    (5, 13, ["umbrella", "water"], "Drip, drop! Noor holds her umbrella in the water."),
+    (5, 13, ["umbrella", "rain"], "Drip, drop! Noor holds her umbrella in the rain."),
     (5, 14, ["yellow", "zebra"], "Ziad wears yellow. A zebra stands next to him!"),
     (6, 15, ["One", "two", "three"], "One, two, three balloons! Up they go!"),
     (6, 16, ["Four", "five"], "Four stars! Five fingers!"),
@@ -199,4 +199,19 @@ for entry in SCENE_DATA:
         (f"assets/vocab-scenes/pre-a/{img_num:02d}.jpg", sentence, bold_words, translation)
     )
 
-run("pre-a", DIALOGUES, None, None, has_phonics=False, skills_data=SKILLS_CHECKPOINTS, spelling_rules=SPELLING_RULES, theme_map=THEME_MAP, scene_map=SCENE_MAP)
+GRAMMAR_UNITS = {
+    14: {  # Lesson 14: Food Part 1 -- "an apple", "an egg" appear here for the first time, so the a/an rule lives here
+        "title": "a / an",
+        "titleAr": "a / an (واحد)",
+        "explanation": "We say \"a\" before most words (a banana), and \"an\" before a word that starts with a, e, i, o, u (an apple, an egg).",
+        "explanationAr": "نقول a قبل معظم الكلمات (a banana)، ونقول an قبل الكلمة التي تبدأ بـ a, e, i, o, u (an apple, an egg).",
+        "examples": [
+            {"en": "a banana", "ar": "موزة"},
+            {"en": "an apple", "ar": "تفاحة"},
+            {"en": "an egg", "ar": "بيضة"},
+            {"en": "I like an apple and a banana.", "ar": "أحب تفاحة وموزة."},
+        ],
+    },
+}
+
+run("pre-a", DIALOGUES, None, GRAMMAR_UNITS, has_phonics=False, skills_data=SKILLS_CHECKPOINTS, spelling_rules=SPELLING_RULES, theme_map=THEME_MAP, scene_map=SCENE_MAP)

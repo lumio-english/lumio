@@ -240,13 +240,9 @@ def slide_vocab(w, idx, n, total, num_words, ch, verb_count=0):
     # kept in sync deliberately -- verb_count=0 (the default, and what
     # every untouched lesson passes) reproduces the exact original
     # "Vocabulary · word" label with no behavior change.
-    is_verb = w.get("pos") == "verb"
-    if is_verb:
-        chip_label = f"New Verbs · {esc(w['en'])}"
-    elif verb_count:
-        chip_label = f"New Words · {esc(w['en'])}"
-    else:
-        chip_label = f"Vocabulary · {esc(w['en'])}"
+    from word_categories import chip_label as _chip, categorize as _cat, CATEGORY_LABELS as _CL
+    chip_label = _chip(w, esc(w["en"]))
+    cat_en, cat_ar = _CL[_cat(w)]
     return (bg_base() + header(chip_label, n, total) + f'''
     <div style="position:relative;z-index:5;display:flex;gap:22px;padding:44px 40px 0">
       {card_open(410, "padding:20px;text-align:center")}
@@ -257,6 +253,7 @@ def slide_vocab(w, idx, n, total, num_words, ch, verb_count=0):
       {card_open(560, "padding:32px 36px")}
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:2.4rem;color:{CARD_TEXT}">{esc(w["en"])}</div>
         <div style="display:inline-block;margin-top:10px;padding:6px 18px;background:#E6FBF8;color:{TEAL_DEEP};border-radius:8px;font-weight:800;font-size:1rem">{w["ar"]}</div>
+        <span style="display:inline-block;margin:10px 0 0 8px;padding:5px 12px;border:1px solid #E2E8F0;border-radius:8px;color:#64748B;font-weight:700;font-size:.82rem">{cat_en} &middot; {cat_ar}</span>
         <div style="border-top:1px solid #EEF0F4;margin:20px 0 16px"></div>
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:{ORANGE_DEEP};font-size:.75rem;letter-spacing:1.5px;margin-bottom:8px">EXAMPLE</div>
         <div style="font-family:'Nunito',sans-serif;font-style:italic;font-weight:700;font-size:1.15rem;color:{CARD_TEXT};margin-bottom:20px">&ldquo;{esc(quote)}&rdquo;</div>
@@ -344,14 +341,15 @@ def slide_sentence_builder(sentence, n, total, ch, seed):
     </style>''')
 
 def slide_sentence_trio(sentences, n, total, ch, seed):
-    """Three compact build-the-sentence exercises on one slide, teen-theme
-    version -- same data-group-scoped drag-and-drop as the kid template's
-    slide_sentence_trio, styled to match this module's dark theme instead
-    (bg_base, CARD_BG, Fredoka) rather than reusing the kid version's
-    cream/Baloo styling directly."""
+    """Three compact build-the-sentence exercises on one slide (teen theme).
+    The instruction sits in its own band under the header and the rows
+    start BELOW it (they used to start at y=130, under the instruction
+    text, so "Drag the tiles into order" printed across row 1). Slots and
+    tray get their own full-width lines and the row height follows the
+    sentence length, like the kid template."""
     rows = ""
-    row_top = 130
-    row_height = 155
+    row_top = 178
+    TILES_PER_LINE_ESTIMATE = 12
     for i, sentence in enumerate(sentences):
         words, punct = tokenize_sentence(sentence)
         order = list(range(len(words)))
@@ -359,28 +357,34 @@ def slide_sentence_trio(sentences, n, total, ch, seed):
         punct_tile = f'<div class="sbg-tile sbg-punct" style="cursor:default">{punct}</div>' if punct else ""
         slots = "".join(f'<div class="sb-slot sbg-slot" data-group="{i}" data-index="{j}"></div>' for j in range(len(words)))
         tray = "".join(f'<div class="sb-tile sbg-tile" draggable="false" data-group="{i}" data-word="{esc(words[j])}">{esc(words[j])}</div>' for j in order)
-        top = row_top + i * row_height
+        wrapped_lines = -(-len(words) // TILES_PER_LINE_ESTIMATE)
+        this_row_height = 92 + wrapped_lines * 42
+        top = row_top
+        row_top += this_row_height + 10
         rows += f'''
-        <div style="position:absolute;left:40px;right:40px;top:{top}px;background:{CARD_BG};border-radius:12px;padding:12px 18px;
+        <div style="position:absolute;left:46px;right:46px;top:{top}px;background:{CARD_BG};border-radius:14px;padding:10px 18px;
                     box-shadow:0 6px 14px rgba(0,0,0,.18)">
-          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-            <div style="font-size:.8rem;font-weight:700;color:{ORANGE};min-width:14px">{i + 1}.</div>
-            <div id="sbSlots{i}" data-correct="{esc(sentence.strip())}" style="display:flex;gap:6px;flex-wrap:wrap;min-height:36px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+            <div style="font-family:'Fredoka',sans-serif;font-size:.85rem;font-weight:600;color:{ORANGE};min-width:16px">{i + 1}.</div>
+            <div id="sbSlots{i}" data-correct="{esc(sentence.strip())}" style="display:flex;gap:6px;flex-wrap:wrap;min-height:38px;flex:1">
               {slots}{punct_tile}
             </div>
-            <div style="width:1.5px;align-self:stretch;background:{BORDER};margin:0 4px"></div>
-            <div id="sbTray{i}" style="display:flex;gap:6px;flex-wrap:wrap;flex:1">
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div id="sbTray{i}" style="display:flex;gap:6px;flex-wrap:wrap;flex:1;padding-left:26px">
               {tray}
             </div>
             <button onclick="window.checkSentenceBuilder && checkSentenceBuilder('{i}')"
                     style="cursor:pointer;border:none;font-family:'Fredoka',sans-serif;background:linear-gradient(135deg,{ORANGE},{ORANGE_DEEP});
-                           color:#fff;font-weight:600;padding:7px 14px;border-radius:8px;font-size:.78rem;white-space:nowrap">Check</button>
+                           color:#fff;font-weight:600;padding:7px 14px;border-radius:8px;font-size:.78rem;white-space:nowrap;flex-shrink:0">&#10003; Check</button>
           </div>
-          <div id="sbFeedback{i}" style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.8rem;min-height:18px;margin-top:4px;color:{CARD_TEXT}"></div>
+          <div id="sbFeedback{i}" style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.8rem;min-height:16px;margin-top:2px;color:{CARD_TEXT}"></div>
         </div>'''
     return (bg_base() + header("Build the Sentences", n, total) + f'''
-    <div style="position:relative;z-index:5;text-align:center;margin-top:30px;font-family:'Nunito',sans-serif;font-weight:700;color:{INK_DIM}">
-      Drag the tiles into order.</div>
+    <div style="position:absolute;left:0;right:0;top:122px;text-align:center;z-index:5">
+      <div style="display:inline-block;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);padding:7px 22px;border-radius:12px;
+                  font-family:'Nunito',sans-serif;font-weight:800;color:#fff;font-size:.95rem">Put the words in the right order &mdash; drag the tiles. <span style="font-weight:700;opacity:.8">1-on-1: say the sentence first, then build it.</span></div>
+    </div>
     {rows}
     <style>
       .sbg-slot {{ width:70px; height:38px; border:2px dashed {BORDER}; border-radius:8px; background:rgba(0,0,0,.04); }}
@@ -406,25 +410,51 @@ def slide_sound_spot(vocab, n, total, ch):
     <div style="position:relative;z-index:5;display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-top:24px;padding:0 40px">{cards}</div>
     ''')
 
-def slide_your_turn(w, idx, total_rounds, n, total, ch):
-    return (bg_base() + header(f"Your Turn · {idx}/{total_rounds}", n, total) + f'''
-    <div style="position:relative;z-index:5;display:flex;align-items:center;justify-content:center;gap:36px;margin-top:60px">
-      {card_open(280, f"height:280px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;background:#232038")}
-        <div id="ytMystery{idx}" style="font-size:3.2rem">&#128266;</div>
-        <img id="ytImg{idx}" src="assets/vocab/{slug(w.get('image') or w['en'])}.png" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff" onerror="this.style.display='none'">
+import json as _json
+
+def your_turn_html(w, idx, total_rounds, teen, chars_html=""):
+    """Shared Your Turn body (kid + teen): hear the word -> say it in
+    Arabic -> reveal (Arabic big, English, picture). Round idx/total_rounds."""
+    img = f"assets/vocab/{slug(w.get('image') or w['en'])}.png"
+    en = w["en"]; ar = w.get("ar", "")
+    if teen:
+        card_bg, ink, soft, accent, accent2, font = "#FFFFFF", "#2B2640", "#6B6580", "#7C5CFC", "#0D9488", "'Fredoka',sans-serif"
+        mystery_bg = "#232038"
+    else:
+        card_bg, ink, soft, accent, accent2, font = "#FFFFFF", "#43301F", "#8A7160", "#F97316", "#0D9488", "'Baloo 2',sans-serif"
+        mystery_bg = "linear-gradient(135deg,#FFF3D6,#FFE0B8)"
+    return f'''
+    <div style="position:absolute;left:0;right:0;top:140px;bottom:150px;display:flex;align-items:center;justify-content:center;gap:34px;z-index:5">
+      <div id="ytCard{idx}" style="width:300px;height:300px;border-radius:24px;background:{mystery_bg};display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;box-shadow:0 14px 30px rgba(0,0,0,.2)">
+        <div id="ytMystery{idx}" style="font-size:4rem">&#128266;</div>
+        <img id="ytImg{idx}" src="{img}" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;padding:14px" onerror="this.style.display='none'">
       </div>
-      {card_open(360, "padding:32px;text-align:center")}
-        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.3rem;color:{CARD_TEXT};margin-bottom:8px">Listen first.</div>
-        <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:.9rem;color:#6B6580">Play the sound, guess it, then reveal.</div>
+      <div style="width:470px;background:{card_bg};border-radius:24px;padding:26px 30px;box-shadow:0 14px 30px rgba(0,0,0,.18);text-align:center">
+        <div id="ytAsk{idx}">
+          <div style="font-family:{font};font-weight:800;font-size:1.5rem;color:{ink}">Listen &mdash; say it in Arabic!</div>
+          <div style="direction:rtl;font-weight:800;font-size:1.15rem;color:{soft};margin-top:4px">استمعوا ثم قولوا الكلمة بالعربية</div>
+          <div style="display:flex;justify-content:center;gap:10px;margin-top:16px;flex-wrap:wrap">
+            {"".join(f'<span style="background:{accent}18;color:{accent};font-weight:800;font-size:.8rem;padding:6px 12px;border-radius:999px">{t}</span>' for t in ("1 Play the word", "2 Say the Arabic", "3 Reveal"))}
+          </div>
+          <div style="margin-top:14px;font-size:.8rem;font-weight:700;color:{soft};line-height:1.45">Pairs: the first to say the Arabic wins the point.<br>1-on-1: your teacher plays the word, you answer.</div>
+        </div>
+        <div id="ytAns{idx}" style="display:none">
+          <div style="direction:rtl;font-weight:900;font-size:2.4rem;color:{ink};line-height:1.2">{ar}</div>
+          <div style="font-family:{font};font-weight:800;font-size:1.5rem;color:{accent};margin-top:6px">{esc(en)}</div>
+          {f'<div style="font-size:.95rem;font-weight:700;color:{soft};margin-top:8px">&ldquo;{esc(w.get("example"))}&rdquo;</div>' if w.get("example") else ""}
+        </div>
       </div>
     </div>
-    <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{esc(w["en"])}')"
-            style="position:absolute;left:50%;transform:translateX(-170px);bottom:110px;z-index:20;cursor:pointer;border:none;font-family:'Fredoka',sans-serif;
-            background:linear-gradient(135deg,{TEAL},{TEAL_DEEP});color:#fff;font-weight:600;padding:12px 22px;border-radius:10px;font-size:.88rem">&#9654; Play</button>
-    <button onclick="document.getElementById('ytMystery{idx}').style.display='none'; document.getElementById('ytImg{idx}').style.display='block'; this.textContent='{esc(w["en"])} \\u2014 {w["ar"]}'; this.style.background='linear-gradient(135deg,#4ADE80,#16A34A)'"
-            style="position:absolute;left:50%;transform:translateX(10px);bottom:110px;z-index:20;cursor:pointer;border:none;font-family:'Fredoka',sans-serif;
-            background:linear-gradient(135deg,{ORANGE},{ORANGE_DEEP});color:#fff;font-weight:600;padding:12px 22px;border-radius:10px;font-size:.88rem">Reveal</button>
-    ''')
+    <div style="position:absolute;left:0;right:0;bottom:84px;display:flex;justify-content:center;gap:18px;z-index:20">
+      <button onclick="typeof Lumio!=='undefined' && Lumio.speak && Lumio.speak({esc(_json.dumps(en))})"
+              style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,{accent2},#0B7A6F);color:#fff;font-weight:800;padding:13px 28px;border-radius:999px;font-size:1.02rem;box-shadow:0 8px 18px rgba(13,148,136,.35)">&#9654; Play the word</button>
+      <button onclick="document.getElementById('ytMystery{idx}').style.display='none';document.getElementById('ytImg{idx}').style.display='block';document.getElementById('ytAsk{idx}').style.display='none';document.getElementById('ytAns{idx}').style.display='block';this.disabled=true;this.style.opacity=.55"
+              style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,{accent},{'#5B3FD9' if teen else '#EA580C'});color:#fff;font-weight:800;padding:13px 28px;border-radius:999px;font-size:1.02rem;box-shadow:0 8px 18px rgba(0,0,0,.25)">&#128064; Reveal</button>
+    </div>
+    {chars_html}'''
+
+def slide_your_turn(w, idx, total_rounds, n, total, ch):
+    return bg_base() + header(f"Your Turn &middot; {idx}/{total_rounds}", n, total) + your_turn_html(w, idx, total_rounds, True)
 
 def slide_quiz(target, distractors, idx, total_q, n, total, seed):
     opts = distractors + [target]
@@ -454,8 +484,8 @@ def today_i_learned_pages(lesson, grammar_topic=None, dialogue=None, crew_talk=N
     6 words silently lost the rest from its own recap."""
     import recap_pages
     max_chips = 2 * recap_pages.TEEN.chips_per_row()
-    blocks = [{"kind": "chips" if len(lesson["vocab"]) <= max_chips else "pills",
-               "label": "KEY WORDS", "items": [w["en"] for w in lesson["vocab"]]}]
+    from word_categories import recap_word_blocks
+    blocks = recap_word_blocks(lesson["vocab"], "chips" if len(lesson["vocab"]) <= max_chips else "pills")
     for blk in (extra_blocks or []):
         if blk.get("items"): blocks.append(blk)
     vocab_sentences = recap_pages.dedupe([w.get("example") for w in lesson["vocab"]]
@@ -480,9 +510,7 @@ def today_i_learned_pages(lesson, grammar_topic=None, dialogue=None, crew_talk=N
     if dialogue:
         lines = [(l[1] if len(l) == 3 else l[0]) for l in dialogue]
         blocks.append({"kind": "lines", "label": "DIALOGUE", "items": recap_pages.dedupe(lines)})
-    if crew_talk:
-        lines = [f"{l[0]}: {l[1]}" for l in crew_talk]
-        blocks.append({"kind": "lines", "label": "CREW TALK", "items": recap_pages.dedupe(lines)})
+    # Crew Talk lines are rehearsal material, not new language -- not recapped.
     return recap_pages.paginate(blocks, recap_pages.TEEN)
 
 
@@ -494,14 +522,14 @@ def _recap_block_html(blk):
     if kind == "chips":
         chips = "".join(f'''
       <div style="background:{CARD_BG};border-radius:10px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;width:100px">
-        <div style="width:64px;height:64px;border-radius:8px;overflow:hidden;background:#F8FAFC"><img src="assets/vocab/{slug(w)}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.75rem;color:{CARD_TEXT};text-align:center">{esc(w)}</div>
+        <div style="width:64px;height:64px;border-radius:8px;overflow:hidden;background:#F8FAFC"><img src="assets/vocab/{slug(w["image"] if isinstance(w, dict) else w)}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.75rem;color:{CARD_TEXT};text-align:center">{esc(w["en"] if isinstance(w, dict) else w)}</div>
       </div>''' for w in items)
         out += f'<div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px">{chips}</div>'
     elif kind == "pills":
         pills = "".join(f'''
       <div style="background:{CARD_BG};border-radius:999px;padding:7px 14px;font-family:'Fredoka',sans-serif;font-weight:600;
-                  font-size:.8rem;color:{CARD_TEXT};line-height:1.2">{esc(w)}</div>''' for w in items)
+                  font-size:.8rem;color:{CARD_TEXT};line-height:1.2">{esc(w["en"] if isinstance(w, dict) else w)}</div>''' for w in items)
         out += f'<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px">{pills}</div>'
     else:
         title = blk.get("title")

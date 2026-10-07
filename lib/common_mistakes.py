@@ -1,0 +1,449 @@
+# -*- coding: utf-8 -*-
+"""Common Mistake bank for the Level 3-6 grammar topics (keyed by the exact
+grammar-hub topic title). Each topic has three REAL learner mistakes --
+the kind Arabic-speaking teens actually make -- with the correction and a
+one-line reason in English and Arabic. The deck's "Common Mistake" slide
+used to invent its own example by swapping the first word of a sentence,
+which produced "mistakes" that were not mistakes at all; everything here
+is written and checked by hand. Add a topic here whenever a new grammar
+topic is added to grammar-hub/<level>.json.
+
+Entry: (wrong, right, why_en, why_ar)"""
+
+BANK = {
+    # ---------------- Level 3 ----------------
+    "Present Simple (I/you/we/they)": [
+        ("I am play football on Fridays.", "I play football on Fridays.",
+         "Habits use the base verb alone -- no \"am\" before it.", "العادات تُقال بالفعل الأساسي فقط — بدون \"am\" قبله."),
+        ("We goes to school by bus.", "We go to school by bus.",
+         "With I, you, we and they the verb has NO -s.", "مع I و you و we و they لا نضيف -s إلى الفعل."),
+        ("They likes pizza.", "They like pizza.",
+         "\"They\" takes the base form: like, not likes.", "\"They\" يأخذ الفعل الأساسي: like وليس likes."),
+    ],
+    "Present Simple (he/she/it + -s)": [
+        ("She play tennis every week.", "She plays tennis every week.",
+         "He, she and it need -s on the verb.", "مع he و she و it نضيف -s إلى الفعل."),
+        ("My brother watch TV at night.", "My brother watches TV at night.",
+         "Verbs ending in -ch, -sh, -s, -x add -es.", "الأفعال المنتهية بـ -ch و -sh و -s و -x تأخذ -es."),
+        ("He has go to work.", "He goes to work.",
+         "Only one verb changes: goes. Don't add \"has\".", "فعل واحد فقط يتغير: goes. لا نضيف \"has\"."),
+    ],
+    "Present Simple Negatives": [
+        ("She doesn't likes tea.", "She doesn't like tea.",
+         "After \"doesn't\" the verb goes back to the base form.", "بعد \"doesn't\" يعود الفعل إلى صيغته الأساسية."),
+        ("I don't want not to go.", "I don't want to go.",
+         "One negative is enough: don't + verb.", "نفي واحد يكفي: don't + الفعل."),
+        ("They doesn't play on Sunday.", "They don't play on Sunday.",
+         "\"Doesn't\" is only for he, she, it. They → don't.", "\"Doesn't\" فقط مع he و she و it. مع They نستخدم don't."),
+    ],
+    "There is / There are": [
+        ("There is two cats on the sofa.", "There are two cats on the sofa.",
+         "More than one → there are.", "أكثر من واحد ← there are."),
+        ("There are a book on the desk.", "There is a book on the desk.",
+         "One thing → there is.", "شيء واحد ← there is."),
+        ("Is there any chairs?", "Are there any chairs?",
+         "Plural question → Are there…?", "السؤال عن الجمع ← Are there…?"),
+    ],
+    "This / That / These / Those": [
+        ("This are my books.", "These are my books.",
+         "Plural and near → these.", "جمع وقريب ← these."),
+        ("Look at those bird over there.", "Look at that bird over there.",
+         "One thing far away → that.", "شيء واحد بعيد ← that."),
+        ("These is my pen.", "This is my pen.",
+         "One thing near you → this.", "شيء واحد قريب ← this."),
+    ],
+    "Plural Nouns": [
+        ("I have two childs.", "I have two children.",
+         "Child is irregular: children.", "child جمعها شاذ: children."),
+        ("She bought three boxs.", "She bought three boxes.",
+         "Nouns ending in -x add -es.", "الأسماء المنتهية بـ -x تأخذ -es."),
+        ("There are many peoples here.", "There are many people here.",
+         "People is already plural.", "كلمة people جمع بالفعل."),
+    ],
+    "Possessive Adjectives": [
+        ("This is she bag.", "This is her bag.",
+         "Before a noun use her, not she.", "قبل الاسم نستخدم her وليس she."),
+        ("The dog wagged it's tail.", "The dog wagged its tail.",
+         "Its = belonging to it. It's = it is.", "its للملكية، أما it's فتعني it is."),
+        ("We love us teacher.", "We love our teacher.",
+         "We → our before a noun.", "مع We نستخدم our قبل الاسم."),
+    ],
+    "Prepositions of Place": [
+        ("The cat is in the table.", "The cat is on the table.",
+         "On a surface → on. Inside something → in.", "على سطح ← on. داخل شيء ← in."),
+        ("I sit next my friend.", "I sit next to my friend.",
+         "It's always \"next to\".", "نقول دائماً \"next to\"."),
+        ("The ball is under of the bed.", "The ball is under the bed.",
+         "Under has no \"of\".", "under لا تأتي مع \"of\"."),
+    ],
+    "Can / Can't (Ability)": [
+        ("She can swims very fast.", "She can swim very fast.",
+         "After can, the verb has no -s.", "بعد can لا يأخذ الفعل -s."),
+        ("I can to speak English.", "I can speak English.",
+         "No \"to\" after can.", "لا نضع \"to\" بعد can."),
+        ("Do you can play chess?", "Can you play chess?",
+         "Can starts the question itself -- no \"do\".", "can تبدأ السؤال بنفسها — بدون \"do\"."),
+    ],
+    "Wh- Questions": [
+        ("Where you live?", "Where do you live?",
+         "Wh- word + do/does + subject + verb.", "كلمة الاستفهام + do/does + الفاعل + الفعل."),
+        ("What time does she goes to bed?", "What time does she go to bed?",
+         "After \"does\" the verb is the base form.", "بعد \"does\" يأتي الفعل في صيغته الأساسية."),
+        ("Why he is late?", "Why is he late?",
+         "With \"be\", the verb comes before the subject.", "مع فعل \"be\" يأتي الفعل قبل الفاعل."),
+    ],
+    "Comparatives (bigger, smaller)": [
+        ("My bag is more big than yours.", "My bag is bigger than yours.",
+         "Short adjectives take -er, not \"more\".", "الصفات القصيرة تأخذ -er وليس \"more\"."),
+        ("This book is gooder than that one.", "This book is better than that one.",
+         "Good is irregular: better.", "good صفة شاذة: better."),
+        ("She is taller that me.", "She is taller than me.",
+         "Comparatives use \"than\".", "المقارنة تستخدم \"than\"."),
+    ],
+    "Articles: a / an / the": [
+        ("I saw a elephant at the zoo.", "I saw an elephant at the zoo.",
+         "Before a vowel sound use an.", "قبل صوت متحرك نستخدم an."),
+        ("She is an university student.", "She is a university student.",
+         "\"University\" starts with a /y/ sound → a.", "كلمة university تبدأ بصوت /y/ ← a."),
+        ("I like the music.", "I like music.",
+         "No \"the\" for things in general.", "لا نضع \"the\" عند الحديث عن الأشياء بشكل عام."),
+    ],
+    "Imperatives (Commands)": [
+        ("You open the window, please.", "Open the window, please.",
+         "Commands start with the verb -- no subject.", "الأوامر تبدأ بالفعل — بدون فاعل."),
+        ("Don't to touch that!", "Don't touch that!",
+         "Don't + base verb, no \"to\".", "Don't + الفعل الأساسي، بدون \"to\"."),
+        ("Please sits down.", "Please sit down.",
+         "The command verb never takes -s.", "فعل الأمر لا يأخذ -s أبداً."),
+    ],
+    "Present Continuous (I am doing)": [
+        ("I eating lunch now.", "I am eating lunch now.",
+         "Present Continuous needs am/is/are.", "المضارع المستمر يحتاج am/is/are."),
+        ("She is study for the test.", "She is studying for the test.",
+         "The verb needs -ing.", "الفعل يحتاج -ing."),
+        ("They are play football right now.", "They are playing football right now.",
+         "are + verb-ing.", "are + الفعل مع -ing."),
+    ],
+    # ---------------- Level 4 ----------------
+    "Present Simple Questions (Do / Does)": [
+        ("Does she likes coffee?", "Does she like coffee?",
+         "After \"does\" the verb is the base form.", "بعد \"does\" يأتي الفعل الأساسي."),
+        ("Do he play tennis?", "Does he play tennis?",
+         "He, she, it → does.", "مع he و she و it ← does."),
+        ("You like pizza?", "Do you like pizza?",
+         "Yes/no questions start with do/does.", "أسئلة نعم/لا تبدأ بـ do/does."),
+    ],
+    "Present Simple for Routines": [
+        ("I am wake up at six every day.", "I wake up at six every day.",
+         "Routines use the base verb, not am + verb.", "الروتين يُقال بالفعل الأساسي وليس am + الفعل."),
+        ("She go to the gym on Mondays.", "She goes to the gym on Mondays.",
+         "She → goes.", "مع she ← goes."),
+        ("We are eating breakfast every morning.", "We eat breakfast every morning.",
+         "\"Every morning\" is a routine → Present Simple.", "\"كل صباح\" روتين ← المضارع البسيط."),
+    ],
+    "Adverbs of Frequency": [
+        ("I go always to school by bus.", "I always go to school by bus.",
+         "The adverb goes BEFORE the main verb.", "الظرف يأتي قبل الفعل الرئيسي."),
+        ("She always is late.", "She is always late.",
+         "With \"be\", the adverb goes AFTER am/is/are.", "مع فعل \"be\" يأتي الظرف بعد am/is/are."),
+        ("He doesn't never eat fish.", "He never eats fish.",
+         "Never is already negative -- no \"doesn't\".", "never نفي بالفعل — لا نضيف \"doesn't\"."),
+    ],
+    "Prepositions of Time": [
+        ("The class starts in 4 o'clock.", "The class starts at 4 o'clock.",
+         "Exact times → at.", "الوقت المحدد ← at."),
+        ("My birthday is on March.", "My birthday is in March.",
+         "Months → in.", "الشهور ← in."),
+        ("We play football in Friday.", "We play football on Friday.",
+         "Days → on.", "الأيام ← on."),
+    ],
+    "Object Pronouns": [
+        ("Please help I with this.", "Please help me with this.",
+         "After a verb use me, not I.", "بعد الفعل نستخدم me وليس I."),
+        ("I saw she at the mall.", "I saw her at the mall.",
+         "She is the subject; her is the object.", "she فاعل، أما her فمفعول به."),
+        ("Give the book to they.", "Give the book to them.",
+         "After \"to\" use them.", "بعد \"to\" نستخدم them."),
+    ],
+    "Possessive Pronouns (mine, yours, his, hers)": [
+        ("This phone is my.", "This phone is mine.",
+         "At the end of a sentence use mine, not my.", "في نهاية الجملة نستخدم mine وليس my."),
+        ("Is this book your?", "Is this book yours?",
+         "No noun after it → yours.", "لا يوجد اسم بعدها ← yours."),
+        ("The red bag is her.", "The red bag is hers.",
+         "Hers stands alone; her needs a noun.", "hers تأتي وحدها، أما her فتحتاج اسماً بعدها."),
+    ],
+    "Some / Any": [
+        ("I don't have some money.", "I don't have any money.",
+         "Negatives use any.", "في النفي نستخدم any."),
+        ("Do you have some brothers?", "Do you have any brothers?",
+         "Questions usually use any.", "الأسئلة عادةً تستخدم any."),
+        ("There are any apples in the bag.", "There are some apples in the bag.",
+         "Positive sentences use some.", "الجمل المثبتة تستخدم some."),
+    ],
+    "Countable & Uncountable Nouns": [
+        ("Can I have two waters?", "Can I have two bottles of water?",
+         "Water is uncountable -- count the bottles or glasses.", "الماء لا يُعد — نعدّ الزجاجات أو الأكواب."),
+        ("She gave me many advices.", "She gave me a lot of advice.",
+         "Advice has no plural.", "advice ليس لها جمع."),
+        ("I need some informations.", "I need some information.",
+         "Information is uncountable.", "information لا تُعد."),
+    ],
+    "How much / How many": [
+        ("How much apples do you want?", "How many apples do you want?",
+         "Countable → how many.", "الأشياء المعدودة ← how many."),
+        ("How many money do you have?", "How much money do you have?",
+         "Money is uncountable → how much.", "المال لا يُعد ← how much."),
+        ("How much is it cost?", "How much does it cost?",
+         "Questions with a verb need do/does.", "الأسئلة التي فيها فعل تحتاج do/does."),
+    ],
+    "Superlatives (the biggest, the best)": [
+        ("He is the most tall boy in class.", "He is the tallest boy in class.",
+         "Short adjectives → -est.", "الصفات القصيرة ← -est."),
+        ("This is the goodest movie.", "This is the best movie.",
+         "Good → best (irregular).", "good ← best (شاذة)."),
+        ("She is biggest fan of the team.", "She is the biggest fan of the team.",
+         "Superlatives need \"the\".", "صيغة التفضيل تحتاج \"the\"."),
+    ],
+    "Would like / Want (polite requests)": [
+        ("I would like a rice, please.", "I would like some rice, please.",
+         "Rice is uncountable → some rice / a plate of rice.", "الأرز لا يُعد ← some rice أو a plate of rice."),
+        ("I would like eat pizza.", "I would like to eat pizza.",
+         "Would like + to + verb.", "would like + to + الفعل."),
+        ("Do you would like a drink?", "Would you like a drink?",
+         "Would starts the question -- no \"do\".", "would تبدأ السؤال — بدون \"do\"."),
+    ],
+    "Should / Shouldn't (advice)": [
+        ("You should to sleep early.", "You should sleep early.",
+         "No \"to\" after should.", "لا نضع \"to\" بعد should."),
+        ("He shoulds study more.", "He should study more.",
+         "Should never changes.", "should لا تتغير أبداً."),
+        ("You don't should eat that.", "You shouldn't eat that.",
+         "The negative is shouldn't.", "النفي هو shouldn't."),
+    ],
+    # ---------------- Level 5 ----------------
+    "Past Simple — Regular Verbs": [
+        ("I play football yesterday.", "I played football yesterday.",
+         "Yesterday = past → add -ed.", "yesterday = ماضٍ ← نضيف -ed."),
+        ("She was walked to school.", "She walked to school.",
+         "Don't add \"was\" to a past verb.", "لا نضيف \"was\" إلى فعل في الماضي."),
+        ("They studyed all night.", "They studied all night.",
+         "Consonant + y → -ied.", "حرف ساكن + y ← -ied."),
+    ],
+    "Past Simple — Irregular Verbs": [
+        ("We goed to the mall.", "We went to the mall.",
+         "Go is irregular: went.", "go فعل شاذ: went."),
+        ("He buyed a new phone.", "He bought a new phone.",
+         "Buy → bought.", "buy ← bought."),
+        ("I eated lunch at noon.", "I ate lunch at noon.",
+         "Eat → ate.", "eat ← ate."),
+    ],
+    "Past Simple Negatives & Questions": [
+        ("I didn't went to school.", "I didn't go to school.",
+         "After didn't, use the base verb.", "بعد didn't نستخدم الفعل الأساسي."),
+        ("Did you saw the movie?", "Did you see the movie?",
+         "After did, use the base verb.", "بعد did نستخدم الفعل الأساسي."),
+        ("She not called me.", "She didn't call me.",
+         "Past negatives need didn't.", "النفي في الماضي يحتاج didn't."),
+    ],
+    "Was / Were": [
+        ("They was at home.", "They were at home.",
+         "They → were.", "مع they ← were."),
+        ("I were tired last night.", "I was tired last night.",
+         "I → was.", "مع I ← was."),
+        ("Was you at the party?", "Were you at the party?",
+         "You → were.", "مع you ← were."),
+    ],
+    "There was / There were": [
+        ("There was many people at the game.", "There were many people at the game.",
+         "Plural → there were.", "الجمع ← there were."),
+        ("There were a storm last night.", "There was a storm last night.",
+         "One thing → there was.", "شيء واحد ← there was."),
+        ("There wasn't no tickets left.", "There weren't any tickets left.",
+         "Plural negative → weren't any (one negative only).", "نفي الجمع ← weren't any (نفي واحد فقط)."),
+    ],
+    "Time Expressions (ago, last, yesterday)": [
+        ("I met him before two days.", "I met him two days ago.",
+         "\"Ago\" comes AFTER the time.", "\"ago\" تأتي بعد المدة الزمنية."),
+        ("We traveled in the last summer.", "We traveled last summer.",
+         "No \"in the\" before last summer.", "لا نضع \"in the\" قبل last summer."),
+        ("She called me yesterday night.", "She called me last night.",
+         "We say last night, not yesterday night.", "نقول last night وليس yesterday night."),
+    ],
+    "Sequencing Words (first, then, next, finally)": [
+        ("First, I woke up. First, I ate breakfast.", "First, I woke up. Then, I ate breakfast.",
+         "Use first only once; the next step is then/next.", "نستخدم first مرة واحدة فقط، والخطوة التالية then/next."),
+        ("Finally I packed, then I left.", "First I packed, then I left.",
+         "Finally is for the LAST event.", "finally للحدث الأخير."),
+        ("At the end, we went home happy.", "In the end, we went home happy.",
+         "\"In the end\" = finally; \"at the end\" needs \"of\" (at the end of the day).", "\"in the end\" تعني أخيراً؛ أما \"at the end\" فتحتاج \"of\" (at the end of the day)."),
+    ],
+    "Because (giving reasons)": [
+        ("I stayed home because of I was sick.", "I stayed home because I was sick.",
+         "Because + a full sentence (no \"of\").", "because + جملة كاملة (بدون \"of\")."),
+        ("Because I was tired. I slept early.", "I slept early because I was tired.",
+         "Don't leave \"because…\" alone -- join it to the result.", "لا نترك \"because…\" وحدها — نربطها بالنتيجة."),
+        ("It rained, so because we stayed in.", "It rained, so we stayed in.",
+         "Use because OR so, not both.", "نستخدم because أو so، وليس الاثنتين معاً."),
+    ],
+    "Feelings in the Past": [
+        ("I was very exciting about the trip.", "I was very excited about the trip.",
+         "People feel -ed; things are -ing.", "الأشخاص يشعرون بـ -ed، أما الأشياء فتكون -ing."),
+        ("She were happy with her grade.", "She was happy with her grade.",
+         "She → was.", "مع she ← was."),
+        ("We was so surprised!", "We were so surprised!",
+         "We → were.", "مع we ← were."),
+    ],
+    "Past Continuous (intro)": [
+        ("I was study when you called.", "I was studying when you called.",
+         "was/were + verb-ing.", "was/were + الفعل مع -ing."),
+        ("They was playing outside.", "They were playing outside.",
+         "They → were.", "مع they ← were."),
+        ("It was rain all day.", "It was raining all day.",
+         "Add -ing to the verb.", "نضيف -ing إلى الفعل."),
+    ],
+    # ---------------- Level 6 ----------------
+    "Going to (Future Plans)": [
+        ("I going to visit my uncle.", "I am going to visit my uncle.",
+         "Going to needs am/is/are.", "going to تحتاج am/is/are."),
+        ("She is going to visits Dubai.", "She is going to visit Dubai.",
+         "After going to, use the base verb.", "بعد going to نستخدم الفعل الأساسي."),
+        ("We are go to watch a film tonight.", "We are going to watch a film tonight.",
+         "It's \"going to\", with -ing.", "الصيغة هي \"going to\" مع -ing."),
+    ],
+    "Will (Future Predictions)": [
+        ("I will to call you later.", "I will call you later.",
+         "No \"to\" after will.", "لا نضع \"to\" بعد will."),
+        ("She wills help us.", "She will help us.",
+         "Will never changes.", "will لا تتغير أبداً."),
+        ("It will rains tomorrow.", "It will rain tomorrow.",
+         "After will, the verb has no -s.", "بعد will لا يأخذ الفعل -s."),
+    ],
+    "Present Continuous for Future Plans": [
+        ("I meeting my friends tonight.", "I'm meeting my friends tonight.",
+         "Needs am/is/are + verb-ing.", "تحتاج am/is/are + الفعل مع -ing."),
+        ("We are flying to Jeddah last week.", "We are flying to Jeddah next week.",
+         "Present Continuous for plans is about the FUTURE.", "المضارع المستمر للخطط يتحدث عن المستقبل."),
+        ("She is go to the dentist at 5.", "She is going to the dentist at 5.",
+         "The verb needs -ing.", "الفعل يحتاج -ing."),
+    ],
+    "Past Continuous (full)": [
+        ("What you were doing at 7 pm?", "What were you doing at 7 pm?",
+         "Questions: were + subject + verb-ing.", "في السؤال: were + الفاعل + الفعل مع -ing."),
+        ("I was sleeping when the phone was ringing.", "I was sleeping when the phone rang.",
+         "The short interrupting action is Past Simple.", "الحدث القصير الذي يقاطع يكون في الماضي البسيط."),
+        ("They were watch TV at 8 pm.", "They were watching TV at 8 pm.",
+         "were + verb-ing.", "were + الفعل مع -ing."),
+    ],
+    "Have to / Don't have to": [
+        ("She have to wake up early.", "She has to wake up early.",
+         "She → has to.", "مع she ← has to."),
+        ("You don't have to not come.", "You don't have to come.",
+         "One negative only: don't have to.", "نفي واحد فقط: don't have to."),
+        ("I must to finish my homework.", "I have to finish my homework.",
+         "Must has no \"to\"; have to does.", "must لا تأتي مع \"to\"، أما have to فتأتي معها."),
+    ],
+    "Adverbs of Manner": [
+        ("He drives very careful.", "He drives very carefully.",
+         "Describing the action → adverb (-ly).", "لوصف الفعل ← ظرف (-ly)."),
+        ("She sings beautiful.", "She sings beautifully.",
+         "Sings how? Beautifully.", "تغني كيف؟ beautifully."),
+        ("They played goodly.", "They played well.",
+         "Good → well (irregular).", "good ← well (شاذة)."),
+    ],
+    "Comparatives & Superlatives with Long Adjectives": [
+        ("This film is interestinger than that one.", "This film is more interesting than that one.",
+         "Long adjectives use \"more\".", "الصفات الطويلة تستخدم \"more\"."),
+        ("She is the most happiest girl.", "She is the happiest girl.",
+         "Don't use \"most\" AND -est together.", "لا نستخدم \"most\" و -est معاً."),
+        ("Math is more difficult that art.", "Math is more difficult than art.",
+         "Comparatives use \"than\".", "المقارنة تستخدم \"than\"."),
+    ],
+}
+
+# ---------------------------------------------------------------- KIDS --
+# Pre-A / Level 1 / Level 2 grammar units (titles from gen_slides_*_v2.py
+# GRAMMAR_UNITS). Short sentences, one error each, the kind a 6-10 year
+# old Arabic speaker really makes.
+KIDS = {
+    "a / an": [
+        ("I like a apple.", "I like an apple.", "\"apple\" starts with a vowel sound -> an.", "كلمة apple تبدأ بصوت علة ← نستخدم an."),
+        ("An banana is yellow.", "A banana is yellow.", "\"banana\" starts with b -> a.", "كلمة banana تبدأ بحرف b ← نستخدم a."),
+        ("I eat egg for breakfast.", "I eat an egg for breakfast.", "One thing needs a / an.", "الشيء الواحد يحتاج a أو an قبله."),
+    ],
+    "I am / You are": [
+        ("I is happy.", "I am happy.", "I goes with am.", "مع I نستخدم am."),
+        ("You is tired.", "You are tired.", "You goes with are.", "مع you نستخدم are."),
+        ("Am fine.", "I am fine.", "English needs the subject: I am...", "في الإنجليزية لا نحذف الفاعل: I am..."),
+    ],
+    "It's a / an + noun": [
+        ("It is cat.", "It is a cat.", "One thing: a + noun.", "شيء واحد: a + الاسم."),
+        ("It is a apple.", "It is an apple.", "Vowel sound -> an.", "صوت علة ← an."),
+        ("Is a dog.", "It is a dog.", "Say \"It\" first.", "نبدأ بـ It."),
+    ],
+    "What is it? / Is it...? Yes, it is. / No, it isn't.": [
+        ("Is big?", "Is it big?", "The question needs \"it\".", "السؤال يحتاج it."),
+        ("Yes, it is big it is.", "Yes, it is.", "Short answer: Yes, it is.", "الجواب القصير: Yes, it is."),
+        ("No, it is not big isn't.", "No, it isn't.", "Short answer: No, it isn't.", "الجواب القصير: No, it isn't."),
+    ],
+    "He is / She is": [
+        ("He is my sister.", "She is my sister.", "A girl -> she.", "البنت ← she."),
+        ("She my brother.", "He is my brother.", "A boy -> he, and we need \"is\".", "الولد ← he، ولا ننسى is."),
+        ("They is my parents.", "They are my parents.", "They goes with are.", "مع they نستخدم are."),
+    ],
+    "Possessive Adjectives: my, your, his, her, our, their": [
+        ("This is me bag.", "This is my bag.", "Before a noun: my (not me).", "قبل الاسم نستخدم my وليس me."),
+        ("Omar is a boy. Her shirt is blue.", "Omar is a boy. His shirt is blue.", "A boy -> his.", "الولد ← his."),
+        ("This is the house of they.", "This is their house.", "Use their + noun.", "نستخدم their + الاسم."),
+    ],
+    "Have got (I have...)": [
+        ("You have got a watch?", "Have you got a watch?", "Question: Have you got...?", "السؤال: Have you got...؟"),
+        ("I has got a phone.", "I have got a phone.", "I goes with have.", "مع I نستخدم have."),
+        ("I have got umbrella.", "I have got an umbrella.", "One thing: an umbrella.", "شيء واحد: an umbrella."),
+    ],
+    "There is / There are": [
+        ("There is ten students.", "There are ten students.", "Many -> There are.", "للجمع نستخدم There are."),
+        ("There are a board.", "There is a board.", "One -> There is.", "للمفرد نستخدم There is."),
+        ("Is a clock there?", "Is there a clock?", "Question: Is there...?", "السؤال: Is there...؟"),
+    ],
+    "When is your birthday? It's in...": [
+        ("My birthday is on May.", "My birthday is in May.", "Months take \"in\".", "مع الشهور نستخدم in."),
+        ("When your birthday?", "When is your birthday?", "The question needs \"is\".", "السؤال يحتاج is."),
+        ("It's in may.", "It's in May.", "Months start with a capital letter.", "أسماء الشهور تبدأ بحرف كبير."),
+    ],
+    "Telling Time": [
+        ("It's three o'clock and half.", "It's half past three.", "Half past + the hour.", "نقول half past + الساعة."),
+        ("It's quarter past to four.", "It's quarter to four.", "Quarter to = 15 minutes before.", "quarter to = قبل الساعة بربع."),
+        ("Is six o'clock.", "It's six o'clock.", "Start with It's.", "نبدأ بـ It's."),
+    ],
+    "Verb + -ing = a noun (an activity)": [
+        ("I like draw.", "I like drawing.", "After like: verb + -ing.", "بعد like نضيف -ing للفعل."),
+        ("She like singing.", "She likes singing.", "She -> likes.", "مع she نقول likes."),
+        ("Do you like cooking? Yes, I like.", "Do you like cooking? Yes, I do.", "Short answer: Yes, I do.", "الجواب القصير: Yes, I do."),
+    ],
+    "This / That / These / Those": [
+        ("This are my books.", "These are my books.", "Many near things -> these.", "أشياء كثيرة قريبة ← these."),
+        ("Those is your bag.", "That is your bag.", "One far thing -> that.", "شيء واحد بعيد ← that."),
+        ("These is my pencil.", "This is my pencil.", "One near thing -> this.", "شيء واحد قريب ← this."),
+    ],
+    "Plurals: one -> many": [
+        ("I have two box.", "I have two boxes.", "box -> boxes.", "box ← boxes (نضيف es)."),
+        ("The childrens are playing.", "The children are playing.", "\"children\" is already plural.", "children جمع بالفعل، لا نضيف s."),
+        ("Wash your foots.", "Wash your feet.", "foot -> feet.", "foot ← feet (جمع شاذ)."),
+    ],
+    "Want to + verb (future goals)": [
+        ("I want achieve my goals.", "I want to achieve my goals.", "want + to + verb.", "بعد want نضع to ثم الفعل."),
+        ("She want to be a doctor.", "She wants to be a doctor.", "She -> wants.", "مع she نقول wants."),
+        ("I want to learning coding.", "I want to learn coding.", "After \"to\" the verb is in its base form.", "بعد to يأتي الفعل في صيغته الأساسية."),
+    ],
+}
+BANK.update(KIDS)
+
+
+def mistakes_for(topic):
+    """The three hand-written mistakes for a grammar-hub topic (by title);
+    an empty list for an unknown topic (the slide is then skipped rather
+    than invented)."""
+    if not topic:
+        return []
+    return BANK.get(topic.get("title", ""), [])

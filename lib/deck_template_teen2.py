@@ -156,39 +156,50 @@ def slide_hook(hook_question, n, total, ch, theme_key="default"):
     </div>
     ''' + char_big(ch, pose=dyn_pose('hook', n)))
 
-def slide_first_listen(dialogue, n, total, theme_key="default"):
-    t = THEMES.get(theme_key, THEMES["default"])
-    # Dynamic spacing rather than a fixed 4-slot layout -- richer, more
-    # advanced dialogues run longer than the original 4-line/2-exchange
-    # format, and a hard-coded slot array would silently stack extra
-    # lines on top of each other instead of failing loudly. Computes
-    # enough pitch to fit however many lines this lesson's dialogue
-    # actually has, capped so short dialogues don't look oddly sparse.
-    count = max(1, len(dialogue))
-    # Bubbles used to start at 110px -- under the header's progress line
-    # and on top of the "Listen first" instruction. Start below the
-    # instruction (~165px) and size the pitch so the last bubble still
-    # clears the presenter's 52px nav row.
-    top_margin = 175
-    bottom_budget = 655 - top_margin
-    pitch = min(96, bottom_budget // count)
-    bubble_font = "1rem" if count <= 5 else ".92rem"
-    ar_font = ".82rem" if count <= 5 else ".76rem"
-    pad = "14px 20px" if count <= 5 else "11px 18px"
-    bubbles = ""
-    for i, (en, ar) in enumerate(dialogue):
+def chat_column(rows, t, instruction, instruction_sub=""):
+    """One centred conversation column (max 940px) -- speaker avatar beside
+    each bubble, bubbles alternating sides INSIDE the column so the
+    conversation reads top-to-bottom like a chat, never pushed to the
+    slide margins. Sizes scale with the number of lines so 4-line and
+    9-line dialogues both fit above the presenter's nav row.
+    rows: [(speaker_label, avatar_img_or_None, en, ar), ...]"""
+    count = max(1, len(rows))
+    big = count <= 5
+    en_font = "1.08rem" if big else (".98rem" if count <= 7 else ".9rem")
+    ar_font = ".86rem" if big else (".8rem" if count <= 7 else ".74rem")
+    pad = "12px 18px" if big else "9px 16px"
+    gap = "14px" if big else ("10px" if count <= 7 else "7px")
+    av = 60 if big else 48
+    out = ""
+    for i, (who, img, en, ar) in enumerate(rows):
         left = i % 2 == 0
         side = "left" if left else "right"
-        bubbles += f'''
-        <div style="position:absolute;{side}:60px;top:{top_margin + i * pitch}px;max-width:480px;background:{CARD_BG};border-radius:12px;
-                    border-{side}:5px solid {t['accent']};padding:{pad};box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
-          <div style="font-family:'Nunito',sans-serif;font-weight:700;font-size:{bubble_font};color:{CARD_TEXT}">{esc(en)}</div>
-          <div style="direction:rtl;text-align:right;font-size:{ar_font};color:#8A8398;font-weight:700;margin-top:3px">{ar}</div>
-        </div>'''
-    return (bg_theme(theme_key) + header_themed("First Listen", n, total, theme_key) + f'''
-    <div style="position:relative;z-index:5;text-align:center;margin-top:34px;font-family:'Nunito',sans-serif;font-weight:700;color:{INK_DIM};font-size:.9rem">
-      Listen first. Don't worry about understanding every word -- just get the gist.</div>
-    ''' + bubbles)
+        avatar = ""
+        if img:
+            avatar = (f'<div style="width:{av}px;height:{av}px;border-radius:50%;background:#fff;border:3px solid {t["accent"]};overflow:hidden;flex-shrink:0;box-shadow:0 6px 14px rgba(0,0,0,.3)">'
+                      f'<img src="{img}" style="width:100%;height:100%;object-fit:cover;object-position:top" onerror="this.parentElement.style.display=\'none\'"></div>')
+        who_html = f'<div style="font-family:Fredoka,sans-serif;font-weight:600;font-size:.7rem;letter-spacing:1px;color:{t["accent_deep"]};margin-bottom:2px">{esc(who)}</div>' if who else ""
+        bubble = (f'<div style="max-width:74%;background:{CARD_BG};border-radius:14px;border-{side}:5px solid {t["accent"]};padding:{pad};box-shadow:0 8px 18px rgba(0,0,0,.25)">'
+                  f'{who_html}'
+                  f'<div style="font-family:\'Nunito\',sans-serif;font-weight:800;font-size:{en_font};color:{CARD_TEXT};line-height:1.35">{esc(en)}</div>'
+                  f'<div dir="rtl" style="font-size:{ar_font};color:#6B6580;font-weight:700;margin-top:3px;text-align:right">{ar}</div></div>')
+        inner = (avatar + bubble) if left else (bubble + avatar)
+        out += f'<div style="display:flex;align-items:flex-start;gap:12px;justify-content:{"flex-start" if left else "flex-end"}">{inner}</div>'
+    sub = f'<div style="font-weight:700;font-size:.8rem;opacity:.8;margin-top:2px">{instruction_sub}</div>' if instruction_sub else ""
+    top = 150 if instruction_sub else 136
+    return (f'<div style="position:relative;z-index:5;text-align:center;margin-top:26px;font-family:\'Nunito\',sans-serif;font-weight:800;color:{INK_DIM};font-size:.95rem">{instruction}{sub}</div>'
+            f'<div style="position:absolute;left:0;right:0;top:{top}px;bottom:62px;z-index:5;display:flex;justify-content:center;overflow:hidden">'
+            f'<div style="width:940px;display:flex;flex-direction:column;gap:{gap};justify-content:center">{out}</div></div>')
+
+def slide_first_listen(dialogue, n, total, theme_key="default", speakers=None):
+    """The lesson's opening dialogue (speakers unnamed in the data: two
+    voices alternate). `speakers` = (name, img) pairs for the two voices."""
+    t = THEMES.get(theme_key, THEMES["default"])
+    sp = speakers or [("A", None), ("B", None)]
+    rows = [(sp[i % 2][0], sp[i % 2][1], en, ar) for i, (en, ar) in enumerate(dialogue)]
+    return (bg_theme(theme_key) + header_themed("First Listen", n, total, theme_key)
+            + chat_column(rows, t, "Listen first. Don't worry about understanding every word -- just get the gist.",
+                          "Then read it in pairs: one voice each, swap roles. 1-on-1: the teacher takes one voice."))
 
 def slide_notice_practice(sentences, note, n, total, theme_key="default"):
     t = THEMES.get(theme_key, THEMES["default"])
@@ -478,20 +489,36 @@ def slide_round_checkpoint(round_label, n, total, theme_key="default"):
     </div>
     ''')
 
-def slide_error_analysis(wrong_sentence, right_sentence, why, n, total, theme_key="default"):
-    return (bg_theme(theme_key) + header_themed("Common Mistake", n, total, theme_key) + f'''
-    <div style="position:relative;z-index:5;display:flex;justify-content:center;margin-top:60px">
-      {card_open(720, "padding:36px 40px")}
-        <div style="display:flex;align-items:center;gap:12px;background:#FEF2F2;border-radius:10px;padding:12px 16px;margin-bottom:10px">
-          <span style="font-size:1.1rem">&#10060;</span>
-          <div style="font-family:'Nunito',sans-serif;font-weight:700;color:#991B1B;font-size:1rem">{esc(wrong_sentence)}</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:12px;background:#F0FDF4;border-radius:10px;padding:12px 16px;margin-bottom:18px">
-          <span style="font-size:1.1rem">&#9989;</span>
-          <div style="font-family:'Nunito',sans-serif;font-weight:700;color:#166534;font-size:1rem">{esc(right_sentence)}</div>
-        </div>
-        <div style="font-size:.9rem;color:{CARD_TEXT};font-weight:700">{esc(why)}</div>
-      </div>
+def slide_error_analysis(mistakes, topic_title, n, total, theme_key="default"):
+    """Common Mistakes: three real learner errors for this lesson's grammar
+    topic (lib/common_mistakes.py). Each row starts with only the wrong
+    sentence -- "find the mistake" -- and a tap reveals the correction and
+    the reason (EN + AR). Works in pairs (who spots it first?) and 1-on-1."""
+    t = THEMES.get(theme_key, THEMES["default"])
+    rows = ""
+    for i, (wrong, right, why_en, why_ar) in enumerate(mistakes[:3], 1):
+        rows += f'''
+        <div style="background:{CARD_BG};border-radius:16px;padding:14px 18px;box-shadow:0 8px 18px rgba(0,0,0,.2)">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:30px;height:30px;border-radius:50%;background:{t['accent']};color:#fff;font-family:'Fredoka',sans-serif;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0">{i}</div>
+            <div style="flex:1;display:flex;align-items:center;gap:10px;background:#FEF2F2;border-radius:10px;padding:9px 14px">
+              <span style="font-size:1rem">&#10060;</span><div style="font-family:'Nunito',sans-serif;font-weight:800;color:#991B1B;font-size:1.02rem">{esc(wrong)}</div></div>
+            <button onclick="var f=document.getElementById('cmFix{i}');f.style.display='block';this.style.display='none'"
+                    style="cursor:pointer;border:none;font-family:'Fredoka',sans-serif;background:{t['accent']};color:#fff;font-weight:600;padding:8px 14px;border-radius:8px;font-size:.8rem;white-space:nowrap">Show the fix</button>
+          </div>
+          <div id="cmFix{i}" style="display:none;margin-top:8px;padding-left:42px">
+            <div style="display:flex;align-items:center;gap:10px;background:#F0FDF4;border-radius:10px;padding:9px 14px">
+              <span style="font-size:1rem">&#9989;</span><div style="font-family:'Nunito',sans-serif;font-weight:800;color:#166534;font-size:1.02rem">{esc(right)}</div></div>
+            <div style="display:flex;justify-content:space-between;gap:16px;margin-top:6px;font-size:.84rem;font-weight:700;color:{CARD_TEXT}">
+              <div>&#128161; {esc(why_en)}</div><div dir="rtl" style="color:#6B6580">{why_ar}</div></div>
+          </div>
+        </div>'''
+    return (bg_theme(theme_key) + header_themed("Common Mistakes", n, total, theme_key) + f'''
+    <div style="position:relative;z-index:5;text-align:center;margin-top:24px;font-family:'Nunito',sans-serif;font-weight:800;color:{INK_DIM};font-size:.95rem">
+      {esc(topic_title)} &middot; Find the mistake in each sentence, then tap to check.
+      <div style="font-weight:700;font-size:.8rem;opacity:.8;margin-top:2px">Pairs: who spots it first? &middot; 1-on-1: say the correct sentence before you reveal it.</div></div>
+    <div style="position:absolute;left:0;right:0;top:150px;bottom:62px;z-index:5;display:flex;justify-content:center;align-items:center">
+      <div style="width:900px;display:flex;flex-direction:column;gap:12px">{rows}</div>
     </div>
     ''')
 
@@ -713,7 +740,10 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
         print("scene skipped:", _e)
     if phrase_focus:
         plan.append(("phrase_focus", phrase_focus))
-    plan.append(("pair_check", f"Quiz your partner on today's words -- point and ask 'What's this?'"))
+    # Activity 1 of 3 (lib/activity_slides.py): Describe It -- replaces the
+    # old one-line "pair check" prompt with a real card game that has a
+    # pairs mode and a 1-on-1 mode on the slide.
+    plan.append(("act_describe", None))
     # Vocabulary Check: live, in-class MCQ practice, split into two 5-question
     # rounds with a checkpoint -- breaks up 10 slides in a row and gives a
     # natural pacing beat instead of one long uninterrupted block.
@@ -736,6 +766,9 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
     plan.append(("sentence_trio", sentence_indices[3:6]))
     if grammar_topic:
         plan.append(("grammar_practice", grammar_topic))
+    # Activity 2 of 3: Story Chain -- free production with today's words and
+    # pattern, right after the controlled grammar practice.
+    plan.append(("act_story", None))
     if crew_talk2:
         plan.append(("crew_talk", crew_talk2))
     if grammar_recap_topics:
@@ -756,10 +789,18 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
     for i in range(ghalf, n_grammar_mcq):
         plan.append(("grammar_mcq", i))
     if grammar_topic:
-        plan.append(("error_analysis", None))
-    your_turn_n = min(2, V)
-    for i in range(your_turn_n):
-        plan.append(("your_turn", (lesson["vocab"][i], i + 1)))
+        import common_mistakes
+        if common_mistakes.mistakes_for(grammar_topic):
+            plan.append(("error_analysis", None))
+        else:
+            print(f"  (no common-mistake bank entry for {grammar_topic.get('title')}; slide skipped)")
+    your_turn_n = min(5, V)
+    _yt_idx = sorted({round(i * (V - 1) / max(1, your_turn_n - 1)) for i in range(your_turn_n)}) if V else []
+    for i, _vi in enumerate(_yt_idx):
+        plan.append(("your_turn", (lesson["vocab"][_vi], i + 1)))
+    # Activity 3 of 3: Two Truths & a Lie -- personalised speaking after the
+    # Your Turn rounds, before the challenge/discussion block.
+    plan.append(("act_truth", None))
     if challenge:
         plan.append(("challenge", None))
     if real_life:
@@ -798,7 +839,8 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
         elif kind == "describing_time":
             slides.append(slide_describing_time(data, n, total, theme_key))
         elif kind == "first_listen":
-            slides.append(slide_first_listen(dialogue, n, total, theme_key))
+            slides.append(slide_first_listen(dialogue, n, total, theme_key,
+                                             speakers=[(ch1.split("-teen-")[0].capitalize(), f"{CHAR}/{ch1}.png"), (ch2.split("-teen-")[0].capitalize(), f"{CHAR}/{ch2}.png")]))
         elif kind == "crew_talk":
             slides.append(slide_crew_talk(data, n, total, theme_key))
         elif kind == "phrase_focus":
@@ -822,6 +864,15 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
             slides.append(slide_practice_themed(w, n, total, VOCAB_CHARS[i % len(VOCAB_CHARS)], seed=i, theme_key=theme_key))
         elif kind == "pair_check":
             slides.append(slide_pair_check(data, n, total, theme_key))
+        elif kind == "act_describe":
+            import activity_slides
+            slides.append(activity_slides.slide_describe_guess(lesson["vocab"], bg_theme(theme_key), header_themed("Describe It &bull; Speaking Game", n, total, theme_key)))
+        elif kind == "act_story":
+            import activity_slides
+            slides.append(activity_slides.slide_story_chain(lesson["vocab"], grammar_topic, bg_theme(theme_key), header_themed("Story Chain &bull; Speaking Game", n, total, theme_key)))
+        elif kind == "act_truth":
+            import activity_slides
+            slides.append(activity_slides.slide_truth_or_lie(lesson["vocab"], grammar_topic, bg_theme(theme_key), header_themed("Two Truths &amp; a Lie &bull; Speaking Game", n, total, theme_key)))
         elif kind == "checkpoint":
             slides.append(slide_round_checkpoint(data, n, total, theme_key))
         elif kind == "vocab_mcq":
@@ -850,19 +901,9 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
                         grammar_mcq_sentences_pool.append({"en": w["example"], "ar": w["ar"]})
             slides.append(slide_grammar_mcq(grammar_mcq_sentences_pool, i, n_grammar_mcq, n, total, theme_key))
         elif kind == "error_analysis":
-            pool = grammar_mcq_sentences_pool or []
-            if pool:
-                target_sentence = pool[0]
-                words = target_sentence["en"].strip().split(" ")
-                correct_word = words[0].rstrip(".,!?")
-                rest = " ".join(words[1:])
-                other_words = list({s["en"].strip().split(" ")[0].rstrip(".,!?") for s in pool} - {correct_word})
-                wrong_word = other_words[0] if other_words else "It"
-                wrong_sentence = f"{wrong_word} {rest}"
-                right_sentence = target_sentence["en"]
-                topic_title = grammar_topic["title"] if grammar_topic else "this grammar point"
-                why = f"With {topic_title}, we say \"{correct_word}\" here, not \"{wrong_word}\"."
-                slides.append(slide_error_analysis(wrong_sentence, right_sentence, why, n, total, theme_key))
+            import common_mistakes
+            _mk = common_mistakes.mistakes_for(grammar_topic)
+            slides.append(slide_error_analysis(_mk, grammar_topic["title"], n, total, theme_key))
         elif kind == "your_turn":
             w, idx = data
             slides.append(v1.slide_your_turn(w, idx, your_turn_n, n, total, "omar-teen-wave"))
@@ -883,31 +924,9 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
 
 def slide_crew_talk(lines, n, total, theme_key="default"):
     """Second dialogue per lesson: a short, natural exchange between named
-    core characters built around the lesson's key words. Each line shows
-    the speaker's teen character (varied pose) beside their bubble, so
-    the cast is visibly present rather than anonymous L/R bubbles."""
+    core characters built around the lesson's key words -- each line with
+    the speaker's avatar, in one centred chat column."""
     t = THEMES.get(theme_key, THEMES["default"])
-    count = max(1, len(lines))
-    top_margin = 170
-    pitch = min(100, (655 - top_margin) // count)
-    poses = ["phone", "laugh", "explain", "surprised", "point", "shrug"]
-    out = ""
-    for i, (who, en, ar) in enumerate(lines):
-        side = "left" if i % 2 == 0 else "right"
-        img = f"{CHAR}/{who.lower()}-teen-{poses[i % len(poses)]}.png"
-        top = top_margin + i * pitch
-        img_html = f'''<img src="{img}" style="position:absolute;{side}:44px;top:{top - 8}px;height:{pitch + 4}px;z-index:7;
-                          filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))" onerror="this.style.display='none'">'''
-        out += f'''
-        {img_html}
-        <div style="position:absolute;{side}:130px;top:{top}px;max-width:520px;background:{CARD_BG};border-radius:12px;
-                    border-{side}:5px solid {t['accent']};padding:12px 18px;box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
-          <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.72rem;letter-spacing:1px;color:{t['accent_deep']};margin-bottom:2px">{esc(who.upper())}</div>
-          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:.98rem;color:{CARD_TEXT};line-height:1.35">{esc(en)}</div>
-          <div dir="rtl" style="font-size:.8rem;color:#6B6580;font-weight:700;margin-top:4px;text-align:right">{ar}</div>
-        </div>'''
-    return (bg_theme(theme_key) + header_themed("Crew Talk", n, total, theme_key) + f'''
-    <div style="position:relative;z-index:5;text-align:center;margin-top:34px;font-family:'Nunito',sans-serif;font-weight:700;color:{INK_DIM};font-size:.95rem">
-      Read it in pairs. Then swap roles.</div>
-    {out}
-    ''')
+    rows = [(who.upper(), f"{CHAR}/{who.lower()}-teen-happy.png", en, ar) for (who, en, ar) in lines]
+    return (bg_theme(theme_key) + header_themed("Crew Talk", n, total, theme_key)
+            + chat_column(rows, t, "Read it in pairs, then swap roles.", "1-on-1: you read one character, your teacher reads the other -- then swap."))

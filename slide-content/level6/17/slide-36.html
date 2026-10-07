@@ -12,45 +12,61 @@
         <div style="height:60px;padding:4px 10px;border-radius:14px;background:#fff;display:flex;align-items:center;box-shadow:0 4px 12px rgba(0,0,0,.18)"><img src="assets/logo/lumio-logo.png" alt="Lumio English" style="height:100%;width:auto;object-fit:contain"></div>
       </div>
       <div style="font-family:'Fredoka',sans-serif;font-weight:600;color:#fff;font-size:.95rem;background:#8B5CF63A;
-                  border:1px solid #8B5CF680;padding:6px 16px;border-radius:8px">Crew Talk</div>
-      <div style="font-family:'Nunito',sans-serif;font-weight:800;color:#C6BBF2;font-size:.8rem">36 / 57</div>
+                  border:1px solid #8B5CF680;padding:6px 16px;border-radius:8px">Story Chain &bull; Speaking Game</div>
+      <div style="font-family:'Nunito',sans-serif;font-weight:800;color:#C6BBF2;font-size:.8rem">36 / 61</div>
     </div>
     <div style="position:relative;z-index:5;margin:14px 40px 0;height:3px;background:#4A3B7A;border-radius:2px">
-      <div style="height:100%;width:63%;background:linear-gradient(90deg,#8B5CF6,#7C3AED);border-radius:2px"></div>
+      <div style="height:100%;width:59%;background:linear-gradient(90deg,#8B5CF6,#7C3AED);border-radius:2px"></div>
     </div>
-    <div style="position:relative;z-index:5;text-align:center;margin-top:34px;font-family:'Nunito',sans-serif;font-weight:700;color:#C6BBF2;font-size:.95rem">
-      Read it in pairs. Then swap roles.</div>
-    
-        <img src="assets/story/characters/ziad-teen-phone.png" style="position:absolute;left:44px;top:162px;height:104px;z-index:7;
-                          filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))" onerror="this.style.display='none'">
-        <div style="position:absolute;left:130px;top:170px;max-width:520px;background:#FFFFFF;border-radius:12px;
-                    border-left:5px solid #8B5CF6;padding:12px 18px;box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
-          <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.72rem;letter-spacing:1px;color:#7C3AED;margin-bottom:2px">ZIAD</div>
-          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:.98rem;color:#2B2640;line-height:1.35">Did you follow the instructions step by step?</div>
-          <div dir="rtl" style="font-size:.8rem;color:#6B6580;font-weight:700;margin-top:4px;text-align:right">هل اتبعت التعليمات خطوة بخطوة؟</div>
+    <div style="position:absolute;left:46px;right:46px;top:128px;z-index:6;display:flex;gap:14px">
+      <div style="flex:1;background:#fff;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.28);border:1px solid rgba(0,0,0,.06);padding:10px 16px">
+        <div style="font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#0D9488">&#128101; PAIRS / GROUP</div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:700;font-size:.92rem;color:#2B2640;line-height:1.3">Build one story together. Tap <b>Next word</b> &mdash; whoever's turn it is adds ONE sentence with that word. Keep the story going round the group; it must make sense!</div>
+      </div>
+      <div style="flex:1;background:#fff;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.28);border:1px solid rgba(0,0,0,.06);padding:10px 16px">
+        <div style="font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#F97316">&#128100; 1-ON-1 WITH YOUR TEACHER</div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:700;font-size:.92rem;color:#2B2640;line-height:1.3">You and your teacher take turns. Teacher starts with the first word; you add the next sentence. Three times round = a whole story. Then retell it alone from the pictures.</div>
+      </div>
+    </div>
+    <div style="position:absolute;left:0;right:0;top:214px;bottom:56px;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px">
+      <div id="scRow" style="display:flex;gap:12px">
+      <div data-say="double-check" style="width:150px;background:#fff;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.28);border:1px solid rgba(0,0,0,.06);padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;transition:transform .15s,outline .15s">
+        <div style="width:96px;height:96px"><img src="assets/vocab/double-check.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:700;color:#2B2640;font-size:.9rem;text-align:center">double-check</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">يتحقق مرتين</div>
+      </div>
+      <div data-say="safely" style="width:150px;background:#fff;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.28);border:1px solid rgba(0,0,0,.06);padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;transition:transform .15s,outline .15s">
+        <div style="width:96px;height:96px"><img src="assets/vocab/safely.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:700;color:#2B2640;font-size:.9rem;text-align:center">safely</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">بأمان</div>
+      </div>
+      <div data-say="neatly" style="width:150px;background:#fff;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.28);border:1px solid rgba(0,0,0,.06);padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;transition:transform .15s,outline .15s">
+        <div style="width:96px;height:96px"><img src="assets/vocab/neatly.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:700;color:#2B2640;font-size:.9rem;text-align:center">neatly</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">بترتيب</div>
+      </div>
+      <div data-say="efficiently" style="width:150px;background:#fff;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.28);border:1px solid rgba(0,0,0,.06);padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;transition:transform .15s,outline .15s">
+        <div style="width:96px;height:96px"><img src="assets/vocab/efficiently.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:700;color:#2B2640;font-size:.9rem;text-align:center">efficiently</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">بكفاءة</div>
+      </div>
+      <div data-say="correctly" style="width:150px;background:#fff;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.28);border:1px solid rgba(0,0,0,.06);padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;transition:transform .15s,outline .15s">
+        <div style="width:96px;height:96px"><img src="assets/vocab/correctly.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:700;color:#2B2640;font-size:.9rem;text-align:center">correctly</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">بشكل صحيح</div>
+      </div>
+      <div data-say="step by step" style="width:150px;background:#fff;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.28);border:1px solid rgba(0,0,0,.06);padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;transition:transform .15s,outline .15s">
+        <div style="width:96px;height:96px"><img src="assets/vocab/step-by-step.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:700;color:#2B2640;font-size:.9rem;text-align:center">step by step</div>
+        <div style="font-size:.78rem;color:#0D9488;font-weight:800">خطوة بخطوة</div>
+      </div></div>
+      <div style="background:#fff;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.28);border:1px solid rgba(0,0,0,.06);padding:12px 18px;display:flex;align-items:center;gap:16px;max-width:760px">
+          <div><div style="font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#F97316">USE TODAY'S PATTERN</div>
+          <div style="font-family:'Fredoka',sans-serif;font-weight:700;color:#2B2640;font-size:1rem">Adverbs of Manner</div></div>
+          <div style="border-left:2px solid #EEF0F4;padding-left:16px;font-style:italic;color:#6B6580;font-weight:700;font-size:.92rem">&ldquo;She speaks clearly.&rdquo;</div>
         </div>
-        <img src="assets/story/characters/omar-teen-laugh.png" style="position:absolute;right:44px;top:262px;height:104px;z-index:7;
-                          filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))" onerror="this.style.display='none'">
-        <div style="position:absolute;right:130px;top:270px;max-width:520px;background:#FFFFFF;border-radius:12px;
-                    border-right:5px solid #8B5CF6;padding:12px 18px;box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
-          <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.72rem;letter-spacing:1px;color:#7C3AED;margin-bottom:2px">OMAR</div>
-          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:.98rem;color:#2B2640;line-height:1.35">Yes, and I double-checked everything before moving on.</div>
-          <div dir="rtl" style="font-size:.8rem;color:#6B6580;font-weight:700;margin-top:4px;text-align:right">نعم، وتحققت من كل شيء مرتين قبل المتابعة.</div>
-        </div>
-        <img src="assets/story/characters/ziad-teen-explain.png" style="position:absolute;left:44px;top:362px;height:104px;z-index:7;
-                          filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))" onerror="this.style.display='none'">
-        <div style="position:absolute;left:130px;top:370px;max-width:520px;background:#FFFFFF;border-radius:12px;
-                    border-left:5px solid #8B5CF6;padding:12px 18px;box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
-          <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.72rem;letter-spacing:1px;color:#7C3AED;margin-bottom:2px">ZIAD</div>
-          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:.98rem;color:#2B2640;line-height:1.35">Was it smooth, or did something go wrong?</div>
-          <div dir="rtl" style="font-size:.8rem;color:#6B6580;font-weight:700;margin-top:4px;text-align:right">هل كان سلساً، أم حدث خطأ ما؟</div>
-        </div>
-        <img src="assets/story/characters/omar-teen-surprised.png" style="position:absolute;right:44px;top:462px;height:104px;z-index:7;
-                          filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))" onerror="this.style.display='none'">
-        <div style="position:absolute;right:130px;top:470px;max-width:520px;background:#FFFFFF;border-radius:12px;
-                    border-right:5px solid #8B5CF6;padding:12px 18px;box-shadow:0 10px 22px rgba(0,0,0,.25);z-index:6">
-          <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.72rem;letter-spacing:1px;color:#7C3AED;margin-bottom:2px">OMAR</div>
-          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:.98rem;color:#2B2640;line-height:1.35">Smooth. Doing it properly the first time saved time.</div>
-          <div dir="rtl" style="font-size:.8rem;color:#6B6580;font-weight:700;margin-top:4px;text-align:right">سلساً. فعلها بشكل صحيح من أول مرة وفّر الوقت.</div>
-        </div>
+      <div style="display:flex;gap:12px">
+        <button onclick="LumioAct.next('scRow')" style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;padding:11px 22px;border-radius:999px;font-size:.95rem;box-shadow:0 8px 18px rgba(0,0,0,.2);font-size:1.05rem;padding:13px 30px">Next word &#9654;</button>
+      </div>
+    </div>
     

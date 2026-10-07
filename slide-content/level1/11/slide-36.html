@@ -1,32 +1,69 @@
 <div style="position:absolute;inset:0;background:url('assets/lesson-bg-kid/closet.jpg') center/cover no-repeat"></div><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,251,245,.2) 0%,rgba(255,243,214,.28) 62%,rgba(232,197,143,.4) 100%)"></div><div class="spark" style="left:375px;top:135px;font-size:1.6rem">&#10022;</div><div class="spark" style="left:415px;top:105px;font-size:1.1rem">&#10022;</div><div class="spark" style="left:392px;top:178px;font-size:1.3rem">&#10022;</div><div class="header">
       <div class="brand"><img src="assets/logo/lumio-logo.png" alt="Lumio English" style="height:70px"></div>
-      <div class="pagetitle">Your Turn &bull; Round 1 of 3</div>
-      <div class="counter">36 / 53</div>
+      <div class="pagetitle">Memory Match &bull; Game</div>
+      <div class="counter">36 / 58</div>
     </div><div class="colorstrip"><div class="c1"></div><div class="c2"></div><div class="c3"></div><div class="c4"></div><div class="c5"></div></div>
-    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:40px;padding-bottom:60px">
-      <div class="card" id="ytCard1" style="width:320px;height:320px;display:flex;align-items:center;justify-content:center;
-                  background:linear-gradient(135deg,#FFF3D6,#FFE0B8);position:relative;overflow:hidden">
-        <div id="ytMystery1" style="font-size:4rem">&#128266;</div>
-        <img id="ytImg1" src="assets/vocab/shirt.png" style="display:none;width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
+    <div style="position:absolute;left:46px;right:46px;top:128px;z-index:6;display:flex;gap:14px">
+      <div style="flex:1;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);padding:10px 16px">
+        <div style="font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#0D9488">&#128101; PAIRS / GROUP</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.92rem;color:#43301F;line-height:1.3">Take turns: tap two cards. A match? Say the word and keep going. No match? Next player. Most pairs wins.</div>
       </div>
-      <div class="card" style="width:400px;padding:40px 36px;text-align:center">
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.7rem;color:#43301F;margin-bottom:10px">Listen first!</div>
-        <div style="font-size:.95rem;color:#8A7160;font-weight:700">Play the sound, guess the word, then reveal the picture.</div>
+      <div style="flex:1;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);padding:10px 16px">
+        <div style="font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#F97316">&#128100; 1-ON-1 WITH YOUR TEACHER</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.92rem;color:#43301F;line-height:1.3">You vs your teacher! Tap two cards; say the word when you find a pair. Count your pairs &mdash; can you beat the teacher?</div>
       </div>
     </div>
-    <!-- Standard bottom-action-row position for this template: bottom:86px
-         (clear of the player's own Back/Next nav bar, which overlaps the
-         lower ~60px of every slide) and a fixed 26px gap sized to each
-         button's own rendered width, rather than a second hardcoded
-         left offset that drifted into the first button as label text
-         length varied. -->
-    <button id="ytPlayBtn1" onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('shirt')"
-            style="position:absolute;left:46px;bottom:86px;z-index:20;cursor:pointer;border:none;font-family:inherit;
-            background:linear-gradient(135deg,#0D9488,#0B7A6F);color:#fff;font-weight:800;padding:13px 26px;border-radius:999px;
-            font-size:1.02rem;box-shadow:0 8px 18px rgba(13,148,136,.35)">&#9654; Play sound</button>
-    <button id="ytRevealBtn1" onclick="document.getElementById('ytMystery1').style.display='none'; document.getElementById('ytImg1').style.display='block'; this.textContent='shirt \u2014 قميص'; this.style.background='linear-gradient(135deg,#4ADE80,#16A34A)'"
-            style="position:absolute;left:216px;bottom:86px;z-index:20;cursor:pointer;border:none;font-family:inherit;
-            background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;padding:13px 26px;border-radius:999px;
-            font-size:1.02rem;box-shadow:0 8px 18px rgba(249,115,22,.35)">&#128064; Reveal picture</button>
-    <script>(function(){var a=document.getElementById('ytPlayBtn1'),b=document.getElementById('ytRevealBtn1');if(a&&b)requestAnimationFrame(function(){b.style.left=(a.offsetLeft+a.offsetWidth+26)+'px';});})();</script>
-    <div class="floorshadow" style="right:95px;bottom:25px;width:230px;height:36px"></div><img class="char" src="assets/story/characters/omar-wave.png" style="right:95px;bottom:32px;height:250px" onerror="this.style.display='none'; this.previousElementSibling.style.display='none'">
+    <div style="position:absolute;left:0;right:0;top:214px;bottom:56px;z-index:6;display:flex;align-items:center;justify-content:center;gap:40px">
+      <div id="mmBoard" style="display:grid;grid-template-columns:repeat(4,150px);gap:14px">
+      <div data-pair="1" data-say="pants" onclick="LumioAct.memory(this)" style="position:relative;width:150px;height:150px;border-radius:18px;overflow:hidden;cursor:pointer;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff;padding:8px"><img src="assets/vocab/pants.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F97316,#FBBF24);color:#fff;font-size:3rem;font-weight:900">?</div>
+      </div>
+      <div data-pair="1" data-say="pants" onclick="LumioAct.memory(this)" style="position:relative;width:150px;height:150px;border-radius:18px;overflow:hidden;cursor:pointer;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff;padding:8px"><img src="assets/vocab/pants.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F97316,#FBBF24);color:#fff;font-size:3rem;font-weight:900">?</div>
+      </div>
+      <div data-pair="0" data-say="shirt" onclick="LumioAct.memory(this)" style="position:relative;width:150px;height:150px;border-radius:18px;overflow:hidden;cursor:pointer;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff;padding:8px"><img src="assets/vocab/shirt.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F97316,#FBBF24);color:#fff;font-size:3rem;font-weight:900">?</div>
+      </div>
+      <div data-pair="0" data-say="shirt" onclick="LumioAct.memory(this)" style="position:relative;width:150px;height:150px;border-radius:18px;overflow:hidden;cursor:pointer;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff;padding:8px"><img src="assets/vocab/shirt.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F97316,#FBBF24);color:#fff;font-size:3rem;font-weight:900">?</div>
+      </div>
+      <div data-pair="3" data-say="T-shirt" onclick="LumioAct.memory(this)" style="position:relative;width:150px;height:150px;border-radius:18px;overflow:hidden;cursor:pointer;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff;padding:8px"><img src="assets/vocab/t-shirt.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F97316,#FBBF24);color:#fff;font-size:3rem;font-weight:900">?</div>
+      </div>
+      <div data-pair="3" data-say="T-shirt" onclick="LumioAct.memory(this)" style="position:relative;width:150px;height:150px;border-radius:18px;overflow:hidden;cursor:pointer;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff;padding:8px"><img src="assets/vocab/t-shirt.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F97316,#FBBF24);color:#fff;font-size:3rem;font-weight:900">?</div>
+      </div>
+      <div data-pair="2" data-say="jacket" onclick="LumioAct.memory(this)" style="position:relative;width:150px;height:150px;border-radius:18px;overflow:hidden;cursor:pointer;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff;padding:8px"><img src="assets/vocab/jacket.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F97316,#FBBF24);color:#fff;font-size:3rem;font-weight:900">?</div>
+      </div>
+      <div data-pair="2" data-say="jacket" onclick="LumioAct.memory(this)" style="position:relative;width:150px;height:150px;border-radius:18px;overflow:hidden;cursor:pointer;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff;padding:8px"><img src="assets/vocab/jacket.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F97316,#FBBF24);color:#fff;font-size:3rem;font-weight:900">?</div>
+      </div></div>
+      <div style="width:260px;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);padding:14px 16px">
+        <div style="font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#0D9488;margin-bottom:8px">WORDS TO FIND</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"><span style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#43301F;background:#fff;padding:4px 10px;border-radius:999px;font-size:.85rem">shirt</span><span style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#43301F;background:#fff;padding:4px 10px;border-radius:999px;font-size:.85rem">pants</span><span style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#43301F;background:#fff;padding:4px 10px;border-radius:999px;font-size:.85rem">jacket</span><span style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#43301F;background:#fff;padding:4px 10px;border-radius:999px;font-size:.85rem">T-shirt</span></div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;gap:8px;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);padding:6px 10px 6px 14px">
+        <span style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#F97316;font-size:.9rem">Player 1</span>
+        <span data-act-score style="display:inline-block;min-width:34px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;color:#43301F;transition:transform .15s">0</span>
+        <button onclick="LumioAct.score(this,1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#F97316;color:#fff;font-weight:900;font-size:1rem">+</button>
+        <button onclick="LumioAct.score(this,-1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#E5E7EB;color:#6B7280;font-weight:900;font-size:1rem">&minus;</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);padding:6px 10px 6px 14px">
+        <span style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#0D9488;font-size:.9rem">Player 2</span>
+        <span data-act-score style="display:inline-block;min-width:34px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;color:#43301F;transition:transform .15s">0</span>
+        <button onclick="LumioAct.score(this,1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#0D9488;color:#fff;font-weight:900;font-size:1rem">+</button>
+        <button onclick="LumioAct.score(this,-1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#E5E7EB;color:#6B7280;font-weight:900;font-size:1rem">&minus;</button>
+      </div></div>
+        <div data-act-memory-done="mmBoard" style="display:none;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:800;color:#0D9488;margin-top:10px">&#127881; All pairs found!</div>
+      </div>
+    </div>
+    

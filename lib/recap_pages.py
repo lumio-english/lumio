@@ -75,7 +75,7 @@ def _block_height(layout, kind, items, has_title=False):
     elif kind == "pills":
         rows, x = 1, 0
         for it in items:
-            w = L.pill_pad + len(it) * L.pill_char_w
+            w = L.pill_pad + len(it if isinstance(it, str) else it.get('en', '')) * L.pill_char_w
             if x and x + L.pill_gap + w > L.content_w:
                 rows += 1; x = w
             else:

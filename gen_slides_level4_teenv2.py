@@ -250,7 +250,7 @@ DIALOGUES = {
        ("Same, honestly. Talent should matter more than just being well-known.", "نفس الشيء، بصراحة. الموهبة يجب أن تكون أهم من الشهرة فقط."),
        ("Agreed. That's basically the whole point of this conversation, isn't it?", "متفق. هذا أساساً كل مغزى هذا الحديث، أليس كذلك؟")],
   11: [("What are you going to order? I genuinely can't decide on anything.", "ماذا ستطلب؟ لا أستطيع فعلاً أن أقرر أي شيء."),
-       ("I'd request whatever they recommend, honestly, I trust their choices here.", "سأطلب أياً كان ما يوصون به، بصراحة، أثق بخياراتهم هنا."),
+       ("I'd just order whatever they recommend, honestly, I trust their choices here.", "سأطلب أياً كان ما يوصون به، بصراحة، أثق بخياراتهم هنا."),
        ("That's smart. I usually prefer picking something familiar, no surprises.", "هذا ذكي. عادة أفضل اختيار شيء مألوف، دون مفاجآت."),
        ("Fair, but can I suggest trying something new for once? Just this once.", "معقول، لكن هل يمكنني اقتراح تجربة شيء جديد لمرة واحدة؟ فقط هذه المرة."),
        ("Fine, you convinced me. What's your top choice on this whole menu?", "حسناً، أقنعتني. ما هو خيارك الأول في هذه القائمة كلها؟"),

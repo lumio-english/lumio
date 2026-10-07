@@ -1,28 +1,33 @@
 <div style="position:absolute;inset:0;background:url('assets/lesson-bg-kid/playroom.jpg') center/cover no-repeat"></div><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,251,245,.2) 0%,rgba(255,243,214,.28) 62%,rgba(232,197,143,.4) 100%)"></div><div class="spark" style="left:375px;top:135px;font-size:1.6rem">&#10022;</div><div class="spark" style="left:415px;top:105px;font-size:1.1rem">&#10022;</div><div class="spark" style="left:392px;top:178px;font-size:1.3rem">&#10022;</div><div class="header">
       <div class="brand"><img src="assets/logo/lumio-logo.png" alt="Lumio English" style="height:70px"></div>
-      <div class="pagetitle">Quick Check &bull; 3/8</div>
-      <div class="counter">34 / 46</div>
+      <div class="pagetitle">Your Turn &bull; Round 4 of 5</div>
+      <div class="counter">34 / 51</div>
     </div><div class="colorstrip"><div class="c1"></div><div class="c2"></div><div class="c3"></div><div class="c4"></div><div class="c5"></div></div>
-    <div class="card" style="position:absolute;left:280px;top:170px;width:280px;height:280px;overflow:hidden;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
-      <div dir="rtl" style="text-align:center;padding:8px 16px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2.4rem;color:#0D9488">أخضر</div>
+    <div style="position:absolute;left:0;right:0;top:140px;bottom:150px;display:flex;align-items:center;justify-content:center;gap:34px;z-index:5">
+      <div id="ytCard4" style="width:300px;height:300px;border-radius:24px;background:linear-gradient(135deg,#FFF3D6,#FFE0B8);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;box-shadow:0 14px 30px rgba(0,0,0,.2)">
+        <div id="ytMystery4" style="font-size:4rem">&#128266;</div>
+        <img id="ytImg4" src="assets/vocab/white.png" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;padding:14px" onerror="this.style.display='none'">
+      </div>
+      <div style="width:470px;background:#FFFFFF;border-radius:24px;padding:26px 30px;box-shadow:0 14px 30px rgba(0,0,0,.18);text-align:center">
+        <div id="ytAsk4">
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;color:#43301F">Listen &mdash; say it in Arabic!</div>
+          <div style="direction:rtl;font-weight:800;font-size:1.15rem;color:#8A7160;margin-top:4px">استمعوا ثم قولوا الكلمة بالعربية</div>
+          <div style="display:flex;justify-content:center;gap:10px;margin-top:16px;flex-wrap:wrap">
+            <span style="background:#F9731618;color:#F97316;font-weight:800;font-size:.8rem;padding:6px 12px;border-radius:999px">1 Play the word</span><span style="background:#F9731618;color:#F97316;font-weight:800;font-size:.8rem;padding:6px 12px;border-radius:999px">2 Say the Arabic</span><span style="background:#F9731618;color:#F97316;font-weight:800;font-size:.8rem;padding:6px 12px;border-radius:999px">3 Reveal</span>
+          </div>
+          <div style="margin-top:14px;font-size:.8rem;font-weight:700;color:#8A7160;line-height:1.45">Pairs: the first to say the Arabic wins the point.<br>1-on-1: your teacher plays the word, you answer.</div>
+        </div>
+        <div id="ytAns4" style="display:none">
+          <div style="direction:rtl;font-weight:900;font-size:2.4rem;color:#43301F;line-height:1.2">أبيض</div>
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;color:#F97316;margin-top:6px">white</div>
+          <div style="font-size:.95rem;font-weight:700;color:#8A7160;margin-top:8px">&ldquo;It is white.&rdquo;</div>
+        </div>
+      </div>
     </div>
-    <div style="position:absolute;left:610px;top:190px;width:540px">
-      <div style="display:inline-block;background:#fff;padding:10px 24px;border-radius:18px;box-shadow:0 8px 18px rgba(67,48,31,.12);font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.9rem;color:#43301F">Which word matches?</div>
+    <div style="position:absolute;left:0;right:0;bottom:84px;display:flex;justify-content:center;gap:18px;z-index:20">
+      <button onclick="typeof Lumio!=='undefined' && Lumio.speak && Lumio.speak(&quot;white&quot;)"
+              style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,#0D9488,#0B7A6F);color:#fff;font-weight:800;padding:13px 28px;border-radius:999px;font-size:1.02rem;box-shadow:0 8px 18px rgba(13,148,136,.35)">&#9654; Play the word</button>
+      <button onclick="document.getElementById('ytMystery4').style.display='none';document.getElementById('ytImg4').style.display='block';document.getElementById('ytAsk4').style.display='none';document.getElementById('ytAns4').style.display='block';this.disabled=true;this.style.opacity=.55"
+              style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;padding:13px 28px;border-radius:999px;font-size:1.02rem;box-shadow:0 8px 18px rgba(0,0,0,.25)">&#128064; Reveal</button>
     </div>
-    
-          <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'green', 'green')"
-                  style="position:absolute;left:560px;top:290px;width:180px;height:100px;background:#fff;border:3px solid #F0E9DD;border-radius:16px;
-                      padding:8px;cursor:pointer;display:flex;align-items:center;justify-content:center" data-quiz-option="green">
-            <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.15rem;color:#43301F;text-align:center">green</div>
-          </button>
-          <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'pink', 'green')"
-                  style="position:absolute;left:790px;top:290px;width:180px;height:100px;background:#fff;border:3px solid #F0E9DD;border-radius:16px;
-                      padding:8px;cursor:pointer;display:flex;align-items:center;justify-content:center" data-quiz-option="pink">
-            <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.15rem;color:#43301F;text-align:center">pink</div>
-          </button>
-          <button onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'blue', 'green')"
-                  style="position:absolute;left:1020px;top:290px;width:180px;height:100px;background:#fff;border:3px solid #F0E9DD;border-radius:16px;
-                      padding:8px;cursor:pointer;display:flex;align-items:center;justify-content:center" data-quiz-option="blue">
-            <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.15rem;color:#43301F;text-align:center">blue</div>
-          </button>
-    
+    <div class="floorshadow" style="right:95px;bottom:25px;width:230px;height:36px"></div><img class="char" src="assets/story/characters/omar-wave.png" style="right:95px;bottom:32px;height:200px" onerror="this.style.display='none'; this.previousElementSibling.style.display='none'">

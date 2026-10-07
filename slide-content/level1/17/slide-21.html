@@ -1,36 +1,75 @@
 <div style="position:absolute;inset:0;background:url('assets/lesson-bg-kid/park.jpg') center/cover no-repeat"></div><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,251,245,.2) 0%,rgba(255,243,214,.28) 62%,rgba(232,197,143,.4) 100%)"></div><div class="spark" style="left:375px;top:135px;font-size:1.6rem">&#10022;</div><div class="spark" style="left:415px;top:105px;font-size:1.1rem">&#10022;</div><div class="spark" style="left:392px;top:178px;font-size:1.3rem">&#10022;</div><div class="header">
       <div class="brand"><img src="assets/logo/lumio-logo.png" alt="Lumio English" style="height:70px"></div>
-      <div class="pagetitle">Dialogue &bull; Let's talk!</div>
-      <div class="counter">21 / 45</div>
+      <div class="pagetitle">Flash Race &bull; Speaking Game</div>
+      <div class="counter">21 / 50</div>
     </div><div class="colorstrip"><div class="c1"></div><div class="c2"></div><div class="c3"></div><div class="c4"></div><div class="c5"></div></div>
-        <div style="position:absolute;left:150px;top:165px;max-width:520px;background:#fff;border-radius:20px;
-                    padding:14px 20px;box-shadow:0 10px 22px rgba(67,48,31,.16);z-index:6">
-          <div style="position:absolute;top:20px;left:-10px;border-right-color:#fff;width:0;height:0;border:10px solid transparent"></div>
-          <div style="font-size:.72rem;font-weight:800;color:#0D9488;letter-spacing:.5px;margin-bottom:2px">Ziad</div>
-          <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.08rem;color:#43301F">Let's go to the park!</div>
-          <div style="direction:rtl;text-align:right;font-size:.86rem;color:#8A7160;font-weight:700;margin-top:3px">لنذهب إلى الحديقة!</div>
+    <div style="position:absolute;left:46px;right:46px;top:128px;z-index:6;display:flex;gap:14px">
+      <div style="flex:1;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);padding:10px 16px">
+        <div style="font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#0D9488">&#128101; PAIRS / GROUP</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.92rem;color:#43301F;line-height:1.3">Two teams. A picture appears &mdash; the first team to shout the English word gets a point. Teacher taps <b>Next</b>.</div>
+      </div>
+      <div style="flex:1;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);padding:10px 16px">
+        <div style="font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#F97316">&#128100; 1-ON-1 WITH YOUR TEACHER</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.92rem;color:#43301F;line-height:1.3">A picture appears &mdash; you say the word! Each correct word = one star. Five stars and you win. Stuck? Your teacher says it, you repeat it.</div>
+      </div>
+    </div>
+    <div style="position:absolute;left:0;right:0;top:214px;bottom:60px;z-index:6;display:flex;align-items:center;justify-content:center;gap:40px">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+        <div id="frPanels" data-idx="0" data-autosay="0">
+        <div data-say="slide" style="display:block"><div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+          <div style="width:300px;height:300px;border-radius:24px;overflow:hidden;background:#FFFCF6;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);"><img src="assets/vocab/slide.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        </div></div>
+        <div data-say="swing" style="display:none"><div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+          <div style="width:300px;height:300px;border-radius:24px;overflow:hidden;background:#FFFCF6;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);"><img src="assets/vocab/swing.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        </div></div>
+        <div data-say="tree" style="display:none"><div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+          <div style="width:300px;height:300px;border-radius:24px;overflow:hidden;background:#FFFCF6;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);"><img src="assets/vocab/tree.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        </div></div>
+        <div data-say="flower" style="display:none"><div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+          <div style="width:300px;height:300px;border-radius:24px;overflow:hidden;background:#FFFCF6;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);"><img src="assets/vocab/flower.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        </div></div>
+        <div data-say="bench" style="display:none"><div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+          <div style="width:300px;height:300px;border-radius:24px;overflow:hidden;background:#FFFCF6;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);"><img src="assets/vocab/bench.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        </div></div>
+        <div data-say="ball" style="display:none"><div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+          <div style="width:300px;height:300px;border-radius:24px;overflow:hidden;background:#FFFCF6;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);"><img src="assets/vocab/ball.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        </div></div>
+        <div data-say="kite" style="display:none"><div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+          <div style="width:300px;height:300px;border-radius:24px;overflow:hidden;background:#FFFCF6;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);"><img src="assets/vocab/kite.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        </div></div>
+        <div data-say="park" style="display:none"><div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+          <div style="width:300px;height:300px;border-radius:24px;overflow:hidden;background:#FFFCF6;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);"><img src="assets/vocab/park.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        </div></div></div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button onclick="LumioAct.cycle('frPanels',-1)" style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,#94A3B8,#64748B);color:#fff;font-weight:800;padding:11px 22px;border-radius:999px;font-size:.95rem;box-shadow:0 8px 18px rgba(0,0,0,.2);">&#9664; Back</button>
+          <span data-act-counter="frPanels" style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#8A7160">1 / 8</span>
+          <button onclick="LumioAct.cycle('frPanels',1)" style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;font-weight:800;padding:11px 22px;border-radius:999px;font-size:.95rem;box-shadow:0 8px 18px rgba(0,0,0,.2);">Next &#9654;</button>
+          <button onclick="LumioAct.random('frPanels')" style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,#0D9488,#0B7A6F);color:#fff;font-weight:800;padding:11px 22px;border-radius:999px;font-size:.95rem;box-shadow:0 8px 18px rgba(0,0,0,.2);">&#127922; Random</button>
         </div>
-        <div style="position:absolute;right:150px;top:271px;max-width:520px;background:#fff;border-radius:20px;
-                    padding:14px 20px;box-shadow:0 10px 22px rgba(67,48,31,.16);z-index:6">
-          <div style="position:absolute;top:20px;right:-10px;border-left-color:#fff;width:0;height:0;border:10px solid transparent"></div>
-          <div style="font-size:.72rem;font-weight:800;color:#F97316;letter-spacing:.5px;margin-bottom:2px">Noor</div>
-          <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.08rem;color:#43301F">Yes! I want to play on the slide.</div>
-          <div style="direction:rtl;text-align:right;font-size:.86rem;color:#8A7160;font-weight:700;margin-top:3px">نعم! أريد اللعب على الزحليقة.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;width:300px">
+        <div style="background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);padding:14px 16px">
+          <div style="font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#0D9488;margin-bottom:6px">TEAM SCORES</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;gap:8px;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);padding:6px 10px 6px 14px">
+        <span style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#F97316;font-size:.9rem">Team A</span>
+        <span data-act-score style="display:inline-block;min-width:34px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;color:#43301F;transition:transform .15s">0</span>
+        <button onclick="LumioAct.score(this,1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#F97316;color:#fff;font-weight:900;font-size:1rem">+</button>
+        <button onclick="LumioAct.score(this,-1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#E5E7EB;color:#6B7280;font-weight:900;font-size:1rem">&minus;</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);padding:6px 10px 6px 14px">
+        <span style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#0D9488;font-size:.9rem">Team B</span>
+        <span data-act-score style="display:inline-block;min-width:34px;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;color:#43301F;transition:transform .15s">0</span>
+        <button onclick="LumioAct.score(this,1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#0D9488;color:#fff;font-weight:900;font-size:1rem">+</button>
+        <button onclick="LumioAct.score(this,-1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#E5E7EB;color:#6B7280;font-weight:900;font-size:1rem">&minus;</button>
+      </div></div>
         </div>
-        <div style="position:absolute;left:150px;top:378px;max-width:520px;background:#fff;border-radius:20px;
-                    padding:14px 20px;box-shadow:0 10px 22px rgba(67,48,31,.16);z-index:6">
-          <div style="position:absolute;top:20px;left:-10px;border-right-color:#fff;width:0;height:0;border:10px solid transparent"></div>
-          <div style="font-size:.72rem;font-weight:800;color:#0D9488;letter-spacing:.5px;margin-bottom:2px">Ziad</div>
-          <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.08rem;color:#43301F">I want to fly my kite.</div>
-          <div style="direction:rtl;text-align:right;font-size:.86rem;color:#8A7160;font-weight:700;margin-top:3px">أريد تطيير طائرتي الورقية.</div>
+        <div style="background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.12);padding:14px 16px">
+          <div style="font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#F97316;margin-bottom:6px">1-ON-1 STARS</div>
+          <div id="frStars" style="display:flex;gap:4px;justify-content:center"><span data-star="0" style="font-size:2rem;opacity:.25;transition:transform .2s">&#11088;</span><span data-star="0" style="font-size:2rem;opacity:.25;transition:transform .2s">&#11088;</span><span data-star="0" style="font-size:2rem;opacity:.25;transition:transform .2s">&#11088;</span><span data-star="0" style="font-size:2rem;opacity:.25;transition:transform .2s">&#11088;</span><span data-star="0" style="font-size:2rem;opacity:.25;transition:transform .2s">&#11088;</span></div>
+          <div style="display:flex;justify-content:center;margin-top:8px"><button onclick="LumioAct.star('frStars')" style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,#FBBF24,#F59E0B);color:#fff;font-weight:800;padding:11px 22px;border-radius:999px;font-size:.95rem;box-shadow:0 8px 18px rgba(0,0,0,.2);color:#43301F">&#11088; Got it!</button></div>
+          <div data-act-stars-done="frStars" style="display:none;text-align:center;font-family:'Baloo 2',sans-serif;font-weight:800;color:#0D9488;margin-top:8px">&#127881; Five stars &mdash; you win!</div>
         </div>
-        <div style="position:absolute;right:150px;top:484px;max-width:520px;background:#fff;border-radius:20px;
-                    padding:14px 20px;box-shadow:0 10px 22px rgba(67,48,31,.16);z-index:6">
-          <div style="position:absolute;top:20px;right:-10px;border-left-color:#fff;width:0;height:0;border:10px solid transparent"></div>
-          <div style="font-size:.72rem;font-weight:800;color:#F97316;letter-spacing:.5px;margin-bottom:2px">Noor</div>
-          <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.08rem;color:#43301F">Let's sit on the bench after.</div>
-          <div style="direction:rtl;text-align:right;font-size:.86rem;color:#8A7160;font-weight:700;margin-top:3px">لنجلس على المقعد بعد ذلك.</div>
-        </div>
-    <img class="char" src="assets/story/characters/ziad-happy.png" style="left:280px;bottom:0px;height:230px;position:absolute;z-index:5;filter:drop-shadow(0 16px 22px rgba(67,48,31,.3))" onerror="this.style.display='none'">
-    <img class="char" src="assets/story/characters/noor-wave.png" style="right:280px;bottom:0px;height:230px;position:absolute;z-index:5;filter:drop-shadow(0 16px 22px rgba(67,48,31,.3));transform:scaleX(-1)" onerror="this.style.display='none'">
-    
+      </div>
+    </div>
+    <div class="floorshadow" style="right:30px;bottom:23px;width:230px;height:36px"></div><img class="char" src="assets/story/characters/ziad-explain.png" style="right:30px;bottom:30px;height:150px" onerror="this.style.display='none'; this.previousElementSibling.style.display='none'">
