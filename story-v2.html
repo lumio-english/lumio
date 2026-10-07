@@ -213,8 +213,10 @@ html[data-lp="teen"] .trail .me{border-color:var(--acc2);background:#2a3260}
 .pic.awake img.art{animation:awake 2.4s ease-in-out infinite}
 @keyframes awake{0%,100%{filter:saturate(1.05) brightness(1)}50%{filter:saturate(1.3) brightness(1.08)}}
 .asleepTag{position:absolute;left:50%;top:8%;transform:translateX(-50%);z-index:5;padding:6px 14px;border-radius:999px;background:rgba(20,12,4,.55);color:#fff;
-  font-family:var(--display);font-weight:800;font-size:clamp(.72rem,1.6vw,1rem);white-space:nowrap;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;align-items:center;gap:6px;transition:opacity .4s}
-.asleepTag svg{width:18px;height:18px}
+  font-family:var(--display);font-weight:800;font-size:clamp(.72rem,1.6vw,1rem);white-space:nowrap;max-width:92%;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;align-items:center;gap:6px;transition:opacity .4s}
+.asleepTag svg{width:18px;height:18px;flex:none}
+.asleepTag span{overflow:hidden;text-overflow:ellipsis}
+@media (max-width:420px){.asleepTag{white-space:normal;text-align:center;line-height:1.2;border-radius:14px}}
 .palette{display:flex;gap:var(--sg,10px);justify-content:center;align-items:center;z-index:7}
 .pic .palette{position:absolute;left:0;right:0;bottom:5%}
 .gameBox .palette{display:grid;grid-template-columns:repeat(4,56px);gap:10px 14px;justify-content:center;margin:8px 0 2px}
@@ -1112,7 +1114,7 @@ function setupGame(pic, tp) {
     <g filter="url(#mgGlow)">${rainbow.map((c, i) => `<path class="arc" data-name="${c.name}" d="${arcPath(i)}" fill="none" stroke="${c.hex}" stroke-width="15" stroke-linecap="round" opacity=".92"/>`).join("")}</g>
     <g mask="url(#mgTrailM)"><path class="trailInk" d="${TRAIL_D}" fill="none" stroke="#1F2937" stroke-width="8" stroke-dasharray="18 13" stroke-linecap="round"/></g>
     <g class="xmark" opacity="0" filter="url(#mgGlow)"><path d="M1012 412l60 56M1072 412l-60 56" stroke="#FFD43B" stroke-width="12" stroke-linecap="round"/></g>
-  </svg><div class="asleepTag">${IC.moon}<span>The map is asleep…</span></div>`);
+  </svg><div class="asleepTag">${IC.sparkle}<span>Tap the colours below to wake up the map!</span></div>`);
   const svg = $(".magic", pic);
   $$(".arc", svg).forEach(p => { const len = p.getTotalLength ? p.getTotalLength() : 1500; p.style.strokeDasharray = len; p.style.strokeDashoffset = len; p._len = len; });
   const tm = $(".trailMask", svg); const tl = tm.getTotalLength ? tm.getTotalLength() : 700; tm.style.strokeDasharray = tl; tm.style.strokeDashoffset = tl; tm._len = tl;
