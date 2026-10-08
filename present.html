@@ -154,7 +154,23 @@ fetch(`assets/slides${DECK}/${level}/manifest.json`).then(r => r.json()).then(ma
     gameStartSlide = n || estimate;
     renderGameLinks(); // the teacher may already be past it
   });
-  loadSlide(1);
+  loadSlide(resumeSlide() || 1);
+});
+
+// A game opened from the last slides: its Exit comes back to this lesson's link (no slide number), so the
+// slide the class was on is kept for this tab and the deck reopens there instead of at slide 1.
+const RESUME_KEY = "lumio_present_resume";
+function resumeSlide() {
+  try {
+    const r = JSON.parse(sessionStorage.getItem(RESUME_KEY) || "null");
+    sessionStorage.removeItem(RESUME_KEY);
+    if (r && r.level === level && r.nn === nn && r.deck === DECK && Date.now() - r.t < 6 * 3600e3 && r.slide >= 1 && r.slide <= total) return r.slide;
+  } catch (e) {}
+  return 0;
+}
+document.getElementById("gameLinks").addEventListener("click", e => {
+  if (!e.target.closest("a")) return;
+  try { sessionStorage.setItem(RESUME_KEY, JSON.stringify({ level, nn, deck: DECK, slide: cur, t: Date.now() })); } catch (err) {}
 });
 
 function loadSlide(n) {
