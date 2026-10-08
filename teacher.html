@@ -3461,7 +3461,7 @@
               <button type="button" data-act="recordings">Audio recordings</button>
               <button type="button" class="danger" data-act="remove">${
                 p.deletionConfirmed ? "Student confirmed: delete now"
-                : p.pendingDeletion ? "Deletion requested"
+                : p.pendingDeletion ? (((LumioProfiles.getCurrentTeacher() || {}).isOwner) ? "Delete now (owner)" : "Deletion requested")
                 : "Delete account"
               }</button>
             </div>
@@ -3520,6 +3520,14 @@
           const paid = Number(p.amountPaid) || 0;
           const why = [left ? `${left} session${left === 1 ? "" : "s"} left` : "", paid ? `${paid} ${p.currency || ""} paid`.trim() : ""].filter(Boolean).join(" and ");
           if (p.pendingDeletion) {
+            // The owner can finish it without waiting for the student (test accounts, students who
+            // left and never log in); any other teacher still waits for the student's confirmation.
+            const meOwner = LumioProfiles.getCurrentTeacher();
+            if (meOwner && meOwner.isOwner) {
+              if (!confirm(`${p.name} hasn't confirmed the deletion yet, and the account is still active (${why}).\n\nAs the owner you can delete it now without waiting. This is permanent: they won't be able to log in, and their record is removed from every device.\n\nDelete ${p.name}'s account now?`)) return;
+              await finalizeStudentDeletion(p);
+              return;
+            }
             showToast(`A deletion request is already waiting for ${p.name} to confirm from their dashboard.`, "info");
             return;
           }
