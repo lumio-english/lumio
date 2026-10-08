@@ -439,6 +439,15 @@
       }).join("") + "</div>");
     main.querySelectorAll(".topic").forEach(function (b) { b.onclick = function () { location.hash = "#/phonics/" + b.dataset.i; }; });
   }
+  function soundLetters(word, sounds) {
+    var toks = sounds.map(function (s) { return String(s.letter).toLowerCase(); }).sort(function (a, b) { return b.length - a.length; });
+    var out = "", w = String(word), i = 0;
+    while (i < w.length) {
+      var hit = toks.filter(function (t) { return t && w.toLowerCase().substr(i, t.length) === t; })[0];
+      if (hit) { out += "<i>" + esc(w.substr(i, hit.length)) + "</i>"; i += hit.length; } else { out += esc(w[i]); i++; }
+    }
+    return out;
+  }
   function phonicsUnit(d, i) {
     var u = d.units[i]; if (!u) return phonicsHome(d);
     setTop("Phonics", u.unit, "#/phonics");
@@ -446,7 +455,11 @@
       '<div class="sec-h"><h2>Sounds</h2><span class="sub">tap to hear</span></div><div class="sounds">' +
       u.sounds.map(function (s, j) { return '<button class="card sound" data-j="' + j + '"><div class="L">' + esc(s.letter) + '</div><div class="S">' + esc(s.sound) + '</div><span class="ar" dir="rtl">' + esc(s.ar) + "</span></button>"; }).join("") + "</div>" +
       '<div class="sec-h"><h2>Words</h2></div><div class="words">' +
-      u.words.map(function (w, j) { return '<button class="card word" data-w="' + j + '"><img src="' + pic(w.en) + '" alt="" loading="lazy" onerror="this.remove()"><b>' + esc(w.en) + '</b><span class="ar" dir="rtl">' + esc(w.ar) + "</span></button>"; }).join("") + "</div>" +
+      u.words.map(function (w, j) {
+        // words without a picture get a letter tile instead, with this group's sounds lit up
+        return '<button class="card word" data-w="' + j + '"><img src="' + pic(w.en) + '" alt="" loading="lazy" onerror="this.parentNode.classList.add(\'nopic\')">' +
+          '<span class="wt" aria-hidden="true"><span>' + soundLetters(w.en, u.sounds) + "</span></span><b>" + esc(w.en) + '</b><span class="ar" dir="rtl">' + esc(w.ar) + "</span></button>";
+      }).join("") + "</div>" +
       (u.story ? '<div class="sec-h"><h2>Read the story</h2></div><div class="card story"><button class="play" id="stPlay" aria-label="Listen">' + g("sound") + '</button><div><p>' + esc(u.story.en) + '</p><p class="ar" dir="rtl">' + esc(u.story.ar) + "</p></div></div>" : "") +
       (u.tip ? '<div class="box tip"><span class="lbl">Tip</span><div class="ar" dir="rtl" style="color:var(--ink)">' + esc(u.tip) + "</div></div>" : "") +
       '<button class="btn pri wide" id="phDone" style="margin-top:18px">' + g("check") + (P.sounds[u.unit] ? "Practised" : "I practised these sounds") + "</button>");
