@@ -153,8 +153,8 @@ const level = qs("level") || "pre-a";
 // the scoreboard, and solo challenge slides (see renderChallengeUI).
 const SOLO = qs("mode") === "solo";
 const DECK_DIR = SOLO ? "trial-solo" : "trial";
-// ?deck=5: the version-5 "show stage" trial decks (slide-content-v5/trial*/, same content) -- preview until released
-const TDECK = qs("deck") === "5" ? "-v5" : "";
+// version-5 "show stage" trial decks (slide-content-v5/trial*/, same content as the classic ones)
+const TDECK = qs("deck") === "classic" ? "" : "-v5";   // v5 "show stage" is the default; ?deck=classic opens the old trial slides
 if (TDECK) document.documentElement.classList.add("deck-v3", "deck-trial", /^level[3-6]$/.test(qs("level") || "") ? "deck-teen" : "deck-kid");
 let stars = 0; const STAR_GOAL = 10; const badgesEarned = {};
 
