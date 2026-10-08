@@ -605,47 +605,65 @@ const Lumio = (() => {
     if ("speechSynthesis" in window) {
       try { const u = new SpeechSynthesisUtterance(" "); u.volume = 0; speechSynthesis.speak(u); speechSynthesis.cancel(); } catch (e) {}
     }
-    if (pendingSpeak) { const t = pendingSpeak; pendingSpeak = null; setTimeout(() => speak(t.text, t.rate), 60); }
+    // a line blocked a moment ago plays now; an older one is dropped (replaying it on some later tap sounded like a repeat)
+    if (pendingSpeak) { const t = pendingSpeak; pendingSpeak = null; if (!t.t || Date.now() - t.t < 4000) setTimeout(() => speak(t.text, t.rate), 60); }
   };
   ["pointerdown", "touchstart", "keydown"].forEach(ev => document.addEventListener(ev, unlockAudio, { passive: true, capture: true }));
 
-  let currentAudio = null;
+  let currentAudio = null, speakSeq = 0;
+  // Background music (games, story) dips while a word is spoken, so the voice is clear on phone speakers.
+  const duckMusic = (on) => { try { if (musicEl && !musicEl.paused) musicEl.volume = on ? .05 : .18; } catch (e) {} };
   const speak = (text, rate = 0.92) => {
     if (text === undefined || text === null || String(text).trim() === "") return;   // e.g. a game calling speak() before its data is ready
     if (currentAudio) { try { currentAudio.pause(); } catch (e) {} currentAudio = null; }
     if ("speechSynthesis" in window) speechSynthesis.cancel();
     const slug = slugify(text);
     if (!slug) { speakSynth(text, rate); return; }
+    // Every call gets a number; a timer or error left over from an EARLIER word must never touch the
+    // current one (an old watchdog used to pause the new word and read the old one in the device voice:
+    // the new line went missing and the old one repeated).
+    const my = ++speakSeq;
     const audio = sharedAudio || new Audio();
     sharedAudio = audio;
     audio.src = `${ASSET_ROOT}assets/audio/${slug}.mp3`;
     audio.playbackRate = 1;
     currentAudio = audio;
+    duckMusic(true);
+    audio.onended = () => { if (my === speakSeq) duckMusic(false); };
     let fellBack = false;
-    const fallback = () => { if (fellBack) return; fellBack = true; speakSynth(text, rate); };
+    const fallback = () => { if (fellBack || my !== speakSeq) return; fellBack = true; duckMusic(false); speakSynth(text, rate); };
     // Single assignment (not addEventListener): the shared element lives
     // across calls, so stacked listeners from earlier words would all fire
     // on a later 404 and replay old words through the browser voice.
     audio.onerror = () => { audio.onerror = null; fallback(); };   // 404: no recording -> browser voice
-    // Watchdog: some desktop setups accept play() but never actually start
-    // (blocked output device / codec). If 'playing' hasn't fired within
-    // 900ms, fall back to the browser voice so the word is never silent.
-    // Only treat it as failed if the file genuinely didn't load (no data
-    // buffered, or a media error) -- not merely because output hasn't
-    // started, which would cut a working recording on slow machines.
-    const watchdog = setTimeout(() => {
-      if (audio.error || audio.readyState < 2) { try { audio.pause(); } catch (e) {} audio.onerror = null; fallback(); }
-    }, 1500);
+    // Watchdog: some setups accept play() but never actually start (blocked output device / codec). If
+    // nothing is buffered after 1.5s, fall back to the browser voice so the word is never silent -- but a
+    // file that is still downloading (slow mobile data) gets until 4s before the device voice takes over.
+    let watchdog = 0;
+    const check = (late) => {
+      if (my !== speakSeq || fellBack) return;
+      if (audio.readyState >= 2 && !audio.error) return;
+      if (!late && !audio.error) { watchdog = setTimeout(() => check(true), 2500); return; }   // still downloading: give it until 4s
+      try { audio.pause(); } catch (e) {} audio.onerror = null; fallback();
+    };
+    watchdog = setTimeout(() => check(false), 1500);
     audio.addEventListener("playing", () => clearTimeout(watchdog), { once: true });
     const playResult = audio.play();
     if (playResult && typeof playResult.catch === "function") {
       playResult.catch(err => {
         if (err && err.name === "AbortError") return;             // src changed mid-play: a newer word took over
+        if (my !== speakSeq) return;
         audio.onerror = null;
-        if (err && err.name === "NotAllowedError") { pendingSpeak = { text, rate }; return; }  // blocked: replay on next tap
+        if (err && err.name === "NotAllowedError") { pendingSpeak = { text, rate, t: Date.now() }; return; }  // blocked: replay on next tap
         fallback();
       });
     }
+  };
+  // Warm the browser cache with a recording that is about to be spoken (games call this before a round).
+  const preloadSpeech = (text) => {
+    const slug = slugify(text || "");
+    if (!slug) return;
+    try { fetch(`${ASSET_ROOT}assets/audio/${slug}.mp3`).catch(() => {}); } catch (e) {}
   };
 
   const speakPhonicsSound = (token, rate = 0.92) => {
@@ -904,7 +922,7 @@ const Lumio = (() => {
            progressAll, progressFor, saveResult, homeworkAll, homeworkFor, saveHomework,
            saveRecording, listRecordingsFor, listAllRecordings,
            lastReportDateFor, logReportSent,
-           speak, speakPhonicsSound, beep, confetti, sfx, music, setSound, soundOn, toast, shuffle, qs, letterTile,
+           speak, preloadSpeech, speakPhonicsSound, beep, confetti, sfx, music, setSound, soundOn, toast, shuffle, qs, letterTile,
            COUNTRY_CODES, combinePhone, splitPhone,
            pushProgressAndHomework, pullProgressAndHomework, retryPendingPush,
            lessonCountFor, attendedSetFor, lessonDone, currentLesson, lessonsDoneCount, levelComplete, isTeacherSession,

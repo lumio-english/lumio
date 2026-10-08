@@ -5963,6 +5963,8 @@
   const LEVELS_WITH_SLIDES = ["pre-a", "level1", "level2", "level3", "level4", "level5", "level6"];
 
   let currentMatLevel = MATERIALS_LEVELS[0] || "pre-a";
+  // the level last open in Materials (this tab), so leaving a class lands back on the same lesson list
+  try { const ml = sessionStorage.getItem("lumio_td_matlevel"); if (ml && MATERIALS_LEVELS.includes(ml)) currentMatLevel = ml; } catch (e) {}
   const matGrid = document.getElementById("matGrid");
   const matBadge = document.getElementById("matBadge");
   const matLevelSelect = document.getElementById("matLevelSelect");
@@ -6081,6 +6083,7 @@
   document.getElementById("matSearch").addEventListener("input", e => renderMaterials(e.target.value));
   matLevelSelect.addEventListener("change", e => {
     currentMatLevel = e.target.value;
+    try { sessionStorage.setItem("lumio_td_matlevel", currentMatLevel); } catch (err) {}
     renderMaterials(document.getElementById("matSearch").value);
   });
 
@@ -6232,8 +6235,19 @@
       if (view === "referrals") { try { renderReferralsView(); } catch (e) { console.error(e); } }
       if (view === "insights") { renderLeaderboard(); renderCohortCompare(); }
       if (view === "schedule") { try { fsMinimumNudge(); } catch (e) {} }
+      try { sessionStorage.setItem("lumio_td_view", view); } catch (e) {}
     });
   });
+  // Coming back to the dashboard (Exit from a class, the browser's Back) reopens the page the teacher was
+  // on, at the same scroll position, instead of Overview -- for this tab only.
+  try {
+    const lastView = sessionStorage.getItem("lumio_td_view");
+    const navBtn = lastView && lastView !== "overview" && document.querySelector(`.td-navitem[data-view="${lastView}"]`);
+    if (navBtn && navBtn.style.display !== "none") navBtn.click();
+    const y = Number(sessionStorage.getItem("lumio_td_scroll") || 0);
+    if (y > 0) setTimeout(() => window.scrollTo(0, y), 600);
+  } catch (e) {}
+  window.addEventListener("pagehide", () => { try { sessionStorage.setItem("lumio_td_scroll", String(Math.round(window.scrollY))); } catch (e) {} });
 
   // ================= Renewals =================
   // ================= Backend-version banner =================
