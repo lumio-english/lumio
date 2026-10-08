@@ -1,0 +1,126 @@
+/* Trial classes, version 5 "show stage" look (Oct 2026). Loaded by present-trial.html on top of css/slides-v3.css.
+   A trial is a first impression, so it looks like a TV game show rather than a regular lesson:
+   kids = a deep purple stage with two spotlights, a warm orange floor glow and gold banners;
+   teens = a black arena with neon-gold rim lights and scan lines.
+   The trial-only slides (welcome, teams, buzzer, relay, scoreboard, champions, finish) are inline-styled by the
+   trial generators and the presenter's JS, so they are restyled here by attribute; nothing in the class logic
+   changes (same ids, same data-challenge hooks). Scene pictures keep their own image. */
+
+/* ---------------- the stage ---------------- */
+.v3-trial .v3-mesh, .v3-trial .v3-mesh.m0, .v3-trial .v3-mesh.m1, .v3-trial .v3-mesh.m2, .v3-trial .v3-mesh.m3 {
+  background:
+    radial-gradient(ellipse 62% 30% at 50% 104%, rgba(255,166,64,.62) 0%, rgba(255,120,40,.18) 45%, transparent 72%),
+    radial-gradient(ellipse 40% 60% at 50% 40%, rgba(160,90,255,.28), transparent 70%),
+    linear-gradient(180deg, #1B0740 0%, #34106B 46%, #250A52 78%, #12052B 100%) !important;
+  overflow: hidden;
+}
+.v3-trial .v3-mesh::before, .v3-trial .v3-mesh::after {   /* two spotlight beams from the rig */
+  content: ""; position: absolute; top: -120px; width: 520px; height: 1000px; pointer-events: none; opacity: .5;
+  background: linear-gradient(180deg, rgba(255,240,200,.75) 0%, rgba(255,214,140,.22) 45%, transparent 80%);
+  filter: blur(22px); mask-image: none; -webkit-mask-image: none; background-size: auto;
+}
+.v3-trial .v3-mesh::before { left: 70px;  clip-path: polygon(44% 0, 56% 0, 100% 100%, 0 100%); transform: rotate(-22deg); transform-origin: 50% 0; }
+.v3-trial .v3-mesh::after  { right: 70px; left: auto; clip-path: polygon(44% 0, 56% 0, 100% 100%, 0 100%); transform: rotate(22deg); transform-origin: 50% 0; }
+.v3-trial .v3-mesh + .v3-shade { background:
+    radial-gradient(1.5px 1.5px at 12% 18%, rgba(255,255,255,.9), transparent 60%), radial-gradient(1.5px 1.5px at 28% 8%, rgba(255,255,255,.7), transparent 60%),
+    radial-gradient(2px 2px at 71% 14%, rgba(255,230,160,.9), transparent 60%), radial-gradient(1.5px 1.5px at 86% 26%, rgba(255,255,255,.8), transparent 60%),
+    radial-gradient(1.5px 1.5px at 44% 22%, rgba(255,255,255,.6), transparent 60%), radial-gradient(2px 2px at 60% 6%, rgba(255,255,255,.7), transparent 60%),
+    linear-gradient(180deg, transparent 80%, rgba(10,2,25,.35)) !important; }
+
+/* teens: black arena, neon gold */
+.v3-trial.v3-teen .v3-mesh, .v3-trial.v3-teen .v3-mesh.m0, .v3-trial.v3-teen .v3-mesh.m1, .v3-trial.v3-teen .v3-mesh.m2, .v3-trial.v3-teen .v3-mesh.m3 {
+  background:
+    radial-gradient(ellipse 62% 28% at 50% 106%, rgba(255,192,0,.42) 0%, rgba(255,120,0,.12) 45%, transparent 72%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.028) 0 1px, transparent 1px 5px),
+    radial-gradient(ellipse 50% 60% at 50% 35%, rgba(255,192,0,.08), transparent 70%),
+    linear-gradient(180deg, #050407 0%, #0D0B12 60%, #050407 100%) !important;
+}
+.v3-trial.v3-teen .v3-mesh::before, .v3-trial.v3-teen .v3-mesh::after { background: linear-gradient(180deg, rgba(255,214,90,.65) 0%, rgba(255,192,0,.16) 45%, transparent 80%); opacity: .42; }
+
+/* ---------------- show banner (slide title) + pills ---------------- */
+.v3-trial .v3-ribbon { background: linear-gradient(180deg, #FFD86B, #FF9F1C 55%, #F2600C) !important; color: #3A1300 !important;
+  box-shadow: 0 0 0 3px rgba(255,255,255,.35), 0 0 34px rgba(255,170,60,.7), 0 10px 22px rgba(30,0,60,.45) !important; border: 0 !important; }
+.v3-trial .v3-ribbon b, .v3-trial .v3-ribbon * { color: #3A1300 !important; text-shadow: 0 1px 0 rgba(255,255,255,.4); }
+.v3-trial .v3-lesson, .v3-trial .v3-page { background: rgba(255,255,255,.12) !important; color: #fff !important; border: 1px solid rgba(255,255,255,.25) !important; box-shadow: none !important; }
+.v3-trial .v3-lesson small, .v3-trial .v3-lesson span, .v3-trial .v3-page, .v3-trial .v3-page * { color: #fff !important; }
+.v3-trial.v3-teen .v3-ribbon { background: #0B0A0E !important; color: #FFC000 !important; box-shadow: 0 0 0 1px #FFC000, 0 0 22px rgba(255,192,0,.55), inset 0 0 18px rgba(255,192,0,.18) !important; }
+.v3-trial.v3-teen .v3-ribbon b, .v3-trial.v3-teen .v3-ribbon * { color: #FFC000 !important; text-shadow: 0 0 10px rgba(255,192,0,.6); }
+
+/* ---------------- panels glow on stage ---------------- */
+.v3-trial.v3-kid .v3-paper, .v3-trial.v3-kid .v3-card, .v3-trial.v3-kid .v3-opt {
+  box-shadow: 0 0 0 2px rgba(255,214,140,.65), 0 0 36px rgba(255,150,60,.35), 0 18px 34px rgba(20,0,50,.45) !important; }
+.v3-trial.v3-teen .v3-paper, .v3-trial.v3-teen .v3-card, .v3-trial.v3-teen .v3-opt {
+  box-shadow: 0 0 0 1px rgba(255,192,0,.55), 0 0 26px rgba(255,192,0,.18), 0 18px 34px rgba(0,0,0,.6) !important; }
+
+/* ---------------- trial-only slides (inline styles from the generators) ---------------- */
+/* text straight on the stage: light */
+.v3-trial h1[style] { color: #fff !important; font-family: 'Nunito', sans-serif !important; font-weight: 900 !important; letter-spacing: -.02em; text-shadow: 0 4px 24px rgba(255,150,60,.55), 0 2px 0 rgba(40,0,80,.4); }
+.v3-trial.v3-teen h1[style] { text-shadow: 0 0 24px rgba(255,192,0,.45); }
+.v3-trial [style*="color:#43301F"] { color: #FFF4E6 !important; }
+.v3-trial [style*="color:#8A7160"] { color: #E6D4FF !important; }
+.v3-trial.v3-teen [style*="color:#8A7160"] { color: #C9C3B3 !important; }
+.v3-trial [style*="font-family:'Baloo 2'"] { font-family: 'Nunito', sans-serif !important; }
+.v3-trial [style*="letter-spacing:2px"][style*="color:#F97316"], .v3-trial [style*="letter-spacing:2px"][style*="color:#0D9488"] {
+  color: #FFD86B !important; text-shadow: 0 0 16px rgba(255,200,90,.7); letter-spacing: 6px !important; }
+/* white cards keep dark text */
+.v3-trial [style*="background:#fff"] { box-shadow: 0 0 0 3px rgba(255,214,140,.7), 0 0 40px rgba(255,150,60,.45), 0 20px 40px rgba(20,0,50,.5) !important; border-radius: 22px !important; }
+.v3-trial [style*="background:#fff"] [style*="color:#43301F"], .v3-trial [style*="background:#fff"][style*="color:#43301F"] { color: #2A1650 !important; }
+.v3-trial [style*="background:#fff"] [style*="color:#8A7160"] { color: #6B5A86 !important; }
+.v3-trial.v3-teen [style*="background:#fff"] { background: #121016 !important; box-shadow: 0 0 0 1px #FFC000, 0 0 30px rgba(255,192,0,.25) !important; border-radius: 6px !important; }
+.v3-trial.v3-teen [style*="background:#fff"] [style*="color:#43301F"], .v3-trial.v3-teen [style*="background:#fff"][style*="color:#43301F"] { color: #fff !important; }
+.v3-trial.v3-teen [style*="background:#fff"] [style*="color:#8A7160"] { color: #C9C3B3 !important; }
+
+/* ---------------- buzzers, team podiums, name lights (buttons the presenter adds) ---------------- */
+.v3-trial #pickerZone button, .v3-trial #teamZone button, .v3-trial #teamAList button, .v3-trial #teamBList button {
+  border-radius: 18px !important; padding: 14px 26px !important; font: 900 1.15rem 'Nunito', sans-serif !important; margin: 7px !important;
+  border: 3px solid rgba(255,255,255,.65) !important; text-shadow: 0 1px 2px rgba(0,0,0,.3);
+  box-shadow: inset 0 -6px 0 rgba(0,0,0,.22), inset 0 3px 0 rgba(255,255,255,.35), 0 0 22px rgba(255,200,120,.45), 0 10px 18px rgba(20,0,50,.4) !important;
+  transition: transform .15s; }
+.v3-trial #pickerZone button:active, .v3-trial #teamZone button:active { transform: translateY(3px) scale(.97); }
+.v3-trial #teamZone button { min-width: 260px; min-height: 92px; font-size: 1.5rem !important; border-radius: 26px !important; }   /* big buzzers */
+.v3-trial.v3-teen #pickerZone button, .v3-trial.v3-teen #teamZone button, .v3-trial.v3-teen #teamAList button, .v3-trial.v3-teen #teamBList button {
+  border-radius: 6px !important; border: 1px solid rgba(255,255,255,.4) !important; box-shadow: inset 0 -4px 0 rgba(0,0,0,.3), 0 0 20px rgba(255,192,0,.3) !important; }
+.v3-trial #trialNames > * { background: rgba(255,255,255,.14) !important; color: #fff !important; border: 2px solid rgba(255,214,140,.7) !important;
+  box-shadow: 0 0 18px rgba(255,190,90,.5) !important; border-radius: 999px !important; font-family: 'Nunito', sans-serif !important; font-weight: 900 !important; }
+.v3-trial.v3-teen #trialNames > * { border-color: #FFC000 !important; color: #FFC000 !important; border-radius: 4px !important; box-shadow: 0 0 14px rgba(255,192,0,.4) !important; }
+/* the big scoreboard: a lit LED board */
+.v3-trial #scoreboardBig > * { filter: drop-shadow(0 0 26px rgba(255,190,90,.5)); }
+.v3-trial #scoreboardBig [style*="font-size"] { font-family: 'Nunito', sans-serif !important; }
+.v3-trial #finaleZone select, .v3-trial #finaleZone label { border-radius: 14px !important; }
+
+/* ---------------- bigger trial-only screens (they were sized for the old small layout) ---------------- */
+.v3-trial h1[style] { font-size: 4.4rem !important; line-height: 1.05; margin-bottom: 18px !important; }
+.v3-trial [style*="font-size:1.4rem"][style*="color:#8A7160"] { font-size: 1.9rem !important; }
+.v3-trial [data-challenge] [style*="font-size:1.05rem"], .v3-trial [data-challenge] [style*="font-size:1rem"],
+.v3-trial [data-challenge] [style*="font-size:1.1rem"], .v3-trial [data-challenge] [style*="font-size:.95rem"] { font-size: 1.45rem !important; line-height: 1.35; }
+.v3-trial [data-challenge] [style*="font-size:1.3rem"], .v3-trial [data-challenge] [style*="font-size:1.5rem"] { font-size: 2.1rem !important; }
+.v3-trial [data-challenge] [style*="width:130px"][style*="height:130px"] { width: 220px !important; height: 220px !important; }
+.v3-trial [data-challenge] [style*="width:110px"][style*="height:110px"] { width: 190px !important; height: 190px !important; }
+.v3-trial [data-challenge] [style*="font-size:1.4rem"][style*="color:#43301F"] { font-size: 2.6rem !important; }
+.v3-trial [data-challenge] [style*="min-width:280px"] { min-width: 420px !important; padding: 24px 28px !important; }
+.v3-trial [data-challenge] [style*="min-width:280px"] > div:first-child { font-size: 1.7rem !important; }
+.v3-trial [data-challenge="scoreboard"] > div:first-child { font-size: 2.6rem !important; color: #fff !important; }
+.v3-trial #finaleZone { width: 760px !important; }
+.v3-trial #finaleZone > * { font-size: 1.3rem !important; padding: 14px 20px !important; }
+/* teens: every white card becomes a dark carbon card with a gold edge */
+.v3-trial.v3-teen [style*="background:#FFFFFF"], .v3-trial.v3-teen [style*="background: #fff"], .v3-trial.v3-teen [style*="background:white"] {
+  background: #121016 !important; box-shadow: 0 0 0 1px #FFC000, 0 0 30px rgba(255,192,0,.25) !important; border-radius: 6px !important; color: #fff !important; }
+.v3-trial.v3-teen [style*="background:#4A3B7A"], .v3-trial.v3-teen [style*="background:rgba(139,92,246"] { background: rgba(255,192,0,.08) !important; border-color: rgba(255,192,0,.4) !important; }
+.v3-trial.v3-teen [style*="color:#2B2640"], .v3-trial.v3-teen [style*="color:#1F1A3D"] { color: #fff !important; }
+
+/* teens: the older teen pages stack their content from the top -- start it below the show banner */
+.v3-trial.v3-teen .v3-top ~ [style*="position:relative"] { margin-top: 120px !important; }
+.v3-trial.v3-teen .v3-top ~ [style*="position:relative"] ~ [style*="position:relative"] { margin-top: 0 !important; }
+
+/* the halfway / final scoreboard: two lit score panels */
+.v3-trial #scoreboardBig > div { gap: 60px !important; }
+.v3-trial #scoreboardBig > div > div { min-width: 300px; padding: 26px 34px 22px; border-radius: 28px;
+  background: linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.05)); border: 2px solid rgba(255,214,140,.6);
+  box-shadow: 0 0 40px rgba(255,170,60,.4), inset 0 1px 0 rgba(255,255,255,.4); }
+.v3-trial #scoreboardBig > div > div > div:nth-child(1) { font-size: 4.2rem !important; }
+.v3-trial #scoreboardBig > div > div > div:nth-child(2) { font: 900 1.8rem 'Nunito', sans-serif !important; text-shadow: 0 0 14px rgba(255,255,255,.35); }
+.v3-trial #scoreboardBig > div > div > div:nth-child(3) { font: 900 6.5rem/1 'Nunito', sans-serif !important; color: #fff !important; margin-top: 6px;
+  text-shadow: 0 0 30px rgba(255,200,100,.85), 0 4px 0 rgba(40,0,80,.4); font-variant-numeric: tabular-nums; }
+.v3-trial.v3-teen #scoreboardBig > div > div { border-radius: 6px; border-color: #FFC000; background: rgba(255,192,0,.06); box-shadow: 0 0 30px rgba(255,192,0,.3); }
+.v3-trial.v3-teen #scoreboardBig > div > div > div:nth-child(3) { color: #FFC000 !important; text-shadow: 0 0 26px rgba(255,192,0,.8); }
+.v3-trial #scoreboardBig > div > div > div:nth-child(2) { filter: brightness(1.6) saturate(1.2); }

@@ -18,6 +18,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@600;700;800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/slide-styles.css">
 <link rel="stylesheet" href="css/slide-motion.css">
+<link rel="stylesheet" href="css/slides-v3.css">
+<link rel="stylesheet" href="css/trial-stage.css">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700&family=Michroma&family=Bricolage+Grotesque:opsz,wght@12..96,600..800&display=swap" rel="stylesheet">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-font-smoothing:antialiased; }
   html,body { height:100%; background:#2B2118; font-family:'Nunito',sans-serif; overflow:hidden; }
@@ -150,6 +153,9 @@ const level = qs("level") || "pre-a";
 // the scoreboard, and solo challenge slides (see renderChallengeUI).
 const SOLO = qs("mode") === "solo";
 const DECK_DIR = SOLO ? "trial-solo" : "trial";
+// ?deck=5: the version-5 "show stage" trial decks (slide-content-v5/trial*/, same content) -- preview until released
+const TDECK = qs("deck") === "5" ? "-v5" : "";
+if (TDECK) document.documentElement.classList.add("deck-v3", "deck-trial", /^level[3-6]$/.test(qs("level") || "") ? "deck-teen" : "deck-kid");
 let stars = 0; const STAR_GOAL = 10; const badgesEarned = {};
 
 // ---------- roster (no fixed limit -- add/remove any time, including
@@ -457,11 +463,12 @@ function renderChallengeUI() {
 
 function loadSlide(n) {
   cur = n;
-  fetch(`slide-content/${DECK_DIR}/${level}/slide-${String(n).padStart(2,"0")}.html`)
+  fetch(`slide-content${TDECK}/${DECK_DIR}/${level}/slide-${String(n).padStart(2,"0")}.html`)
     .then(r => { if (!r.ok) throw new Error("missing"); return r.text(); })
     .then(html => {
       const stageContent = document.getElementById("stageContent");
       stageContent.innerHTML = html;
+      if (window.LumioIcons) stageContent.querySelectorAll("[data-ico]").forEach(e => { e.innerHTML = LumioIcons.svg(e.dataset.ico); });   // v5 icons
       delete stageContent.dataset.quizAnswered; // reset per-slide -- this container persists across slide loads
       document.getElementById("prevBtn").disabled = n === 1;
       document.getElementById("nextBtn").disabled = n === total;
