@@ -822,6 +822,7 @@ async function go(n, dir) {
   const first = !curData;
   const oldL = pageL.firstElementChild, oldR = pageR.firstElementChild;
   currentPage = n; curData = d;
+  [n, n + 1].forEach(k => { if (k <= part.pages && !noClip.has(pageClip(k))) fetch(pageClip(k)).catch(() => {}); });   // warm the recordings for this page and the next
   const newPic = buildPic(d, n), newPap = buildText(d, n), newTp = $(".tp", newPap);
   if (MO) newTp.classList.add("veil");
   if (dir) sfx("flip");
@@ -1060,7 +1061,8 @@ function playClip(my, tp, onFail) {
   const words = tp._words, src = tp._clip || pageClip(currentPage);
   if (noClip.has(src)) { onFail(); return; }
   let ok = false, failed = false;
-  const fail = () => { if (ok || failed) return; failed = true; noClip.add(src); if (my === tok) onFail(); };
+  // a missing clip (error) is remembered; a slow one is not, so the next tap tries the recording again
+  const fail = slow => { if (ok || failed) return; failed = true; if (!slow) noClip.add(src); if (my === tok) onFail(); };
   // weight each word by its length plus a pause after punctuation, then light the word the clip has reached
   const wt = words.map(w => 1 + w.word.replace(/[^A-Za-z0-9]/g, "").length * .55 + (/[.!?…]["”’]*$/.test(w.word) ? 2.4 : /[,;:—–]["”’]*$/.test(w.word) ? 1.1 : 0));
   const total = wt.reduce((a, b) => a + b, 0); const cum = []; wt.reduce((a, b, i) => (cum[i] = a + b, a + b), 0);
@@ -1072,12 +1074,13 @@ function playClip(my, tp, onFail) {
     if (i !== last) { last = i; hi(words, i); }
   };
   narration.onended = () => { if (my !== tok) return; talking = false; clearHi(); paintReadBtn(); readyNext(300); };
-  narration.onerror = fail;
+  narration.onerror = () => fail();
   narration.onplaying = () => { ok = true; };
   narration.src = src;
   const pr = narration.play();
-  if (pr && pr.catch) pr.catch(err => { if (err && err.name === "AbortError") return; fail(); });
-  timers.push(setTimeout(() => { if (!ok && narration.readyState < 2) { try { narration.pause(); } catch (e) {} fail(); } }, 2500));
+  if (pr && pr.catch) pr.catch(err => { if (err && err.name === "AbortError") return; fail(err && err.name === "NotAllowedError"); });
+  // slow connection: give the recording time to arrive before falling back to the device voice
+  timers.push(setTimeout(() => { if (!ok && narration.readyState < 2) { try { narration.pause(); } catch (e) {} fail(true); } }, 9000));
 }
 function readPage() {
   const tp = $(".tp", pageR); if (!tp || !tp._plain || textHidden || finished || $(".ov")) return;
