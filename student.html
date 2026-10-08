@@ -3621,7 +3621,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
         </div>
       </div>`).join("");
   }
-  document.getElementById("hubVocab").onclick = () => { location.href = `hub-present.html?type=vocab&level=${level}`; };
+  document.getElementById("hubVocab").onclick = () => { location.href = `english-hub.html?level=${encodeURIComponent(level)}#/vocab`; };
   document.getElementById("vocabClose").onclick = () => vocabOverlay.classList.remove("show");
   vocabOverlay.addEventListener("click", e => { if (e.target === vocabOverlay) vocabOverlay.classList.remove("show"); });
 
@@ -3675,7 +3675,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
         ${u.tip ? `<div class="sd-phonics-tip">${u.tip}</div>` : ""}
       </div>`).join("");
   }
-  document.getElementById("hubPhonics").onclick = () => { location.href = `hub-present.html?type=phonics&level=${level}`; };
+  document.getElementById("hubPhonics").onclick = () => { location.href = `english-hub.html?level=${encodeURIComponent(level)}#/phonics`; };
   document.getElementById("phonicsClose").onclick = () => phonicsOverlay.classList.remove("show");
   phonicsOverlay.addEventListener("click", e => { if (e.target === phonicsOverlay) phonicsOverlay.classList.remove("show"); });
 
@@ -3687,7 +3687,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
   // hub-present.html handles every other level automatically, just by
   // spelling-hub/ only having a pre-a.json file and nothing else.
   const SPELLING_AVAILABLE_AT = ["pre-a"]; // = the files in spelling-hub/; add a level here when its JSON lands
-  document.getElementById("hubSpelling").onclick = () => { location.href = `hub-present.html?type=spelling&level=${level}`; };
+  document.getElementById("hubSpelling").onclick = () => { location.href = `english-hub.html?level=${encodeURIComponent(level)}#/spelling`; };
   // Spelling is a foundations tile: only shown for Level 0 (pre-a) and
   // Level 1. Higher levels don't see the card at all rather than seeing
   // one that leads to a "not ready for your level" page.
@@ -3744,7 +3744,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
         </div>
       </div>`).join("");
   }
-  document.getElementById("hubGrammar").onclick = () => { location.href = `hub-present.html?type=grammar&level=${level}`; };
+  document.getElementById("hubGrammar").onclick = () => { location.href = `english-hub.html?level=${encodeURIComponent(level)}#/grammar`; };
   document.getElementById("grammarClose").onclick = () => grammarOverlay.classList.remove("show");
   grammarOverlay.addEventListener("click", e => { if (e.target === grammarOverlay) grammarOverlay.classList.remove("show"); });
 
@@ -3764,7 +3764,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
   document.getElementById("hubGames").onclick = () => gamesPick.classList.add("show");
   document.getElementById("gamesPickClose").onclick = () => gamesPick.classList.remove("show");
   gamesPick.addEventListener("click", e => { if (e.target === gamesPick) gamesPick.classList.remove("show"); });
-  document.getElementById("hubIdioms").onclick = () => { location.href = `hub-present.html?type=idioms&level=${level}`; };
+  document.getElementById("hubIdioms").onclick = () => { location.href = `english-hub.html?level=${encodeURIComponent(level)}#/idioms`; };
 
   // ================= English Hub: Writing & Speaking =================
   const writingOverlay = document.getElementById("writingOverlay");
@@ -3899,7 +3899,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
     if (!data) { writingContent.innerHTML = `<p style="text-align:center;color:var(--sd-cocoa-soft);padding:20px">Prompts for your level aren't ready yet — check back soon!</p>`; return; }
     renderPromptPicker(data);
   }
-  document.getElementById("hubWriting").onclick = () => { location.href = `hub-present.html?type=writing&level=${level}`; };
+  document.getElementById("hubWriting").onclick = () => { location.href = `english-hub.html?level=${encodeURIComponent(level)}#/writing`; };
   document.getElementById("hubSongs").onclick = () => { location.href = `songs.html?level=${level}`; };
   document.getElementById("writingClose").onclick = () => { writingOverlay.classList.remove("show"); wrCleanupStream(); };
   writingOverlay.addEventListener("click", e => { if (e.target === writingOverlay) { writingOverlay.classList.remove("show"); wrCleanupStream(); } });
