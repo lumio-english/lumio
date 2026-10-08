@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/logo/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/logo/favicon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#F2600C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lumio">
+<title>English Hub — Lumio English</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Michroma&family=Tajawal:wght@500;700;800&display=swap" rel="stylesheet">
+<script>
+/* same cache-busting as every other page: one version for every shared file, read fresh from js/version.json */
+(function () {
+  var v = "20261007e";
+  try { var x = new XMLHttpRequest(); x.open("GET", "js/version.json?_=" + Date.now(), false); x.send(null); if (x.status === 200) { var j = JSON.parse(x.responseText); if (j && j.v) v = j.v; } } catch (e) {}
+  window.LUMIO_V = v;
+  document.write('<link rel="stylesheet" href="css/hub2.css?v=' + v + '">');
+})();
+</script>
+</head>
+<body>
+<header class="hb-top">
+  <button class="hb-back" id="hbBack" aria-label="Back"></button>
+  <div class="hb-ttl"><small id="hbSmall">Lumio English</small><b id="hbTitle">English Hub</b></div>
+  <div class="hb-xp" id="hbXp" aria-label="Your XP"></div>
+</header>
+<main class="hb-main" id="main" aria-live="polite"><div class="empty">Loading…</div></main>
+<div class="toast" id="hbToast" role="status"></div>
+<script>
+document.write('<script src="js/app.js?v=' + window.LUMIO_V + '"><' + '/script>');
+document.write('<script src="js/hub2.js?v=' + window.LUMIO_V + '"><' + '/script>');
+</script>
+</body>
+</html>
