@@ -450,14 +450,16 @@
   }
   function phonicsUnit(d, i) {
     var u = d.units[i]; if (!u) return phonicsHome(d);
+    var sight = /sight word/i.test(u.unit);
     setTop("Phonics", u.unit, "#/phonics");
     render('<span class="lbl">Group ' + (+i + 1) + " of " + d.units.length + '</span><h1 class="h1" style="font-size:clamp(26px,6.5vw,38px)">' + esc(u.unit) + "</h1>" +
       '<div class="sec-h"><h2>Sounds</h2><span class="sub">tap to hear</span></div><div class="sounds">' +
       u.sounds.map(function (s, j) { return '<button class="card sound" data-j="' + j + '"><div class="L">' + esc(s.letter) + '</div><div class="S">' + esc(s.sound) + '</div><span class="ar" dir="rtl">' + esc(s.ar) + "</span></button>"; }).join("") + "</div>" +
       '<div class="sec-h"><h2>Words</h2></div><div class="words">' +
       u.words.map(function (w, j) {
+        // sight words (the, a, to, we...) are taught as words, so their tile says so
         // words without a picture get a letter tile instead, with this group's sounds lit up
-        return '<button class="card word" data-w="' + j + '"><img src="' + pic(w.en) + '" alt="" loading="lazy" onerror="this.parentNode.classList.add(\'nopic\')">' +
+        return '<button class="card word' + (sight ? " sight" : "") + '" data-w="' + j + '"><img src="' + pic(w.en) + '" alt="" loading="lazy" onerror="this.parentNode.classList.add(\'nopic\')">' +
           '<span class="wt" aria-hidden="true"><span>' + soundLetters(w.en, u.sounds) + "</span></span><b>" + esc(w.en) + '</b><span class="ar" dir="rtl">' + esc(w.ar) + "</span></button>";
       }).join("") + "</div>" +
       (u.story ? '<div class="sec-h"><h2>Read the story</h2></div><div class="card story"><button class="play" id="stPlay" aria-label="Listen">' + g("sound") + '</button><div><p>' + esc(u.story.en) + '</p><p class="ar" dir="rtl">' + esc(u.story.ar) + "</p></div></div>" : "") +

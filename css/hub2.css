@@ -278,3 +278,6 @@ html.teen .word .wt { border-radius: 0; background: #1E1E23; }
 html.kid .word .wt i { color: #E5590B; }
 .word.nopic img { display: none; }
 .word.nopic .wt { display: grid; }
+.word .wt { position: relative; }
+.word.sight.nopic .wt::before { content: "Sight word"; position: absolute; top: 10px; left: 0; right: 0; text-align: center; font-family: var(--label); font-size: 10px; letter-spacing: var(--labelTrack); text-transform: uppercase; font-weight: 800; color: var(--ink2); }
+.word.sight.nopic .wt i { color: inherit; }
