@@ -1,6 +1,14 @@
-# Lumio English — Session Handoff (as of 23 Sep 2026)
+# Lumio English — Session Handoff (updated 8 Oct 2026; first written 23 Sep 2026)
 
-Read this first in any new chat. Repo `github.com/lumio-english/lumio`, branch `main`. Latest work commit: `e6fc843d3`.
+Read this first in any new chat. Repo `github.com/lumio-english/lumio`, branch `main` (live site = GitHub Pages from main). Live version **20261008d** (`js/version.json`). Start with **section 0** (rules + open items), then the newest sections (3y onward).
+
+## 0. Standing rules and open items (8 Oct 2026)
+- **Push to main (live) only when Eslam says "make it live".** Work on a branch, show a preview/screenshots first for anything big ("let me see a sample first").
+- Every release: merge origin/main into the branch (another chat pushes voice files to main), bump `js/version.json`, push the branch, then `git push origin HEAD:main`; check the Pages run with the GitHub MCP `actions_list` (the proxy blocks github.io).
+- Commit trailer: `Co-Authored-By` + `Claude-Session` lines as in recent commits. No model names in commits/docs. Never ask for or print secrets (Groq key, Artlist password, the Sheet API key).
+- Eslam writes in short English with typos; answer in plain English, short, no jargon. A separate chat ("Sound effects and voice batch creation", session_01GVguqLqCCzugjZa2omTyxD) makes Artlist voice files and commits them to main; send it voice lists with `send_message`.
+- **Open items:** (1) 25 Phonics pictures (L1/L2) to generate from `_docs/missing-phonics-prompts-oct.md`, plus 115 vocab pictures from `_docs/missing-vocab-prompts-oct.md`; intake = rename to slug, max 600px PNG into `assets/vocab/`. (2) English Hub progress (XP, known words) is localStorage only (`lumio_hub2`); syncing it needs an Apps Script kind (v13) -- offered, not asked yet. (3) Only the student dashboard is Arabic; lesson/homework/games/Hub UI are still English (offered). (4) Idiom meanings have no recordings (Hub shows them as text). (5) Teen story L5/L6 scene pictures still awaited (see 3).
+
 
 ## 1. How the platform is wired (the traps)
 - BRAND (29 Sep): logo = the yellow-chick Lumi design (`assets/logo/lumio-logo.png` full lockup, `assets/logo/lumi-mark.png` face-only for small badges/topbars/deck headers, `favicon.ico` + `assets/logo/favicon-{16,32,48,180,192,512}.png`). The old orange-blob mascot/logo is retired everywhere (web, decks, trial, PDFs, manuals, marketing images); `assets/story/characters/lumi-hero.png` now holds the new design. Colours: `css/brand.css` is the single source of truth (`--lumio-*` tokens + `--lumio-page-bg`); it is linked first on every page and every page-local palette (`--sd-*`, `--td-*`, `--tp-*`, placement `--yellow/--blue`, dashboard `--y/--b`, style.css `--orange/--sun/...`) aliases it. Teen night theme = cocoa-night tokens (`--lumio-night*`), no more indigo. Change a colour in brand.css, never per page. Teen DECK templates (L3-6, `lib/deck_template_teen*.py`) still use their own indigo palette -- retinting them means regenerating all four teen levels.
@@ -288,5 +296,29 @@ Done by three parallel workers (sync layer / teacher UI / student UI), merged an
 - Balloon Pop is in the Hub word-games chooser (`games/balloon-pop.html?level=…&from=hub`): from=hub uses the student's level + latest attempted lesson, exits to student.html#secHub, saves its best (score = balloons popped, no total) via `Lumio.saveGameBest`. Presenter/trial plays never save. The other three games call `Lumio.pushExtras` after saving their best.
 - Test: scratchpad verify/t30_extras.py <port> (two devices, kid+teen, sibling, migration, security, teacher drawer).
 
+## 3y. Class slides version 5 for every level (7-8 Oct 2026, live 20261008a)
+- New premium design for all class decks: kids (Pre-A, L1, L2) = iPhone-style glass on soft colour meshes; teens (L3-L6) = matte black + gold (Michroma labels, cut corners). Same content as the classic decks (checked slide by slide with scratchpad `teenv3/check.py`).
+- Built from the classic generators by monkeypatching: `lib/deck_v3_kid.py` (+ `deck_v3_kid_extra.py`, `v3_glyphs.py`) and `lib/deck_v3_teen.py`; run `python3.12 gen_slides_v3.py <pre-a|level1|level2>` / `gen_slides_v3_teen.py <level3..6>` -> `slide-content-v5/<level>/NN/` + `assets/slides-v5/<level>/manifest.json`. **After any lesson-content change, regenerate BOTH the classic deck (regen_level.py) and the v5 deck.** CSS: `css/slides-v3.css`.
+- `present.html` opens v5 by default (`?deck=classic` = old slides) and turns on the Live Class engine (`window.LUMIO_SLIDE_FX = !!DECK`; `js/slide-motion.js` + `css/slide-motion.css`): soft cross-dissolve (old page stays solid under the new one; behind a chapter card too), host bubbles, vocab magic reveal, karaoke, star jar/XP, answer states, finale. Trial decks (`present-trial.html`) are still classic.
+- Coming back from a game reopens the slide you left (`sessionStorage lumio_present_resume`); trial games open in a new tab that closes on Exit. Teacher dashboard remembers page / Materials level / scroll per tab (`lumio_td_view`, `lumio_td_matlevel`, `lumio_td_scroll`), so Exit from a class returns to the same lesson list.
+
+## 3z. English Hub v2 (8 Oct 2026, live 20261008a)
+- `english-hub.html` + `css/hub2.css` + `js/hub2.js`: phone-first study app in the v5 look, all levels, reads the same `<type>-hub/<level>.json`. Routes in the hash: `#/vocab[/i[/learn|/quiz]]`, `#/idioms[/quiz]`, `#/grammar[/i]` (rule + build-the-sentence), `#/phonics[/i]`, `#/spelling[/i]`, `#/writing[/i]` (autosaved, checklist). Songs/Games open the old pages. Student page Hub buttons point here; `hub-present.html` (old slide Hub) still exists.
+- Phonics words without a picture show a letter tile with the group's sounds lit; sight-word units show "Sight word" cards. Progress per student+level in localStorage `lumio_hub2` (known, quiz, idioms, grammar, sounds, spelling, writing, xp, days).
+
+## 3aa. Voice player + games (8 Oct 2026, live 20261008d)
+- `Lumio.speak` (js/app.js): every call numbered (`speakSeq`) so an old watchdog/error can't pause the new word and read the old one in the device voice (that was the "repeated line + missing line" bug); 1.5s watchdog extends to 4s while the file is still downloading; a blocked line replays on the next tap only if <4s old; music dips while speaking; `Lumio.preloadSpeech(text)`.
+- Lumi's Pocket: no repeated word/letter in a game; preloads each round; words that share one sentence in a lesson (Pre-A L2 friend/you, L20 clap/hands) say the word instead.
+- New voice files from the voice chat (8 Oct): 51 phonics sounds re-recorded, letter names b-z, phonics-sound-q, will/give/later, `story-pre-a-part1-page3-done.mp3` (story.html now uses a separate clip after the colours game; tapped story words use recordings).
+
+## 3bb. Student dashboard in Arabic (8 Oct 2026, live 20261008d)
+- `js/student-i18n.js` (loaded first in student.html; a head snippet sets `dir=rtl` + hides the body until translated): Arabic by default, English via the "English / العربية" button next to the phone Menu; the setting is the shared `lumio_lang` (home + login pages). Translates text nodes in place with a dictionary + regex patterns (numbers, names, level names), attributes, confirm/alert, and later-rendered content (MutationObserver). English learning content (lesson titles, words, names, game/story names) stays English and is bidi-isolated. **New UI text on the dashboard must get an entry in this file's dictionary** (check with scratchpad `verify/t_ar1.py`, which lists visible English).
+- RTL fixes live in the same file (Lumi on the left of the cover). `js/student-journey.js` translates a heading before splitting it into words.
+
+## 3cc. Smaller fixes (8 Oct 2026)
+- Owner can finish a pending student deletion ("Delete now (owner)") without waiting for the student; other teachers still wait (teacher.html).
+- Level 1 phonics "top" = قِمّة (was spinning top).
+
 ## 4. Working style
+Test setup (scratchpad, recreate if lost): static site `python3 -m http.server 8810` from the repo; mock Apps Script `node verify/gsserver.js 8899 _docs/AppsScript-Code.gs` with `verify/lib.py` (seed, teacher_login, student_login). Artifacts for previews are private claude.ai pages (Version 5 slides, English Hub preview).
 Verify in a browser before claiming done; check files before writing prompts; never duplicate; fix in templates not per slide; say plainly what was NOT done; ask one specific question when ambiguous.
