@@ -497,6 +497,10 @@ function getDoneCount() {
 }
 function isTeacherSession() { try { return localStorage.getItem("lumio_teacher") === "1"; } catch (e) { return false; } }
 const previewMode = qs("preview") === "1" && isTeacherSession();   // preview is for teachers only
+// a teacher previewing from the teacher dashboard goes back there, not to the student dashboard
+const HOME = previewMode ? "teacher.html" : "student.html";
+const HOME_LABEL = previewMode ? "Back to dashboard" : "Back to my lessons";
+document.getElementById("exitBtn").setAttribute("href", HOME);
 const part = PARTS.find(p => p.id === partNum);
 const doneCount = getDoneCount();
 
@@ -1399,7 +1403,7 @@ function showLock() {
       <h2>Part ${p.id} is locked</h2>
       <p>Finish ${p.unlockLesson} lessons to unlock "${esc(p.name)}"! You've completed ${doneCount} so far — keep going!</p>
       <div class="lbar"><b></b></div><div class="lnum">${Math.min(doneCount, p.unlockLesson)} / ${p.unlockLesson} lessons</div>
-      <div class="btns"><a class="btnP" href="student.html" data-press>${IC.home}<span>Back to my lessons</span></a><button type="button" class="btnG" id="lockMap" data-press>${IC.map}<span>Story map</span></button></div></div>`;
+      <div class="btns"><a class="btnP" href="${HOME}" data-press>${IC.home}<span>${HOME_LABEL}</span></a><button type="button" class="btnG" id="lockMap" data-press>${IC.map}<span>Story map</span></button></div></div>`;
   document.body.appendChild(ov);
   $("#lockMap").onclick = openMap;
   const bar = $(".lbar b", ov);
@@ -1431,7 +1435,7 @@ function finishPart() {
           return `<div class="stop ${cls}" data-id="${p.id}"><img class="th" src="assets/story/scenes/${esc(LEVEL)}/p${p.id}-01.jpg" alt=""><span class="bd">${cls === "locked" ? IC.lock : cls === "done" ? IC.check : p.id}</span><small>Part ${p.id}</small></div>`; }).join("")}
         <img class="tok" src="${avatar("lumi")}" alt=""></div>
       <div class="btns">${nextOpen ? `<button type="button" class="btnP" id="ceNext" data-press><span>Read Part ${nextPart.id}</span>${IC.arrow}</button>` : ""}
-        <a class="${nextOpen ? "btnG" : "btnP"}" href="student.html" data-press>${IC.home}<span>Back to my lessons</span></a>
+        <a class="${nextOpen ? "btnG" : "btnP"}" href="${HOME}" data-press>${IC.home}<span>${HOME_LABEL}</span></a>
         <button type="button" class="btnG" id="ceAgain" data-press>${IC.again}<span>Read again</span></button></div></div></div>`;
   document.body.appendChild(ov);
   if (nextOpen) $("#ceNext").onclick = () => goPart(nextPart.id);
@@ -1500,7 +1504,7 @@ function finishPart() {
   }
   if (!part) {
     nav.hidden = true; $("#bookWrap").hidden = true;
-    document.body.insertAdjacentHTML("beforeend", `<section class="ov" style="display:flex;align-items:center;justify-content:center"><div class="ovBg" style="background:#2a1c10"></div><div class="ovCard"><h2>Story part not found</h2><p>This part of the story doesn't exist.</p><div class="btns"><a class="btnP" href="student.html">${IC.home}<span>Back to my lessons</span></a></div></div></section>`);
+    document.body.insertAdjacentHTML("beforeend", `<section class="ov" style="display:flex;align-items:center;justify-content:center"><div class="ovBg" style="background:#2a1c10"></div><div class="ovCard"><h2>Story part not found</h2><p>This part of the story doesn't exist.</p><div class="btns"><a class="btnP" href="${HOME}">${IC.home}<span>${HOME_LABEL}</span></a></div></div></section>`);
     return;
   }
   const firstSrc = `assets/story/scenes/${LEVEL}/p${part.id}-01.jpg`;
