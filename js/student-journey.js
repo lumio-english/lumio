@@ -64,7 +64,9 @@
   function visibleSections() { return $$(':scope > .s26-sec', main).filter(function (s) { return !s.hidden && s.offsetParent !== null; }); }
   function splitWords(h) {
     if (!h || h.dataset.sjSplit) return; h.dataset.sjSplit = '1';
-    var t = h.textContent.trim(); h.setAttribute('aria-label', t);
+    var t = h.textContent.replace(/\s+/g, ' ').trim();
+    if (window.LumioI18n && LumioI18n.lang === 'ar') { var tt = LumioI18n.tr(t); if (tt) t = tt; }   // whole phrase first, then the words
+    h.setAttribute('aria-label', t);
     h.innerHTML = t.split(/\s+/).map(function (w) { return '<span class="w" aria-hidden="true"></span>'; }).join(' ');
     var ws = t.split(/\s+/); $$('.w', h).forEach(function (s, i) { s.textContent = ws[i]; });
   }

@@ -2,6 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<script>
+/* The dashboard opens in Arabic unless the student chose English ("lumio_lang", shared with the home and login
+   pages). Set the direction before anything paints; js/student-i18n.js translates the text and shows the page. */
+(function () { try { if (localStorage.getItem("lumio_lang") !== "en") { var h = document.documentElement; h.lang = "ar"; h.dir = "rtl"; h.className += " lang-ar i18n-wait"; } } catch (e) {} })();
+</script>
+<style>html.i18n-wait body{visibility:hidden}</style>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/logo/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="assets/logo/favicon-16.png">
@@ -1684,6 +1690,7 @@
       if (parsed && parsed.v) v = parsed.v;
     }
   } catch (e) {}
+  document.write('<script src="js/student-i18n.js?v=' + v + '"><' + '/script>');
   document.write('<script src="js/app.js?v=' + v + '"><' + '/script>');
   document.write('<script src="js/lessons-data.js?v=' + v + '"><' + '/script>');
   document.write('<script src="js/lumio-profiles.js?v=' + v + '"><' + '/script>');
