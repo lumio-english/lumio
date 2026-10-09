@@ -178,7 +178,57 @@ function cellToString_(col, v) {
   return v;
 }
 
+// ---- speed (v13) ----
+// One request often reads the same tab several times (whoIs_ reads Teachers or the Roster, then the action reads it
+// again). READ_MEMO_ keeps each tab's rows for the rest of this one request; writeRows_ drops it. The Teachers tab,
+// read by EVERY request, is also kept in the script cache for TAB_CACHE_S_ seconds (cleared on every write here; a
+// hand edit in the Sheet shows up within that time).
+var READ_MEMO_ = {};
+var TAB_CACHE_S_ = 120;
+var SHARED_CACHE_TABS_ = { "Teachers": true };
 function readRows_(name, columns) {
+  var key = name + "|" + columns.join(",");
+  if (READ_MEMO_[key]) return JSON.parse(READ_MEMO_[key]);
+  var cached = SHARED_CACHE_TABS_[name] ? tabCacheGet_(key) : null;
+  if (cached) { READ_MEMO_[key] = cached; return JSON.parse(cached); }
+  var rows = readRowsFromSheet_(name, columns);
+  var json = JSON.stringify(rows);
+  READ_MEMO_[key] = json;
+  if (SHARED_CACHE_TABS_[name]) tabCachePut_(key, json);
+  return rows;
+}
+function tabCacheKey_(key) { return "tab_" + Utilities.base64EncodeWebSafe(key).slice(0, 200); }
+function tabCacheGet_(key) {
+  try {
+    var c = CacheService.getScriptCache(), k = tabCacheKey_(key), n = Number(c.get(k + "_n") || 0);
+    if (!n) return null;
+    var parts = c.getAll(Array.apply(null, Array(n)).map(function (_, i) { return k + "_" + i; }));
+    var out = "";
+    for (var i = 0; i < n; i++) { if (parts[k + "_" + i] == null) return null; out += parts[k + "_" + i]; }
+    return out;
+  } catch (e) { return null; }
+}
+function tabCachePut_(key, json) {
+  try {
+    var c = CacheService.getScriptCache(), k = tabCacheKey_(key), size = 90000, vals = {}, n = Math.ceil(json.length / size) || 1;
+    if (n > 8) return;   // too big to be worth it
+    for (var i = 0; i < n; i++) vals[k + "_" + i] = json.slice(i * size, (i + 1) * size);
+    c.putAll(vals, TAB_CACHE_S_);
+    c.put(k + "_n", String(n), TAB_CACHE_S_);
+  } catch (e) {}
+}
+function forgetTab_(name) {
+  Object.keys(READ_MEMO_).forEach(function (k) { if (k.indexOf(name + "|") === 0) delete READ_MEMO_[k]; });
+  if (SHARED_CACHE_TABS_[name]) {
+    try {
+      var c = CacheService.getScriptCache();
+      Object.keys(TAB_COLUMNS_FOR_CACHE_()).forEach(function (cols) { c.remove(tabCacheKey_(name + "|" + cols) + "_n"); });
+    } catch (e) {}
+  }
+}
+function TAB_COLUMNS_FOR_CACHE_() { var o = {}; o[TEACHERS_COLUMNS.join(",")] = 1; return o; }
+
+function readRowsFromSheet_(name, columns) {
   var sheet = getOrCreateSheet_(name, columns);
   var lastRow = sheet.getLastRow();
   if (lastRow < 2) return [];
@@ -198,6 +248,7 @@ function readRows_(name, columns) {
 }
 
 function writeRows_(name, columns, rows) {
+  forgetTab_(name);
   var sheet = getOrCreateSheet_(name, columns);
   var lastRow = sheet.getLastRow(), lastCol = Math.max(sheet.getLastColumn(), columns.length);
   var head = sheet.getRange(1, 1, 1, lastCol);
@@ -1600,45 +1651,73 @@ function keyOk_(e) {
 
 function denied_(who) { return jsonResponse_({ ok: false, error: who.error || "unauthorized" }); }
 
+// The answer to one read action for an already identified caller (same rules as before v13).
+function getResult_(action, who) {
+  var no = { ok: false, error: who.error || "unauthorized" };
+  if (who.role === "student") {
+    if (action === "pullRoster") return studentRoster_(who);
+    if (action === "pullScheduleV2") return studentSchedule_(who);
+    if (action === "pullProgress") return { ok: true, rows: ownRows_(pullProgress_().rows, who.student) };
+    if (action === "pullHomework") return { ok: true, rows: ownRows_(pullHomework_().rows, who.student) };
+    if (action === "pullExtras") return { ok: true, rows: ownRows_(pullExtras_().rows, who.student) };
+    return no;
+  }
+  if (who.role === "public") {
+    // The teacher portal needs the list of teachers to show before
+    // anyone has signed in -- names and avatars only.
+    if (action === "pullRoster") return { ok: true, students: [], teachers: publicTeachers_(), rewardCatalog: [], deletedIds: deletedIdsOfType_(["teacher"]) };
+    if (action) return no;
+    return { ok: true, message: "Lumio sync backend is running." };
+  }
+  if (action === "pullRoster") return pullRoster_(who);
+  if (action === "pullScheduleV2") return pullScheduleV2_();
+  if (action === "pullProgress") return pullProgress_();
+  if (action === "pullHomework") return pullHomework_();
+  if (action === "pullExtras") return pullExtras_();
+  if (action === "pullLeads") return pullLeads_();
+  if (action === "pullProAdmins") return callerIsOwner_(who) ? pullProAdmins_() : { ok: false, error: "unauthorized" };
+  if (action === "pullProTestResults") return pullProTestResults_();
+  return { ok: true, message: "Lumio sync backend is running." };
+}
+var BUNDLE_ACTIONS_ = { pullRoster: 1, pullScheduleV2: 1, pullProgress: 1, pullHomework: 1, pullExtras: 1, pullLeads: 1, pullProAdmins: 1, pullProTestResults: 1 };
+
 function doGet(e) {
   try {
+    READ_MEMO_ = {};   // each request starts with fresh reads
     if (!keyOk_(e)) return jsonResponse_({ ok: false, error: "unauthorized" });
     var action = (e && e.parameter) ? e.parameter.action : null;
     // Lets a page tell this version apart from older deployments.
-    if (action === "version") return jsonResponse_({ ok: true, version: 12, auth: true, merge: true, studentPhoto: true, mainOwner: true, hardened: true, extras: true });
+    if (action === "version") return jsonResponse_({ ok: true, version: 13, auth: true, merge: true, studentPhoto: true, mainOwner: true, hardened: true, extras: true, bundle: true });
+    if (action === "ping") { keepWarm(); return jsonResponse_({ ok: true }); }
     var who = whoIs_(e);
     if (who.error) return denied_(who);
-    if (who.role === "student") {
-      if (action === "pullRoster") return jsonResponse_(studentRoster_(who));
-      if (action === "pullScheduleV2") return jsonResponse_(studentSchedule_(who));
-      if (action === "pullProgress") return jsonResponse_({ ok: true, rows: ownRows_(pullProgress_().rows, who.student) });
-      if (action === "pullHomework") return jsonResponse_({ ok: true, rows: ownRows_(pullHomework_().rows, who.student) });
-      if (action === "pullExtras") return jsonResponse_({ ok: true, rows: ownRows_(pullExtras_().rows, who.student) });
-      return denied_(who);
+    // v13: several reads in one request (a dashboard used to send 5 at once, each identifying the caller again)
+    if (action === "bundle") {
+      var list = String((e.parameter && e.parameter.actions) || "").split(",").filter(function (a) { return BUNDLE_ACTIONS_[a]; }).slice(0, 8);
+      var results = {};
+      list.forEach(function (a) { try { results[a] = getResult_(a, who); } catch (err) { results[a] = { ok: false, error: String(err) }; } });
+      return jsonResponse_({ ok: true, bundle: true, results: results });
     }
-    if (who.role === "public") {
-      // The teacher portal needs the list of teachers to show before
-      // anyone has signed in -- names and avatars only.
-      if (action === "pullRoster") return jsonResponse_({ ok: true, students: [], teachers: publicTeachers_(), rewardCatalog: [], deletedIds: deletedIdsOfType_(["teacher"]) });
-      if (action) return denied_(who);
-      return jsonResponse_({ ok: true, message: "Lumio sync backend is running." });
-    }
-    if (action === "pullRoster") return jsonResponse_(pullRoster_(who));
-    if (action === "pullScheduleV2") return jsonResponse_(pullScheduleV2_());
-    if (action === "pullProgress") return jsonResponse_(pullProgress_());
-    if (action === "pullHomework") return jsonResponse_(pullHomework_());
-    if (action === "pullExtras") return jsonResponse_(pullExtras_());
-    if (action === "pullLeads") return jsonResponse_(pullLeads_());
-    if (action === "pullProAdmins") return callerIsOwner_(who) ? jsonResponse_(pullProAdmins_()) : denied_({});
-    if (action === "pullProTestResults") return jsonResponse_(pullProTestResults_());
-    return jsonResponse_({ ok: true, message: "Lumio sync backend is running." });
+    return jsonResponse_(getResult_(action, who));
   } catch (err) {
     return jsonResponse_({ ok: false, error: String(err) });
   }
 }
 
+// ---- keep the script awake (v13) ----
+// Google puts an unused script to sleep; the first request after that waits 5-10 s. A timer that runs every
+// 5 minutes keeps it awake and the Teachers cache filled. Run setupKeepWarm() ONCE from the editor to install it.
+function keepWarm() {
+  readRows_(TEACHERS_SHEET, TEACHERS_COLUMNS);
+}
+function setupKeepWarm() {
+  ScriptApp.getProjectTriggers().forEach(function (t) { if (t.getHandlerFunction() === "keepWarm") ScriptApp.deleteTrigger(t); });
+  ScriptApp.newTrigger("keepWarm").timeBased().everyMinutes(5).create();
+}
+
 function doPost(e) {
   try {
+    READ_MEMO_ = {};   // each request starts with fresh reads
     if (!keyOk_(e)) return jsonResponse_({ ok: false, error: "unauthorized" });
     var action = (e && e.parameter) ? e.parameter.action : null;
     var body = {};

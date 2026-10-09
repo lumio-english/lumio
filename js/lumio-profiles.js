@@ -1659,19 +1659,33 @@
   // message. Asked once per tab; until the new script is deployed every
   // page keeps the previous behaviour.
   let capsPromise = null;
+  // What went wrong on the last failed call, shown in "couldn't reach the server" so the cause can be found.
+  let lastNetError = "";
+  function netReason_(err) {
+    if (!err) return "unknown";
+    if (err.name === "AbortError") return "timeout";
+    return String(err.message || err).slice(0, 120);
+  }
+  // Apps Script answers with an HTML page (not JSON) when it is down, over quota or not shared with "Anyone".
+  function readJson_(r) {
+    return r.text().then(t => {
+      try { return JSON.parse(t); }
+      catch (e) { throw new Error("HTTP " + r.status + ", not JSON: " + t.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 90)); }
+    });
+  }
   function serverCaps() {
     try { const c = JSON.parse(sessionStorage.getItem("lumio_srv_caps") || "null"); if (c) return Promise.resolve(c); } catch (e) {}
     if (capsPromise) return capsPromise;
     const cfg = getSyncConfig();
     if (!cfg.enabled || !cfg.url) return Promise.resolve({ auth: false });
     capsPromise = fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=version", {}, 20000)
-      .then(r => r.json())
+      .then(readJson_)
       .then(j => {
-        const c = { auth: !!(j && j.auth), version: (j && j.version) || 0 };
+        const c = { auth: !!(j && j.auth), version: (j && j.version) || 0, bundle: !!(j && j.bundle) };
         try { sessionStorage.setItem("lumio_srv_caps", JSON.stringify(c)); } catch (e) {}
         return c;
       })
-      .catch(() => ({ auth: false, unknown: true }))
+      .catch(err => { lastNetError = netReason_(err); return { auth: false, unknown: true }; })
       .finally(() => { capsPromise = null; });
     return capsPromise;
   }
@@ -1681,19 +1695,19 @@
   async function loginCaps() {
     let caps = await serverCaps();
     if (caps.unknown) caps = await serverCaps();
-    if (caps.unknown) { const e = new Error("Couldn't reach the Lumio server. Check the connection and try again."); e.code = "offline"; throw e; }
+    if (caps.unknown) throw offlineError();
     return caps;
   }
   // The script answers "busy" when its site-wide login limit is used up (many logins in 10 minutes):
   // that is not a wrong PIN either.
   function busyError(out) { const e = new Error((out && out.message) || "The Lumio server is busy right now. Please wait a few minutes and try again."); e.code = "busy"; return e; }
-  function offlineError() { const e = new Error("Couldn't reach the Lumio server. Check the connection and try again."); e.code = "offline"; return e; }
+  function offlineError() { const e = new Error("Couldn't reach the Lumio server. Check the connection and try again." + (lastNetError ? " (" + lastNetError + ")" : "")); e.code = "offline"; return e; }
   async function postAction(action, body) {
     const cfg = getSyncConfig();
     const res = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=" + action + authQuery(), {
       method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(body || {}),
-    });
-    return res.json();
+    }).catch(err => { lastNetError = netReason_(err); throw err; });
+    return readJson_(res).catch(err => { lastNetError = netReason_(err); throw err; });
   }
 
   function stripPin(record) {
