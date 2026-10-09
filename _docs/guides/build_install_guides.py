@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "_docs/guides"
 TMP = Path(os.environ.get("LUMIO_TMP", "/tmp/lumio-guides")); TMP.mkdir(parents=True, exist_ok=True)
 FONTS = ROOT / "_docs/manuals-src/assets/fonts"
-SITE = "lumio-english.github.io/lumio"
+SITE = "lumiooo.com"
 
 def du(p, mime="image/png"):
     return f"data:{mime};base64," + base64.b64encode(Path(p).read_bytes()).decode()

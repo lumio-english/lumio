@@ -332,6 +332,7 @@
         pinError.textContent = err && err.code === "pending_approval"
           ? LG_T("pending")
           : err && err.code === "locked" ? LG_T("locked")
+          : err && err.code === "offline" ? LG_T("offline")
           : LG_T("wrong") + " (" + ((err && err.message) || "unknown error") + ")";
         oops();
         pinError.classList.remove("shake"); void pinError.offsetWidth; pinError.classList.add("shake");

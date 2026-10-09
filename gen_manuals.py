@@ -247,7 +247,7 @@ def build_level(lvl, cfg, data, story, game):
     pages.append(f'''<div class="page back"><div class="top"><div class="lock" style="background:#fff;border-radius:18px;padding:10px 16px;display:inline-block"><img src="assets/lumio-logo.png" alt="Lumio English" style="height:96px;width:auto;display:block"></div></div>
   <h1>We're here with you every step</h1><div class="sub">Thank you for trusting Lumio English with your child's learning journey. We can't wait to see how far they'll go.</div>
   <img class="hero" src="assets/{cfg["cover_char"]}" alt="">
-  <div class="contact"><div class="qr"><img src="assets/qr-website.png" alt=""></div><div><div class="k">Visit our website</div><div class="v">lumio-english.github.io/lumio</div><div class="h">Scan with your phone camera to open the site &mdash; the free placement test, the free trial class, every level's details and pricing.</div></div></div>
+  <div class="contact"><div class="qr"><img src="assets/qr-website.png" alt=""></div><div><div class="k">Visit our website</div><div class="v">lumiooo.com</div><div class="h">Scan with your phone camera to open the site &mdash; the free placement test, the free trial class, every level's details and pricing.</div></div></div>
   <div class="slogan">Small Steps &middot; Big Futures</div></div>''')
     return f'<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>{label} &middot; {E(cfg["name"])} Guide</title><style>{CSS}</style></head><body>{"".join(pages)}</body></html>'
 

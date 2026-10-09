@@ -305,9 +305,12 @@
       tPinView.classList.remove("show");
     }
     async function tryTeacherLogin() {
-      const ok = window.LumioProfiles && await LumioProfiles.verifyTeacherLogin(activeTeacher.name, tPinBuffer);
+      let ok = null, err = null;
+      tPinError.textContent = "Checking…";
+      try { ok = window.LumioProfiles && await LumioProfiles.verifyTeacherLogin(activeTeacher.name, tPinBuffer); }
+      catch (e) { err = e; }
       if (!ok) {
-        tPinError.textContent = "That PIN doesn't match — try again.";
+        tPinError.textContent = err && (err.code === "offline" || err.code === "locked") ? err.message : "That PIN doesn't match — try again.";
         tPinError.classList.remove("shake"); void tPinError.offsetWidth; tPinError.classList.add("shake");
         tPinBuffer = "";
         renderTeacherDots();

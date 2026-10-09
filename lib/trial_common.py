@@ -18,7 +18,7 @@ for teens).
 """
 import re
 
-SITE = "lumio-english.github.io/lumio"
+SITE = "lumiooo.com"
 
 # Same table as GAME_INFO in student.html -- keep both in step.
 GAMES = {

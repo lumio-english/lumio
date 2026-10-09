@@ -1341,11 +1341,12 @@
   // that order since code and phone are the two ways login.html now
   // actually asks for.
   async function verifyStudentLogin(identifier, pin) {
-    const caps = await serverCaps();
+    const caps = await loginCaps();
     if (caps.auth && normalizePin(pin)) {
       const pinHash = await hashPin(normalizePin(pin));
       let out = null;
       try { out = await postAction("studentLogin", { identifier: String(identifier || "").trim(), pinHash }); } catch (e) { out = null; }
+      if (out === null) throw offlineError();   // no answer is not a wrong PIN
       if (out && out.ok && out.student) {
         // This device now holds exactly one student: this one. Anything a
         // previous version cached about other students is dropped.
@@ -1515,12 +1516,13 @@
     const p = normalizePin(pin);
     if (!p) return null;
     const pinHash = await hashPin(p);
-    const caps = await serverCaps();
+    const caps = await loginCaps();
     if (caps.auth) {
       // The teacher list a device gets before sign-in has no PIN hashes,
       // so the script checks the PIN.
       let out = null;
       try { out = await postAction("teacherLogin", { id: t.id, pinHash }); } catch (e) { out = null; }
+      if (out === null) throw offlineError();   // no answer is not a wrong PIN
       if (out && out.ok) {
         setTeacherAuth(t.id, pinHash);
         if (out.teacher) {
@@ -1660,7 +1662,7 @@
     if (capsPromise) return capsPromise;
     const cfg = getSyncConfig();
     if (!cfg.enabled || !cfg.url) return Promise.resolve({ auth: false });
-    capsPromise = fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=version", {}, 10000)
+    capsPromise = fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=version", {}, 20000)
       .then(r => r.json())
       .then(j => {
         const c = { auth: !!(j && j.auth), version: (j && j.version) || 0 };
@@ -1671,6 +1673,16 @@
       .finally(() => { capsPromise = null; });
     return capsPromise;
   }
+  // Login needs to know how the server checks PINs. A slow first answer (Google waking the script up, a new
+  // device, a new web address) used to look like "no PIN check on the server", so the right PIN was compared
+  // locally against nothing and reported as wrong. Try twice; if the server still can't be reached, say so.
+  async function loginCaps() {
+    let caps = await serverCaps();
+    if (caps.unknown) caps = await serverCaps();
+    if (caps.unknown) { const e = new Error("Couldn't reach the Lumio server. Check the connection and try again."); e.code = "offline"; throw e; }
+    return caps;
+  }
+  function offlineError() { const e = new Error("Couldn't reach the Lumio server. Check the connection and try again."); e.code = "offline"; return e; }
   async function postAction(action, body) {
     const cfg = getSyncConfig();
     const res = await fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=" + action + authQuery(), {
