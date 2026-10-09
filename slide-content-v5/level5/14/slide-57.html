@@ -1,10 +1,52 @@
 <div class="v3 v3-teen"><div class="v3-bg v3-mesh m2"></div><div class="v3-shade"></div><div class="v3-top">
       <div class="v3-lesson"><img src="assets/logo/lumio-logo.png" alt="Lumio English"><span><small>Level 5</small>Lesson 14</span></div>
-      <div class="pagetitle v3-ribbon"><b>Real Life Connection</b></div>
-      <div class="counter v3-page">57 / 61</div>
+      <div class="pagetitle v3-ribbon"><b>Two Truths &amp; a Lie</b> &bull; <i>Speaking Game</i></div>
+      <div class="counter v3-page">57 / 63</div>
     </div>
-    <div class="v3-paper" style="left:80px;width:860px;top:210px;padding:50px 56px 54px">
-      <div class="v3-label"><i class="v3-ico" data-ico="star"></i>REAL LIFE</div>
-      <div class="v3-quote" style="font-size:2.6rem;margin-top:18px">Describe your favorite party ever, in English, to a friend.</div>
+    <div class="v3t-band">
+      <div class="v3-paper"><div class="v3-label"><i class="v3-ico" data-ico="people"></i> PAIRS / GROUP</div><div class="tx">Tap <b>Spin</b>: three words. Say three sentences about YOU using them &mdash; two true, one false. Your partner asks one question, then guesses the lie. Fool them = 2 points; they catch you = 1 point for them.</div></div>
+      <div class="v3-paper"><div class="v3-label"><i class="v3-ico" data-ico="user"></i> 1-ON-1 WITH YOUR TEACHER</div><div class="tx">Spin, then tell your teacher three sentences (two true, one false). The teacher asks one follow-up question and guesses. Then the teacher spins and you catch the lie!</div></div>
     </div>
-    <div class="v3-floor" style="right:100px;bottom:2px;width:300px"></div><img class="char v3-host" src="assets/story/characters/noor-teen-sit.png" style="right:110px;bottom:0px;height:600px" alt="" onerror="this.style.display='none'"></div>
+    <div class="v3t-act">
+      <div class="v3t-tlmain">
+        <div id="tlPool" style="display:none">
+      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/guests.png" alt="" onerror="this.style.display='none'"></div>
+        <div class="w">guests</div><div class="ar">ضيوف</div></div>
+      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/lanterns.png" alt="" onerror="this.style.display='none'"></div>
+        <div class="w">lanterns</div><div class="ar">فوانيس</div></div>
+      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/cake.png" alt="" onerror="this.style.display='none'"></div>
+        <div class="w">cake</div><div class="ar">كعكة</div></div>
+      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/games.png" alt="" onerror="this.style.display='none'"></div>
+        <div class="w">games</div><div class="ar">ألعاب</div></div>
+      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/gifts.png" alt="" onerror="this.style.display='none'"></div>
+        <div class="w">gifts</div><div class="ar">هدايا</div></div>
+      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/decorations.png" alt="" onerror="this.style.display='none'"></div>
+        <div class="w">decorations</div><div class="ar">زينة</div></div>
+      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/balloons.png" alt="" onerror="this.style.display='none'"></div>
+        <div class="w">balloons</div><div class="ar">بالونات</div></div>
+      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/invitation.png" alt="" onerror="this.style.display='none'"></div>
+        <div class="w">invitation</div><div class="ar">دعوة</div></div>
+      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/sweets.png" alt="" onerror="this.style.display='none'"></div>
+        <div class="w">sweets</div><div class="ar">حلويات</div></div></div>
+        <div id="tlPicked" class="v3t-picked">
+          <div class="v3-quote" style="font-size:1.7rem;opacity:.85">Tap Spin to get your three words &#8594;</div>
+        </div>
+        <div class="v3t-small" style="text-align:center"><span class="v3t-hl">Use: There was / There were</span> &mdash; every sentence must contain one of the three words.</div>
+      </div>
+      <div class="v3t-side">
+        <div class="v3-paper"><button class="v3-btn" style="width:100%" onclick="LumioAct.pick('tlPool','tlPicked',3)"><span class="v3-gl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="9" cy="9" r="1.4" fill="currentColor" stroke="none"/><circle cx="15" cy="15" r="1.4" fill="currentColor" stroke="none"/><circle cx="15" cy="9" r="1.4" fill="currentColor" stroke="none"/><circle cx="9" cy="15" r="1.4" fill="currentColor" stroke="none"/></svg></span><span class="v3-bl">Spin</span></button></div>
+        <div class="v3-paper"><div class="v3-label">SCORE</div>
+      <div class="v3t-score">
+        <span class="lb">A / You</span>
+        <span data-act-score class="val">0</span>
+        <button class="v3-btn s" onclick="LumioAct.score(this,1)"><span class="v3-bl">+</span></button>
+        <button class="v3-btn s ghost" onclick="LumioAct.score(this,-1)"><span class="v3-bl">&minus;</span></button>
+      </div>
+      <div class="v3t-score">
+        <span class="lb">B / Teacher</span>
+        <span data-act-score class="val">0</span>
+        <button class="v3-btn s" onclick="LumioAct.score(this,1)"><span class="v3-bl">+</span></button>
+        <button class="v3-btn s ghost" onclick="LumioAct.score(this,-1)"><span class="v3-bl">&minus;</span></button>
+      </div></div>
+      </div>
+    </div></div>

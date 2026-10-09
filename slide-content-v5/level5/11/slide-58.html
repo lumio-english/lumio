@@ -1,56 +1,27 @@
 <div class="v3 v3-teen"><div class="v3-bg v3-mesh m3"></div><div class="v3-shade"></div><div class="v3-top">
       <div class="v3-lesson"><img src="assets/logo/lumio-logo.png" alt="Lumio English"><span><small>Level 5</small>Lesson 11</span></div>
-      <div class="pagetitle v3-ribbon"><b>Two Truths &amp; a Lie</b> &bull; <i>Speaking Game</i></div>
-      <div class="counter v3-page">58 / 64</div>
+      <div class="pagetitle v3-ribbon"><b>Your Turn</b> &middot; <i>4/5</i></div>
+      <div class="counter v3-page">58 / 66</div>
     </div>
-    <div class="v3t-band">
-      <div class="v3-paper"><div class="v3-label"><i class="v3-ico" data-ico="people"></i> PAIRS / GROUP</div><div class="tx">Tap <b>Spin</b>: three words. Say three sentences about YOU using them &mdash; two true, one false. Your partner asks one question, then guesses the lie. Fool them = 2 points; they catch you = 1 point for them.</div></div>
-      <div class="v3-paper"><div class="v3-label"><i class="v3-ico" data-ico="user"></i> 1-ON-1 WITH YOUR TEACHER</div><div class="tx">Spin, then tell your teacher three sentences (two true, one false). The teacher asks one follow-up question and guesses. Then the teacher spins and you catch the lie!</div></div>
-    </div>
-    <div class="v3t-act">
-      <div class="v3t-tlmain">
-        <div id="tlPool" style="display:none">
-      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/reviewed.png" alt="" onerror="this.style.display='none'"></div>
-        <div class="w">reviewed</div><div class="ar">راجع</div></div>
-      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/memorized.png" alt="" onerror="this.style.display='none'"></div>
-        <div class="w">memorized</div><div class="ar">حفظ</div></div>
-      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/practiced.png" alt="" onerror="this.style.display='none'"></div>
-        <div class="w">practiced</div><div class="ar">تمرن</div></div>
-      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/passed.png" alt="" onerror="this.style.display='none'"></div>
-        <div class="w">passed</div><div class="ar">نجح</div></div>
-      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/struggled.png" alt="" onerror="this.style.display='none'"></div>
-        <div class="w">struggled</div><div class="ar">عانى</div></div>
-      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/improved.png" alt="" onerror="this.style.display='none'"></div>
-        <div class="w">improved</div><div class="ar">تحسن</div></div>
-      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/grade.png" alt="" onerror="this.style.display='none'"></div>
-        <div class="w">grade</div><div class="ar">درجة</div></div>
-      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/exam.png" alt="" onerror="this.style.display='none'"></div>
-        <div class="w">exam</div><div class="ar">اختبار</div></div>
-      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/revision.png" alt="" onerror="this.style.display='none'"></div>
-        <div class="w">revision</div><div class="ar">مراجعة</div></div>
-      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/score.png" alt="" onerror="this.style.display='none'"></div>
-        <div class="w">score</div><div class="ar">نتيجة</div></div>
-      <div style="display:none" class="v3t-chain big"><div class="ph"><img src="assets/vocab/effort.png" alt="" onerror="this.style.display='none'"></div>
-        <div class="w">effort</div><div class="ar">جهد</div></div></div>
-        <div id="tlPicked" class="v3t-picked">
-          <div class="v3-quote" style="font-size:1.7rem;opacity:.85">Tap Spin to get your three words &#8594;</div>
-        </div>
-        <div class="v3t-small" style="text-align:center"><span class="v3t-hl">Use: Past Simple — Regular Verbs</span> &mdash; every sentence must contain one of the three words.</div>
-      </div>
-      <div class="v3t-side">
-        <div class="v3-paper"><button class="v3-btn" style="width:100%" onclick="LumioAct.pick('tlPool','tlPicked',3)"><span class="v3-gl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="9" cy="9" r="1.4" fill="currentColor" stroke="none"/><circle cx="15" cy="15" r="1.4" fill="currentColor" stroke="none"/><circle cx="15" cy="9" r="1.4" fill="currentColor" stroke="none"/><circle cx="9" cy="15" r="1.4" fill="currentColor" stroke="none"/></svg></span><span class="v3-bl">Spin</span></button></div>
-        <div class="v3-paper"><div class="v3-label">SCORE</div>
-      <div class="v3t-score">
-        <span class="lb">A / You</span>
-        <span data-act-score class="val">0</span>
-        <button class="v3-btn s" onclick="LumioAct.score(this,1)"><span class="v3-bl">+</span></button>
-        <button class="v3-btn s ghost" onclick="LumioAct.score(this,-1)"><span class="v3-bl">&minus;</span></button>
-      </div>
-      <div class="v3t-score">
-        <span class="lb">B / Teacher</span>
-        <span data-act-score class="val">0</span>
-        <button class="v3-btn s" onclick="LumioAct.score(this,1)"><span class="v3-bl">+</span></button>
-        <button class="v3-btn s ghost" onclick="LumioAct.score(this,-1)"><span class="v3-bl">&minus;</span></button>
-      </div></div>
-      </div>
+    <div class="v3-photo" style="left:120px;top:150px;width:470px;height:470px"><div class="pic v3t-myst" id="ytCard4">
+      <div id="ytMystery4" class="v3t-mq"><i class="v3-ico" data-ico="sound"></i></div>
+      <img id="ytImg4" src="assets/vocab/revision.png" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;padding:14px" onerror="this.style.display='none'">
     </div></div>
+    <div class="v3-paper" style="left:650px;top:160px;width:700px;min-height:330px;padding:40px 46px;text-align:center">
+      <div id="ytAsk4">
+        <div class="v3-quote" style="font-size:2.8rem">Listen &mdash; say it in Arabic!</div>
+        <div class="v3-arline" style="text-align:center;font-size:1.5rem;margin-top:6px">استمعوا ثم قولوا الكلمة بالعربية</div>
+        <div class="v3t-chips" style="justify-content:center;margin-top:18px"><span class="v3-chip">1 Play the word</span><span class="v3-chip">2 Say the Arabic</span><span class="v3-chip">3 Reveal</span></div>
+        <div class="v3t-small" style="margin-top:18px">Pairs: the first to say the Arabic wins the point.<br>1-on-1: your teacher plays the word, you answer.</div>
+      </div>
+      <div id="ytAns4" style="display:none">
+        <div class="v3-bigar">مراجعة</div>
+        <div class="v3-word" style="font-size:3.6rem;margin-top:10px">revision</div>
+        <div class="v3-quote" style="font-size:1.6rem;margin-top:14px;color:var(--ink2)">&ldquo;I did a full revision the night before the exam.&rdquo;</div>
+      </div>
+    </div>
+    <div style="position:absolute;left:650px;width:700px;top:540px;display:flex;justify-content:center;gap:22px;z-index:20">
+      <button class="v3-btn teal" onclick="typeof Lumio!=='undefined' && Lumio.speak && Lumio.speak(&quot;revision&quot;)"><span class="v3-gl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor" stroke="none"/></svg></span><span class="v3-bl">Play the word</span></button>
+      <button class="v3-btn" onclick="document.getElementById('ytMystery4').style.display='none';document.getElementById('ytImg4').style.display='block';document.getElementById('ytAsk4').style.display='none';document.getElementById('ytAns4').style.display='block';this.disabled=true;this.style.opacity=.55"><span class="v3-gl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/></svg></span><span class="v3-bl">Reveal</span></button>
+    </div>
+    </div>

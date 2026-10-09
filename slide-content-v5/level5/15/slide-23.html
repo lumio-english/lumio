@@ -1,12 +1,72 @@
 <div class="v3 v3-teen"><div class="v3-bg v3-mesh m3"></div><div class="v3-shade"></div><div class="v3-top">
       <div class="v3-lesson"><img src="assets/logo/lumio-logo.png" alt="Lumio English"><span><small>Level 5</small>Lesson 15</span></div>
-      <div class="pagetitle v3-ribbon"><b>Vocabulary Check</b> &middot; <i>2/10</i></div>
-      <div class="counter v3-page">23 / 63</div>
-    </div><div class="v3-paper v3-qcard" style="left:90px;top:170px;width:480px;height:440px">
-          <div class="v3-label">WHAT'S THE ENGLISH WORD?</div>
-          <div class="v3-bigar" style="margin-top:22px">استعد</div></div>
-    <div class="v3-opts v3t-opts" style="left:640px;right:90px;top:200px"><button class="v3-opt" data-letter="A" onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'left', 'got ready')"
-        data-quiz-option="left">left</button><button class="v3-opt" data-letter="B" onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'photo album', 'got ready')"
-        data-quiz-option="photo album">photo album</button><button class="v3-opt" data-letter="C" onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'got ready', 'got ready')"
-        data-quiz-option="got ready">got ready</button><button class="v3-opt" data-letter="D" onclick="window.checkQuizAnswer && checkQuizAnswer(this, 'remembered', 'got ready')"
-        data-quiz-option="remembered">remembered</button></div></div>
+      <div class="pagetitle v3-ribbon"><b>Describe It</b> &bull; <i>Speaking Game</i></div>
+      <div class="counter v3-page">23 / 65</div>
+    </div>
+    <div class="v3t-band">
+      <div class="v3-paper"><div class="v3-label"><i class="v3-ico" data-ico="people"></i> PAIRS / GROUP</div><div class="tx">Partner A flips a card and describes the word in English &mdash; <b>without saying it</b>. Partner B guesses. Swap after each card. 60 seconds, most cards wins.</div></div>
+      <div class="v3-paper"><div class="v3-label"><i class="v3-ico" data-ico="user"></i> 1-ON-1 WITH YOUR TEACHER</div><div class="tx">Your teacher flips a card and describes it &mdash; you guess in English. Then swap: you describe, the teacher guesses. Use a full sentence: <i>It's a place where&hellip; / You do this when&hellip;</i></div></div>
+    </div>
+    <div class="v3t-act">
+      <div class="v3t-flips">
+      <div onclick="LumioAct.flip(this)" class="v3t-flip">
+        <div class="act-front" style="display:none"><div class="in">
+          <img src="assets/vocab/woke-up.png" alt="" onerror="this.style.display='none'">
+          <div class="w">woke up</div>
+        </div></div>
+        <div class="act-back"><div class="q">?</div><div class="v3-label">TAP TO FLIP</div></div>
+      </div>
+      <div onclick="LumioAct.flip(this)" class="v3t-flip">
+        <div class="act-front" style="display:none"><div class="in">
+          <img src="assets/vocab/left.png" alt="" onerror="this.style.display='none'">
+          <div class="w">left</div>
+        </div></div>
+        <div class="act-back"><div class="q">?</div><div class="v3-label">TAP TO FLIP</div></div>
+      </div>
+      <div onclick="LumioAct.flip(this)" class="v3t-flip">
+        <div class="act-front" style="display:none"><div class="in">
+          <img src="assets/vocab/remembered.png" alt="" onerror="this.style.display='none'">
+          <div class="w">remembered</div>
+        </div></div>
+        <div class="act-back"><div class="q">?</div><div class="v3-label">TAP TO FLIP</div></div>
+      </div>
+      <div onclick="LumioAct.flip(this)" class="v3t-flip">
+        <div class="act-front" style="display:none"><div class="in">
+          <img src="assets/vocab/memory.png" alt="" onerror="this.style.display='none'">
+          <div class="w">memory</div>
+        </div></div>
+        <div class="act-back"><div class="q">?</div><div class="v3-label">TAP TO FLIP</div></div>
+      </div>
+      <div onclick="LumioAct.flip(this)" class="v3t-flip">
+        <div class="act-front" style="display:none"><div class="in">
+          <img src="assets/vocab/anniversary.png" alt="" onerror="this.style.display='none'">
+          <div class="w">anniversary</div>
+        </div></div>
+        <div class="act-back"><div class="q">?</div><div class="v3-label">TAP TO FLIP</div></div>
+      </div>
+      <div onclick="LumioAct.flip(this)" class="v3t-flip">
+        <div class="act-front" style="display:none"><div class="in">
+          <img src="assets/vocab/tradition.png" alt="" onerror="this.style.display='none'">
+          <div class="w">tradition</div>
+        </div></div>
+        <div class="act-back"><div class="q">?</div><div class="v3-label">TAP TO FLIP</div></div>
+      </div></div>
+      <div class="v3t-side">
+        <div class="v3-paper"><div class="v3-label">TIMER</div>
+          <button class="v3-btn" style="width:100%;margin-top:12px" onclick="LumioAct.timer(this,60)"><span class="v3-gl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span><span class="v3-bl">Start 60s</span></button></div>
+        <div class="v3-paper"><div class="v3-label">SCORE</div>
+      <div class="v3t-score">
+        <span class="lb">A / You</span>
+        <span data-act-score class="val">0</span>
+        <button class="v3-btn s" onclick="LumioAct.score(this,1)"><span class="v3-bl">+</span></button>
+        <button class="v3-btn s ghost" onclick="LumioAct.score(this,-1)"><span class="v3-bl">&minus;</span></button>
+      </div>
+      <div class="v3t-score">
+        <span class="lb">B / Teacher</span>
+        <span data-act-score class="val">0</span>
+        <button class="v3-btn s" onclick="LumioAct.score(this,1)"><span class="v3-bl">+</span></button>
+        <button class="v3-btn s ghost" onclick="LumioAct.score(this,-1)"><span class="v3-bl">&minus;</span></button>
+      </div></div>
+        <div class="v3t-small" style="text-align:center">Rule: no Arabic, no spelling, no pointing &mdash; English only!</div>
+      </div>
+    </div></div>
