@@ -210,7 +210,7 @@ EXTRA = {
   10: [("We were waiting at the bus stop.", ["were waiting", "bus stop"], "كنا ننتظر عند موقف الحافلة.",
         "Omar, Sara and Hamad huddled under a bus-stop shelter, dark storm clouds and wind blowing leaves; street."),
        ("We took shelter under a big tree.", ["took shelter", "tree"], "احتمينا تحت شجرة كبيرة.",
-        "Noor and Ziad crouched under a large tree during a downpour, holding a picnic basket, lightning far off in the sky; park.")],
+        "Noor and Sara crouched under a large tree during a downpour, holding a picnic basket, lightning far off in the sky; park.")],
   11: [("She memorized the vocabulary.", ["memorized", "vocabulary"], "حفظت المفردات.",
         "Sara with eyes closed and a finger to her temple, flashcards fanned in her other hand, a stack of cards on the desk; library."),
        ("I did a full revision the night before the exam.", ["revision", "exam"], "قمت بمراجعة كاملة في الليلة التي سبقت الامتحان.",
