@@ -215,9 +215,10 @@
   }
   var deckMap = null, castNames = [];
   function slideUrl(n) {
-    var trialM = location.pathname.match(/present-trial/);
-    if (trialM) return null;   // trial decks: read titles from the live slide only
-    return "slide-content" + (qs("deck") === "5" ? "-v5" : "") + "/" + LEVEL + "/" + String(NUM).padStart(2, "0") + "/slide-" + String(n).padStart(2, "0") + ".html";
+    var v5 = qs("deck") === "classic" ? "" : "-v5";   // v5 is the default deck on both pages (?deck=classic = old slides)
+    if (location.pathname.match(/present-trial/))      // trial decks have no lesson number: slide-content-v5/trial(-solo)/<level>/
+      return "slide-content" + v5 + "/" + (qs("mode") === "solo" ? "trial-solo" : "trial") + "/" + LEVEL + "/slide-" + String(n).padStart(2, "0") + ".html";
+    return "slide-content" + v5 + "/" + LEVEL + "/" + String(NUM).padStart(2, "0") + "/slide-" + String(n).padStart(2, "0") + ".html";
   }
   function buildMap(total) {
     if (deckMap || !total || !slideUrl(1)) return;
@@ -843,7 +844,7 @@
     if (RM) return;
     var ov = mk("div", "lc-finale");
     var cast = castFor(3);
-    ov.innerHTML = '<div class="lc-chBg"></div><div class="lc-fnIn"><div class="lc-fnJar">' + (TEEN ? icon("bolt") : icon("trophy")) + '</div><h2>' + (TEEN ? "Lesson complete" : "Lesson complete!") + '</h2><p>' +
+    ov.innerHTML = '<div class="lc-chBg"></div><div class="lc-fnIn"><div class="lc-fnJar">' + (TEEN ? icon("bolt") : icon("trophy")) + '</div><h2>' + (DECK.indexOf("trial-") === 0 ? (TEEN ? "Trial class complete" : "Trial class complete!") : (TEEN ? "Lesson complete" : "Lesson complete!")) + '</h2><p>' +
       (jarN ? (TEEN ? "Your class earned <b>" + jarN * 100 + " XP</b> today." : "Your class earned <b>" + jarN + " star" + (jarN === 1 ? "" : "s") + "</b> today!") : (TEEN ? "Great work today, everyone." : "Great work today, everyone!")) +
       '</p><small>' + (TEEN ? "Tap to close" : "Tap to close") + '</small></div>' +
       cast.map(function (c, i) { return '<img class="lc-fnCast lc-f' + i + '" alt="" src="assets/story/characters/' + c + '-celebrate.png">'; }).join("");
