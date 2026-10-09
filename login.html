@@ -416,7 +416,9 @@
           // instead of JSON and the pull fails.
           console.info("Lumio roster sync on login:", res);
           const haveRoster = LumioProfiles.listStudents().length > 0;
-          if (res && !res.ok && !haveRoster) {
+          // a slow first answer from the Google Sheet (cold start, new device, new address) is not an error:
+          // signing in asks the server directly, so only a real failure is shown
+          if (res && !res.ok && !haveRoster && res.reason !== "timeout") {
             syncStatus.style.color = "";
             syncStatus.textContent = LG_T("offline") + " (" + (res.reason || "unknown") + ")";
           } else {

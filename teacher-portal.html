@@ -227,6 +227,7 @@
     const heading = document.getElementById("teacherHeading");
 
     let teachers = (window.LumioProfiles && LumioProfiles.listTeachers()) || [];
+    let firstLoad = !teachers.length;   // true until the first team-list pull answers
     let activeTeacher = null;
     let tPinBuffer = "";
     let selectedTeacherId = (window.LumioProfiles && LumioProfiles.getCurrentTeacherId())
@@ -246,6 +247,8 @@
     function renderTeacherGrid() {
       tGrid.innerHTML = "";
       tEmpty.style.display = teachers.length ? "none" : "block";
+      // first visit on a device (or a new web address): nothing cached yet, the team list is still on its way
+      if (!teachers.length) tEmpty.textContent = firstLoad ? "Loading teachers… (this can take up to 20 seconds the first time)" : "No teacher profiles found yet. Ask the platform owner to add you from the dashboard's Team tab.";
       teachers.forEach(t => {
         const el = document.createElement("div");
         el.className = "tp-profile" + (t.id === selectedTeacherId ? " selected" : "");
@@ -348,6 +351,7 @@
     function refreshTeachersInBackground() {
       if (!window.LumioProfiles) return;
       LumioProfiles.syncNow().then(res => {
+        if (firstLoad) { firstLoad = false; if (!activeTeacher && !(res && res.ok)) renderTeacherGrid(); }
         if (res && res.ok) {
           teachers = LumioProfiles.listTeachers();
           // The Sheet is the source of truth. Only if it truly has no
