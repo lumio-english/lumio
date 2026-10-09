@@ -1097,7 +1097,7 @@
   </nav>
   <div class="td-sidebar-foot">
     <a class="td-exit" href="#" id="switchTeacherLink">↔ Switch teacher</a>
-    <a class="td-exit" href="index.html">← Exit to site</a>
+    <a class="td-exit" href="teacher-portal.html" id="logoutTeacherLink">← Log out</a>
   </div>
 </aside>
 
@@ -5574,6 +5574,14 @@
     e.preventDefault();
     if (window.LumioProfiles) LumioProfiles.clearCurrentTeacher();
     try { localStorage.removeItem("lumio_teacher"); } catch (err) {}
+    location.href = "teacher-portal.html";
+  };
+
+  // ---------- log out: sign this device out of the dashboard and go back to the teacher login ----------
+  document.getElementById("logoutTeacherLink").onclick = (e) => {
+    e.preventDefault();
+    if (window.LumioProfiles) { LumioProfiles.clearCurrentTeacher(); if (LumioProfiles.clearTeacherAuth) LumioProfiles.clearTeacherAuth(); }
+    try { localStorage.removeItem("lumio_teacher"); sessionStorage.removeItem("lumio_td_view"); sessionStorage.removeItem("lumio_td_scroll"); } catch (err) {}
     location.href = "teacher-portal.html";
   };
 
