@@ -152,7 +152,7 @@ header.nav.light{background:rgba(251,247,240,.86);backdrop-filter:blur(14px);col
 .zoom .ppl{display:grid;grid-template-rows:repeat(4,minmax(0,1fr));gap:8px;min-height:0}
 .zoom .ppl div{border-radius:10px;background:#1C1C1C;position:relative;overflow:hidden;min-height:0}
 .zoom .ppl img{position:absolute;left:50%;bottom:-30%;height:125%;width:auto;max-width:none;transform:translateX(-50%)}
-.zoom .ppl span{position:absolute;left:6px;top:5px;font-size:10px;font-weight:800;color:var(--cream2)}
+.zoom .ppl span{position:absolute;left:6px;top:5px;z-index:1;font-size:10px;font-weight:800;color:var(--cream2)}   /* above the character picture */
 .zoom .ppl .live{outline:2px solid var(--teal)}
 .progress{position:absolute;right:24px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:12px;z-index:3}
 .progress i{width:4px;height:34px;border-radius:4px;background:rgba(255,255,255,.15);overflow:hidden;position:relative}
@@ -448,6 +448,7 @@ html[dir="rtl"] .hero .veil{background:linear-gradient(270deg,rgba(255,255,255,.
 html[dir="rtl"] .hero .copy{align-self:flex-start}
 html[dir="rtl"] .hero .lumi{right:auto;left:clamp(10px,6vw,90px)}
 html[dir="rtl"] .progress{right:auto;left:24px}
+html[dir="rtl"] .zoom .ppl span{left:auto;right:6px}
 html[dir="rtl"] .hubdev .float{right:auto;left:-18px}
 html[dir="rtl"] .hitem:hover{translate:-6px 0}
 html[dir="rtl"] .stab{text-align:right}
