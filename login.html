@@ -197,7 +197,7 @@
       newTest: 'Free placement test', newTestP: 'Find your level and get your Student ID.', newTrial: 'Free trial class', newTrialP: 'See a real Lumio class before you join.',
       placeholder: 'e.g. 482913', checking: 'Checking your account…', needId: 'Enter your Student ID or phone number first.',
       noMatch: "That ID/phone and PIN don't match — try again.", pending: "Your account is pending your teacher's approval — please check back soon!",
-      wrong: 'Something went wrong — please try again.', offline: "Couldn't reach the Lumio server to load your account. Check your connection and reload, or ask your teacher.",
+      wrong: 'Something went wrong — please try again.', busy: 'The Lumio server is busy right now. Please wait a few minutes and try again.', offline: "Couldn't reach the Lumio server to load your account. Check your connection and reload, or ask your teacher.",
       hi: 'Hi {name}! Opening your adventure…', almost: 'Almost there…', oops: 'Oops! Try again.', pin: 'PIN digit', locked: 'Too many wrong PINs — please wait 15 minutes and try again.' },
     ar: { brand: 'لوميو <i>إنجلش</i>', lang: 'English', kicker: 'دخول الطالب', h1: 'أهلاً <em>بعودتك.</em>', sub: 'مستعد لمغامرة اليوم؟', bubble: 'مستعد لدرس اليوم؟',
       tabCur: 'لدي حساب', tabNew: 'أنا جديد', curH: 'أهلاً بعودتك!', curP: 'اكتب رقم الطالب أو رقم الجوال، ثم الرمز السري المكوّن من 4 أرقام.',
@@ -206,7 +206,7 @@
       newTest: 'اختبار تحديد المستوى المجاني', newTestP: 'اعرف مستواك واحصل على رقم الطالب.', newTrial: 'حصة تجريبية مجانية', newTrialP: 'شاهد حصة لوميو حقيقية قبل أن تنضم.',
       placeholder: 'مثال: 482913', checking: 'جارٍ التحقق من حسابك…', needId: 'اكتب رقم الطالب أو رقم الجوال أولاً.',
       noMatch: 'رقم الطالب/الجوال والرمز السري غير متطابقين — حاول مرة أخرى.', pending: 'حسابك بانتظار موافقة المعلم — يرجى المحاولة لاحقاً!',
-      wrong: 'حدث خطأ ما — يرجى المحاولة مرة أخرى.', offline: 'تعذّر الوصول إلى خادم لوميو لتحميل حسابك. تحقق من الاتصال وأعد تحميل الصفحة، أو اسأل معلمك.',
+      wrong: 'حدث خطأ ما — يرجى المحاولة مرة أخرى.', busy: 'خادم لوميو مشغول الآن. انتظر بضع دقائق ثم حاول مرة أخرى.', offline: 'تعذّر الوصول إلى خادم لوميو لتحميل حسابك. تحقق من الاتصال وأعد تحميل الصفحة، أو اسأل معلمك.',
       hi: 'أهلاً يا {name}! نفتح مغامرتك…', almost: 'اقتربت…', oops: 'أوه! حاول مرة أخرى.', pin: 'رقم من الرمز السري', locked: 'محاولات خاطئة كثيرة — يرجى الانتظار 15 دقيقة ثم المحاولة مرة أخرى.' }
   };
   var lang = document.documentElement.lang === 'en' ? 'en' : 'ar', T = D[lang];
@@ -333,6 +333,7 @@
           ? LG_T("pending")
           : err && err.code === "locked" ? LG_T("locked")
           : err && err.code === "offline" ? LG_T("offline")
+          : err && err.code === "busy" ? LG_T("busy")
           : LG_T("wrong") + " (" + ((err && err.message) || "unknown error") + ")";
         oops();
         pinError.classList.remove("shake"); void pinError.offsetWidth; pinError.classList.add("shake");

@@ -1347,6 +1347,7 @@
       let out = null;
       try { out = await postAction("studentLogin", { identifier: String(identifier || "").trim(), pinHash }); } catch (e) { out = null; }
       if (out === null) throw offlineError();   // no answer is not a wrong PIN
+      if (out && out.error === "busy") throw busyError(out);
       if (out && out.ok && out.student) {
         // This device now holds exactly one student: this one. Anything a
         // previous version cached about other students is dropped.
@@ -1523,6 +1524,7 @@
       let out = null;
       try { out = await postAction("teacherLogin", { id: t.id, pinHash }); } catch (e) { out = null; }
       if (out === null) throw offlineError();   // no answer is not a wrong PIN
+      if (out && out.error === "busy") throw busyError(out);
       if (out && out.ok) {
         setTeacherAuth(t.id, pinHash);
         if (out.teacher) {
@@ -1682,6 +1684,9 @@
     if (caps.unknown) { const e = new Error("Couldn't reach the Lumio server. Check the connection and try again."); e.code = "offline"; throw e; }
     return caps;
   }
+  // The script answers "busy" when its site-wide login limit is used up (many logins in 10 minutes):
+  // that is not a wrong PIN either.
+  function busyError(out) { const e = new Error((out && out.message) || "The Lumio server is busy right now. Please wait a few minutes and try again."); e.code = "busy"; return e; }
   function offlineError() { const e = new Error("Couldn't reach the Lumio server. Check the connection and try again."); e.code = "offline"; return e; }
   async function postAction(action, body) {
     const cfg = getSyncConfig();
