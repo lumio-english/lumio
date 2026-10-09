@@ -396,7 +396,12 @@
     // "Checking your account..." status so the student knows to hold on.
     // A 6-second timeout ensures a bad connection never freezes the page —
     // after timeout we fall through to whatever is already cached locally.
-    if (window.LumioProfiles) {
+    // Speed: a server that checks PINs itself (remembered on this device) doesn't need the roster here at all --
+    // signing in asks it directly -- so the pad is ready at once and this extra Google round trip is skipped.
+    let pinCheckedByServer = false;
+    try { const c = JSON.parse(localStorage.getItem("lumio_srv_caps_v2") || "null"); pinCheckedByServer = !!(c && c.c && c.c.auth); } catch (e) {}
+    if (pinCheckedByServer && window.LumioProfiles && LumioProfiles.serverCaps) LumioProfiles.serverCaps();   // quiet re-check, also wakes the script
+    if (window.LumioProfiles && !pinCheckedByServer) {
       const syncStatus = pinError;
       syncStatus.style.color = "#767676";
       syncStatus.textContent = LG_T("checking");

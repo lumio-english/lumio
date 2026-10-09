@@ -4,6 +4,61 @@
    backend upgrade path (same pattern as your 51Talk stack).
    ============================================================ */
 
+/* ---------- Speed: combine the Google Sheet reads a page sends at the same moment ----------
+   A dashboard asks the Apps Script for roster, schedule, progress, homework and extras all at once. Each one used
+   to be its own Google request (each checking who the caller is again), and Google runs only ~30 at a time for
+   the whole site. When the server says it can (version >= 13, "bundle", remembered by js/lumio-profiles.js), reads
+   sent within 40 ms of each other go out as ONE "bundle" request and every caller still gets its own answer.
+   Anything unexpected falls back to the separate requests, exactly as before. */
+(function lumioBundleReads() {
+  if (typeof window === "undefined" || !window.fetch || window.__lumioBundle) return;
+  window.__lumioBundle = true;
+  const BUNDLE = { pullRoster: 1, pullScheduleV2: 1, pullProgress: 1, pullHomework: 1, pullExtras: 1, pullLeads: 1, pullProAdmins: 1, pullProTestResults: 1 };
+  const realFetch = window.fetch.bind(window);
+  const groups = {};
+  const canBundle = (base) => {
+    try { const c = JSON.parse(localStorage.getItem("lumio_srv_caps_v2") || "null"); return !!(c && c.c && c.c.bundle && base.indexOf(c.url) === 0); } catch (e) { return false; }
+  };
+  const asResponse = (o) => new Response(JSON.stringify(o), { status: 200, headers: { "Content-Type": "application/json" } });
+  const single = (it) => realFetch(it.input, it.init).then(it.resolve, it.reject);
+  function flush(base) {
+    const items = groups[base].items; delete groups[base];
+    if (items.length === 1) { single(items[0]); return; }
+    const actions = Array.from(new Set(items.map(i => i.action)));
+    const u = new URL(base); u.searchParams.set("action", "bundle"); u.searchParams.set("actions", actions.join(","));
+    const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 25000);
+    realFetch(u.toString(), { signal: ctrl.signal }).finally(() => clearTimeout(timer))
+      .then(r => r.json())
+      .then(j => {
+        if (j && j.bundle && j.results) { items.forEach(it => { const r = j.results[it.action]; if (r) it.resolve(asResponse(r)); else single(it); }); return; }
+        if (j && j.ok === false) { items.forEach(it => it.resolve(asResponse(j))); return; }   // refused (signed out, locked...): same answer each would get
+        items.forEach(single);                                                                 // an older script: ask separately
+      })
+      .catch(() => items.forEach(single));
+  }
+  window.fetch = function (input, init) {
+    try {
+      const url = typeof input === "string" ? input : (input && input.url) || "";
+      const method = String((init && init.method) || (input && typeof input !== "string" && input.method) || "GET").toUpperCase();
+      if (method === "GET" && url.indexOf("script.google.com/macros/") >= 0) {
+        const u = new URL(url), action = u.searchParams.get("action");
+        if (BUNDLE[action]) {
+          u.searchParams.delete("action");
+          const base = u.toString();
+          if (canBundle(base)) {
+            return new Promise((resolve, reject) => {
+              let g = groups[base];
+              if (!g) { g = groups[base] = { items: [] }; setTimeout(() => flush(base), 40); }
+              g.items.push({ action, input, init, resolve, reject });
+            });
+          }
+        }
+      }
+    } catch (e) {}
+    return realFetch(input, init);
+  };
+})();
+
 const Lumio = (() => {
 
   /* ---------- Levels ---------- */
@@ -325,6 +380,8 @@ const Lumio = (() => {
   let extrasCapsP = null;
   const extrasSupported = () => {
     try { const c = sessionStorage.getItem("lumio_srv_extras"); if (c === "1") return Promise.resolve(true); } catch (e) {}
+    // already known on this device (js/lumio-profiles.js remembers what the server can do)
+    try { const k = JSON.parse(localStorage.getItem("lumio_srv_caps_v2") || "null"); if (k && k.c && k.c.extras) return Promise.resolve(true); } catch (e) {}
     if (!extrasCapsP) {
       extrasCapsP = syncFetch("version").then(j => {
         const ok = !!(j && j.extras);

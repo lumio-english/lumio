@@ -1673,20 +1673,36 @@
       catch (e) { throw new Error("HTTP " + r.status + ", not JSON: " + t.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 90)); }
     });
   }
+  // Speed: what the server can do hardly ever changes, so it is remembered on the device for a week
+  // (CAPS_KEY, also read by the request combiner in js/app.js) and only re-checked quietly once per visit,
+  // instead of a "version" round trip to Google before every login.
+  const CAPS_KEY = "lumio_srv_caps_v2", CAPS_TTL = 7 * 864e5;
+  function storedCaps_(url) {
+    try { const s = JSON.parse(safeGet(CAPS_KEY) || "null"); if (s && s.url === url && s.c && Date.now() - s.t < CAPS_TTL) return s.c; } catch (e) {}
+    return null;
+  }
   function serverCaps() {
     try { const c = JSON.parse(sessionStorage.getItem("lumio_srv_caps") || "null"); if (c) return Promise.resolve(c); } catch (e) {}
     if (capsPromise) return capsPromise;
     const cfg = getSyncConfig();
     if (!cfg.enabled || !cfg.url) return Promise.resolve({ auth: false });
-    capsPromise = fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=version", {}, 20000)
+    const stored = storedCaps_(cfg.url);
+    const check = fetchWithTimeout(cfg.url + "?key=" + LUMIO_API_KEY + "&action=version", {}, 20000)
       .then(readJson_)
       .then(j => {
-        const c = { auth: !!(j && j.auth), version: (j && j.version) || 0, bundle: !!(j && j.bundle) };
+        const c = { auth: !!(j && j.auth), version: (j && j.version) || 0, bundle: !!(j && j.bundle), extras: !!(j && j.extras) };
         try { sessionStorage.setItem("lumio_srv_caps", JSON.stringify(c)); } catch (e) {}
+        safeSet(CAPS_KEY, JSON.stringify({ url: cfg.url, c, t: Date.now() }));
         return c;
       })
-      .catch(err => { lastNetError = netReason_(err); return { auth: false, unknown: true }; })
+      .catch(err => { lastNetError = netReason_(err); return stored || { auth: false, unknown: true }; })
       .finally(() => { capsPromise = null; });
+    if (stored) {
+      // answer at once from the device; the check above refreshes it in the background (once per visit)
+      try { sessionStorage.setItem("lumio_srv_caps", JSON.stringify(stored)); } catch (e) {}
+      return Promise.resolve(stored);
+    }
+    capsPromise = check;
     return capsPromise;
   }
   // Login needs to know how the server checks PINs. A slow first answer (Google waking the script up, a new
