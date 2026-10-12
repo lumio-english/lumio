@@ -150,3 +150,14 @@
 .bx .bx-say { width:62px !important; height:62px !important; min-width:62px; padding:0 !important; border-radius:50% !important; flex:0 0 auto; display:inline-grid; place-items:center; }
 .bx .bx-say .v3-ico { width:30px !important; height:30px !important; }
 .bx-hint { bottom:86px; }
+
+/* long content: tighter so it stays above the toolbar */
+.bx-ladder.many { gap:8px; }
+.bx-ladder.many .bx-step { padding-top:8px; padding-bottom:8px; margin-left:calc(var(--i) * 56px); }
+.bx-ladder.many .bx-step .lab { font-size:1.6rem; }
+.bx-ladder.many .bx-step .sub { font-size:1.05rem; }
+.bx-long .bx-hw { font-size:1.4rem; }
+.bx-long .bx-ar { font-size:1.05rem; line-height:1.4; }
+.bx-long .bx-tasks { font-size:1.15rem; gap:6px; margin-top:10px; }
+.bx-revs.long .bx-rev { min-height:120px; }
+.bx-revs.long .bx-rev .q, .bx-revs.long .bx-rev .a { font-size:1.2rem; line-height:1.25; }

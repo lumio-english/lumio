@@ -58,6 +58,21 @@ def ar(text, cls="bx-ar"):
     return f'<div class="{cls}" dir="rtl">{ar_html(text)}</div>' if text else ""
 
 
+def fit(text, base, limit):
+    """A smaller font for text longer than `limit` characters (style attribute, or "")."""
+    n = len(str(text))
+    return "" if n <= limit else f' style="font-size:{max(1.15, round(base * (limit / n) ** 0.5, 2))}rem"'
+
+
+def longest(items):
+    return max(len(str(it.get("prompt", ""))) + len(str(it.get("answer", ""))) for it in items)
+
+
+def et_cols(items):
+    n = len(items)
+    return 3 if longest(items) > 70 and n > 3 else min(n, 5)
+
+
 def level_name(level):
     return level.replace("level", "Level ").replace("pre-a", "Pre-A")
 
@@ -122,7 +137,7 @@ class Deck:
         inner = (f'<div class="v3-paper" style="left:60px;top:140px;width:900px">'
                  f'<div class="v3-label">{ico("compass")} Today I can...</div><ol class="bx-goals">{rows}</ol></div>'
                  f'<div class="v3-paper bx-big" style="left:990px;top:170px;width:400px">'
-                 f'<div class="v3-label t">{ico("bulb")} Big idea</div><div class="v3-quote">{esc(d["bigIdea"])}</div></div>')
+                 f'<div class="v3-label t">{ico("bulb")} Big idea</div><div class="v3-quote"{fit(d["bigIdea"], 1.65, 200)}>{esc(d["bigIdea"])}</div></div>')
         self.add("Let's learn · today's goals", inner)
 
     def exit_ticket(self):
@@ -133,14 +148,14 @@ class Deck:
             f'<div class="a">{esc(it["answer"])}</div></div>'
             for i, it in enumerate(et["items"], 1))
         inner = (self.instructions(et.get("instructions"), et.get("instructionsAr"), 150)
-                 + f'<div class="bx-revs cols{min(len(et["items"]), 5)}" style="top:300px">{items}</div>'
+                 + f'<div class="bx-revs cols{et_cols(et["items"])}{" long" if longest(et["items"]) > 70 else ""}" style="top:300px">{items}</div>'
                  + f'<div class="bx-hint">Teacher: tap a card to show the answer</div>')
         self.add("Quiz · exit ticket", inner)
 
     def homework(self):
         hw = self.d["homework"]
         tasks = "".join(f'<li>{ico("check")} {esc(t)}</li>' for t in hw.get("tasks", [])[:4])
-        inner = (f'<div class="v3-paper" style="left:60px;top:150px;width:930px">'
+        inner = (f'<div class="v3-paper{" bx-long" if len(hw["en"]) + len(hw["ar"]) > 480 else ""}" style="left:60px;top:150px;width:930px">'
                  f'<div class="v3-label">{ico("gift")} Your bonus mission</div>'
                  f'<div class="v3-quote bx-hw">{esc(hw["en"])}</div>{ar(hw["ar"])}<ul class="bx-tasks">{tasks}</ul></div>'
                  + self.host("lumi-celebrate", right=80, height=440))
@@ -194,7 +209,7 @@ class Deck:
                         f'<div class="lab">{esc(st["label"])}</div><div class="sub">{esc(st.get("sub", ""))}</div>'
                         f'{ar(st.get("ar"))}</div>')
         inner = (f'<div class="bx-h1" style="top:150px">{esc(s.get("title", ""))}</div>'
-                 f'<div class="bx-ladder" style="top:230px">{"".join(rows)}</div>'
+                 f'<div class="bx-ladder{" many" if len(steps) > 4 else ""}" style="top:{215 if len(steps) > 4 else 230}px">{"".join(rows)}</div>'
                  + (f'<div class="v3-paper bx-side" style="right:60px;top:250px;width:420px">'
                     f'<div class="v3-label t">{ico("bulb")} {esc(s.get("noteTitle", "Remember"))}</div>'
                     f'<div class="v3-quote">{esc(s["note"])}</div>{ar(s.get("noteAr"))}</div>' if s.get("note") else ""))
@@ -273,7 +288,7 @@ class Deck:
         lines = "".join(
             f'<div class="bx-line">{speak_btn(l["en"])}<div><div class="en">{esc(l["en"])}</div>{ar(l.get("ar"))}</div></div>'
             for l in s["lines"])
-        inner = (f'<div class="v3-paper bx-chant{" many" if len(s["lines"]) > 5 else ""}" style="left:60px;top:150px;width:{960 if s.get("host") else 1340}px">'
+        inner = (f'<div class="v3-paper bx-chant{" many" if sum(1.5 if l.get("ar") else 1 for l in s["lines"]) + (1 if s.get("tip") else 0) > 5.5 else ""}" style="left:60px;top:150px;width:{960 if s.get("host") else 1340}px">'
                  f'<div class="v3-label">{ico("music")} {esc(s.get("title", "Say it with me"))}</div>{lines}'
                  f'{f"<div class=bx-tip>{esc(s["tip"])}</div>" if s.get("tip") else ""}</div>'
                  + self.host(s.get("host"), height=430))
