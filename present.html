@@ -19,6 +19,7 @@
 <link rel="stylesheet" href="css/slide-styles.css">
 <link rel="stylesheet" href="css/slide-motion.css">
 <link rel="stylesheet" href="css/slides-v3.css">
+<link rel="stylesheet" href="css/bonus-slides.css">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700&family=Michroma&family=Bricolage+Grotesque:opsz,wght@12..96,600..800&display=swap" rel="stylesheet">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-font-smoothing:antialiased; }
@@ -107,19 +108,28 @@ if (typeof localStorage === "undefined" || !localStorage.getItem("lumio_teacher"
 }
 const qs = k => new URLSearchParams(location.search).get(k);
 const level = qs("level") || "pre-a";
-const num = parseInt(qs("n") || "1", 10);
-const nn = String(num).padStart(2, "0");
+// ?bonus=N opens Bonus Class N of the level (slide-content-v5/<level>/bonus-NN/, built by gen_bonus_slides.py).
+const BONUS = parseInt(qs("bonus") || "0", 10) || 0;
+const num = BONUS || parseInt(qs("n") || "1", 10);
+const nn = BONUS ? "bonus-" + String(BONUS).padStart(2, "0") : String(num).padStart(2, "0");
 // Version 5 slides for every class (Oct 2026): slide-content-v5/, same content as slide-content/.
 // ?deck=classic opens the previous slides if ever needed.
-const DECK = qs("deck") === "classic" ? "" : "-v5";
+const DECK = qs("deck") === "classic" && !BONUS ? "" : "-v5";   // bonus decks exist in v5 only
 if (DECK) document.documentElement.classList.add("deck-v3", /^level[3-6]$/.test(qs("level") || "") ? "deck-teen" : "deck-kid");
 
 let cur = 1;
 let total = 1;
 let gameStartSlide = null;
 
-document.getElementById("lessonBrand").textContent = `📖 ${level.toUpperCase()} · Lesson ${num}`;
+document.getElementById("lessonBrand").textContent = BONUS ? `⭐ ${level.toUpperCase()} · Bonus Class ${BONUS}` : `📖 ${level.toUpperCase()} · Lesson ${num}`;
 
+if (BONUS) {
+  // Bonus Classes have no games section; their slide counts live in bonus-manifest.json.
+  fetch(`assets/slides-v5/${level}/bonus-manifest.json`).then(r => r.json()).then(manifest => {
+    total = manifest[String(BONUS).padStart(2, "0")] || 1;
+    loadSlide(resumeSlide() || 1);
+  });
+} else
 fetch(`assets/slides${DECK}/${level}/manifest.json`).then(r => r.json()).then(manifest => {
   total = manifest[nn] || 20;
   const lesson = (window.LUMIO_LESSONS && window.LUMIO_LESSONS[level] && window.LUMIO_LESSONS[level][num]) || { vocab: [] };

@@ -40,7 +40,8 @@
 
   var RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
   var LEVEL = qs("level") || "pre-a";
-  var NUM = qs("n") || "1";
+  var BONUS = parseInt(qs("bonus") || "0", 10) || 0;   // present.html?bonus=N: a Bonus Class deck
+  var NUM = BONUS ? "bonus-" + String(BONUS).padStart(2, "0") : (qs("n") || "1");
   var TEEN = /^level[3-6]$/.test(LEVEL);
   var SW = 1467, SH = 825;
   var DECK = (location.pathname.match(/present-trial/) ? "trial-" : "") + LEVEL + "-" + NUM;
@@ -218,6 +219,7 @@
     var v5 = qs("deck") === "classic" ? "" : "-v5";   // v5 is the default deck on both pages (?deck=classic = old slides)
     if (location.pathname.match(/present-trial/))      // trial decks have no lesson number: slide-content-v5/trial(-solo)/<level>/
       return "slide-content" + v5 + "/" + (qs("mode") === "solo" ? "trial-solo" : "trial") + "/" + LEVEL + "/slide-" + String(n).padStart(2, "0") + ".html";
+    if (BONUS) return "slide-content-v5/" + LEVEL + "/" + NUM + "/slide-" + String(n).padStart(2, "0") + ".html";
     return "slide-content" + v5 + "/" + LEVEL + "/" + String(NUM).padStart(2, "0") + "/slide-" + String(n).padStart(2, "0") + ".html";
   }
   function buildMap(total) {
@@ -533,7 +535,7 @@
       var ov = mk("div", "lc-chapter");
       var letters = sec.label.split("").map(function (ch, i) { return '<span style="--i:' + i + '">' + (ch === " " ? "&nbsp;" : ch.replace(/[<>&]/g, "")) + "</span>"; }).join("");
       var cast = castFor(2);
-      ov.innerHTML = '<div class="lc-chBg"></div><div class="lc-chIn"><div class="lc-chIco">' + icon(sec.icon) + '</div><div class="lc-chTitle">' + letters + '</div><div class="lc-chSub">' + (TEEN ? "Lesson " + NUM : "Lesson " + NUM + " &middot; let's go!") + '</div></div>' +
+      ov.innerHTML = '<div class="lc-chBg"></div><div class="lc-chIn"><div class="lc-chIco">' + icon(sec.icon) + '</div><div class="lc-chTitle">' + letters + '</div><div class="lc-chSub">' + (BONUS ? "Bonus Class " + BONUS + (TEEN ? "" : " &middot; let's go!") : TEEN ? "Lesson " + NUM : "Lesson " + NUM + " &middot; let's go!") + '</div></div>' +
         cast.map(function (c, i) { return '<img class="lc-chCast lc-c' + i + '" alt="" src="assets/story/characters/' + c + "-" + (i === 0 ? "celebrate" : "thumbs") + '.png">'; }).join("");
       layer.appendChild(ov);
       ov.querySelectorAll(".lc-chCast").forEach(function (im) { im.onerror = function () { im.remove(); }; });
