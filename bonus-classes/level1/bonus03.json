@@ -9,57 +9,163 @@
   "ages": "6-8",
   "strand": "Sound Lab",
   "strandAr": "مختبر الأصوات",
-  "skillFocus": ["phonics", "reading", "spelling", "linguistics"],
+  "skillFocus": [
+    "phonics",
+    "reading",
+    "spelling",
+    "linguistics"
+  ],
   "title": "Blending Builders: Sounds Into Words",
   "titleAr": "بنّاؤو الكلمات: من الأصوات إلى الكلمات",
-  "bigIdea": "Reading is pushing sounds together from left to right (blending); spelling is pulling a word apart into its sounds (segmenting). English writes every vowel, so we read every letter and never skip the middle.",
-  "bigIdeaAr": "القراءة هي ضمّ الأصوات معاً من اليسار إلى اليمين (الدمج)، والكتابة هي تفكيك الكلمة إلى أصواتها (التقطيع). الإنجليزية تكتب كل حركة، لذلك نقرأ كل حرف ولا نتخطّى الوسط أبداً.",
+  "bigIdea": "Reading is pushing sounds together from left to right (blending); spelling is pulling a word apart into its sounds (segmenting). English writes its vowels as letters, so we read every letter and never skip the middle.",
+  "bigIdeaAr": "القراءة هي ضمّ الأصوات معاً من اليسار إلى اليمين (الدمج)، والتهجئة (الكتابة) هي تفكيك الكلمة إلى أصواتها (التقطيع). الإنجليزية تكتب الحركات حروفاً، لذلك نقرأ كل حرف ولا نتخطّى الوسط أبداً.",
   "builtOn": [
     "Lessons 9-12: my house, in the kitchen (cup), clothes (hat), weather (hot)",
     "Phonics groups 5-6 (Lessons 9 and 11): h, b, f, l and blending CVC words",
     "Bonus Classes 1-2: the five vowel friends (Lazy A, Quick E, Smiley I, Round O, Grumpy U), the Vowel Elevator, sound twins"
   ],
   "objectives": [
-    {"en": "I can blend 3 sounds into a word: c-a-t, cat.", "ar": "أستطيع أن أدمج 3 أصوات لأصنع كلمة: c-a-t ← cat."},
-    {"en": "I can break a word into its sounds and count them: hat has 3 sounds.", "ar": "أستطيع أن أقطّع الكلمة إلى أصواتها وأعدّها: hat فيها 3 أصوات."},
-    {"en": "I can change one sound to make a new word in a sound chain (cat, cap, map).", "ar": "أستطيع أن أغيّر صوتاً واحداً لأصنع كلمة جديدة في سلسلة أصوات (cat ثم cap ثم map)."},
-    {"en": "I can explain why English always writes the vowel and Arabic often does not.", "ar": "أستطيع أن أشرح لماذا تكتب الإنجليزية الحركة دائماً بينما لا تكتبها العربية غالباً."}
+    {
+      "en": "I can blend 3 sounds into a word: c-a-t, cat.",
+      "ar": "أستطيع أن أدمج 3 أصوات لأصنع كلمة: c-a-t ← cat."
+    },
+    {
+      "en": "I can break a word into its sounds and count them: hat has 3 sounds.",
+      "ar": "أستطيع أن أقطّع الكلمة إلى أصواتها وأعدّها: hat فيها 3 أصوات."
+    },
+    {
+      "en": "I can change one sound to make a new word in a sound chain (cat, cap, map).",
+      "ar": "أستطيع أن أغيّر صوتاً واحداً لأصنع كلمة جديدة في سلسلة أصوات (cat ثم cap ثم map)."
+    },
+    {
+      "en": "I can explain why the vowel letter matters: English writes it, and Arabic often leaves short vowels out.",
+      "ar": "أستطيع أن أشرح أهمية حرف الحركة: الإنجليزية تكتبه، أما العربية فكثيراً ما تترك الحركات القصيرة دون كتابة."
+    }
   ],
   "keyTerms": [
-    {"term": "blend", "ar": "يدمج", "meaning": "Push sounds together to read a word: s-u-n, sun."},
-    {"term": "segment", "ar": "يقطّع", "meaning": "Pull a word apart into its sounds to spell it: bed, b-e-d."},
-    {"term": "phoneme", "ar": "وحدة صوتية (فونيم)", "meaning": "The smallest sound that can change a word: change the c in cat to h and you get hat."},
-    {"term": "sound box", "ar": "صندوق الصوت", "meaning": "One box for each sound in a word. duck has 3 boxes: d | u | ck."},
-    {"term": "CVC word", "ar": "كلمة ساكن-حركة-ساكن", "meaning": "A word made of consonant, vowel, consonant: cat, hot, sun."}
+    {
+      "term": "blend",
+      "ar": "يدمج",
+      "meaning": "Push sounds together to read a word: s-u-n, sun."
+    },
+    {
+      "term": "segment",
+      "ar": "يقطّع",
+      "meaning": "Pull a word apart into its sounds to spell it: bed, b-e-d."
+    },
+    {
+      "term": "phoneme",
+      "ar": "وحدة صوتية (فونيم)",
+      "meaning": "The smallest sound that can change a word: change the c in cat to h and you get hat."
+    },
+    {
+      "term": "sound box",
+      "ar": "صناديق الأصوات (صندوق لكل صوت)",
+      "meaning": "One box for each sound in a word. duck has 3 boxes: d | u | ck."
+    },
+    {
+      "term": "CVC word",
+      "ar": "كلمة صامت-حركة-صامت",
+      "meaning": "A word made of consonant, vowel, consonant: cat, hot, sun."
+    }
   ],
   "linguisticsCorner": {
     "title": "Phonemes: the bricks of words",
     "titleAr": "الفونيمات: طوب الكلمات",
     "facts": [
-      {"en": "Words are built from small sound bricks called phonemes. Change one brick and you get a new word: cat, hat, hot, hop. Linguists find the bricks of a language exactly like this.", "ar": "الكلمات مبنيّة من طوب صوتي صغير اسمه الفونيمات. غيّر طوبة واحدة تحصل على كلمة جديدة: cat و hat و hot و hop. وعلماء اللغة يكتشفون طوب أي لغة بهذه الطريقة تماماً."},
-      {"en": "Sounds and letters are not always the same number. duck has 4 letters but only 3 sounds, because ck is one sound. bell has 4 letters and 3 sounds.", "ar": "عدد الأصوات لا يساوي دائماً عدد الحروف. كلمة duck فيها 4 حروف و3 أصوات فقط، لأن ck صوت واحد. وكذلك bell: 4 حروف و3 أصوات."},
-      {"en": "Some sounds can be stretched (stretchy sounds: mmm, sss, fff, lll, nnn, rrr and all the vowels). Others are quick pops that cannot be stretched (bouncy sounds: p, b, t, d, k, g). Stretchy sounds are the easiest to blend: mmm-aaa-p, map.", "ar": "بعض الأصوات يمكن مدّها (أصوات مطّاطة: mmm و sss و fff و lll و nnn و rrr وكل الحركات)، وبعضها فرقعة سريعة لا تُمدّ (أصوات قافزة: p و b و t و d و k و g). الأصوات المطّاطة أسهل في الدمج: mmm-aaa-p ← map."},
-      {"en": "English has about 44 phonemes but only 26 letters. Arabic has about 34 phonemes (28 consonants and 6 vowels: 3 short and 3 long) and 28 letters plus the harakat.", "ar": "في الإنجليزية نحو 44 فونيماً و26 حرفاً فقط. وفي العربية نحو 34 فونيماً (28 صامتاً و6 حركات: 3 قصيرة و3 طويلة) و28 حرفاً إضافة إلى الحركات."},
-      {"en": "Arabic writing is an abjad: it mostly writes consonants and long vowels, and readers fill in the short vowels. The Greeks borrowed the old Phoenician letters (the same family as Arabic أ ب) and added letters for vowels. That is where the word 'alphabet' comes from: alpha + beta, like ألف + باء.", "ar": "الكتابة العربية «أبجدية»: تكتب غالباً الحروف الساكنة وحروف المدّ، والقارئ يضيف الحركات القصيرة بنفسه. أخذ الإغريق الحروف الفينيقية القديمة (من عائلة أ ب العربية نفسها) وأضافوا حروفاً للحركات. ومن هنا جاءت كلمة alphabet: ألفا + بيتا، مثل ألف + باء."}
+      {
+        "en": "Words are built from small sound bricks called phonemes. Change one brick and you get a new word: cat, hat, hot, hop. Linguists use this same trick to find the bricks of a language.",
+        "ar": "الكلمات مبنيّة من طوب صوتي صغير اسمه الفونيمات. غيّر طوبة واحدة تحصل على كلمة جديدة: cat و hat و hot و hop. وعلماء اللغة يستعملون هذه الحيلة نفسها ليكتشفوا طوب أي لغة."
+      },
+      {
+        "en": "Sounds and letters are not always the same number. duck has 4 letters but only 3 sounds, because ck is one sound. bell has 4 letters and 3 sounds.",
+        "ar": "عدد الأصوات لا يساوي دائماً عدد الحروف. كلمة duck فيها 4 حروف و3 أصوات فقط، لأن ck صوت واحد. وكذلك bell: 4 حروف و3 أصوات."
+      },
+      {
+        "en": "Some sounds can be stretched (stretchy sounds: mmm, sss, fff, lll, nnn, rrr and all the vowels). Others are quick pops that cannot be stretched (bouncy sounds: p, b, t, d, k, g). Stretchy sounds are the easiest to blend: mmm-aaa-p, map.",
+        "ar": "بعض الأصوات يمكن مدّها (أصوات مطّاطة: mmm و sss و fff و lll و nnn و rrr وكل الحركات)، وبعضها فرقعة سريعة لا تُمدّ (أصوات قافزة: p و b و t و d و k و g). الأصوات المطّاطة أسهل في الدمج: mmm-aaa-p ← map."
+      },
+      {
+        "en": "English has about 44 phonemes but only 26 letters. Arabic has about 34 phonemes (28 consonants and 6 vowels: 3 short and 3 long) and 28 letters plus the harakat.",
+        "ar": "في الإنجليزية نحو 44 فونيماً و26 حرفاً فقط. وفي العربية نحو 34 فونيماً (28 صامتاً و6 حركات: 3 قصيرة و3 طويلة) و28 حرفاً إضافة إلى الحركات."
+      },
+      {
+        "en": "Arabic writing is an abjad: it mostly writes consonants and long vowels, and readers fill in the short vowels. The Greeks borrowed the old Phoenician letters (from the same family as Arabic أ ب) and used some of them for vowels. That is where the word 'alphabet' comes from: alpha + beta, like ألف + باء.",
+        "ar": "يسمّي العلماء الكتابة العربية «أبجد» (abjad): فهي تكتب غالباً الحروف الصامتة وحروف المدّ، والقارئ يضيف الحركات القصيرة بنفسه. أخذ الإغريق الحروف الفينيقية القديمة (من عائلة أ ب العربية نفسها) واستعملوا بعضها للحركات. ومن هنا جاءت كلمة alphabet: ألفا + بيتا، مثل ألف + باء."
+      }
     ]
   },
   "arabicBridge": [
-    {"english": "cat: c-a-t (the vowel is a letter)", "arabic": "قط (الحركة غير مكتوبة غالباً)", "point": "In everyday Arabic the short vowels are not written; the reader knows them. In English the vowel is always a letter inside the word.", "pointAr": "في الكتابة العربية اليومية لا نكتب الحركات القصيرة لأن القارئ يعرفها، أما في الإنجليزية فالحركة دائماً حرف مكتوب داخل الكلمة."},
-    {"english": "h_t: hat, hit, hot, hut", "arabic": "كتب: كَتَبَ، كُتُب، كُتِبَ", "point": "Without vowels, كتب can be three words and Arabic readers use the sentence to choose. Without the vowel, h_t could be four English words, so English writes it and you must read it.", "pointAr": "من غير حركات قد تكون كتب ثلاث كلمات ونختار من السياق. ومن غير الحركة قد تكون h_t أربع كلمات إنجليزية، لذلك تكتبها الإنجليزية ويجب أن تقرأها."},
-    {"english": "Blend from left to right: c → a → t", "arabic": "نقرأ العربية من اليمين إلى اليسار", "point": "Same skill, opposite direction. Your eyes start on the left in English; use the blending arrow on the slide.", "pointAr": "المهارة نفسها لكن بالاتجاه المعاكس. في الإنجليزية تبدأ عيناك من اليسار؛ استعمل سهم الدمج على الشريحة."},
-    {"english": "c-a-t → cat (blending)", "arabic": "كَ + تَ + بَ ← كَتَبَ", "point": "You already blend in Arabic when you read with harakat. English blending is the same: sound by sound, then the whole word.", "pointAr": "أنت تدمج الأصوات في العربية عندما تقرأ مع الحركات. الدمج في الإنجليزية مثله: صوتاً صوتاً ثم الكلمة كاملة."}
+    {
+      "english": "cat: c-a-t (the vowel is a letter)",
+      "arabic": "قط (الحركة غير مكتوبة غالباً)",
+      "point": "In everyday Arabic writing the short vowels are usually not written; the reader knows them (children's books and the Quran do show them). In English the vowel is written as a letter inside the word.",
+      "pointAr": "في الكتابة العربية اليومية لا نكتب الحركات القصيرة عادةً لأن القارئ يعرفها (لكنها تظهر في كتب الأطفال وفي المصحف)، أما في الإنجليزية فالحركة حرف مكتوب داخل الكلمة."
+    },
+    {
+      "english": "h_t: hat, hit, hot, hut",
+      "arabic": "كتب: كَتَبَ، كُتُب، كُتِبَ",
+      "point": "Without vowels, كتب can be three words and Arabic readers use the sentence to choose. Without the vowel, h_t could be four English words. English writes the vowel, so you must read it.",
+      "pointAr": "من غير حركات قد تكون كتب ثلاث كلمات ونختار من السياق. ومن غير الحركة قد تكون h_t أربع كلمات إنجليزية. والإنجليزية تكتب الحركة، لذلك يجب أن تقرأها."
+    },
+    {
+      "english": "Blend from left to right: c → a → t",
+      "arabic": "نقرأ العربية من اليمين إلى اليسار",
+      "point": "Same skill, opposite direction. Your eyes start on the left in English; use the blending arrow on the slide.",
+      "pointAr": "المهارة نفسها لكن بالاتجاه المعاكس. في الإنجليزية تبدأ عيناك من اليسار؛ استعمل سهم الدمج على الشريحة."
+    },
+    {
+      "english": "c-a-t → cat (blending)",
+      "arabic": "كَ + تَ + بَ ← كَتَبَ",
+      "point": "You already blend in Arabic when you read with harakat. English blending is the same: sound by sound, then the whole word.",
+      "pointAr": "أنت تدمج الأصوات في العربية عندما تقرأ مع الحركات. الدمج في الإنجليزية مثله: صوتاً صوتاً ثم الكلمة كاملة."
+    }
   ],
   "commonErrors": [
-    {"wrong": "ct, bd, hp (spelling)", "right": "cat, bed, hop", "why": "Arabic often leaves short vowels out in writing, so children write only the consonants. Every English CVC word needs its vowel letter in the middle."},
-    {"wrong": "cuh-a-tuh -> 'cuhatuh'", "right": "c-a-t -> cat", "why": "Adding an 'uh' after bouncy sounds makes extra vowels that block blending. Say pure, short sounds."},
-    {"wrong": "car (for cat), hat (for hot)", "right": "cat, hot", "why": "Guessing from the first letter or the picture instead of reading every sound, especially the vowel."},
-    {"wrong": "pit (for tip), dog read as 'god'", "right": "tip, dog", "why": "Starting from the right, as in Arabic. Use the left-to-right arrow and the arm-tap."},
-    {"wrong": "duck has 4 sounds", "right": "duck has 3 sounds: d | u | ck", "why": "Counting letters, not sounds. ck is one sound in one box."},
-    {"wrong": "ckat, ckup", "right": "cat, cup", "why": "ck goes at the end of a word after a short vowel (duck, sock), never at the start."}
+    {
+      "wrong": "ct, bd, hp (spelling)",
+      "right": "cat, bed, hop",
+      "why": "Arabic often leaves short vowels out in writing, so children write only the consonants. Every English CVC word needs its vowel letter in the middle."
+    },
+    {
+      "wrong": "cuh-a-tuh -> 'cuhatuh'",
+      "right": "c-a-t -> cat",
+      "why": "Adding an 'uh' after bouncy sounds makes extra vowels that block blending. Say pure, short sounds."
+    },
+    {
+      "wrong": "car (for cat), hat (for hot)",
+      "right": "cat, hot",
+      "why": "Guessing from the first letter or the picture instead of reading every sound, especially the vowel."
+    },
+    {
+      "wrong": "pit (for tip), nap (for pan)",
+      "right": "tip, pan",
+      "why": "Starting from the right, as in Arabic. Use the left-to-right arrow and the arm-tap."
+    },
+    {
+      "wrong": "duck has 4 sounds",
+      "right": "duck has 3 sounds: d | u | ck",
+      "why": "Counting letters, not sounds. ck is one sound in one box."
+    },
+    {
+      "wrong": "ckat, ckup",
+      "right": "cat, cup",
+      "why": "ck goes at the end of a word after a short vowel (duck, sock), never at the start."
+    }
   ],
   "materials": {
-    "teacher": ["Bonus Class 3 slides (with a left-to-right blending arrow and 3-box and 4-box sound-box grids)", "Letter cards: s a t p i n m d g o c k ck e u r h b f l", "Picture cards: cat, hat, hot, cup, sun, bed, dog, duck, bell, map, hen, bug", "Five small counters (coins, buttons or Lego) for the demo"],
-    "student": ["Paper with three empty boxes drawn on it (□ □ □), drawn in class", "Three small counters: coins, buttons or Lego pieces", "A pencil", "The five vowel cards from Bonus Classes 1-2: a, e, i, o, u"]
+    "teacher": [
+      "Bonus Class 3 slides (with a left-to-right blending arrow and 3-box and 4-box sound-box grids)",
+      "Letter cards: s a t p i n m d g o c k ck e u r h b f l",
+      "Picture cards: cat, hat, hot, cup, sun, bed, dog, duck, bell, map, hen, bug",
+      "Five small counters (coins, buttons or Lego) for the demo"
+    ],
+    "student": [
+      "Paper with three empty boxes drawn on it (□ □ □), drawn in class",
+      "Three small counters: coins, buttons or Lego pieces",
+      "A pencil",
+      "The five vowel cards from Bonus Classes 1-2: a, e, i, o, u"
+    ]
   },
   "stages": [
     {
@@ -67,29 +173,57 @@
       "name": "Warm-up: Robot Talk",
       "nameAr": "إحماء: كلام الروبوت",
       "method": "Oral blending game (phonemic awareness, no letters)",
-      "purpose": "Practise blending by ear before seeing letters, and make it fun.",
+      "purpose": "Practice blending by ear before seeing letters, and make it fun.",
       "teacherSays": [
         "Beep beep! I am a robot. I can only talk in sounds. Can you understand me? h-a-t!",
         "Yes! hat! Robots, show me the hat on your head!",
         "Next: c-u-p. s-u-n. d-o-g. b-e-d. Say the word and point to it or act it out!",
         "Now you are the robot. Say a word in robot sounds for your friends."
       ],
-      "teacherSaysAr": ["أنا روبوت ولا أتكلّم إلا بالأصوات. هل تفهمونني؟ h-a-t!", "الآن أنت الروبوت: قل كلمة بأصوات الروبوت لأصدقائك."],
-      "studentsDo": ["Listen to robot sounds and say the whole word.", "Act or point to the word (hat on head, drink from a cup).", "One child is the robot for the group."],
+      "teacherSaysAr": [
+        "أنا روبوت ولا أتكلّم إلا بالأصوات. هل تفهمونني؟ h-a-t!",
+        "الآن أنت الروبوت: قل كلمة بأصوات الروبوت لأصدقائك."
+      ],
+      "studentsDo": [
+        "Listen to robot sounds and say the whole word.",
+        "Act or point to the word (hat on head, drink from a cup).",
+        "One child is the robot for the group."
+      ],
       "exercise": {
         "type": "oral-blending",
         "instructions": "Listen to the robot. Say the word.",
         "instructionsAr": "استمع للروبوت وقل الكلمة.",
         "items": [
-          {"prompt": "h-a-t", "answer": "hat"},
-          {"prompt": "c-u-p", "answer": "cup"},
-          {"prompt": "s-u-n", "answer": "sun"},
-          {"prompt": "d-o-g", "answer": "dog"},
-          {"prompt": "b-e-d", "answer": "bed"},
-          {"prompt": "h-o-t", "answer": "hot"}
+          {
+            "prompt": "h-a-t",
+            "answer": "hat"
+          },
+          {
+            "prompt": "c-u-p",
+            "answer": "cup"
+          },
+          {
+            "prompt": "s-u-n",
+            "answer": "sun"
+          },
+          {
+            "prompt": "d-o-g",
+            "answer": "dog"
+          },
+          {
+            "prompt": "b-e-d",
+            "answer": "bed"
+          },
+          {
+            "prompt": "h-o-t",
+            "answer": "hot"
+          }
         ]
       },
-      "tips": ["Use robot arms and a flat robot voice; children love it and it keeps sounds separate.", "Leave one second between sounds at first, then make the gaps shorter."]
+      "tips": [
+        "Use robot arms and a flat robot voice; children love it and it keeps sounds separate.",
+        "Leave one second between sounds at first, then make the gaps shorter."
+      ]
     },
     {
       "minutes": 9,
@@ -100,11 +234,14 @@
       "teacherSays": [
         "Words are like Lego houses. Each sound is one brick. These bricks have a science name: phonemes.",
         "Let's count bricks with our fingers. hat: h (one finger), a (two), t (three). hat has 3 sounds!",
-        "Now duck. d... u... ck. How many sounds? 3! How many letters? d-u-c-k: 4! Why? Because c and k together make one sound, so they live in one brick.",
+        "Now duck. d... u... ck. How many sounds? 3! How many letters? d-u-c-k: 4! Why? c and k together make one sound, so they live in one brick.",
         "Look: bell. b... e... ll. 3 sounds, 4 letters. Two l's, one sound.",
         "And some words have only 2 bricks: up, it, on, egg."
       ],
-      "teacherSaysAr": ["الكلمات مثل بيوت الليغو، وكل صوت طوبة. اسم هذه الطوبات العلمي: الفونيمات.", "duck فيها 4 حروف لكن 3 أصوات فقط، لأن ck صوت واحد."],
+      "teacherSaysAr": [
+        "الكلمات مثل بيوت الليغو، وكل صوت طوبة. اسم هذه الطوبات العلمي: الفونيمات.",
+        "duck فيها 4 حروف لكن 3 أصوات فقط، لأن ck صوت واحد."
+      ],
       "studentsDo": [
         "Count sounds on fingers for each word, then say the number.",
         "Count letters too, and spot the words where sounds and letters are different.",
@@ -115,17 +252,44 @@
         "instructions": "Say the word slowly. Count the sounds on your fingers. Show the number.",
         "instructionsAr": "قل الكلمة ببطء، وعدّ الأصوات على أصابعك، ثم أرِنا العدد.",
         "items": [
-          {"prompt": "cat", "answer": "3"},
-          {"prompt": "up", "answer": "2"},
-          {"prompt": "duck", "answer": "3 (d-u-ck; 4 letters)"},
-          {"prompt": "sun", "answer": "3"},
-          {"prompt": "egg", "answer": "2 (e-gg; 3 letters)"},
-          {"prompt": "bell", "answer": "3 (b-e-ll; 4 letters)"},
-          {"prompt": "on", "answer": "2"},
-          {"prompt": "sock", "answer": "3 (s-o-ck; 4 letters)"}
+          {
+            "prompt": "cat",
+            "answer": "3"
+          },
+          {
+            "prompt": "up",
+            "answer": "2"
+          },
+          {
+            "prompt": "duck",
+            "answer": "3 (d-u-ck; 4 letters)"
+          },
+          {
+            "prompt": "sun",
+            "answer": "3"
+          },
+          {
+            "prompt": "egg",
+            "answer": "2 (e-gg; 3 letters)"
+          },
+          {
+            "prompt": "bell",
+            "answer": "3 (b-e-ll; 4 letters)"
+          },
+          {
+            "prompt": "on",
+            "answer": "2"
+          },
+          {
+            "prompt": "sock",
+            "answer": "3 (s-o-ck; 4 letters)"
+          }
         ]
       },
-      "tips": ["Count sounds by ear first, letters second. Saying 'sounds are for ears, letters are for eyes' links back to Bonus Class 1.", "Double letters (ll, gg, ss) and ck are one sound each: one finger, one box."]
+      "tips": [
+        "Count sounds by ear first, letters second. Saying 'sounds are for ears, letters are for eyes' links back to Bonus Class 1.",
+        "Double letters (ll, gg, ss) and ck are one sound each: one finger, one box."
+      ]
     },
     {
       "minutes": 7,
@@ -136,11 +300,14 @@
       "teacherSays": [
         "Read this Arabic word: كتب. Is it كَتَبَ, كُتُب or كُتِبَ? We don't know until we see the sentence! In Arabic we often don't write the short vowels.",
         "Now look: what if English did the same? h_t. Is it hat? hit? hot? hut? Four words!",
-        "That is why English never hides the vowel. It is always there, in the middle of the word, as a full letter.",
+        "English does not hide the vowel like that. In words like cat, hot and sun it is always there, in the middle, as a full letter.",
         "So, Blending Builders, rule number one: never skip the middle sound!",
-        "Did you know? Arabic writing is called an abjad. The Greeks took the old letters from the same family as Arabic and added vowel letters. That is why we say 'alphabet': alpha, beta, like ألف, باء!"
+        "Did you know? Arabic writing is called an abjad. The Greeks took old letters from the same family as Arabic and used some of them for vowels. That is why we say 'alphabet': alpha, beta, like ألف, باء!"
       ],
-      "teacherSaysAr": ["كلمة كتب: هل هي كَتَبَ أم كُتُب أم كُتِبَ؟ لا نعرف إلا من الجملة. أما الإنجليزية فتكتب الحركة دائماً.", "القاعدة الأولى لبنّائي الكلمات: لا تتخطَّ الصوت الأوسط أبداً!"],
+      "teacherSaysAr": [
+        "كلمة كتب: هل هي كَتَبَ أم كُتُب أم كُتِبَ؟ لا نعرف إلا من الجملة. أما الإنجليزية فتكتب الحركة حرفاً.",
+        "القاعدة الأولى لبنّائي الكلمات: لا تتخطَّ الصوت الأوسط أبداً!"
+      ],
       "studentsDo": [
         "Read كتب in three ways with the harakat on the slide.",
         "Solve the vowel-less English words: say every real word you can make.",
@@ -151,15 +318,36 @@
         "instructions": "The vowel is missing! How many real words can you make? Write them.",
         "instructionsAr": "الحركة مفقودة! كم كلمة حقيقية تستطيع أن تصنع؟ اكتبها.",
         "items": [
-          {"prompt": "h_t", "answer": "hat, hit, hot, hut"},
-          {"prompt": "b_g", "answer": "bag, beg, big, bog, bug"},
-          {"prompt": "p_t", "answer": "pat, pet, pit, pot"},
-          {"prompt": "c_p", "answer": "cap, cup"},
-          {"prompt": "b_d", "answer": "bad, bed, bid, bud"},
-          {"prompt": "s_t", "answer": "sat, set, sit"}
+          {
+            "prompt": "h_t",
+            "answer": "hat, hit, hot, hut"
+          },
+          {
+            "prompt": "b_g",
+            "answer": "bag, beg, big, bog, bug"
+          },
+          {
+            "prompt": "p_t",
+            "answer": "pat, pet, pit, pot (put is a word too, but its u is not Grumpy U)"
+          },
+          {
+            "prompt": "c_p",
+            "answer": "cap, cup (cop is a word too)"
+          },
+          {
+            "prompt": "b_d",
+            "answer": "bad, bed, bid, bud"
+          },
+          {
+            "prompt": "s_t",
+            "answer": "sat, set, sit"
+          }
         ]
       },
-      "tips": ["Accept any real word; bog, bid and bud are bonus words, just explain them quickly.", "Keep the message proud, not negative: Arabic readers are clever at guessing vowels; English just shows them."]
+      "tips": [
+        "Accept any real word; bog, bid, bud and cop are bonus words, just explain them quickly. If a child says put, praise it: it is a real word, but its u does not say Grumpy U.",
+        "Keep the message proud, not negative: Arabic readers are clever at guessing vowels; English just shows them."
+      ]
     },
     {
       "minutes": 10,
@@ -170,37 +358,70 @@
       "teacherSays": [
         "Watch me read. Arm out! Touch your shoulder: s. Touch your elbow: u. Touch your wrist: n. Now slide your hand down your arm: sun!",
         "Stretchy sounds help us. Listen: mmmaaap. I don't stop between sounds. mmm-aaa-p: map!",
-        "Bouncy sounds are quick: b, d, t, p. Say them short: b, not 'buh'. Then jump straight to the vowel: b-e-d... bbed... bed!",
+        "Bouncy sounds are quick: b, d, t, p. Say them short: b, not 'buh'. Then jump straight to the vowel: b-e-d... be-d... bed!",
         "Your turn. Follow the arrow on the slide from left to right. Read every sound, then slide!",
         "Read the silly sentence: 'A red hen got a big hat.'"
       ],
-      "teacherSaysAr": ["المس كتفك للصوت الأول، ومرفقك للثاني، ورسغك للثالث، ثم مرّر يدك على ذراعك وقل الكلمة.", "الأصوات المطّاطة نمدّها بلا توقّف، والأصوات القافزة نقولها قصيرة بدون 'أَه'."],
+      "teacherSaysAr": [
+        "المس كتفك للصوت الأول، ومرفقك للثاني، ورسغك للثالث، ثم مرّر يدك على ذراعك وقل الكلمة.",
+        "الأصوات المطّاطة نمدّها بلا توقّف، والأصوات القافزة نقولها قصيرة بدون 'أَه'."
+      ],
       "studentsDo": [
-        "Arm-tap each word: shoulder, elbow, wrist, then slide.",
+        "Arm-tap each word on the right arm: shoulder, elbow, wrist, then slide.",
         "Read the words on the slide one by one, following the arrow.",
-        "Read the silly sentences: 'A red hen got a big hat.' / 'The pup can run in the sun.' / 'Dad has a hot cup.'"
+        "Read the silly sentences: 'A red hen got a big hat.' / 'The pup can run in the sun.' / 'Dad got a hot cup.'"
       ],
       "exercise": {
         "type": "read-and-blend",
         "instructions": "Arm-tap the sounds, then slide and say the word.",
         "instructionsAr": "انقر الأصوات على ذراعك ثم مرّر يدك وقل الكلمة.",
         "items": [
-          {"prompt": "m-a-p", "answer": "map"},
-          {"prompt": "h-e-n", "answer": "hen"},
-          {"prompt": "f-i-t", "answer": "fit"},
-          {"prompt": "l-o-g", "answer": "log"},
-          {"prompt": "r-u-g", "answer": "rug"},
-          {"prompt": "b-e-d", "answer": "bed"},
-          {"prompt": "d-u-ck", "answer": "duck"},
-          {"prompt": "l-e-g", "answer": "leg"},
-          {"prompt": "p-i-g", "answer": "pig"},
-          {"prompt": "h-o-p", "answer": "hop"}
+          {
+            "prompt": "m-a-p",
+            "answer": "map"
+          },
+          {
+            "prompt": "h-e-n",
+            "answer": "hen"
+          },
+          {
+            "prompt": "f-i-t",
+            "answer": "fit"
+          },
+          {
+            "prompt": "l-o-g",
+            "answer": "log"
+          },
+          {
+            "prompt": "r-u-g",
+            "answer": "rug"
+          },
+          {
+            "prompt": "b-e-d",
+            "answer": "bed"
+          },
+          {
+            "prompt": "d-u-ck",
+            "answer": "duck"
+          },
+          {
+            "prompt": "l-e-g",
+            "answer": "leg"
+          },
+          {
+            "prompt": "p-i-g",
+            "answer": "pig"
+          },
+          {
+            "prompt": "h-o-p",
+            "answer": "hop"
+          }
         ]
       },
       "tips": [
         "Start with words that begin with a stretchy sound (map, sun, log, fit, rug); they are easiest to blend smoothly.",
         "If a child says every sound correctly but cannot put them together, blend the first two sounds only ('hhheee... hen'), then add the last.",
-        "On camera, ask children to watch the slide arrow rather than your arm; their self-view may be mirrored.",
+        "Direction matters for Arabic readers. Children hold out their RIGHT arm and tap with the left hand, so shoulder, elbow, wrist goes from left to right, like English. You hold out your LEFT arm, so on the children's screens it also goes left to right. If in doubt, follow the slide arrow.",
         "'The' in the silly sentences is a tricky word; just tell children the word. It is the topic of Bonus Class 4."
       ]
     },
@@ -217,7 +438,10 @@
         "Tricky one: duck. d | u | ck. Where does ck go? In the last box, together, because it is one sound.",
         "Hold your paper up to the camera. Let's check!"
       ],
-      "teacherSaysAr": ["الآن نفعل العكس: نفكّك الكلمة. ارسم ثلاثة صناديق، وادفع قطعة نقود إلى صندوق مع كل صوت.", "الصندوق الأوسط هو صندوق الحركة، ولا يكون فارغاً أبداً!"],
+      "teacherSaysAr": [
+        "الآن نفعل العكس: نفكّك الكلمة. ارسم ثلاثة صناديق، وادفع قطعة نقود إلى صندوق مع كل صوت.",
+        "الصندوق الأوسط هو صندوق الحركة، ولا يكون فارغاً أبداً!"
+      ],
       "studentsDo": [
         "Push a counter into a box for each sound, saying the sound.",
         "Write the letters in the boxes.",
@@ -229,20 +453,44 @@
         "instructions": "Push a coin for each sound. Then write one sound in each box.",
         "instructionsAr": "ادفع قطعة نقود مع كل صوت، ثم اكتب صوتاً واحداً في كل صندوق.",
         "items": [
-          {"prompt": "cup", "answer": "c | u | p"},
-          {"prompt": "hat", "answer": "h | a | t"},
-          {"prompt": "bed", "answer": "b | e | d"},
-          {"prompt": "sun", "answer": "s | u | n"},
-          {"prompt": "dog", "answer": "d | o | g"},
-          {"prompt": "fan", "answer": "f | a | n"},
-          {"prompt": "duck", "answer": "d | u | ck"},
-          {"prompt": "red", "answer": "r | e | d"}
+          {
+            "prompt": "cup",
+            "answer": "c | u | p"
+          },
+          {
+            "prompt": "hat",
+            "answer": "h | a | t"
+          },
+          {
+            "prompt": "bed",
+            "answer": "b | e | d"
+          },
+          {
+            "prompt": "sun",
+            "answer": "s | u | n"
+          },
+          {
+            "prompt": "dog",
+            "answer": "d | o | g"
+          },
+          {
+            "prompt": "fan",
+            "answer": "f | a | n"
+          },
+          {
+            "prompt": "duck",
+            "answer": "d | u | ck"
+          },
+          {
+            "prompt": "red",
+            "answer": "r | e | d"
+          }
         ]
       },
       "tips": [
         "Do the coins first (sounds only), then the letters. Coins show the child is hearing the sounds before worrying about spelling.",
         "If the vowel box is empty or wrong, go back to the vowel friends: 'Which friend is in the middle? Grumpy U or Round O?'",
-        "Accept 'k' for the cup sound only if the child hears it right; then show that cup starts with c (Lesson 5: c and k say the same sound)."
+        "If a child writes k for the first sound of cup, praise the hearing (the sound is right), then show that cup is spelled with c (Lesson 5: c and k say the same sound)."
       ]
     },
     {
@@ -257,7 +505,10 @@
         "Our chain: cat, cap, map, mop, hop, hot, hut, hug, bug, bun, sun. Can we make it longer?",
         "Build each word with your letter cards or write it, then read it with the arm-tap."
       ],
-      "teacherSaysAr": ["نبدأ بكلمة cat. غيّر طوبة واحدة فقط لتصنع كلمة جديدة.", "قل الكلمة الجديدة، وأخبرنا أيّ طوبة تغيّرت: الأولى أم الوسطى أم الأخيرة؟"],
+      "teacherSaysAr": [
+        "نبدأ بكلمة cat. غيّر طوبة واحدة فقط لتصنع كلمة جديدة.",
+        "قل الكلمة الجديدة، وأخبرنا أيّ طوبة تغيّرت: الأولى أم الوسطى أم الأخيرة؟"
+      ],
       "studentsDo": [
         "Change one sound to make the next word in the chain.",
         "Write each new word and read it aloud.",
@@ -269,20 +520,50 @@
         "instructions": "Change one sound. Write the new word and read it.",
         "instructionsAr": "غيّر صوتاً واحداً، واكتب الكلمة الجديدة واقرأها.",
         "items": [
-          {"prompt": "cat: change t to p", "answer": "cap"},
-          {"prompt": "cap: change c to m", "answer": "map"},
-          {"prompt": "map: change a to o", "answer": "mop"},
-          {"prompt": "mop: change m to h", "answer": "hop"},
-          {"prompt": "hop: change p to t", "answer": "hot"},
-          {"prompt": "hot: change o to u", "answer": "hut"},
-          {"prompt": "hut: change t to g", "answer": "hug"},
-          {"prompt": "hug: change h to b", "answer": "bug"},
-          {"prompt": "bug: change g to n", "answer": "bun"},
-          {"prompt": "bun: change b to s", "answer": "sun"}
+          {
+            "prompt": "cat: change t to p",
+            "answer": "cap"
+          },
+          {
+            "prompt": "cap: change c to m",
+            "answer": "map"
+          },
+          {
+            "prompt": "map: change a to o",
+            "answer": "mop"
+          },
+          {
+            "prompt": "mop: change m to h",
+            "answer": "hop"
+          },
+          {
+            "prompt": "hop: change p to t",
+            "answer": "hot"
+          },
+          {
+            "prompt": "hot: change o to u",
+            "answer": "hut"
+          },
+          {
+            "prompt": "hut: change t to g",
+            "answer": "hug"
+          },
+          {
+            "prompt": "hug: change h to b",
+            "answer": "bug"
+          },
+          {
+            "prompt": "bug: change g to n",
+            "answer": "bun"
+          },
+          {
+            "prompt": "bun: change b to s",
+            "answer": "sun"
+          }
         ]
       },
       "tips": [
-        "Middle-sound changes (map to mop, hot to hut) are the hardest; they are exactly where Arabic speakers need practice.",
+        "Middle-sound changes (map to mop, hot to hut) are usually the hardest, and they are where Arabic speakers need the most practice.",
         "Give points to the team for each correct link, not to individuals, so slower children are not exposed.",
         "Stronger children can make the chain without a prompt: 'Make a new word from sun!'"
       ]
@@ -298,22 +579,50 @@
         "Teacher, say it twice: once normal, once slowly. Writers, use your boxes in your head!",
         "Show your paper. Teacher, is the vowel box right?"
       ],
-      "teacherSaysAr": ["إملاء بين الأصدقاء: أحدكم المعلّم يقول الكلمة، والباقون يكتبونها.", "قلها مرّتين: مرة عادية ومرة ببطء."],
-      "studentsDo": ["Take turns saying a word for the group.", "Write each word and hold it up.", "The child-teacher checks the vowel."],
+      "teacherSaysAr": [
+        "إملاء بين الأصدقاء: أحدكم المعلّم يقول الكلمة، والباقون يكتبونها.",
+        "قلها مرّتين: مرة عادية ومرة ببطء."
+      ],
+      "studentsDo": [
+        "Take turns saying a word for the group.",
+        "Write each word and hold it up.",
+        "The child-teacher checks the vowel."
+      ],
       "exercise": {
         "type": "dictation",
         "instructions": "Listen to your friend. Write the word.",
         "instructionsAr": "استمع لصديقك واكتب الكلمة.",
         "items": [
-          {"prompt": "pig", "answer": "pig"},
-          {"prompt": "hen", "answer": "hen"},
-          {"prompt": "rock", "answer": "rock"},
-          {"prompt": "bus", "answer": "bus"},
-          {"prompt": "lip", "answer": "lip"},
-          {"prompt": "fog", "answer": "fog"}
+          {
+            "prompt": "pig",
+            "answer": "pig"
+          },
+          {
+            "prompt": "hen",
+            "answer": "hen"
+          },
+          {
+            "prompt": "rock",
+            "answer": "rock"
+          },
+          {
+            "prompt": "bus",
+            "answer": "bus"
+          },
+          {
+            "prompt": "lip",
+            "answer": "lip"
+          },
+          {
+            "prompt": "fog",
+            "answer": "fog"
+          }
         ]
       },
-      "tips": ["Send each child-teacher their words in the private chat.", "If the child-teacher's vowel is unclear, that is good practice too: ask the group to listen again."]
+      "tips": [
+        "Send each child-teacher their words in the private chat.",
+        "If the child-teacher's vowel is unclear, that is good practice too: ask the group to listen again."
+      ]
     },
     {
       "minutes": 5,
@@ -326,20 +635,43 @@
         "Did you know? The word 'alphabet' comes from alpha and beta, the first two Greek letters, and they come from the same old letters as ألف and باء! English and Arabic letters are distant cousins.",
         "Your mission at home: play Robot Talk with your family. Can they understand your robot words?"
       ],
-      "teacherSaysAr": ["هل تعلم؟ كلمة alphabet تأتي من ألفا وبيتا، أول حرفين في اليونانية، وهما من الحروف القديمة نفسها التي جاءت منها ألف وباء! حروف الإنجليزية والعربية أبناء عمومة بعيدون.", "مهمتك في البيت: العب لعبة كلام الروبوت مع عائلتك."],
-      "studentsDo": ["Read 3 words aloud and write 2 words.", "Say goodbye in robot talk: 'b-y-e!'"],
-      "tips": ["Note who reads with guessing (wrong vowel) or writes without the vowel; give them sound-box practice in Lessons 13-15 warm-ups."]
+      "teacherSaysAr": [
+        "هل تعلم؟ كلمة alphabet تأتي من ألفا وبيتا، أول حرفين في اليونانية، وهما من الحروف القديمة نفسها التي جاءت منها ألف وباء! حروف الإنجليزية والعربية أبناء عمومة بعيدون.",
+        "مهمتك في البيت: العب لعبة كلام الروبوت مع عائلتك."
+      ],
+      "studentsDo": [
+        "Read 3 words aloud and write 2 words.",
+        "Say goodbye in robot talk: 'b-ye!' (2 sounds)"
+      ],
+      "tips": [
+        "Note who reads with guessing (wrong vowel) or writes without the vowel; give them sound-box practice in Lessons 13-15 warm-ups."
+      ]
     }
   ],
   "exitTicket": {
     "instructions": "Items 1-3: read the word aloud. Items 4-5: listen and write the word.",
     "instructionsAr": "1-3: اقرأ الكلمة بصوت عالٍ. 4-5: استمع واكتب الكلمة.",
     "items": [
-      {"prompt": "Read: hut", "answer": "hut"},
-      {"prompt": "Read: leg", "answer": "leg"},
-      {"prompt": "Read: sock", "answer": "sock"},
-      {"prompt": "Write: (teacher says) bag", "answer": "bag"},
-      {"prompt": "Write: (teacher says) hot", "answer": "hot"}
+      {
+        "prompt": "Read: hut",
+        "answer": "hut"
+      },
+      {
+        "prompt": "Read: leg",
+        "answer": "leg"
+      },
+      {
+        "prompt": "Read: sock",
+        "answer": "sock"
+      },
+      {
+        "prompt": "Write: (teacher says) bag",
+        "answer": "bag"
+      },
+      {
+        "prompt": "Write: (teacher says) hot",
+        "answer": "hot"
+      }
     ]
   },
   "homework": {
@@ -368,14 +700,21 @@
       "Blends at least 8 of 10 CVC words correctly without adding 'uh'.",
       "Counts the sounds in at least 6 of 8 words, including duck and bell.",
       "Spells at least 6 of 8 sound-box words with the correct vowel.",
-      "Explains in English or Arabic why English writes every vowel (h_t could be four words)."
+      "Explains in English or Arabic why the vowel letter matters (h_t could be four words)."
     ],
-    "watchFor": ["vowel missing in writing (ct for cat)", "extra 'uh' after consonants (cuh-a-tuh)", "guessing from the first letter or picture", "reading right to left (pit for tip)", "counting letters instead of sounds (duck = 4)", "ck at the start of a word"]
+    "watchFor": [
+      "vowel missing in writing (ct for cat)",
+      "extra 'uh' after consonants (cuh-a-tuh)",
+      "guessing from the first letter or picture",
+      "reading right to left (pit for tip)",
+      "counting letters instead of sounds (duck = 4)",
+      "ck at the start of a word"
+    ]
   },
   "teacherNotes": [
-    "All words are decodable with the Level 1 letters taught by Lesson 11 (s a t p i n m d g o c k ck e u r h b f l), plus the tricky words a and the, which the teacher simply reads aloud.",
+    "All words are decodable with the Level 1 letters taught by Lesson 11 (s a t p i n m d g o c k ck e u r h b f l), plus the tricky words a and the, which the teacher simply reads aloud. Only the challenge puzzle uses x (ox), which is not taught yet.",
     "Blending (reading) and segmenting (spelling) are two sides of one skill; always do both in the same class.",
     "The Arabic Bridge is about writing, not speaking: Arabic readers are experts at filling in vowels from context, which is useful later but makes guessing a habit. Praise every child who reads the middle sound.",
-    "Bonus Class 4 builds on this: the tricky words that cannot be blended (the, was, said) and the rules for writing sentences."
+    "Bonus Class 4 builds on this: the tricky words with a part that cannot be blended (the, was, said) and the rules for writing sentences."
   ]
 }
