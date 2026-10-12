@@ -90,7 +90,7 @@ Each class only uses what the students have met in the lessons before it.
 1. (after L4: regular/irregular past, did, was/were) **The Three Sounds of -ed and the Old Verbs** — walked /t/, played /d/, wanted /id/; irregular verbs as fossils (sing-sang-sung change the vowel inside, like Arabic كَتَبَ/كُتُب).
 2. (after L8: there was, time expressions, sequencing, because) **How Stories Are Built** — the story mountain (setting, problem, climax, ending), linking words, "Once upon a time" vs "كان يا ما كان".
 3. (after L12: feelings, past continuous, trip) **Background and Action: Was Doing vs Did** — scene-setting vs events on a timeline, when/while; Arabic كان يلعب = was playing.
-4. (after L16: party, a day to remember, while) **Speak Like a Storyteller** — sentence stress, content vs function words, weak forms (was = /wəz/), linking, pausing; English is stress-timed, Arabic is closer to syllable/mora timing; dramatic reading.
+4. (after L16: party, a day to remember, while) **Speak Like a Storyteller: The Music of English** — sentence stress, content vs function words, weak forms (was = /wəz/), linking, pausing; English is stress-timed and shrinks its small words, while Arabic speakers tend to give every small word a full vowel; dramatic reading.
 
 ### Level 6 — English in the World
 1. (after L4: going to, will, present continuous future) **Does English Have a Future Tense?** — English has no future ending (Arabic has سـ / سوف); choosing will / going to / present continuous by meaning; 'll and gonna in speech.
