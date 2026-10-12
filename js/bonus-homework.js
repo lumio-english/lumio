@@ -32,6 +32,15 @@
   var ICON = { "listen-choose": "👂", build: "🧱", sort: "🗂️", "true-false": "🔬", record: "🎙️", mission: "🏠" };
   var CHAR = TEEN ? "assets/story/characters/lumi-teen-explain.png" : "assets/story/characters/lumi-magnify.png";
 
+  // Saved like lesson homework, under the Bonus Class's number in the level's order (Bonus 1 = 4.5 ...).
+  var BONUS_KEY = L.bonusLesson ? L.bonusLesson(B) : [4, 8, 12, 16][B - 1] + 0.5;
+  // Gate (students only): own level, and the Bonus Class attended -- same rule as lesson homework.
+  if (!preview && user) {
+    if (user.level && user.level !== level) { gateMsg("This bonus mission is for another level.", "Open your own dashboard to see your next class."); return; }
+    var att = (window.LumioSchedule && LumioSchedule.attendedLessonNumbers) ? LumioSchedule.attendedLessonNumbers(user.name, level) : null;
+    if (!att || !att.has(BONUS_KEY)) { gateMsg("Not quite yet!", "Your bonus mission opens after your Bonus Class " + B + " with your teacher."); return; }
+  }
+  function gateMsg(t, sub) { app.innerHTML = '<section class="bm-finish"><div class="bm-badge">🔒</div><h2>' + esc(t) + '</h2><p>' + esc(sub) + '</p><a class="bm-btn" href="student.html">My dashboard</a></section>'; }
   fetch("bonus-classes/" + level + "/bonus" + String(B).padStart(2, "0") + ".json")
     .then(function (r) { if (!r.ok) throw new Error("missing"); return r.json(); })
     .then(function (d) {
@@ -84,7 +93,7 @@
     var sc = score(), st = stars(sc.pct);
     var rec = state.map(function (s, i) { return { type: data.missions[i].type, correct: s.correct, total: s.total, extra: s.extra || null }; });
     if (!preview && L.saveHomework) {
-      L.saveHomework(user.name, level, "B" + B, {
+      L.saveHomework(user.name, level, BONUS_KEY, {
         stars: st, score: sc.c, total: sc.t, bonus: B, missions: rec, date: new Date().toISOString().slice(0, 10)
       });
     }

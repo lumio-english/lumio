@@ -48,7 +48,10 @@
   for (let n = 1; n <= N; n++) {
     if (!isFullyDone(n)) { current = n; break; }
   }
-  const done = current - 1; // count of lessons fully complete, in order
+  // Bonus Classes (Oct 2026): one after every four lessons, numbered 4.5, 8.5, 12.5, 16.5. The shared rule in
+  // js/app.js decides the current class (lesson or bonus) so the map, lesson.html and homework agree.
+  if (Lumio.currentLesson) current = Lumio.currentLesson(user.name, level, attendedSet);
+  const done = Math.ceil(current) - 1; // count of lessons fully complete, in order
   const stars = Object.values(prepProg).reduce((s, r) => s + (r.stars || 0), 0);
 
   // Number only: the card has its own "Lessons done" label and ★/⚡ icon.
@@ -63,7 +66,9 @@
   const cols = matchMedia("(max-width:760px)").matches ? 4 : 5;
   const LOCK_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="9" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 11V7a4 4 0 018 0v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 
-  for (let n = 1; n <= N; n++) {
+  const SEQ = Lumio.levelSequence ? Lumio.levelSequence(level) : Array.from({ length: N }, (_, i) => i + 1);
+  SEQ.forEach((n, idx) => {
+    if (Lumio.isBonus && Lumio.isBonus(n)) { path.appendChild(bonusNode(n, idx)); return; }
     const r = prepProg[n];
     const fullyDone = n < current; // true for every node before "current", by construction
     const isCurrentPrep = n === current && !isPrepDone(n);          // do the prep now
@@ -109,12 +114,38 @@
     }
     el.innerHTML = `<span>${iconHtml}</span>${subHtml}`;
 
-    // snake layout: reverse order on every second row
-    const row = Math.floor((n - 1) / cols);
-    const posInRow = (n - 1) % cols;
-    el.style.order = row * cols + (row % 2 === 1 ? (cols - 1 - posInRow) : posInRow);
-
+    el.dataset.label = String(n); el.dataset.name = "Lesson " + n;
+    snake(el, idx);
     path.appendChild(el);
+  });
+
+  // snake layout: reverse order on every second row
+  function snake(el, idx) {
+    const row = Math.floor(idx / cols);
+    const posInRow = idx % cols;
+    el.style.order = row * cols + (row % 2 === 1 ? (cols - 1 - posInRow) : posInRow);
+  }
+  // A Bonus Class stop: no prep -- the live class, then the bonus mission (bonus-homework.html).
+  function bonusNode(n, idx) {
+    const b = Lumio.bonusNumber(n);
+    const fullyDone = Lumio.lessonDone(user.name, level, n, attendedSet);
+    const owed = !fullyDone && n < current;            // went past it before Bonus Classes started
+    const isCurrent = n === current || owed;
+    const locked = !fullyDone && !isCurrent;
+    const live = isLiveDone(n);
+    const el = document.createElement(locked || (!live && !fullyDone) ? "div" : "a");
+    let cls = locked ? "locked" : fullyDone ? "done" : live ? "awaiting-hw" : "awaiting";
+    el.className = `node bonus ${cls}`;
+    if (el.tagName === "A") el.href = `bonus-homework.html?level=${level}&b=${b}`;
+    let iconHtml, subHtml = "";
+    if (locked) { iconHtml = LOCK_SVG; el.title = `Bonus Class ${b} opens after Lesson ${Math.floor(n)}`; }
+    else if (fullyDone) { iconHtml = "B" + b; subHtml = '<span class="n-stars">★</span>'; el.title = `Bonus Class ${b} done!`; }
+    else if (live) { iconHtml = '<span class="n-clock">⭐</span>'; subHtml = '<span class="n-wait-label">Bonus mission</span>'; el.title = "Class done! Finish your bonus mission."; }
+    else { iconHtml = '<span class="n-clock">⭐</span>'; subHtml = `<span class="n-wait-label">Bonus ${b}</span>`; el.title = `Bonus Class ${b}: book it in My Schedule.`; }
+    el.innerHTML = `<span>${iconHtml}</span>${subHtml}`;
+    el.dataset.label = "B" + b; el.dataset.name = "Bonus Class " + b;
+    snake(el, idx);
+    return el;
   }
 
   // Exposed so student.html's own script (mission panel, schedule

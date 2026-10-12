@@ -203,7 +203,7 @@
     const nd = document.getElementById("notDone"); nd.style.display = "block";
     if (done < meta.lessons) {
       document.getElementById("lockTitle").textContent = "Finish the level first";
-      document.getElementById("lockText").textContent = `All ${meta.lessons} lessons of ${meta.name}, then the level test — ${done} lessons done so far.`;
+      document.getElementById("lockText").textContent = `All 24 classes of ${meta.name} (${meta.lessons} lessons + 4 Bonus Classes), then the level test — ${done} lessons done so far.`;
     } else {
       document.getElementById("lockTitle").textContent = test ? "One more try" : "One last step: the level test";
       document.getElementById("lockText").textContent = test ? `Your best score is ${test.pct}% — you need ${Lumio.TEST_PASS_PCT}% to earn the certificate.` : `You finished every lesson! Take the ${meta.name} level test to earn this certificate.`;

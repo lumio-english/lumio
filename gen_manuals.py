@@ -46,6 +46,14 @@ def hub_counts(lvl):
                 phonics=os.path.exists(f"phonics-hub/{lvl}.json"), spelling=os.path.exists(f"spelling-hub/{lvl}.json"))
 
 
+def bonus_classes(lvl):
+    out = []
+    for p in sorted(glob.glob(os.path.join(ROOT, "bonus-classes", lvl, "bonus*.json"))):
+        with open(p, encoding="utf-8") as f:
+            out.append(json.load(f))
+    return out
+
+
 def stories():
     src = open("story.html", encoding="utf-8").read()
     out = {}
@@ -168,7 +176,7 @@ def build_level(lvl, cfg, data, story, game):
   <div class="top"><div class="lock"><img src="assets/lumio-logo.png" alt=""></div></div>
   <div class="badge">{label}</div><h1>{E(cfg["name"])}</h1>
   <div class="sub">Complete Lesson Guide &middot; Ages {cfg["ages"]} &middot; CEFR {cfg["cefr"]}</div>
-  <div class="stats"><span>{len(L)} Lessons</span><span>{len(all_words)} Words</span><span>{stat3}</span></div>
+  <div class="stats"><span>{len(L)} Lessons</span><span>4 Bonus Classes</span><span>{len(all_words)} Words</span><span>{stat3}</span></div>
   <img class="hero" src="assets/{cfg["cover_char"]}" alt="">
   <div class="bubble">{E(cfg["cover_quote"])}</div></div>''')
     # ---- overview
@@ -196,9 +204,9 @@ def build_level(lvl, cfg, data, story, game):
     <div class="step"><div class="n o4">4</div><div><h3>Grow on the map</h3><p>Every finished lesson lights up the next step on the adventure map and unlocks that lesson's bonus game.</p></div></div>
   </div>
   <div style="height:13px"></div>{story_html}
-  <div class="card"><h2>The {E(cfg["name"])} Hub</h2><p>Open any time, not just during lessons: {", ".join(hubparts)} (page 9). And after every finished lesson, a new round of this level's bonus game, <b>{E(game)}</b>, unlocks (page 11).</p></div>
+  <div class="card"><h2>The {E(cfg["name"])} Hub</h2><p>Open any time, not just during lessons: {", ".join(hubparts)} (page 10). And after every finished lesson, a new round of this level's bonus game, <b>{E(game)}</b>, unlocks (page 11).</p></div>
   <div class="note" >Every lesson has the same shape: new words with pictures, Arabic and audio &rarr; listening and matching practice &rarr; {"a grammar point &rarr; " if grammar_n else ""}a short quiz and spelling &rarr; homework, a printable worksheet and flashcards. Lesson {len(L)} is the level's Big Review.</div>
-  <div class="note">Live classes run 45&ndash;90 minutes depending on the lesson: a little shorter at the start of the level, and the full 90 minutes for the Big Review in Lesson {len(L)}.</div>
+  <div class="note">Live classes run 45&ndash;90 minutes depending on the lesson: a little shorter at the start of the level, and the full 90 minutes for the Big Review in Lesson {len(L)}. Each Bonus Class runs {45 if lvl == "pre-a" else 60} minutes.</div>
   </div>{foot(lvl, cfg, 3)}</div>''')
     # ---- lessons, 4 per page
     unlock = {u: i + 1 for i, (n, u) in enumerate(story["parts"])} if story else {}
@@ -214,6 +222,14 @@ def build_level(lvl, cfg, data, story, game):
             items.append(f'''<div class="lesson{" review" if review else ""}"><div class="head"><div class="num">{n}</div><h3>{E(d["title"])}{ar}</h3>{tag}</div>
   <div class="goal">Goal: {E(d.get("goal",""))}</div>{gf}<div class="words">{"".join(pill(w) for w in d["vocab"][:20])}{f'<span class="pill t">+{len(d["vocab"])-20} more review words</span>' if len(d["vocab"]) > 20 else ""}</div></div>''')
         pages.append(f'<div class="page">{bar(f"{label} · Lessons {p*4+1}-{p*4+4}")}<div class="content">{"".join(items)}</div>{foot(lvl, cfg, 4+p)}</div>')
+    # ---- Bonus Classes (bonus-classes/<level>/bonusNN.json)
+    bonus = bonus_classes(lvl)
+    if bonus:
+        bitems = "".join(f'''<div class="lesson"><div class="head"><div class="num">B{b["bonusNumber"]}</div><h3>{E(b["title"])}<span class="ar">{E(b["titleAr"])}</span></h3><span class="tag">After Lesson {b["afterLesson"]}</span></div>
+  <div class="goal">{E(b["bigIdea"])}</div></div>''' for b in bonus)
+        pages.append(f'''<div class="page">{bar(f"{label} · Bonus Classes")}<div class="content">
+  <div class="card"><h2>Four Bonus Classes: how English works</h2><p>A level is 24 live classes: the 20 lessons plus a Bonus Class after every four lessons. Each Bonus Class ({45 if lvl == "pre-a" else 60} minutes) explains how English really works &mdash; sounds, spelling, grammar or word history &mdash; compares it with Arabic, and practises it with games and creative tasks. After it, your child does a special bonus mission at home.</p></div>
+  {bitems}</div>{foot(lvl, cfg, 9)}</div>''')
     # ---- hub
     themes = "".join(f'<span class="pill o">{E(t.get("name") or t.get("title") or t.get("theme",""))}</span>' for t in hub["themes"])
     idioms = "".join(f'<li><b>{E(i.get("phrase",""))}</b> &mdash; {E(i.get("meaning",""))}</li>' for i in hub["idioms"][:3])
@@ -226,7 +242,7 @@ def build_level(lvl, cfg, data, story, game):
   <div class="card"><h2>Sample idioms your child will discover</h2><ul>{idioms}</ul></div>
   <div class="shot" style="max-width:470px;margin:0 auto"><img src="assets/lv-{lvl}-hub.png" alt=""></div>
   <div class="cap">The first vocabulary theme of this level, as it appears in the Hub</div>
-  </div>{foot(lvl, cfg, 9)}</div>''')
+  </div>{foot(lvl, cfg, 10)}</div>''')
     # ---- printables
     fc = data["flashcards_teen" if teen else "flashcards_young"]
     pages.append(f'''<div class="page">{bar("Writing Practice & Flashcards")}<div class="content">
@@ -234,7 +250,7 @@ def build_level(lvl, cfg, data, story, game):
   <div class="two"><div><div class="shot"><img src="assets/lv-{lvl}-worksheet.png" alt=""></div><div class="cap">Lesson 1 homework sheet</div></div>
   <div><div class="shot"><img src="assets/lv-{lvl}-flashcards.png" alt=""></div><div class="cap">Lesson 1 flashcards (print double-sided)</div></div></div>
   <div class="card" style="margin-top:13px"><h2>Who they're for, and why</h2><p><b>Writing practice:</b> {E(cfg["writing"])}</p><p style="margin-top:6px"><b>Flashcards:</b> {E(fc)}</p></div>
-  </div>{foot(lvl, cfg, 10)}</div>''')
+  </div>{foot(lvl, cfg, 11)}</div>''')
     # ---- game
     steps = "".join(f"<li>{E(s)}</li>" for s in cfg["game_steps"])
     pages.append(f'''<div class="page">{bar(f"{game} — How It Works")}<div class="content">
@@ -242,7 +258,7 @@ def build_level(lvl, cfg, data, story, game):
   <div class="two" style="align-items:start"><div class="shot"><img src="assets/lv-{lvl}-game.png" alt=""></div>
   <div class="card" style="margin:0"><h2>How to play</h2><ol>{steps}</ol></div></div>
   <div class="note" style="margin-top:13px">A new round of the game unlocks after every lesson your child finishes, using that lesson's own words &mdash; so it is always practice, never random.</div>
-  </div>{foot(lvl, cfg, 11)}</div>''')
+  </div>{foot(lvl, cfg, 12)}</div>''')
     # ---- back cover
     pages.append(f'''<div class="page back"><div class="top"><div class="lock" style="background:#fff;border-radius:18px;padding:10px 16px;display:inline-block"><img src="assets/lumio-logo.png" alt="Lumio English" style="height:96px;width:auto;display:block"></div></div>
   <h1>We're here with you every step</h1><div class="sub">Thank you for trusting Lumio English with your child's learning journey. We can't wait to see how far they'll go.</div>

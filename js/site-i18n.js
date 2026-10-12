@@ -14,7 +14,7 @@ window.LUMIO_SITE_I18N = {
     'hero.h1a': "Let's learn English", 'hero.h1b': 'the fun way.',
     'hero.lead': 'Live classes with real teachers, an app your child actually wants to open, and Arabic support in every single lesson.',
     'hero.ctaTest': 'Free placement test', 'hero.ctaStudent': "I'm a student",
-    'stat.levels': 'levels', 'stat.lessons': 'live lessons', 'stat.pages': 'story pages', 'stat.songs': 'original songs',
+    'stat.levels': 'levels', 'stat.lessons': 'live classes', 'stat.pages': 'story pages', 'stat.songs': 'original songs',
     'hero.hint': 'Scroll, or tap a letter tile', 'hero.world': 'Floating English and Arabic letter tiles. Tap a tile to see its word.',
 
     'how.kicker': 'How it works', 'how.h2': 'One lesson, four moments.',
@@ -31,11 +31,11 @@ window.LUMIO_SITE_I18N = {
     'db.aria': "A student's Lumio dashboard: the adventure map lights up to lesson 10, story part 2 unlocks, and progress, stars and the next live class are shown.",
     'db.hi': 'Hi, Lina!', 'db.level': 'Level 2 · The Twelve Months Club', 'db.streakA': '', 'db.streakB': '-day streak',
     'db.map': 'Adventure map', 'db.lv': 'Level 2', 'db.toast': 'Story part 2 unlocked!',
-    'db.of': '{n} of 20 lessons', 'db.next': 'Next live class', 'db.when': 'Tue · 5:00 PM', 'db.join': 'Join class',
+    'db.of': '{n} of 24 classes', 'db.next': 'Next live class', 'db.when': 'Tue · 5:00 PM', 'db.join': 'Join class',
     'db.unl': 'Unlocked', 'db.story': 'Story 2', 'db.game': 'Game', 'db.songs': 'Songs',
 
     'lv.kicker': 'The path', 'lv.h2': 'Seven levels, from first words to real conversations.',
-    'lv.p': 'Every level has 20 real lessons behind it, built for one age group.',
+    'lv.p': 'Every level has 20 real lessons plus 4 Bonus Classes on how English works, built for one age group.',
 
     'hub.kicker': 'The English Hub', 'hub.h2': 'A library of English, open any time.',
     'hub.p': 'Every level unlocks its own Hub: organised, searchable and available any time, not only during lessons.',
@@ -76,7 +76,7 @@ window.LUMIO_SITE_I18N = {
     'crew.p': 'Every character carries a part of what Lumio is.', 'crew.tabs': 'Characters',
 
     'pr.kicker': 'Pricing', 'pr.h2': 'Simple pricing, real value.',
-    'pr.intro': "One level = 2 months · 20 live sessions · full access to that level's English Hub. Save more the longer you commit.",
+    'pr.intro': "One level = about 3 months · 24 live classes (20 lessons + 4 Bonus Classes), 2-3 a week · full access to that level's English Hub. Save more the longer you commit.",
     'pr.freehint': 'Not sure which level fits? <a href="lumio-pro-test.html">Take the free placement test</a> or <a href="#free">try a free trial class</a> first.',
     'pr.cur': 'Choose currency', 'pr.get': 'Get started', 'pr.perlevel': 'per level', 'pr.save': 'save {n}%',
     'pr.note': 'Prices shown for reference. SAR, AED, OMR and QAR are all pegged to the US dollar and stay stable; KWD is a floating rate, so it may move slightly.',
@@ -137,9 +137,9 @@ window.LUMIO_SITE_I18N = {
       { level: 'Level 3', title: 'The Crew', parts: ['Meet the Crew', 'Around School', 'Game Night', 'The Big Match'] }
     ],
     plans: [
-      { name: 'Single Level', sub: '2 months · 20 sessions', per: 'per level', li: ['1 full level, start to finish', 'Full English Hub access for that level', 'Grouped with peers at your level', 'Teacher + supervisor support'] },
-      { name: '6-Level Bundle', sub: 'Full year · 120 sessions', badges: ['Most popular', 'Best value'], li: ['6 full levels: nearly the whole path', 'Full English Hub access, every level included', 'Grouped with peers at your level', 'Teacher + supervisor support'] },
-      { name: '3-Level Bundle', sub: '6 months · 60 sessions', li: ['3 full levels, back to back', 'Full English Hub access, every level included', 'Grouped with peers at your level', 'Teacher + supervisor support'] }
+      { name: 'Single Level', sub: 'About 3 months · 24 classes', per: 'per level', li: ['1 full level, start to finish', 'Full English Hub access for that level', 'Grouped with peers at your level', 'Teacher + supervisor support'] },
+      { name: '6-Level Bundle', sub: 'About 18 months · 144 classes', badges: ['Most popular', 'Best value'], li: ['6 full levels: nearly the whole path', 'Full English Hub access, every level included', 'Grouped with peers at your level', 'Teacher + supervisor support'] },
+      { name: '3-Level Bundle', sub: 'About 9 months · 72 classes', li: ['3 full levels, back to back', 'Full English Hub access, every level included', 'Grouped with peers at your level', 'Teacher + supervisor support'] }
     ],
     faq: [
       ['What age is Lumio for?', 'From 4 all the way to 15. The curriculum spans 7 levels, each built for a specific age range, from a child’s very first English words to real conversation.'],
@@ -179,11 +179,11 @@ window.LUMIO_SITE_I18N = {
     'db.aria': 'لوحة طالب في لوميو: خريطة المغامرة تضيء حتى الدرس العاشر، ويُفتح الجزء الثاني من القصة، مع التقدم والنجوم والحصة القادمة.',
     'db.hi': 'أهلاً يا لينا!', 'db.level': 'المستوى 2 · نادي الأشهر الاثني عشر', 'db.streakA': 'أيام متتالية: ', 'db.streakB': '',
     'db.map': 'خريطة المغامرة', 'db.lv': 'المستوى 2', 'db.toast': 'فُتح الجزء الثاني من القصة!',
-    'db.of': '{n} من 20 درساً', 'db.next': 'الحصة القادمة', 'db.when': 'الثلاثاء · 5:00 م', 'db.join': 'انضم للحصة',
+    'db.of': '{n} من 24 حصة', 'db.next': 'الحصة القادمة', 'db.when': 'الثلاثاء · 5:00 م', 'db.join': 'انضم للحصة',
     'db.unl': 'مفتوح', 'db.story': 'القصة 2', 'db.game': 'اللعبة', 'db.songs': 'الأغاني',
 
     'lv.kicker': 'المسار', 'lv.h2': 'سبعة مستويات، من الكلمات الأولى إلى محادثات حقيقية.',
-    'lv.p': 'كل مستوى يحتوي على 20 درساً حقيقياً جاهزاً، مصمم لفئة عمرية واحدة.',
+    'lv.p': 'كل مستوى يحتوي على 20 درساً حقيقياً جاهزاً و4 حصص إضافية عن طريقة عمل اللغة، مصمم لفئة عمرية واحدة.',
 
     'hub.kicker': 'المكتبة التعليمية', 'hub.h2': 'مكتبة إنجليزية مفتوحة في أي وقت.',
     'hub.p': 'كل مستوى يفتح مكتبته الخاصة: منظمة، قابلة للبحث، ومتاحة في أي وقت، وليس فقط أثناء الدروس.',
@@ -224,7 +224,7 @@ window.LUMIO_SITE_I18N = {
     'crew.p': 'كل شخصية تحمل جزءاً مما تمثله لوميو.', 'crew.tabs': 'الشخصيات',
 
     'pr.kicker': 'الأسعار', 'pr.h2': 'أسعار بسيطة، وقيمة حقيقية.',
-    'pr.intro': 'المستوى الواحد = شهران · 20 حصة مباشرة · وصول كامل لمكتبة ذلك المستوى. وفّر أكثر كلما التزمت لفترة أطول.',
+    'pr.intro': 'المستوى الواحد = نحو 3 أشهر · 24 حصة مباشرة (20 درساً + 4 حصص إضافية)، حصتان إلى ثلاث أسبوعياً · وصول كامل لمكتبة ذلك المستوى. وفّر أكثر كلما التزمت لفترة أطول.',
     'pr.freehint': 'لست متأكداً من المستوى المناسب؟ <a href="lumio-pro-test.html">جرّب اختبار تحديد المستوى المجاني</a> أو <a href="#free">احجز حصة تجريبية مجانية</a> أولاً.',
     'pr.cur': 'اختر العملة', 'pr.get': 'ابدأ الآن', 'pr.perlevel': 'لكل مستوى', 'pr.save': 'وفّر {n}%',
     'pr.note': 'الأسعار للاطلاع فقط. الريال السعودي والدرهم الإماراتي والريال العماني والريال القطري مربوطة بالدولار الأمريكي وتبقى ثابتة؛ أما الدينار الكويتي فسعره متغير وقد يتحرك قليلاً.',
@@ -285,9 +285,9 @@ window.LUMIO_SITE_I18N = {
       { level: 'المستوى 3', title: 'الشلة', parts: ['تعرّف على الشلة', 'في أرجاء المدرسة', 'ليلة الألعاب', 'المباراة الكبرى'] }
     ],
     plans: [
-      { name: 'مستوى واحد', sub: 'شهران · 20 حصة', per: 'لكل مستوى', li: ['مستوى كامل، من البداية للنهاية', 'وصول كامل لمكتبة ذلك المستوى', 'ضمن مجموعة من زملاء بنفس مستواك', 'دعم من معلم ومشرف'] },
-      { name: 'باقة 6 مستويات', sub: 'سنة كاملة · 120 حصة', badges: ['الأكثر طلباً', 'الأفضل قيمة'], li: ['6 مستويات كاملة — تقريباً المسار بأكمله', 'وصول كامل للمكتبة، بكل المستويات', 'ضمن مجموعة من زملاء بنفس مستواك', 'دعم من معلم ومشرف'] },
-      { name: 'باقة 3 مستويات', sub: '6 أشهر · 60 حصة', li: ['3 مستويات كاملة، متتالية', 'وصول كامل للمكتبة، بكل المستويات', 'ضمن مجموعة من زملاء بنفس مستواك', 'دعم من معلم ومشرف'] }
+      { name: 'مستوى واحد', sub: 'نحو 3 أشهر · 24 حصة', per: 'لكل مستوى', li: ['مستوى كامل، من البداية للنهاية', 'وصول كامل لمكتبة ذلك المستوى', 'ضمن مجموعة من زملاء بنفس مستواك', 'دعم من معلم ومشرف'] },
+      { name: 'باقة 6 مستويات', sub: 'نحو 18 شهراً · 144 حصة', badges: ['الأكثر طلباً', 'الأفضل قيمة'], li: ['6 مستويات كاملة — تقريباً المسار بأكمله', 'وصول كامل للمكتبة، بكل المستويات', 'ضمن مجموعة من زملاء بنفس مستواك', 'دعم من معلم ومشرف'] },
+      { name: 'باقة 3 مستويات', sub: 'نحو 9 أشهر · 72 حصة', li: ['3 مستويات كاملة، متتالية', 'وصول كامل للمكتبة، بكل المستويات', 'ضمن مجموعة من زملاء بنفس مستواك', 'دعم من معلم ومشرف'] }
     ],
     faq: [
       ['لأي عمر مناسب لوميو؟', 'من عمر 4 حتى 15 عاماً — يمتد المنهج عبر 7 مستويات، كل منها مصمم لفئة عمرية محددة، بدءاً من أولى كلمات الطفل بالإنجليزية وصولاً إلى محادثة حقيقية.'],

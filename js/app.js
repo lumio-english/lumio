@@ -488,21 +488,65 @@ const Lumio = (() => {
   const attendedSetFor = (name, levelId) => {
     try { return (window.LumioSchedule && LumioSchedule.attendedLessonNumbers) ? LumioSchedule.attendedLessonNumbers(name, levelId) : null; } catch (e) { return null; }
   };
+  /* ---------- Bonus Classes (Oct 2026) ----------
+     A level is 24 classes: Lessons 1-20 plus Bonus Classes 1-4, one after every four lessons. A Bonus Class
+     travels everywhere as a lesson number of N + 0.5 (Bonus 1 = 4.5, 2 = 8.5, 3 = 12.5, 4 = 16.5), so class
+     rows, attendance, homework keys and the Sheet keep their one "lesson" column and simply sort in order.
+     Lessons keep their numbers 1-20. A Bonus Class has no prep: it is done when the student attended it and
+     sent its bonus homework. */
+  const BONUS_AFTER = [4, 8, 12, 16];
+  const isBonus = (n) => { const x = Number(n); return isFinite(x) && x % 1 !== 0; };
+  const bonusNumber = (n) => { const i = BONUS_AFTER.indexOf(Math.floor(Number(n))); return isBonus(n) && i >= 0 ? i + 1 : 0; };
+  const bonusLesson = (b) => BONUS_AFTER[b - 1] + 0.5;
+  const levelSequence = (levelId) => {
+    const out = [];
+    for (let n = 1; n <= lessonCountFor(levelId); n++) { out.push(n); if (BONUS_AFTER.includes(n)) out.push(n + 0.5); }
+    return out;
+  };
+  const classCountFor = (levelId) => levelSequence(levelId).length;
+  // Next / previous class in the level's order (null at the ends). nextInSequence(0) = 1.
+  const nextInSequence = (levelId, n) => { const x = Number(n) || 0; return levelSequence(levelId).find(v => v > x) || null; };
+  const prevInSequence = (levelId, n) => { const x = Number(n) || 0; const s = levelSequence(levelId).filter(v => v < x); return s.length ? s[s.length - 1] : null; };
+  const lessonLabel = (n, short) => {
+    const b = bonusNumber(n);
+    if (b) return short ? "B" + b : "Bonus Class " + b;
+    return short ? "L" + n : "Lesson " + n;
+  };
   const lessonDone = (name, levelId, n, attendedSet) => {
     const prep = (progressFor(name)[levelId] || {})[n];
     const hw = (homeworkFor(name)[levelId] || {})[n];
     const att = attendedSet === undefined ? attendedSetFor(name, levelId) : attendedSet;
+    if (isBonus(n)) return !!hw && !!(att && att.has(Number(n)));
     return !!prep && !!hw && !!(att && att.has(Number(n)));
   };
-  // First lesson not fully done (N+1 when the level is finished).
+  // A Bonus Class the student has already gone past (they attended a later class, e.g. students who were mid-level
+  // when Bonus Classes started) is still owed -- it is booked next and the level test waits for it -- but it does
+  // not lock their lessons.
+  const bonusPassed = (n, att) => !!att && [...att].some(a => Number(a) > Number(n));
+  // First class (lesson or bonus) not fully done; N+1 when the level is finished.
   const currentLesson = (name, levelId, attendedSet) => {
-    const N = lessonCountFor(levelId);
     const att = attendedSet === undefined ? attendedSetFor(name, levelId) : attendedSet;
-    for (let n = 1; n <= N; n++) if (!lessonDone(name, levelId, n, att)) return n;
-    return N + 1;
+    for (const n of levelSequence(levelId)) {
+      if (lessonDone(name, levelId, n, att)) continue;
+      if (isBonus(n) && bonusPassed(n, att)) continue;
+      return n;
+    }
+    return lessonCountFor(levelId) + 1;
   };
-  const lessonsDoneCount = (name, levelId, attendedSet) => currentLesson(name, levelId, attendedSet) - 1;
-  const levelComplete = (name, levelId, attendedSet) => lessonsDoneCount(name, levelId, attendedSet) >= lessonCountFor(levelId);
+  // Regular lessons finished before the current class (Bonus 1 current -> 4).
+  const lessonsDoneCount = (name, levelId, attendedSet) => Math.ceil(currentLesson(name, levelId, attendedSet)) - 1;
+  // Bonus Classes (numbers 1-4) not done yet (attended + bonus homework sent).
+  const bonusesMissing = (name, levelId, attendedSet) => {
+    const att = attendedSet === undefined ? attendedSetFor(name, levelId) : attendedSet;
+    return BONUS_AFTER.map((a, i) => i + 1).filter(b => !lessonDone(name, levelId, bonusLesson(b), att));
+  };
+  const classesDoneCount = (name, levelId, attendedSet) => {
+    const att = attendedSet === undefined ? attendedSetFor(name, levelId) : attendedSet;
+    return levelSequence(levelId).filter(n => lessonDone(name, levelId, n, att)).length;
+  };
+  // Every lesson AND every Bonus Class done.
+  const levelComplete = (name, levelId, attendedSet) => lessonsDoneCount(name, levelId, attendedSet) >= lessonCountFor(levelId)
+    && !bonusesMissing(name, levelId, attendedSet).length;
   // Teacher session on this device? (preview links, presenter, overrides)
   const isTeacherSession = () => { try { return localStorage.getItem("lumio_teacher") === "1"; } catch (e) { return false; } };
 
@@ -983,6 +1027,7 @@ const Lumio = (() => {
            COUNTRY_CODES, combinePhone, splitPhone,
            pushProgressAndHomework, pullProgressAndHomework, retryPendingPush,
            lessonCountFor, attendedSetFor, lessonDone, currentLesson, lessonsDoneCount, levelComplete, isTeacherSession,
+           BONUS_AFTER, isBonus, bonusNumber, bonusLesson, levelSequence, classCountFor, nextInSequence, prevInSequence, lessonLabel, classesDoneCount, bonusesMissing,
            TEST_PASS_PCT, testBand, levelTestsAll, levelTestFor, saveLevelTest,
            storyProgressFor, saveStoryPart, gameBestAll, gameBestFor, saveGameBest, GAME_NAMES,
            pushExtras, pullExtras, retryExtrasPush,

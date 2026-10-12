@@ -88,7 +88,7 @@ def teen_slides(level, grammar_line, dialogue_lines, n_start, total):
       <div style="margin-top:22px;background:#fff;border-radius:16px;padding:16px 22px;box-shadow:0 8px 18px rgba(0,0,0,.08)">
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.8rem;letter-spacing:1.5px;color:{TEAL_DEEP};margin-bottom:6px">GRAMMAR YOU USED TODAY</div>
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.15rem;color:{CARD_TEXT}">{esc(grammar_line)}</div>
-        <div style="font-size:.95rem;color:{INK_DIM};margin-top:6px">This was one class. The full level has 20 lessons, a bonus game, printable worksheets and flashcards, and a story.</div>
+        <div style="font-size:.95rem;color:{INK_DIM};margin-top:6px">This was one class. The full level has 24 classes (20 lessons + 4 Bonus Classes on how English works), a bonus game, printable worksheets and flashcards, and a story.</div>
       </div>
     </div>''')
     out = [first]

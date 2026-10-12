@@ -1278,7 +1278,7 @@
       <div class="sd-test-badge" id="levelTestIcon">🔒</div>
       <div class="sd-test-text">
         <div class="sd-test-title" id="levelTestTitle">Level test</div>
-        <div class="sd-test-sub" id="levelTestSub">Unlocks after all 20 lessons</div>
+        <div class="sd-test-sub" id="levelTestSub">Unlocks after all 24 classes</div>
       </div>
     </div>
     <div class="sd-progressbar sd-test-bar"><div id="levelTestBar" style="width:0%"></div></div>
@@ -1809,7 +1809,11 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
   for (let n = 1; n <= total; n++) {
     if (!isFullyDone(n)) { current = n; break; }
   }
-  const done = current - 1;
+  // Bonus Classes (one after every four lessons, numbered 4.5, 8.5 ...): the shared rule in js/app.js decides
+  // the current class, so the map, lesson.html and this card agree.
+  if (Lumio.currentLesson) current = Lumio.currentLesson(u.name, level, attendedSet);
+  const isBonusNow = !!(Lumio.isBonus && Lumio.isBonus(current));
+  const done = Math.ceil(current) - 1;
   const pct = Math.round((done / total) * 100);
 
   // Number only -- the "Lessons done" label sits right under it (js/dashboard.js writes the same).
@@ -1838,14 +1842,14 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
     const ltIcon = document.getElementById("levelTestIcon");
     const ltMeta = document.getElementById("levelTestMeta");
     const lt = Lumio.levelTestFor ? Lumio.levelTestFor(u.name, level) : null;
-    const unlocked = done >= total || (Lumio.isTeacherSession && Lumio.isTeacherSession());
+    const unlocked = (done >= total && !(Lumio.bonusesMissing && Lumio.bonusesMissing(u.name, level, attendedSet).length)) || (Lumio.isTeacherSession && Lumio.isTeacherSession());
     ltLink.className = "sd-cert-link sd-test-link";
     ltCard.className = "sd-test-card";
     document.getElementById("levelTestBar").style.width = Math.min(100, Math.round((done / total) * 100)) + "%";
     const setState = (cls, icon, title, sub, btn, meta) => { ltCard.classList.add(cls); ltIcon.textContent = icon; ltLink.querySelector(".ic").textContent = icon; ltTitle.textContent = title; ltSub.textContent = sub; ltBtn.textContent = btn; ltMeta.textContent = meta || ""; };
     if (!unlocked) {
       ltLink.classList.add("locked"); ltLink.href = "#"; ltLink.setAttribute("aria-disabled", "true");
-      setState("locked", "🔒", `${meta.name} level test`, `Opens the moment all ${total} lessons are done — then your certificate.`, `Locked — ${total - done} lesson${total - done === 1 ? "" : "s"} to go`, `${done}/${total} lessons done (prep + class + homework)`);
+      setState("locked", "🔒", `${meta.name} level test`, "Opens the moment all 24 classes are done — then your certificate.", `Locked — ${total - done} lesson${total - done === 1 ? "" : "s"} to go`, `${done}/${total} lessons done (prep + class + homework)`);
       ltLink.onclick = e => { e.preventDefault(); showToast(`Finish all ${total} lessons first — ${total - done} to go!`, "🔒"); };
     } else {
       ltLink.href = `level-test.html?level=${level}${done < total ? "&preview=1" : ""}`; ltLink.removeAttribute("aria-disabled"); ltLink.onclick = null;
@@ -1939,7 +1943,26 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
   // doesn't exist yet.
   const hasWritingPractice = ["pre-a", "level1", "level2", "level3"].includes(level);
   if (!hasWritingPractice) document.getElementById("writingBtn").style.display = "none";
-  if (done >= total) {
+  // A Bonus Class still owed after the last lesson (students who were mid-level when Bonus Classes started).
+  const owedBonus = done >= total && Lumio.bonusesMissing ? Lumio.bonusesMissing(u.name, level, attendedSet)[0] : 0;
+  const bonusNow = isBonusNow ? Lumio.bonusNumber(current) : owedBonus;
+  if (bonusNow) {
+    const bLesson = Lumio.bonusLesson(bonusNow), bn = String(bonusNow).padStart(2, "0");
+    const attendedB = isLiveDone(bLesson);
+    document.getElementById("missionTitle").textContent = `Bonus Class ${bonusNow} ⭐`;
+    document.getElementById("missionSub").textContent = attendedB
+      ? "Your Bonus Class is done — finish your bonus mission to unlock the next lesson!"
+      : "A special class about how English works. Book it like a normal class in My Schedule.";
+    document.getElementById("missionBtn").textContent = attendedB ? "⭐ Bonus mission" : "📅 My schedule";
+    document.getElementById("missionBtn").href = attendedB ? `bonus-homework.html?level=${level}&b=${bonusNow}` : "#scheduleCard";
+    document.getElementById("homeworkBtn").href = `bonus-homework.html?level=${level}&b=${bonusNow}`;
+    document.getElementById("worksheetBtn").href = `worksheets/${level}/bonus${bn}-worksheet.pdf`;
+    document.getElementById("writingBtn").style.display = "none";
+    document.getElementById("flashcardsBtn").href = `flashcards/${level}/bonus${bn}-cards.pdf`;
+    fetch(`bonus-classes/${level}/bonus${bn}.json`).then(r => r.ok ? r.json() : null).then(d => {
+      if (d && d.title) document.getElementById("missionTitle").textContent = `Bonus Class ${bonusNow}: ${d.title}`;
+    }).catch(() => {});
+  } else if (done >= total) {
     const lt = Lumio.levelTestFor ? Lumio.levelTestFor(u.name, level) : null;
     const ltPassed = !!(lt && lt.pct >= Lumio.TEST_PASS_PCT);
     document.getElementById("missionTitle").textContent = ltPassed ? "Level complete! 🎉" : "All lessons done! 🎉";
@@ -2020,7 +2043,11 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
     if (current > total) {
       trailEl.innerHTML = `<div class="sd-trail sd-trail-complete">🎉 You've finished every lesson in this level!</div>`;
     } else {
-      const steps = [
+      // A Bonus Class has no prep: class, then the bonus mission.
+      const steps = isBonusNow ? [
+        { key: "class", label: "Bonus Class", icon: "🎥", done: isLiveDone(current) },
+        { key: "hw", label: "Bonus mission", icon: "⭐", done: isHomeworkDone(current) },
+      ] : [
         { key: "prep", label: "Preparation", icon: "📖", done: isPrepDone(current) },
         { key: "class", label: "Lesson", icon: "🎥", done: isLiveDone(current) },
         { key: "hw", label: "Homework", icon: "📝", done: isHomeworkDone(current) },
@@ -2039,7 +2066,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
           </div>${connector}`;
       }).join("");
       trailEl.innerHTML = `<div class="sd-trail">
-        <div class="sd-trail-title">Lesson ${current} progress</div>
+        <div class="sd-trail-title">${Lumio.lessonLabel ? Lumio.lessonLabel(current) : "Lesson " + current} progress</div>
         <div class="sd-trail-row">${stepsHtml}</div></div>`;
     }
   } catch (e) {
@@ -2144,7 +2171,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
         LumioSchedule.saveFixedPlan(u.name, fxPicks);
         return askBooking("Nothing to book yet", skipped.length ? `${skipped[0].reason} — your weekly times are saved and we'll offer the next weeks as they open.` : "Everything in the next three weeks is already booked. Your weekly times are saved.", "OK");
       }
-      const body = okItems.map(x => `✓ ${fmtD(x.date)} ${Lumio.fmtClassTime(x.date, x.startTime)} — Lesson ${x.lesson}${x.kind === "join" ? ` (join ${x.taken})` : ""}`).join("\n")
+      const body = okItems.map(x => `✓ ${fmtD(x.date)} ${Lumio.fmtClassTime(x.date, x.startTime)} — ${Lumio.lessonLabel(x.lesson)}${x.kind === "join" ? ` (join ${x.taken})` : ""}`).join("\n")
         + (skipped.length ? `\n\nSkipped: ` + skipped.map(x => `${fmtD(x.date)} ${Lumio.fmt12(x.startTime)} — ${x.reason}`).join("; ") : "");
       if (!(await askBooking(`Book ${okItems.length} class${okItems.length === 1 ? "" : "es"} for the next 3 weeks?`, body, "Yes, book them ✓"))) return;
       bookBtn.disabled = true; bookBtn.textContent = "Booking…";
@@ -2164,7 +2191,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
     let me = null;
     try { const oid = localStorage.getItem("lumio_student_id"); me = (oid && LumioProfiles.getStudent(oid)) || LumioProfiles.findByName(u.name) || null; } catch (e) {}
     const st = LumioSchedule.studentBookingState(u.name, level);
-    const lessonLabel = st.nextLesson ? `Lesson ${st.nextLesson}` : "";
+    const lessonLabel = st.nextLesson ? Lumio.lessonLabel(st.nextLesson) : "";
     card.style.display = "block";
     const head = `<div class="sd-book-title">📅 Book my next class ${st.nextLesson ? `<span class="lvl">${meta.name} · ${lessonLabel}</span>` : ""}</div>`;
     const note = msg => { card.innerHTML = head + `<div class="sd-book-note">${msg}</div>`; };
@@ -2338,7 +2365,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
             <div class="ic">🎥</div>
             <div>
               <div class="when">${fmtSchedDay(next.date)} at ${fmtSchedTime(next.startTime, next.date)}</div>
-              <div class="sub">${next.lessonNumber ? `Lesson ${Number(next.lessonNumber)} · ` : ""}Next class with ${sdEsc(next.teacherName || "your teacher")} · ${next.durationMinutes} min${next.students && next.students.length > 1 ? ` · with ${next.students.length - 1} classmate${next.students.length > 2 ? "s" : ""}` : ""}</div>
+              <div class="sub">${next.lessonNumber ? `${Lumio.lessonLabel(Number(next.lessonNumber))} · ` : ""}Next class with ${sdEsc(next.teacherName || "your teacher")} · ${next.durationMinutes} min${next.students && next.students.length > 1 ? ` · with ${next.students.length - 1} classmate${next.students.length > 2 ? "s" : ""}` : ""}</div>
               ${(() => { const g = LumioSchedule.joinGate(u.name, next); if (!g.ok) return `<a class="sd-gate" href="homework.html?level=${next.level || level}&n=${g.lesson}">🔒 ${sdEsc(g.reason)}</a>`; const ml = LumioSchedule.meetingLinkFor(next); return ml ? `<a href="${sdUrl(ml)}" target="_blank" rel="noopener" class="sd-join-link">${/teams\.microsoft|teams\.live/i.test(ml) ? "🟣 Join on Teams" : "🔗 Join class link"}</a>` : ""; })()}
               ${canCancel(next) ? `<button type="button" class="sd-cancel-link" data-cancel="${next.id}">Cancel</button>` : ""}
             </div>
@@ -2347,7 +2374,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
           <div class="sd-class-row">
             <div class="dt">${fmtSchedDay(c.date)}<span>${fmtSchedTime(c.startTime, c.date)}</span></div>
             <div>
-              <div class="who">${c.lessonNumber ? `<span class="sd-lesson-tag">Lesson ${Number(c.lessonNumber)}</span> ` : ""}${sdEsc(c.teacherName || "Your teacher")}</div>
+              <div class="who">${c.lessonNumber ? `<span class="sd-lesson-tag">${Lumio.lessonLabel(Number(c.lessonNumber))}</span> ` : ""}${sdEsc(c.teacherName || "Your teacher")}</div>
               <div class="meta">${c.durationMinutes} min${c.notes ? " · " + sdEsc(c.notes) : ""}</div>
               ${(() => { const g = LumioSchedule.joinGate(u.name, c); if (!g.ok) return `<a class="sd-gate" href="homework.html?level=${c.level || level}&n=${g.lesson}">🔒 Homework ${g.lesson} first</a>`; const ml = LumioSchedule.meetingLinkFor(c); return ml ? `<a href="${sdUrl(ml)}" target="_blank" rel="noopener" class="sd-join-link">${/teams\.microsoft|teams\.live/i.test(ml) ? "🟣 Join on Teams" : "🔗 Join link"}</a>` : ""; })()}
               ${canCancel(c) ? `<button type="button" class="sd-cancel-link" data-cancel="${c.id}">Cancel</button>` : ""}
@@ -2360,7 +2387,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
           if (!c) return;
           const later = LumioSchedule.laterBookings(c.id, u.name);
           const laterNote = later.length ? ` Lesson${later.length === 1 ? "" : "s"} ${later.map(x => x.lessonNumber).sort((a, b) => a - b).join(", ")} booked after it will be cancelled too (lessons go in order).` : "";
-          if (!(await askBooking("Cancel this class?", `Lesson ${c.lessonNumber || ""} on ${fmtSchedDay(c.date)} at ${fmtSchedTime(c.startTime, c.date)} — your seat opens up for someone else and you can book another time.${laterNote}`, "Yes, cancel it"))) return;
+          if (!(await askBooking("Cancel this class?", `${c.lessonNumber ? Lumio.lessonLabel(c.lessonNumber) : "Class"} on ${fmtSchedDay(c.date)} at ${fmtSchedTime(c.startTime, c.date)} — your seat opens up for someone else and you can book another time.${laterNote}`, "Yes, cancel it"))) return;
           btn.disabled = true;
           try {
             await LumioSchedule.cancelBookingRemote(c.id, u.name);
@@ -3011,7 +3038,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
         if (isNaN(start)) return;
         const minsUntil = (start - now) / 60000;
         if (minsUntil > 0 && minsUntil <= 60) {
-          const lesson = c.lessonNumber ? `Lesson ${c.lessonNumber}` : "Your class";
+          const lesson = c.lessonNumber ? Lumio.lessonLabel(c.lessonNumber) : "Your class";
           const added = LumioProfiles.addMessageOnce(rosterProfile.id, `reminder_${c.id}`, {
             type: "class_reminder",
             text: `⏰ ${lesson} starts in about ${Math.max(1, Math.round(minsUntil))} minute${Math.round(minsUntil) === 1 ? "" : "s"} (${Lumio.fmtClassTime(c.date, c.startTime)}). Get your notebook ready!${LumioSchedule.meetingLinkFor(c) ? " Tap Join on your dashboard when it's time." : ""}`,
@@ -3165,8 +3192,8 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
             <div class="mp-grade-avg ${gradeClass(tg.avgLetter)}"><b>${tg.avgLetter || "–"}</b><span>${tg.pct === null ? "No grade yet" : `Average · ${tg.pct}%`}</span></div>
             <div class="mp-grades-sub">Your teacher's grade for each live class · تقييم المعلم لكل حصة</div>
           </div>
-          <div class="mp-grade-list">${tg.list.map(g => `<div class="mp-grade-chip ${gradeClass(g.grade)}" title="${g.date}"><span>L${g.lessonNumber || "–"}</span><b>${g.grade || "–"}</b></div>`).join("")}</div>
-          ${tg.list.some(g => g.comment) ? `<div class="mp-grade-comments">${tg.list.filter(g => g.comment).slice(-6).reverse().map(g => `<div class="mp-grade-note"><b>L${g.lessonNumber || "–"}${g.grade ? " · " + g.grade : ""}</b><span>${esc(g.comment)}</span><small>${g.teacherName ? esc(g.teacherName) + " · " : ""}${g.date}</small></div>`).join("")}</div>` : ""}`
+          <div class="mp-grade-list">${tg.list.map(g => `<div class="mp-grade-chip ${gradeClass(g.grade)}" title="${g.date}"><span>${g.lessonNumber ? Lumio.lessonLabel(g.lessonNumber, true) : "L–"}</span><b>${g.grade || "–"}</b></div>`).join("")}</div>
+          ${tg.list.some(g => g.comment) ? `<div class="mp-grade-comments">${tg.list.filter(g => g.comment).slice(-6).reverse().map(g => `<div class="mp-grade-note"><b>${g.lessonNumber ? Lumio.lessonLabel(g.lessonNumber, true) : "L–"}${g.grade ? " · " + g.grade : ""}</b><span>${esc(g.comment)}</span><small>${g.teacherName ? esc(g.teacherName) + " · " : ""}${g.date}</small></div>`).join("")}</div>` : ""}`
         : `<div class="mp-grades-sub">No teacher grades yet — your teacher grades each live class you attend.</div>`;
       }
     }
@@ -3245,9 +3272,9 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
             <div class="pr-stats">
               <div class="pr-stat"><b>${tg.avgLetter}</b><span>Average grade (${tg.pct}%)</span></div>
               <div class="pr-stat"><b>${tg.list.length}</b><span>Classes graded</span></div>
-              <div class="pr-stat"><b>${tg.latest.grade}</b><span>Latest · Lesson ${tg.latest.lessonNumber || "–"}</span></div>
+              <div class="pr-stat"><b>${tg.latest.grade}</b><span>Latest · ${tg.latest.lessonNumber ? Lumio.lessonLabel(tg.latest.lessonNumber) : "Lesson –"}</span></div>
             </div>
-            <p style="font-size:.8rem;color:#6B5040;margin:8px 0 0">${tg.list.map(g => `Lesson ${g.lessonNumber || "?"}: <b>${g.grade}</b>`).join(" · ")}</p>`
+            <p style="font-size:.8rem;color:#6B5040;margin:8px 0 0">${tg.list.map(g => `${g.lessonNumber ? Lumio.lessonLabel(g.lessonNumber) : "Lesson ?"}: <b>${g.grade}</b>`).join(" · ")}</p>`
             : `<p style="color:#8891A3;font-size:.85rem">No teacher grades yet — each live class attended is graded by the teacher.</p>`}
           </div>
           <div class="pr-section">

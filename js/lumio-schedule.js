@@ -682,7 +682,8 @@
       const d = new Date(t);
       if (!isNaN(d)) rec.startTime = riyadhParts(d).hm;
     }
-    if (typeof rec.lessonNumber === "string" && /^\d+$/.test(rec.lessonNumber)) rec.lessonNumber = Number(rec.lessonNumber);
+    // Bonus Classes travel as N.5 (Bonus 1 = 4.5 ...), see Lumio.levelSequence.
+    if (typeof rec.lessonNumber === "string" && /^\d+(\.5)?$/.test(rec.lessonNumber)) rec.lessonNumber = Number(rec.lessonNumber);
     if (typeof rec.durationMinutes === "string" && /^\d+$/.test(rec.durationMinutes)) rec.durationMinutes = Number(rec.durationMinutes);
     // fieldTimes arrives as JSON text from the Sheet (or "" on old rows).
     if (rec.fieldTimes !== undefined) {
@@ -1243,9 +1244,12 @@
       const mine = data.classes.filter(c => c.patternId === p.id)
         .sort((x, y) => (x.date + x.startTime).localeCompare(y.date + y.startTime));
       let n = 0;
+      // Sessions follow the level's class order, Bonus Classes included (4, 4.5, 5 ...).
+      const seq = (global.Lumio && Lumio.levelSequence) ? Lumio.levelSequence(p.level) : null;
+      const startAt = seq ? Math.max(0, seq.indexOf(Number(p.lessonStart))) : 0;
       mine.forEach(c => {
         if (c.status === "cancelled") return;
-        const want = Number(p.lessonStart) + n;
+        const want = seq ? (seq[startAt + n] || seq[seq.length - 1]) : Number(p.lessonStart) + n;
         n++;
         if (Number(c.lessonNumber) === want) return;
         if (c.lessonNumber && (hasStarted(c) || !unmarked(c))) return; // what was taught stays on record
@@ -1316,6 +1320,8 @@
   // little shorter, the level's Big Review the full 90).
   function lessonDuration(level, lesson) {
     const n = Number(lesson) || 1;
+    // Bonus Classes: 60 minutes (Pre-A 45).
+    if (n % 1 !== 0) return level === "pre-a" ? 45 : 60;
     const N = (global.Lumio && Lumio.lessonCountFor) ? Lumio.lessonCountFor(level) : 20;
     if (n >= N) return 90;
     if (n <= 3) return 45;
@@ -1421,8 +1427,18 @@
     // booked a second time before the teacher marks it.
     const maxBooked = booked.reduce((m, c) => Math.max(m, Number(c.lessonNumber) || 0), 0);
     const N = (global.Lumio && Lumio.lessonCountFor) ? Lumio.lessonCountFor(level) : 20;
-    const nextLesson = Math.max(maxAttended, maxBooked) + 1;
-    return { nextLesson: nextLesson > N ? null : nextLesson, maxAttended, maxBooked, futureCount: future.length, levelDone: nextLesson > N };
+    const top = Math.max(maxAttended, maxBooked);
+    // Next class in the level's order (Bonus Classes included). A Bonus Class the student already went past
+    // without attending (students who were mid-level when Bonus Classes started) is booked first: no skipping.
+    let nextLesson;
+    if (global.Lumio && Lumio.levelSequence) {
+      const bookedSet = new Set(booked.map(c => Number(c.lessonNumber)));
+      const owed = Lumio.levelSequence(level).find(n => n % 1 !== 0 && n < top && !attended.has(n) && !bookedSet.has(n));
+      nextLesson = owed || Lumio.nextInSequence(level, top);
+    } else {
+      nextLesson = top + 1 > N ? null : top + 1;
+    }
+    return { nextLesson: nextLesson || null, maxAttended, maxBooked, futureCount: future.length, levelDone: !nextLesson };
   }
   // Sun..Sat week (Riyadh) containing date d.
   function weekKey(d) { return addDaysStr(d, -dowOf(d)); }
@@ -1521,7 +1537,7 @@
     const st = studentBookingState(studentName, level);
     if (st.levelDone) throw new Error("Every lesson of this level is already attended or booked.");
     lesson = Number(lesson || st.nextLesson);
-    if (lesson !== st.nextLesson) throw new Error(`The next class to book is Lesson ${st.nextLesson}.`);
+    if (lesson !== st.nextLesson) throw new Error(`The next class to book is ${labelOf(st.nextLesson)}.`);
     let cls = classId ? data.classes.find(c => c.id === classId) : null;
     let pat = patternId ? data.patterns.find(p => p.id === patternId) : null;
     if (!cls && pat && date) cls = data.classes.find(c => c.patternId === pat.id && c.date === date && c.status !== "cancelled") || null;
@@ -1533,7 +1549,7 @@
     if (pat && !isLegacyPattern(pat) && (slotDate < pat.startDate || (pat.endDate && slotDate >= pat.endDate) || Number(pat.dayOfWeek) !== dowOf(slotDate))) throw new Error("That slot isn't available on that date.");
     const slotDur = cls ? (cls.durationMinutes || lessonDuration(level, lesson)) : lessonDuration(level, lesson);
     if (studentBusy(studentName, slotDate, slotTime, slotDur, cls && cls.id)) throw new Error("The student already has a class at that time.");
-    if (startMs({ date: slotDate, startTime: slotTime }) <= latestBookedStart(studentName, level)) throw new Error(`Lesson ${lesson} must come after the lessons already booked — pick a later time.`);
+    if (startMs({ date: slotDate, startTime: slotTime }) <= latestBookedStart(studentName, level)) throw new Error(`${labelOf(lesson)} must come after the lessons already booked — pick a later time.`);
     if (!cls && teacherBusy(pat.teacherId, slotDate, slotTime, slotDur)) throw new Error("The teacher is still teaching another class then (the class before runs longer).");
     if (!override) {
       const full = global.LumioProfiles ? (studentId ? global.LumioProfiles.getStudent(studentId) : global.LumioProfiles.findByName(studentName)) : null;
@@ -1607,9 +1623,15 @@
   function joinGate(studentName, cls) {
     const n = Number(cls.lessonNumber) || 0;
     if (n <= 1 || !global.Lumio || !Lumio.homeworkFor) return { ok: true };
-    const hw = (Lumio.homeworkFor(studentName)[cls.level] || {})[n - 1];
-    return hw ? { ok: true } : { ok: false, reason: `Finish the homework for Lesson ${n - 1} before joining Lesson ${n}.`, lesson: n - 1 };
+    // The class before this one in the level's order (a Bonus Class sits between Lessons 4 and 5 ...).
+    let prev = Lumio.prevInSequence ? Lumio.prevInSequence(cls.level, n) : n - 1;
+    // A Bonus Class the student went past before Bonus Classes started has no homework to wait for.
+    if (prev && prev % 1 !== 0 && n % 1 === 0 && !attendedLessonNumbers(studentName, cls.level).has(prev)) prev = Lumio.prevInSequence(cls.level, prev);
+    if (!prev) return { ok: true };
+    const hw = (Lumio.homeworkFor(studentName)[cls.level] || {})[prev];
+    return hw ? { ok: true } : { ok: false, reason: `Finish the homework for ${labelOf(prev)} before joining ${labelOf(n)}.`, lesson: prev };
   }
+  function labelOf(n) { return (global.Lumio && Lumio.lessonLabel) ? Lumio.lessonLabel(n) : "Lesson " + n; }
 
   // ---- student-device booking: server is the referee ----
   // A student's phone never pushes the whole schedule, so a booking goes

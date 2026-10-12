@@ -139,10 +139,14 @@
   // ---- gate: every lesson done (prep + class + homework) ----
   const done = preview ? meta.lessons : Lumio.lessonsDoneCount(u.name, level);
   document.getElementById("levelBadge").textContent = meta.name;
-  if (!preview && done < meta.lessons) {
+  // Bonus Classes count too: the test opens after all 24 classes (20 lessons + 4 Bonus Classes).
+  const bonusLeft = preview || !Lumio.bonusesMissing ? [] : Lumio.bonusesMissing(u.name, level);
+  if (!preview && (done < meta.lessons || bonusLeft.length)) {
     document.getElementById("stepIntro").style.display = "none";
     const L = document.getElementById("stepLocked"); L.style.display = "";
-    document.getElementById("lockText").textContent = `The ${meta.name} test opens after all ${meta.lessons} lessons — ${done} done so far.`;
+    document.getElementById("lockText").textContent = done < meta.lessons
+      ? `The ${meta.name} test opens after all 24 classes (${meta.lessons} lessons + 4 Bonus Classes) — ${done} lessons done so far.`
+      : `Almost there! Finish Bonus Class ${bonusLeft.join(", ")} first — then the ${meta.name} test opens.`;
     return;
   }
   // ---- intro content ----

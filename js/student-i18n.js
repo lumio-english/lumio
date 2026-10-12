@@ -76,7 +76,7 @@
     "Your level manual, your account and help.": "دليل مستواك، وحسابك، والمساعدة.",
     "To be continued": "يتبع", "To be continued…": "يتبع…", "Come back tomorrow for the next page of your story.": "عُد غدًا لتقرأ الصفحة التالية من قصتك.",
     // hero
-    "Your story,": "قصتك،", "the last page": "الصفحة الأخيرة", "My schedule": "جدولي", "📅 My schedule": "📅 جدولي", "Subscribed": "مشترك",
+    "Your story,": "قصتك،", "the last page": "الصفحة الأخيرة", "My schedule": "جدولي", "📅 My schedule": "📅 جدولي", "⭐ Bonus mission": "⭐ المهمة الإضافية", "Bonus mission": "المهمة الإضافية", "Bonus Class": "الحصة الإضافية", "Your Bonus Class is done — finish your bonus mission to unlock the next lesson!": "انتهت حصتك الإضافية — أنهِ مهمتك الإضافية ليُفتح الدرس التالي!", "A special class about how English works. Book it like a normal class in My Schedule.": "حصة خاصة عن طريقة عمل اللغة الإنجليزية. احجزها مثل أي حصة عادية من «جدولي».", "Class done! Finish your bonus mission.": "انتهت الحصة! أنهِ مهمتك الإضافية.", "Subscribed": "مشترك",
     "Open today's chapter": "افتح فصل اليوم", "Streak": "أيام متتالية", "Stars earned": "النجوم", "Reward points": "نقاط المكافأة", "Sessions": "الحصص",
     "Not currently subscribed": "غير مشترك حاليًا", "Subscription activated": "تم تفعيل الاشتراك",
     // mission
@@ -97,7 +97,7 @@
     // adventure / map / test
     "Show as a list": "اعرض كقائمة", "Finish each lesson to unlock the next one!": "أنهِ كل درس لتفتح الدرس التالي!", "My certificate": "شهادتي",
     "Level test": "اختبار المستوى", "questions": "سؤالًا", "to pass": "للنجاح", "skills: words, Arabic→English, sentences, listening": "المهارات: الكلمات، والترجمة من العربية إلى الإنجليزية، والجمل، والاستماع",
-    "Opens the moment all 20 lessons are done — then your certificate.": "يُفتح فور إنهاء الدروس العشرين — ثم تحصل على شهادتك.",
+    "Opens the moment all 20 lessons are done — then your certificate.": "يُفتح فور إنهاء الدروس العشرين — ثم تحصل على شهادتك.", "Opens the moment all 24 classes are done — then your certificate.": "يُفتح فور إنهاء الحصص الأربع والعشرين — ثم تحصل على شهادتك.", "Unlocks after all 24 classes": "يُفتح بعد إنهاء الحصص الأربع والعشرين",
     "Opens when you reach this lesson": "يُفتح عندما تصل إلى هذا الدرس",
     // progress
     "Lessons finished": "الدروس المكتملة", "Classes attended": "الحصص التي حضرتها", "Attendance": "الحضور", "Prep score": "درجة التحضير",
@@ -195,6 +195,20 @@
     [/^Lesson (\d+) · (.+)$/, function (m) { return "الدرس " + m[1] + " · " + iso(m[2]); }],
     [/^Lesson (\d+) steps$/, function (m) { return "خطوات الدرس " + m[1]; }],
     [/^Lesson (\d+) progress$/, function (m) { return "تقدّم الدرس " + m[1]; }],
+    // Bonus Classes (one after every four lessons)
+    [/^Bonus Class (\d)$/, function (m) { return "الحصة الإضافية " + m[1]; }],
+    [/^Bonus Class (\d) ⭐$/, function (m) { return "الحصة الإضافية " + m[1] + " ⭐"; }],
+    [/^Bonus Class (\d): (.+)$/, function (m) { return "الحصة الإضافية " + m[1] + ": " + iso(m[2]); }],
+    [/^Bonus Class (\d) progress$/, function (m) { return "تقدّم الحصة الإضافية " + m[1]; }],
+    [/^Bonus Class (\d) done!$/, function (m) { return "أنهيت الحصة الإضافية " + m[1] + "!"; }],
+    [/^Bonus Class (\d) · (.+)$/, function (m) { return "الحصة الإضافية " + m[1] + " · " + iso(m[2]); }],
+    [/^Bonus Class (\d): book it in My Schedule\.$/, function (m) { return "الحصة الإضافية " + m[1] + ": احجزها من «جدولي»."; }],
+    [/^Bonus Class (\d) opens after Lesson (\d+)$/, function (m) { return "تُفتح الحصة الإضافية " + m[1] + " بعد الدرس " + m[2]; }],
+    [/^Bonus (\d)$/, function (m) { return "إضافية " + m[1]; }],
+    [/^The next class to book is Bonus Class (\d)\.$/, function (m) { return "الحصة التالية للحجز هي الحصة الإضافية " + m[1] + "."; }],
+    [/^Book Bonus Class (\d)\?$/, function (m) { return "هل تحجز الحصة الإضافية " + m[1] + "؟"; }],
+    [/^Bonus Class (\d) booked! 🎉$/, function (m) { return "تم حجز الحصة الإضافية " + m[1] + "! 🎉"; }],
+    [/^(Level \d+ · [^·]+|Pre-A · [^·]+) · Bonus Class (\d)$/, function (m) { return lv(m[1]) + " · الحصة الإضافية " + m[2]; }],
     [/^(\d+)\/(\d+) lessons done \(prep \+ class \+ homework\)$/, function (m) { return m[1] + "/" + m[2] + " دروس منجزة (تحضير + حصة + واجب)"; }],
     [/^(\d+) of (\d+) lessons done$/, function (m) { return m[1] + " من " + m[2] + " دروس منجزة"; }],
     [/^· (\d+) of (\d+) lessons$/, function (m) { return "· " + m[1] + " من " + m[2] + " دروس"; }],

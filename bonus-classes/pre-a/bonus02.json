@@ -624,5 +624,862 @@
     "The trickster discovery (cat/kite, one, xylophone) is meant to plant a seed: in English, listen first, then look.",
     "Bonus Class 3 moves from the start of words to the end of words (rhyme) and to beats (syllables).",
     "Timing: this class is 45 minutes (5 + 8 + 9 + 4 + 7 + 7 + 5), which suits 4-6 year olds online. Keep every stage short and moving, and add a 30-second stand-and-stretch between seated stages when attention drops. If the group is slow, trim in this order: skip the object hunt in I Spy (use the picture scene only), do 3 chants instead of 5, then match 6 words instead of 8 in the Arabic Bridge (keep three, tree and van). Never cut the trickster cases, the movement break or the exit ticket."
-  ]
+  ],
+  "deck": [
+    {
+      "type": "reveal",
+      "ribbon": "Warm-up · the mystery bag",
+      "instructions": "Listen to the first sound and the clue. What is in Lumi's bag?",
+      "instructionsAr": "استمع إلى الصوت الأول واللغز: ماذا في كيس لومي؟",
+      "perSlide": 3,
+      "items": [
+        {
+          "prompt": "/s/ ... it is yellow ... it is in the sky",
+          "say": "/s/",
+          "answer": "the sun: /s/ sun"
+        },
+        {
+          "prompt": "/f/ ... it swims",
+          "say": "/f/",
+          "answer": "a fish: /f/ fish"
+        },
+        {
+          "prompt": "/k/ ... it tells the time",
+          "say": "/k/",
+          "answer": "a clock: /k/ clock"
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "ribbon": "Sound lab · the word train",
+      "title": "A word is a little train",
+      "big": "sssss-un",
+      "text": "The first sound is the engine at the front. Stretch the word, then stop at the engine: /s/!",
+      "ar": "الكلمة قطار صغير، والصوت الأول هو القاطرة في المقدمة. مُدّ الكلمة، ثم توقّف عند القاطرة /s/ وحدها.",
+      "host": "lumi-teach-board"
+    },
+    {
+      "type": "listen",
+      "ribbon": "Listen · catch the engine",
+      "question": "What is the first sound?",
+      "rounds": [
+        {
+          "say": "sun",
+          "options": [
+            "s",
+            "z",
+            "t"
+          ],
+          "answer": "s"
+        },
+        {
+          "say": "moon",
+          "options": [
+            "n",
+            "m",
+            "b"
+          ],
+          "answer": "m"
+        },
+        {
+          "say": "zebra",
+          "options": [
+            "s",
+            "v",
+            "z"
+          ],
+          "answer": "z"
+        },
+        {
+          "say": "red",
+          "options": [
+            "l",
+            "w",
+            "r"
+          ],
+          "answer": "r"
+        },
+        {
+          "say": "yellow",
+          "options": [
+            "y",
+            "w",
+            "l"
+          ],
+          "answer": "y"
+        },
+        {
+          "say": "water",
+          "options": [
+            "v",
+            "w",
+            "y"
+          ],
+          "answer": "w"
+        },
+        {
+          "say": "van",
+          "options": [
+            "f",
+            "b",
+            "v"
+          ],
+          "answer": "v"
+        },
+        {
+          "say": "green",
+          "options": [
+            "g",
+            "k",
+            "d"
+          ],
+          "answer": "g"
+        }
+      ]
+    },
+    {
+      "type": "reveal",
+      "ribbon": "Game · I spy",
+      "instructions": "I spy with my little eye... Listen to the first sound and the clue.",
+      "instructionsAr": "أرى بعيني... استمع إلى الصوت الأول واللغز.",
+      "perSlide": 5,
+      "items": [
+        {
+          "prompt": "/t/ ... it is green and tall",
+          "say": "/t/",
+          "answer": "tree"
+        },
+        {
+          "prompt": "/z/ ... it has stripes",
+          "say": "/z/",
+          "answer": "zebra"
+        },
+        {
+          "prompt": "/k/ ... it tells the time",
+          "say": "/k/",
+          "answer": "clock"
+        },
+        {
+          "prompt": "/f/ ... it swims",
+          "say": "/f/",
+          "answer": "fish"
+        },
+        {
+          "prompt": "/v/ ... it has wheels",
+          "say": "/v/",
+          "answer": "van"
+        }
+      ]
+    },
+    {
+      "type": "cards",
+      "ribbon": "Game · trickster cases",
+      "title": "Detectives listen! Letters play tricks",
+      "cards": [
+        {
+          "big": "C K",
+          "say": "/k/",
+          "head": "cat · kite",
+          "sub": "Same first sound /k/, two different letters!",
+          "ar": "صوت واحد وحرفان مختلفان",
+          "words": [
+            "cat",
+            "kite"
+          ],
+          "color": "#1E4FA3"
+        },
+        {
+          "big": "O",
+          "say": "one",
+          "head": "one",
+          "sub": "It starts with /w/, like water!",
+          "ar": "تبدأ بالصوت /w/ مثل water",
+          "words": [
+            "one",
+            "water"
+          ],
+          "color": "#BE123C"
+        },
+        {
+          "big": "X",
+          "say": "xylophone",
+          "head": "xylophone",
+          "sub": "It starts with /z/, like zebra!",
+          "ar": "تبدأ بالصوت /z/ مثل zebra",
+          "words": [
+            "xylophone",
+            "zebra"
+          ],
+          "color": "#7C3AED"
+        }
+      ]
+    },
+    {
+      "type": "sort",
+      "ribbon": "Game · jump or statue?",
+      "instructions": "Does it start with /s/? Jump! No? Be a statue!",
+      "instructionsAr": "هل تبدأ الكلمة بالصوت /s/؟ اقفز! لا؟ قف كالتمثال!",
+      "boxes": [
+        "Jump! It starts with /s/",
+        "Statue! Not /s/"
+      ],
+      "colors": [
+        "#F97316",
+        "#6B7280"
+      ],
+      "items": [
+        {
+          "text": "sun",
+          "box": "Jump! It starts with /s/"
+        },
+        {
+          "text": "ten",
+          "box": "Statue! Not /s/"
+        },
+        {
+          "text": "six",
+          "box": "Jump! It starts with /s/"
+        },
+        {
+          "text": "zebra",
+          "box": "Statue! Not /s/"
+        },
+        {
+          "text": "seven",
+          "box": "Jump! It starts with /s/"
+        },
+        {
+          "text": "blue",
+          "box": "Statue! Not /s/"
+        },
+        {
+          "text": "three",
+          "box": "Statue! Not /s/"
+        },
+        {
+          "text": "sit",
+          "box": "Jump! It starts with /s/"
+        }
+      ]
+    },
+    {
+      "type": "compare",
+      "ribbon": "Arabic bridge · sound friends",
+      "title": "Same sound, two alphabets",
+      "columns": [
+        {
+          "head": "English"
+        },
+        {
+          "head": "First sound"
+        },
+        {
+          "head": "العربية",
+          "rtl": true
+        }
+      ],
+      "rows": [
+        [
+          "sun",
+          "/s/",
+          "س: سمكة"
+        ],
+        [
+          "moon",
+          "/m/",
+          "م: موز"
+        ],
+        [
+          "three",
+          "/θ/: tongue out a little",
+          "ث: ثلاثة"
+        ],
+        [
+          "tree",
+          "/t/: tongue behind the teeth",
+          "ت: تفاحة"
+        ],
+        [
+          "van",
+          "/v/: teeth on the lip + buzz",
+          "لا يوجد حرف عربي"
+        ]
+      ],
+      "note": "Arabic has no v and no p: van is not 'fan', pen is not 'ben'!",
+      "noteAr": "انتبه: لا يوجد في العربية v ولا p، فكلمة van ليست fan، وكلمة pen ليست ben"
+    },
+    {
+      "type": "reveal",
+      "ribbon": "Arabic bridge · find the friend",
+      "instructions": "Say the word. Point to the Arabic letter with the same first sound.",
+      "instructionsAr": "قل الكلمة، وأشر إلى الحرف العربي الذي له الصوت الأول نفسه.",
+      "perSlide": 8,
+      "items": [
+        {
+          "prompt": "sun",
+          "say": "sun",
+          "answer": "س"
+        },
+        {
+          "prompt": "moon",
+          "say": "moon",
+          "answer": "م"
+        },
+        {
+          "prompt": "red",
+          "say": "red",
+          "answer": "ر"
+        },
+        {
+          "prompt": "yellow",
+          "say": "yellow",
+          "answer": "ي"
+        },
+        {
+          "prompt": "water",
+          "say": "water",
+          "answer": "و"
+        },
+        {
+          "prompt": "three",
+          "say": "three",
+          "answer": "ث"
+        },
+        {
+          "prompt": "tree",
+          "say": "tree",
+          "answer": "ت"
+        },
+        {
+          "prompt": "van",
+          "say": "van",
+          "answer": "no Arabic letter: cross arms"
+        }
+      ]
+    },
+    {
+      "type": "chant",
+      "ribbon": "Practice · silly sound chants",
+      "title": "Say it two times. Faster!",
+      "lines": [
+        {
+          "en": "Big blue ball!"
+        },
+        {
+          "en": "Six silly suns!"
+        },
+        {
+          "en": "Five funny fish!"
+        },
+        {
+          "en": "Ten tall trees!"
+        },
+        {
+          "en": "Sara's sun! Ziad's zebra!"
+        }
+      ],
+      "tip": "Which sound do you hear again and again?",
+      "host": "lumi-megaphone"
+    },
+    {
+      "type": "reveal",
+      "ribbon": "Your turn · finish the chant",
+      "instructions": "Finish the chant with a word that starts with the same sound.",
+      "instructionsAr": "أكمل النشيد بكلمة تبدأ بالصوت نفسه.",
+      "perSlide": 5,
+      "items": [
+        {
+          "prompt": "Big blue ...",
+          "say": "Big blue",
+          "answer": "ball (or another /b/ word)"
+        },
+        {
+          "prompt": "Six silly ...",
+          "say": "Six silly",
+          "answer": "suns (or another /s/ word)"
+        },
+        {
+          "prompt": "Five funny ...",
+          "say": "Five funny",
+          "answer": "fish (or another /f/ word)"
+        },
+        {
+          "prompt": "Ten tall ...",
+          "say": "Ten tall",
+          "answer": "trees (or another /t/ word)"
+        },
+        {
+          "prompt": "Ziad's ...",
+          "say": "Ziad's",
+          "answer": "zebra (any /z/ word)"
+        }
+      ]
+    },
+    {
+      "type": "fact",
+      "ribbon": "Did you know · letter tricks",
+      "text": "Cat and kite start with the same sound, but with different letters: C and K. English letters like to play tricks. Detectives listen first!",
+      "ar": "كلمتا cat و kite تبدآن بالصوت نفسه، لكن بحرفين مختلفين: C و K. الحروف الإنجليزية تحب الخدع، فاستمع أولاً!"
+    }
+  ],
+  "homeworkMissions": {
+    "theme": "Detective Club",
+    "themeAr": "نادي المحققين",
+    "intro": "Five detective missions. Ask a grown-up to read them with you. Solve them all to earn your badge!",
+    "introAr": "خمس مهمات للمحققين. اطلب من أحد الكبار أن يقرأها معك. حُلّها كلها لتحصل على شارتك!",
+    "badge": "First Sound Detective",
+    "badgeAr": "محقق الصوت الأول",
+    "missions": [
+      {
+        "type": "listen-choose",
+        "title": "Catch the Engine",
+        "titleAr": "التقط القاطرة",
+        "intro": "Listen to the word. Tap the letter of its first sound.",
+        "introAr": "استمع إلى الكلمة واضغط حرف أول صوت فيها.",
+        "rounds": [
+          {
+            "say": "sun",
+            "options": [
+              "s",
+              "t",
+              "z"
+            ],
+            "answer": "s"
+          },
+          {
+            "say": "moon",
+            "options": [
+              "n",
+              "b",
+              "m"
+            ],
+            "answer": "m"
+          },
+          {
+            "say": "zebra",
+            "options": [
+              "z",
+              "s",
+              "v"
+            ],
+            "answer": "z"
+          },
+          {
+            "say": "van",
+            "options": [
+              "f",
+              "v",
+              "b"
+            ],
+            "answer": "v"
+          },
+          {
+            "say": "red",
+            "options": [
+              "r",
+              "l",
+              "w"
+            ],
+            "answer": "r"
+          },
+          {
+            "say": "water",
+            "options": [
+              "y",
+              "v",
+              "w"
+            ],
+            "answer": "w"
+          },
+          {
+            "say": "yellow",
+            "options": [
+              "l",
+              "y",
+              "w"
+            ],
+            "answer": "y"
+          },
+          {
+            "say": "green",
+            "options": [
+              "k",
+              "d",
+              "g"
+            ],
+            "answer": "g"
+          }
+        ]
+      },
+      {
+        "type": "listen-choose",
+        "title": "Same or Different?",
+        "titleAr": "نفسه أم مختلف؟",
+        "intro": "Listen to two words. Same first sound? Thumbs up! Different? Thumbs down!",
+        "introAr": "استمع إلى كلمتين: الصوت الأول نفسه؟ ارفع إبهامك! مختلف؟ اخفضه!",
+        "labels": {
+          "👍": "same",
+          "👎": "different"
+        },
+        "rounds": [
+          {
+            "say": "sun, six",
+            "options": [
+              "👍",
+              "👎"
+            ],
+            "answer": "👍"
+          },
+          {
+            "say": "ten, red",
+            "options": [
+              "👍",
+              "👎"
+            ],
+            "answer": "👎"
+          },
+          {
+            "say": "cat, kite",
+            "options": [
+              "👍",
+              "👎"
+            ],
+            "answer": "👍"
+          },
+          {
+            "say": "van, five",
+            "options": [
+              "👍",
+              "👎"
+            ],
+            "answer": "👎"
+          },
+          {
+            "say": "fish, four",
+            "options": [
+              "👍",
+              "👎"
+            ],
+            "answer": "👍"
+          },
+          {
+            "say": "three, tree",
+            "options": [
+              "👍",
+              "👎"
+            ],
+            "answer": "👎"
+          },
+          {
+            "say": "zebra, seven",
+            "options": [
+              "👍",
+              "👎"
+            ],
+            "answer": "👎"
+          },
+          {
+            "say": "nose, nine",
+            "options": [
+              "👍",
+              "👎"
+            ],
+            "answer": "👍"
+          }
+        ]
+      },
+      {
+        "type": "sort",
+        "title": "Jump or Statue?",
+        "titleAr": "اقفز أم تمثال؟",
+        "intro": "Tap a word to hear it. Does it start with /s/? Tap its box.",
+        "introAr": "اضغط الكلمة لتسمعها: هل تبدأ بالصوت /s/؟ ثم اختر صندوقها.",
+        "boxes": [
+          "Jump! /s/",
+          "Statue! not /s/"
+        ],
+        "items": [
+          {
+            "text": "sun",
+            "box": 0
+          },
+          {
+            "text": "ten",
+            "box": 1
+          },
+          {
+            "text": "six",
+            "box": 0
+          },
+          {
+            "text": "zebra",
+            "box": 1
+          },
+          {
+            "text": "seven",
+            "box": 0
+          },
+          {
+            "text": "blue",
+            "box": 1
+          },
+          {
+            "text": "three",
+            "box": 1
+          },
+          {
+            "text": "sit",
+            "box": 0
+          }
+        ]
+      },
+      {
+        "type": "record",
+        "title": "Silly Chant Studio",
+        "titleAr": "استوديو الأناشيد المضحكة",
+        "intro": "Listen, then record yourself. Slowly first, then fast!",
+        "introAr": "استمع ثم سجّل صوتك: ببطء أولاً ثم بسرعة!",
+        "lines": [
+          "Big blue ball!",
+          "Six silly suns!",
+          "Five funny fish!",
+          "Ten tall trees!"
+        ]
+      },
+      {
+        "type": "mission",
+        "title": "I Spy at Home",
+        "titleAr": "أرى بعيني في البيت",
+        "intro": "Play the detective game with your family!",
+        "introAr": "العب لعبة المحقق مع عائلتك!",
+        "steps": [
+          {
+            "en": "Play I spy with a family member: 'I spy something that starts with /b/.'",
+            "ar": "العب 'أرى بعيني' مع أحد أفراد عائلتك: قل 'I spy something that starts with /b/' ودعه يخمّن."
+          },
+          {
+            "en": "Take turns: the grown-up spies, you guess. Then you spy!",
+            "ar": "تبادلا الأدوار: الكبير يختار شيئاً وأنت تخمّن، ثم تختار أنت!"
+          },
+          {
+            "en": "Find 3 things that start with the same sound and draw them in one big house.",
+            "ar": "ابحث عن 3 أشياء تبدأ بالصوت نفسه وارسمها داخل بيت كبير."
+          },
+          {
+            "en": "Say your silly name chant to your family (Sara's sun!).",
+            "ar": "قل نشيد اسمك المضحك (مثل Sara's sun) لعائلتك."
+          }
+        ],
+        "ask": "Who played I spy with you?",
+        "askAr": "مَن لعب معك 'أرى بعيني'؟",
+        "findLabel": "Grown-up: write the 3 things",
+        "findLabelAr": "ولي الأمر: اكتب الأشياء الثلاثة",
+        "findCount": 3
+      }
+    ]
+  },
+  "printables": {
+    "worksheet": [
+      {
+        "type": "picture-gap",
+        "title": "Look and say. Write the first letter",
+        "titleAr": "انظر وقل الكلمة، ثم اكتب الحرف الأول",
+        "items": [
+          {
+            "image": "sun",
+            "frame": "_un",
+            "answer": "s"
+          },
+          {
+            "image": "moon",
+            "frame": "_oon",
+            "answer": "m"
+          },
+          {
+            "image": "zebra",
+            "frame": "_ebra",
+            "answer": "z"
+          },
+          {
+            "image": "van",
+            "frame": "_an",
+            "answer": "v"
+          },
+          {
+            "image": "fish",
+            "frame": "_ish",
+            "answer": "f"
+          },
+          {
+            "image": "tree",
+            "frame": "_ree",
+            "answer": "t"
+          },
+          {
+            "image": "water",
+            "frame": "_ater",
+            "answer": "w"
+          },
+          {
+            "image": "red",
+            "frame": "_ed",
+            "answer": "r"
+          }
+        ]
+      },
+      {
+        "type": "odd-one-out",
+        "title": "Grown-up reads. Circle the different first sound",
+        "titleAr": "يقرأ الكبير الكلمات: ضع دائرة حول الكلمة ذات الصوت الأول المختلف",
+        "sets": [
+          [
+            "sun",
+            "six",
+            "ten"
+          ],
+          [
+            "fish",
+            "five",
+            "van"
+          ],
+          [
+            "tree",
+            "ten",
+            "three"
+          ],
+          [
+            "cat",
+            "kite",
+            "goat"
+          ]
+        ]
+      },
+      {
+        "type": "match",
+        "title": "Draw a line from each word to its Arabic first-sound friend",
+        "titleAr": "صِل كل كلمة بالحرف العربي الذي له الصوت الأول نفسه",
+        "pairs": [
+          [
+            "sun",
+            "م"
+          ],
+          [
+            "moon",
+            "ث"
+          ],
+          [
+            "tree",
+            "ر"
+          ],
+          [
+            "three",
+            "س"
+          ],
+          [
+            "red",
+            "ت"
+          ]
+        ]
+      },
+      {
+        "type": "draw",
+        "title": "My same-sound house: draw 3 things with the same first sound",
+        "titleAr": "بيت الصوت الواحد: ارسم 3 أشياء تبدأ بالصوت نفسه",
+        "boxes": [
+          {
+            "label": "1",
+            "color": "#F97316"
+          },
+          {
+            "label": "2",
+            "color": "#0D9488"
+          },
+          {
+            "label": "3",
+            "color": "#7C3AED"
+          }
+        ]
+      },
+      {
+        "type": "sign",
+        "text": "I played I spy with:",
+        "textAr": "لعبتُ 'أرى بعيني' مع:"
+      }
+    ],
+    "cards": [
+      {
+        "big": "s",
+        "head": "/s/",
+        "sub": "sun · six · seven",
+        "ar": "س",
+        "color": "#F97316"
+      },
+      {
+        "big": "m",
+        "head": "/m/",
+        "sub": "moon",
+        "ar": "م",
+        "color": "#BE123C"
+      },
+      {
+        "big": "t",
+        "head": "/t/",
+        "sub": "ten · tree",
+        "ar": "ت",
+        "color": "#15803D"
+      },
+      {
+        "big": "z",
+        "head": "/z/",
+        "sub": "zebra · xylophone",
+        "ar": "ز",
+        "color": "#7C3AED"
+      },
+      {
+        "big": "v",
+        "head": "/v/",
+        "sub": "van · teeth on the lip + buzz",
+        "ar": "صوت جديد",
+        "color": "#0D9488"
+      },
+      {
+        "big": "k",
+        "head": "/k/",
+        "sub": "cat · kite · clock (C or K!)",
+        "ar": "ك",
+        "color": "#1E4FA3"
+      },
+      {
+        "image": "sun",
+        "head": "sun",
+        "color": "#F97316"
+      },
+      {
+        "image": "moon",
+        "head": "moon",
+        "color": "#BE123C"
+      },
+      {
+        "image": "tree",
+        "head": "tree",
+        "color": "#15803D"
+      },
+      {
+        "image": "zebra",
+        "head": "zebra",
+        "color": "#7C3AED"
+      },
+      {
+        "image": "van",
+        "head": "van",
+        "color": "#0D9488"
+      },
+      {
+        "image": "clock",
+        "head": "clock",
+        "color": "#1E4FA3"
+      }
+    ]
+  }
 }
