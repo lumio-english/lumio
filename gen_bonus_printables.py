@@ -22,6 +22,8 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 FONTS = os.path.join(ROOT, "_docs", "manuals-src", "assets", "fonts")
 TEEN = {"level3", "level4", "level5", "level6"}
 e = lambda s: html.escape(str(s if s is not None else ""))
+sys.path.insert(0, os.path.join(ROOT, "lib"))
+from bonus_deck import ar_html as ea  # Arabic with English examples isolated left-to-right
 
 
 def url(rel):
@@ -97,11 +99,11 @@ def worksheet_html(d):
     for s in d["printables"].get("worksheet", []):
         t = s["type"]
         if t == "sign":
-            out.append(f'<section class="sign"><span>{e(s["text"])}<br><span class="ar">{e(s.get("textAr"))}</span></span>'
+            out.append(f'<section class="sign"><span>{e(s["text"])}<br><span class="ar">{ea(s.get("textAr") or "")}</span></span>'
                        f'<span class="l"></span><span>Parent ✓</span><span class="l" style="flex:.4"></span></section>')
             continue
         n += 1
-        h = f'<h2><span class="n">{n}</span>{e(s["title"])}</h2><div class="ar sub">{e(s.get("titleAr"))}</div>'
+        h = f'<h2><span class="n">{n}</span>{e(s["title"])}</h2><div class="ar sub">{ea(s.get("titleAr") or "")}</div>'
         if t == "draw":
             body = '<div class="draws">' + "".join(
                 f'<div class="draw" style="--c:{b.get("color", acc)}"><b>{e(b["label"])}</b></div>' for b in s["boxes"]) + "</div>"
@@ -144,7 +146,7 @@ def cards_html(d):
         top = f'<div class="big"{fs}>{e(c["big"])}</div>' if c.get("big") else (f'<img src="{pic}">' if pic else "")
         cards.append(f'<div class="card" style="--c:{c.get("color", "#F97316")}">{top}<div class="h">{e(c["head"])}</div>'
                      f'{f"<div class=s>{e(c["sub"])}</div>" if c.get("sub") else ""}'
-                     f'{f"<div class=ar>{e(c["ar"])}</div>" if c.get("ar") else ""}</div>')
+                     f'{f"<div class=ar>{ea(c["ar"])}</div>" if c.get("ar") else ""}</div>')
     return (f'<!doctype html><html><head><meta charset="utf-8"><style>{font_css()}{BASE_CSS}</style></head><body>'
             f'<div class="cut">✂ Cut along the dashed lines · {e(d["label"])}: {e(d["title"])}</div>'
             f'<div class="cards">{"".join(cards)}</div></body></html>')

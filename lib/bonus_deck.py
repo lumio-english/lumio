@@ -10,6 +10,7 @@ Lumio.speak for sound, checkQuizAnswer (present.html) for one-answer quizzes, cl
 """
 import html as _html
 import re
+_re = re
 
 CHAR = "assets/story/characters"
 W, H = 1467, 825
@@ -40,8 +41,21 @@ def speak_btn(text, cls="s"):
     return f'<button class="v3-btn teal round {cls} bx-say" onclick="{speak_js(text)}" aria-label="Listen">{ico("sound")}</button>'
 
 
+# English inside an Arabic line (examples like "Noor is shy", "-s", "Wh-") is isolated left-to-right,
+# otherwise the browser's bidi reordering scrambles the words and brackets.
+_LATIN = _re.compile(r"-?[A-Za-z][A-Za-z0-9 '\u2019/+\-.,?!…]*[A-Za-z0-9?!'\u2019\-]|-?[A-Za-z]")
+
+
+def ar_html(text):
+    out, pos, t = [], 0, str(text)
+    for m in _LATIN.finditer(t):
+        out.append(esc(t[pos:m.start()]) + f'<bdi dir="ltr">{esc(m.group(0))}</bdi>')
+        pos = m.end()
+    return "".join(out) + esc(t[pos:])
+
+
 def ar(text, cls="bx-ar"):
-    return f'<div class="{cls}" dir="rtl">{esc(text)}</div>' if text else ""
+    return f'<div class="{cls}" dir="rtl">{ar_html(text)}</div>' if text else ""
 
 
 def level_name(level):
@@ -105,7 +119,7 @@ class Deck:
         d = self.d
         rows = "".join(f'<li><span class="n">{i}</span><div><b>{esc(o["en"])}</b>{ar(o["ar"])}</div></li>'
                        for i, o in enumerate(d["objectives"], 1))
-        inner = (f'<div class="v3-paper" style="left:60px;top:150px;width:900px">'
+        inner = (f'<div class="v3-paper" style="left:60px;top:140px;width:900px">'
                  f'<div class="v3-label">{ico("compass")} Today I can...</div><ol class="bx-goals">{rows}</ol></div>'
                  f'<div class="v3-paper bx-big" style="left:990px;top:170px;width:400px">'
                  f'<div class="v3-label t">{ico("bulb")} Big idea</div><div class="v3-quote">{esc(d["bigIdea"])}</div></div>')
@@ -259,7 +273,7 @@ class Deck:
         lines = "".join(
             f'<div class="bx-line">{speak_btn(l["en"])}<div><div class="en">{esc(l["en"])}</div>{ar(l.get("ar"))}</div></div>'
             for l in s["lines"])
-        inner = (f'<div class="v3-paper bx-chant" style="left:60px;top:150px;width:{960 if s.get("host") else 1340}px">'
+        inner = (f'<div class="v3-paper bx-chant{" many" if len(s["lines"]) > 5 else ""}" style="left:60px;top:150px;width:{960 if s.get("host") else 1340}px">'
                  f'<div class="v3-label">{ico("music")} {esc(s.get("title", "Say it with me"))}</div>{lines}'
                  f'{f"<div class=bx-tip>{esc(s["tip"])}</div>" if s.get("tip") else ""}</div>'
                  + self.host(s.get("host"), height=430))
@@ -269,7 +283,7 @@ class Deck:
         cols = s["columns"]
         head = "".join(f'<th{" dir=rtl" if c.get("rtl") else ""}>{esc(c["head"])}</th>' for c in cols)
         body = "".join(
-            "<tr>" + "".join(f'<td{" dir=rtl class=r" if cols[j].get("rtl") else ""}>{esc(cell)}</td>' for j, cell in enumerate(row)) + "</tr>"
+            "<tr>" + "".join((f'<td dir=rtl class=r>{ar_html(cell)}</td>' if cols[j].get("rtl") else f'<td>{esc(cell)}</td>') for j, cell in enumerate(row)) + "</tr>"
             for row in s["rows"])
         inner = (f'<div class="bx-h1" style="top:150px">{esc(s.get("title", ""))}</div>'
                  f'<div class="v3-paper bx-table" style="left:60px;top:230px;width:{1000 if s.get("host") else 1340}px">'
@@ -280,7 +294,7 @@ class Deck:
 
     def s_fact(self, s):
         inner = (f'<div class="v3-glow" style="left:260px;top:60px;width:900px;height:900px"></div>'
-                 f'<div class="v3-paper bx-fact" style="left:160px;top:190px;width:880px">'
+                 f'<div class="v3-paper bx-fact" style="left:100px;top:190px;width:820px">'
                  f'<div class="v3-label">{ico("sparkle")} {esc(s.get("title", "Did you know?"))}</div>'
                  f'<div class="v3-quote">{esc(s["text"])}</div>{ar(s.get("ar"))}</div>'
                  + self.host(s.get("host", "lumi-surprised"), right=80, height=440))

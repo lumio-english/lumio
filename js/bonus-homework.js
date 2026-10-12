@@ -21,6 +21,14 @@
   var app = document.getElementById("bmApp");
   var data = null, cls = null, state = [];
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+  // English inside an Arabic line is isolated left-to-right so brackets and word order stay right
+  var LATIN = /-?[A-Za-z][A-Za-z0-9 '\u2019\/+\-.,?!\u2026]*[A-Za-z0-9?!'\u2019\-]|-?[A-Za-z]/g;
+  function escAr(s) {
+    var t = String(s == null ? "" : s), out = "", pos = 0, m;
+    LATIN.lastIndex = 0;
+    while ((m = LATIN.exec(t))) { out += esc(t.slice(pos, m.index)) + '<bdi dir="ltr">' + esc(m[0]) + "</bdi>"; pos = m.index + m[0].length; }
+    return out + esc(t.slice(pos));
+  }
   function say(t) {
     t = String(t || "");
     try {
@@ -58,7 +66,7 @@
     app.innerHTML =
       '<section class="bm-hero">' +
         '<div class="bm-hero-txt"><span class="bm-kicker">' + esc(cls.label) + ' · ' + esc(data.theme) + '</span>' +
-        '<h1>' + esc(cls.title) + '</h1><p>' + esc(data.intro) + '</p><p class="ar" dir="rtl">' + esc(data.introAr) + '</p></div>' +
+        '<h1>' + esc(cls.title) + '</h1><p>' + esc(data.intro) + '</p><p class="ar" dir="rtl">' + escAr(data.introAr) + '</p></div>' +
         '<div class="bm-ring" style="--p:' + pct + '"><b>' + done + '/' + n + '</b><small>missions</small></div>' +
         '<img class="bm-buddy" src="' + CHAR + '" alt="">' +
       '</section>' +
@@ -66,7 +74,7 @@
         var s = state[i];
         return '<button type="button" class="bm-tile' + (s.done ? " done" : "") + '" data-i="' + i + '">' +
           '<span class="bm-num">' + (i + 1) + '</span><span class="bm-ico">' + (ICON[m.type] || "⭐") + '</span>' +
-          '<b>' + esc(m.title) + '</b><span class="ar" dir="rtl">' + esc(m.titleAr) + '</span>' +
+          '<b>' + esc(m.title) + '</b><span class="ar" dir="rtl">' + escAr(m.titleAr) + '</span>' +
           '<span class="bm-state">' + (s.done ? (s.total ? "✓ " + s.correct + "/" + s.total : "✓ Done") : "Start") + '</span>' +
           (s.done ? '<span class="bm-stamp">★</span>' : "") + '</button>';
       }).join("") + '</div>' +
@@ -83,7 +91,7 @@
   function finishCard() {
     var sc = score(), st = stars(sc.pct);
     return '<section class="bm-finish"><div class="bm-badge">🏅</div><h2>' + esc(data.badge) + '!</h2>' +
-      '<p class="ar" dir="rtl">' + esc(data.badgeAr) + '</p>' +
+      '<p class="ar" dir="rtl">' + escAr(data.badgeAr) + '</p>' +
       '<div class="bm-stars">' + "★★★".slice(0, st) + '<span>' + "★★★".slice(st) + '</span></div>' +
       '<p>' + sc.c + ' of ' + sc.t + ' answers right on the first try (' + sc.pct + '%).</p>' +
       '<button type="button" class="bm-btn" id="bmSubmit">' + (preview ? "Finish (preview)" : "Send to my teacher") + '</button></section>';
@@ -107,7 +115,7 @@
     var m = data.missions[i];
     app.innerHTML = '<section class="bm-mission"><button type="button" class="bm-back">← All missions</button>' +
       '<div class="bm-mhead"><span class="bm-ico">' + (ICON[m.type] || "⭐") + '</span><div><h2>' + esc(m.title) + '</h2>' +
-      '<p>' + esc(m.intro) + '</p><p class="ar" dir="rtl">' + esc(m.introAr) + '</p></div></div>' +
+      '<p>' + esc(m.intro) + '</p><p class="ar" dir="rtl">' + escAr(m.introAr) + '</p></div></div>' +
       '<div class="bm-body" id="bmBody"></div></section>';
     app.querySelector(".bm-back").addEventListener("click", board);
     scrollTo(0, 0);
@@ -204,7 +212,7 @@
     },
     "true-false": function (m, body, finish) {
       rounds(body, m.items, function (r, el, answer) {
-        el.innerHTML = '<p class="bm-q">' + esc(r.q) + '</p>' + (r.qAr ? '<p class="ar bm-qar" dir="rtl">' + esc(r.qAr) + '</p>' : "") +
+        el.innerHTML = '<p class="bm-q">' + esc(r.q) + '</p>' + (r.qAr ? '<p class="ar bm-qar" dir="rtl">' + escAr(r.qAr) + '</p>' : "") +
           '<div class="bm-opts two"><button type="button" class="bm-opt tf" data-v="1"><b>True</b><small>صح</small></button>' +
           '<button type="button" class="bm-opt tf" data-v="0"><b>False</b><small>خطأ</small></button></div><p class="bm-why" hidden></p>';
         el.querySelectorAll(".bm-opt").forEach(function (b) {
@@ -258,10 +266,10 @@
     mission: function (m, body, finish) {
       var n = m.findCount || 0;
       body.innerHTML = '<ol class="bm-steps">' + m.steps.map(function (s, j) {
-        return '<li><label><input type="checkbox" data-j="' + j + '"><span>' + esc(s.en) + '<span class="ar" dir="rtl">' + esc(s.ar) + '</span></span></label></li>';
+        return '<li><label><input type="checkbox" data-j="' + j + '"><span>' + esc(s.en) + '<span class="ar" dir="rtl">' + escAr(s.ar) + '</span></span></label></li>';
       }).join("") + '</ol>' +
-        (m.ask ? '<label class="bm-field">' + esc(m.ask) + ' <span class="ar" dir="rtl">' + esc(m.askAr) + '</span><input type="text" id="bmWho" maxlength="40" placeholder="Mom, Dad, my brother..."></label>' : "") +
-        (n ? '<div class="bm-field">' + esc(m.findLabel) + ' <span class="ar" dir="rtl">' + esc(m.findLabelAr) + '</span><div class="bm-finds">' +
+        (m.ask ? '<label class="bm-field">' + esc(m.ask) + ' <span class="ar" dir="rtl">' + escAr(m.askAr) + '</span><input type="text" id="bmWho" maxlength="40" placeholder="Mom, Dad, my brother..."></label>' : "") +
+        (n ? '<div class="bm-field">' + esc(m.findLabel) + ' <span class="ar" dir="rtl">' + escAr(m.findLabelAr) + '</span><div class="bm-finds">' +
           Array.from({ length: n }, function (_, j) { return '<input type="text" maxlength="20" class="bm-find" aria-label="Thing ' + (j + 1) + '">'; }).join("") + '</div></div>' : "") +
         '<button type="button" class="bm-btn" id="bmMissionDone" disabled>Mission done!</button>';
       var btn = body.querySelector("#bmMissionDone");

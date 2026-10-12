@@ -111,6 +111,8 @@ def load_all():
 
 # ---------------------------------------------------------------- HTML
 e = lambda s: html.escape(str(s))
+sys.path.insert(0, os.path.join(ROOT, "lib"))
+from bonus_deck import ar_html as ea  # Arabic with English examples isolated left-to-right
 
 CSS = """
 :root{--o:var(--lumio-orange,#F97316);--od:var(--lumio-orange-dark,#C2530A);--os:var(--lumio-orange-soft,#FFF1E0);
@@ -197,13 +199,13 @@ def bullets(items):
 
 
 def ar_bullets(items):
-    return '<ul class="ar">' + "".join(f"<li>{e(x)}</li>" for x in items) + "</ul>"
+    return '<ul class="ar">' + "".join(f"<li>{ea(x)}</li>" for x in items) + "</ul>"
 
 
 def exercise_html(ex):
     out = [f'<div class="ex"><b>Exercise · {e(ex.get("type", ""))}</b> — {e(ex.get("instructions", ""))}']
     if ex.get("instructionsAr"):
-        out.append(f'<div class="ar">{e(ex["instructionsAr"])}</div>')
+        out.append(f'<div class="ar">{ea(ex["instructionsAr"])}</div>')
     out.append("<ol>")
     for it in ex.get("items", []):
         out.append(f'<li>{e(it["prompt"])} → <span class="ans">{e(it["answer"])}</span></li>')
@@ -218,9 +220,9 @@ def class_page(d):
 <span class="tag">{e(lvname)}</span><span class="tag">{e(d['label'])}</span>
 <span class="tag">Class {d['classPosition']} of 24 · after Lesson {d['afterLesson']}</span>
 <span class="tag">{d['durationMinutes']} minutes · ages {e(d['ages'])}</span>
-<span class="tag">{e(d['strand'])} · <span class="ar">{e(d['strandAr'])}</span></span>
-<h1>{e(d['title'])}</h1><div class="ar">{e(d['titleAr'])}</div>
-<div class="big"><b>Big idea:</b> {e(d['bigIdea'])}<div class="ar">{e(d['bigIdeaAr'])}</div></div>
+<span class="tag">{e(d['strand'])} · <span class="ar">{ea(d['strandAr'])}</span></span>
+<h1>{e(d['title'])}</h1><div class="ar">{ea(d['titleAr'])}</div>
+<div class="big"><b>Big idea:</b> {e(d['bigIdea'])}<div class="ar">{ea(d['bigIdeaAr'])}</div></div>
 </section>""")
 
     # timeline
@@ -236,20 +238,20 @@ def class_page(d):
         t += s["minutes"]
     h.append("</table></div>")
 
-    obj = "".join(f'<tr><td>{e(o["en"])}</td><td class="ar">{e(o["ar"])}</td></tr>' for o in d["objectives"])
+    obj = "".join(f'<tr><td>{e(o["en"])}</td><td class="ar">{ea(o["ar"])}</td></tr>' for o in d["objectives"])
     h.append(f'<div class="grid"><div class="card"><h2>Objectives</h2><table>{obj}</table></div>'
              f'<div class="card"><h2>Builds on</h2>{bullets(d["builtOn"])}'
              f'<h3>Skill focus</h3><p>{e(", ".join(d["skillFocus"]))}</p></div></div>')
 
     lc = d["linguisticsCorner"]
-    facts = "".join(f'<tr><td>{e(f["en"])}</td><td class="ar">{e(f["ar"])}</td></tr>' for f in lc["facts"])
-    terms = "".join(f'<tr><td><b>{e(k["term"])}</b></td><td class="ar">{e(k["ar"])}</td><td>{e(k["meaning"])}</td></tr>'
+    facts = "".join(f'<tr><td>{e(f["en"])}</td><td class="ar">{ea(f["ar"])}</td></tr>' for f in lc["facts"])
+    terms = "".join(f'<tr><td><b>{e(k["term"])}</b></td><td class="ar">{ea(k["ar"])}</td><td>{e(k["meaning"])}</td></tr>'
                     for k in d["keyTerms"])
-    h.append(f'<div class="card"><h2>Linguistics Corner — {e(lc["title"])} <span class="ar" style="font-weight:600">· {e(lc.get("titleAr", ""))}</span></h2>'
+    h.append(f'<div class="card"><h2>Linguistics Corner — {e(lc["title"])} <span class="ar" style="font-weight:600">· {ea(lc.get("titleAr", ""))}</span></h2>'
              f'<table>{facts}</table><h3>Key terms</h3><table><tr><th>Term</th><th class="ar">بالعربية</th><th>Meaning</th></tr>{terms}</table></div>')
 
-    br = "".join(f'<tr><td><b>{e(b["english"])}</b></td><td class="ar">{e(b["arabic"])}</td><td>{e(b["point"])}'
-                 f'<div class="ar">{e(b.get("pointAr", ""))}</div></td></tr>' for b in d["arabicBridge"])
+    br = "".join(f'<tr><td><b>{e(b["english"])}</b></td><td class="ar">{ea(b["arabic"])}</td><td>{e(b["point"])}'
+                 f'<div class="ar">{ea(b.get("pointAr", ""))}</div></td></tr>' for b in d["arabicBridge"])
     h.append(f'<div class="card"><h2>Arabic Bridge</h2><table><tr><th>English</th><th class="ar">العربية</th><th>What to notice</th></tr>{br}</table></div>')
 
     er = "".join(f'<tr><td>{e(x["wrong"])}</td><td>{e(x["right"])}</td><td>{e(x["why"])}</td></tr>' for x in d["commonErrors"])
@@ -265,7 +267,7 @@ def class_page(d):
         part = [f'<div class="card stage" style="border-left-color:{col}"><div class="head"><h2 style="color:{col}">'
                 f'{i}. {e(s["name"])}</h2><span class="min" style="background:{col}">{t}–{t + s["minutes"]} min</span></div>']
         t += s["minutes"]
-        part.append(f'<div class="ar">{e(s["nameAr"])}</div>')
+        part.append(f'<div class="ar">{ea(s["nameAr"])}</div>')
         part.append(f'<div class="meta"><b>Method:</b> {e(s["method"])}<br><b>Purpose:</b> {e(s["purpose"])}</div>')
         part.append('<div class="say"><b>Teacher says</b>' + "".join(f"<p>“{e(x)}”</p>" for x in s["teacherSays"]))
         if s.get("teacherSaysAr"):
@@ -282,7 +284,7 @@ def class_page(d):
     et = d["exitTicket"]
     h.append('<div class="card"><h2>Exit ticket</h2>' + exercise_html({"type": "exit ticket", **et}) + "</div>")
     hw = d["homework"]
-    h.append(f'<div class="card"><h2>Homework</h2><p>{e(hw["en"])}</p><p class="ar">{e(hw["ar"])}</p>{bullets(hw.get("tasks", []))}</div>')
+    h.append(f'<div class="card"><h2>Homework</h2><p>{e(hw["en"])}</p><p class="ar">{ea(hw["ar"])}</p>{bullets(hw.get("tasks", []))}</div>')
     df = d["differentiation"]
     h.append(f'<div class="grid"><div class="card"><h2>Support</h2>{bullets(df.get("support", []))}</div>'
              f'<div class="card"><h2>Challenge</h2>{bullets(df.get("challenge", []))}</div></div>')
@@ -308,7 +310,7 @@ About 3 months per level at 2-3 classes a week. Each Bonus Class is 60 minutes (
         cs.sort(key=lambda d: d["bonusNumber"])
         links = "".join(
             f'<a href="{level}-bonus{d["bonusNumber"]:02d}.html"><b>{e(d["label"])}: {e(d["title"])}</b><br>'
-            f'<span class="ar">{e(d["titleAr"])}</span><br><small>Class {d["classPosition"]} · after Lesson {d["afterLesson"]} · '
+            f'<span class="ar">{ea(d["titleAr"])}</span><br><small>Class {d["classPosition"]} · after Lesson {d["afterLesson"]} · '
             f'{e(", ".join(d["skillFocus"]))}</small></a>' for d in cs)
         h.append(f'<div class="card lv"><h2><span>{e(LEVEL_NAMES[level])}</span><small>{e(cs[0]["strand"])} · ages {e(cs[0]["ages"])}</small></h2>'
                  f'<div class="clist">{links}</div></div>')
