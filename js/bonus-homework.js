@@ -145,11 +145,14 @@
     next();
   }
 
+  // whole words ("forbidden", "informal") don't fit big side-by-side tiles on a phone: stack them as wide buttons
+  function wordy(opts) { return opts.some(function (o) { return String(o).length > 4; }) ? " words" : ""; }
+
   var RUN = {
     "listen-choose": function (m, body, finish) {
       rounds(body, m.rounds, function (r, el, answer) {
         el.innerHTML = '<button type="button" class="bm-say big" aria-label="Listen">🔊</button>' +
-          '<div class="bm-opts">' + r.options.map(function (o) {
+          '<div class="bm-opts' + wordy(r.options) + '">' + r.options.map(function (o) {
             return '<button type="button" class="bm-opt" data-o="' + esc(o) + '"><b>' + esc(o) + '</b>' +
               (m.labels && m.labels[o] ? '<small>' + esc(m.labels[o]) + '</small>' : "") + '</button>';
           }).join("") + '</div>';
@@ -163,7 +166,7 @@
         var parts = r.frame.split("_");
         el.innerHTML = '<button type="button" class="bm-say big" aria-label="Listen">🔊</button>' +
           '<div class="bm-frame"><span>' + esc(parts[0]) + '</span><span class="gap">?</span><span>' + esc(parts[1]) + '</span></div>' +
-          '<div class="bm-opts">' + m.options.map(function (o) { return '<button type="button" class="bm-opt" data-o="' + esc(o) + '"><b>' + esc(o) + '</b></button>'; }).join("") + '</div>';
+          '<div class="bm-opts' + wordy(m.options) + '">' + m.options.map(function (o) { return '<button type="button" class="bm-opt" data-o="' + esc(o) + '"><b>' + esc(o) + '</b></button>'; }).join("") + '</div>';
         el.querySelector(".bm-say").addEventListener("click", function () { say(r.say); });
         el.querySelectorAll(".bm-opt").forEach(function (b) {
           b.addEventListener("click", function () {
