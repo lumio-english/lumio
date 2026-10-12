@@ -1438,6 +1438,17 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
             plan.append(("sound_match", i))
     if spelling_rules and lesson_num in spelling_rules:
         plan.append(("spelling_rule", spelling_rules[lesson_num]))
+    # Grammar (explanation + its exercises) straight after the phonics
+    # block and before any new words -- the day's rules are handled at the
+    # start of the class, then the new material comes (Eslam, 12 Oct).
+    if grammar_topic:
+        plan.append(("grammar_rule", grammar_topic))
+        plan.append(("grammar_practice", grammar_topic))
+        for qi, q in enumerate(grammar_topic.get("mcq", []), 1):
+            plan.append(("grammar_mcq", (grammar_topic, q, qi, len(grammar_topic["mcq"]))))
+        import common_mistakes as _cm
+        if _cm.mistakes_for(grammar_topic):
+            plan.append(("common_mistakes", grammar_topic))
     if tier == "preA":
         for w in lesson["vocab"]:
             plan.append(("tpr", tpr_action_for(w["en"])))
@@ -1481,14 +1492,6 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
     sentence_indices = [i % V for i in range(6)]
     plan.append(("sentence_trio", sentence_indices[0:3]))
     plan.append(("sentence_trio", sentence_indices[3:6]))
-    if grammar_topic:
-        plan.append(("grammar_rule", grammar_topic))
-        plan.append(("grammar_practice", grammar_topic))
-        for qi, q in enumerate(grammar_topic.get("mcq", []), 1):
-            plan.append(("grammar_mcq", (grammar_topic, q, qi, len(grammar_topic["mcq"]))))
-        import common_mistakes as _cm
-        if _cm.mistakes_for(grammar_topic):
-            plan.append(("common_mistakes", grammar_topic))
     plan.append(("dialogue", None))
     # Activity 2 of 3: Memory Match (pairs take turns / student vs teacher).
     plan.append(("act_memory", None))

@@ -61,12 +61,12 @@ PASSAGES = {
     images=[("03-a.jpg", "a Gulf majlis corner: a golden dallah coffee pot pouring into a small finjan cup, a plate of dates, patterned cushions, warm evening light"),
             ("03-b.jpg", "CHAR: Omar and Hamad at a bright modern café counter, each holding a tall bubble-tea cup with a wide straw, neon-style decor without letters")],
     before=["Look at the two pictures. Which drink do you think the family likes? Which do teens like?",
-            "What is your favourite drink when you meet friends?"],
+            "What is your favorite drink when you meet friends?"],
     paras=[
         "Every Friday, Omar's family sits [together](th-v) in the majlis. His grandfather pours gahwa from a golden dallah. The coffee is hot and a little bitter, so they eat sweet dates with it. Omar [thinks](th-s) the smell is awesome.",
         "His little cousin Fahad does not agree. \"Gahwa is not my [thing](th-s),\" he says. \"It is too bitter!\" Everyone laughs, but Grandfather just smiles and pours another cup.",
         "After lunch, Omar and Hamad go to a new café in the mall. They order bubble tea with big black pearls and wide straws. Hamad loves it. \"This is epic,\" he says. Omar is not sure. The pearls are weird, and the drink is very sweet.",
-        "At home, Omar tells his grandfather about the café. The old man laughs. \"Bubble tea is cool for you,\" he says, \"but gahwa is for [everyone](wh). Come, sit. I will teach you how to pour it.\" Omar does not say no.",
+        "At home, Omar tells his grandfather about the café. The old man laughs. \"Bubble tea is cool for you,\" he says, \"but gahwa is for [everyone](stress). Come, sit. I will teach you how to pour it.\" Omar does not say no.",
     ],
     new=[("majlis", "مجلس"), ("bitter", "مُرّ"), ("pour", "يصبّ")],
     questions=[
@@ -86,8 +86,8 @@ PASSAGES = {
     paras=[
         "On Fridays, Sara's house is full. Her [cousins](ou-u) come from all over Riyadh, and her neighbors come too. There are twelve [kids](s-z), three grandmothers and one very tired cat.",
         "The boys play football in the courtyard. Sara's brother is the captain of his team, so he gives everyone a job. His teammates are his cousins, and his classmates are his rivals. [Nobody](schwa) is a stranger here.",
-        "Inside, the girls help in the [kitchen](ch-k). Sara's aunt makes kabsa in a pot that is bigger than the cat. Noor, Sara's best friend, is not a cousin, but she comes every week. \"She is family now,\" Sara's mother says.",
-        "At three o'clock, everyone sits on the floor around one big plate. The grandmothers eat first. Then the kids eat, and the siblings fight over the last piece of chicken. After lunch, the cousins sleep, the cat sleeps, and the house is [quiet](qu) again.",
+        "Inside, the girls help in the kitchen. Sara's aunt makes kabsa in a pot that is bigger than the cat. Noor, Sara's best friend, is not a cousin, but she comes every week. \"She is family now,\" Sara's mother says.",
+        "At three o'clock, everyone sits on the floor around one big plate. The grandmothers eat first. Then the kids eat, and the siblings [fight](ght) over the last piece of chicken. After lunch, the cousins sleep, the cat sleeps, and the house is [quiet](qu) again.",
     ],
     new=[("courtyard", "فناء"), ("rival", "منافس"), ("aunt", "عمّة / خالة")],
     questions=[
@@ -100,14 +100,14 @@ PASSAGES = {
     ]),
 9: dict(
     title="What Can Ziad Do?", title_ar="ماذا يستطيع زياد أن يفعل؟", tag="Skills & Gaming",
-    images=[("09-a.jpg", "CHAR: Ziad at a desk with two monitors showing colourful blocks of code (no readable letters), headphones on, a small robot kit beside the keyboard, a trophy-shaped lamp"),
+    images=[("09-a.jpg", "CHAR: Ziad at a desk with two monitors showing colorful blocks of code (no readable letters), headphones on, a small robot kit beside the keyboard, a trophy-shaped lamp"),
             ("09-b.jpg", "an esports arena stage in Riyadh at night: big curved screens with abstract game graphics, a crowd of fans with green glow sticks, dramatic lights, no text")],
     before=["What can you do well? What can't you do yet?",
             "Picture B shows a gaming event in Riyadh. Have you heard of one?"],
     paras=[
-        "Ziad can't swim, and he can't bake a cake. But Ziad can do [something](th-s) his friends can't: he can code. Last year he made a small app that tells you [when](wh) the next prayer is. His mother uses it every day.",
+        "Ziad can't swim, and he can't bake a cake. But Ziad can do [something](th-s) his friends can't: he can code. He has a small app that tells you [when](wh) the next prayer is. He made it himself, and his mother uses it every day.",
         "This summer, Riyadh has a huge gaming festival. Thousands of fans come to watch the best teams in the world. Ziad wants to go, but not as a fan. He wants to perform on the stage one day.",
-        "So every afternoon, he practises. He can [solve](magic-e) a puzzle game in two minutes. He can edit videos of his games and post them. He can even draw his own game [characters](ch-k).",
+        "So every afternoon, he practices. He can solve a puzzle game in two minutes, and he [practices](soft-c) every day. He can edit videos of his games and post them. He can even draw his own game [characters](ch-k).",
         "His father is not sure. \"Can you do your homework too?\" he asks. Ziad smiles. \"I can,\" he says, \"and I can teach you to play.\" His father laughs. He can't say no to that.",
     ],
     new=[("festival", "مهرجان"), ("perform", "يؤدّي / يقدّم عرضًا"), ("puzzle", "لغز")],
@@ -142,14 +142,14 @@ PASSAGES = {
     ]),
 15: dict(
     title="Exam Week at the Library", title_ar="أسبوع الاختبارات في المكتبة", tag="Study & Teamwork",
-    images=[("15-a.jpg", "CHAR: Sara and Noor at a long wooden library table covered with colour-coded flashcards, highlighters and two laptops, tall bookshelves and a round skylight behind them"),
+    images=[("15-a.jpg", "CHAR: Sara and Noor at a long wooden library table covered with color-coded flashcards, highlighters and two laptops, tall bookshelves and a round skylight behind them"),
             ("15-b.jpg", "a close-up of a hand-drawn study poster on a table: a sketch of the Elephant Rock of AlUla, arrows, sticky notes and a highlighter, no readable text")],
     before=["Where do you study best: at home, at school or in a library?",
             "Picture B shows a project about a famous place. Can you guess which place?"],
     paras=[
-        "It is exam week, and the public library is full. Sara and Noor are sitting at a long table. Sara is highlighting her notes in [three](th-s) colours. Noor is making flashcards for every word in Unit Five.",
-        "They are not alone. At the next table, Omar's group is [working](link) on a presentation about AlUla. Hamad is drawing the Elephant Rock. Omar is reading about the old city of Hegra, and Ziad is [editing](ed-id) the slides on his laptop.",
-        "\"Are you memorizing or [understanding](th-s)?\" Noor asks Sara. Sara laughs. \"Both! I am quizzing myself every ten minutes.\" The librarian walks past and puts a finger on her lips. The girls go [quiet](qu).",
+        "It is exam week, and the public library is full. Sara and Noor are sitting at a long table. Sara is highlighting her notes in [three](th-s) colors. Noor is making flashcards for every word in Unit Five.",
+        "They are not alone. At the next table, Omar's group is working on a presentation about AlUla. Hamad is drawing the [Elephant](ph) Rock. Omar is [reading](ea-ee) about the old city of Hegra, and Ziad is editing the slides on his laptop.",
+        "\"Are you memorizing or understanding?\" Noor asks Sara. Sara laughs. \"[Both](th-s)! I am quizzing myself every ten minutes.\" The librarian walks past and puts a finger on her lips. The girls go [quiet](qu).",
         "The deadline is tomorrow, so nobody is going home early. But teamwork makes it easy. At six o'clock, Ziad's slides are ready, Hamad's rock looks real, and Sara knows every word. \"Study buddies forever,\" Noor says, and they pack their bags.",
     ],
     new=[("public library", "مكتبة عامة"), ("librarian", "أمين/ة المكتبة"), ("unit", "وحدة")],
@@ -164,14 +164,14 @@ PASSAGES = {
 18: dict(
     title="The Family Vote", title_ar="تصويت العائلة", tag="Decisions & Travel",
     images=[("18-a.jpg", "a family living room scene from above: a big paper map of Saudi Arabia on a coffee table with two sticky notes (blank) on Abha mountains and the Red Sea coast, a bowl of dates, tea glasses, hands pointing (no faces needed)"),
-            ("18-b.jpg", "the green terraced mountains of Abha with mist, a traditional stone house with coloured window frames, a tiny road winding below")],
+            ("18-b.jpg", "the green terraced mountains of Abha with mist, a traditional stone house with colored window frames, a tiny road winding below")],
     before=["Where does your family go in the Eid holiday? Who decides?",
             "Look at picture B. Would you like a holiday here? Why?"],
     paras=[
-        "Eid is in two [weeks](ea-ee), and Noor's family cannot agree. [Where](wh) should they go? Her father wants the mountains of Abha. Her mother wants the Red Sea. Her brother wants to stay home and play games.",
-        "\"Why Abha?\" Noor asks. \"Because it is cool in summer,\" her father says. \"The air is fresh, and the houses have beautiful colours.\" \"And why the sea?\" \"Because I can swim every morning,\" her mother says.",
+        "Eid is in two weeks, and Noor's family cannot agree. [Where](wh) should they go? Her father wants the mountains of Abha. Her mother wants the Red Sea. Her brother wants to stay home and play games.",
+        "\"Why Abha?\" Noor asks. \"Because it is cool in summer,\" her father says. \"The air is fresh, and the houses have beautiful colors.\" \"And why the sea?\" \"Because I can swim every morning,\" her mother says.",
         "Noor has an idea. \"Let's vote,\" she says. \"Everyone gets one vote, and we need a [reason](ea-ee).\" Her brother disagrees at first, but a vote is fair. He [writes](silent) 'home' on his paper and draws a game controller.",
-        "The vote is two for Abha, one for the sea and one for home. But Noor's mother is a good [negotiator](tion). \"Abha this Eid,\" she says, \"and the sea in winter.\" That is a compromise, and everyone agrees. Even the brother. He can take his games to the mountains.",
+        "The vote is two for Abha, one for the sea and one for home. But Noor's mother is a good negotiator, and she knows how to [compromise](stress). \"Abha this Eid,\" she says, \"and the sea in winter.\" That is a compromise, and everyone agrees. Even the brother. He can take his games to the mountains.",
     ],
     new=[("fresh", "منعش"), ("negotiator", "مفاوض/ة"), ("controller", "يد التحكم")],
     questions=[
@@ -191,9 +191,9 @@ PASSAGES = {
     before=["What changes in your daily routine in Ramadan?",
             "Look at picture A. What time of day is it? How do you know?"],
     paras=[
-        "In Ramadan, Hamad's day turns upside down. He [usually](schwa) wakes up at seven, but in Ramadan he wakes up at four for suhoor. His mother makes eggs and warm bread, and his grandmother always says, \"Eat slowly, it is a long day.\"",
+        "In Ramadan, Hamad's day turns upside down. He [usually](schwa) wakes up at seven, but in Ramadan he wakes up at four for suhoor. His mother makes eggs and warm bread, and his grandmother always says, \"[Eat](ea-ee) slowly, it is a long day.\"",
         "School starts late, so Hamad rarely feels tired in class. In the afternoon, he sometimes sleeps, and occasionally he reads. He never plays football before iftar. \"Football at four o'clock in Ramadan? That is a bad habit,\" his father says.",
-        "At sunset, the whole family sits [together](th-v). First, dates and water. Then soup, then everything else. Twice a week, his uncle's family comes, and the table is twice as long. After iftar, Hamad walks to the mosque with his father for taraweeh. The streets are full of [people](ea-ee), lights and the smell of coffee.",
+        "At sunset, the whole family sits [together](th-v). First, dates and water. Then soup, then everything else. Twice a week, his uncle's family comes, and the table is twice as long. After iftar, Hamad walks to the mosque with his father for taraweeh. The streets are full of people, lights and the smell of coffee.",
         "At night, the city wakes up. Shops open, cousins visit, and kids play in the street until midnight. Hamad constantly checks the time, [because](stress) suhoor comes quickly. Ramadan is tiring, but he loves it. \"It is one month,\" he says, \"but we talk about it all year.\"",
     ],
     new=[("suhoor", "سحور"), ("sunset", "غروب الشمس"), ("midnight", "منتصف الليل")],
@@ -202,7 +202,7 @@ PASSAGES = {
         ("find", "What does the family eat first at iftar?"),
         ("think", "Why does Hamad's father call football before iftar 'a bad habit'?"),
         ("think", "What does 'the city wakes up at night' mean?"),
-        ("you", "How often do you visit relatives in Ramadan? What is your favourite iftar dish?"),
+        ("you", "How often do you visit relatives in Ramadan? What is your favorite iftar dish?"),
         ("you", "Describe your Ramadan routine using usually, sometimes and never."),
     ]),
 6: dict(
@@ -213,7 +213,7 @@ PASSAGES = {
             "Look at picture B. What can you buy in this market?"],
     paras=[
         "The class trip to the old souq was fun, but the bus home is a mess. Things are everywhere. A jacket is on the floor, a lunchbox is under a seat, and someone's earbuds are hanging from the window.",
-        "\"[Whose](wh) jacket is this?\" the teacher asks. \"It's mine,\" says Omar. \"No, it isn't,\" says Hamad. \"Yours is black. This one is blue, so it's his.\" He points at Ziad. Ziad looks at the jacket and shakes his head. \"Mine has a hood.\"",
+        "\"Whose jacket is this?\" the [teacher](ea-ee) asks. \"It's mine,\" says Omar. \"No, it isn't,\" says Hamad. \"Yours is black. This one is blue, so it's his.\" He points at Ziad. Ziad looks at the jacket and shakes his head. \"Mine has a hood.\"",
         "Then Sara finds a notebook with a falcon sticker. \"This is Noor's,\" she says. \"It's hers; I know her stickers.\" Noor is happy. Her notes about the souq are inside: the [spices](soft-c), the carpets, the man who sells dates from a wooden cart.",
         "In the end, the blue jacket belongs to the bus driver. Everyone laughs. The earbuds are Ziad's, the lunchbox is Hamad's, and the [umbrella](schwa) is nobody's. \"Then it's ours now,\" the teacher says. \"We will need it in winter.\"",
     ],
@@ -229,14 +229,14 @@ PASSAGES = {
 9: dict(
     title="Saving for Riyadh Season", title_ar="التوفير لموسم الرياض", tag="Money & Goals",
     images=[("09-a.jpg", "a glass goal jar on a bedroom shelf, half full of coins and folded notes (plain, no numerals), a sticker of a Ferris wheel on the jar, a small notebook with a pencil, a lamp"),
-            ("09-b.jpg", "a festival entrance at night with a giant Ferris wheel, fountains with coloured lights, food stalls with warm lanterns, crowds with families, no text")],
+            ("09-b.jpg", "a festival entrance at night with a giant Ferris wheel, fountains with colored lights, food stalls with warm lanterns, crowds with families, no text")],
     before=["Do you get pocket money? What do you spend it on?",
             "Have you been to Riyadh Season? What did you like?"],
     paras=[
-        "Every year, Riyadh Season opens in October, and every year Ziad wants to go. There are [games](s-z), concerts and a Ferris wheel [taller](link) than his school. But this year, he wants to pay for the ticket himself.",
-        "So Ziad has a plan. He has a goal jar on his shelf. Every week, he puts some money inside: coins from his pocket, notes from Eid, and a little money he earns from washing his father's car. He [rarely](ea-ee) spends anything now.",
-        "His friends do not understand. \"Just borrow some money from your brother,\" Hamad says. \"No,\" Ziad [answers](silent). \"If I borrow, I will have to lend him my games. And I don't want to spend money I don't have.\"",
-        "After eight weeks, the jar is full. Ziad counts the coins and the notes: it is enough for the ticket and one cheap meal. He puts the money in his wallet and takes a [photo](ph) of the empty jar. \"Goal number one,\" he writes under it. \"Next: a new [keyboard](ea-ee).\"",
+        "Every year, Riyadh Season opens in October, and every year Ziad wants to go. There are [games](s-z), concerts and a Ferris [wheel](wh) taller than his school. But this year, he wants to pay for the ticket himself.",
+        "So Ziad has a plan. He has a goal jar on his shelf. Every week, he puts some money inside: coins from his pocket, notes from Eid, and a little money he earns from washing his father's car. He rarely spends anything now.",
+        "His friends do not understand. \"Just borrow some money from your brother,\" Hamad says. \"No,\" Ziad [answers](silent). \"If I borrow, I have to lend him my games. And I don't want to spend money I don't have.\"",
+        "After eight weeks, the jar is full. Ziad counts the coins and the notes: it is enough for the ticket and one [cheap](ea-ee) meal. He puts the money in his wallet and takes a [photo](ph) of the empty jar. \"Goal number one,\" he [writes](silent) under it. \"Next: a new keyboard.\"",
     ],
     new=[("Ferris wheel", "عجلة دوّارة"), ("pocket money", "مصروف"), ("count", "يعدّ")],
     questions=[
@@ -255,7 +255,7 @@ PASSAGES = {
             "What should teens do less? What should they do more?"],
     paras=[
         "Sara's grandfather is eighty years old. He does not have an Instagram account, but he has a lot of opinions about [phones](ph). \"You [should](silent) look up,\" he tells Sara. \"The sky is bigger than your screen.\"",
-        "Sara laughs, but she listens. Her grandfather was a pearl diver's son. [When](wh) he was her age, he worked on a boat for three months every summer. \"We had one piece of advice,\" he says. \"Be patient. The sea does not hurry, so you shouldn't hurry either.\"",
+        "Sara laughs, but she listens. Her grandfather's father was a pearl diver. [When](wh) her grandfather was her age, he was on a boat for three months every summer. \"We had one piece of advice,\" he says. \"Be patient. The sea does not hurry, so you shouldn't hurry either.\"",
         "His tips are simple. You should sleep [eight](ght) hours. You shouldn't check your phone at the table. You should call your friends, not just text them. And you should make one mistake every day, [because](stress) a day without a mistake is a day without learning.",
         "Sara tries to improve. She puts her phone in a basket at dinner. It is hard, and she makes mistakes. But her grandfather only smiles. \"Patience,\" he says, and he gives her a date from his pocket. \"Now tell me about your day. All of it.\"",
     ],
@@ -270,14 +270,14 @@ PASSAGES = {
     ]),
 15: dict(
     title="Choosing a Club", title_ar="اختيار النادي", tag="School & Choices",
-    images=[("15-a.jpg", "a school notice board with three colourful club posters shown only as icons: a small robot, a football, and an Arabic calligraphy reed pen with an ink pot, pins and ribbons, no readable text"),
+    images=[("15-a.jpg", "a school notice board with three colorful club posters shown only as icons: a small robot, a football, and an Arabic calligraphy reed pen with an ink pot, pins and ribbons, no readable text"),
             ("15-b.jpg", "CHAR: Noor at a desk carefully writing Arabic calligraphy strokes with a reed pen on cream paper (strokes abstract, no readable words), an ink pot, a calm teacher figure in hijab in the background")],
     before=["What clubs does your school have? Which one are you in?",
             "Look at picture A. Which club would you choose?"],
     paras=[
-        "This term, every student at Noor's school has to join a club. There are three options: robotics, football and Arabic [calligraphy](ph). Noor would like to try all of them, but she can only [choose](ch-k) one.",
-        "She makes a list of pros and cons. Robotics is exciting, and her cousin says the teacher is great. But the club meets on Thursdays, and Noor has Qur'an class on Thursdays. Football is fun, but she [doesn't](silent) want to play every day. Calligraphy is calm. Her grandmother writes beautiful letters, and Noor would like to learn.",
-        "Her friends have opinions. \"Robotics!\" says Sara. \"We can build a robot [together](th-v).\" Noor considers it. There is a risk: if she misses Qur'an class, she will regret it. She doesn't want that.",
+        "This term, every student at Noor's school has to join a club. There are [three](th-s) options: robotics, football and Arabic [calligraphy](ph). Noor would like to try all of them, but she can only choose one.",
+        "She makes a list of pros and cons. Robotics is exciting, and her cousin says the teacher is great. But the club meets on Thursdays, and Noor has Qur'an class on [Thursdays](th-s). Football is fun, but she doesn't want to play every day. Calligraphy is calm. Her grandmother writes beautiful letters, and Noor would like to learn.",
+        "Her friends have opinions. \"Robotics!\" says Sara. \"We can build a robot [together](th-v).\" Noor considers it. There is a risk: if she misses Qur'an class, she is going to regret it. She doesn't want that.",
         "In the end, Noor chooses calligraphy, and she asks the robotics teacher one [question](qu): \"Can I visit on Mondays?\" He says yes. That is her compromise. Two months later, her first word in beautiful letters hangs on the kitchen wall. It says 'patience'.",
     ],
     new=[("term", "فصل دراسي"), ("calligraphy", "فن الخط"), ("reed pen", "قلم القصب")],
@@ -322,7 +322,7 @@ PASSAGES = {
         "On the first morning of Eid, Omar's [phone](ph) did not stop. His family group chat had two hundred messages before breakfast. His aunt sent a picture of the sheep. His uncle sent a video of the kids. Everyone sent 'Eid Mubarak' with a hundred lanterns.",
         "Omar [replied](ed-d) to all of them. He [called](ed-d) his grandmother. He checked his messages every ten minutes. But he did not send one message, and he did not notice. His cousin Faisal, who moved to Dammam last year, was waiting.",
         "On the third day, Faisal wrote: \"Did you forget me?\" Omar's face went red. Did he forget? Yes, he did. He didn't reply because he didn't see Faisal's name in the long list. \"I'm so sorry,\" he [typed](ed-t). \"Did you attend the Eid prayer? Did you miss Riyadh?\" Faisal did not answer.",
-        "So Omar did something better. He bought a box of [chocolates](ch-k), wrote a card by hand, and asked his father to drive to Dammam on Friday. [When](wh) Faisal opened the door, he laughed. \"You didn't text me,\" he said, \"but you came.\" \"A reminder,\" Omar said. \"Next Eid, you are first on my list.\"",
+        "So Omar did something better. He bought a box of chocolates, wrote a card by hand, and [asked](ed-t) his father to drive to Dammam on Friday. [When](wh) Faisal opened the door, he laughed. \"You didn't text me,\" he said, \"but you came.\" \"A reminder,\" Omar said. \"Next Eid, you are first on my list.\"",
     ],
     new=[("group chat", "محادثة جماعية"), ("notice", "يلاحظ"), ("by hand", "بخط اليد")],
     questions=[
@@ -341,7 +341,7 @@ PASSAGES = {
             "Look at picture A. How old do you think these buildings are?"],
     paras=[
         "Two years ago, Sara's school went to AlUla, and she still talks about it. Last week, she found the photos on her old [phone](ph). \"Noor, look!\" she said. \"That was the best trip of my life.\"",
-        "They [travelled](ed-d) by bus for a whole night and [arrived](ed-d) at sunrise. The first stop was Hegra. The tombs were carved into the rock two thousand years ago by the Nabataeans, the same people who built Petra. The guide said the city was a stop on the old spice road. Sara [touched](ed-t) the cold stone and felt very small.",
+        "They [traveled](ed-d) by bus for a whole night and [arrived](ed-d) at sunrise. The first stop was Hegra. The Nabataeans carved the tombs into the rock two thousand years ago; the same people built Petra. The guide said the city was a stop on the old spice road. Sara [touched](ed-t) the cold stone and felt very small.",
         "A while ago, Noor forgot the second day, but Sara remembered everything. In the afternoon they [visited](ed-id) the old town with its mud houses. In the evening, they sat under the Elephant Rock. It was dark, the stars were [bright](ght), and the desert was completely silent.",
         "\"Earlier today, I checked the website,\" Sara said. \"There is a new trip in March.\" Noor smiled. \"Two years ago we were kids. Now we can take better photos.\" They [booked](ed-t) their places that night. Some memories deserve a second visit.",
     ],
@@ -361,14 +361,14 @@ PASSAGES = {
     before=["How did you celebrate the last National Day?",
             "Have you ever spoken in front of a crowd? How did you feel?"],
     paras=[
-        "Last September, Hamad's school [asked](ed-t) him to speak at the National Day assembly. He was proud, but he was also terrified. He [practised](ed-t) his speech forty times in front of the mirror and twice in front of his cat.",
-        "On the morning of the 23rd, the whole city was green. There were flags on the cars, flags on the balconies, and green lights on the tallest towers. Hamad's [heart](silent) was beating fast when he walked onto the stage. The microphone made a loud noise, and everyone laughed. He was embarrassed for one second. Then he smiled, and the fear went away.",
+        "Last September, Hamad's school [asked](ed-t) him to speak at the National Day assembly. He was proud, but he was also terrified. He [practiced](ed-t) his speech forty times in front of the mirror and twice in front of his cat.",
+        "On the morning of the 23rd, the whole city was green. There were flags on the cars, flags on the balconies, and green lights on the tallest towers. Hamad's heart beat fast when he walked onto the stage. The microphone made a loud noise, and everyone laughed. He was [embarrassed](ed-t) for one second. Then he smiled, and the fear went away.",
         "His speech was about his grandfather, who [moved](ed-d) to Riyadh when it was a small town with one main street. \"My grandfather was surprised by every new building,\" Hamad said. \"Today, I am surprised by nothing. But I am grateful for everything.\"",
-        "[When](wh) he finished, the hall was silent for a moment. Then the clapping started. His teacher was thrilled, and his mother was crying a little. Hamad felt relieved and calm, like after a long race. That night, the fireworks were green, and so was his [heart](silent).",
+        "[When](wh) he finished, the hall was silent for a moment. Then the clapping started. His teacher was [thrilled](ed-d), and his mother cried a little. Hamad felt relieved and calm, like after a long race. That night, the fireworks were green, and so was his heart.",
     ],
     new=[("assembly", "طابور / تجمّع مدرسي"), ("terrified", "مرعوب"), ("clapping", "تصفيق")],
     questions=[
-        ("find", "How many times did Hamad practise his speech?"),
+        ("find", "How many times did Hamad practice his speech?"),
         ("find", "What was his speech about?"),
         ("think", "Why did the laughing help Hamad instead of hurting him?"),
         ("think", "What does 'I am surprised by nothing, but I am grateful for everything' mean?"),
@@ -378,8 +378,8 @@ PASSAGES = {
 12: dict(
     title="Our Trip to Muscat", title_ar="رحلتنا إلى مسقط", tag="Travel & Culture",
     images=[("12-a.jpg", "the Mutrah corniche in Muscat: white buildings with wooden balconies along a calm blue bay, a traditional dhow boat, brown mountains behind, a few seagulls"),
-            ("12-b.jpg", "a close-up of a market stall in Mutrah souq: small bags of frankincense resin, silver khanjar daggers in cases, colourful cloth, a brass lamp, a hand holding a small resin piece, no faces, no text")],
-    before=["Have you travelled to another Gulf country? Which one?",
+            ("12-b.jpg", "a close-up of a market stall in Mutrah souq: small bags of frankincense resin, silver khanjar daggers in cases, colorful cloth, a brass lamp, a hand holding a small resin piece, no faces, no text")],
+    before=["Have you traveled to another Gulf country? Which one?",
             "Look at picture B. What do you think people buy here?"],
     paras=[
         "Last spring, Ziad's family [packed](ed-t) three suitcases and drove to the airport. The flight to Muscat was short, but Ziad was so excited that he checked his boarding pass ten times. They [landed](ed-id) at noon, and the air smelled of the sea.",
@@ -403,8 +403,8 @@ PASSAGES = {
     before=["Do you remember 22 November 2022? What happened?",
             "What is a day you will never forget?"],
     paras=[
-        "First, nobody [believed](ed-d) it was possible. On 22 November 2022, Saudi Arabia played Argentina in the World Cup in Qatar. Argentina had Messi. Saudi Arabia had hope. Omar [woke up](silent) early, got ready, and went to Hamad's house to watch the match with the whole family.",
-        "At first, it was bad. Messi [scored](ed-d) after ten minutes, and the living room went quiet. Hamad's grandfather said, \"Be patient.\" Then, after half-time, everything [changed](ed-d). Al-Shehri scored. Three minutes later, Al-Dawsari took the ball, turned, and shot. Two to one. The boys jumped so high that the popcorn [reached](ed-t) the ceiling.",
+        "First, nobody [believed](ed-d) it was possible. On 22 November 2022, Saudi Arabia played Argentina in the World Cup in Qatar. Argentina had Messi. Saudi Arabia had hope. Omar [woke](magic-e) up early, got ready, and went to Hamad's house to watch the match with the whole family.",
+        "At first, it was bad. Messi [scored](ed-d) after ten minutes, and the living room went quiet. Hamad's grandfather said, \"Be patient.\" Then, after half-time, everything [changed](ed-d). Al-Shehri scored. Five minutes later, Al-Dawsari took the ball, turned, and shot. Two to one. The boys jumped so high that the popcorn [reached](ed-t) the ceiling.",
         "After that, the longest twenty minutes in history. Argentina [attacked](ed-t) again and again, and the Saudi goalkeeper saved everything. Finally, the whistle. Hamad's mother cried, the grandfather [laughed](ed-t), and outside, every car in Riyadh was honking.",
         "That night, they celebrated in the street with green flags until midnight. The next day, the King announced a holiday. Omar still has the photo on his wall. \"We remembered where we were,\" he says. \"Every Saudi remembers.\" Some days become history, and some become tradition.",
     ],
@@ -419,7 +419,7 @@ PASSAGES = {
     ]),
 18: dict(
     title="Movie Night in the Majlis", title_ar="ليلة الأفلام في المجلس", tag="Family & Film",
-    images=[("18-a.jpg", "a cosy family majlis at night turned into a cinema: a big projector screen on the wall showing abstract desert-film colours, floor cushions in rows, bowls of popcorn, small cups of tea, a projector beam with dust in the light"),
+    images=[("18-a.jpg", "a cozy family majlis at night turned into a cinema: a big projector screen on the wall showing abstract desert-film colors, floor cushions in rows, bowls of popcorn, small cups of tea, a projector beam with dust in the light"),
             ("18-b.jpg", "CHAR: Sara asleep against a cushion with a blanket, her little sister (small girl in hijab) wide awake holding popcorn and pointing at the screen, Noor laughing softly beside them")],
     before=["Where does your family watch movies: at home or at the cinema?",
             "What usually happens when you watch a long movie late at night?"],
@@ -443,13 +443,13 @@ PASSAGES = {
 3: dict(
     title="Hosting Eid Lunch", title_ar="استضافة غداء العيد", tag="Plans & Family",
     images=[("03-a.jpg", "a kitchen counter the night before Eid: a tall stack of plates, a tray of maamoul cookies being dusted with sugar, a handwritten checklist pad (ticks only, no words), a bowl of dates, a vase of fresh flowers"),
-            ("03-b.jpg", "CHAR: Noor and her mother (in hijab) arranging cushions and a long floor mat in a bright majlis, a tray with dallah and cups on the side, balloons in soft colours by the window, no text")],
+            ("03-b.jpg", "CHAR: Noor and her mother (in hijab) arranging cushions and a long floor mat in a bright majlis, a tray with dallah and cups on the side, balloons in soft colors by the window, no text")],
     before=["Who hosts Eid lunch in your family? What do they prepare?",
             "What are you doing this weekend? Say three plans."],
     paras=[
         "This year, Noor's family is hosting Eid lunch for the first time, and the house is in planning mode. Her mother is making the guest list [tonight](ght); her father is picking up the lamb on Thursday morning; her brother is leaving school early to help. \"Forty-two guests,\" her mother says, looking at the sheet. \"Forty-five,\" says her father. \"Your cousins always bring cousins.\"",
         "Noor is in charge of the sweets. On Wednesday evening she is baking maamoul with her grandmother, who does not use a recipe and does not trust anyone who does. On Thursday, she is decorating the majlis: cushions along the walls, the long mat, fresh flowers and a tray of dates by the door.",
-        "There is also a schedule on the fridge. Eid prayer at six. [Breakfast](ea-e) at seven, but only a small one. Guests are arriving at one, [starting](link) with the grandparents. The [young](ou-u) cousins are coming after prayer and staying until midnight, which worries the cat.",
+        "There is also a [schedule](ch-k) on the fridge. Eid prayer at six. [Breakfast](ea-e) at seven, but only a small one. Guests are arriving at one, starting with the grandparents. The [young](ou-u) cousins are coming after prayer and staying until midnight, which worries the cat.",
         "\"Are you nervous?\" Sara asks on the phone. Noor looks at the list, the oven and the flowers. \"A little,\" she says. \"But Grandmother is bringing her coffee pot, and when that pot is in the house, nothing goes wrong.\" Besides, next year her aunt is hosting, and Noor is attending as a guest. With an [appetite](schwa).",
     ],
     new=[("in charge of", "مسؤول عن"), ("maamoul", "معمول"), ("appetite", "شهيّة")],
@@ -468,12 +468,12 @@ PASSAGES = {
     before=["Have you tried Arabic calligraphy? Is it easy or hard?",
             "Think of something you do slowly and carefully. What is it?"],
     paras=[
-        "Hamad types quickly. He texts quickly, he games quickly, and he does his homework quickly, sometimes too quickly. So his mother signed him up for a calligraphy course at the cultural centre. \"One hour a week,\" she said, \"where you do something slowly.\"",
-        "The teacher, Ustadh Khalid, has been [writing](silent) for forty years. On the first day he did not let the students write a single letter. They sat quietly and cut their reed pens carefully, at exactly the right angle. Then they mixed the ink patiently, and then they went home. Hamad was annoyed. \"We did nothing,\" he told his father. \"You [prepared](ed-d),\" his father said. \"That is not nothing.\"",
+        "Hamad types quickly. He texts quickly, he games quickly, and he does his homework quickly, sometimes too quickly. So his mother signed him up for a calligraphy course at the cultural center. \"One hour a week,\" she said, \"where you do something slowly.\"",
+        "The teacher, Ustadh Khalid, started [writing](silent) forty years ago. On the first day he did not let the students write a single letter. They sat quietly and cut their reed pens carefully, at exactly the right angle. Then they mixed the ink patiently, and then they went home. Hamad was annoyed. \"We did nothing,\" he told his father. \"You [prepared](ed-d),\" his father said. \"That is not nothing.\"",
         "In week three, Hamad wrote his first alif. Badly. Ustadh Khalid looked at it [thoughtfully](ght) and said, \"Again, but more gently. The pen is not a sword.\" Hamad tried again, and again, and on the ninth try the line was straight. He stared at it for a long time.",
         "Now, six months later, he writes his name in Thuluth, slowly and accurately, and it hangs above his desk. He still games loudly and texts quickly. But when he picks up the reed pen, something changes. He [breathes](th-v) deeply, and for one hour, the world moves at the speed of ink.",
     ],
-    new=[("cultural centre", "مركز ثقافي"), ("angle", "زاوية"), ("ink", "حبر")],
+    new=[("cultural center", "مركز ثقافي"), ("angle", "زاوية"), ("ink", "حبر")],
     questions=[
         ("find", "What did the students do on the first day of the course?"),
         ("find", "How many tries did Hamad need to write a straight alif?"),
@@ -489,8 +489,8 @@ PASSAGES = {
     before=["What will your city look like in 2040?",
             "Picture A shows Earth from space. Do you know a Saudi astronaut?"],
     paras=[
-        "In May 2023, Rayyanah Barnawi [looked](ed-t) down at the Arabian Peninsula from the International Space Station. She was the first Saudi woman in space, and she was doing science up there: experiments about cells and rain. Ziad watched the launch online and decided something. \"In 2040,\" he said, \"I will be up there too.\"",
-        "His class made predictions for the year 2040. Sara thinks cars will drive themselves, and the city will be greener, with farms inside tall buildings. Hamad predicts that students won't carry bags, because every book will be on one small screen. Noor believes doctors will cure diseases that we cannot cure today.",
+        "In May 2023, Rayyanah Barnawi [looked](ed-t) down at the Arabian Peninsula from the International Space Station. She was the first Saudi woman in space, and she was doing [science](soft-c) up there: experiments about cells and clouds. Ziad watched the launch online and decided something. \"In 2040,\" he said, \"I will be up there too.\"",
+        "His class made [predictions](tion) for the year 2040. Sara thinks cars will drive themselves, and the city will be greener, with farms inside tall buildings. Hamad predicts that students won't carry bags, because every book will be on one small screen. Noor believes doctors will cure diseases that we cannot cure today.",
         "Not every prediction is happy. Omar thinks the summers will be hotter, so cities will build more shade and plant more trees. \"Technology won't fix everything,\" he says. \"People will have to change too.\" The class agreed that this was the most honest prediction of the day.",
         "Ziad's prediction is the biggest. He believes a Saudi scientist will discover something important on the Moon, and that a Gulf city will invent a new way to make water from air. \"Will you succeed?\" Sara asks him. Ziad shrugs. \"I will try,\" he says. \"And if I fail, I will have tried from [space](soft-c).\"",
     ],
@@ -512,8 +512,8 @@ PASSAGES = {
     paras=[
         "[When](wh) the Riyadh Metro opened in December 2024, Sara's family had a debate. Her father loves his car. It is comfortable, it is convenient, and nobody else is in it. Her mother thinks the metro is the most reasonable option: it is cheaper, it is faster at rush hour, and you can read on it.",
         "So Sara tested both. On Sunday she went to the library by car. It took forty-five minutes, [because](stress) the highway was full. Her father was patient, but the car was not moving. On Monday she took the metro: twenty-two minutes, a cool station, a seat by the window and three chapters of her book.",
-        "The car is more flexible, Sara wrote in her notebook. You can leave [whenever](wh) you want, and you can carry heavy things. But the metro is more reliable, more affordable and far more efficient during the day. The stations are the most beautiful buildings she has ever waited in.",
-        "Her conclusion surprised her father. \"Metro to school, car to Grandmother's house,\" she said. \"Grandmother lives far from a station, and she sends us home with [twelve](silent) boxes of food.\" Her father smiled. The most useful answer, he admitted, is usually 'both'.",
+        "The car is more flexible, Sara wrote in her notebook. You can leave [whenever](wh) you want, and you can carry heavy things. But the metro is more reliable, more affordable and far more efficient during the day. The [stations](tion) are the most beautiful buildings in the city.",
+        "Her conclusion surprised her father. \"Metro to school, car to Grandmother's house,\" she said. \"Grandmother lives far from a station, and she sends us home with twelve boxes of food.\" Her father smiled. The most useful answer, he admitted, is usually 'both'.",
     ],
     new=[("rush hour", "ساعة الذروة"), ("flexible", "مرن"), ("chapter", "فصل (في كتاب)")],
     questions=[
@@ -547,15 +547,15 @@ PASSAGES = {
     ]),
 18: dict(
     title="Two Ramadans", title_ar="رمضانان", tag="Cultures Compared",
-    images=[("18-a.jpg", "a Cairo street at night in Ramadan: colourful glass fanous lanterns strung across the lane, old stone buildings, a long communal iftar table (mawaid al-rahman) with plates and jugs, warm light, no readable text"),
-            ("18-b.jpg", "a Gulf neighbourhood at sunset in Ramadan: a cannon in a small square being prepared, a mosque minaret behind, a family carrying covered dishes to a neighbour's door, string lights, no text")],
+    images=[("18-a.jpg", "a Cairo street at night in Ramadan: colorful glass fanous lanterns strung across the lane, old stone buildings, a long communal iftar table (mawaid al-rahman) with plates and jugs, warm light, no readable text"),
+            ("18-b.jpg", "a Gulf neighborhood at sunset in Ramadan: a cannon in a small square being prepared, a mosque minaret behind, a family carrying covered dishes to a neighbour's door, string lights, no text")],
     before=["Do you know how Ramadan is celebrated in another country?",
             "Look at the two pictures. What is similar? What is different?"],
     paras=[
-        "Last year, Omar's family spent Ramadan in Cairo, where his mother grew up. He expected it to be the same as Riyadh. It was not. Cairo's Ramadan is [louder](ou-ow), more colourful and more crowded, and the streets never sleep. Every lane has fanous lanterns, and long tables appear on the pavement where anyone, rich or poor, can eat iftar for free.",
-        "Riyadh's Ramadan, Omar realised, is more traditional in a different way. The cannon fires at sunset, the neighbours send dishes to each other's doors, and the majlis is more important than the street. Families gather at home, and the night belongs to the mosque and the quiet cafés.",
+        "Last year, Omar's family spent Ramadan in Cairo, where his mother grew up. He expected it to be the same as Riyadh. It was not. Cairo's Ramadan is [louder](ou-ow), more colorful and more crowded, and the streets never sleep. Every lane has fanous lanterns, and long tables appear on the pavement where anyone, rich or poor, can eat iftar for free.",
+        "Riyadh's Ramadan, Omar realized, is more traditional in a different way. The cannon fires at sunset, the neighbours send dishes to each other's doors, and the majlis is more important than the street. Families gather at home, and the night belongs to the mosque and the quiet cafés.",
         "Some things were exactly the same. Both cities eat dates first. Both have the Ramadan drummer who wakes people for suhoor, [although](ght) in Cairo he is far louder. Both become kinder: in Cairo his uncle gave food to strangers every night, and in Riyadh his grandmother cooks for the whole building.",
-        "\"Which Ramadan is better?\" Sara asked when he came back. Omar [thought](ght) about the lanterns and the cannon, the crowded tables and the quiet majlis. \"Cairo is the most colourful,\" he said. \"Riyadh is the most peaceful. But hospitality is the same in both. That is the heritage, and it does not change with the city.\"",
+        "\"Which Ramadan is better?\" Sara asked when he came back. Omar [thought](ght) about the lanterns and the cannon, the crowded tables and the quiet majlis. \"Cairo is the most colorful,\" he said. \"Riyadh is the most peaceful. But hospitality is the same in both. That is the heritage, and it does not change with the city.\"",
     ],
     new=[("pavement", "رصيف"), ("cannon", "مدفع"), ("gather", "يجتمع")],
     questions=[

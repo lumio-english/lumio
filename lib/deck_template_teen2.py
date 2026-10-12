@@ -706,6 +706,39 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
     plan.append(("first_listen", None))
     if crew_talk:
         plan.append(("crew_talk", crew_talk))
+    # Grammar FIRST (Eslam, 12 Oct): the rule, its noticing, controlled
+    # practice, the model dialogue, the check and the common mistakes all sit
+    # right before the new words, so the structure is handled at the start of
+    # the class and the vocabulary block then feeds straight into use.
+    # Grammar: rule -> notice the pattern -> controlled practice.
+    if grammar_topic:
+        plan.append(("grammar_rule", grammar_topic))
+    if notice_sentences:
+        plan.append(("notice", None))
+    if grammar_topic:
+        plan.append(("grammar_practice", grammar_topic))
+    # Second dialogue models the structure in a natural exchange before it
+    # is checked.
+    if crew_talk2:
+        plan.append(("crew_talk", crew_talk2))
+    if grammar_recap_topics:
+        # Review-lesson-only (lesson 20): grammar_topic is never set for a
+        # "review" grammarFocus, so the pre-chunked hub topics give breadth
+        # instead of one topic's depth.
+        for chunk in grammar_recap_topics:
+            plan.append(("grammar_recap", chunk))
+    ghalf = n_grammar_mcq // 2
+    for i in range(ghalf):
+        plan.append(("grammar_mcq", i))
+    plan.append(("checkpoint", "Round 1"))
+    for i in range(ghalf, n_grammar_mcq):
+        plan.append(("grammar_mcq", i))
+    if grammar_topic:
+        import common_mistakes
+        if common_mistakes.mistakes_for(grammar_topic):
+            plan.append(("error_analysis", None))
+        else:
+            print(f"  (no common-mistake bank entry for {grammar_topic.get('title')}; slide skipped)")
     for i, w in enumerate(lesson["vocab"]):
         plan.append(("vocab", (w, i)))
         # Review lessons (currently just lesson 20) pack a 38-word vocab
@@ -762,35 +795,6 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
     sentence_indices = [i % V for i in range(6)]
     plan.append(("sentence_trio", sentence_indices[0:3]))
     plan.append(("sentence_trio", sentence_indices[3:6]))
-    # Grammar: rule -> notice the pattern -> controlled practice.
-    if grammar_topic:
-        plan.append(("grammar_rule", grammar_topic))
-    if notice_sentences:
-        plan.append(("notice", None))
-    if grammar_topic:
-        plan.append(("grammar_practice", grammar_topic))
-    # Second dialogue models the structure in a natural exchange before it
-    # is checked.
-    if crew_talk2:
-        plan.append(("crew_talk", crew_talk2))
-    if grammar_recap_topics:
-        # Review-lesson-only (lesson 20): grammar_topic is never set for a
-        # "review" grammarFocus, so the pre-chunked hub topics give breadth
-        # instead of one topic's depth.
-        for chunk in grammar_recap_topics:
-            plan.append(("grammar_recap", chunk))
-    ghalf = n_grammar_mcq // 2
-    for i in range(ghalf):
-        plan.append(("grammar_mcq", i))
-    plan.append(("checkpoint", "Round 1"))
-    for i in range(ghalf, n_grammar_mcq):
-        plan.append(("grammar_mcq", i))
-    if grammar_topic:
-        import common_mistakes
-        if common_mistakes.mistakes_for(grammar_topic):
-            plan.append(("error_analysis", None))
-        else:
-            print(f"  (no common-mistake bank entry for {grammar_topic.get('title')}; slide skipped)")
     # Reading Lab (lib/reading_passages.py): every third lesson, a culturally
     # rich passage at the level's band -- opener, the Z-layout passage with
     # glowing studied words / pronunciation rules, teacher questions. Placed
