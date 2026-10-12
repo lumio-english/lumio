@@ -65,7 +65,7 @@ PASSAGES = {
     paras=[
         "Omar has got a big family. He has got a mom, a dad and a little sister. His grandparents live in a big [house](ou-ow) with a garden.",
         "Every Friday, the family goes to the grandparents' house. Omar's uncle and aunt come too. They have got [twins](s-z)! The twins are six years old, and they look the same.",
-        "Omar's cousins run in the garden. His grandfather sits in the majlis and drinks coffee. His grandmother makes rice and [chicken](ch-k). It smells so good!",
+        "Omar's cousins run in the garden. His grandfather sits in the majlis and drinks coffee. His grandmother makes rice and chicken. It [smells](s-z) so good!",
         "\"[This](th-v) is my family,\" Omar says. \"It is big, and it is noisy. But I love it!\"",
     ],
     new=[("garden", "حديقة"), ("noisy", "صاخب"), ("the same", "متشابهان")],
@@ -84,8 +84,8 @@ PASSAGES = {
     before=["What have you got in your pocket or bag today?",
             "Look at picture B. Can you name three things?"],
     paras=[
-        "Sara's grandfather has got big pockets. \"What have you got in there, Grandpa?\" Sara asks. He smiles and puts [everything](th-s) on a tray.",
-        "He has got a gold [watch](wh). He has got glasses, but he can't find them! They are on his head. Sara laughs.",
+        "Sara's grandfather has got big pockets. \"[What](wh) have you got in there, Grandpa?\" Sara asks. He smiles and puts [everything](th-s) on a tray.",
+        "He has got a gold watch. He has got glasses, but he can't find them! They are on his head. Sara laughs.",
         "He has got a key, a small wallet and an old [phone](ph). The phone has got big buttons and no camera. \"It is twenty years old,\" he says, \"and it works!\"",
         "He has got prayer beads too. They are brown and smooth. \"Have you got a camera, Grandpa?\" Sara asks. \"No,\" he says. \"I have got my [eyes](s-z).\"",
     ],
@@ -126,8 +126,8 @@ PASSAGES = {
     before=["When is your birthday? What month?",
             "Look at picture A. How many candles can you count?"],
     paras=[
-        "Sara's birthday is in [March](ch-k). This year, her family has got a picnic in the park. It is a sunny day, and the grass is green.",
-        "Her mother brings a big cake. It has got seven candles. Her aunt brings orange and teal balloons. Her cousins are the [guests](s-z).",
+        "Sara's birthday is in March. This year, her family has got a picnic in the park. It is a sunny day, and the grass is green.",
+        "Her mother brings a big [cake](magic-e). It has got seven candles. Her aunt brings orange and teal balloons. Her cousins are the [guests](s-z).",
         "Sara opens her presents. She has got a new book, a pink watch and a box of colored pencils. \"[Thank](th-s) you!\" she says to everyone.",
         "Then they sing, and Sara blows out the candles. One, two, three... all seven! Everyone claps. \"[When](wh) is your birthday, Noor?\" Sara asks. \"It's in May,\" says Noor. \"We can have a picnic too!\"",
     ],
