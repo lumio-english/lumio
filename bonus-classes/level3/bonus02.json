@@ -652,5 +652,862 @@
     "Do not present Arabic as 'messy' or 'free for no reason': its flexibility comes from case endings and context, which is a smart system. English is strict because it lost its endings.",
     "'The ... of ...' is not always wrong in English (the end of the movie, the top of the page); for people's things, 's is the normal form. Teach the people rule only at this level.",
     "Bonus Class 3 builds on this: questions are the main place where English changes S-V-O, by moving the helper verb to the front."
-  ]
+  ],
+  "deck": [
+    {
+      "type": "listen",
+      "ribbon": "Warm-up · who does it?",
+      "question": "Same words, new order. Who does the action?",
+      "rounds": [
+        {
+          "say": "Sara texts Noor.",
+          "show": "Sara texts Noor.",
+          "options": [
+            "Sara",
+            "Noor"
+          ],
+          "answer": "Sara"
+        },
+        {
+          "say": "Noor texts Sara.",
+          "show": "Noor texts Sara.",
+          "options": [
+            "Sara",
+            "Noor"
+          ],
+          "answer": "Noor"
+        },
+        {
+          "say": "Ziad follows Hamad.",
+          "show": "Ziad follows Hamad.",
+          "options": [
+            "Ziad",
+            "Hamad"
+          ],
+          "answer": "Ziad"
+        },
+        {
+          "say": "Hamad follows Ziad.",
+          "show": "Hamad follows Ziad.",
+          "options": [
+            "Ziad",
+            "Hamad"
+          ],
+          "answer": "Hamad"
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "ribbon": "Warm-up · today's mystery",
+      "title": "Move one word, change the whole story",
+      "big": "Sara texts Noor.  ≠  Noor texts Sara.",
+      "text": "Same three words, different meaning. Why is English so strict about order?",
+      "ar": "الكلمات الثلاث نفسها والمعنى مختلف. لماذا تهتم الإنجليزية بالترتيب إلى هذا الحد؟",
+      "host": "noor-teen-point"
+    },
+    {
+      "type": "cards",
+      "ribbon": "Grammar lab · S - V - O",
+      "title": "Rule hunt 1: who sits where?",
+      "cards": [
+        {
+          "big": "S",
+          "head": "Subject",
+          "sub": "The doer. It comes first.",
+          "ar": "الفاعل: يأتي أولاً",
+          "words": [
+            "Omar",
+            "My cousins",
+            "Noor"
+          ],
+          "color": "#1E4FA3"
+        },
+        {
+          "big": "V",
+          "head": "Verb",
+          "sub": "The action. It comes second.",
+          "ar": "الفعل: يأتي ثانياً",
+          "words": [
+            "wears",
+            "love",
+            "charges"
+          ],
+          "color": "#BE123C"
+        },
+        {
+          "big": "O",
+          "head": "Object",
+          "sub": "The thing. It comes after the verb.",
+          "ar": "المفعول به: بعد الفعل",
+          "words": [
+            "a black hoodie",
+            "new sneakers",
+            "her phone"
+          ],
+          "color": "#0D9488"
+        }
+      ]
+    },
+    {
+      "type": "reveal",
+      "ribbon": "Practice · label S, V, O",
+      "instructions": "Find S | V | O. The whole noun group is one slot.",
+      "instructionsAr": "حدّد الفاعل | الفعل | المفعول به. مجموعة الاسم كلها خانة واحدة.",
+      "perSlide": 4,
+      "items": [
+        {
+          "prompt": "Omar wears a black hoodie.",
+          "answer": "Omar | wears | a black hoodie"
+        },
+        {
+          "prompt": "My cousins love new sneakers.",
+          "answer": "My cousins | love | new sneakers"
+        },
+        {
+          "prompt": "Noor charges her phone.",
+          "answer": "Noor | charges | her phone"
+        },
+        {
+          "prompt": "The principal rings the bell.",
+          "answer": "The principal | rings | the bell"
+        },
+        {
+          "prompt": "Our teammates need a new captain.",
+          "answer": "Our teammates | need | a new captain"
+        },
+        {
+          "prompt": "Ziad forgets his password.",
+          "answer": "Ziad | forgets | his password"
+        },
+        {
+          "prompt": "My siblings watch funny videos.",
+          "answer": "My siblings | watch | funny videos"
+        },
+        {
+          "prompt": "Sara loses her earbuds every week.",
+          "answer": "Sara | loses | her earbuds (+ extra)"
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "ribbon": "Grammar lab · four rules",
+      "title": "The four rules of English order",
+      "bullets": [
+        "1. S - V - O: doer, then verb, then thing.",
+        "2. Adjective first: a black hoodie.",
+        "3. Adjectives never change: two black hoodies (not blacks).",
+        "4. Owner first: Sara's phone, my charger.",
+        "Your turn: write the four rules in your own words!"
+      ],
+      "ar": "الفاعل ثم الفعل ثم المفعول به، والصفة قبل الاسم ولا تتغيّر، والمالك أولاً.",
+      "host": "noor-teen-point"
+    },
+    {
+      "type": "compare",
+      "ribbon": "Did you know · world word orders",
+      "title": "Six possible orders. Which is the most common?",
+      "columns": [
+        {
+          "head": "Order"
+        },
+        {
+          "head": "Feels like"
+        },
+        {
+          "head": "Languages"
+        }
+      ],
+      "rows": [
+        [
+          "SOV (most common)",
+          "Omar football plays.",
+          "Japanese, Korean, Turkish, Hindi"
+        ],
+        [
+          "SVO (close behind)",
+          "Omar plays football.",
+          "English, Chinese, Spanish, French"
+        ],
+        [
+          "VSO (much rarer)",
+          "Plays Omar football.",
+          "formal Arabic, Welsh, Irish"
+        ],
+        [
+          "OSV (the rarest)",
+          "Football Omar plays.",
+          "very few languages"
+        ]
+      ],
+      "note": "From a survey of about 1,400 languages. Some languages have no single main order.",
+      "noteAr": "من دراسة شملت نحو 1400 لغة، وبعض اللغات ليس لها ترتيب أساسي واحد."
+    },
+    {
+      "type": "fact",
+      "ribbon": "Did you know · endings or order",
+      "title": "Why is English so strict?",
+      "text": "Languages show who did what with word endings or with position. Old English had endings, like Arabic. Most of them disappeared between about 900 and 600 years ago, so position does the job now.",
+      "ar": "العربية الفصحى تُظهر الفاعل بالإعراب (الطالبُ)، أما الإنجليزية ففقدت الإعراب فصار الموقع يحدد الوظيفة.",
+      "host": "lumi-teen-explain"
+    },
+    {
+      "type": "reveal",
+      "ribbon": "Quiz · which word order?",
+      "instructions": "Which order is it? SVO, SOV or VSO?",
+      "instructionsAr": "ما نوع الترتيب؟ SVO أو SOV أو VSO؟",
+      "perSlide": 4,
+      "items": [
+        {
+          "prompt": "English: Omar plays football.",
+          "answer": "SVO"
+        },
+        {
+          "prompt": "Japanese style: Omar football plays.",
+          "answer": "SOV"
+        },
+        {
+          "prompt": "Formal Arabic: يلعبُ عمرُ الكرةَ",
+          "answer": "VSO"
+        },
+        {
+          "prompt": "Chinese style: Omar plays football.",
+          "answer": "SVO"
+        },
+        {
+          "prompt": "Turkish style: Sara her phone charges.",
+          "answer": "SOV"
+        },
+        {
+          "prompt": "Welsh style: Texts Sara Noor.",
+          "answer": "VSO"
+        },
+        {
+          "prompt": "Spoken Arabic (Egyptian): عمر بيلعب كورة",
+          "answer": "SVO"
+        }
+      ]
+    },
+    {
+      "type": "compare",
+      "ribbon": "Arabic bridge · the mirror",
+      "title": "Flexible Arabic, strict English",
+      "columns": [
+        {
+          "head": "العربية",
+          "rtl": true
+        },
+        {
+          "head": "English"
+        },
+        {
+          "head": "The rule"
+        }
+      ],
+      "rows": [
+        [
+          "يلعبُ عمرُ الكرةَ / عمرُ يلعبُ الكرةَ",
+          "Omar plays football.",
+          "English: only S-V-O"
+        ],
+        [
+          "سترة سوداء",
+          "a black jacket",
+          "mirror: adjective first"
+        ],
+        [
+          "سيارة حمراء / سيارات حمراء",
+          "a red car / red cars",
+          "red never changes"
+        ],
+        [
+          "هاتف سارة",
+          "Sara's phone",
+          "mirror: owner first"
+        ],
+        [
+          "على المكتب",
+          "on the desk",
+          "same order: easy!"
+        ]
+      ],
+      "note": "Arabic endings (إعراب) let words move. English has no endings, so it needs fixed seats.",
+      "noteAr": "الإعراب يسمح للكلمات العربية بالحركة، أما الإنجليزية فلا إعراب فيها فتحتاج إلى مواقع ثابتة."
+    },
+    {
+      "type": "concept",
+      "ribbon": "Arabic bridge · one subject seat",
+      "title": "One subject seat only",
+      "big": "My brother plays football.",
+      "text": "Not: My brother he plays football. English has one subject: no extra he.",
+      "ar": "في العربية قد نقول: أخي... هو يلعب. أما الإنجليزية فلها فاعل واحد فقط.",
+      "host": "omar-teen-think"
+    },
+    {
+      "type": "reveal",
+      "ribbon": "Arabic bridge · say it in English",
+      "instructions": "Say it in English. Watch the order. Don't change the adjective!",
+      "instructionsAr": "قلها بالإنجليزية. انتبه للترتيب ولا تغيّر الصفة.",
+      "perSlide": 4,
+      "items": [
+        {
+          "prompt": "سترة سوداء",
+          "answer": "a black jacket"
+        },
+        {
+          "prompt": "سترات سوداء",
+          "answer": "black jackets (not blacks)"
+        },
+        {
+          "prompt": "هاتف سارة",
+          "answer": "Sara's phone"
+        },
+        {
+          "prompt": "حقيبة عمر الجديدة",
+          "answer": "Omar's new backpack"
+        },
+        {
+          "prompt": "أصدقائي الجدد",
+          "answer": "my new friends (not news)"
+        },
+        {
+          "prompt": "شاحني القديم",
+          "answer": "my old charger"
+        },
+        {
+          "prompt": "هذه الأحذية الرياضية الجديدة",
+          "answer": "these new sneakers"
+        },
+        {
+          "prompt": "خزانة نور بجانب الباب",
+          "answer": "Noor's locker is next to the door."
+        }
+      ]
+    },
+    {
+      "type": "reveal",
+      "ribbon": "Practice · rebuild the message",
+      "instructions": "Lumi's chat got scrambled! Start with the subject, then the verb.",
+      "instructionsAr": "اختلطت رسائل لومي! ابدأ بالفاعل ثم الفعل ثم الباقي.",
+      "perSlide": 5,
+      "items": [
+        {
+          "prompt": "hoodie / wears / a / gray / Ziad",
+          "answer": "Ziad wears a gray hoodie."
+        },
+        {
+          "prompt": "sneakers / are / new / These / my",
+          "answer": "These are my new sneakers."
+        },
+        {
+          "prompt": "charger / Sara's / is / white",
+          "answer": "Sara's charger is white."
+        },
+        {
+          "prompt": "cousin / My / big / a / has / backpack",
+          "answer": "My cousin has a big backpack."
+        },
+        {
+          "prompt": "locker / next to / is / the gym / His",
+          "answer": "His locker is next to the gym."
+        },
+        {
+          "prompt": "cool / Noor / neighbors / has",
+          "answer": "Noor has cool neighbors."
+        },
+        {
+          "prompt": "earbuds / Those / our / are / captain's",
+          "answer": "Those are our captain's earbuds."
+        },
+        {
+          "prompt": "charger / black / borrows / my / Omar",
+          "answer": "Omar borrows my black charger."
+        },
+        {
+          "prompt": "sunglasses / cool / wears / Hamad",
+          "answer": "Hamad wears cool sunglasses."
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "ribbon": "Game · error auction",
+      "title": "The Lumio Grammar Auction",
+      "text": "Each team has 100 coins. Think a sentence is correct? Bid 10, 20 or 30 coins to buy it!",
+      "bullets": [
+        "You bought a correct sentence: you get double your bid back.",
+        "You bought a broken sentence: you lose your bid.",
+        "Fix a broken sentence first: 10 bonus coins!"
+      ],
+      "ar": "زايد على الجمل الصحيحة، وأصلح الجمل الخاطئة لتربح عملات إضافية.",
+      "host": "ziad-teen-point"
+    },
+    {
+      "type": "reveal",
+      "ribbon": "Game · auction sentences",
+      "instructions": "Correct or broken? Bid on the correct ones; fix the broken ones.",
+      "instructionsAr": "صحيحة أم خاطئة؟ زايد على الجمل الصحيحة وأصلح الخاطئة.",
+      "perSlide": 5,
+      "items": [
+        {
+          "prompt": "I have a jacket red.",
+          "answer": "Fix: I have a red jacket."
+        },
+        {
+          "prompt": "Omar's sneakers are new.",
+          "answer": "Correct"
+        },
+        {
+          "prompt": "She has two news backpacks.",
+          "answer": "Fix: She has two new backpacks."
+        },
+        {
+          "prompt": "The phone of Hamad is on the shelf.",
+          "answer": "Fix: Hamad's phone is on the shelf."
+        },
+        {
+          "prompt": "My sister she loves selfies.",
+          "answer": "Fix: My sister loves selfies."
+        },
+        {
+          "prompt": "The library is above the cafeteria.",
+          "answer": "Correct"
+        },
+        {
+          "prompt": "Charges Noor her phone every night.",
+          "answer": "Fix: Noor charges her phone every night."
+        },
+        {
+          "prompt": "This headphones are new.",
+          "answer": "Fix: These headphones are new."
+        },
+        {
+          "prompt": "Our teammates are cool.",
+          "answer": "Correct"
+        },
+        {
+          "prompt": "Ziad has cools sunglasses.",
+          "answer": "Fix: Ziad has cool sunglasses."
+        }
+      ]
+    },
+    {
+      "type": "fact",
+      "ribbon": "Did you know · Yoda's order",
+      "text": "Yoda in Star Wars often puts the object first: 'Much to learn you still have.' That is OSV, the rarest basic order in the world's languages. No wonder he sounds strange!",
+      "ar": "يودا في أفلام حرب النجوم يضع المفعول به أولاً غالباً، وهذا ترتيب OSV، وهو الأندر بين لغات العالم.",
+      "host": "lumi-teen-surprised"
+    }
+  ],
+  "homeworkMissions": {
+    "theme": "Word Order Lab",
+    "themeAr": "مختبر ترتيب الكلمات",
+    "intro": "Six missions about who does what. Finish them all to earn your Word Order Pro badge!",
+    "introAr": "ست مهمات عن 'مَن يفعل ماذا'. أنهِها كلها لتحصل على شارة محترف ترتيب الكلمات!",
+    "badge": "Word Order Pro",
+    "badgeAr": "محترف ترتيب الكلمات",
+    "missions": [
+      {
+        "type": "listen-choose",
+        "title": "Who Did It?",
+        "titleAr": "مَن فعلها؟",
+        "intro": "Listen. Who does the action? The doer comes first!",
+        "introAr": "استمع: مَن يقوم بالفعل؟ الفاعل يأتي أولاً!",
+        "rounds": [
+          {
+            "say": "Noor helps Sara.",
+            "options": [
+              "Noor",
+              "Sara"
+            ],
+            "answer": "Noor"
+          },
+          {
+            "say": "Sara helps Noor.",
+            "options": [
+              "Noor",
+              "Sara"
+            ],
+            "answer": "Sara"
+          },
+          {
+            "say": "The dog follows Ziad.",
+            "options": [
+              "the dog",
+              "Ziad"
+            ],
+            "answer": "the dog"
+          },
+          {
+            "say": "Ziad follows the dog.",
+            "options": [
+              "the dog",
+              "Ziad"
+            ],
+            "answer": "Ziad"
+          },
+          {
+            "say": "Hamad calls Omar every night.",
+            "options": [
+              "Hamad",
+              "Omar"
+            ],
+            "answer": "Hamad"
+          },
+          {
+            "say": "Omar calls Hamad every night.",
+            "options": [
+              "Hamad",
+              "Omar"
+            ],
+            "answer": "Omar"
+          }
+        ]
+      },
+      {
+        "type": "build",
+        "title": "Owner First",
+        "titleAr": "المالك أولاً",
+        "intro": "Listen and complete: Sara or Sara's?",
+        "introAr": "استمع وأكمل: Sara أم Sara's؟",
+        "options": [
+          "Sara",
+          "Sara's"
+        ],
+        "rounds": [
+          {
+            "frame": "This is _ phone.",
+            "say": "This is Sara's phone.",
+            "answer": "Sara's"
+          },
+          {
+            "frame": "_ texts Noor every day.",
+            "say": "Sara texts Noor every day.",
+            "answer": "Sara"
+          },
+          {
+            "frame": "I like _ new hoodie.",
+            "say": "I like Sara's new hoodie.",
+            "answer": "Sara's"
+          },
+          {
+            "frame": "_ is my cousin.",
+            "say": "Sara is my cousin.",
+            "answer": "Sara"
+          },
+          {
+            "frame": "Where is _ charger?",
+            "say": "Where is Sara's charger?",
+            "answer": "Sara's"
+          },
+          {
+            "frame": "_ wears cool sunglasses.",
+            "say": "Sara wears cool sunglasses.",
+            "answer": "Sara"
+          }
+        ]
+      },
+      {
+        "type": "true-false",
+        "title": "Grammar Auction at Home",
+        "titleAr": "مزاد القواعد في البيت",
+        "intro": "Is the sentence correct? True = correct, False = broken.",
+        "introAr": "هل الجملة صحيحة؟ صح = صحيحة، خطأ = خاطئة.",
+        "items": [
+          {
+            "q": "I have a jacket black.",
+            "qAr": "هل هذه الجملة صحيحة؟",
+            "a": false,
+            "why": "Adjective first: I have a black jacket."
+          },
+          {
+            "q": "Omar's sneakers are new.",
+            "qAr": "هل هذه الجملة صحيحة؟",
+            "a": true
+          },
+          {
+            "q": "She has two blacks hoodies.",
+            "qAr": "هل هذه الجملة صحيحة؟",
+            "a": false,
+            "why": "Adjectives never take -s: two black hoodies."
+          },
+          {
+            "q": "The phone of Sara is on the desk.",
+            "qAr": "هل هذه الجملة صحيحة؟",
+            "a": false,
+            "why": "Owner first: Sara's phone is on the desk."
+          },
+          {
+            "q": "My brother he plays football.",
+            "qAr": "هل هذه الجملة صحيحة؟",
+            "a": false,
+            "why": "One subject only: My brother plays football."
+          },
+          {
+            "q": "These sneakers are new.",
+            "qAr": "هل هذه الجملة صحيحة؟",
+            "a": true
+          },
+          {
+            "q": "Plays Omar football every Friday.",
+            "qAr": "هل هذه الجملة صحيحة؟",
+            "a": false,
+            "why": "Subject first: Omar plays football every Friday."
+          },
+          {
+            "q": "Our teammates need a new captain.",
+            "qAr": "هل هذه الجملة صحيحة؟",
+            "a": true
+          }
+        ]
+      },
+      {
+        "type": "sort",
+        "title": "Languages of the World",
+        "titleAr": "لغات العالم",
+        "intro": "Tap a language, then tap its usual word order.",
+        "introAr": "اضغط اللغة ثم اختر ترتيبها المعتاد.",
+        "boxes": [
+          "SVO",
+          "SOV",
+          "VSO"
+        ],
+        "items": [
+          {
+            "text": "English",
+            "box": 0
+          },
+          {
+            "text": "Japanese",
+            "box": 1
+          },
+          {
+            "text": "Welsh",
+            "box": 2
+          },
+          {
+            "text": "Chinese",
+            "box": 0
+          },
+          {
+            "text": "Turkish",
+            "box": 1
+          },
+          {
+            "text": "Irish",
+            "box": 2
+          },
+          {
+            "text": "Spanish",
+            "box": 0
+          },
+          {
+            "text": "Korean",
+            "box": 1
+          },
+          {
+            "text": "formal Arabic",
+            "box": 2
+          },
+          {
+            "text": "Hindi",
+            "box": 1
+          }
+        ]
+      },
+      {
+        "type": "record",
+        "title": "Yoda Studio",
+        "titleAr": "استوديو يودا",
+        "intro": "Listen, then record yourself. Say Yoda's line, then the normal English!",
+        "introAr": "استمع ثم سجّل صوتك: جملة يودا ثم الجملة الإنجليزية العادية!",
+        "lines": [
+          "Much to learn you still have.",
+          "You still have much to learn.",
+          "Omar wears a black hoodie.",
+          "These are my new sneakers.",
+          "Sara's phone is next to my charger."
+        ]
+      },
+      {
+        "type": "mission",
+        "title": "Teach the Mirror Rule",
+        "titleAr": "علّم قاعدة المرآة",
+        "intro": "Teach someone at home how English flips the order!",
+        "introAr": "علّم أحداً في البيت كيف تقلب الإنجليزية الترتيب!",
+        "steps": [
+          {
+            "en": "Show the mirror: سترة سوداء = a black jacket, هاتف سارة = Sara's phone.",
+            "ar": "أرِهم المرآة: سترة سوداء = a black jacket، وهاتف سارة = Sara's phone."
+          },
+          {
+            "en": "Describe 3 things at home with adjective + noun (my old charger).",
+            "ar": "صِف 3 أشياء في البيت بصفة + اسم (my old charger)."
+          },
+          {
+            "en": "Ask them to say one in English. Check the order!",
+            "ar": "اطلب منهم أن يقولوا واحداً بالإنجليزية، وتحقق من الترتيب!"
+          }
+        ],
+        "ask": "Who did you teach?",
+        "askAr": "مَن علّمت؟",
+        "findLabel": "Write the 3 things you described",
+        "findLabelAr": "اكتب الأشياء الثلاثة التي وصفتها",
+        "findCount": 3
+      }
+    ]
+  },
+  "printables": {
+    "worksheet": [
+      {
+        "type": "match",
+        "title": "The mirror: match the Arabic to the English",
+        "titleAr": "المرآة: صِل العبارة العربية بالإنجليزية",
+        "pairs": [
+          [
+            "سترة سوداء",
+            "my old charger"
+          ],
+          [
+            "هاتف سارة",
+            "black jackets"
+          ],
+          [
+            "سترات سوداء",
+            "a black jacket"
+          ],
+          [
+            "شاحني القديم",
+            "Omar's new backpack"
+          ],
+          [
+            "حقيبة عمر الجديدة",
+            "Sara's phone"
+          ]
+        ]
+      },
+      {
+        "type": "sort-table",
+        "title": "Adjective or noun? Write each word in the right box",
+        "titleAr": "صفة أم اسم؟ اكتب كل كلمة في الصندوق المناسب",
+        "letters": [
+          "hoodie",
+          "·",
+          "black",
+          "·",
+          "sneakers",
+          "·",
+          "new",
+          "·",
+          "cap",
+          "·",
+          "cool",
+          "·",
+          "phone",
+          "·",
+          "old"
+        ],
+        "boxes": [
+          "Adjectives",
+          "Nouns"
+        ]
+      },
+      {
+        "type": "write-lines",
+        "title": "Put the words in order: (a) sneakers / are / new / These / my  (b) charger / black / borrows / my / Omar",
+        "titleAr": "رتّب الكلمات لتكوّن جملة صحيحة",
+        "example": "hoodie / wears / a / gray / Ziad -> Ziad wears a gray hoodie.",
+        "lines": 2
+      },
+      {
+        "type": "write-lines",
+        "title": "Fix it: I have a jacket red. / She has two blacks hoodies. / The phone of Sara is new.",
+        "titleAr": "أصلح الجمل الخاطئة",
+        "example": "My brother he plays football. -> My brother plays football.",
+        "lines": 3
+      },
+      {
+        "type": "write-lines",
+        "title": "Mirror Mission: describe 3 things in your bag (owner + adjective + noun)",
+        "titleAr": "مهمة المرآة: صِف 3 أشياء في حقيبتك (المالك + الصفة + الاسم)",
+        "example": "my brother's old charger",
+        "lines": 3
+      }
+    ],
+    "cards": [
+      {
+        "big": "S",
+        "head": "Subject",
+        "sub": "the doer: first",
+        "ar": "الفاعل",
+        "color": "#1E4FA3"
+      },
+      {
+        "big": "V",
+        "head": "Verb",
+        "sub": "the action: second",
+        "ar": "الفعل",
+        "color": "#BE123C"
+      },
+      {
+        "big": "O",
+        "head": "Object",
+        "sub": "the thing: after the verb",
+        "ar": "المفعول به",
+        "color": "#0D9488"
+      },
+      {
+        "big": "Adj",
+        "head": "Adjective",
+        "sub": "before the noun, no -s",
+        "ar": "الصفة",
+        "color": "#15803D"
+      },
+      {
+        "big": "N",
+        "head": "Noun",
+        "sub": "after the adjective",
+        "ar": "الاسم",
+        "color": "#1E4FA3"
+      },
+      {
+        "big": "'s",
+        "head": "Owner",
+        "sub": "Sara's phone",
+        "ar": "المالك أولاً",
+        "color": "#B45309"
+      },
+      {
+        "image": "hoodie",
+        "head": "hoodie",
+        "color": "#0D9488"
+      },
+      {
+        "image": "sneakers",
+        "head": "sneakers",
+        "color": "#0D9488"
+      },
+      {
+        "image": "backpack",
+        "head": "backpack",
+        "color": "#0D9488"
+      },
+      {
+        "image": "cap",
+        "head": "cap",
+        "color": "#0D9488"
+      },
+      {
+        "image": "phone",
+        "head": "phone",
+        "color": "#0D9488"
+      },
+      {
+        "image": "charger",
+        "head": "charger",
+        "color": "#0D9488"
+      }
+    ]
+  }
 }

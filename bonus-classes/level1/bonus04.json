@@ -648,5 +648,928 @@
     "History facts are simplified for children but accurate: knife (late Old English cnīf, from Old Norse) kept a pronounced k until about the 1600s; William Caxton set up the first printing press in England in 1476; the Great Vowel Shift ran from about 1400 to 1700; early printers' type had no þ (thorn), so they used y, which looked like it in late handwriting. 'Ye' was always read 'the', and most 'Ye Olde' signs are modern imitations of an old style.",
     "Keep the Arabic comparison respectful and balanced: Arabic has fewer tricky spellings than English, but it does have some (هذا، لكن، الشمس، عمرو).",
     "Level 2 (Spelling Detectives) continues with digraphs such as sh, ch and th, including the two sounds of th (ث and ذ)."
-  ]
+  ],
+  "deck": [
+    {
+      "type": "reveal",
+      "ribbon": "Warm-up · blend it or not?",
+      "instructions": "Arm out! Blend the sounds. Is it a real word?",
+      "instructionsAr": "مدّ ذراعك وادمج الأصوات: هل هي كلمة حقيقية؟",
+      "perSlide": 4,
+      "items": [
+        {
+          "prompt": "h - o - t",
+          "answer": "hot"
+        },
+        {
+          "prompt": "c - a - t",
+          "answer": "cat"
+        },
+        {
+          "prompt": "r - u - n",
+          "answer": "run"
+        },
+        {
+          "prompt": "s - a - i - d",
+          "answer": "'sa-id'? No! It's said: tricky!"
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "ribbon": "Story · an old photo",
+      "title": "English spelling is like an old photo",
+      "big": "knife  =  'k-neef'",
+      "text": "Long ago, people said the k in knife. The k sound went away, but the letter stayed in the spelling!",
+      "bullets": [
+        "Long ago: people said almost every letter.",
+        "Then the way people spoke changed.",
+        "Books kept the old spellings."
+      ],
+      "ar": "قديماً كان الناس ينطقون كل حرف تقريباً، ثم تغيّر الكلام وبقيت التهجئة القديمة في الكتب.",
+      "host": "lumi-books"
+    },
+    {
+      "type": "sort",
+      "ribbon": "Sound lab · blend it or tricky?",
+      "instructions": "Can you blend it? Thumbs-up for blend it, a hand heart for tricky.",
+      "instructionsAr": "هل تستطيع دمج أصواتها؟ ارفع إبهامك إذا استطعت، واصنع قلباً بيديك إذا كانت خادعة.",
+      "boxes": [
+        "Blend it",
+        "Tricky (heart word)"
+      ],
+      "colors": [
+        "#15803D",
+        "#DC2626"
+      ],
+      "items": [
+        {
+          "text": "cat",
+          "box": "Blend it",
+          "say": "cat"
+        },
+        {
+          "text": "said",
+          "box": "Tricky (heart word)",
+          "say": "said"
+        },
+        {
+          "text": "dog",
+          "box": "Blend it",
+          "say": "dog"
+        },
+        {
+          "text": "was",
+          "box": "Tricky (heart word)",
+          "say": "was"
+        },
+        {
+          "text": "the",
+          "box": "Tricky (heart word)",
+          "say": "the"
+        },
+        {
+          "text": "run",
+          "box": "Blend it",
+          "say": "run"
+        },
+        {
+          "text": "you",
+          "box": "Tricky (heart word)",
+          "say": "you"
+        },
+        {
+          "text": "bed",
+          "box": "Blend it",
+          "say": "bed"
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "ribbon": "Word lab · heart words",
+      "title": "A tricky word is tricky in only ONE part",
+      "big": "s  ♥ai  d",
+      "text": "s and d are normal. Only ai is tricky: it says Quick E, sed. We learn that part by heart!",
+      "bullets": [
+        "Find the tricky part.",
+        "Draw a heart over it.",
+        "Learn that part by heart."
+      ],
+      "ar": "في said الجزء الخادع فقط ai، ويُنطق مثل E السريع. نضع فوقه قلباً لأننا نحفظه عن ظهر قلب.",
+      "host": "sara-explain"
+    },
+    {
+      "type": "reveal",
+      "ribbon": "Word lab · find the tricky part",
+      "instructions": "Which part is tricky? Draw a heart over it. How does it sound?",
+      "instructionsAr": "أيّ جزء خادع؟ ارسم قلباً فوقه. كيف يُنطق؟",
+      "perSlide": 5,
+      "items": [
+        {
+          "prompt": "said",
+          "answer": "ai says e: sed",
+          "say": "said"
+        },
+        {
+          "prompt": "was",
+          "answer": "a says u (or o), s says z",
+          "say": "was"
+        },
+        {
+          "prompt": "the",
+          "answer": "th is ذ, e says 'uh'",
+          "say": "the"
+        },
+        {
+          "prompt": "to",
+          "answer": "o says oo",
+          "say": "to"
+        },
+        {
+          "prompt": "he",
+          "answer": "e says its name: ee",
+          "say": "he"
+        },
+        {
+          "prompt": "go",
+          "answer": "o says its name: oh",
+          "say": "go"
+        },
+        {
+          "prompt": "my",
+          "answer": "y says 'eye'",
+          "say": "my"
+        },
+        {
+          "prompt": "have",
+          "answer": "the e is silent",
+          "say": "have"
+        },
+        {
+          "prompt": "you",
+          "answer": "ou says oo",
+          "say": "you"
+        }
+      ]
+    },
+    {
+      "type": "cards",
+      "ribbon": "Word lab · th is ذ",
+      "title": "the, this, that: tongue between your teeth + buzz",
+      "cards": [
+        {
+          "big": "ذ",
+          "head": "the  ·  this  ·  that",
+          "sub": "th here sounds like Arabic ذ  (tongue between the teeth + buzz)",
+          "ar": "th في the هو صوت الذال نفسه",
+          "words": [
+            "the",
+            "this",
+            "that"
+          ],
+          "color": "#DC2626"
+        },
+        {
+          "big": "z / d",
+          "head": "Not ze, not de!",
+          "sub": "Look in the mirror: can you see the tip of your tongue?",
+          "ar": "ليست زاياً ولا دالاً: انظر في المرآة",
+          "color": "#6B7280"
+        }
+      ]
+    },
+    {
+      "type": "chant",
+      "ribbon": "Practice · heart word chant",
+      "title": "Point, say, write it in the air",
+      "lines": [
+        {
+          "en": "the  ·  to  ·  was  ·  said"
+        },
+        {
+          "en": "you  ·  he  ·  my  ·  have"
+        },
+        {
+          "en": "I have a cat.",
+          "ar": "عندي قطة."
+        },
+        {
+          "en": "He said, \"I can run.\"",
+          "ar": "قال: «أستطيع أن أركض»."
+        }
+      ],
+      "tip": "Sky-write each heart word with a big finger!",
+      "host": "lumi-megaphone"
+    },
+    {
+      "type": "reveal",
+      "ribbon": "Game · fill the gap",
+      "instructions": "Word bank: the, was, said, you, to, he, my, have",
+      "instructionsAr": "بنك الكلمات: the و was و said و you و to و he و my و have",
+      "perSlide": 4,
+      "items": [
+        {
+          "prompt": "I ___ a pet dog.",
+          "answer": "have"
+        },
+        {
+          "prompt": "Can ___ swim? Yes, I can.",
+          "answer": "you"
+        },
+        {
+          "prompt": "Yesterday the cat ___ in the box.",
+          "answer": "was"
+        },
+        {
+          "prompt": "Mom ___, \"Sit down.\"",
+          "answer": "said"
+        },
+        {
+          "prompt": "___ dog is big. (It is my dog.)",
+          "answer": "My"
+        },
+        {
+          "prompt": "I go ___ bed.",
+          "answer": "to"
+        },
+        {
+          "prompt": "Sam is my friend. ___ can run.",
+          "answer": "He"
+        },
+        {
+          "prompt": "___ sun is hot.",
+          "answer": "The"
+        }
+      ]
+    },
+    {
+      "type": "tasks",
+      "ribbon": "Your turn · look, say, cover",
+      "title": "Look, Say, Cover, Write, Check: said, was, the, you",
+      "icon": "pencil",
+      "steps": [
+        "LOOK at the word. Find the heart part.",
+        "SAY it aloud.",
+        "COVER it with your hand.",
+        "WRITE it from memory.",
+        "CHECK: did you get the heart part right?"
+      ],
+      "ar": "انظر، قل، غطِّ، اكتب، ثم تحقّق: هل كتبت الجزء الخادع صحيحاً؟",
+      "host": "lumi-pencil"
+    },
+    {
+      "type": "compare",
+      "ribbon": "Arabic bridge · ? and ؟",
+      "title": "English and Arabic sentences: same or different?",
+      "columns": [
+        {
+          "head": "English"
+        },
+        {
+          "head": "العربية",
+          "rtl": true
+        },
+        {
+          "head": "Same or different?"
+        }
+      ],
+      "rows": [
+        [
+          "Capital letters: I, Monday, Sam",
+          "لا توجد حروف كبيرة",
+          "Different"
+        ],
+        [
+          "A letter keeps one shape: b",
+          "الحرف يتغيّر شكله: بـ ـبـ ـب",
+          "Different"
+        ],
+        [
+          "Question mark: ?",
+          "علامة الاستفهام: ؟",
+          "Mirror twins!"
+        ],
+        [
+          "Period . and spaces",
+          "النقطة . والمسافات",
+          "Same!"
+        ]
+      ],
+      "note": "English goes left to right, so ? faces the English way.",
+      "noteAr": "العربية تُكتب من اليمين إلى اليسار، لذلك تتّجه علامة الاستفهام فيها إلى الجهة الأخرى."
+    },
+    {
+      "type": "cards",
+      "ribbon": "Arabic bridge · tricky too!",
+      "title": "Arabic has tricky words too!",
+      "cards": [
+        {
+          "big": "هذا",
+          "head": "haadhaa",
+          "sub": "A long a is said but not written.",
+          "ar": "ألف تُنطق ولا تُكتب",
+          "color": "#DC2626"
+        },
+        {
+          "big": "لكن",
+          "head": "laakin",
+          "sub": "A long a is said but not written.",
+          "ar": "ألف تُنطق ولا تُكتب",
+          "color": "#7C3AED"
+        },
+        {
+          "big": "الشمس",
+          "head": "ash-shams",
+          "sub": "The l (laam) is written but not said.",
+          "ar": "لام تُكتب ولا تُنطق",
+          "color": "#B45309"
+        },
+        {
+          "big": "عمرو",
+          "head": "Amr",
+          "sub": "The w (waaw) at the end is written but not said.",
+          "ar": "واو تُكتب ولا تُنطق",
+          "color": "#1E4FA3"
+        }
+      ]
+    },
+    {
+      "type": "cards",
+      "ribbon": "Grammar lab · sentence rules",
+      "title": "Every sentence has rules. Do the actions!",
+      "cards": [
+        {
+          "big": "A",
+          "head": "Capital letter",
+          "sub": "At the start, for I, names and days. Stand tall, arms up!",
+          "ar": "حرف كبير: قف منتصباً وارفع ذراعيك",
+          "color": "#1E4FA3"
+        },
+        {
+          "big": "a  b",
+          "head": "Finger space",
+          "sub": "A space between words. Two fingers up!",
+          "ar": "مسافة الإصبع: إصبعان بين الكلمات",
+          "color": "#0D9488"
+        },
+        {
+          "big": ".",
+          "head": "Period",
+          "sub": "The end of a telling sentence. Stamp: stop!",
+          "ar": "النقطة: اضرب الأرض بقدمك",
+          "color": "#B45309"
+        },
+        {
+          "big": "?",
+          "head": "Question mark",
+          "sub": "The end of a question. Shrug and draw a hook!",
+          "ar": "علامة الاستفهام: هزّ كتفيك وارسم خطافاً",
+          "color": "#7C3AED"
+        }
+      ]
+    },
+    {
+      "type": "reveal",
+      "ribbon": "Grammar lab · sentence doctor",
+      "instructions": "This sentence is sick! Find the mistake. What is the cure?",
+      "instructionsAr": "هذه الجملة مريضة! اعثر على الخطأ. ما العلاج؟",
+      "perSlide": 4,
+      "items": [
+        {
+          "prompt": "i have a cat.",
+          "answer": "I have a cat."
+        },
+        {
+          "prompt": "Today is monday",
+          "answer": "Today is Monday."
+        },
+        {
+          "prompt": "Can you swim؟",
+          "answer": "Can you swim?"
+        },
+        {
+          "prompt": "the dog is big.",
+          "answer": "The dog is big."
+        },
+        {
+          "prompt": "Mydogisinthebox.",
+          "answer": "My dog is in the box."
+        },
+        {
+          "prompt": "Where is the ball.",
+          "answer": "Where is the ball?"
+        },
+        {
+          "prompt": "sam and i can run",
+          "answer": "Sam and I can run."
+        },
+        {
+          "prompt": "I have a red hat?",
+          "answer": "I have a red hat."
+        }
+      ]
+    },
+    {
+      "type": "tasks",
+      "ribbon": "Your turn · my three sentences",
+      "title": "Write three sentences about you",
+      "icon": "pencil",
+      "steps": [
+        "About a pet: I have a ___.",
+        "About the day: Today is ___.",
+        "A question for a friend: Can you ___?",
+        "Check: capital? spaces? period or question mark? heart words right?"
+      ],
+      "ar": "اكتب ثلاث جمل عن نفسك، ثم تحقّق: حرف كبير؟ مسافات؟ نقطة أو علامة استفهام؟",
+      "host": "noor-point"
+    },
+    {
+      "type": "reveal",
+      "ribbon": "Your turn · sentence starters",
+      "instructions": "Finish each sentence with your own idea. Tap to see an example.",
+      "instructionsAr": "أكمل كل جملة بفكرتك الخاصة، واضغط لترى مثالاً.",
+      "perSlide": 6,
+      "items": [
+        {
+          "prompt": "I have a ___",
+          "answer": "I have a cat."
+        },
+        {
+          "prompt": "Today is ___",
+          "answer": "Today is Monday."
+        },
+        {
+          "prompt": "Can you ___",
+          "answer": "Can you swim?"
+        },
+        {
+          "prompt": "My ___ is ___",
+          "answer": "My dog is big."
+        },
+        {
+          "prompt": "Where is the ___",
+          "answer": "Where is the ball?"
+        },
+        {
+          "prompt": "He said, \"___\"",
+          "answer": "He said, \"I can run.\""
+        }
+      ]
+    },
+    {
+      "type": "fact",
+      "ribbon": "Did you know · Ye Olde Shop",
+      "text": "Some old-style signs in England say 'Ye Olde Shop'. But ye is really the! The old letter thorn (þ) looked a bit like y, so early printers used y.",
+      "ar": "بعض اللافتات ذات الطراز القديم في إنجلترا مكتوب عليها Ye Olde Shop، لكن ye هي في الحقيقة the! الحرف القديم þ كان يشبه y قليلاً، فاستعمل الطابعون الأوائل y."
+    }
+  ],
+  "homeworkMissions": {
+    "theme": "Heart Words and Sentence Doctors",
+    "themeAr": "كلمات القلب وأطباء الجمل",
+    "intro": "Six missions. Finish them all to earn your Sentence Doctor badge!",
+    "introAr": "ست مهمات. أنهِها كلها لتحصل على شارة طبيب الجمل!",
+    "badge": "Sentence Doctor",
+    "badgeAr": "طبيب الجمل",
+    "missions": [
+      {
+        "type": "listen-choose",
+        "title": "Heart Word Ears",
+        "titleAr": "أذن كلمات القلب",
+        "intro": "Listen. Which heart word do you hear?",
+        "introAr": "استمع: أي كلمة من كلمات القلب تسمع؟",
+        "rounds": [
+          {
+            "say": "said",
+            "options": [
+              "said",
+              "was",
+              "you"
+            ],
+            "answer": "said"
+          },
+          {
+            "say": "was",
+            "options": [
+              "the",
+              "was",
+              "my"
+            ],
+            "answer": "was"
+          },
+          {
+            "say": "you",
+            "options": [
+              "he",
+              "to",
+              "you"
+            ],
+            "answer": "you"
+          },
+          {
+            "say": "the",
+            "options": [
+              "the",
+              "have",
+              "said"
+            ],
+            "answer": "the"
+          },
+          {
+            "say": "have",
+            "options": [
+              "my",
+              "have",
+              "was"
+            ],
+            "answer": "have"
+          },
+          {
+            "say": "to",
+            "options": [
+              "to",
+              "you",
+              "he"
+            ],
+            "answer": "to"
+          },
+          {
+            "say": "my",
+            "options": [
+              "said",
+              "the",
+              "my"
+            ],
+            "answer": "my"
+          },
+          {
+            "say": "he",
+            "options": [
+              "he",
+              "have",
+              "to"
+            ],
+            "answer": "he"
+          }
+        ]
+      },
+      {
+        "type": "build",
+        "title": "Fill the Heart Part",
+        "titleAr": "أكمل جزء القلب",
+        "intro": "Listen to the heart word. Which tricky part is missing?",
+        "introAr": "استمع لكلمة القلب: ما الجزء الخادع الناقص؟",
+        "options": [
+          "ai",
+          "a",
+          "ou",
+          "o",
+          "y",
+          "e"
+        ],
+        "rounds": [
+          {
+            "frame": "s_d",
+            "say": "said",
+            "answer": "ai"
+          },
+          {
+            "frame": "w_s",
+            "say": "was",
+            "answer": "a"
+          },
+          {
+            "frame": "y_",
+            "say": "you",
+            "answer": "ou"
+          },
+          {
+            "frame": "t_",
+            "say": "to",
+            "answer": "o"
+          },
+          {
+            "frame": "m_",
+            "say": "my",
+            "answer": "y"
+          },
+          {
+            "frame": "hav_",
+            "say": "have",
+            "answer": "e"
+          }
+        ]
+      },
+      {
+        "type": "sort",
+        "title": "Blend It or Heart Word?",
+        "titleAr": "تُدمج أم كلمة قلب؟",
+        "intro": "Tap a word to hear it. Can you blend it? Then tap its box.",
+        "introAr": "اضغط الكلمة لتسمعها. هل تستطيع دمج أصواتها؟ ثم اختر صندوقها.",
+        "boxes": [
+          "Blend it",
+          "Heart word (tricky)"
+        ],
+        "items": [
+          {
+            "text": "cat",
+            "box": 0,
+            "say": "cat"
+          },
+          {
+            "text": "said",
+            "box": 1,
+            "say": "said"
+          },
+          {
+            "text": "dog",
+            "box": 0,
+            "say": "dog"
+          },
+          {
+            "text": "was",
+            "box": 1,
+            "say": "was"
+          },
+          {
+            "text": "the",
+            "box": 1,
+            "say": "the"
+          },
+          {
+            "text": "run",
+            "box": 0,
+            "say": "run"
+          },
+          {
+            "text": "you",
+            "box": 1,
+            "say": "you"
+          },
+          {
+            "text": "hop",
+            "box": 0,
+            "say": "hop"
+          }
+        ]
+      },
+      {
+        "type": "true-false",
+        "title": "Sentence Doctor Quiz",
+        "titleAr": "اختبار طبيب الجمل",
+        "intro": "True or false?",
+        "introAr": "صح أم خطأ؟",
+        "items": [
+          {
+            "q": "A sentence starts with a capital letter.",
+            "qAr": "تبدأ الجملة بحرف كبير.",
+            "a": true
+          },
+          {
+            "q": "The word I is always a capital letter.",
+            "qAr": "كلمة I تُكتب دائماً بحرف كبير.",
+            "a": true
+          },
+          {
+            "q": "Arabic has capital letters.",
+            "qAr": "في العربية حروف كبيرة.",
+            "a": false,
+            "why": "Arabic has no capital letters. English does."
+          },
+          {
+            "q": "In English, we write the question mark like this: ؟",
+            "qAr": "في الإنجليزية نكتب علامة الاستفهام هكذا: ؟",
+            "a": false,
+            "why": "English uses ?. The Arabic ؟ faces the other way."
+          },
+          {
+            "q": "Monday starts with a capital letter.",
+            "qAr": "كلمة Monday تبدأ بحرف كبير.",
+            "a": true
+          },
+          {
+            "q": "Long ago, people said the k in knife.",
+            "qAr": "قديماً كان الناس ينطقون k في كلمة knife.",
+            "a": true
+          }
+        ]
+      },
+      {
+        "type": "record",
+        "title": "Heart Word Studio",
+        "titleAr": "استوديو كلمات القلب",
+        "intro": "Listen, then record yourself. Tongue between your teeth for the!",
+        "introAr": "استمع ثم سجّل صوتك. ضع لسانك بين أسنانك في the!",
+        "lines": [
+          "I have a cat.",
+          "Can you swim?",
+          "He said, \"I can run.\"",
+          "The dog was in the box."
+        ]
+      },
+      {
+        "type": "mission",
+        "title": "Heart Word Hunt",
+        "titleAr": "صيد كلمات القلب",
+        "intro": "Be a heart word hunter and a sentence doctor at home!",
+        "introAr": "كن صيّاد كلمات القلب وطبيب الجمل في البيت!",
+        "steps": [
+          {
+            "en": "Find the, was, said and you in a book or on a box at home. Count them.",
+            "ar": "ابحث عن the و was و said و you في كتاب أو على علبة في البيت، وعُدّها."
+          },
+          {
+            "en": "Show someone at home a capital letter and a period in a sentence.",
+            "ar": "أرِ أحد أفراد أسرتك حرفاً كبيراً ونقطة في جملة."
+          },
+          {
+            "en": "Write three sentences about your family. One must be a question.",
+            "ar": "اكتب ثلاث جمل عن عائلتك، واحدة منها على الأقل سؤال."
+          }
+        ],
+        "ask": "Who did you show?",
+        "askAr": "مَن الذي أريتَه؟",
+        "findLabel": "How many did you find? (the, was, said, you)",
+        "findLabelAr": "كم مرة وجدتها؟ (the و was و said و you)",
+        "findCount": 4
+      }
+    ]
+  },
+  "printables": {
+    "worksheet": [
+      {
+        "type": "odd-one-out",
+        "title": "Circle the heart word (the tricky word) in each row",
+        "titleAr": "ضع دائرة حول كلمة القلب (الكلمة الخادعة) في كل سطر",
+        "sets": [
+          [
+            "cat",
+            "said",
+            "dog"
+          ],
+          [
+            "run",
+            "bed",
+            "was"
+          ],
+          [
+            "you",
+            "hop",
+            "sun"
+          ],
+          [
+            "big",
+            "the",
+            "hen"
+          ]
+        ]
+      },
+      {
+        "type": "match",
+        "title": "Match each heart word to its tricky part",
+        "titleAr": "صِل كل كلمة قلب بجزئها الخادع",
+        "pairs": [
+          [
+            "said",
+            "ou says oo"
+          ],
+          [
+            "was",
+            "the e is silent"
+          ],
+          [
+            "you",
+            "a says u (or o)"
+          ],
+          [
+            "have",
+            "ai says e"
+          ]
+        ]
+      },
+      {
+        "type": "draw",
+        "title": "Write each heart word big. Draw a heart over the tricky part",
+        "titleAr": "اكتب كل كلمة قلب بخط كبير وارسم قلباً فوق الجزء الخادع",
+        "boxes": [
+          {
+            "label": "said",
+            "color": "#DC2626"
+          },
+          {
+            "label": "was",
+            "color": "#7C3AED"
+          },
+          {
+            "label": "you",
+            "color": "#1E4FA3"
+          }
+        ]
+      },
+      {
+        "type": "write-lines",
+        "title": "Sentence Doctor: fix and write   the dog is big   ·   Can you swim؟   ·   Mydogisinthebox.",
+        "titleAr": "طبيب الجمل: أصلح هذه الجمل الثلاث واكتبها صحيحة",
+        "lines": 3
+      },
+      {
+        "type": "write-lines",
+        "title": "My three sentences: a pet, the day and a question",
+        "titleAr": "جملي الثلاث: حيوان أليف، واليوم، وسؤال",
+        "example": "I have a cat.  Today is Monday.  Can you swim?",
+        "lines": 3
+      },
+      {
+        "type": "sign",
+        "text": "I hunted heart words in a book with:",
+        "textAr": "الشخص الذي بحثتُ معه عن كلمات القلب:"
+      }
+    ],
+    "cards": [
+      {
+        "big": "♥",
+        "head": "the",
+        "sub": "th = ذ, e says 'uh'",
+        "ar": "كلمة قلب",
+        "color": "#DC2626"
+      },
+      {
+        "big": "♥",
+        "head": "to",
+        "sub": "o says oo",
+        "ar": "كلمة قلب",
+        "color": "#DC2626"
+      },
+      {
+        "big": "♥",
+        "head": "was",
+        "sub": "a says u (or o), s says z",
+        "ar": "كلمة قلب",
+        "color": "#DC2626"
+      },
+      {
+        "big": "♥",
+        "head": "said",
+        "sub": "ai says e",
+        "ar": "كلمة قلب",
+        "color": "#DC2626"
+      },
+      {
+        "big": "♥",
+        "head": "you",
+        "sub": "ou says oo",
+        "ar": "كلمة قلب",
+        "color": "#DC2626"
+      },
+      {
+        "big": "♥",
+        "head": "he",
+        "sub": "e says its name",
+        "ar": "كلمة قلب",
+        "color": "#DC2626"
+      },
+      {
+        "big": "♥",
+        "head": "my",
+        "sub": "y says 'eye'",
+        "ar": "كلمة قلب",
+        "color": "#DC2626"
+      },
+      {
+        "big": "♥",
+        "head": "have",
+        "sub": "the e is silent",
+        "ar": "كلمة قلب",
+        "color": "#DC2626"
+      },
+      {
+        "big": "I",
+        "head": "I",
+        "sub": "always a capital letter",
+        "ar": "حرف كبير دائماً",
+        "color": "#1E4FA3"
+      },
+      {
+        "big": "♥",
+        "head": "go",
+        "sub": "o says its name",
+        "ar": "كلمة قلب",
+        "color": "#DC2626"
+      },
+      {
+        "big": ".",
+        "head": "period",
+        "sub": "the end of a telling sentence",
+        "ar": "نقطة",
+        "color": "#B45309"
+      },
+      {
+        "big": "?",
+        "head": "question mark",
+        "sub": "the end of a question",
+        "ar": "علامة استفهام",
+        "color": "#7C3AED"
+      }
+    ]
+  }
 }

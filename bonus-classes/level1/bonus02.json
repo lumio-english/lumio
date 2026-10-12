@@ -685,5 +685,1257 @@
     "Do not over-correct accent. The goal is a clear contrast (pin is not bin), not a native accent.",
     "Reuse 'More puff!', 'More buzz!' and the Round O / Grumpy U gestures as quick corrections in later lessons.",
     "Bonus Class 3 builds on this: blending sounds into words and segmenting words into sounds."
-  ]
+  ],
+  "deck": [
+    {
+      "type": "cards",
+      "ribbon": "Warm-up · vowel friends",
+      "title": "Wake up, vowel friends! Show me the gesture",
+      "cards": [
+        {
+          "big": "a",
+          "say": "/a/",
+          "head": "Lazy A",
+          "sub": "Yawn! Mouth wide open.",
+          "ar": "A الكسولة: الفم مفتوح كثيراً",
+          "words": [
+            "cat",
+            "bag",
+            "man"
+          ],
+          "color": "#F97316"
+        },
+        {
+          "big": "e",
+          "say": "/e/",
+          "head": "Quick E",
+          "sub": "Quick point! Short and fast.",
+          "ar": "E السريع: قصير وسريع",
+          "words": [
+            "ten",
+            "red",
+            "bed"
+          ],
+          "color": "#0D9488"
+        },
+        {
+          "big": "i",
+          "say": "/i/",
+          "head": "Smiley I",
+          "sub": "Tiny pinch! A tiny smile.",
+          "ar": "I المبتسمة: ابتسامة صغيرة",
+          "words": [
+            "big",
+            "pin",
+            "sit"
+          ],
+          "color": "#7C3AED"
+        }
+      ]
+    },
+    {
+      "type": "reveal",
+      "ribbon": "Warm-up · which friend?",
+      "instructions": "Listen. Which vowel friend is in the word?",
+      "instructionsAr": "استمع: أي صديق من أصدقاء الحركات في الكلمة؟",
+      "perSlide": 5,
+      "items": [
+        {
+          "prompt": "cat",
+          "answer": "Lazy A",
+          "say": "cat"
+        },
+        {
+          "prompt": "ten",
+          "answer": "Quick E",
+          "say": "ten"
+        },
+        {
+          "prompt": "big",
+          "answer": "Smiley I",
+          "say": "big"
+        },
+        {
+          "prompt": "red",
+          "answer": "Quick E",
+          "say": "red"
+        },
+        {
+          "prompt": "pin",
+          "answer": "Smiley I",
+          "say": "pin"
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "ribbon": "Sound lab · the buzz box",
+      "title": "Hand on your throat!",
+      "big": "zzz  ·  sss",
+      "text": "Your voice box has two tiny curtains. For buzz sounds they shake very fast. For whisper sounds they stay open.",
+      "bullets": [
+        "zzz like a bee: your throat shakes",
+        "sss like a snake: only air, no buzz",
+        "Thumbs-up for buzz, flat hand for whisper"
+      ],
+      "ar": "في صندوق صوتك ستارتان صغيرتان: تهتزّان مع أصوات الطنين، وتبقيان مفتوحتين مع الهمس.",
+      "host": "lumi-point"
+    },
+    {
+      "type": "compare",
+      "ribbon": "Sound lab · sound twins",
+      "title": "Twins: same mouth, but one buzzes",
+      "columns": [
+        {
+          "head": "Whisper twin"
+        },
+        {
+          "head": "Buzz twin"
+        },
+        {
+          "head": "Same mouth place"
+        }
+      ],
+      "rows": [
+        [
+          "p",
+          "b",
+          "both lips"
+        ],
+        [
+          "t",
+          "d",
+          "tongue behind the top teeth"
+        ],
+        [
+          "k",
+          "g",
+          "back of the tongue"
+        ],
+        [
+          "f",
+          "v",
+          "top teeth on the bottom lip"
+        ],
+        [
+          "s",
+          "z",
+          "tongue near the teeth: hiss!"
+        ]
+      ],
+      "note": "Say each pair with your hand on your throat. Only the buzz is different!",
+      "noteAr": "انطق كل توأمين ويدك على حلقك: الفرق فقط في الطنين!"
+    },
+    {
+      "type": "sort",
+      "ribbon": "Sound lab · buzz or whisper?",
+      "instructions": "Hand on your throat. Say the sound. Buzz or whisper?",
+      "instructionsAr": "ضع يدك على حلقك وانطق الصوت: طنين أم همس؟",
+      "boxes": [
+        "Buzz (voiced)",
+        "Whisper (voiceless)"
+      ],
+      "colors": [
+        "#15803D",
+        "#6B7280"
+      ],
+      "items": [
+        {
+          "text": "z",
+          "box": "Buzz (voiced)",
+          "say": "/z/"
+        },
+        {
+          "text": "s",
+          "box": "Whisper (voiceless)",
+          "say": "/s/"
+        },
+        {
+          "text": "v",
+          "box": "Buzz (voiced)",
+          "say": "/v/"
+        },
+        {
+          "text": "f",
+          "box": "Whisper (voiceless)",
+          "say": "/f/"
+        },
+        {
+          "text": "b",
+          "box": "Buzz (voiced)",
+          "say": "/b/"
+        },
+        {
+          "text": "p",
+          "box": "Whisper (voiceless)",
+          "say": "/p/"
+        },
+        {
+          "text": "d",
+          "box": "Buzz (voiced)",
+          "say": "/d/"
+        },
+        {
+          "text": "t",
+          "box": "Whisper (voiceless)",
+          "say": "/t/"
+        },
+        {
+          "text": "g",
+          "box": "Buzz (voiced)",
+          "say": "/g/"
+        },
+        {
+          "text": "k",
+          "box": "Whisper (voiceless)",
+          "say": "/k/"
+        }
+      ]
+    },
+    {
+      "type": "compare",
+      "ribbon": "Arabic bridge · missing twins",
+      "title": "Which twins does Arabic have?",
+      "columns": [
+        {
+          "head": "Twins"
+        },
+        {
+          "head": "العربية",
+          "rtl": true
+        },
+        {
+          "head": "For us"
+        }
+      ],
+      "rows": [
+        [
+          "t / d",
+          "ت و د",
+          "Easy!"
+        ],
+        [
+          "s / z",
+          "س و ز",
+          "Easy!"
+        ],
+        [
+          "k / g",
+          "ك، وصوت g: الجيم المصرية والقاف الخليجية",
+          "Easy!"
+        ],
+        [
+          "p / b",
+          "ب فقط: لا يوجد p",
+          "p is NEW: train it!"
+        ],
+        [
+          "f / v",
+          "ف فقط: لا يوجد v",
+          "v is NEW: train it!"
+        ]
+      ],
+      "note": "Arabic has b and f, but not their twins p and v. And Arabic has sounds that English doesn't have!",
+      "noteAr": "في العربية ب و ف، لكن ليس فيها توأماهما p و v. وفي العربية أيضاً أصوات ليست في الإنجليزية: ع وح وخ!"
+    },
+    {
+      "type": "cards",
+      "ribbon": "Arabic bridge · three dots",
+      "title": "Letters with three dots for the missing twins",
+      "cards": [
+        {
+          "big": "پ",
+          "say": "/p/",
+          "head": "p in Persian and Urdu",
+          "sub": "ب with three dots underneath",
+          "ar": "پ: باء بثلاث نقاط من تحتها",
+          "color": "#DB2777"
+        },
+        {
+          "big": "ڤ",
+          "say": "/v/",
+          "head": "v in some Arabic writing",
+          "sub": "ف with three dots on top",
+          "ar": "ڤ: فاء بثلاث نقاط من فوقها، كما في ڤيتامين",
+          "color": "#9333EA"
+        }
+      ]
+    },
+    {
+      "type": "cards",
+      "ribbon": "Sound lab · Puffy P, Bouncy B",
+      "title": "The tissue test: hold a tissue in front of your lips",
+      "cards": [
+        {
+          "big": "p",
+          "say": "/p/",
+          "head": "Puffy P",
+          "sub": "A big puff! The tissue jumps. No buzz.",
+          "ar": "P النفّاخ: نفخة قوية بلا طنين",
+          "words": [
+            "pin",
+            "pig",
+            "pat",
+            "pet"
+          ],
+          "color": "#DB2777"
+        },
+        {
+          "big": "b",
+          "say": "/b/",
+          "head": "Bouncy B",
+          "sub": "A buzz in your throat. The tissue stays almost still.",
+          "ar": "B القافزة: طنين في الحلق بلا نفخة كبيرة",
+          "words": [
+            "bin",
+            "big",
+            "bat",
+            "bet"
+          ],
+          "color": "#2563EB"
+        }
+      ]
+    },
+    {
+      "type": "chant",
+      "ribbon": "Practice · tissue test",
+      "title": "Tissue up! Say each pair",
+      "lines": [
+        {
+          "en": "pin  ·  bin"
+        },
+        {
+          "en": "pig  ·  big"
+        },
+        {
+          "en": "pat  ·  bat"
+        },
+        {
+          "en": "pet  ·  bet"
+        },
+        {
+          "en": "pizza  ·  pink  ·  peas"
+        },
+        {
+          "en": "apple: lips close, a small puff"
+        }
+      ],
+      "tip": "The tissue jumps for p. Your throat buzzes for b.",
+      "host": "lumi-megaphone"
+    },
+    {
+      "type": "reveal",
+      "ribbon": "Listen · p or b?",
+      "instructions": "Listen to the word. Show the p card or the b card.",
+      "instructionsAr": "استمع للكلمة وارفع بطاقة p أو بطاقة b.",
+      "perSlide": 5,
+      "items": [
+        {
+          "prompt": "Word 1",
+          "answer": "p  ·  pin",
+          "say": "pin"
+        },
+        {
+          "prompt": "Word 2",
+          "answer": "b  ·  big",
+          "say": "big"
+        },
+        {
+          "prompt": "Word 3",
+          "answer": "p  ·  pig",
+          "say": "pig"
+        },
+        {
+          "prompt": "Word 4",
+          "answer": "b  ·  bat",
+          "say": "bat"
+        },
+        {
+          "prompt": "Word 5",
+          "answer": "p  ·  pet",
+          "say": "pet"
+        },
+        {
+          "prompt": "Word 6",
+          "answer": "b  ·  bin",
+          "say": "bin"
+        },
+        {
+          "prompt": "Word 7",
+          "answer": "p  ·  pat",
+          "say": "pat"
+        },
+        {
+          "prompt": "Word 8",
+          "answer": "b  ·  bet",
+          "say": "bet"
+        },
+        {
+          "prompt": "Word 9 · end sound",
+          "answer": "p  ·  cap",
+          "say": "cap"
+        },
+        {
+          "prompt": "Word 10 · end sound",
+          "answer": "b  ·  cab",
+          "say": "cab"
+        }
+      ]
+    },
+    {
+      "type": "cards",
+      "ribbon": "Sound lab · Fluffy F, Very V",
+      "title": "Mirror check: top teeth on your bottom lip",
+      "cards": [
+        {
+          "big": "f",
+          "say": "/f/",
+          "head": "Fluffy F",
+          "sub": "Blow: fff. Just like Arabic ف. No buzz.",
+          "ar": "F الناعمة: مثل الفاء، بلا طنين",
+          "words": [
+            "fan",
+            "fish",
+            "five",
+            "fine"
+          ],
+          "color": "#0891B2"
+        },
+        {
+          "big": "v",
+          "say": "/v/",
+          "head": "Very Vibrating V",
+          "sub": "Same teeth, switch on the buzz: vvv. Your lip tickles!",
+          "ar": "V المهتزّة جداً: الأسنان نفسها مع الطنين",
+          "words": [
+            "van",
+            "very",
+            "vet",
+            "seven"
+          ],
+          "color": "#9333EA"
+        }
+      ]
+    },
+    {
+      "type": "chant",
+      "ribbon": "Practice · v in numbers",
+      "title": "Clap on every v!",
+      "lines": [
+        {
+          "en": "sev-en  ·  e-lev-en  ·  twelve"
+        },
+        {
+          "en": "five: f at the start, v at the end"
+        },
+        {
+          "en": "Five vans, very fast!",
+          "ar": "خمس شاحنات صغيرة، سريعة جداً!"
+        },
+        {
+          "en": "Seven vans, very fast!",
+          "ar": "سبع شاحنات صغيرة، سريعة جداً!"
+        }
+      ],
+      "tip": "Teeth on your lip for v. Both lips for b!",
+      "host": "noor-point"
+    },
+    {
+      "type": "reveal",
+      "ribbon": "Listen · f or v?",
+      "instructions": "Listen. Fluffy F or Very Vibrating V? Show the f card or the v card.",
+      "instructionsAr": "استمع: هل تسمع F الناعمة أم V المهتزّة؟ ارفع بطاقة f أو v.",
+      "perSlide": 8,
+      "items": [
+        {
+          "prompt": "Word 1",
+          "answer": "f  ·  fan",
+          "say": "fan"
+        },
+        {
+          "prompt": "Word 2",
+          "answer": "v  ·  van",
+          "say": "van"
+        },
+        {
+          "prompt": "Word 3",
+          "answer": "f  ·  fish",
+          "say": "fish"
+        },
+        {
+          "prompt": "Word 4",
+          "answer": "v  ·  very",
+          "say": "very"
+        },
+        {
+          "prompt": "Word 5 · middle sound",
+          "answer": "v  ·  seven",
+          "say": "seven"
+        },
+        {
+          "prompt": "Word 6",
+          "answer": "f  ·  fine",
+          "say": "fine"
+        },
+        {
+          "prompt": "Word 7",
+          "answer": "v  ·  vet",
+          "say": "vet"
+        },
+        {
+          "prompt": "Word 8 · first sound",
+          "answer": "f  ·  five",
+          "say": "five"
+        }
+      ]
+    },
+    {
+      "type": "cards",
+      "ribbon": "Vowel friends · O and U",
+      "title": "Two new vowel friends!",
+      "cards": [
+        {
+          "big": "o",
+          "say": "/o/",
+          "head": "Round O",
+          "sub": "Surprised! Jaw wide open. Make an O with your fingers.",
+          "ar": "O المستدير: متفاجئ وفمه مفتوح جيداً",
+          "words": [
+            "hot",
+            "dog",
+            "top"
+          ],
+          "color": "#CA8A04"
+        },
+        {
+          "big": "u",
+          "say": "/u/",
+          "head": "Grumpy U",
+          "sub": "Short, relaxed 'uh'. Lips NOT round. Arms crossed!",
+          "ar": "U المتذمّر: 'أَه' قصيرة والشفتان مرتاحتان",
+          "words": [
+            "up",
+            "cup",
+            "sun",
+            "run"
+          ],
+          "color": "#DC2626"
+        }
+      ]
+    },
+    {
+      "type": "swap",
+      "ribbon": "Vowel friends · o or u?",
+      "title": "Mirror pairs: swap o and u, make a new word",
+      "vowels": [
+        "o",
+        "u"
+      ],
+      "colors": {
+        "o": "#CA8A04",
+        "u": "#DC2626"
+      },
+      "frames": [
+        {
+          "frame": "h_t",
+          "words": {
+            "o": "hot",
+            "u": "hut"
+          }
+        },
+        {
+          "frame": "c_t",
+          "words": {
+            "o": "cot",
+            "u": "cut"
+          }
+        },
+        {
+          "frame": "d_g",
+          "words": {
+            "o": "dog",
+            "u": "dug"
+          }
+        },
+        {
+          "frame": "n_t",
+          "words": {
+            "o": "not",
+            "u": "nut"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reveal",
+      "ribbon": "Listen · O or U?",
+      "instructions": "Listen. Finger circle for Round O, crossed arms for Grumpy U.",
+      "instructionsAr": "استمع: دائرة بأصابعك لـ O المستدير، وذراعان معقودتان لـ U المتذمّر.",
+      "perSlide": 5,
+      "items": [
+        {
+          "prompt": "Word 1",
+          "answer": "Round O  ·  hot",
+          "say": "hot"
+        },
+        {
+          "prompt": "Word 2",
+          "answer": "Grumpy U  ·  hut",
+          "say": "hut"
+        },
+        {
+          "prompt": "Word 3",
+          "answer": "Grumpy U  ·  cup",
+          "say": "cup"
+        },
+        {
+          "prompt": "Word 4",
+          "answer": "Round O  ·  dog",
+          "say": "dog"
+        },
+        {
+          "prompt": "Word 5",
+          "answer": "Grumpy U  ·  sun",
+          "say": "sun"
+        },
+        {
+          "prompt": "Word 6",
+          "answer": "Round O  ·  top",
+          "say": "top"
+        },
+        {
+          "prompt": "Word 7",
+          "answer": "Grumpy U  ·  duck",
+          "say": "duck"
+        },
+        {
+          "prompt": "Word 8",
+          "answer": "Round O  ·  sock",
+          "say": "sock"
+        },
+        {
+          "prompt": "Word 9",
+          "answer": "Grumpy U  ·  nut",
+          "say": "nut"
+        },
+        {
+          "prompt": "Word 10",
+          "answer": "Round O  ·  not",
+          "say": "not"
+        }
+      ]
+    },
+    {
+      "type": "cards",
+      "ribbon": "Sound lab · Puppy R",
+      "title": "Two kinds of r: does your tongue touch?",
+      "cards": [
+        {
+          "big": "ر",
+          "head": "Motorbike R (Arabic)",
+          "sub": "rrrr! The tongue tip taps or rolls.",
+          "ar": "الراء العربية: يضرب طرف اللسان أو يتدحرج",
+          "color": "#6B7280"
+        },
+        {
+          "big": "r",
+          "say": "/r/",
+          "head": "Puppy R (English)",
+          "sub": "A soft little growl. Tip back, touching nothing, lips a little round.",
+          "ar": "R الجرو: زمجرة ناعمة، واللسان لا يلمس شيئاً",
+          "words": [
+            "red",
+            "run",
+            "rat",
+            "rug",
+            "rock"
+          ],
+          "color": "#B45309"
+        }
+      ]
+    },
+    {
+      "type": "reveal",
+      "ribbon": "Game · which word?",
+      "instructions": "Listen to your friend. Which word did you hear? Show the card.",
+      "instructionsAr": "استمع لصديقك: أي كلمة سمعت؟ ارفع البطاقة.",
+      "perSlide": 8,
+      "items": [
+        {
+          "prompt": "pig or big?",
+          "answer": "pig"
+        },
+        {
+          "prompt": "fan or van?",
+          "answer": "van"
+        },
+        {
+          "prompt": "hot or hut?",
+          "answer": "hut"
+        },
+        {
+          "prompt": "pat or bat?",
+          "answer": "bat"
+        },
+        {
+          "prompt": "cot or cut?",
+          "answer": "cot"
+        },
+        {
+          "prompt": "pin or bin?",
+          "answer": "pin"
+        },
+        {
+          "prompt": "dog or dug?",
+          "answer": "dug"
+        },
+        {
+          "prompt": "pet or bet?",
+          "answer": "pet"
+        }
+      ]
+    },
+    {
+      "type": "chant",
+      "ribbon": "Practice · tongue twisters",
+      "title": "Slowly first, then fast!",
+      "lines": [
+        {
+          "en": "Puffy P puts pink peas in a pot.",
+          "ar": "P النفّاخ يضع بازلاء وردية في قِدر."
+        },
+        {
+          "en": "Bouncy B has a big blue bag.",
+          "ar": "B القافزة معها حقيبة زرقاء كبيرة."
+        },
+        {
+          "en": "Seven vans, very fast!",
+          "ar": "سبع شاحنات صغيرة، سريعة جداً!"
+        },
+        {
+          "en": "Grumpy U runs up in the sun.",
+          "ar": "U المتذمّر يركض صاعداً تحت الشمس."
+        }
+      ],
+      "tip": "Tissue up for the p twister! Clear sounds win, not speed.",
+      "host": "lumi-celebrate"
+    },
+    {
+      "type": "fact",
+      "ribbon": "Did you know · every language",
+      "text": "Every language chooses its own sounds. English has p and v but no ع or ح. Arabic has ع and ح but no p or v. Now your mouth can do both!",
+      "ar": "كل لغة تختار أصواتها. في الإنجليزية p و v وليس فيها ع ولا ح، وفي العربية ع وح وليس فيها p ولا v. والآن فمك يستطيع الاثنين!"
+    }
+  ],
+  "homeworkMissions": {
+    "theme": "The Missing Twins",
+    "themeAr": "التوأمان المفقودان",
+    "intro": "Six missions. Finish them all to earn your Puff and Buzz Expert badge!",
+    "introAr": "ست مهمات. أنهِها كلها لتحصل على شارة خبير النفخ والطنين!",
+    "badge": "Puff and Buzz Expert",
+    "badgeAr": "خبير النفخ والطنين",
+    "missions": [
+      {
+        "type": "listen-choose",
+        "title": "Puff or Buzz?",
+        "titleAr": "نفخة أم طنين؟",
+        "intro": "Listen. Do you hear Puffy P or Bouncy B at the start?",
+        "introAr": "استمع: هل تسمع P النفّاخ أم B القافزة في أول الكلمة؟",
+        "labels": {
+          "p": "Puffy P",
+          "b": "Bouncy B"
+        },
+        "rounds": [
+          {
+            "say": "pin",
+            "options": [
+              "p",
+              "b"
+            ],
+            "answer": "p"
+          },
+          {
+            "say": "big",
+            "options": [
+              "p",
+              "b"
+            ],
+            "answer": "b"
+          },
+          {
+            "say": "pig",
+            "options": [
+              "p",
+              "b"
+            ],
+            "answer": "p"
+          },
+          {
+            "say": "bat",
+            "options": [
+              "p",
+              "b"
+            ],
+            "answer": "b"
+          },
+          {
+            "say": "pet",
+            "options": [
+              "p",
+              "b"
+            ],
+            "answer": "p"
+          },
+          {
+            "say": "bin",
+            "options": [
+              "p",
+              "b"
+            ],
+            "answer": "b"
+          },
+          {
+            "say": "pink",
+            "options": [
+              "p",
+              "b"
+            ],
+            "answer": "p"
+          },
+          {
+            "say": "bed",
+            "options": [
+              "p",
+              "b"
+            ],
+            "answer": "b"
+          }
+        ]
+      },
+      {
+        "type": "build",
+        "title": "Round O or Grumpy U?",
+        "titleAr": "O المستدير أم U المتذمّر؟",
+        "intro": "Listen to the word. Put o or u in the gap.",
+        "introAr": "استمع للكلمة وضع o أو u في الفراغ.",
+        "options": [
+          "o",
+          "u"
+        ],
+        "rounds": [
+          {
+            "frame": "h_t",
+            "say": "hot",
+            "answer": "o"
+          },
+          {
+            "frame": "c_p",
+            "say": "cup",
+            "answer": "u"
+          },
+          {
+            "frame": "d_g",
+            "say": "dog",
+            "answer": "o"
+          },
+          {
+            "frame": "b_s",
+            "say": "bus",
+            "answer": "u"
+          },
+          {
+            "frame": "t_p",
+            "say": "top",
+            "answer": "o"
+          },
+          {
+            "frame": "r_g",
+            "say": "rug",
+            "answer": "u"
+          }
+        ]
+      },
+      {
+        "type": "sort",
+        "title": "Buzz or Whisper?",
+        "titleAr": "طنين أم همس؟",
+        "intro": "Tap a sound to hear it. Hand on your throat! Then tap its box.",
+        "introAr": "اضغط الصوت لتسمعه، وضع يدك على حلقك، ثم اختر صندوقه.",
+        "boxes": [
+          "Buzz (voiced)",
+          "Whisper (voiceless)"
+        ],
+        "items": [
+          {
+            "text": "z",
+            "box": 0,
+            "say": "/z/"
+          },
+          {
+            "text": "s",
+            "box": 1,
+            "say": "/s/"
+          },
+          {
+            "text": "v",
+            "box": 0,
+            "say": "/v/"
+          },
+          {
+            "text": "f",
+            "box": 1,
+            "say": "/f/"
+          },
+          {
+            "text": "b",
+            "box": 0,
+            "say": "/b/"
+          },
+          {
+            "text": "p",
+            "box": 1,
+            "say": "/p/"
+          },
+          {
+            "text": "d",
+            "box": 0,
+            "say": "/d/"
+          },
+          {
+            "text": "t",
+            "box": 1,
+            "say": "/t/"
+          }
+        ]
+      },
+      {
+        "type": "true-false",
+        "title": "Twin Detective Quiz",
+        "titleAr": "اختبار محقّق التوائم",
+        "intro": "True or false?",
+        "introAr": "صح أم خطأ؟",
+        "items": [
+          {
+            "q": "p and b are both made with your two lips.",
+            "qAr": "يُنطق p و b كلاهما بالشفتين.",
+            "a": true
+          },
+          {
+            "q": "Arabic has a letter for the p sound.",
+            "qAr": "في العربية حرف لصوت p.",
+            "a": false,
+            "why": "Arabic has ب (b) but no p. Persian and Urdu use پ."
+          },
+          {
+            "q": "v buzzes in your throat.",
+            "qAr": "صوت v يطنّ في حلقك.",
+            "a": true
+          },
+          {
+            "q": "For f and v, your top teeth touch your bottom lip.",
+            "qAr": "مع f و v تلمس أسنانك العليا شفتك السفلى.",
+            "a": true
+          },
+          {
+            "q": "The u in sun is a long oo, like soon.",
+            "qAr": "u في sun صوت طويل مثل soon.",
+            "a": false,
+            "why": "Grumpy U is a short, relaxed 'uh': sun, not soon."
+          },
+          {
+            "q": "English r rolls, like Arabic ر.",
+            "qAr": "r الإنجليزية تتدحرج مثل الراء العربية.",
+            "a": false,
+            "why": "English r is a soft Puppy R: the tongue touches nothing."
+          }
+        ]
+      },
+      {
+        "type": "record",
+        "title": "Tongue Twister Studio",
+        "titleAr": "استوديو الجمل الصعبة",
+        "intro": "Listen, then record yourself. Slowly first, then fast!",
+        "introAr": "استمع ثم سجّل صوتك: ببطء أولاً ثم بسرعة!",
+        "lines": [
+          "Puffy P puts pink peas in a pot.",
+          "Bouncy B has a big blue bag.",
+          "Seven vans, very fast!",
+          "Grumpy U runs up in the sun."
+        ]
+      },
+      {
+        "type": "mission",
+        "title": "Tissue Test at Home",
+        "titleAr": "اختبار المنديل في البيت",
+        "intro": "Be the sound scientist at home today!",
+        "introAr": "كن عالِم الأصوات في البيت اليوم!",
+        "steps": [
+          {
+            "en": "Show someone at home the tissue test with pin / bin and pig / big.",
+            "ar": "أرِ أحد أفراد أسرتك اختبار المنديل مع pin / bin و pig / big."
+          },
+          {
+            "en": "Ask them to say pizza with a puff. Does the tissue jump?",
+            "ar": "اطلب منه أن يقول pizza بنفخة. هل يتحرّك المنديل؟"
+          },
+          {
+            "en": "Say five, seven and eleven with a buzzing v.",
+            "ar": "قل five و seven و eleven مع v التي تطنّ."
+          },
+          {
+            "en": "Find things at home with p in their name (pen, pot, plate...).",
+            "ar": "ابحث عن أشياء في البيت فيها صوت p في اسمها (pen و pot و plate...)."
+          }
+        ],
+        "ask": "Who did the tissue test with you?",
+        "askAr": "مَن جرّب معك اختبار المنديل؟",
+        "findLabel": "Write 3 things you found with p",
+        "findLabelAr": "اكتب 3 أشياء وجدتها فيها p",
+        "findCount": 3
+      }
+    ]
+  },
+  "printables": {
+    "worksheet": [
+      {
+        "type": "picture-gap",
+        "title": "Look, say, write the first letter: p, b, f or v",
+        "titleAr": "انظر وانطق واكتب الحرف الأول: p أو b أو f أو v",
+        "items": [
+          {
+            "image": "pig",
+            "frame": "_ig",
+            "answer": "p"
+          },
+          {
+            "image": "bag",
+            "frame": "_ag",
+            "answer": "b"
+          },
+          {
+            "image": "pen",
+            "frame": "_en",
+            "answer": "p"
+          },
+          {
+            "image": "bed",
+            "frame": "_ed",
+            "answer": "b"
+          },
+          {
+            "image": "fan",
+            "frame": "_an",
+            "answer": "f"
+          },
+          {
+            "image": "van",
+            "frame": "_an",
+            "answer": "v"
+          },
+          {
+            "image": "fish",
+            "frame": "_ish",
+            "answer": "f"
+          },
+          {
+            "image": "ball",
+            "frame": "_all",
+            "answer": "b"
+          }
+        ]
+      },
+      {
+        "type": "picture-gap",
+        "title": "Round O or Grumpy U? Write o or u",
+        "titleAr": "O المستدير أم U المتذمّر؟ اكتب o أو u",
+        "items": [
+          {
+            "image": "dog",
+            "frame": "d_g",
+            "answer": "o"
+          },
+          {
+            "image": "cup",
+            "frame": "c_p",
+            "answer": "u"
+          },
+          {
+            "image": "pot",
+            "frame": "p_t",
+            "answer": "o"
+          },
+          {
+            "image": "duck",
+            "frame": "d_ck",
+            "answer": "u"
+          },
+          {
+            "image": "box",
+            "frame": "b_x",
+            "answer": "o"
+          },
+          {
+            "image": "bus",
+            "frame": "b_s",
+            "answer": "u"
+          },
+          {
+            "image": "fox",
+            "frame": "f_x",
+            "answer": "o"
+          },
+          {
+            "image": "sun",
+            "frame": "s_n",
+            "answer": "u"
+          }
+        ]
+      },
+      {
+        "type": "sort-table",
+        "title": "Hand on your throat. Write each letter in the right box",
+        "titleAr": "ضع يدك على حلقك واكتب كل حرف في صندوقه",
+        "letters": [
+          "z",
+          "s",
+          "v",
+          "f",
+          "b",
+          "p",
+          "d",
+          "t"
+        ],
+        "boxes": [
+          "Buzz sounds (voiced)",
+          "Whisper sounds (voiceless)"
+        ]
+      },
+      {
+        "type": "match",
+        "title": "Match the sound twins: whisper and buzz",
+        "titleAr": "صِل كل توأمين: الهامس والذي يطنّ",
+        "pairs": [
+          [
+            "p",
+            "z"
+          ],
+          [
+            "f",
+            "d"
+          ],
+          [
+            "s",
+            "b"
+          ],
+          [
+            "t",
+            "v"
+          ]
+        ]
+      },
+      {
+        "type": "draw",
+        "title": "Draw Puffy P, Round O and Grumpy U",
+        "titleAr": "ارسم P النفّاخ و O المستدير و U المتذمّر",
+        "boxes": [
+          {
+            "label": "Puffy P",
+            "sub": "pin, pig",
+            "color": "#DB2777"
+          },
+          {
+            "label": "Round O",
+            "sub": "hot, dog",
+            "color": "#CA8A04"
+          },
+          {
+            "label": "Grumpy U",
+            "sub": "sun, cup",
+            "color": "#DC2626"
+          }
+        ]
+      },
+      {
+        "type": "sign",
+        "text": "I did the tissue test with:",
+        "textAr": "الشخص الذي جرّبتُ معه اختبار المنديل:"
+      }
+    ],
+    "cards": [
+      {
+        "big": "p",
+        "head": "Puffy P",
+        "sub": "pin · pig · pizza",
+        "ar": "P النفّاخ",
+        "color": "#DB2777"
+      },
+      {
+        "big": "b",
+        "head": "Bouncy B",
+        "sub": "bin · big · bag",
+        "ar": "B القافزة",
+        "color": "#2563EB"
+      },
+      {
+        "big": "f",
+        "head": "Fluffy F",
+        "sub": "fan · fish · five",
+        "ar": "F الناعمة",
+        "color": "#0891B2"
+      },
+      {
+        "big": "v",
+        "head": "Very Vibrating V",
+        "sub": "van · very · seven",
+        "ar": "V المهتزّة جداً",
+        "color": "#9333EA"
+      },
+      {
+        "big": "o",
+        "head": "Round O",
+        "sub": "hot · dog · top",
+        "ar": "O المستدير",
+        "color": "#CA8A04"
+      },
+      {
+        "big": "u",
+        "head": "Grumpy U",
+        "sub": "up · cup · sun",
+        "ar": "U المتذمّر",
+        "color": "#DC2626"
+      },
+      {
+        "big": "r",
+        "head": "Puppy R",
+        "sub": "red · run · rug",
+        "ar": "R الجرو",
+        "color": "#B45309"
+      },
+      {
+        "image": "pig",
+        "head": "pig",
+        "color": "#DB2777"
+      },
+      {
+        "image": "fan",
+        "head": "fan",
+        "color": "#0891B2"
+      },
+      {
+        "image": "van",
+        "head": "van",
+        "color": "#9333EA"
+      },
+      {
+        "image": "dog",
+        "head": "dog",
+        "color": "#CA8A04"
+      },
+      {
+        "image": "cup",
+        "head": "cup",
+        "color": "#DC2626"
+      }
+    ]
+  }
 }

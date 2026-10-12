@@ -139,7 +139,9 @@ def cards_html(d):
     cards = []
     for c in d["printables"].get("cards", []):
         pic = img(c["image"]) if c.get("image") else ""
-        top = f'<div class="big">{e(c["big"])}</div>' if c.get("big") else (f'<img src="{pic}">' if pic else "")
+        bl = len(str(c.get("big") or ""))
+        fs = "" if bl <= 2 else f' style="font-size:{max(26, int(150 / bl))}pt"'   # long symbols/words shrink to fit
+        top = f'<div class="big"{fs}>{e(c["big"])}</div>' if c.get("big") else (f'<img src="{pic}">' if pic else "")
         cards.append(f'<div class="card" style="--c:{c.get("color", "#F97316")}">{top}<div class="h">{e(c["head"])}</div>'
                      f'{f"<div class=s>{e(c["sub"])}</div>" if c.get("sub") else ""}'
                      f'{f"<div class=ar>{e(c["ar"])}</div>" if c.get("ar") else ""}</div>')
