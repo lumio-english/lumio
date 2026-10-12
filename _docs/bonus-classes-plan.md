@@ -78,7 +78,7 @@ Each class only uses what the students have met in the lessons before it.
 1. (after L4: present simple, negatives, there is/are) **Every Word Has a Job: Parts of Speech** — noun, verb, adjective, pronoun, preposition vs Arabic اسم/فعل/حرف; every English sentence needs a verb ("He is a teacher", not "He teacher" like هو معلم).
 2. (after L8: this/that, plurals, possessives, prepositions) **Word Order: Who Does What** — English fixed S-V-O vs Arabic's free order; adjective before noun (a red car / سيارة حمراء); adjectives never change for plural or gender.
 3. (after L12: can, wh-questions, comparatives, articles) **The Question Machine** — how English builds questions (move the helper, add do/does) vs Arabic هل + tone; rising and falling intonation.
-4. (after L16: imperatives, present continuous) **Time Inside Verbs: Simple vs Continuous** — habit vs now; Arabic يدرس covers both; state verbs (I know, not I am knowing).
+4. (after L16: imperatives L13, present continuous L14-15, comparatives review L16) **Time Inside Verbs: Simple vs Continuous** — habit vs now; Arabic يدرس covers both; state verbs (I know, not I am knowing).
 
 ### Level 4 — Word Power
 1. (after L4: do/does, routines, frequency, in/on/at) **The -s Mystery and the Time Triangle** — why only he/she/it gets -s (old English "he doeth" → does), the three sounds of -s, in/on/at as a triangle (at = point, on = day, in = longer).
