@@ -32,3 +32,8 @@ Rules:
   | Field / location | Before | After | Reason |  — and a short "Verified correct, no change" list of the
   key claims you checked. Also list anything you could NOT verify and need the owner or a native speaker to decide.
 - Do not touch any file outside your level's bonus-classes folder and your review log. Do not commit.
+
+## Owner rules added 12 Oct 2026
+- Pre-A bonus classes are 45 minutes (stages must sum to 45). All other levels stay 60.
+- Pronunciation symbols use General American IPA in the Cambridge Dictionary US style: /æ e ɪ i: ɑ: ɔ: ʊ u: ʌ ə ɝ: ɚ eɪ aɪ ɔɪ oʊ aʊ ɪr er ʊr/, r always pronounced (car /kɑ:r/, bird /bɝ:d/, teacher /ˈti:tʃɚ/), lot /lɑ:t/, hot /hɑ:t/, was /wʌz/ strong ~ /wəz/ weak, go /ɡoʊ/. Tapped t (water /ˈwɑ:t̬ɚ/) may be noted. Where a class compares accents, the British form may be shown labelled "British".
+- Quran: everything related to the Holy Quran is written with full respect and must be 100% accurate ("the Holy Quran" / القرآن الكريم / المصحف الشريف). Any verse cited is written in Arabic only, without translation, exactly as in the Mushaf with full diacritics (Uthmani script, Hafs). Verses are never used as practice material. Do not add verses unless the owner asks; none are cited at present.

@@ -95,7 +95,7 @@ class Deck:
                  f'<img src="assets/logo/lumio-logo.png" alt="" style="height:120px"></div>'
                  f'<div class="v3-paper bx-cover" style="left:80px;top:210px;width:900px">'
                  f'<div class="bx-badge">{ico("star")} {esc(d["label"])} &middot; {esc(d["strand"])}</div>'
-                 f'<div class="v3-label">{level_name(self.level)} &middot; class {d["classPosition"]} of 24 &middot; 60 minutes</div>'
+                 f'<div class="v3-label">{level_name(self.level)} &middot; class {d["classPosition"]} of 24 &middot; {d["durationMinutes"]} minutes</div>'
                  f'<div class="v3-word bx-title">{esc(d["title"])}</div>{ar(d["titleAr"], "bx-ar big")}'
                  f'<div class="bx-chips">{skills}</div></div>'
                  + self.host("lumi-hero" if not self.teen else "lumi-teen-happy", right=90, height=460))

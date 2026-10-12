@@ -27,6 +27,7 @@ LEVEL_NAMES = {
 }
 AFTER_LESSON = {1: 4, 2: 8, 3: 12, 4: 16}
 CLASS_MINUTES = 60
+LEVEL_MINUTES = {"pre-a": 45}   # owner decision 12 Oct 2026: Pre-A bonus classes are 45 minutes
 
 REQUIRED = ["id", "level", "bonusNumber", "label", "afterLesson", "classPosition", "durationMinutes",
             "ages", "strand", "strandAr", "skillFocus", "title", "titleAr", "bigIdea", "bigIdeaAr",
@@ -66,11 +67,12 @@ def check(d, path):
         errs.append(f"afterLesson should be {AFTER_LESSON.get(b)}")
     if d["classPosition"] != sequence().index(("bonus", b)) + 1:
         errs.append(f"classPosition should be {sequence().index(('bonus', b)) + 1}")
-    if d["durationMinutes"] != CLASS_MINUTES:
-        errs.append("durationMinutes must be 60")
+    want = LEVEL_MINUTES.get(level, CLASS_MINUTES)
+    if d["durationMinutes"] != want:
+        errs.append(f"durationMinutes must be {want}")
     total = sum(s.get("minutes", 0) for s in d["stages"])
-    if total != CLASS_MINUTES:
-        errs.append(f"stages add up to {total} minutes, not 60")
+    if total != want:
+        errs.append(f"stages add up to {total} minutes, not {want}")
     for i, s in enumerate(d["stages"], 1):
         for k in STAGE_REQUIRED:
             if k not in s:
@@ -226,7 +228,7 @@ def class_page(d):
     for i, s in enumerate(d["stages"]):
         bar.append(f'<div style="flex:{s["minutes"]};background:{STAGE_COLOURS[i % len(STAGE_COLOURS)]}" '
                    f'title="{e(s["name"])}">{s["minutes"]}′ {e(s["name"].split(":")[0])}</div>')
-    h.append('<div class="card"><h2>The 60 minutes</h2><div class="timeline">' + "".join(bar) + "</div>")
+    h.append(f'<div class="card"><h2>The {d["durationMinutes"]} minutes</h2><div class="timeline">' + "".join(bar) + "</div>")
     h.append('<table><tr><th>Min</th><th>Stage</th><th>Method</th></tr>')
     t = 0
     for s in d["stages"]:
@@ -296,7 +298,7 @@ def index_page(classes):
     h = ["""<section class="hero"><span class="tag">Design · not live yet</span>
 <h1>Bonus Classes</h1><div class="ar">الحصص الإضافية</div>
 <div class="big">Every level = 24 classes: 20 lessons + 4 Bonus Classes (one after every 4 lessons).
-About 3 months per level at 2-3 classes a week. Each Bonus Class is 60 minutes and teaches how English works.
+About 3 months per level at 2-3 classes a week. Each Bonus Class is 60 minutes (45 for Pre-A) and teaches how English works.
 <div class="ar">كل مستوى = 24 حصة: 20 درساً + 4 حصص إضافية (واحدة بعد كل 4 دروس). نحو 3 أشهر للمستوى بمعدل حصتين إلى ثلاث أسبوعياً.</div></div></section>""",
          f'<div class="card"><h2>Order of classes in every level</h2><div class="seq">{seq}</div></div>']
     for level in LEVELS:
