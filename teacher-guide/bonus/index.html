@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bonus Classes · Teacher plans</title>
+<link rel="icon" href="../../favicon.ico">
+<link rel="stylesheet" href="../../css/brand.css">
+<style>
+:root{--o:var(--lumio-orange,#F97316);--od:var(--lumio-orange-dark,#C2530A);--os:var(--lumio-orange-soft,#FFF1E0);
+--sun:var(--lumio-sun-soft,#FFF3D6);--teal:var(--lumio-teal,#0D9488);--ts:var(--lumio-teal-soft,#E6FAF7);
+--blue:var(--lumio-blue,#1E4FA3);--bs:var(--lumio-blue-soft,#E8EFFB);--coral:var(--lumio-coral,#F43F5E);
+--cs:var(--lumio-coral-soft,#FCEBEA);--ink:var(--lumio-ink,#2A2118);--soft:var(--lumio-ink-soft,#6B5040);
+--muted:var(--lumio-muted,#8A7160);--line:var(--lumio-border,#EAE3D8);--paper:var(--lumio-paper,#FFFBF5)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.55 "Nunito","Segoe UI",system-ui,sans-serif}
+.ar{font-family:"Cairo","Segoe UI",Tahoma,sans-serif;direction:rtl;text-align:right;unicode-bidi:isolate}
+main{max-width:980px;margin:0 auto;padding:24px 16px 64px}
+a{color:var(--od)}
+header.top{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+header.top img{height:46px}
+header.top .crumb{color:var(--muted);font-size:.9rem}
+.hero{background:linear-gradient(135deg,#FB923C,#F97316 55%,#F59E0B);color:#fff;border-radius:22px;padding:24px 26px;margin-bottom:18px}
+.hero .tag{display:inline-block;background:rgba(255,255,255,.22);border-radius:999px;padding:3px 12px;font-weight:800;font-size:.8rem;margin:0 6px 8px 0}
+.hero h1{margin:4px 0 6px;font-size:1.75rem;line-height:1.2}
+.hero .ar{font-size:1.15rem;opacity:.95}
+.hero .big{margin-top:12px;background:rgba(255,255,255,.16);border-radius:14px;padding:10px 14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 18px;margin-bottom:14px;break-inside:avoid}
+.card h2{margin:0 0 10px;font-size:1.1rem;color:var(--od)}
+.card h3{margin:12px 0 6px;font-size:.98rem}
+ul{margin:4px 0;padding-left:20px}
+li{margin:3px 0}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start}
+.pair>div{min-width:0}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--os);color:var(--od);font-weight:800}
+td.ar,th.ar{text-align:right}
+.timeline{display:flex;border-radius:12px;overflow:hidden;margin:6px 0 4px;border:1px solid var(--line)}
+.timeline div{padding:6px 4px;font-size:.72rem;font-weight:800;text-align:center;color:#fff;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.stage{border-left:6px solid var(--o)}
+.stage .head{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.stage .min{background:var(--o);color:#fff;border-radius:999px;padding:2px 12px;font-weight:800;white-space:nowrap}
+.meta{color:var(--soft);font-size:.9rem;margin:4px 0 8px}
+.say{background:var(--sun);border-radius:12px;padding:8px 12px;margin:6px 0}
+.say p{margin:4px 0}
+.do{background:var(--ts);border-radius:12px;padding:8px 12px;margin:6px 0}
+.ex{background:var(--bs);border-radius:12px;padding:8px 12px;margin:6px 0}
+.ex ol{margin:6px 0;padding-left:22px}
+.ans{color:var(--teal);font-weight:800}
+.tips{color:var(--soft);font-size:.9rem}
+.err td:first-child{color:var(--coral);text-decoration:line-through}
+.err td:nth-child(2){color:var(--teal);font-weight:800}
+.lv h2{display:flex;justify-content:space-between;align-items:baseline}
+.seq{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0 12px}
+.seq span{border-radius:8px;padding:3px 7px;font-size:.75rem;font-weight:800;background:#F1ECE2;color:var(--soft)}
+.seq span.b{background:var(--o);color:#fff}
+.clist a{display:block;padding:10px 12px;border:1px solid var(--line);border-radius:12px;margin:6px 0;text-decoration:none;color:var(--ink);background:#fff}
+.clist a:hover{border-color:var(--o)}
+.clist small{color:var(--muted)}
+.btn{display:inline-block;background:var(--o);color:#fff;border-radius:999px;padding:6px 14px;font-weight:800;text-decoration:none;border:0;cursor:pointer;font:inherit}
+@media (max-width:640px){.pair{grid-template-columns:1fr}.hero h1{font-size:1.4rem}}
+@media print{body{background:#fff;font-size:12px}main{max-width:none;padding:0}.noprint{display:none}
+.hero{-webkit-print-color-adjust:exact;print-color-adjust:exact}.card{page-break-inside:avoid}}
+</style></head>
+<body><main>
+<header class="top"><img src="../../assets/logo/lumio-logo.png" alt="Lumio English">
+<div class="crumb"><a href="index.html">Bonus Classes</a> · Teacher plans</div>
+<button class="btn noprint" style="margin-left:auto" onclick="print()">Print</button></header>
+<section class="hero"><span class="tag">Design · not live yet</span>
+<h1>Bonus Classes</h1><div class="ar">الحصص الإضافية</div>
+<div class="big">Every level = 24 classes: 20 lessons + 4 Bonus Classes (one after every 4 lessons).
+About 3 months per level at 2-3 classes a week. Each Bonus Class is 60 minutes and teaches how English works.
+<div class="ar">كل مستوى = 24 حصة: 20 درساً + 4 حصص إضافية (واحدة بعد كل 4 دروس). نحو 3 أشهر للمستوى بمعدل حصتين إلى ثلاث أسبوعياً.</div></div></section>
+<div class="card"><h2>Order of classes in every level</h2><div class="seq"><span>L1</span><span>L2</span><span>L3</span><span>L4</span><span class="b">B1</span><span>L5</span><span>L6</span><span>L7</span><span>L8</span><span class="b">B2</span><span>L9</span><span>L10</span><span>L11</span><span>L12</span><span class="b">B3</span><span>L13</span><span>L14</span><span>L15</span><span>L16</span><span class="b">B4</span><span>L17</span><span>L18</span><span>L19</span><span>L20</span></div></div>
+<div class="card lv"><h2><span>Level 1 · About Me</span><small>Sound Lab · ages 6-8</small></h2><div class="clist"><a href="level1-bonus01.html"><b>Bonus Class 1: How English Sounds Work: Lazy A, Quick E and Smiley I</b><br><span class="ar">كيف تعمل أصوات الإنجليزية: A الكسولة وE السريعة وI المبتسمة</span><br><small>Class 5 · after Lesson 4 · phonics, pronunciation, listening, linguistics</small></a></div></div>
+</main></body></html>
