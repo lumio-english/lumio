@@ -203,3 +203,154 @@ Reviewer scope: bonus-classes/pre-a/bonus01-04.json (ages 4-6, strand Sound Expl
 6. **Tongue twister خيط حرير على حيط خليل** is now labelled colloquial (it is Levantine in flavour). The owner may prefer a Gulf or Egyptian twister.
 7. **Lumi.** Lumi is described as a chick or bird in the bonus files. I did not check this against the brand bible.
 8. **Bonus 4 numerals note.** I added that ١٢٣ are often called الأرقام الهندية in Arabic. This is useful for parents, but the owner may find it too much detail for the children's slide.
+
+## 45-minute redesign + US IPA (12 Oct)
+
+Owner rule (BRIEF.md, 12 Oct 2026): Pre-A bonus classes are 45 minutes; IPA is General American (Cambridge US style). Each class went from 8 stages (60 min) to 7 stages (45 min). All 4 objectives are kept in every class. I cut the weakest or longest parts and merged overlapping activities instead of squeezing everything in. Every class keeps one movement break, a Linguistics Corner, the Arabic Bridge, the 5-item exit ticket (unchanged) and its best activities. `durationMinutes` is now 45 in all four files. `gen_bonus_plans.py --check` reports "28 bonus classes OK". Backups of the 60-minute versions are in the session scratchpad (prea45/).
+
+Stage tables use "S1, S2 ..." for the new stage order. "Old Sn" means the stage number in the 60-minute version.
+
+### IPA (all four classes)
+
+| Field / location | Before | After | Reason |
+|---|---|---|---|
+| B1 linguisticsCorner.facts[1].en/.ar | /k/ and /g/ | /k/ and /ɡ/ | The brief's Cambridge US style uses the IPA letter ɡ (as in /ɡoʊ/), not the keyboard g. |
+| B2 arabicBridge[3].english/.point/.pointAr (5 places) | /g/ | /ɡ/ | Same. |
+| B2 S2 exercise item green; S2 tips[0] | /g/ | /ɡ/ | Same. |
+| B4 S2 exercise item G | g - /g/ goat | g - /ɡ/ goat | Same. |
+
+**Checked and already General American, no change:** sun /s/ + /ʌ/ + /n/ (US /sʌn/); apple /æ/; egg /e/ (Cambridge US writes /eɡ/); queen /kw/; yellow /j/; three /θ/; /r/ is the phonemic symbol Cambridge uses for American r. The other symbols are consonants that are the same in both accents. No British-only vowels (ɒ, əʊ, eə, ɪə, ʊə, non-rhotic forms) appear in Pre-A. Letter names in quotes ('bee', 'aitch', 'jee') are respellings, not IPA. Z is never named, so the 'zee'/'zed' question does not come up. Stretched teaching sounds such as /mmm/ and /sss/ are classroom notation and are kept on purpose.
+
+### Bonus Class 1: My Mouth Makes Music
+
+New plan: S1 Warm-up + Noise or Word? 5 · S2 Linguistics Corner: Mouth Helpers 9 · S3 Movement 4 · S4 Arabic Bridge 7 · S5 Name or Sound? game 8 · S6 My Name Sound 7 · S7 Exit 5 = 45.
+
+| Field / location | Before | After | Reason |
+|---|---|---|---|
+| durationMinutes | 60 | 45 | Owner rule. |
+| Old S1 Warm-up (5) + Old S2 Linguistics Corner: Noise or Word? (8) | Two stages, 13 min: hello song, close-eyes guessing of 3 noises, clap-back rhythm, then 8 noise/word items, a dog-cannot-talk line, a Lumi-has-no-lips line, and children making their own noise and word | S1 "Warm-up: Hello Song and the Sound Box (Noise or Word?)", 5 min: hello song, then the sound box becomes the noise-or-word game (6 items: clap, hello, knock, cat, bell/spoon on cup, moon) | The noise/word point is simple and was the weakest use of 8 minutes. Merging it into the sound-box hook keeps objective 1 and frees time. The close-eyes guessing, the clap-back rhythm, the dog/bird lines and the own-noise turn are cut. The cough and whistle items are replaced by the bell/cup that is already in the teacher materials. |
+| S1 teacherSays / teacherSaysAr / studentsDo / tips | (from the old S1 + S2) | Rewritten for the merged stage: 5 EN lines, 4 AR lines, 3 studentsDo, 3 tips (hide your mouth behind a card; keep it at 'noise' and 'word') | Matches the merged activity. |
+| Old S3 → S2 name | Meet the Mouth Helpers: Lips, Teeth, Tongue | Linguistics Corner: Meet the Mouth Helpers (Lips, Teeth, Tongue) | The mouth helpers are the class's real Linguistics Corner content (linguisticsCorner facts 1-3), so the Linguistics Corner label moves here. |
+| S2 nameAr | تعرّف على مساعدي الفم: الشفتان والأسنان واللسان | ركن اللغويات: تعرّف على مساعدي الفم (الشفتان والأسنان واللسان) | Same. |
+| S2 minutes | 10 | 9 | Time. |
+| S2 studentsDo[2] | Hold a tissue or paper in front of the mouth: it moves for /p/, not much for /b/. | Hold a hand (or a light tissue) in front of the mouth: feel the puff for /p/, not much for /b/. | The hand test is quicker and needs nothing. The tissue stays optional. |
+| S2 exercise items | 8 (/m/ /b/ /p/ /f/ /l/ /d/ /n/ /k/) | 6 (/m/ /b/ /p/ /f/ /l/ /k/) | Time. /d/ and /n/ repeat the tongue-tip answer of /l/. All three helpers, the nose hum and the /p/ puff are still covered. |
+| Old S4 → S3 Movement minutes | 5 | 4 | Time. |
+| S3 studentsDo | 3 items, including "One child calls a sound; the others do its movement." | That item removed | Fits 4 minutes. |
+| Old S5 → S4 Arabic Bridge minutes | 8 | 7 | Time. |
+| S4 studentsDo[0] | for B, M, N, L, F, D, K, P | for B, M, N, L, F, P | Matches the shorter exercise. |
+| S4 studentsDo[1] | (B-ب, M-م, N-ن, L-ل, F-ف, D-د, K-ك) | (B-ب, M-م, N-ن, L-ل, F-ف) | Same. |
+| S4 exercise items | 8 (B M N L F D K P) | 6 (B M N L F P) | Time. P (no Arabic letter) is kept. arabicBridge[2] (ghunna) is untouched and verbatim, as instructed. |
+| Old S6 → S5 game minutes | 10 | 8 | Time. |
+| S5 studentsDo | 4 items, including "Take a turn being Lumi and say a letter name or sound for the group." | That item moved to a new tip: "If there is time left, let one child be Lumi... skip this when time is short." | Optional extra, so it can be dropped first. |
+| S5 exercise items | 10 (ball moon fish dog lion nose hat pen rabbit kite) | 8 (ball moon fish lion nose hat pen kite) | Time. dog and rabbit add no new contrast. hat (/h/ vs 'aitch') and pen (/p/ vs /b/) are kept. |
+| Old S7 → S6 My Name Sound minutes | 8 | 7 | Time. |
+| S6 method | Personalized speaking + drawing (multisensory) | Personalized speaking + sky writing (multisensory) | Drawing a self-portrait takes 3-4 minutes for this age, and drawing is already in the homework. |
+| S6 teacherSays[3] | Draw a big picture of you. Write or copy your first letter next to it. | Look at your first letter on the slide. Write it in the air with your finger. Big! | Same. |
+| S6 teacherSaysAr[3] | ارسم نفسك واكتب أول حرف من اسمك بجانب الرسمة. | انظر إلى أول حرف من اسمك على الشاشة، واكتبه في الهواء بإصبعك. كبيراً! | Same. |
+| S6 studentsDo[3] | Draw themselves and copy the first letter of their name (teacher shows it on the slide). | Sky-write the first letter of their name with a finger (the teacher shows it on the slide). | Same. |
+| S6 exercise items | 8 (Lumi Sara Ziad Noor Mona Badr Hala Fatima) | 6 (Lumi Sara Ziad Noor Badr Fatima) | Time. Mona is only the teacher's model name (tip). Hala's /h/ is already in the game. Lips, teeth, tongue, buzz and nose hum are all still covered. |
+| Old S8 → S7 Exit minutes | 6 | 5 | Time. The exit ticket (5 items) is unchanged. |
+| S7 studentsDo[0] | Answer 5 quick picture items one by one... | Answer the 5 quick exit-ticket items one by one... | Accuracy: item 5 is a name-or-sound item, not a picture. |
+| materials.student | ... "Paper and crayons" | removed | Nothing is drawn in class any more (drawing is homework). |
+| assessment.successCriteria[0] | at least 6 of 8 noise-or-word items | at least 5 of 6 noise-or-word items | Matches the 6 items now in the exercise. |
+| assessment.successCriteria[1] | at least 7 of 10 pictures | at least 6 of 8 pictures | Matches the 8 items now in the exercise. |
+| teacherNotes (Timing) | Timing: 60 minutes online is long for 4-5 year olds... shorten the Arabic Bridge rather than the movement break or the exit ticket. | Timing: this class is 45 minutes (5 + 9 + 4 + 7 + 8 + 7 + 5)... If the group is slow, trim in this order: do 6 pictures instead of 8 in the Name or Sound game, skip the friend's-name turn in My Name Sound, then match only B, M and P in the Arabic Bridge. Never cut the movement break or the exit ticket. | New length, with a trim order. |
+| homework | (unchanged) | (unchanged) | It refers to nothing that was cut. |
+
+### Bonus Class 2: First Sound Detectives
+
+New plan: S1 Warm-up 5 · S2 Linguistics Corner: Catch the First Sound 8 · S3 I Spy + Trickster Cases 9 · S4 Movement 4 · S5 Arabic Bridge 7 · S6 Silly Sound Chants 7 · S7 Exit 5 = 45.
+
+| Field / location | Before | After | Reason |
+|---|---|---|---|
+| durationMinutes | 60 | 45 | Owner rule. |
+| S1 Warm-up | 5 min | unchanged | Already short. |
+| S2 Linguistics Corner exercise items | 10 (sun moon zebra red yellow water nine dog van green) | 8 (sun moon zebra red yellow water van green) | Time. nine and dog repeat /n/-type and stop sounds. van (/v/) and green (/ɡ/) are kept. Minutes stay at 8. |
+| Old S3 I Spy (10) + Old S6 Detective Cases: Sort the Pictures and Catch the Tricksters (8) | Two stages, 18 min: I spy (8 clues) + object hunt + child as spy, then sorting 6 number pictures into /s/ /t/ /f/ houses + 3 trickster cases | S3 "I Spy with Lumi and the Trickster Cases" (nameAr لعبة أرى بعيني مع لومي وقضايا المخادعين), 9 min: I spy (5 clues: tree, zebra, clock, fish, van), one 10-second object hunt for /b/, then the 3 trickster cases (cat/kite, one, xylophone) | The sorting houses repeated the I-spy skill (matching words to a first sound) and were the weakest 8 minutes. The trickster discovery is "the heart of the class" (tip), so it is kept in full. The child-as-spy turn and the moon/water/lion clues are cut. |
+| S3 method / purpose / teacherSays / teacherSaysAr / studentsDo / exercise / tips | (from the old S3 + S6) | Rewritten for the merged stage. The exercise is point-and-say, 8 items (5 I spy + 3 trickster cases). The instructions add "Trickster cases: say the first sound you hear." Tips: one hunt round of 10-15 seconds; accept Arabic object names; trickster tips kept | Matches the merged activity. |
+| Old S4 → S4 Movement minutes | 5 | 4 | Time. |
+| S4 teacherSays[3] / teacherSaysAr[2] / studentsDo[1] | Second round: "New sound: /t/. Touch your toes if it starts with /t/!" | removed | Fits 4 minutes. The 8-item /s/ round, with its zebra and three traps, is kept. |
+| Old S5 → S5 Arabic Bridge minutes | 8 | 7 | Time. |
+| S5 teacherSays[4] / teacherSaysAr[3] | The hamza line (Arabic words always start with a consonant... apple starts right away with a vowel) | removed from the script. New tip: "The vowel-start point (apple vs أرنب with its hamza) is in the Arabic Bridge table; use it only if a child asks." | Not practised in any exercise. The teacher keeps it as background (arabicBridge[4] unchanged). |
+| S5 exercise items | 10 (sun moon lion zero red yellow water three tree van) | 8 (sun moon red yellow water three tree van) | Time. three/tree and van, the real contrasts, are kept. |
+| Old S7 → S6 Silly Sound Chants minutes | 10 | 7 | Time. This was the longest seated stage. |
+| S6 teacherSays[2] | More chants: Six silly suns! ... Ten tall trees! (stretch up) Zebra zooms to zero! (run on the spot) | ...Ten tall trees! (stretch up) | Time. |
+| S6 teacherSaysAr[4] | وفي العربية أيضاً جمل صعبة النطق... خيط حرير على حيط خليل! | removed. New tip: "Only if there is time left: try the Arabic tongue twister from the Arabic Bridge table..." | Time. It is also the item the earlier review flagged (Levantine flavour). It stays in arabicBridge[5] as optional background. |
+| S6 studentsDo | Chant each line 3 times...; make a name chant... then draw it; try the Arabic tongue twister... | Chant each line 2 times...; make a name chant (no drawing); tongue-twister item removed | Time. |
+| S6 exercise items | 8 (Big blue / Six silly / Five funny / Ten tall / Zebra zooms to / Lumi likes / Red ... / Ziad's ...) | 5 (Big blue / Six silly / Five funny / Ten tall / Ziad's ...) | Time. The name chant (objective 3) is kept. |
+| S6 tips[2] | 'tall', 'funny', 'silly', 'zooms' and 'likes' are support words... | 'tall', 'funny' and 'silly' are support words... | zooms and likes are no longer used. |
+| Old S8 → S7 Exit minutes | 6 | 5 | Time. The exit ticket is unchanged. |
+| materials.teacher[2] (picture cards) | 28 cards incl. six, seven, ten, two, four, five, nine, zero, blue, nose, lion, dog | 16 cards: sun, fish, clock, moon, zebra, red, yellow, water, van, green, tree, three, cat, kite, one, xylophone | Only the cards the 45-minute plan uses. The number sort is gone, and the movement words are said aloud with no cards. |
+| materials.student | ... "Paper and crayons" | removed | Nothing is drawn in class any more. |
+| homework.en | ...draw them in one 'sound house'. | ...draw them together in one big house. | The 'sound house' sort was cut, so the homework now explains itself. |
+| homework.ar | وارسمها في 'بيت صوت' واحد. | وارسمها معاً داخل بيت كبير. | Same. |
+| differentiation.challenge[0] | Fill a sound house alone: a number, a thing and a name... | Find a number, a thing and a name that share a first sound... | Same. |
+| assessment.successCriteria[0] | at least 7 of 10 pictures | at least 6 of 8 pictures | Matches the 8 items. |
+| assessment.successCriteria[1] | Finds the picture for at least 6 of 8 I-spy clues. | Finds the picture for at least 4 of 5 I-spy clues and gives the first sound of at least 2 of 3 trickster cases. | Matches the merged exercise. |
+| assessment.successCriteria[2] | Sorts at least 6 of 9 pictures into the right sound house. | Points to the matching Arabic letter (or crosses arms) for at least 6 of 8 words. | The sort was cut. Objective 4 (Arabic letter with the same first sound) had no criterion before. |
+| teacherNotes (Timing) | Timing: 60 minutes online is long... | Timing: this class is 45 minutes (5 + 8 + 9 + 4 + 7 + 7 + 5)... trim in this order: skip the object hunt in I Spy (picture scene only), do 3 chants instead of 5, then match 6 words instead of 8 in the Arabic Bridge (keep three, tree and van). Never cut the trickster cases, the movement break or the exit ticket. | New length, with a trim order. |
+
+### Bonus Class 3: Rhyme Time and Clap the Beats
+
+New plan: S1 Warm-up rap 4 · S2 Linguistics Corner: What Is a Rhyme? 7 · S3 Rhyme Match 7 · S4 Movement 4 · S5 Arabic Bridge 6 · S6 Syllable Gym and Name Trains 12 · S7 Exit 5 = 45.
+
+| Field / location | Before | After | Reason |
+|---|---|---|---|
+| durationMinutes | 60 | 45 | Owner rule. |
+| S1 Warm-up minutes | 5 | 4 | Time. Content unchanged. The hat should be ready before class (materials). |
+| S2 Linguistics Corner minutes | 8 | 7 | Time. |
+| S2 exercise items | 9 (cat-hat, dog-frog, cat-cake, fish-dish, duck-dog, nose-toes, red-bed, bird-mom, two-blue) | 7 (cat-hat, dog-frog, cat-cake, fish-dish, nose-toes, bird-mom, two-blue) | Time. cat-cake (rhyme vs same start) and two-blue (sound, not spelling) are kept. |
+| S3 Rhyme Match minutes | 8 | 7 | Time. |
+| S3 exercise items | 8 (...A dog on a log; My teddy is red, he is in my bed) | 6 (cat/hat, fish/dish, duck/truck, nose/toes, kite/white, two/blue) | Time. The log line is already in the warm-up rap. The teddy/bed line needed an extra picture word. |
+| S4 Movement minutes | 5 | 4 | Time. All 6 items kept. |
+| S5 Arabic Bridge minutes | 7 | 6 | Time. Content unchanged. |
+| Old S6 Clap the Beats: Syllable Gym (10) + Old S7 Beat Trains: Sort the Words and Clap Our Names (10) | Two stages, 20 min: 12 clap-and-count words, then a 10-word train sort, a train drawing and a group beat chant | S6 "Clap the Beats: Syllable Gym and Name Trains" (nameAr صفّق للنبضات: رياضة المقاطع وقطارات الأسماء), 12 min: clap, chin test, robot walk, black as 1 beat, then each child claps their own and friends' names and says which train they ride | The train sort repeated the clap-and-count skill. The drawing and group chant were the longest low-yield parts. The name clapping (objective 4, the strongest motivation) is kept. |
+| S6 method / purpose / teacherSays / teacherSaysAr / studentsDo / tips | (from the old S6 + S7) | Rewritten for the merged stage (6 EN, 6 AR lines). The tips keep: hyphens for the teacher only, chin test, elephant preview, family name forms (Mu-ham-mad, Fat-ma), every child gets a turn | Matches the merged activity. |
+| S6 exercise items | 12 (cat rab-bit ba-by el-e-phant duck grand-ma um-brel-la pur-ple black sis-ter xy-lo-phone hands) | 8 (cat rab-bit ba-by el-e-phant black um-brel-la pur-ple hands) | Time. 1-, 2- and 3-beat words, black (cluster trap) and purple (/p/) are kept. The 10-item train-sort exercise is removed with the sort. |
+| Old S8 → S7 Exit minutes | 7 | 5 | Time. The exit ticket is unchanged. |
+| materials.teacher[2] (picture cards) | ... red, bed, ... sister, grandma, ... yellow, ... xylophone | those 6 removed | They are no longer used on cards. bed is only said aloud in the movement break. |
+| materials.student | "Paper and crayons" first | removed | Nothing is drawn in class any more. Drawing a beat train stays in the homework, and the name trains are on the slide. |
+| assessment.successCriteria[0] | at least 7 of 9 rhyme pairs | at least 5 of 7 rhyme pairs | Matches the 7 items. |
+| assessment.successCriteria[1] | at least 5 of 8 rhyming lines | at least 4 of 6 rhyming lines | Matches the 6 items. |
+| assessment.successCriteria[2] | at least 9 of 12 words | at least 6 of 8 words | Matches the 8 items. |
+| teacherNotes[1] | (log, dish, truck, frog, toes, bed, spoon, cake, teddy) | (log, dish, truck, frog, toes, bed, spoon, cake) | teddy is no longer used. |
+| teacherNotes (Timing) | Timing: 60 minutes online is long... | Timing: this class is 45 minutes (4 + 7 + 7 + 4 + 6 + 12 + 5)... trim in this order: skip the robot walk (keep clapping and the chin test), skip the Arabic poetry line in the Arabic Bridge, then do 4 rhyming lines instead of 6. Never cut the name clapping, the movement break or the exit ticket. | New length, with a trim order. |
+| homework | (unchanged) | (unchanged) | "Draw a beat train" still matches the name trains on the slide. |
+
+### Bonus Class 4: Big Letters, Small Letters, Left to Right
+
+New plan: S1 Warm-up song 4 · S2 Linguistics Corner: One Letter, Two Shapes (with a quick twins/different gesture) 8 · S3 Movement: Sky Writing 4 · S4 Arabic Bridge 8 · S5 Left-to-Right Train and the 'bed' Trick 8 · S6 My Name Card 8 · S7 Exit 5 = 45.
+
+| Field / location | Before | After | Reason |
+|---|---|---|---|
+| durationMinutes | 60 | 45 | Owner rule. |
+| S1 Warm-up minutes | 5 | 4 | Time. Content unchanged. |
+| Old S3 Twins or Different? Letter Family Sort (9 min, 10-item sort) | full stage | removed. Its key idea is now a one-minute gesture inside S2 (see the next rows) | It repeated the matching skill of S2 and was the weakest 9 minutes. The twins idea is kept as a quick gesture. |
+| S2 teacherSays (new [2]) | - | Some families are twins: big O, small o. Hands together! Some are different: big A, small a. Hands apart! | Brings in the twins idea. |
+| S2 teacherSaysAr (new [1]) | - | بعض العائلات توائم: O و o لهما الشكل نفسه، فضمّ يديك. وبعضها مختلف: A و a، فافتح يديك. | Same. |
+| S2 studentsDo (new [1]) | - | Show 'twins' (hands together) or 'different' (hands apart) for O o, A a, S s and G g. | Same. |
+| S2 exercise items | 8 (A B M E R G D Q) | 6 (A B E R G Q) | Time. M looks alike in both forms, and D is practised in S5. |
+| S2 tips | [0] (A a, B b, E e, R r, G g, D d, Q q); [1] history tip | [0] (A a, B b, E e, R r, G g, Q q); [1] history tip; [2] the print-font tip from the old twins stage (single-story a and g) | Matches the items. The font tip still matters for the slide. |
+| S3 Movement minutes | 5 | 4 | Time. |
+| S4 Arabic Bridge minutes | 9 | 8 | Time. |
+| S4 exercise items | 8 | 6 (left to right; no big letters; letter changes shape; letters stand apart in a book; most letters join; a name starts with a big letter) | Removed "We write from right to left" (the mirror of item 1) and "Letters have big and small shapes" (the mirror of "no big letters"). |
+| S5 Left-to-Right Train minutes | 9 | 8 | Time. |
+| S5 studentsDo[3] | Circle b or d at the start of picture words on paper. | removed | Time. The bed trick is practised orally with the hands. |
+| S5 exercise items | 8 (bag dog book bread dad banana duck cake) | 6 (bag dog book dad banana cake) | Time. Both b and d are kept, plus the cake trickster. |
+| S6 My Name Card minutes | 8 | 8 | Unchanged. This is objective 4. |
+| S6 studentsDo[1] | Decorate the name card and show it to the camera. | Hold the name card up to the camera. | Decorating is cut for time. The door name card is in the homework. |
+| S6 exercise items | 7 (sara bAg dook koob ziad MILK nOOr) | 5 (sara bAg dook koob nOOr) | Time. ziad repeats sara. MILK was removed because the class's own tip said it is 'not wrong' on signs, so its answer was not the only defensible one (brief, point 4). |
+| S6 tips | 3, incl. "MILK in all capitals is not 'wrong' on a sign or a box..." | that tip removed | The item is gone. |
+| Old S8 → S7 Exit minutes | 7 | 5 | Time. The exit ticket is unchanged. |
+| assessment.successCriteria[0] | at least 6 of 8 big letters | at least 5 of 6 big letters | Matches the 6 items. |
+| assessment.successCriteria[1] | Sorts at least 7 of 10 families as twins or different. | Answers at least 5 of 6 'Arabic or English?' items correctly. | The sort was cut. Objective 3 (two ways Arabic differs) had no criterion before. |
+| teacherNotes (Timing) | Timing: 60 minutes online is long... shorten the history part of the Linguistics Corner... | Timing: this class is 45 minutes (4 + 8 + 4 + 8 + 8 + 8 + 5)... trim in this order: shorten the history story to one sentence about the printers' boxes, fix only 3 of Lumi's mistakes, then do 4 'Arabic or English?' items instead of 6. Never cut the name writing, the movement break or the exit ticket. | New length, with a trim order. |
+| homework | (unchanged) | (unchanged) | It refers to nothing that was cut. |
+
+**Verified, no change:** stage minutes add up to 45 in all four classes. The 5-item exit tickets still match the objectives, and the success-criteria counts match the remaining exercise items. Each class keeps exactly one movement break (B4 also has the stand/crouch song). No string in Pre-A still says 60 minutes. B1 arabicBridge[2] (Holy Quran / ghunna) is byte-identical to the owner's reviewer version.
+
+**For the owner:**
+1. **IPA ɡ across levels.** Pre-A now uses /ɡ/ as the brief does. Level 4 bonus01 still has one /g/. Other reviewers may want to align it.
+2. **B4 student materials** still list "Food or school things from home (optional)". No stage used them, before or after this change. I left the line as it was. It can be deleted.
+3. **Optional extras** (B1 child-as-Lumi turn, B2 Arabic tongue twister, B2 hamza point) are now "only if time" tips. This avoids squeezing them into 45 minutes. The owner may prefer to drop them completely.

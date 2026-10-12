@@ -5,7 +5,7 @@
   "label": "Bonus Class 2",
   "afterLesson": 8,
   "classPosition": 10,
-  "durationMinutes": 60,
+  "durationMinutes": 45,
   "ages": "4-6",
   "strand": "Sound Explorers",
   "strandAr": "مستكشفو الأصوات",
@@ -160,14 +160,13 @@
     "teacher": [
       "Bonus Class 2 slides (picture cards, I-spy scene, Arabic letter cards)",
       "Lumi puppet with a detective hat or a paper magnifying glass",
-      "Picture cards: sun, six, seven, ten, two, tree, three, fish, four, five, nine, cat, kite, clock, water, one, zebra, zero, xylophone, van, red, blue, yellow, green, moon, nose, lion, dog",
+      "Picture cards: sun, fish, clock, moon, zebra, red, yellow, water, van, green, tree, three, cat, kite, one, xylophone",
       "A small box or bag for the 'mystery bag'"
     ],
     "student": [
       "A paper magnifying glass (a circle drawn on paper, or two fingers in a circle)",
       "3-4 small things from home (a ball, a pen, a cup, a toy)",
-      "Something red, blue, yellow or green",
-      "Paper and crayons"
+      "Something red, blue, yellow or green"
     ]
   },
   "stages": [
@@ -251,14 +250,6 @@
             "answer": "/w/"
           },
           {
-            "prompt": "(picture) nine",
-            "answer": "/n/"
-          },
-          {
-            "prompt": "(picture) dog",
-            "answer": "/d/"
-          },
-          {
             "prompt": "(picture) van",
             "answer": "/v/ (buzz, not /f/)"
           },
@@ -274,32 +265,38 @@
       ]
     },
     {
-      "minutes": 10,
-      "name": "I Spy with Lumi",
-      "nameAr": "لعبة أرى بعيني مع لومي",
-      "method": "Classic I-spy game on a picture scene + real objects from home (multisensory, gamified)",
-      "purpose": "Practice matching a first sound to known words in a fun, fast game.",
+      "minutes": 9,
+      "name": "I Spy with Lumi and the Trickster Cases",
+      "nameAr": "لعبة أرى بعيني مع لومي وقضايا المخادعين",
+      "method": "Classic I-spy game on a picture scene + one real-object hunt + guided discovery of spelling 'tricks' (gamified, multisensory)",
+      "purpose": "Match a first sound to known words in a fast game, and discover that the sound, not the look of the letter, is what counts.",
       "teacherSays": [
         "I spy with my little eye something that starts with /s/... It is in the sky!",
         "Point to it! Yes, the sun!",
         "Now look in your room. Find something that starts with /b/! Run! 10 seconds!",
-        "Show me! A ball! /b/ ball! Something blue! /b/ blue!"
+        "Show me! A ball! /b/ ball! Something blue! /b/ blue!",
+        "Detective case! Cat and kite. Same first sound? Listen: /k/at, /k/ite. Yes! But look: C and K. Two letters, one sound!",
+        "Big case! One... /w/-un. It starts like water! But it is written with O. Tricky letter!",
+        "Xylophone: /z/... like zebra! X is playing a trick!"
       ],
       "teacherSaysAr": [
         "أرى بعيني الصغيرة شيئاً يبدأ بالصوت /s/... إنه في السماء!",
-        "أشر إليه على الشاشة!",
         "الآن ابحث في غرفتك عن شيء يبدأ بالصوت /b/! أسرع، معك 10 ثوانٍ!",
-        "أرِنا ما وجدت وقل اسمه بالإنجليزية!"
+        "قضية جديدة: cat و kite تبدآن بالصوت نفسه /k/، لكن بحرفين مختلفين!",
+        "قضية كبيرة: one تبدأ بالصوت /w/ مثل water، لكنها تُكتب بحرف O!",
+        "و xylophone تبدأ بالصوت /z/ مثل zebra. الحرف X يخدعنا!",
+        "المحقق الذكي يستمع إلى الصوت، ولا يكتفي بالنظر إلى الحرف."
       ],
       "studentsDo": [
         "Point on the slide (or use the Teams annotation pen) to the thing that starts with the sound.",
-        "Run and bring an object from home that starts with the sound, then say its name and first sound.",
-        "Take a turn as the spy: 'I spy something that starts with ...'"
+        "Run and bring one object from home that starts with /b/, then say its name and first sound.",
+        "Listen to the trickster words and say their first sound.",
+        "Give a detective thumbs up when they catch a trick."
       ],
       "exercise": {
         "type": "point-and-say",
-        "instructions": "Listen to the first sound. Find the thing in the picture that starts with it. Point and say the word.",
-        "instructionsAr": "استمع للصوت الأول، وابحث في الصورة عن الشيء الذي يبدأ به، ثم أشر إليه وقل الكلمة.",
+        "instructions": "Listen to the first sound. Find the thing in the picture that starts with it. Point and say the word. Trickster cases: say the first sound you hear.",
+        "instructionsAr": "استمع للصوت الأول، وابحث في الصورة عن الشيء الذي يبدأ به، ثم أشر إليه وقل الكلمة. في القضايا المخادعة: قل الصوت الأول الذي تسمعه.",
         "items": [
           {
             "prompt": "I spy /t/ ... it is green and tall",
@@ -318,30 +315,32 @@
             "answer": "fish"
           },
           {
-            "prompt": "I spy /m/ ... it shines at night",
-            "answer": "moon"
-          },
-          {
             "prompt": "I spy /v/ ... it has wheels",
             "answer": "van"
           },
           {
-            "prompt": "I spy /w/ ... we drink it",
-            "answer": "water"
+            "prompt": "Trickster case: cat / kite",
+            "answer": "both /k/ (letters C and K)"
           },
           {
-            "prompt": "I spy /l/ ... it says roar",
-            "answer": "lion"
+            "prompt": "Trickster case: one",
+            "answer": "/w/, like water (letter O)"
+          },
+          {
+            "prompt": "Trickster case: xylophone",
+            "answer": "/z/, like zebra (letter X)"
           }
         ]
       },
       "tips": [
+        "Keep the object hunt to one round of 10-15 seconds and count down out loud so children come back to the camera.",
         "Accept objects from home with Arabic names if the child does not know the English word: say the English word for them, and check whether the first sound still matches. If not, it's a great discovery!",
-        "Keep the object hunt short (10-15 seconds) and count down out loud so children come back to the camera."
+        "The 'trickster' discovery is the heart of the class: children learn early that English spelling does not always match the sound, and that listening is the detective's main tool.",
+        "Do not explain why one is spelled with O; for this age it is enough to notice and enjoy the trick."
       ]
     },
     {
-      "minutes": 5,
+      "minutes": 4,
       "name": "Movement Break: Jump on the Sound",
       "nameAr": "استراحة حركة: اقفز على الصوت",
       "method": "TPR listening game (whole body response)",
@@ -349,17 +348,14 @@
       "teacherSays": [
         "Stand up, detectives! Our sound is /s/.",
         "If the word starts with /s/, jump! If not, stand still like a statue.",
-        "Sun! (jump) Ten! (statue) Six! (jump) Seven! (jump) Blue! (statue)",
-        "New sound: /t/. Touch your toes if it starts with /t/!"
+        "Sun! (jump) Ten! (statue) Six! (jump) Seven! (jump) Blue! (statue)"
       ],
       "teacherSaysAr": [
         "قفوا أيها المحققون! صوتنا الآن /s/.",
-        "إذا بدأت الكلمة بـ /s/ اقفز، وإذا لم تبدأ به قف مثل التمثال.",
-        "صوت جديد: /t/. المس أصابع قدميك إذا بدأت الكلمة بـ /t/!"
+        "إذا بدأت الكلمة بـ /s/ اقفز، وإذا لم تبدأ به قف مثل التمثال."
       ],
       "studentsDo": [
         "Jump for words that start with /s/ and freeze for others.",
-        "Touch toes for /t/ words (ten, two, tree) and freeze for three.",
         "Sit down quietly at the end: 'sssit'."
       ],
       "exercise": {
@@ -407,7 +403,7 @@
       ]
     },
     {
-      "minutes": 8,
+      "minutes": 7,
       "name": "Arabic Bridge: Same Sound, Two Alphabets",
       "nameAr": "جسر العربية: صوت واحد وأبجديتان",
       "method": "Contrastive analysis: matching English first sounds to Arabic letters",
@@ -416,14 +412,12 @@
         "Sun: /s/. In Arabic: سمكة, /s/! The same sound. Friends!",
         "Moon: /m/. موز, /m/! Friends!",
         "Three: put your tongue out a little: /θ/. Like ث in ثلاثة! Tree: /t/, like ت.",
-        "Van: /v/. Is there an Arabic letter? No! New sound: teeth on lip like ف... and buzz!",
-        "Arabic words always start with a consonant. Even أرنب starts with hamza, a little catch in the throat. English apple starts right away with a vowel: apple!"
+        "Van: /v/. Is there an Arabic letter? No! New sound: teeth on lip like ف... and buzz!"
       ],
       "teacherSaysAr": [
         "sun تبدأ بالصوت /s/، وسمكة تبدأ بالسين: الصوت نفسه!",
         "three تبدأ مثل الثاء في ثلاثة: أخرِج طرف لسانك قليلاً. أما tree فتبدأ مثل التاء.",
-        "van تبدأ بصوت ليس في العربية: الأسنان على الشفة مثل الفاء، لكن مع اهتزاز في الحلق.",
-        "كل كلمة عربية تبدأ بصوت صامت (حرف)، حتى أرنب تبدأ بالهمزة. أما apple فتبدأ مباشرة بصوت علّة (حركة)."
+        "van تبدأ بصوت ليس في العربية: الأسنان على الشفة مثل الفاء، لكن مع اهتزاز في الحلق."
       ],
       "studentsDo": [
         "Say the English word, then the Arabic word with the same first sound.",
@@ -443,14 +437,6 @@
           {
             "prompt": "moon",
             "answer": "م"
-          },
-          {
-            "prompt": "lion",
-            "answer": "ل"
-          },
-          {
-            "prompt": "zero",
-            "answer": "ز"
           },
           {
             "prompt": "red",
@@ -481,85 +467,12 @@
       "tips": [
         "Say 'friends' or 'close', not 'exactly the same': English r, for example, is softer than Arabic ر (the tongue does not tap or trill).",
         "For Egyptian children, three vs tree is a real challenge because Egyptian colloquial Arabic often turns ث into ت or س. Be patient and use the mirror; it is not a 'wrong Arabic', just a different sound habit.",
-        "If children ask about green: ج in Egyptian Arabic and ق in many Gulf dialects already sound like /g/."
+        "If children ask about green: ج in Egyptian Arabic and ق in many Gulf dialects already sound like /g/.",
+        "The vowel-start point (apple vs أرنب with its hamza) is in the Arabic Bridge table; use it only if a child asks."
       ]
     },
     {
-      "minutes": 8,
-      "name": "Detective Cases: Sort the Pictures and Catch the Tricksters",
-      "nameAr": "قضايا المحققين: صنّف الصور واكشف المخادعين",
-      "method": "Picture sorting by first sound (categorization) + guided discovery of spelling 'tricks'",
-      "purpose": "Group words by sound, and discover that the sound, not the look of the letter, is what counts.",
-      "teacherSays": [
-        "Three houses: the /s/ house, the /t/ house, the /f/ house. Who lives where?",
-        "Six... /s/! In the /s/ house. Four... /f/! In the /f/ house.",
-        "Detective case! Cat and kite. Same first sound? Listen: /k/at, /k/ite. Yes! But look: C and K. Two letters, one sound!",
-        "Big case! One... /w/-un. It starts like water! But it is written with O. Tricky letter!",
-        "Xylophone: /z/... like zebra! X is playing a trick!"
-      ],
-      "teacherSaysAr": [
-        "عندنا ثلاثة بيوت: بيت /s/ وبيت /t/ وبيت /f/. من يسكن في أي بيت؟",
-        "قضية جديدة: cat و kite تبدآن بالصوت نفسه /k/، لكن بحرفين مختلفين!",
-        "قضية كبيرة: one تبدأ بالصوت /w/ مثل water، لكنها تُكتب بحرف O!",
-        "و xylophone تبدأ بالصوت /z/ مثل zebra. الحرف X يخدعنا!",
-        "المحقق الذكي يستمع إلى الصوت، ولا يكتفي بالنظر إلى الحرف."
-      ],
-      "studentsDo": [
-        "Drag or point each picture into the right sound house on the slide.",
-        "Say the word and its first sound as they sort it.",
-        "Listen to the trickster words and decide which house they belong to by sound.",
-        "Give a detective thumbs up when they catch a trick."
-      ],
-      "exercise": {
-        "type": "sort",
-        "instructions": "Say the word. Which house does it live in? Listen to the first sound, not the letter. The last three are trickster cases: say their first sound.",
-        "instructionsAr": "قل الكلمة. في أي بيت تسكن؟ استمع إلى الصوت الأول، لا إلى الحرف. آخر ثلاث كلمات قضايا مخادعة: قل صوتها الأول.",
-        "items": [
-          {
-            "prompt": "six",
-            "answer": "/s/ house"
-          },
-          {
-            "prompt": "ten",
-            "answer": "/t/ house"
-          },
-          {
-            "prompt": "five",
-            "answer": "/f/ house"
-          },
-          {
-            "prompt": "seven",
-            "answer": "/s/ house"
-          },
-          {
-            "prompt": "two",
-            "answer": "/t/ house"
-          },
-          {
-            "prompt": "fish",
-            "answer": "/f/ house"
-          },
-          {
-            "prompt": "cat / kite / clock",
-            "answer": "all /k/ (letters C and K)"
-          },
-          {
-            "prompt": "one",
-            "answer": "/w/, like water (letter O)"
-          },
-          {
-            "prompt": "xylophone",
-            "answer": "/z/, like zebra (letter X)"
-          }
-        ]
-      },
-      "tips": [
-        "The 'trickster' discovery is the heart of the class: children learn early that English spelling does not always match the sound, and that listening is the detective's main tool.",
-        "Do not explain why one is spelled with O; for this age it is enough to notice and enjoy the trick."
-      ]
-    },
-    {
-      "minutes": 10,
+      "minutes": 7,
       "name": "Silly Sound Chants: Six Silly Suns",
       "nameAr": "أناشيد الأصوات المضحكة: ست شموس مضحكة",
       "method": "Alliteration chants with actions + creative production (children invent their own)",
@@ -567,7 +480,7 @@
       "teacherSays": [
         "Listen to Lumi's chant: Big blue ball! Big blue ball! What sound do you hear again and again? /b/!",
         "Say it and bounce: Big - blue - ball!",
-        "More chants: Six silly suns! (wiggle) Five funny fish! (swim) Ten tall trees! (stretch up) Zebra zooms to zero! (run on the spot)",
+        "More chants: Six silly suns! (wiggle) Five funny fish! (swim) Ten tall trees! (stretch up)",
         "Cartoon names love this game: Mickey Mouse, Donald Duck, Peppa Pig!",
         "Now make your own with your name: Sara's sun! Ziad's zebra! Noor's nose! Lumi's lion!"
       ],
@@ -575,14 +488,12 @@
         "اسمعوا نشيد لومي: Big blue ball! ما الصوت الذي يتكرر؟ /b/!",
         "نقولها ونحن نقفز مثل الكرة!",
         "حتى أسماء الشخصيات الكرتونية تستخدم هذه اللعبة: Mickey Mouse و Donald Duck و Peppa Pig!",
-        "الآن اصنع جملة مضحكة باسمك: سارة مع sun، وزياد مع zebra، ونور مع nose!",
-        "وفي العربية أيضاً جمل صعبة النطق تلعب بالأصوات، مثل هذه الجملة العامية: خيط حرير على حيط خليل!"
+        "الآن اصنع جملة مضحكة باسمك: سارة مع sun، وزياد مع zebra، ونور مع nose!"
       ],
       "studentsDo": [
-        "Chant each line 3 times with its action, getting faster each time.",
+        "Chant each line 2 times with its action, faster the second time.",
         "Say which sound repeats in each chant.",
-        "Make a name chant: their name + a word with the same first sound, then draw it.",
-        "Try the Arabic tongue twister and say which sounds repeat (خ / ح)."
+        "Make a name chant: their name + a word with the same first sound."
       ],
       "exercise": {
         "type": "complete-the-chant",
@@ -606,18 +517,6 @@
             "answer": "trees (or another /t/ word)"
           },
           {
-            "prompt": "Zebra zooms to ...",
-            "answer": "zero (or another /z/ word)"
-          },
-          {
-            "prompt": "Lumi likes ...",
-            "answer": "lions (or another /l/ word)"
-          },
-          {
-            "prompt": "Red ... (an animal)",
-            "answer": "rabbit"
-          },
-          {
             "prompt": "My name + a word: Ziad's ...",
             "answer": "zebra (any /z/ word)"
           }
@@ -626,11 +525,12 @@
       "tips": [
         "Silly is good: nonsense combinations make the sound stand out and children remember them.",
         "Accept any word with the right first sound, even an Arabic word; then offer an English one.",
-        "'tall', 'funny', 'silly', 'zooms' and 'likes' are support words shown with a picture or gesture; children do not need to learn them."
+        "'tall', 'funny' and 'silly' are support words shown with a picture or gesture; children do not need to learn them.",
+        "Only if there is time left: try the Arabic tongue twister from the Arabic Bridge table (خيط حرير على حيط خليل) and ask which sounds repeat."
       ]
     },
     {
-      "minutes": 6,
+      "minutes": 5,
       "name": "Exit Ticket, Did You Know? and Goodbye",
       "nameAr": "بطاقة الخروج، هل تعلم؟ والوداع",
       "method": "Formative check (same or different + first sound) + curiosity close",
@@ -684,8 +584,8 @@
     ]
   },
   "homework": {
-    "en": "Detective mission: play I spy at home in English with one family member. Find 3 things that start with the same sound and draw them in one 'sound house'.",
-    "ar": "مهمة المحقق: العب 'أرى بعيني' بالإنجليزية مع أحد أفراد أسرتك. ابحث عن 3 أشياء تبدأ بالصوت نفسه وارسمها في 'بيت صوت' واحد.",
+    "en": "Detective mission: play I spy at home in English with one family member. Find 3 things that start with the same sound and draw them together in one big house.",
+    "ar": "مهمة المحقق: العب 'أرى بعيني' بالإنجليزية مع أحد أفراد أسرتك. ابحث عن 3 أشياء تبدأ بالصوت نفسه وارسمها معاً داخل بيت كبير.",
     "tasks": [
       "Play I spy with a family member: 'I spy something that starts with /b/.'",
       "Draw a house and put 3 pictures inside that start with the same sound.",
@@ -699,16 +599,16 @@
       "Let the child answer by pointing instead of saying the sound."
     ],
     "challenge": [
-      "Fill a sound house alone: a number, a thing and a name that share a first sound (six, sun, Sara / ten, tree, Tamer).",
+      "Find a number, a thing and a name that share a first sound (six, sun, Sara / ten, tree, Tamer).",
       "Make a 3-word silly chant with no help (Seven silly snakes).",
       "Listen for the last sound: sun ends with /n/, red ends with /d/."
     ]
   },
   "assessment": {
     "successCriteria": [
-      "Says the first sound (not the letter name) for at least 7 of 10 pictures.",
-      "Finds the picture for at least 6 of 8 I-spy clues.",
-      "Sorts at least 6 of 9 pictures into the right sound house.",
+      "Says the first sound (not the letter name) for at least 6 of 8 pictures.",
+      "Finds the picture for at least 4 of 5 I-spy clues and gives the first sound of at least 2 of 3 trickster cases.",
+      "Points to the matching Arabic letter (or crosses arms) for at least 6 of 8 words.",
       "Makes one name chant with a matching first sound."
     ],
     "watchFor": [
@@ -723,6 +623,6 @@
     "Most of the pictures are known words from Lessons 3-8; the support words in chants (silly, tall, funny) are only shown with a picture or a gesture.",
     "The trickster discovery (cat/kite, one, xylophone) is meant to plant a seed: in English, listen first, then look.",
     "Bonus Class 3 moves from the start of words to the end of words (rhyme) and to beats (syllables).",
-    "Timing: 60 minutes online is long for 4-5 year olds. Keep every stage short and moving, add a 30-second stand-and-stretch between seated stages when attention drops, and if time runs short, shorten the Arabic Bridge rather than the movement break or the exit ticket."
+    "Timing: this class is 45 minutes (5 + 8 + 9 + 4 + 7 + 7 + 5), which suits 4-6 year olds online. Keep every stage short and moving, and add a 30-second stand-and-stretch between seated stages when attention drops. If the group is slow, trim in this order: skip the object hunt in I Spy (use the picture scene only), do 3 chants instead of 5, then match 6 words instead of 8 in the Arabic Bridge (keep three, tree and van). Never cut the trickster cases, the movement break or the exit ticket."
   ]
 }
