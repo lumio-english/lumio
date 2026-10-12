@@ -319,6 +319,12 @@ Done by three parallel workers (sync layer / teacher UI / student UI), merged an
 - Owner can finish a pending student deletion ("Delete now (owner)") without waiting for the student; other teachers still wait (teacher.html).
 - Level 1 phonics "top" = قِمّة (was spinning top).
 
+## 3dd. Bonus Classes (Oct 2026)
+- Every level = 24 classes: 20 lessons + 4 Bonus Classes (after lessons 4, 8, 12, 16), about 3 months at 2-3 classes a week. A bonus class takes a session; prices unchanged. 60 minutes (Pre-A 45). Plan + outline: `_docs/bonus-classes-plan.md`; academic review logs: `_docs/bonus-review/`; pictures still to generate: `_docs/bonus-review/image-prompts.md`.
+- **Stored as lesson number N.5** (B1=4.5, B2=8.5, B3=12.5, B4=16.5) in schedule, attendance and homework, so the Sheet / Apps Script needed no change. Helpers in `js/app.js`: levelSequence, isBonus, bonusNumber, bonusLesson, nextInSequence, prevInSequence, lessonLabel, bonusesMissing, classesDoneCount. A bonus is done when attended + its bonus homework is sent. A student already past a bonus at go-live owes it: it is booked next but does not lock lessons. Level test / certificate need all 4.
+- Content: `bonus-classes/<level>/bonusNN.json` (plan, deck, homeworkMissions, printables). Generators: `gen_bonus_plans.py` (teacher-guide/bonus/), `gen_bonus_slides.py` + `lib/bonus_deck.py` + `css/bonus-slides.css` (slide-content-v5/<level>/bonus-NN/, assets/slides-v5/<level>/bonus-manifest.json), `gen_bonus_printables.py` (worksheets/<level>/bonusNN-worksheet.pdf, flashcards/<level>/bonusNN-cards.pdf). **After editing a bonus JSON, run all three.**
+- Pages: `present.html?level=&bonus=N`, `bonus-homework.html?level=&b=N` (mission board; `&preview=1` for teachers). Student map shows B1-B4 stops; teacher Materials tab lists Bonus Class rows. Quran mentions are descriptive only (no verse cited); if a verse is ever cited it must be Arabic with full Mushaf diacritics, no translation.
+
 ## 4. Working style
 Test setup (scratchpad, recreate if lost): static site `python3 -m http.server 8810` from the repo; mock Apps Script `node verify/gsserver.js 8899 _docs/AppsScript-Code.gs` with `verify/lib.py` (seed, teacher_login, student_login). Artifacts for previews are private claude.ai pages (Version 5 slides, English Hub preview).
 Verify in a browser before claiming done; check files before writing prompts; never duplicate; fix in templates not per slide; say plainly what was NOT done; ask one specific question when ambiguous.
