@@ -162,6 +162,7 @@ td.ar,th.ar{text-align:right}
 .seq span.b{background:var(--o);color:#fff}
 .clist a{display:block;padding:10px 12px;border:1px solid var(--line);border-radius:12px;margin:6px 0;text-decoration:none;color:var(--ink);background:#fff}
 .clist a:hover{border-color:var(--o)}
+.clist .ar{display:block}
 .clist small{color:var(--muted)}
 .btn{display:inline-block;background:var(--o);color:#fff;border-radius:999px;padding:6px 14px;font-weight:800;text-decoration:none;border:0;cursor:pointer;font:inherit}
 @media (max-width:640px){.pair{grid-template-columns:1fr}.hero h1{font-size:1.4rem}}

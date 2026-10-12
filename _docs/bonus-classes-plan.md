@@ -93,8 +93,8 @@ Each class only uses what the students have met in the lessons before it.
 4. (after L16: party, a day to remember, while) **Speak Like a Storyteller: The Music of English** — sentence stress, content vs function words, weak forms (was = /wəz/), linking, pausing; English is stress-timed and shrinks its small words, while Arabic speakers tend to give every small word a full vowel; dramatic reading.
 
 ### Level 6 — English in the World
-1. (after L4: going to, will, present continuous future) **Does English Have a Future Tense?** — English has no future ending (Arabic has سـ / سوف); choosing will / going to / present continuous by meaning; 'll and gonna in speech.
-2. (after L8: have to, adverbs of manner, long comparatives) **The Language of Rules** — must / have to / don't have to / mustn't (the "don't have to" trap vs لا يجب), adverb spelling rules (-ly, -ily, -ally).
+1. (after L4; future forms taught in L1-3, past continuous L4) **Does English Have a Future Tense?** — English has no future ending (Arabic has سـ / سوف); choosing will / going to / present continuous by meaning; 'll and gonna in speech.
+2. (after L8: have to, adverbs of manner, long comparatives) **The Language of Rules** — introduces must alongside the taught have to; must / have to / don't have to / mustn't (the "don't have to" trap vs لا يجب), adverb spelling rules (-ly, -ily, -ally).
 3. (after L12: rules at home, the way we talk, which is better) **Where English Words Come From** — language families, Old English / French / Latin layers, English words from Arabic (sugar, coffee, cotton, algebra, zero, giraffe, sofa, magazine), synonyms by origin (buy/purchase).
 4. (after L16: debate, next year, getting ready) **The Art of Persuasion** — ethos, pathos, logos; discourse markers (firstly, however, on the other hand), hedging, a timed mini-debate.
 
