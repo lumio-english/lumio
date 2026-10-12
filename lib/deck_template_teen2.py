@@ -721,16 +721,35 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
     for i in range(3):
         w = lesson["vocab"][i % V]
         plan.append(("practice", (w, i)))
-    # Scene slide right after the vocabulary: one illustrated moment for
-    # the lesson's language (lib/teen_scenes.py). Skipped if no image.
+    # ---- Segment order (academic review, Oct 2026) ----------------------
+    # Presentation -> controlled practice -> check -> freer word game ->
+    # words in context (scenes) -> sentence structure -> grammar rule ->
+    # noticing -> controlled grammar practice -> model dialogue -> grammar
+    # check -> error awareness -> freer grammar game -> personal production
+    # -> challenge / real life / discussion -> recap.
+    if phrase_focus:
+        plan.append(("phrase_focus", phrase_focus))
+    # Vocabulary Check: live, in-class MCQ practice, split into two 5-question
+    # rounds with a checkpoint -- breaks up 10 slides in a row and gives a
+    # natural pacing beat instead of one long uninterrupted block. Sits right
+    # after the controlled practice so recall is checked before the freer game.
+    half = n_vocab_mcq // 2
+    for i in range(half):
+        plan.append(("vocab_mcq", i))
+    plan.append(("checkpoint", "Round 1"))
+    for i in range(half, n_vocab_mcq):
+        plan.append(("vocab_mcq", i))
+    # Activity 1 of 3 (lib/activity_slides.py): Describe It -- the word game,
+    # freer use of the new words once they have been checked.
+    plan.append(("act_describe", None))
+    # Scenes straight after the word game: the new words used in real
+    # sentences (lib/teen_scenes.py + teen_scenes_extra.py), the input the
+    # sentence-structure and grammar slides then build on. Skipped if no image.
     try:
         import teen_scenes, os as _os
         _sc = teen_scenes.SCENES.get(level or "", {}).get(lesson_num)
         if _sc and _os.path.exists(f"assets/vocab-scenes/{level}/{lesson_num:02d}.jpg"):
             plan.append(("scene", dict(_sc, img=f"assets/vocab-scenes/{level}/{lesson_num:02d}.jpg")))
-        # Scene-coverage campaign: up to two more scenes per lesson
-        # (lib/teen_scenes_extra.py -> NN-2.jpg, NN-3.jpg), each skipped
-        # until its image exists so the rollout can be partial.
         import teen_scenes_extra
         for _i, (_en, _bold, _ar, _stage) in enumerate(teen_scenes_extra.EXTRA.get(level or "", {}).get(lesson_num, []), start=2):
             _img = f"assets/vocab-scenes/{level}/{lesson_num:02d}-{_i}.jpg"
@@ -738,48 +757,26 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
                 plan.append(("scene", {"en": _en, "bold": _bold, "ar": _ar, "img": _img}))
     except Exception as _e:
         print("scene skipped:", _e)
-    if phrase_focus:
-        plan.append(("phrase_focus", phrase_focus))
-    # Activity 1 of 3 (lib/activity_slides.py): Describe It -- replaces the
-    # old one-line "pair check" prompt with a real card game that has a
-    # pairs mode and a 1-on-1 mode on the slide.
-    plan.append(("act_describe", None))
-    # Vocabulary Check: live, in-class MCQ practice, split into two 5-question
-    # rounds with a checkpoint -- breaks up 10 slides in a row and gives a
-    # natural pacing beat instead of one long uninterrupted block.
-    half = n_vocab_mcq // 2
-    for i in range(half):
-        plan.append(("vocab_mcq", i))
-    plan.append(("checkpoint", "Round 1"))
-    for i in range(half, n_vocab_mcq):
-        plan.append(("vocab_mcq", i))
+    # Sentence structure: 2 slides of 3 sentences each, drawn from the
+    # lesson's own vocab in order (cycling for the rare short list).
+    sentence_indices = [i % V for i in range(6)]
+    plan.append(("sentence_trio", sentence_indices[0:3]))
+    plan.append(("sentence_trio", sentence_indices[3:6]))
+    # Grammar: rule -> notice the pattern -> controlled practice.
     if grammar_topic:
         plan.append(("grammar_rule", grammar_topic))
     if notice_sentences:
         plan.append(("notice", None))
-    # Same reasoning and layout as the kid template: 2 slides of 3
-    # sentences each, drawn from the lesson's own vocab in order,
-    # cycling back to the start for the rare lesson with fewer than 6
-    # words (none currently in Level 3-6, but kept safe regardless).
-    sentence_indices = [i % V for i in range(6)]
-    plan.append(("sentence_trio", sentence_indices[0:3]))
-    plan.append(("sentence_trio", sentence_indices[3:6]))
     if grammar_topic:
         plan.append(("grammar_practice", grammar_topic))
-    # Activity 2 of 3: Story Chain -- free production with today's words and
-    # pattern, right after the controlled grammar practice.
-    plan.append(("act_story", None))
+    # Second dialogue models the structure in a natural exchange before it
+    # is checked.
     if crew_talk2:
         plan.append(("crew_talk", crew_talk2))
     if grammar_recap_topics:
-        # Review-lesson-only: grammar_topic is deliberately never set for
-        # lessons whose grammarFocus says "review" (see
-        # match_grammar_by_lesson_focus's own docstring), which meant
-        # Lesson 20 previously had zero grammar content in the deck at
-        # all -- confirmed this by checking lesson20.json's grammarFocus
-        # field directly rather than assuming. grammar_recap_topics
-        # (pre-chunked into groups of ~5 by the caller) fills that gap
-        # with breadth instead of one topic's usual depth.
+        # Review-lesson-only (lesson 20): grammar_topic is never set for a
+        # "review" grammarFocus, so the pre-chunked hub topics give breadth
+        # instead of one topic's depth.
         for chunk in grammar_recap_topics:
             plan.append(("grammar_recap", chunk))
     ghalf = n_grammar_mcq // 2
@@ -794,6 +791,9 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
             plan.append(("error_analysis", None))
         else:
             print(f"  (no common-mistake bank entry for {grammar_topic.get('title')}; slide skipped)")
+    # Activity 2 of 3: Story Chain -- freer production with today's words and
+    # pattern, once the structure has been checked and the usual slips flagged.
+    plan.append(("act_story", None))
     your_turn_n = min(5, V)
     _yt_idx = sorted({round(i * (V - 1) / max(1, your_turn_n - 1)) for i in range(your_turn_n)}) if V else []
     for i, _vi in enumerate(_yt_idx):

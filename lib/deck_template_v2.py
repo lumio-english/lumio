@@ -1458,10 +1458,29 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
             plan.append(("practice_phonics", (w, i)))
             if is_review_lesson and (i + 1) % BREAK_EVERY == 0 and (i + 1) < V:
                 plan.append(("review_break", (i + 1, V)))
+    # ---- Segment order (academic review, Oct 2026) ----------------------
+    # New words -> word game -> words in context (scenes) -> sentence
+    # structure -> grammar (where the lesson has a focus) -> dialogue ->
+    # memory game -> listening -> quick check (recognition) -> your turn
+    # (production) -> mystery picture -> teacher games -> quiz -> recap.
     # Activity 1 of 3 (lib/activity_slides.py): Flash Race -- straight after
-    # the new words, before grammar: say the word before the next picture.
+    # the new words: say the word before the next picture.
     if not is_abc_lesson:
         plan.append(("act_flash", None))
+    # Scenes straight after the word game: our characters acting out this
+    # lesson's most important words, the sentence displayed with those
+    # words highlighted -- seeing and hearing the words used together
+    # before the sentence-building slides.
+    if scene_map and lesson_num in scene_map:
+        for scene in scene_map[lesson_num]:
+            plan.append(("vocab_scene", scene))
+    # Sentence structure: every vocab word has a meaning-grounded example
+    # sentence; 2 slides of 3 sentences each, in lesson order. Only 2 of
+    # 140 lessons have fewer than 6 words (Pre-A lessons 6 and 8), so
+    # those cycle back to the start rather than showing fewer than 3.
+    sentence_indices = [i % V for i in range(6)]
+    plan.append(("sentence_trio", sentence_indices[0:3]))
+    plan.append(("sentence_trio", sentence_indices[3:6]))
     if grammar_topic:
         plan.append(("grammar_rule", grammar_topic))
         plan.append(("grammar_practice", grammar_topic))
@@ -1471,39 +1490,17 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
         if _cm.mistakes_for(grammar_topic):
             plan.append(("common_mistakes", grammar_topic))
     plan.append(("dialogue", None))
-    # Real scene images of our characters acting out this lesson's most
-    # important words, the sentence displayed with those words
-    # highlighted, right before the sentence-building slides -- seeing
-    # and hearing the words used together in a real scene first.
-    if scene_map and lesson_num in scene_map:
-        for scene in scene_map[lesson_num]:
-            plan.append(("vocab_scene", scene))
-
-    # Every vocab word already has a real, meaning-grounded example
-    # sentence in its own data -- previously only word 0 ever got turned
-    # into an actual exercise (build-the-sentence), leaving every other
-    # word's sentence sitting unused beyond its passive "SAY IT" quote on
-    # the vocab card. 2 slides of 3 sentences each, drawn from the
-    # lesson's own vocab in order; only 2 of 140 lessons have fewer than
-    # 6 words at all (Pre-A lessons 6 and 8, 5 and 4 words respectively),
-    # so those two cycle back to the start of the list rather than ever
-    # showing fewer than 3 per slide.
-    sentence_indices = [i % V for i in range(6)]
-    plan.append(("sentence_trio", sentence_indices[0:3]))
-    plan.append(("sentence_trio", sentence_indices[3:6]))
     # Activity 2 of 3: Memory Match (pairs take turns / student vs teacher).
     plan.append(("act_memory", None))
     plan.append(("sound_spot", None))
+    # Quick Check: live, age-calibrated in-class practice -- one round per
+    # vocab word, once through (recognition before production).
+    for i in range(V):
+        plan.append(("quick_check", (i, 0)))
     your_turn_n = min(5, V)
     _yt_idx = sorted({round(i * (V - 1) / max(1, your_turn_n - 1)) for i in range(your_turn_n)}) if V else []
     for i, _vi in enumerate(_yt_idx):
         plan.append(("your_turn", (lesson["vocab"][_vi], i + 1)))
-    # Quick Check: live, age-calibrated in-class practice -- one round per
-    # vocab word, once through (no repeat round -- that repetition is now
-    # a real teacher-led game instead, more engaging than seeing the same
-    # question format twice)
-    for i in range(V):
-        plan.append(("quick_check", (i, 0)))
     # Activity 3 of 3: Mystery Picture -- guess early for more points.
     plan.append(("act_mystery", None))
     plan.append(("teacher_game", "teacher"))
