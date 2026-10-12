@@ -9,11 +9,16 @@
   "ages": "11-13",
   "strand": "Word Power",
   "strandAr": "قوة الكلمات",
-  "skillFocus": ["vocabulary", "morphology", "spelling", "linguistics"],
+  "skillFocus": [
+    "vocabulary",
+    "morphology",
+    "spelling",
+    "linguistics"
+  ],
   "title": "Word Builders: Roots, Prefixes and Suffixes",
   "titleAr": "بُناة الكلمات: الجذور والسوابق واللواحق",
-  "bigIdea": "English builds most new words like Lego, by adding pieces to the front and back of a word (happy → unhappy → unhappiness); Arabic weaves vowels and extra letters around a three-letter root (ك ت ب → كاتب، مكتب، مكتبة). Know the pieces and you can understand words you have never seen.",
-  "bigIdeaAr": "تبني الإنجليزية معظم كلماتها الجديدة مثل الليغو، بإضافة قطع إلى أول الكلمة وآخرها (happy ← unhappy ← unhappiness)، أما العربية فتنسج الحركات وحروفاً زائدة حول جذر ثلاثي (ك ت ب ← كاتب، مكتب، مكتبة). اعرف القطع تفهم كلمات لم ترها من قبل.",
+  "bigIdea": "English builds many new words like Lego, by adding pieces to the front and back of a word (happy → unhappy → unhappiness); Arabic weaves vowels and extra letters around a root (usually three letters) (ك ت ب → كاتب، مكتب، مكتبة). Know the pieces and you can understand words you have never seen.",
+  "bigIdeaAr": "تبني الإنجليزية كثيراً من كلماتها الجديدة مثل الليغو، بإضافة قطع إلى أول الكلمة وآخرها (happy ← unhappy ← unhappiness)، أما العربية فتنسج الحركات وحروفاً زائدة حول جذر ثلاثي في الغالب (ك ت ب ← كاتب، مكتب، مكتبة). اعرف القطع تفهم كلمات لم ترها من قبل.",
   "builtOn": [
     "Lesson 9: Countable and uncountable nouns (review): save, spend, earn, borrow, lend",
     "Lesson 10: Superlatives (the biggest, the best): talented, skilled, impressive, outstanding, popular, unique, judge, applause",
@@ -22,46 +27,153 @@
     "Bonus Class 1: the -s ending; Bonus Class 2: countable nouns"
   ],
   "objectives": [
-    {"en": "I can split a word into its morphemes (un + help + ful) and say what each piece means.", "ar": "أستطيع أن أقسّم الكلمة إلى وحداتها الصرفية (un + help + ful) وأذكر معنى كل قطعة."},
-    {"en": "I can use the prefixes un- and re- and the suffixes -er, -est, -ful, -less, -ness, -ion and -ment to build new words.", "ar": "أستطيع أن أستخدم السوابق un- و re- واللواحق -er و-est و-ful و-less و-ness و-ion و-ment لبناء كلمات جديدة."},
-    {"en": "I can apply the spelling changes: big → biggest, happy → happier, nice → nicest.", "ar": "أستطيع أن أطبّق تغييرات الإملاء: big ← biggest و happy ← happier و nice ← nicest."},
-    {"en": "I can compare English affixes with Arabic roots and patterns (كاتب، مكتب، مكتبة).", "ar": "أستطيع أن أقارن اللواحق والسوابق الإنجليزية بالجذور والأوزان العربية (كاتب، مكتب، مكتبة)."}
+    {
+      "en": "I can split a word into its morphemes (un + help + ful) and say what each piece means.",
+      "ar": "أستطيع أن أقسّم الكلمة إلى وحداتها الصرفية (un + help + ful) وأذكر معنى كل قطعة."
+    },
+    {
+      "en": "I can use the prefixes un- and re- and the suffixes -er, -est, -ful, -less, -ness, -ion and -ment to build new words.",
+      "ar": "أستطيع أن أستخدم السوابق un- و re- واللواحق -er و -est و -ful و -less و -ness و -ion و -ment لبناء كلمات جديدة."
+    },
+    {
+      "en": "I can apply the spelling changes: big → biggest, happy → happier, nice → nicest.",
+      "ar": "أستطيع أن أطبّق تغييرات الإملاء: big ← biggest و happy ← happier و nice ← nicest."
+    },
+    {
+      "en": "I can compare English affixes with Arabic roots and patterns (كاتب، مكتب، مكتبة).",
+      "ar": "أستطيع أن أقارن اللواحق والسوابق الإنجليزية بالجذور والأوزان العربية (كاتب، مكتب، مكتبة)."
+    }
   ],
   "keyTerms": [
-    {"term": "morpheme", "ar": "وحدة صرفية (مورفيم)", "meaning": "The smallest piece of a word that has meaning: un-, help, -ful."},
-    {"term": "root / base", "ar": "الجذر / الأصل", "meaning": "The main part of a word that carries the core meaning: help in helpful."},
-    {"term": "prefix", "ar": "سابقة", "meaning": "A piece added to the front: un- (not), re- (again)."},
-    {"term": "suffix", "ar": "لاحقة", "meaning": "A piece added to the end: -ful, -less, -ness, -er."},
-    {"term": "pattern (wazn)", "ar": "الوزن الصرفي", "meaning": "In Arabic, a template of vowels and extra letters poured around a root: فاعِل، مَفْعَل، مَفْعُول."},
-    {"term": "concatenative / non-concatenative", "ar": "صرف بالإلصاق / صرف بالنسج (غير خطّي)", "meaning": "Building words by gluing pieces in a line (English) vs weaving a pattern through the root (Arabic)."}
+    {
+      "term": "morpheme",
+      "ar": "وحدة صرفية (مورفيم)",
+      "meaning": "The smallest piece of a word that has meaning: un-, help, -ful."
+    },
+    {
+      "term": "root / base",
+      "ar": "الجذر / الأصل",
+      "meaning": "The main part of a word that carries the core meaning: help in helpful."
+    },
+    {
+      "term": "prefix",
+      "ar": "سابقة",
+      "meaning": "A piece added to the front: un- (not), re- (again)."
+    },
+    {
+      "term": "suffix",
+      "ar": "لاحقة",
+      "meaning": "A piece added to the end: -ful, -less, -ness, -er."
+    },
+    {
+      "term": "pattern (wazn)",
+      "ar": "الوزن الصرفي",
+      "meaning": "In Arabic, a template of vowels and extra letters poured around a root: فاعِل، مَفْعَل، مَفْعُول."
+    },
+    {
+      "term": "concatenative / non-concatenative",
+      "ar": "صرف بالإلصاق / صرف بالنسج (غير خطّي)",
+      "meaning": "Building words by gluing pieces in a line (English) vs weaving a pattern through the root (Arabic)."
+    }
   ],
   "linguisticsCorner": {
     "title": "Lego languages and weaving languages",
     "titleAr": "لغات الليغو ولغات النسيج",
     "facts": [
-      {"en": "A morpheme is the smallest piece of meaning. 'Unhelpful' has three: un (not) + help + ful (full of). 'Cat' has one. 'Cats' has two (cat + plural -s).", "ar": "المورفيم أصغر قطعة لها معنى. كلمة unhelpful فيها ثلاث: un (ليس) + help + ful (مليء بـ). و cat فيها واحدة، و cats فيها اثنتان (cat + -s الجمع)."},
-      {"en": "English is mostly concatenative: it glues pieces in a line, like Lego bricks. The base usually stays visible: teach → teacher, kind → kindness, happy → unhappiness.", "ar": "الإنجليزية في الغالب «إلصاقية»: تلصق القطع في خط واحد كقطع الليغو، ويبقى الأصل ظاهراً عادة: teach ← teacher و kind ← kindness."},
-      {"en": "Arabic is famous for non-concatenative morphology: a root of (usually) three consonants carries the core idea, and patterns weave vowels and extra letters through it. ك-ت-ب (writing): كَتَبَ wrote, كاتِب writer, مَكْتوب written, مَكْتَب desk/office, مَكْتَبة library, كِتاب book.", "ar": "تشتهر العربية بالصرف «غير الخطّي»: جذر من ثلاثة حروف غالباً يحمل الفكرة الأساسية، والأوزان تنسج الحركات وحروفاً زائدة خلاله. ك-ت-ب: كَتَبَ، كاتِب، مَكْتوب، مَكْتَب، مَكْتَبة، كِتاب."},
-      {"en": "Arabic patterns carry meaning like English suffixes do: فاعِل = the doer (كاتب، لاعب) ≈ English -er (writer, player); مَفْعول = the thing done (مكتوب) ≈ -ed/-en (written); مَفْعَل / مَفْعَلة = a place (ملعب، مدرسة, مكتبة).", "ar": "الأوزان العربية تحمل معنى كما تحمله اللواحق الإنجليزية: فاعِل للفاعل ≈ -er، ومَفْعول لما وقع عليه الفعل ≈ -ed/-en، ومَفْعَل ومَفْعَلة للمكان (ملعب، مدرسة، مكتبة)."},
-      {"en": "Neither language is 100% one type. Arabic also adds pieces (ال، ـون، ـة، سـ), and English also changes vowels inside words (sing → sang, man → men, foot → feet), a small echo of the Arabic way.", "ar": "لا توجد لغة من نوع واحد تماماً: العربية تضيف قطعاً أيضاً (ال، ـون، ـة، سـ)، والإنجليزية تغيّر الحركات داخل بعض الكلمات (sing ← sang و man ← men)، وهذا صدى صغير للطريقة العربية."},
-      {"en": "One suffix can have two jobs: -er makes comparatives (bigger) and also people who do things (teacher, player). Same spelling, different morphemes. And -s has three jobs: plural, he/she/it, and possessive 's.", "ar": "قد تكون للاحقة الواحدة وظيفتان: -er للمقارنة (bigger) ولمن يقوم بالفعل (teacher). الكتابة واحدة والمورفيم مختلف. و-s لها ثلاث وظائف: الجمع، و he/she/it، والملكية 's."}
+      {
+        "en": "A morpheme is the smallest piece of meaning. 'Unhelpful' has three: un (not) + help + ful (full of). 'Cat' has one. 'Cats' has two (cat + plural -s).",
+        "ar": "المورفيم أصغر قطعة لها معنى. كلمة unhelpful فيها ثلاث: un (ليس) + help + ful (مليء بـ). و cat فيها واحدة، و cats فيها اثنتان (cat + -s الجمع)."
+      },
+      {
+        "en": "English is mostly concatenative: it glues pieces in a line, like Lego bricks. The base usually stays visible: teach → teacher, kind → kindness, happy → unhappiness.",
+        "ar": "الإنجليزية في الغالب «إلصاقية»: تلصق القطع في خط واحد كقطع الليغو، ويبقى الأصل ظاهراً عادة: teach ← teacher و kind ← kindness."
+      },
+      {
+        "en": "Arabic is famous for non-concatenative morphology: a root of (usually) three consonants carries the core idea, and patterns weave vowels and extra letters through it. ك-ت-ب (writing): كَتَبَ wrote, كاتِب writer, مَكْتوب written, مَكْتَب desk/office, مَكْتَبة library/bookshop, كِتاب book.",
+        "ar": "تشتهر العربية بالصرف «غير الخطّي»: جذر من ثلاثة حروف غالباً يحمل الفكرة الأساسية، والأوزان تنسج الحركات وحروفاً زائدة خلاله. ك-ت-ب: كَتَبَ، كاتِب، مَكْتوب، مَكْتَب، مَكْتَبة، كِتاب."
+      },
+      {
+        "en": "Arabic patterns carry meaning like English suffixes do: فاعِل = the doer (كاتب، لاعب) ≈ English -er (writer, player); مَفْعول = the thing done (مكتوب) ≈ -ed/-en (written); مَفْعَل / مَفْعَلة = a place (ملعب، مدرسة، مكتبة).",
+        "ar": "الأوزان العربية تحمل معنى كما تحمله اللواحق الإنجليزية: فاعِل للفاعل ≈ -er، ومَفْعول لما وقع عليه الفعل ≈ -ed/-en، ومَفْعَل ومَفْعَلة للمكان (ملعب، مدرسة، مكتبة)."
+      },
+      {
+        "en": "Neither language is 100% one type. Arabic also adds pieces (ال، ـون، ـة، سـ), and English also changes vowels inside words (sing → sang, man → men, foot → feet), a small echo of the Arabic way.",
+        "ar": "لا توجد لغة من نوع واحد تماماً: العربية تضيف قطعاً أيضاً (ال، ـون، ـة، سـ)، والإنجليزية تغيّر الحركات داخل بعض الكلمات (sing ← sang و man ← men)، وهذا صدى صغير للطريقة العربية."
+      },
+      {
+        "en": "One suffix can have two jobs: -er makes comparatives (bigger) and also people who do things (teacher, player). Same spelling, different morphemes. And -s has three jobs: plural, he/she/it, and possessive 's.",
+        "ar": "قد تكون للاحقة الواحدة وظيفتان: -er للمقارنة (bigger) ولمن يقوم بالفعل (teacher). الكتابة واحدة والمورفيم مختلف. و -s لها ثلاث وظائف: الجمع، و he/she/it، والملكية 's."
+      }
     ]
   },
   "arabicBridge": [
-    {"english": "write → writer; play → player (-er = person who does it)", "arabic": "كَتَبَ ← كاتِب؛ لَعِبَ ← لاعِب (وزن فاعِل)", "point": "Same idea, different machine: English adds -er at the end; Arabic pours the root into the pattern فاعِل.", "pointAr": "الفكرة واحدة والآلة مختلفة: الإنجليزية تضيف -er في الآخر، والعربية تصبّ الجذر في وزن فاعِل."},
-    {"english": "play → playground; study → study room (compound or new word)", "arabic": "لَعِبَ ← مَلْعَب؛ دَرَسَ ← مَدْرَسة (وزن مَفْعَل/مَفْعَلة للمكان)", "point": "Arabic has a ready-made 'place' pattern. English usually makes a compound or uses a different word (school is not built from study).", "pointAr": "في العربية وزن جاهز للمكان، أما الإنجليزية فتصنع كلمة مركّبة أو تستخدم كلمة مختلفة (school ليست مشتقة من study)."},
-    {"english": "unhappy, impatient (not + adjective)", "arabic": "غير سعيد، غير صبور / قليل الصبر", "point": "Arabic says 'not' with a separate word (غير); English glues un- or im- onto the adjective to make one word.", "pointAr": "العربية تنفي بكلمة منفصلة (غير)، والإنجليزية تلصق un- أو im- بالصفة لتصبح كلمة واحدة."},
-    {"english": "helpful / helpless; careful / careless", "arabic": "مفيد / عاجز؛ حريص / مهمل (أو: كثير العناية / عديم العناية)", "point": "Arabic often uses a completely different word or a phrase (عديم، كثير). English uses the matching pair -ful / -less on the same base.", "pointAr": "العربية تستخدم غالباً كلمة مختلفة تماماً أو تركيباً (عديم، كثير)، أما الإنجليزية فتستخدم الزوج -ful / -less مع الأصل نفسه."},
-    {"english": "big → bigger → the biggest", "arabic": "كبير ← أكبر ← الأكبر", "point": "Arabic changes the pattern (وزن أفعل); English adds -er/-est and sometimes changes the spelling (double g).", "pointAr": "العربية تغيّر الوزن (أفعل)، والإنجليزية تضيف -er/-est وتغيّر الإملاء أحياناً (مضاعفة g)."}
+    {
+      "english": "write → writer; play → player (-er = person who does it)",
+      "arabic": "كَتَبَ ← كاتِب؛ لَعِبَ ← لاعِب (وزن فاعِل)",
+      "point": "Same idea, different machine: English adds -er at the end; Arabic pours the root into the pattern فاعِل.",
+      "pointAr": "الفكرة واحدة والآلة مختلفة: الإنجليزية تضيف -er في الآخر، والعربية تصبّ الجذر في وزن فاعِل."
+    },
+    {
+      "english": "play → playground; study → study room (compound or new word)",
+      "arabic": "لَعِبَ ← مَلْعَب؛ دَرَسَ ← مَدْرَسة (وزن مَفْعَل/مَفْعَلة للمكان)",
+      "point": "Arabic has a ready-made 'place' pattern. English usually makes a compound or uses a different word (school is not built from study).",
+      "pointAr": "في العربية وزن جاهز للمكان، أما الإنجليزية فتصنع كلمة مركّبة أو تستخدم كلمة مختلفة (school ليست مشتقة من study)."
+    },
+    {
+      "english": "unhappy, impatient (not + adjective)",
+      "arabic": "غير سعيد، غير صبور / قليل الصبر",
+      "point": "Arabic says 'not' with a separate word (غير); English glues un- or im- onto the adjective to make one word.",
+      "pointAr": "العربية تنفي بكلمة منفصلة (غير)، والإنجليزية تلصق un- أو im- بالصفة لتصبح كلمة واحدة."
+    },
+    {
+      "english": "helpful / helpless; careful / careless",
+      "arabic": "مفيد / عاجز؛ حريص / مهمل (أو: كثير العناية / عديم العناية)",
+      "point": "Arabic often uses a completely different word or a phrase (عديم، كثير). English uses the matching pair -ful / -less on the same base.",
+      "pointAr": "العربية تستخدم غالباً كلمة مختلفة تماماً أو تركيباً (عديم، كثير)، أما الإنجليزية فتستخدم الزوج -ful / -less مع الأصل نفسه."
+    },
+    {
+      "english": "big → bigger → the biggest",
+      "arabic": "كبير ← أكبر ← الأكبر",
+      "point": "Arabic changes the pattern (وزن أفعل); English adds -er/-est and sometimes changes the spelling (double g).",
+      "pointAr": "العربية تغيّر الوزن (أفعل)، والإنجليزية تضيف -er/-est وتغيّر الإملاء أحياناً (مضاعفة g)."
+    }
   ],
   "commonErrors": [
-    {"wrong": "He is the most big player.", "right": "He is the biggest player.", "why": "Short adjectives take -est. Learners copy the Arabic 'separate word' idea or over-use most."},
-    {"wrong": "the bigest / the happyest / the nicest → 'the niceest'", "right": "the biggest / the happiest / the nicest", "why": "Spelling rules: double the last consonant after one short vowel (big → biggest), y → i (happy → happiest), drop the silent e (nice → nicest)."},
-    {"wrong": "She is very not patient. / She is not happy person.", "right": "She is impatient. / She is an unhappy person.", "why": "Arabic غير is a separate word; English often uses a prefix: un-, im-."},
-    {"wrong": "This advice is very use.", "right": "This advice is very useful.", "why": "Mixing word classes: use is a verb/noun; we need the adjective form useful (-ful makes adjectives)."},
-    {"wrong": "I want to improvement my English.", "right": "I want to improve my English. / My English needs improvement.", "why": "Using the noun (with -ment) where a verb is needed. Arabic tolerates verbal nouns (المصدر) in more places."},
-    {"wrong": "He is a very care driver.", "right": "He is a very careful driver.", "why": "Adjective needed before a noun: care + -ful."},
-    {"wrong": "the goodest / more good", "right": "the best / better", "why": "Good is irregular (good, better, best): these forms come from different old words, so there is no rule to follow."}
+    {
+      "wrong": "He is the most big player.",
+      "right": "He is the biggest player.",
+      "why": "Short adjectives take -est. Learners over-use most, perhaps copying Arabic phrases with الأكثر (الأكثر شهرة)."
+    },
+    {
+      "wrong": "the bigest / the happyest / the niceest",
+      "right": "the biggest / the happiest / the nicest",
+      "why": "Spelling rules: double the last consonant after one short vowel (big → biggest), y → i (happy → happiest), drop the silent e (nice → nicest)."
+    },
+    {
+      "wrong": "She is very not patient. / She is not happy person.",
+      "right": "She is impatient. / She is an unhappy person.",
+      "why": "Arabic غير is a separate word; English often uses a prefix: un-, im-."
+    },
+    {
+      "wrong": "This advice is very use.",
+      "right": "This advice is very useful.",
+      "why": "Mixing word classes: use is a verb/noun; we need the adjective form useful (-ful makes adjectives)."
+    },
+    {
+      "wrong": "I want to improvement my English.",
+      "right": "I want to improve my English. / My English needs improvement.",
+      "why": "Using the noun (with -ment) where a verb is needed. Arabic often uses a verbal noun here (أريد تحسينَ لغتي), so learners pick the English noun."
+    },
+    {
+      "wrong": "He is a very care driver.",
+      "right": "He is a very careful driver.",
+      "why": "Adjective needed before a noun: care + -ful."
+    },
+    {
+      "wrong": "the goodest / more good",
+      "right": "the best / better",
+      "why": "Good is irregular (good, better, best): these forms come from different old words, so there is no rule to follow."
+    }
   ],
   "materials": {
     "teacher": [
@@ -127,16 +239,46 @@
         "instructions": "Cut the word into morphemes. How many pieces? What does each piece mean?",
         "instructionsAr": "قسّم الكلمة إلى مورفيمات. كم قطعة؟ وما معنى كل قطعة؟",
         "items": [
-          {"prompt": "unhappiness", "answer": "un + happi + ness (3): not + happy + state of"},
-          {"prompt": "teachers", "answer": "teach + er + s (3): teach + person who + plural"},
-          {"prompt": "careless", "answer": "care + less (2): care + without"},
-          {"prompt": "rewrite", "answer": "re + write (2): again + write"},
-          {"prompt": "unpopular", "answer": "un + popular (2): not + popular"},
-          {"prompt": "suggestion", "answer": "suggest + ion (2): suggest + noun (the thing suggested)"},
-          {"prompt": "improvement", "answer": "improve + ment (2): improve + noun (the result)"},
-          {"prompt": "biggest", "answer": "big + est (2, with double g): big + the most"},
-          {"prompt": "players", "answer": "play + er + s (3): play + person who + plural"},
-          {"prompt": "kindness", "answer": "kind + ness (2): kind + state of"}
+          {
+            "prompt": "unhappiness",
+            "answer": "un + happi + ness (3): not + happy + state of"
+          },
+          {
+            "prompt": "teachers",
+            "answer": "teach + er + s (3): teach + person who + plural"
+          },
+          {
+            "prompt": "careless",
+            "answer": "care + less (2): care + without"
+          },
+          {
+            "prompt": "rewrite",
+            "answer": "re + write (2): again + write"
+          },
+          {
+            "prompt": "unpopular",
+            "answer": "un + popular (2): not + popular"
+          },
+          {
+            "prompt": "suggestion",
+            "answer": "suggest + ion (2): suggest + noun (the thing suggested)"
+          },
+          {
+            "prompt": "improvement",
+            "answer": "improve + ment (2): improve + noun (the result)"
+          },
+          {
+            "prompt": "biggest",
+            "answer": "big + est (2, with double g): big + the most"
+          },
+          {
+            "prompt": "players",
+            "answer": "play + er + s (3): play + person who + plural"
+          },
+          {
+            "prompt": "kindness",
+            "answer": "kind + ness (2): kind + state of"
+          }
         ]
       },
       "tips": [
@@ -155,7 +297,7 @@
         "Arabic is a weaving language. You are the experts here! What do these words share: كاتب، مكتوب، مكتب، مكتبة، كتاب، كَتَبَ?",
         "Yes, ك ت ب, the idea of writing. The root letters stay in order, and the pattern weaves vowels and letters between and around them.",
         "And patterns have meanings, like suffixes! فاعِل: the person who does it. كاتب = writer, لاعب = player. Look: Arabic فاعِل is like English -er!",
-        "مَفْعَل and مَفْعَلة: a place. ملعب, مدرسة, مكتبة. English doesn't have a place suffix: it says playground, school, library.",
+        "مَفْعَل and مَفْعَلة: a place. ملعب, مدرسة, مكتبة. English has no regular place pattern like this (only a few endings, like -ery in bakery): it says playground, school, library.",
         "So Arabic speakers are already great at finding roots. Use that skill in English: find the base inside the long word!"
       ],
       "teacherSaysAr": [
@@ -173,20 +315,44 @@
         "instructions": "Find the Arabic root. Then give the English word and say how English builds it.",
         "instructionsAr": "استخرج الجذر العربي، ثم اذكر الكلمة الإنجليزية وكيف تبنيها الإنجليزية.",
         "items": [
-          {"prompt": "كاتِب", "answer": "ك ت ب → writer (write + -er)"},
-          {"prompt": "لاعِب", "answer": "ل ع ب → player (play + -er)"},
-          {"prompt": "مَلْعَب", "answer": "ل ع ب → playground (compound: play + ground)"},
-          {"prompt": "مُدَرِّس", "answer": "د ر س → teacher (teach + -er)"},
-          {"prompt": "مَكْتوب", "answer": "ك ت ب → written (write + -en, with a vowel change)"},
-          {"prompt": "مَكْتَبة", "answer": "ك ت ب → library (a different word, not built from write)"},
-          {"prompt": "نَصيحة", "answer": "ن ص ح → advice (a different word; the verb is advise)"},
-          {"prompt": "حَكَم", "answer": "ح ك م → judge (Lesson 10; the same form is a verb and a noun in English: to judge / a judge)"}
+          {
+            "prompt": "كاتِب",
+            "answer": "ك ت ب → writer (write + -er)"
+          },
+          {
+            "prompt": "لاعِب",
+            "answer": "ل ع ب → player (play + -er)"
+          },
+          {
+            "prompt": "مَلْعَب",
+            "answer": "ل ع ب → playground / playing field (compounds built on play)"
+          },
+          {
+            "prompt": "مُدَرِّس",
+            "answer": "د ر س → teacher (teach + -er)"
+          },
+          {
+            "prompt": "مَكْتوب",
+            "answer": "ك ت ب → written (write + -en, with a vowel change)"
+          },
+          {
+            "prompt": "مَكْتَبة",
+            "answer": "ك ت ب → library (a different word, not built from write)"
+          },
+          {
+            "prompt": "نَصيحة",
+            "answer": "ن ص ح → advice (a different word; the verb is advise)"
+          },
+          {
+            "prompt": "حَكَم",
+            "answer": "ح ك م → judge (Lesson 10; the same form is a verb and a noun in English: to judge / a judge)"
+          }
         ]
       },
       "tips": [
         "Let students lead the Arabic part; teens love being the experts.",
         "Be honest: Arabic also has prefixes and suffixes (ال، ـون، ـات), and English has a few inside changes (sing / sang, man / men). The difference is in what each language does most.",
-        "Some students may know مُدَرِّس has an extra shadda pattern (فعّل): accept and praise."
+        "Strong students may notice that مُدَرِّس is not on فاعِل: it is مُفَعِّل, from the verb دَرَّسَ (to teach). Accept and praise."
       ]
     },
     {
@@ -215,16 +381,46 @@
         "instructions": "Use the word in brackets in the correct form. Add a prefix or suffix.",
         "instructionsAr": "استخدم الكلمة بين القوسين بالشكل الصحيح، وأضف سابقة أو لاحقة.",
         "items": [
-          {"prompt": "Thanks for the tip. It's really (use).", "answer": "useful"},
-          {"prompt": "Ziad made a (care) mistake on his test.", "answer": "careless"},
-          {"prompt": "The waiter made a great (suggest): try the dessert!", "answer": "suggestion"},
-          {"prompt": "I can see a big (improve) in your writing.", "answer": "improvement"},
-          {"prompt": "Your essay has mistakes. Please (write) it.", "answer": "rewrite"},
-          {"prompt": "Noor is never angry. Her (kind) is famous.", "answer": "kindness"},
-          {"prompt": "Hamad hates waiting. He is very (patient).", "answer": "impatient"},
-          {"prompt": "The judge said the song was (popular) with young people. Nobody liked it.", "answer": "unpopular"},
-          {"prompt": "Omar is a fantastic football (play).", "answer": "player"},
-          {"prompt": "Without a map we felt totally (help).", "answer": "helpless"}
+          {
+            "prompt": "Thanks for the tip. It's really (use).",
+            "answer": "useful"
+          },
+          {
+            "prompt": "Ziad made a (care) mistake on his test.",
+            "answer": "careless"
+          },
+          {
+            "prompt": "The waiter made a great (suggest): try the dessert!",
+            "answer": "suggestion"
+          },
+          {
+            "prompt": "I can see a big (improve) in your writing.",
+            "answer": "improvement"
+          },
+          {
+            "prompt": "Your essay has mistakes. Please (write) it.",
+            "answer": "rewrite"
+          },
+          {
+            "prompt": "Noor is never angry. Her (kind) is famous.",
+            "answer": "kindness"
+          },
+          {
+            "prompt": "Hamad hates waiting. He is very (patient).",
+            "answer": "impatient"
+          },
+          {
+            "prompt": "The judge said the song was (popular) with young people. Nobody liked it.",
+            "answer": "unpopular"
+          },
+          {
+            "prompt": "Omar is a fantastic football (play).",
+            "answer": "player"
+          },
+          {
+            "prompt": "Without a map we felt totally (help).",
+            "answer": "helpless"
+          }
         ]
       },
       "tips": [
@@ -257,23 +453,59 @@
         "instructions": "Read the meaning. Build the word with a base + prefix/suffix.",
         "instructionsAr": "اقرأ المعنى وابنِ الكلمة من الأصل مع سابقة أو لاحقة.",
         "items": [
-          {"prompt": "not kind", "answer": "unkind"},
-          {"prompt": "read again", "answer": "reread"},
-          {"prompt": "a person who teaches", "answer": "teacher"},
-          {"prompt": "full of care", "answer": "careful"},
-          {"prompt": "without hope", "answer": "hopeless"},
-          {"prompt": "the state of being sad", "answer": "sadness"},
-          {"prompt": "the thing you recommend", "answer": "recommendation"},
-          {"prompt": "a person who sings", "answer": "singer"},
-          {"prompt": "not happy, and the noun of it", "answer": "unhappiness"},
-          {"prompt": "having talent (adjective from Lesson 10)", "answer": "talented"},
-          {"prompt": "the result of improving", "answer": "improvement"},
-          {"prompt": "do it again: (try → ...)", "answer": "retry"}
+          {
+            "prompt": "not kind",
+            "answer": "unkind"
+          },
+          {
+            "prompt": "read again",
+            "answer": "reread"
+          },
+          {
+            "prompt": "a person who teaches",
+            "answer": "teacher"
+          },
+          {
+            "prompt": "full of care",
+            "answer": "careful"
+          },
+          {
+            "prompt": "without hope",
+            "answer": "hopeless"
+          },
+          {
+            "prompt": "the state of being sad",
+            "answer": "sadness"
+          },
+          {
+            "prompt": "the thing you recommend",
+            "answer": "recommendation"
+          },
+          {
+            "prompt": "a person who sings",
+            "answer": "singer"
+          },
+          {
+            "prompt": "not happy, and the noun of it",
+            "answer": "unhappiness"
+          },
+          {
+            "prompt": "having talent (adjective from Lesson 10)",
+            "answer": "talented"
+          },
+          {
+            "prompt": "the result of improving",
+            "answer": "improvement"
+          },
+          {
+            "prompt": "do it again: (try → ...)",
+            "answer": "retry"
+          }
         ]
       },
       "tips": [
         "talented uses -ed, not -ful: a nice surprise that shows English is not 100% regular.",
-        "recommendation: the stress moves (reCOMmend → recommenDAtion). Say it with the class; suffixes can move stress."
+        "recommendation: -ion often comes as -ation (recommend → recommendation, inform → information), and the stress moves (recomMEND → recommenDAtion). Say it with the class; suffixes can move stress."
       ]
     },
     {
@@ -284,10 +516,10 @@
       "purpose": "Apply the three spelling rules when adding -er/-est (doubling, y → i, drop e) and know the irregular 'good, better, best'.",
       "teacherSays": [
         "When we glue -er and -est, sometimes the word changes shape. Look: big → biggest, happy → happiest, nice → nicest. What happened?",
-        "Rule 1: one short vowel + one consonant at the end → double it: big, biggest; hot, hottest.",
+        "Rule 1: short word, one short vowel + one consonant at the end → double it: big, biggest; hot, hottest.",
         "Rule 2: consonant + y → change y to i: happy, happiest; funny, funniest.",
         "Rule 3: silent e at the end → just add -r or -st: nice, nicest; large, largest.",
-        "And the rebels: good, better, best; bad, worse, worst. They come from completely different old words. Linguists call this suppletion. Arabic has a rebel too: خير/أفضل!"
+        "And the rebels: good, better, best; bad, worse, worst. They come from completely different old words. Linguists call this suppletion. Arabic has something similar: for جيّد we often say أفضل, from a different root (ف ض ل)!"
       ],
       "teacherSaysAr": [
         "قاعدة 1: حرف علة قصير + ساكن واحد ← نضاعف الساكن.",
@@ -304,20 +536,47 @@
         "instructions": "Write the superlative (the ___est). Which rule did you use?",
         "instructionsAr": "اكتب صيغة التفضيل العليا. أي قاعدة استخدمت؟",
         "items": [
-          {"prompt": "big", "answer": "the biggest (rule 1: double)"},
-          {"prompt": "happy", "answer": "the happiest (rule 2: y → i)"},
-          {"prompt": "nice", "answer": "the nicest (rule 3: drop e)"},
-          {"prompt": "hot", "answer": "the hottest (rule 1)"},
-          {"prompt": "funny", "answer": "the funniest (rule 2)"},
-          {"prompt": "large", "answer": "the largest (rule 3)"},
-          {"prompt": "good", "answer": "the best (rebel)"},
-          {"prompt": "cheap (Lesson 9)", "answer": "the cheapest (no change: two vowels before p)"},
-          {"prompt": "popular", "answer": "the most popular (long adjective: most, not -est)"}
+          {
+            "prompt": "big",
+            "answer": "the biggest (rule 1: double)"
+          },
+          {
+            "prompt": "happy",
+            "answer": "the happiest (rule 2: y → i)"
+          },
+          {
+            "prompt": "nice",
+            "answer": "the nicest (rule 3: drop e)"
+          },
+          {
+            "prompt": "hot",
+            "answer": "the hottest (rule 1)"
+          },
+          {
+            "prompt": "funny",
+            "answer": "the funniest (rule 2)"
+          },
+          {
+            "prompt": "large",
+            "answer": "the largest (rule 3)"
+          },
+          {
+            "prompt": "good",
+            "answer": "the best (rebel)"
+          },
+          {
+            "prompt": "cheap (Lesson 9)",
+            "answer": "the cheapest (no change: two vowels before p)"
+          },
+          {
+            "prompt": "popular",
+            "answer": "the most popular (long adjective: most, not -est)"
+          }
         ]
       },
       "tips": [
         "cheap does not double the p because it has two vowel letters (ea) before it: a good test of rule 1.",
-        "Remind students that long adjectives (popular, talented, impressive) use most: the -est suffix is only for short words."
+        "Remind students that long adjectives (popular, talented, impressive) use most: -est is for short words (one syllable, or two syllables ending in -y like happy and funny)."
       ]
     },
     {
@@ -329,7 +588,7 @@
       "teacherSays": [
         "You are the judges of the Lumio Talent Show! Each of you writes a 4-sentence comment for an act: Lumi's dance, Ziad's magic trick or Sara's song.",
         "Your comment must use: one un- word, one -ful or -less word, one -ness or -ment word, and one superlative. And some advice with should!",
-        "Example: 'Lumi, that was the funniest dance tonight! You were fearless. You should work on your timing. I can see a big improvement since last week.'"
+        "Example: 'Lumi, that was the funniest dance tonight! You were fearless and unstoppable. I can see a big improvement since last week. You should work on your timing.'"
       ],
       "teacherSaysAr": [
         "أنتم حكّام برنامج المواهب! اكتبوا تعليقاً من 4 جمل فيه: كلمة بـ un-، وكلمة بـ -ful أو -less، وكلمة بـ -ness أو -ment، وصيغة تفضيل، ونصيحة بـ should."
@@ -352,11 +611,11 @@
       "purpose": "Check segmenting, affix meaning, spelling and the English/Arabic contrast individually.",
       "teacherSays": [
         "Exit ticket: five items, privately to me in the chat.",
-        "Did you know? One of the longest words in English dictionaries, 'antidisestablishmentarianism', is just Lego: anti + dis + establish + ment + arian + ism. And Arabic can pack a whole sentence into one word: وسيكتبونها (and they will write it) = و + سـ + يكتب + ون + ها, built on our old friend ك ت ب!",
+        "Did you know? One of the longest words in English dictionaries, 'antidisestablishmentarianism', is just Lego: anti + dis + establish + ment + arian + ism. And Arabic can pack a whole sentence into one word: وسيكتبونها (and they will write it) = و + سـ + يـ + كتب + ون + ها, built on our old friend ك ت ب!",
         "Mission: find a long English word this week and cut it into morphemes."
       ],
       "teacherSaysAr": [
-        "هل تعلم؟ من أطول الكلمات الإنجليزية antidisestablishmentarianism، وهي مجرد قطع ليغو! والعربية تستطيع أن تجمع جملة كاملة في كلمة واحدة: «وسيكتبونها» = و + سـ + يكتب + ون + ها، من صديقنا القديم ك ت ب!",
+        "هل تعلم؟ من أطول الكلمات الإنجليزية antidisestablishmentarianism، وهي مجرد قطع ليغو! والعربية تستطيع أن تجمع جملة كاملة في كلمة واحدة: «وسيكتبونها» = و + سـ + يـ + كتب + ون + ها، من صديقنا القديم ك ت ب!",
         "مهمتك: ابحث عن كلمة إنجليزية طويلة هذا الأسبوع وقسّمها إلى مورفيمات."
       ],
       "studentsDo": [
@@ -372,11 +631,26 @@
     "instructions": "Answer each item.",
     "instructionsAr": "أجب عن كل سؤال.",
     "items": [
-      {"prompt": "How many morphemes are in 'careless'? Name them.", "answer": "2: care + less"},
-      {"prompt": "What does re- mean in 'rewrite'?", "answer": "again"},
-      {"prompt": "Complete: Thank you! Your advice is very ___ (use).", "answer": "useful"},
-      {"prompt": "Write the superlative of 'happy'.", "answer": "the happiest"},
-      {"prompt": "Which Arabic pattern means 'the person who does it', like English -er?", "answer": "فاعِل (كاتب، لاعب)"}
+      {
+        "prompt": "How many morphemes are in 'careless'? Name them.",
+        "answer": "2: care + less"
+      },
+      {
+        "prompt": "What does re- mean in 'rewrite'?",
+        "answer": "again"
+      },
+      {
+        "prompt": "Complete: Thank you! Your advice is very ___ (use).",
+        "answer": "useful"
+      },
+      {
+        "prompt": "Write the superlative of 'happy'.",
+        "answer": "the happiest"
+      },
+      {
+        "prompt": "Which Arabic pattern means 'the person who does it', like English -er?",
+        "answer": "فاعِل (كاتب، لاعب)"
+      }
     ]
   },
   "homework": {
@@ -398,7 +672,7 @@
     "challenge": [
       "Find words with two prefixes or two suffixes (re + un + ...; care + less + ness = carelessness).",
       "Investigate -er with two jobs: list 5 comparatives and 5 'person' words and explain how you can tell them apart.",
-      "Compare: English 'library' and Arabic 'مكتبة' vs 'bookshop'. Why do some languages use one word for both?"
+      "Compare: Arabic مكتبة can mean a library or a bookshop, but English uses two words. Why might a language use one word for both?"
     ]
   },
   "assessment": {
@@ -421,7 +695,7 @@
     "The class uses Lesson 9-12 vocabulary (talented, popular, judge, suggest, recommend, improve, advice, patience, mistake, cheap) as raw material for word building.",
     "Celebrate Arabic morphology: Arabic-speaking students are often excellent at finding roots, which transfers well to English word families.",
     "Keep the 'concatenative / non-concatenative' terms for the teacher and strong students; for most, 'Lego vs weaving' is enough.",
-    "The word وسيكتبونها shows that Arabic also glues pieces (و، سـ، ـون، ـها) around a pattern-built stem: a good reminder that both languages mix the two methods.",
+    "The word وسيكتبونها shows that Arabic also glues pieces (و، سـ، يـ، ـون، ـها) around a pattern-built stem: a good reminder that both languages mix the two methods.",
     "Bonus Class 4 moves from words to how we use them with people: politeness and register."
   ]
 }

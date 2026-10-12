@@ -9,11 +9,17 @@
   "ages": "11-13",
   "strand": "Word Power",
   "strandAr": "قوة الكلمات",
-  "skillFocus": ["pragmatics", "speaking", "writing", "register", "intercultural awareness"],
+  "skillFocus": [
+    "pragmatics",
+    "speaking",
+    "writing",
+    "register",
+    "intercultural awareness"
+  ],
   "title": "Polite English: Sounding Kind and Clear",
   "titleAr": "الإنجليزية المهذّبة: كيف تبدو لطيفاً وواضحاً",
-  "bigIdea": "Politeness is built differently in each language: Arabic makes a direct request polite with formulas (لو سمحت، من فضلك، الله يخليك), while English makes it polite with indirect questions and modals (Could you..., Would you mind..., I'd like...). So a word-for-word translation like 'Give me water' can sound rude in English, even with please.",
-  "bigIdeaAr": "التهذيب يُبنى بطرق مختلفة في كل لغة: العربية تجعل الطلب المباشر مهذباً بعبارات مثل «لو سمحت، من فضلك، الله يخليك»، أما الإنجليزية فتجعله مهذباً بالسؤال غير المباشر والأفعال المساعدة (Could you... و Would you mind... و I'd like...). لذلك قد تبدو الترجمة الحرفية مثل Give me water وقحة في الإنجليزية حتى مع please.",
+  "bigIdea": "Politeness is built differently in each language: Arabic often makes a direct request polite with formulas (لو سمحت، من فضلك, and in spoken Arabic الله يخليك), while English makes it polite with indirect questions and modals (Could you..., Would you mind..., I'd like...). So a word-for-word translation like 'Give me water' can sound rude in English, even with please.",
+  "bigIdeaAr": "التهذيب يُبنى بطرق مختلفة في كل لغة: العربية كثيراً ما تجعل الطلب المباشر مهذباً بعبارات مثل «لو سمحت» و«من فضلك» و«الله يخليك» في العامية، أما الإنجليزية فتجعله مهذباً بالسؤال غير المباشر والأفعال المساعدة (Could you... و Would you mind... و I'd like...). لذلك قد تبدو الترجمة الحرفية مثل Give me water وقحة في الإنجليزية حتى مع please.",
   "builtOn": [
     "Lesson 11: Would like / want (polite requests): order, prefer, request, menu, waiter, bill",
     "Lesson 12: Should / shouldn't (advice): suggestion, opinion, tip, warning",
@@ -23,53 +29,160 @@
     "Lesson 16: Under Pressure: nervous, confident, calm, relieved"
   ],
   "objectives": [
-    {"en": "I can make a request polite in English with Could you / Can I / Would you mind / I'd like.", "ar": "أستطيع أن أجعل الطلب مهذباً في الإنجليزية باستخدام Could you / Can I / Would you mind / I'd like."},
-    {"en": "I can explain why a direct translation of an Arabic request can sound rude in English.", "ar": "أستطيع أن أشرح لماذا قد تبدو الترجمة الحرفية لطلب عربي وقحة في الإنجليزية."},
-    {"en": "I can change my message for different people: a friend in a group chat, a teacher by email, a team captain.", "ar": "أستطيع أن أغيّر رسالتي حسب الشخص: صديق في محادثة جماعية، معلّم عبر البريد الإلكتروني، قائد فريق."},
-    {"en": "I can understand what people really mean, not only what their words say ('Can you pass the salt?' is a request, not a question about ability).", "ar": "أستطيع أن أفهم ما يقصده الناس حقاً، لا ما تقوله كلماتهم فقط (Can you pass the salt? طلب وليس سؤالاً عن القدرة)."}
+    {
+      "en": "I can make a request polite in English with Could you / Can I / Would you mind / I'd like.",
+      "ar": "أستطيع أن أجعل الطلب مهذباً في الإنجليزية باستخدام Could you / Can I / Would you mind / I'd like."
+    },
+    {
+      "en": "I can explain why a direct translation of an Arabic request can sound rude in English.",
+      "ar": "أستطيع أن أشرح لماذا قد تبدو الترجمة الحرفية لطلب عربي وقحة في الإنجليزية."
+    },
+    {
+      "en": "I can change my message for different people: a friend in a group chat, a teacher by email, a team captain.",
+      "ar": "أستطيع أن أغيّر رسالتي حسب الشخص: صديق في محادثة جماعية، معلّم عبر البريد الإلكتروني، قائد فريق."
+    },
+    {
+      "en": "I can understand what people really mean, not only what their words say ('Can you pass the salt?' is a request, not a question about ability).",
+      "ar": "أستطيع أن أفهم ما يقصده الناس حقاً، لا ما تقوله كلماتهم فقط (Can you pass the salt? طلب وليس سؤالاً عن القدرة)."
+    }
   ],
   "keyTerms": [
-    {"term": "pragmatics", "ar": "التداولية", "meaning": "The study of what people mean when they use words in real situations, not just the dictionary meaning."},
-    {"term": "direct / indirect request", "ar": "طلب مباشر / غير مباشر", "meaning": "Direct: Give me the menu. Indirect: Could I see the menu, please?"},
-    {"term": "softener (hedge)", "ar": "مُلطِّف", "meaning": "A word or phrase that makes a message gentler: just, a bit, maybe, I think, please."},
-    {"term": "modal verb", "ar": "فعل مساعد ناقص (للاحتمال والتهذيب)", "meaning": "Can, could, would, should, may: small verbs that add politeness, possibility or advice."},
-    {"term": "register", "ar": "مستوى اللغة (رسمي / غير رسمي)", "meaning": "The style of language we choose for a situation: formal, neutral or informal."},
-    {"term": "politeness formula", "ar": "عبارة مجاملة جاهزة", "meaning": "A fixed phrase used to be polite: please, thank you, excuse me, لو سمحت، يعطيك العافية."}
+    {
+      "term": "pragmatics",
+      "ar": "التداولية",
+      "meaning": "The study of what people mean when they use words in real situations, not just the dictionary meaning."
+    },
+    {
+      "term": "direct / indirect request",
+      "ar": "طلب مباشر / غير مباشر",
+      "meaning": "Direct: Give me the menu. Indirect: Could I see the menu, please?"
+    },
+    {
+      "term": "softener (hedge)",
+      "ar": "مُلطِّف",
+      "meaning": "A word or phrase that makes a message gentler: just, a bit, maybe, I think, please."
+    },
+    {
+      "term": "modal verb",
+      "ar": "فعل مساعد (للقدرة والاحتمال والتهذيب)",
+      "meaning": "Can, could, would, should, may: small verbs that add ability, politeness, possibility or advice."
+    },
+    {
+      "term": "register",
+      "ar": "مستوى اللغة (رسمي / غير رسمي)",
+      "meaning": "The style of language we choose for a situation: formal, neutral or informal."
+    },
+    {
+      "term": "politeness formula",
+      "ar": "عبارة مجاملة جاهزة",
+      "meaning": "A fixed phrase used to be polite: please, thank you, excuse me, لو سمحت، يعطيك العافية (spoken Arabic)."
+    }
   ],
   "linguisticsCorner": {
     "title": "Pragmatics: words do things",
     "titleAr": "التداولية: الكلمات تفعل أشياء",
     "facts": [
-      {"en": "Linguists say words don't just mean things, they do things: they ask, promise, warn, thank. These are called speech acts.", "ar": "يقول اللغويون إن الكلمات لا تعني أشياء فقط، بل تفعل أشياء: تطلب وتَعِد وتحذّر وتشكر. وتُسمّى «أفعال الكلام»."},
-      {"en": "Many English requests are disguised as questions: 'Can you pass the salt?' is not about your ability. Nobody answers 'Yes, I can' and does nothing! This is an indirect speech act.", "ar": "كثير من الطلبات الإنجليزية متنكّرة في صورة أسئلة: Can you pass the salt? ليست سؤالاً عن قدرتك. لا أحد يجيب Yes, I can ثم لا يفعل شيئاً! هذا «فعل كلامي غير مباشر»."},
-      {"en": "Even a statement can be a request: 'It's a bit cold in here' can mean 'Please close the window.' The listener has to work out the hidden meaning.", "ar": "حتى الجملة الخبرية قد تكون طلباً: It's a bit cold in here قد تعني «أغلق النافذة من فضلك». وعلى السامع أن يستنتج المعنى الخفي."},
-      {"en": "In English, the past forms sound softer than the present: Could you... is softer than Can you..., Would you... is softer than Will you.... Distance in time feels like distance in politeness.", "ar": "في الإنجليزية تبدو صيغ الماضي ألطف من المضارع: Could you ألطف من Can you، و Would you ألطف من Will you. البعد في الزمن يشعرنا بالبعد المهذّب."},
-      {"en": "Every culture is polite, but in different ways. Arabic uses rich formulas and blessings (لو سمحت، الله يخليك، يعطيك العافية) and is comfortable with direct imperatives plus a formula. English relies more on indirectness, modals and softeners like just and a bit.", "ar": "كل الثقافات مهذبة، لكن بطرق مختلفة. العربية تستخدم عبارات ودعوات غنية (لو سمحت، الله يخليك، يعطيك العافية) وتقبل صيغة الأمر المباشر مع عبارة مجاملة. أما الإنجليزية فتعتمد أكثر على عدم المباشرة والأفعال المساعدة والملطِّفات مثل just و a bit."},
-      {"en": "Register is choosing the right 'outfit' for your words: you wear different clothes to a wedding, a football match and bed. Group chat English (thx, pls, u) is fine with friends, but not in an email to a teacher.", "ar": "مستوى اللغة هو اختيار «الملابس» المناسبة لكلماتك: لا تلبس الثياب نفسها في العرس ومباراة كرة القدم والنوم. لغة المحادثة الجماعية (thx، pls، u) مناسبة مع الأصدقاء، لكن ليس في بريد إلكتروني إلى المعلم."}
+      {
+        "en": "Linguists say words don't just mean things, they do things: they ask, promise, warn, thank. These are called speech acts.",
+        "ar": "يقول اللغويون إن الكلمات لا تعني أشياء فقط، بل تفعل أشياء: تطلب وتَعِد وتحذّر وتشكر. وتُسمّى «أفعال الكلام»."
+      },
+      {
+        "en": "Many English requests are disguised as questions: 'Can you pass the salt?' is not about your ability. Nobody answers 'Yes, I can' and does nothing! This is an indirect speech act.",
+        "ar": "كثير من الطلبات الإنجليزية متنكّرة في صورة أسئلة: Can you pass the salt? ليست سؤالاً عن قدرتك. لا أحد يجيب Yes, I can ثم لا يفعل شيئاً! هذا «فعل كلامي غير مباشر»."
+      },
+      {
+        "en": "Even a statement can be a request: 'It's a bit cold in here' can mean 'Please close the window.' The listener has to work out the hidden meaning.",
+        "ar": "حتى الجملة الخبرية قد تكون طلباً: It's a bit cold in here قد تعني «أغلق النافذة من فضلك». وعلى السامع أن يستنتج المعنى الخفي."
+      },
+      {
+        "en": "In English, could and would (old past forms of can and will) sound softer than the present forms: Could you... is softer than Can you..., Would you... is softer than Will you.... Many linguists think distance in time feels like polite distance.",
+        "ar": "في الإنجليزية تبدو صيغ الماضي ألطف من المضارع: Could you ألطف من Can you، و Would you ألطف من Will you. ويرى كثير من اللغويين أن البعد في الزمن يوحي بمسافة مهذّبة."
+      },
+      {
+        "en": "Every culture is polite, but in different ways. Arabic often uses rich formulas and blessings (لو سمحت, and in spoken Arabic الله يخليك، يعطيك العافية) and is comfortable with direct imperatives plus a formula. English relies more on indirectness, modals and softeners like just and a bit.",
+        "ar": "كل الثقافات مهذبة، لكن بطرق مختلفة. العربية كثيراً ما تستخدم عبارات ودعوات غنية (لو سمحت، و«الله يخليك» و«يعطيك العافية» في العامية) وتقبل صيغة الأمر المباشر مع عبارة مجاملة. أما الإنجليزية فتعتمد أكثر على عدم المباشرة والأفعال المساعدة والملطِّفات مثل just و a bit."
+      },
+      {
+        "en": "Register is choosing the right 'outfit' for your words: you wear different clothes to a wedding, a football match and bed. Group chat English (thx, pls, u) is fine with friends, but not in an email to a teacher.",
+        "ar": "مستوى اللغة هو اختيار «الملابس» المناسبة لكلماتك: لا تلبس الثياب نفسها في العرس ومباراة كرة القدم والنوم. لغة المحادثة الجماعية (thx، pls، u) مناسبة مع الأصدقاء، لكن ليس في بريد إلكتروني إلى المعلم."
+      }
     ]
   },
   "arabicBridge": [
-    {"english": "Could I have some water, please?", "arabic": "عطني ماي لو سمحت / أعطني ماءً من فضلك", "point": "In Arabic, an imperative + لو سمحت is polite and normal. In English the imperative 'Give me water, please' still sounds like an order, especially to a waiter or an adult. English moves the politeness into the question shape: Could I have...?", "pointAr": "في العربية صيغة الأمر مع «لو سمحت» مهذبة وطبيعية. أما في الإنجليزية فـ Give me water, please تبقى أمراً، خصوصاً مع النادل أو شخص كبير. الإنجليزية تضع التهذيب في شكل السؤال: Could I have...?"},
-    {"english": "Excuse me, could you help me?", "arabic": "الله يخليك ساعدني / الله يعافيك", "point": "Blessings and religious formulas carry politeness in Arabic. English has no direct equivalent; translated literally ('God keep you, help me') they sound unusual. Use Excuse me + Could you... instead.", "pointAr": "الدعوات والعبارات الدينية تحمل التهذيب في العربية، ولا مقابل مباشر لها في الإنجليزية؛ وترجمتها حرفياً تبدو غريبة. استخدم Excuse me مع Could you... بدلاً منها."},
-    {"english": "I'd like the chicken, please. / Can I get the chicken? (AmE)", "arabic": "أبغى دجاج / أريد الدجاج", "point": "أبغى / أريد is normal when ordering in Arabic. 'I want...' to a waiter sounds demanding in English; 'I'd like...' is the polite standard (Lesson 11).", "pointAr": "«أبغى» و«أريد» عاديتان عند الطلب بالعربية، لكن I want... للنادل تبدو متطلّبة في الإنجليزية؛ والصيغة المهذبة المعتادة هي I'd like... (الدرس 11)."},
-    {"english": "Thank you. / Thanks a lot. / Cheers (BrE, informal)", "arabic": "شكراً / يعطيك العافية / مشكور", "point": "English speakers say please and thank you very often, even with family and for small things. Arabic speakers often show thanks with blessings and tone. In English, the words please and thank you are expected.", "pointAr": "متحدثو الإنجليزية يقولون please و thank you كثيراً جداً، حتى مع العائلة وفي الأشياء الصغيرة. أما في العربية فكثيراً ما نعبّر عن الشكر بالدعاء والنبرة. في الإنجليزية يُنتظر منك قول الكلمتين."},
-    {"english": "Would you mind closing the door? → No, not at all. (= Yes, I'll do it!)", "arabic": "هل تمانع أن تغلق الباب؟ ← لا، أبداً.", "point": "Same logic in both languages: 'No' means 'I don't mind, I'll do it'. Learners often answer 'Yes!' meaning 'OK', which actually means 'Yes, I mind!'", "pointAr": "المنطق واحد في اللغتين: «لا» تعني «لا أمانع، سأفعل». لكن المتعلمين كثيراً ما يجيبون Yes! ويقصدون «حسناً»، وهي تعني «نعم، أمانع!»."}
+    {
+      "english": "Could I have some water, please?",
+      "arabic": "عطني ماي لو سمحت (عامية خليجية) / أعطني ماءً من فضلك (فصحى)",
+      "point": "In Arabic, an imperative + لو سمحت is polite and normal. In English the imperative 'Give me water, please' still sounds like an order, especially to a waiter or an adult. English moves the politeness into the question shape: Could I have...?",
+      "pointAr": "في العربية صيغة الأمر مع «لو سمحت» مهذبة وطبيعية. أما في الإنجليزية فـ Give me water, please تبقى أمراً، خصوصاً مع النادل أو شخص كبير. الإنجليزية تضع التهذيب في شكل السؤال: Could I have...?"
+    },
+    {
+      "english": "Excuse me, could you help me?",
+      "arabic": "الله يخليك ساعدني / الله يعافيك (عامية)",
+      "point": "Blessings and religious formulas carry politeness in Arabic. English has no direct equivalent; translated literally ('God keep you, help me') they sound unusual. Use Excuse me + Could you... instead.",
+      "pointAr": "الدعوات والعبارات الدينية تحمل التهذيب في العربية، ولا مقابل مباشر لها في الإنجليزية؛ وترجمتها حرفياً تبدو غريبة. استخدم Excuse me مع Could you... بدلاً منها."
+    },
+    {
+      "english": "I'd like the chicken, please. / Can I get the chicken? (AmE)",
+      "arabic": "أبغى دجاج (خليجي) / عايز فراخ (مصري) / أريد الدجاج (فصحى)",
+      "point": "أبغى / عايز / أريد is normal when ordering in Arabic. 'I want...' to a waiter sounds demanding in English; 'I'd like...' is the polite standard (Lesson 11).",
+      "pointAr": "«أبغى» و«عايز» و«أريد» عادية عند الطلب بالعربية، لكن I want... للنادل تبدو متطلّبة في الإنجليزية؛ والصيغة المهذبة المعتادة هي I'd like... (الدرس 11)."
+    },
+    {
+      "english": "Thank you. / Thanks a lot. / Cheers (BrE, informal)",
+      "arabic": "شكراً / يعطيك العافية، مشكور (عامية)",
+      "point": "English speakers say please and thank you very often, even with family and for small things. Arabic speakers often show thanks with blessings and tone. In English, the words please and thank you are expected.",
+      "pointAr": "متحدثو الإنجليزية يقولون please و thank you كثيراً جداً، حتى مع العائلة وفي الأشياء الصغيرة. أما في العربية فكثيراً ما نعبّر عن الشكر بالدعاء والنبرة. في الإنجليزية يُنتظر منك قول الكلمتين."
+    },
+    {
+      "english": "Would you mind closing the door? → No, not at all. (= Yes, I'll do it!)",
+      "arabic": "هل تمانع أن تغلق الباب؟ ← لا، أبداً.",
+      "point": "Same logic in both languages: 'No' means 'I don't mind, I'll do it'. Learners often answer 'Yes!' meaning 'OK', which actually means 'Yes, I mind!'",
+      "pointAr": "المنطق واحد في اللغتين: «لا» تعني «لا أمانع، سأفعل». لكن المتعلمين كثيراً ما يجيبون Yes! ويقصدون «حسناً»، وهي تعني «نعم، أمانع!»."
+    }
   ],
   "commonErrors": [
-    {"wrong": "Give me water.", "right": "Could I have some water, please?", "why": "Direct translation of عطني ماي / أعطني ماء. A bare imperative sounds like an order in English."},
-    {"wrong": "Give me the bill, please.", "right": "Could we have the bill, please?", "why": "Please does not fix an imperative to a waiter; English politeness lives in the question shape and the modal."},
-    {"wrong": "I want a burger. (to a waiter)", "right": "I'd like a burger, please. / Can I get a burger, please?", "why": "أبغى / أريد is neutral in Arabic; I want sounds demanding to a stranger in English."},
-    {"wrong": "Teacher, send me the homework.", "right": "Excuse me, Ms Lina, could you send me the homework, please?", "why": "Arabic speakers use يا أستاذة + imperative. In English, 'Teacher' as a name sounds odd; use the title + surname or first name, and a question."},
-    {"wrong": "Would you mind helping me? — Yes. (meaning OK)", "right": "No, not at all. / Sure, no problem.", "why": "Yes means 'I do mind'. To agree, say No, not at all."},
-    {"wrong": "hey teacher can u check my work thx (in an email to a teacher)", "right": "Dear Ms Lina, Could you please check my work? Thank you, Sara", "why": "Wrong register: chat style in a formal message."},
-    {"wrong": "You must give me the ball! (to a teammate)", "right": "Could you pass me the ball? / Pass it here! (in a fast game)", "why": "Must sounds bossy. In fast teamwork short commands are fine, but outside the game, use Could you..."}
+    {
+      "wrong": "Give me water.",
+      "right": "Could I have some water, please?",
+      "why": "Direct translation of عطني ماي / أعطني ماء. A bare imperative sounds like an order in English."
+    },
+    {
+      "wrong": "Give me the bill, please.",
+      "right": "Could we have the bill, please?",
+      "why": "Please does not fix an imperative to a waiter; English politeness lives in the question shape and the modal."
+    },
+    {
+      "wrong": "I want a burger. (to a waiter)",
+      "right": "I'd like a burger, please. / Can I get a burger, please?",
+      "why": "أبغى / أريد is neutral in Arabic; I want sounds demanding to a stranger in English."
+    },
+    {
+      "wrong": "Teacher, send me the homework.",
+      "right": "Excuse me, Ms. Lina, could you send me the homework, please?",
+      "why": "Arabic speakers use يا أستاذة + imperative. In English, 'Teacher' as a name sounds odd; use the teacher's title and name (Ms. Lina, Mr. Adams) and a question."
+    },
+    {
+      "wrong": "Would you mind helping me? — Yes. (meaning OK)",
+      "right": "No, not at all. / Sure, no problem.",
+      "why": "Yes means 'I do mind'. To agree, say No, not at all."
+    },
+    {
+      "wrong": "hey teacher can u check my work thx (in an email to a teacher)",
+      "right": "Dear Ms. Lina, Could you please check my work? Thank you, Sara",
+      "why": "Wrong register: chat style in a formal message."
+    },
+    {
+      "wrong": "You must give me the ball! (to a teammate)",
+      "right": "Could you pass me the ball? / Pass it here! (in a fast game)",
+      "why": "Must sounds bossy. In fast teamwork short commands are fine, but outside the game, use Could you..."
+    }
   ],
   "materials": {
     "teacher": [
       "Bonus Class 4 slides (teen look)",
       "Slide: the Politeness Ladder (5 steps from 'Water!' to 'Would you mind getting me some water?')",
       "Slide: three message windows: group chat, teacher email, team captain message",
-      "Role-play cards: Café, Team Captain, Group Project, Borrowing, Complaint (one per student)",
+      "Role-play cards: Café, Team Captain, Group Project, Borrowing (one per student)",
       "Politeness Meter (1-5 stars) for peer feedback"
     ],
     "student": [
@@ -83,7 +196,7 @@
       "name": "Warm-up: Which One Would You Say?",
       "nameAr": "إحماء: أيّها ستقول؟",
       "method": "Reaction poll (affective hook: how does it feel?)",
-      "purpose": "Get teens to feel the difference in politeness before analysing it.",
+      "purpose": "Get teens to feel the difference in politeness before analyzing it.",
       "teacherSays": [
         "Imagine Ziad in a café. He says to the waiter: 'Water.' How does the waiter feel?",
         "Now: 'Give me water.' Then: 'Give me water, please.' Then: 'Could I have some water, please?'",
@@ -112,7 +225,7 @@
       "teacherSays": [
         "Here's the ladder. Bottom step: 'Water!' Top step: 'Would you mind getting me some water?' Where do the others go?",
         "What changes when we climb? 1) An order becomes a question. 2) Can becomes could, will becomes would. 3) We add please, just, a bit, maybe.",
-        "Interesting fact: could and would are past forms, and English uses them to sound softer and less pushy.",
+        "Interesting fact: could and would began as the past forms of can and will, and English uses them to sound softer and less pushy.",
         "But careful: the top of the ladder isn't always best. With your best friend, 'Would you mind passing me the chips?' sounds funny! Choose the step for the person."
       ],
       "teacherSaysAr": [
@@ -129,14 +242,38 @@
         "instructions": "Give each request a step on the ladder (1 = very direct, 5 = very polite). Name the tool that makes it polite.",
         "instructionsAr": "ضع كل طلب على درجة من السُّلَّم (1 = مباشر جداً، 5 = مهذب جداً) واذكر الأداة التي جعلته مهذباً.",
         "items": [
-          {"prompt": "Pass the ball!", "answer": "1: bare imperative (fine in a fast game)"},
-          {"prompt": "Pass the ball, please.", "answer": "2: imperative + please"},
-          {"prompt": "Can you pass the ball?", "answer": "3: question with can"},
-          {"prompt": "Could you pass me the ball, please?", "answer": "4: could + please"},
-          {"prompt": "Would you mind passing me the ball?", "answer": "5: would you mind + -ing"},
-          {"prompt": "I'd like the chicken, please.", "answer": "4: I'd like + please"},
-          {"prompt": "I want the chicken.", "answer": "1-2: I want (direct)"},
-          {"prompt": "Could you just check my caption? It's a bit long.", "answer": "4-5: could + softeners just and a bit"}
+          {
+            "prompt": "Pass the ball!",
+            "answer": "1: bare imperative (fine in a fast game)"
+          },
+          {
+            "prompt": "Pass the ball, please.",
+            "answer": "2: imperative + please"
+          },
+          {
+            "prompt": "Can you pass the ball?",
+            "answer": "3: question with can"
+          },
+          {
+            "prompt": "Could you pass me the ball, please?",
+            "answer": "4: could + please"
+          },
+          {
+            "prompt": "Would you mind passing me the ball?",
+            "answer": "5: would you mind + -ing"
+          },
+          {
+            "prompt": "I'd like the chicken, please.",
+            "answer": "4: I'd like + please"
+          },
+          {
+            "prompt": "I want the chicken.",
+            "answer": "1-2: I want (direct)"
+          },
+          {
+            "prompt": "Could you just check my caption? It's a bit long.",
+            "answer": "4-5: could + softeners just and a bit"
+          }
         ]
       },
       "tips": [
@@ -169,17 +306,38 @@
         "instructions": "What does the speaker really want? Say what you would do or answer.",
         "instructionsAr": "ماذا يريد المتكلم حقاً؟ قل ماذا ستفعل أو بماذا ستجيب.",
         "items": [
-          {"prompt": "Teacher: 'It's a bit noisy in here.'", "answer": "Please be quiet. (Students lower their voices.)"},
-          {"prompt": "Captain: 'Can you take the corner kick?'", "answer": "Please take the corner kick. (Sure!)"},
-          {"prompt": "Friend in the group chat: 'Has anyone got the homework?'", "answer": "Please send me the homework. (Here it is!)"},
-          {"prompt": "Mom: 'Your room is a bit messy.'", "answer": "Please tidy your room. (OK, I'll do it now.)"},
-          {"prompt": "Waiter: 'Are you ready to order?'", "answer": "Tell me your order, please. (Yes, I'd like...)"},
-          {"prompt": "Sara: 'I don't have a pen...'", "answer": "Can I borrow a pen? (Here, you can use mine.)"},
-          {"prompt": "Noor: 'Would you like to come to my party?'", "answer": "An invitation. (I'd love to, thank you! / I'm sorry, I can't.)"}
+          {
+            "prompt": "Teacher: 'It's a bit noisy in here.'",
+            "answer": "Please be quiet. (Students lower their voices.)"
+          },
+          {
+            "prompt": "Captain: 'Can you take the corner kick?'",
+            "answer": "Please take the corner kick. (Sure!)"
+          },
+          {
+            "prompt": "Friend in the group chat: 'Does anyone have the homework?'",
+            "answer": "Please send me the homework. (Here it is!)"
+          },
+          {
+            "prompt": "Mom: 'Your room is a bit messy.'",
+            "answer": "Please tidy your room. (OK, I'll do it now.)"
+          },
+          {
+            "prompt": "Waiter: 'Are you ready to order?'",
+            "answer": "Tell me your order, please. (Yes, I'd like...)"
+          },
+          {
+            "prompt": "Sara: 'I don't have a pen...'",
+            "answer": "Can I borrow a pen? (Here, you can use mine.)"
+          },
+          {
+            "prompt": "Noor: 'Would you like to come to my party?'",
+            "answer": "She is inviting you; this one is not hidden. (I'd love to, thank you! / I'm sorry, I can't.)"
+          }
         ]
       },
       "tips": [
-        "Arabic has indirect requests too (الجو حار شوي) so this is a familiar idea; the difference is how often English uses them.",
+        "Arabic has indirect requests too (spoken Arabic: الجو حار شوي) so this is a familiar idea; the difference is how often English uses them.",
         "Keep 'speech act' as a bonus term; 'hidden meaning' is enough for most students."
       ]
     },
@@ -188,11 +346,11 @@
       "name": "Arabic Bridge: Formula vs Frame",
       "nameAr": "جسر العربية: العبارة الجاهزة مقابل الإطار",
       "method": "Contrastive pragmatics + translation for meaning (not word for word)",
-      "purpose": "Show that Arabic politeness is often carried by formulas around a direct request, while English puts politeness in the frame of the sentence; practise translating requests for function, not form.",
+      "purpose": "Show that Arabic politeness is often carried by formulas around a direct request, while English puts politeness in the frame of the sentence; practice translating requests for function, not form.",
       "teacherSays": [
-        "In Arabic: عطني ماي لو سمحت. It's an imperative, 'give me', and it's polite because of لو سمحت. Totally normal!",
+        "In Gulf Arabic we say: عطني ماي لو سمحت. It's an imperative, 'give me', and it's polite because of لو سمحت. Totally normal!",
         "In English, the same shape, 'Give me water, please', is still an order. English puts the politeness in the frame: Could I have some water, please?",
-        "Arabic has beautiful formulas: الله يخليك، يعطيك العافية، تسلم إيدك. English doesn't have the same blessings, so we don't translate them word for word. We translate the job they do.",
+        "Spoken Arabic has beautiful formulas: الله يخليك، يعطيك العافية، تسلم إيدك. English doesn't have the same blessings, so we don't translate them word for word. We translate the job they do.",
         "So the rule is: translate the meaning, not the words. Ready? Translate like a diplomat!"
       ],
       "teacherSaysAr": [
@@ -205,17 +363,41 @@
       ],
       "exercise": {
         "type": "translate-for-function",
-        "instructions": "Translate into polite, natural English. Don't translate word for word.",
-        "instructionsAr": "ترجم إلى إنجليزية مهذبة وطبيعية، ولا تترجم كلمة بكلمة.",
+        "instructions": "Translate into polite, natural English. Don't translate word for word. (Most prompts are in spoken Gulf Arabic.)",
+        "instructionsAr": "ترجم إلى إنجليزية مهذبة وطبيعية، ولا تترجم كلمة بكلمة. (أغلب الجمل باللهجة الخليجية المحكية.)",
         "items": [
-          {"prompt": "لو سمحت، عطني المنيو.", "answer": "Excuse me, could I see the menu, please?"},
-          {"prompt": "أبغى عصير برتقال.", "answer": "I'd like an orange juice, please. / Can I get an orange juice, please?"},
-          {"prompt": "الله يخليك، ساعدني بالواجب.", "answer": "Could you help me with my homework, please?"},
-          {"prompt": "من فضلك، افتح النافذة.", "answer": "Could you open the window, please? / Would you mind opening the window?"},
-          {"prompt": "يا أستاذ، أرسل لي الملف.", "answer": "Excuse me, Mr Adams, could you send me the file, please?"},
-          {"prompt": "عطنا الفاتورة لو سمحت.", "answer": "Could we have the bill, please?"},
-          {"prompt": "ممكن أستلف قلمك؟", "answer": "Can I borrow your pen? / Could I borrow your pen, please?"},
-          {"prompt": "يعطيك العافية! (to a teammate after the match)", "answer": "Thanks a lot! / Great job today! / Well played!"}
+          {
+            "prompt": "لو سمحت، عطني المنيو.",
+            "answer": "Excuse me, could I see the menu, please?"
+          },
+          {
+            "prompt": "أبغى عصير برتقال.",
+            "answer": "I'd like an orange juice, please. / Can I get an orange juice, please?"
+          },
+          {
+            "prompt": "الله يخليك، ساعدني بالواجب.",
+            "answer": "Could you help me with my homework, please?"
+          },
+          {
+            "prompt": "من فضلك، افتح النافذة.",
+            "answer": "Could you open the window, please? / Would you mind opening the window?"
+          },
+          {
+            "prompt": "يا أستاذ، أرسل لي الملف.",
+            "answer": "Excuse me, Mr. Adams, could you send me the file, please?"
+          },
+          {
+            "prompt": "عطنا الفاتورة لو سمحت.",
+            "answer": "Could we have the bill, please?"
+          },
+          {
+            "prompt": "ممكن أستلف قلمك؟",
+            "answer": "Can I borrow your pen? / Could I borrow your pen, please?"
+          },
+          {
+            "prompt": "يعطيك العافية! (to a teammate after the match)",
+            "answer": "Thanks a lot! / Great job today! / Well played!"
+          }
         ]
       },
       "tips": [
@@ -228,7 +410,7 @@
       "name": "Softener Workshop: Make It Kinder",
       "nameAr": "ورشة الملطِّفات: اجعلها ألطف",
       "method": "Transformation drill (rewrite with a given frame) + peer check",
-      "purpose": "Practise turning direct messages into polite requests and suggestions with Could you, Can I, Would you mind + -ing, I'd like, Maybe we should.",
+      "purpose": "Practice turning direct messages into polite requests and suggestions with Could you, Can I, Would you mind + -ing, I'd like, Maybe we should.",
       "teacherSays": [
         "Your tools: Could you...? Can I...? Would you mind + -ing? I'd like... Maybe we should... And the softeners: just, a bit, maybe, I think.",
         "These messages are from Hamad. Hamad is a nice guy, but his messages sound bossy! Let's help him.",
@@ -249,15 +431,42 @@
         "instructions": "Make Hamad's message polite. Use the frame in brackets.",
         "instructionsAr": "اجعل رسالة حمد مهذبة باستخدام الإطار بين القوسين.",
         "items": [
-          {"prompt": "Send me the photo. (Could you...?)", "answer": "Could you send me the photo, please?"},
-          {"prompt": "Give me your notebook. (Can I borrow...?)", "answer": "Can I borrow your notebook, please?"},
-          {"prompt": "Turn off the music. (Would you mind + -ing?)", "answer": "Would you mind turning off the music?"},
-          {"prompt": "I want a pizza. (I'd like...)", "answer": "I'd like a pizza, please."},
-          {"prompt": "Your idea is bad. (I think maybe we should...)", "answer": "I think maybe we should consider another option."},
-          {"prompt": "Delete that comment! (Could you just...?)", "answer": "Could you just delete that comment, please?"},
-          {"prompt": "Help me with the poster. (Would you mind + -ing?)", "answer": "Would you mind helping me with the poster?"},
-          {"prompt": "Be quiet, I'm studying. (Could you... a bit...?)", "answer": "Could you be a bit quieter, please? I'm studying."},
-          {"prompt": "Change the caption. (Maybe you could...?)", "answer": "Maybe you could change the caption? / Could you change the caption?"}
+          {
+            "prompt": "Send me the photo. (Could you...?)",
+            "answer": "Could you send me the photo, please?"
+          },
+          {
+            "prompt": "Give me your notebook. (Can I borrow...?)",
+            "answer": "Can I borrow your notebook, please?"
+          },
+          {
+            "prompt": "Turn off the music. (Would you mind + -ing?)",
+            "answer": "Would you mind turning off the music?"
+          },
+          {
+            "prompt": "I want a pizza. (I'd like...)",
+            "answer": "I'd like a pizza, please."
+          },
+          {
+            "prompt": "Your idea is bad. (I think maybe we should...)",
+            "answer": "I think maybe we should consider another option."
+          },
+          {
+            "prompt": "Delete that comment! (Could you just...?)",
+            "answer": "Could you just delete that comment, please?"
+          },
+          {
+            "prompt": "Help me with the poster. (Would you mind + -ing?)",
+            "answer": "Would you mind helping me with the poster?"
+          },
+          {
+            "prompt": "Be quiet, I'm studying. (Could you... a bit...?)",
+            "answer": "Could you be a bit quieter, please? I'm studying."
+          },
+          {
+            "prompt": "Change the caption. (Maybe you could...?)",
+            "answer": "Maybe you could change the caption?"
+          }
         ]
       },
       "tips": [
@@ -270,10 +479,10 @@
       "name": "Register-Switch Challenge",
       "nameAr": "تحدّي تبديل المستوى اللغوي",
       "method": "Register sorting + rewriting the same message for three audiences",
-      "purpose": "Recognise informal, neutral and formal language and switch between group chat, team message and teacher email.",
+      "purpose": "Recognize informal, neutral and formal language and switch between group chat, team message and teacher email.",
       "teacherSays": [
-        "Register is your language outfit. Pyjamas for a group chat, a school uniform for a team message, your best clothes for an email to a teacher.",
-        "Look at these 8 lines. Who is each one for: friends (informal), team (neutral) or teacher (formal)?",
+        "Register is your language outfit. Pajamas for a group chat, a school uniform for a team message, your best clothes for an email to a teacher.",
+        "Look at these 9 lines. Who is each one for: friends (informal), team (neutral) or teacher (formal)?",
         "Now the challenge: the same news, three outfits. 'I can't come to practice tomorrow.' Write it for the group chat, for the captain and for the coach by email."
       ],
       "teacherSaysAr": [
@@ -290,15 +499,42 @@
         "instructions": "Informal (friends), neutral (team / classmates) or formal (teacher / coach email)?",
         "instructionsAr": "غير رسمي (أصدقاء)، محايد (الفريق / الزملاء)، أم رسمي (بريد للمعلم / المدرّب)؟",
         "items": [
-          {"prompt": "omg that's sooo funny 😂", "answer": "informal"},
-          {"prompt": "Dear Ms Lina,", "answer": "formal"},
-          {"prompt": "Hi everyone, practice is at 5 tomorrow.", "answer": "neutral"},
-          {"prompt": "thx bro, cu later", "answer": "informal"},
-          {"prompt": "Could you please send me the worksheet?", "answer": "formal / neutral"},
-          {"prompt": "Best wishes, Omar", "answer": "formal"},
-          {"prompt": "Can someone share the notes? Thanks!", "answer": "neutral"},
-          {"prompt": "I would like to ask about my mark.", "answer": "formal"},
-          {"prompt": "Sorry I'm late, guys!", "answer": "informal"}
+          {
+            "prompt": "omg that's sooo funny 😂",
+            "answer": "informal"
+          },
+          {
+            "prompt": "Dear Ms. Lina,",
+            "answer": "formal"
+          },
+          {
+            "prompt": "Hi everyone, practice is at 5 tomorrow.",
+            "answer": "neutral"
+          },
+          {
+            "prompt": "thx bro, cu later",
+            "answer": "informal"
+          },
+          {
+            "prompt": "I look forward to hearing from you.",
+            "answer": "formal"
+          },
+          {
+            "prompt": "Best wishes, Omar",
+            "answer": "formal"
+          },
+          {
+            "prompt": "Can someone share the notes? Thanks!",
+            "answer": "neutral"
+          },
+          {
+            "prompt": "I would like to ask about my grade.",
+            "answer": "formal"
+          },
+          {
+            "prompt": "Sorry I'm late, guys!",
+            "answer": "informal"
+          }
         ]
       },
       "tips": [
@@ -342,16 +578,16 @@
       "purpose": "Check each student's ability to make requests polite and choose the right register; end the Level 4 bonus series with a reflection.",
       "teacherSays": [
         "Last exit ticket of our Word Power series: five items, privately in the chat.",
-        "Did you know? British English speakers say 'sorry' so often that they even say it when someone else bumps into them! Politeness is a culture, not just grammar.",
+        "Did you know? In Britain, many people say 'sorry' so often that some even say it when someone else bumps into them! Politeness is part of culture, not just grammar.",
         "Mission: this week, notice how people ask for things in English videos or games. Find one Could you... or Would you mind... and share it next class."
       ],
       "teacherSaysAr": [
-        "هل تعلم؟ يقول البريطانيون sorry كثيراً جداً، حتى عندما يصطدم بهم شخص آخر! التهذيب ثقافة وليس قواعد فقط.",
+        "هل تعلم؟ في بريطانيا يقول كثير من الناس sorry كثيراً جداً، حتى إن بعضهم يقولها عندما يصطدم بهم شخص آخر! التهذيب جزء من الثقافة وليس قواعد فقط.",
         "مهمتك: لاحظ كيف يطلب الناس الأشياء في الفيديوهات أو الألعاب الإنجليزية، وشاركنا مثالاً."
       ],
       "studentsDo": [
         "Answer 5 items privately.",
-        "Say which of the four Word Power classes was their favourite and why."
+        "Say which of the four Word Power classes was their favorite and why."
       ],
       "tips": [
         "This is the last Bonus Class of Level 4: take 30 seconds to celebrate the series and link back to the -s mystery, counting and word building."
@@ -362,11 +598,26 @@
     "instructions": "Answer each item.",
     "instructionsAr": "أجب عن كل سؤال.",
     "items": [
-      {"prompt": "Make it polite: 'Give me the menu.'", "answer": "Could I see / have the menu, please?"},
-      {"prompt": "Complete: Would you mind ___ (open) the door?", "answer": "opening"},
-      {"prompt": "Someone asks 'Would you mind helping me?' You want to help. What do you say?", "answer": "No, not at all. / Sure!"},
-      {"prompt": "Formal or informal? 'Dear Mr Adams, I would like to ask about the test.'", "answer": "formal"},
-      {"prompt": "Why can 'Give me water, please' sound rude in English but عطني ماي لو سمحت is polite in Arabic?", "answer": "Arabic makes a direct imperative polite with formulas like لو سمحت; English needs an indirect question or modal (Could I have...?), so an imperative + please still sounds like an order."}
+      {
+        "prompt": "Make it polite: 'Give me the menu.'",
+        "answer": "Could I see / have the menu, please?"
+      },
+      {
+        "prompt": "Complete: Would you mind ___ (open) the door?",
+        "answer": "opening"
+      },
+      {
+        "prompt": "Someone asks 'Would you mind helping me?' You want to help. What do you say?",
+        "answer": "No, not at all. / Sure!"
+      },
+      {
+        "prompt": "Formal or informal? 'Dear Mr. Adams, I would like to ask about the test.'",
+        "answer": "formal"
+      },
+      {
+        "prompt": "Why can 'Give me water, please' sound rude in English but عطني ماي لو سمحت is polite in Arabic?",
+        "answer": "Arabic makes a direct imperative polite with formulas like لو سمحت; English needs an indirect question or modal (Could I have...?), so an imperative + please still sounds like an order."
+      }
     ]
   },
   "homework": {
@@ -412,7 +663,7 @@
     "This class uses Lessons 11-16 language (I'd like, should, group chat, teamwork, decisions, feelings) and adds no new topic vocabulary.",
     "Pragmatic errors can be more damaging than grammar errors: a listener forgives a missing -s but may think a direct request is rude. Explain this to students as the reason this class matters.",
     "Treat both cultures with respect: Arabic politeness is rich and warm; it simply uses different tools. Never present English as 'more polite'.",
-    "Teacher names in examples (Ms Lina, Mr Adams, Coach Adams) are fictional; replace them with real names from the student's school if helpful.",
+    "Teacher names in examples (Ms. Lina, Mr. Adams, Coach Adams) are fictional; replace them with real names from the student's school if helpful.",
     "This is the last Bonus Class of Level 4; Level 5's bonus series (Story Science) builds on these speaking skills with storytelling and sentence stress."
   ]
 }
