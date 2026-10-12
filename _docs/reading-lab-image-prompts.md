@@ -1,6 +1,6 @@
-# Reading Lab — Scene Image Prompts (Levels 3–6)
+# Reading Lab — Scene Image Prompts (Levels 2–6)
 
-Standard production format, same as the scene batches. The **Reading Lab** is the new reading-comprehension section in the teen decks (Levels 3–6, every third lesson: 3, 6, 9, 12, 15, 18 — 24 passages, 48 pictures). Each passage has two pictures: **A** is the hero on the opener and sits top-left of the passage; **B** sits bottom-right beside the second half of the text. Until a file exists the slide shows a styled placeholder tile, so the batch can arrive in parts.
+Standard production format, same as the scene batches. The **Reading Lab** is the new reading-comprehension section in the teen decks (Levels 2–6, every third lesson: 3, 6, 9, 12, 15, 18 — 30 passages, 60 pictures). Each passage has two pictures: **A** is the hero on the opener and sits top-left of the passage; **B** sits bottom-right beside the second half of the text. Until a file exists the slide shows a styled placeholder tile, so the batch can arrive in parts.
 
 **Format:** landscape scene, **16:10** (e.g. 1600×1000) — the slides crop to cover, so keep the subject in the middle 80%. No text, letters, numerals, logos or watermarks anywhere (signs, screens, posters and notebooks stay blank or abstract).
 
@@ -8,9 +8,37 @@ Standard production format, same as the scene batches. The **Reading Lab** is th
 
 **Master style** (append to every prompt): Rich flat-vector illustration with soft painterly shading for a teen English-learning app. Clean dark outlines, warm cinematic light, detailed but uncluttered backgrounds, a palette of warm orange, teal and gold accents, mood of a modern graphic novel. Characters are aged 13–16 with realistic teen proportions and use the established Teen Track designs exactly — **Omar:** short dark hair, warm brown skin, white thobe with orange trim, white-and-orange sneakers. **Sara:** orange hijab, glasses, orange cardigan over a white top, long orange skirt, orange-and-white sneakers. **Noor:** orange-and-teal patterned hijab, teal tunic dress with patterned trim over white sleeves, orange-and-white sneakers. **Ziad:** short tousled brown hair, blue-and-yellow zip hoodie over a white t-shirt, dark grey cargo pants, blue-and-white sneakers, on-ear headphones around his neck. **Hamad:** white ghutra headscarf with black agal, white thobe, plain dark sneakers.
 
+**Level 2 (Kids Track):** the six Level 2 passages use the **Kids Track** style instead — simple flat vector illustration for a young children's English-learning app (ages 7–10), bright cheerful colors (orange, teal, yellow accents), thick clean black outlines, soft rounded shapes, warm friendly scenes. `CHAR (kids):` means the same five characters **as children** in their established Kids Track designs (same signature outfits and colors as the Teen Track list above, younger and rounder proportions). Same modesty rules.
+
 Save into `assets/reading/<level>/` with the exact file name shown (I crop/centre and compress on install — send the originals).
 
 ---
+
+## Level 2 (Kids Track style)
+
+**Lesson 3 — Omar's Big Family** (Family)
+- `level2/03-a.jpg` NEW — CHAR (kids): Omar as a child at a big Friday family lunch on a floor mat with his grandparents (grandfather in white thobe and ghutra, grandmother in dark abaya and hijab), an uncle and aunt, and two identical twin boy cousins, a big platter of rice in the middle, bright happy colors
+- `level2/03-b.jpg` NEW — a hand-drawn family tree poster on a child's bedroom wall: a big green tree with round photo frames on the branches showing smiling cartoon faces (grandparents at the top, parents, children at the bottom), colored pencils on the desk, no text
+
+**Lesson 6 — What Is in Grandpa's Pocket?** (Things We Have)
+- `level2/06-a.jpg` NEW — CHAR (kids): Sara as a child sitting beside her grandfather (white thobe, red-and-white shemagh, grey beard) on a majlis cushion, he is emptying his pocket onto a small tray: a gold watch, glasses, a key, an old phone, a small wallet and wooden prayer beads, Sara looking amazed, a clear gap between them
+- `level2/06-b.jpg` NEW — a flat-lay of a grandfather's things on a patterned cushion: a round gold watch, reading glasses, a brass key, a small brown leather wallet, an old simple phone, wooden prayer beads, a few dates in a tiny bowl, no text
+
+**Lesson 9 — Good Morning, Class!** (School)
+- `level2/09-a.jpg` NEW — CHAR (kids): a bright primary classroom, a kind teacher in hijab standing at the front with one hand raised, Omar and Hamad (as children, in white thobes) standing up straight beside small wooden desks, books closed on the desks, a window with morning sun, no readable text on the board
+- `level2/09-b.jpg` NEW — a close-up of a child's desk: an open storybook with a colorful picture inside (no readable text), a pencil, a small hand raised in the air next to it, a water bottle, bright colors
+
+**Lesson 12 — Sara's Birthday Picnic** (Celebrations)
+- `level2/12-a.jpg` NEW — CHAR (kids): Sara as a child in hijab at a park picnic with her mother, aunt and three girl cousins (all in hijab), a round cake with seven candles on a picnic blanket, orange and teal balloons tied to a tree, presents with ribbons, soft afternoon light
+- `level2/12-b.jpg` NEW — a close-up of a birthday cake with seven lit candles on a picnic blanket, a plate of dates and cookies, a small wrapped present with a bow, a balloon string, no text or numerals
+
+**Lesson 15 — Hamad's Evening** (Daily Routine)
+- `level2/15-a.jpg` NEW — CHAR (kids): Hamad as a child (white thobe, small ghutra) at a kitchen table doing homework with a pencil, a glass of milk, a window showing an orange sunset sky and a mosque minaret in the distance, warm light
+- `level2/15-b.jpg` NEW — a cozy child's bedroom at night: a bed with a soft blanket, striped pajamas folded on it, a storybook open on the pillow, a small lamp, a crescent moon through the window, slippers on the floor, no people, no text
+
+**Lesson 18 — At the Dates Market** (Culture & Food)
+- `level2/18-a.jpg` NEW — CHAR (kids): Noor as a child in hijab with her father (white thobe, ghutra) at a bright dates market, rows of wooden boxes full of golden and brown dates, a friendly seller behind a table, Noor pointing at a box close to her, no text
+- `level2/18-b.jpg` NEW — a close-up of the dates market table: this box of golden dates near the front, those dark dates on a far shelf, small paper cups for tasting, a brass scale, a basket, warm light, no text or numerals
 
 ## Level 3
 

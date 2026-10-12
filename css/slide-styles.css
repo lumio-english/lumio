@@ -35,10 +35,16 @@
     background:linear-gradient(90deg,#F97316,#F59E0B,#2DD4BF,#0D9488); }
 
   /* ================= Reading Lab (lib/reading_slides.py) ================= */
-  .rl { position:absolute; left:44px; right:44px; top:134px; bottom:80px; z-index:6; font-family:'Nunito',sans-serif; color:#fff;
+  .rl { position:absolute; left:44px; right:44px; top:134px; bottom:80px; z-index:6; font-family:'Nunito',sans-serif; color:#2B1D12;
     --rl-card:#fff; --rl-ink:#2B1D12; --rl-dim:#7A6656; --rl-line:rgba(67,48,31,.1); --rl-teal:#0E8BA3; --rl-teal-bg:rgba(48,176,199,.16);
     --rl-gold:#B45309; --rl-gold-bg:rgba(251,191,36,.26); --rl-orange:#F97316; }
+  .rl.rl-teen { color:#fff; }
   .rl p, .rl li { font-size:1.06rem; line-height:1.56; }
+  .rl-part { font-size:.72rem; font-weight:900; letter-spacing:.14em; color:inherit; opacity:.9; }
+  .rl-kid .rl-text p { font-size:1.34rem; line-height:1.6; } .rl-kid .rl-text p + p { margin-top:12px; }
+  .rl-kid .rl-q span { font-size:1.34rem; } .rl-kid .rl-before li { font-size:1.14rem; } .rl-kid .rl-flow li { font-size:1rem; }
+  .rl-kid .rl-known, .rl-kid .rl-rule { border-radius:10px; padding:1px 7px; }
+  .rl-kid .rl-tools, .rl-kid .rl-askhead p, .rl-kid .rl-askfoot { color:#7A6656; }
   .rl-lab { font-size:.68rem; font-weight:900; letter-spacing:.16em; color:var(--rl-orange); margin-bottom:8px; }
   .rl-lab small { font-weight:700; letter-spacing:0; color:var(--rl-dim); text-transform:none; margin-left:6px; }
   .rl-ar { font-family:'Tajawal',sans-serif; font-weight:700; }
@@ -80,7 +86,7 @@
   .rl-read .rl-img { min-height:200px; flex:1 1 200px; }
   .rl-text { background:var(--rl-card); border-radius:18px; padding:16px 22px; flex:0 0 auto; border:1px solid var(--rl-line); box-shadow:0 10px 24px -12px rgba(67,48,31,.3); overflow:hidden; }
   .rl-text p { font-size:1.12rem; line-height:1.55; } .rl-text p + p { margin-top:9px; }
-  .rl-tools { display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:.78rem; font-weight:800; color:rgba(255,255,255,.85); }
+  .rl-tools { display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:.78rem; font-weight:800; color:inherit; opacity:.92; }
   .rl-text, .rl-box, .rl-tier { color:var(--rl-ink); }
   .rl-btn { font:inherit; font-weight:900; font-size:.82rem; letter-spacing:.04em; border:0; cursor:pointer; border-radius:999px; padding:8px 16px; color:#fff;
     background:linear-gradient(135deg,#F97316,#EA580C); box-shadow:0 8px 16px -8px rgba(234,88,12,.8); display:inline-flex; align-items:center; gap:7px; }
@@ -96,7 +102,7 @@
   .rl-pop em.ex { color:#FCD34D; } .rl-pop.rule { border-top:3px solid #F59E0B; } .rl-pop.word { border-top:3px solid #30B0C7; }
   /* questions */
   .rl-ask { display:flex; flex-direction:column; gap:16px; }
-  .rl-askhead h2 { font-family:'Baloo 2','Nunito',sans-serif; font-size:2rem; font-weight:800; } .rl-askhead p { color:rgba(255,255,255,.8); font-weight:700; font-size:.98rem; }
+  .rl-askhead h2 { font-family:'Baloo 2','Nunito',sans-serif; font-size:2rem; font-weight:800; } .rl-askhead p { color:inherit; opacity:.85; font-weight:700; font-size:.98rem; }
   .rl-tiers { display:grid; grid-template-columns:1fr 1fr 1fr; gap:18px; flex:1; }
   .rl-tier { background:var(--rl-card); border-radius:20px; padding:18px 18px 14px; border:1px solid var(--rl-line); box-shadow:0 12px 28px -14px rgba(67,48,31,.35); border-top:5px solid var(--rl-orange); }
   .rl-tier.t-think { border-top-color:#30B0C7; } .rl-tier.t-think .rl-lab { color:#0E8BA3; }
@@ -105,5 +111,5 @@
   .rl-q:hover { background:rgba(249,115,22,.08); }
   .rl-q b { flex:0 0 36px; height:36px; border-radius:10px; background:var(--rl-ink); color:#fff; display:flex; align-items:center; justify-content:center; font-size:.95rem; }
   .rl-q span { font-size:1.26rem; line-height:1.4; font-weight:700; }
-  .rl-askfoot { font-size:.86rem; font-weight:800; color:rgba(255,255,255,.8); text-align:center; }
+  .rl-askfoot { font-size:.86rem; font-weight:800; color:inherit; opacity:.85; text-align:center; }
   .rl-askfoot span { font-family:'Tajawal',sans-serif; }

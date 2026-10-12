@@ -1,68 +1,10 @@
 <div style="position:absolute;inset:0;background:url('assets/lesson-bg-kid/school.jpg') center/cover no-repeat"></div><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,251,245,.2) 0%,rgba(255,243,214,.28) 62%,rgba(232,197,143,.4) 100%)"></div><div class="spark" style="left:375px;top:135px;font-size:1.6rem">&#10022;</div><div class="spark" style="left:415px;top:105px;font-size:1.1rem">&#10022;</div><div class="spark" style="left:392px;top:178px;font-size:1.3rem">&#10022;</div><div class="header">
       <div class="brand"><img src="assets/logo/lumio-logo.png" alt="Lumio English" style="height:70px"></div>
-      <div class="pagetitle">Sound &amp; Spot</div>
-      <div class="counter">34 / 55</div>
+      <div class="pagetitle">Reading Lab &middot; Let&#39;s Talk</div>
+      <div class="counter">34 / 58</div>
     </div><div class="colorstrip"><div class="c1"></div><div class="c2"></div><div class="c3"></div><div class="c4"></div><div class="c5"></div></div>
-    <div style="position:absolute;left:0;right:0;top:158px;text-align:center">
-      <div style="display:inline-block;background:#fff;padding:8px 20px;border-radius:14px;box-shadow:0 6px 14px rgba(67,48,31,.1);font-family:'Baloo 2',sans-serif;font-weight:700;
-                font-size:1.05rem;color:#8A7160">Tap any word to hear it &mdash; can you say it before it plays?</div>
+    <div class="rl rl-ask rl-kid">
+      <div class="rl-askhead"><h2>Let&#39;s Talk About It</h2><p>Teacher asks, you answer. Short answers are fine &mdash; then try a full sentence!</p></div>
+      <div class="rl-tiers"><div class="rl-tier t-find"><div class="rl-lab">FIND IT <small>it is in the story</small></div><div class="rl-q"><b>1</b><span>What does Teacher Noor say first?</span></div><div class="rl-q"><b>2</b><span>Where is Hamad&#39;s book?</span></div></div><div class="rl-tier t-think"><div class="rl-lab">THINK <small>why?</small></div><div class="rl-q"><b>1</b><span>Why does Omar raise his hand?</span></div><div class="rl-q"><b>2</b><span>Why do the children line up quietly?</span></div></div><div class="rl-tier t-you"><div class="rl-lab">YOU <small>about you</small></div><div class="rl-q"><b>1</b><span>What commands does your teacher use? Show me one!</span></div><div class="rl-q"><b>2</b><span>Give me a command: Stand up! Sit down! ...</span></div></div></div>
+      <div class="rl-askfoot"><span dir="rtl">المعلّم يسأل والطالب يجيب شفهيًا</span> &middot; <b>Good Morning, Class!</b></div>
     </div>
-    <!-- Review lessons can carry 40+ words -- a plain flex-wrap with no
-         height limit let extra rows run past the bottom nav bar,
-         invisible and unreachable rather than just off-screen. Capping
-         the box height and adding its own scroll keeps every word
-         reachable regardless of how many there are, without changing
-         card size lesson to lesson. -->
-    <div style="position:absolute;left:0;right:400px;top:210px;bottom:96px;overflow-y:auto;display:flex;flex-wrap:wrap;align-content:flex-start;gap:16px;justify-content:center;padding:4px 30px 12px">
-      
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('stand up')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/stand-up.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">stand up</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">قف</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('sit down')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/sit-down.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">sit down</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">اجلس</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('listen')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/listen.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">listen</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">استمع</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('look')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/look.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">look</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">انظر</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('open your book')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/open-your-book.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">open your book</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">افتح كتابك</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('raise your hand')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/raise-your-hand.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">raise your hand</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">ارفع يدك</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('desk')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/desk.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">desk</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">مكتب</div>
-      </button>
-    </div>
-    <div class="floorshadow" style="right:90px;bottom:33px;width:230px;height:36px"></div><img class="char" src="assets/story/characters/sara-clap.png" style="right:90px;bottom:40px;height:320px" onerror="this.style.display='none'; this.previousElementSibling.style.display='none'">

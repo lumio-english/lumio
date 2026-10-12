@@ -325,7 +325,7 @@ Verify in a browser before claiming done; check files before writing prompts; ne
 
 ## 3u. Reading Lab (12 Oct 2026)
 
-Reading-comprehension section in the **teen decks (Levels 3–6)**, every third lesson (3, 6, 9, 12, 15, 18): three slides placed after Common Mistakes, before Story Chain.
+Reading-comprehension section, every third lesson (3, 6, 9, 12, 15, 18): **teens (L3–6)** after Build the Sentences, before Story Chain; **Level 2 (kids)** after Build the Sentences, before Dialogue (kid=True: bigger type, child wording). No full-passage audio by design -- teacher reads Part 1, student reads Part 2; only tapped words speak.
 
 - `lib/reading_passages.py` — the 24 passages (title EN/AR, tag, 2 image prompts, 2 pre-reading questions, 4 paragraphs, 2–3 new words glossed, 6 teacher questions: Find it / Think / You) + `RULES` (pronunciation rules). Inline marks `[word](rule)` make a word glow gold.
 - `lib/reading_slides.py` — builds opener / Z-layout passage / questions; studied words are detected automatically from `lessons/*/lessonNN.json` (all lower levels + this level up to this lesson), glow teal, tap → Arabic + where it was taught (`LumioAct.rlPop`). Listen buttons: `LumioAct.rlSpeak`.

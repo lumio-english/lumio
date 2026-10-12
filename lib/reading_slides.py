@@ -158,7 +158,7 @@ def _speak_btn(text, label="Listen", cls=""):
 
 
 # ---------------------------------------------------------------- slides
-def slide_opener(p, level, lesson_num, bg, header_html):
+def slide_opener(p, level, lesson_num, bg, header_html, kid=False):
     known = known_words(level, lesson_num)
     used = set()
     for para in p["paras"]:
@@ -167,8 +167,18 @@ def slide_opener(p, level, lesson_num, bg, header_html):
     before = "".join(f'<li>{_html(q)}</li>' for q in p["before"])
     new = "".join(f'<div class="rl-new"><b>{_html(en)}</b><span dir="rtl">{_html(ar)}</span></div>' for en, ar in p["new"])
     img_a = _img_tile(level, p["images"][0][0], p["images"][0][1], "hero")
+    if kid:
+        flow = (f'<li><b>Look</b> &mdash; look at the pictures and answer the two questions <small>1 min</small></li>'
+                f'<li><b>Teacher reads, you follow</b> &mdash; put your finger on the words; then YOU read Part 2 <small>3 min</small></li>'
+                f'<li><b>Tap the words</b> &mdash; <span class="rl-known demo">{n_known} words</span> you know glow; <span class="rl-rule demo">gold words</span> show a sound rule <small>1 min</small></li>'
+                f'<li><b>Talk about it</b> &mdash; teacher asks, you answer <small>2 min</small></li>')
+    else:
+        flow = (f'<li><b>Predict</b> &mdash; look at the pictures, answer the two questions above <small>1 min</small></li>'
+                f'<li><b>Read aloud</b> &mdash; Part 1 teacher, Part 2 student; swap on the second read <small>3 min</small></li>'
+                f'<li><b>Tap the words</b> &mdash; <span class="rl-known demo">{n_known} words</span> you already studied glow; <span class="rl-rule demo">gold words</span> hide a pronunciation rule <small>1 min</small></li>'
+                f'<li><b>Check understanding</b> &mdash; teacher asks, student answers aloud <small>3 min</small></li>')
     return bg + header_html + f'''
-    <div class="rl rl-open">
+    <div class="rl rl-open {'rl-kid' if kid else 'rl-teen'}">
       <div class="rl-hero">{img_a}
         <div class="rl-hero-cap"><small>{_html(p["tag"])}</small><h2>{_html(p["title"])}</h2><div class="rl-ar" dir="rtl">{_html(p["title_ar"])}</div></div>
       </div>
@@ -183,18 +193,13 @@ def slide_opener(p, level, lesson_num, bg, header_html):
         </div>
         <div class="rl-box rl-tip">
           <div class="rl-lab">HOW WE READ IT</div>
-          <ol class="rl-flow">
-            <li><b>Predict</b> &mdash; look at the pictures, answer the two questions above <small>1 min</small></li>
-            <li><b>Listen, then read</b> &mdash; Part 1 teacher, Part 2 student; swap on the second read <small>3 min</small></li>
-            <li><b>Tap the words</b> &mdash; <span class="rl-known demo">{n_known} words</span> you already studied glow; <span class="rl-rule demo">gold words</span> hide a pronunciation rule <small>1 min</small></li>
-            <li><b>Check understanding</b> &mdash; teacher asks, student answers aloud <small>3 min</small></li>
-          </ol>
+          <ol class="rl-flow">{flow}</ol>
         </div>
       </div>
     </div>'''
 
 
-def slide_passage(p, level, lesson_num, bg, header_html):
+def slide_passage(p, level, lesson_num, bg, header_html, kid=False):
     known = known_words(level, lesson_num)
     used = set()
     paras = [render_paragraph(t, known, used) for t in p["paras"]]
@@ -204,17 +209,17 @@ def slide_passage(p, level, lesson_num, bg, header_html):
     txt_right = " ".join(plain_text(t) for t in p["paras"][2:])
     img_a = _img_tile(level, p["images"][0][0], p["images"][0][1])
     img_b = _img_tile(level, p["images"][1][0], p["images"][1][1])
-    words = len((txt_left + " " + txt_right).split())
+    words = len((txt_left + " " + txt_right).split())  # shown as a reading-length hint
     return bg + header_html + f'''
-    <div class="rl rl-read" data-rl-stage="1">
+    <div class="rl rl-read {'rl-kid' if kid else 'rl-teen'}" data-rl-stage="1">
       <div class="rl-col">
         {img_a}
         <div class="rl-text">{left}</div>
-        <div class="rl-tools">{_speak_btn(txt_left, "Part 1")}<span class="rl-count">{words} words &middot; {len(used)} known</span></div>
+        <div class="rl-tools"><span class="rl-part">PART 1 &middot; {"teacher reads" if kid else "teacher"}</span><span class="rl-count">{words} words &middot; {len(used)} known</span></div>
       </div>
       <div class="rl-col">
         <div class="rl-text">{right}</div>
-        <div class="rl-tools">{_speak_btn(txt_right, "Part 2")}<span class="rl-legend"><i class="k"></i> studied <i class="r"></i> pronunciation</span></div>
+        <div class="rl-tools"><span class="rl-part">PART 2 &middot; {"you read" if kid else "student"}</span><span class="rl-legend"><i class="k"></i> {"I know it" if kid else "studied"} <i class="r"></i> {"sound rule" if kid else "pronunciation"}</span></div>
         {img_b}
       </div>
       <div class="rl-pop" id="rlPop" onclick="LumioAct.rlClose()"></div>
@@ -222,35 +227,35 @@ def slide_passage(p, level, lesson_num, bg, header_html):
 
 
 _TIER = {"find": ("FIND IT", "in the text"), "think": ("THINK", "between the lines"), "you": ("YOU", "your own life")}
+_TIER_KID = {"find": ("FIND IT", "it is in the story"), "think": ("THINK", "why?"), "you": ("YOU", "about you")}
 
 
-def slide_questions(p, level, lesson_num, bg, header_html):
+def slide_questions(p, level, lesson_num, bg, header_html, kid=False):
     cols = []
     for tier in ("find", "think", "you"):
         qs = [q for k, q in p["questions"] if k == tier]
-        cards = "".join(f'''<div class="rl-q" onclick="LumioAct.rlSpeak(this, '{_jsq(q)}')"><b>{i + 1}</b><span>{_html(q)}</span></div>'''
-                        for i, q in enumerate(qs))
-        lab, sub = _TIER[tier]
+        cards = "".join(f'''<div class="rl-q"><b>{i + 1}</b><span>{_html(q)}</span></div>''' for i, q in enumerate(qs))
+        lab, sub = (_TIER_KID if kid else _TIER)[tier]
         cols.append(f'<div class="rl-tier t-{tier}"><div class="rl-lab">{lab} <small>{sub}</small></div>{cards}</div>')
     return bg + header_html + f'''
-    <div class="rl rl-ask">
-      <div class="rl-askhead"><h2>Check Understanding</h2><p>Teacher asks, student answers aloud &mdash; in full sentences when you can. No options, no pressure.</p></div>
+    <div class="rl rl-ask {'rl-kid' if kid else 'rl-teen'}">
+      <div class="rl-askhead"><h2>{"Let&#39;s Talk About It" if kid else "Check Understanding"}</h2><p>{"Teacher asks, you answer. Short answers are fine &mdash; then try a full sentence!" if kid else "Teacher asks, student answers aloud &mdash; in full sentences when you can. No options, no pressure."}</p></div>
       <div class="rl-tiers">{"".join(cols)}</div>
       <div class="rl-askfoot"><span dir="rtl">المعلّم يسأل والطالب يجيب شفهيًا</span> &middot; <b>{_html(p["title"])}</b></div>
     </div>'''
 
 
-def reading_slide(level, lesson_num, idx, bg, header_fn):
+def reading_slide(level, lesson_num, idx, bg, header_fn, kid=False):
     """One of the three slides (idx 0-2) -- header_fn(title) -> header html for that slide's page number."""
     p = passage_for(level, lesson_num)
     if not p:
         return ""
     t = _html(p["title"])
     if idx == 0:
-        return slide_opener(p, level, lesson_num, bg, header_fn(f"Reading Lab &middot; {t}"))
+        return slide_opener(p, level, lesson_num, bg, header_fn(f"Reading Lab &middot; {t}"), kid)
     if idx == 1:
-        return slide_passage(p, level, lesson_num, bg, header_fn(f"Reading Lab &middot; {t}"))
-    return slide_questions(p, level, lesson_num, bg, header_fn("Reading Lab &middot; Check Understanding"))
+        return slide_passage(p, level, lesson_num, bg, header_fn(f"Reading Lab &middot; {t}"), kid)
+    return slide_questions(p, level, lesson_num, bg, header_fn("Reading Lab &middot; " + ("Let&#39;s Talk" if kid else "Check Understanding")), kid)
 
 
 def reading_slides(level, lesson_num, bg, header_fn):
