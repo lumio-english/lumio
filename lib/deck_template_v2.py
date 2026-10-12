@@ -1514,11 +1514,8 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
         plan.append(("your_turn", (lesson["vocab"][_vi], i + 1)))
     # Activity 3 of 3: Mystery Picture -- guess early for more points.
     plan.append(("act_mystery", None))
-    plan.append(("teacher_game", "teacher"))
-    plan.append(("teacher_game", "student"))
-    plan.append(("teacher_game", "partner"))
-    if V <= 4:
-        plan.append(("teacher_game", "group"))
+    # (Teacher & Student Game / Your Turn to Call It / Partner Challenge
+    # removed from every deck -- Eslam, 13 Oct 2026.)
     plan.append(("quiz", 1))
     plan.append(("quiz", 2))
     # Review lessons only: two fixed quiz slides is a reasonable capstone
