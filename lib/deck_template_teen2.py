@@ -791,6 +791,15 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
             plan.append(("error_analysis", None))
         else:
             print(f"  (no common-mistake bank entry for {grammar_topic.get('title')}; slide skipped)")
+    # Reading Lab (lib/reading_passages.py): every third lesson, a culturally
+    # rich passage at the level's band -- opener, the Z-layout passage with
+    # glowing studied words / pronunciation rules, teacher questions. Placed
+    # after the grammar check so the text recycles the lesson's words AND
+    # structure, as input for the production block that follows.
+    import reading_slides
+    if reading_slides.passage_for(level or "", lesson_num):
+        for _ri in range(3):
+            plan.append(("reading", _ri))
     # Activity 2 of 3: Story Chain -- freer production with today's words and
     # pattern, once the structure has been checked and the usual slips flagged.
     plan.append(("act_story", None))
@@ -817,6 +826,10 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
     if phrase_focus:
         _extra_blocks = [{"kind": "sentences", "label": "PHRASES YOU LEARNED",
                           "items": [f"{en} ({gloss})" for en, gloss, ar in phrase_focus]}]
+    _rp = reading_slides.passage_for(level or "", lesson_num)
+    if _rp:
+        _extra_blocks = (_extra_blocks or []) + [{"kind": "sentences", "label": "READING LAB",
+                          "items": [f"{_rp['title']} -- {en} ({ar})" for en, ar in _rp["new"]]}]
     _recap = v1.today_i_learned_pages(lesson, grammar_topic, dialogue, _all_crew, _scene_sentence,
                                       grammar_recap_topics=grammar_recap_topics, extra_blocks=_extra_blocks)
     for _pi, _page in enumerate(_recap, 1):
@@ -867,6 +880,10 @@ def build_deck_v2(lesson_num, lesson, grammar_topic, dialogue, hook_question, no
         elif kind == "act_describe":
             import activity_slides
             slides.append(activity_slides.slide_describe_guess(lesson["vocab"], bg_theme(theme_key), header_themed("Describe It &bull; Speaking Game", n, total, theme_key)))
+        elif kind == "reading":
+            import reading_slides
+            slides.append(reading_slides.reading_slide(level, lesson_num, data, bg_theme(theme_key),
+                                                       lambda t, _n=n: header_themed(t, _n, total, theme_key)))
         elif kind == "act_story":
             import activity_slides
             slides.append(activity_slides.slide_story_chain(lesson["vocab"], grammar_topic, bg_theme(theme_key), header_themed("Story Chain &bull; Speaking Game", n, total, theme_key)))

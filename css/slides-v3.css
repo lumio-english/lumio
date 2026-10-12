@@ -461,3 +461,24 @@ html.deck-v3.deck-teen .navbtn.next { color:#111; background:linear-gradient(180
 .v3-kid .v3t-now { border-radius:18px; border-left:0; background:rgba(48,176,199,.14); }
 .v3-kid .v3t-mist .wrong { color:#D92D20; } .v3-kid .v3t-mist .right { color:#1E9E46; }
 .v3-kid .v3t-bar > div { background:linear-gradient(90deg,#FFA43A,#F2600C); }
+
+/* ---------- Reading Lab in the night studio ---------- */
+.v3 .rl { top:112px; bottom:76px; --rl-card:rgba(14,14,17,.84); --rl-ink:#fff; --rl-dim:#A6A6AE; --rl-line:rgba(255,255,255,.12); --rl-teal:#5EE1F5; --rl-teal-bg:rgba(48,176,199,.2);
+  --rl-gold:#FFD166; --rl-gold-bg:rgba(255,204,0,.18); --rl-orange:var(--gold); color:#fff; }
+.v3 .rl-text, .v3 .rl-box, .v3 .rl-tier { backdrop-filter:blur(14px); box-shadow:var(--shadow); border-radius:0; clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px); }
+.v3 .rl-text::after, .v3 .rl-box::after, .v3 .rl-tier::after { content:""; position:absolute; left:22px; right:0; top:0; height:2px; background:linear-gradient(90deg,var(--gold),rgba(255,192,0,0) 70%); }
+.v3 .rl-text, .v3 .rl-box, .v3 .rl-tier { position:relative; }
+.v3 .rl-tier { border-top:0; } .v3 .rl-tier.t-think::after { background:linear-gradient(90deg,var(--teal),rgba(48,176,199,0) 70%); } .v3 .rl-tier.t-you::after { background:linear-gradient(90deg,#A78BFA,rgba(167,139,250,0) 70%); }
+.v3 .rl-tier.t-think .rl-lab { color:var(--teal); } .v3 .rl-tier.t-you .rl-lab { color:#C4B5FD; }
+.v3 .rl-lab { font-family:var(--wide); font-size:.6rem; letter-spacing:.2em; }
+.v3 .rl-img, .v3 .rl-hero { border-radius:0; clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px); box-shadow:none; }
+.v3 .rl-hero .rl-img { clip-path:none; }
+.v3 .rl-img.rl-ph { background:linear-gradient(135deg,#1C1C22,#2A2412); color:#C9C9D1; }
+.v3 .rl-hero-cap small { background:var(--gold); color:#111; font-family:var(--wide); letter-spacing:.12em; }
+.v3 .rl-hero-cap h2 { font-family:var(--display); letter-spacing:-.02em; }
+.v3 .rl-new span { color:#fff; }
+.v3 .rl-btn { background:var(--gold); color:#111; box-shadow:0 8px 20px -8px rgba(255,204,0,.7); border-radius:0; clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%); }
+.v3 .rl-q b { background:var(--gold); color:#111; border-radius:0; }
+.v3 .rl-q:hover { background:rgba(255,204,0,.08); }
+.v3 .rl-askhead h2 { font-family:var(--display); }
+.v3 .rl-pop { background:#0E0E11; border:1px solid rgba(255,255,255,.14); }
