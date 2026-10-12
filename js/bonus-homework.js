@@ -248,7 +248,7 @@
       body.innerHTML = '<ol class="bm-steps">' + m.steps.map(function (s, j) {
         return '<li><label><input type="checkbox" data-j="' + j + '"><span>' + esc(s.en) + '<span class="ar" dir="rtl">' + esc(s.ar) + '</span></span></label></li>';
       }).join("") + '</ol>' +
-        (m.ask ? '<label class="bm-field">' + esc(m.ask) + ' <span class="ar" dir="rtl">' + esc(m.askAr) + '</span><input type="text" id="bmWho" maxlength="40" placeholder="Mum, Dad, my brother..."></label>' : "") +
+        (m.ask ? '<label class="bm-field">' + esc(m.ask) + ' <span class="ar" dir="rtl">' + esc(m.askAr) + '</span><input type="text" id="bmWho" maxlength="40" placeholder="Mom, Dad, my brother..."></label>' : "") +
         (n ? '<div class="bm-field">' + esc(m.findLabel) + ' <span class="ar" dir="rtl">' + esc(m.findLabelAr) + '</span><div class="bm-finds">' +
           Array.from({ length: n }, function (_, j) { return '<input type="text" maxlength="20" class="bm-find" aria-label="Thing ' + (j + 1) + '">'; }).join("") + '</div></div>' : "") +
         '<button type="button" class="bm-btn" id="bmMissionDone" disabled>Mission done!</button>';
