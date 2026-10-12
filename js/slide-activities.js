@@ -91,12 +91,26 @@
 
   // Memory pairs: cards carry data-pair; two face-up non-matching cards flip
   // back after a moment, matches stay up. State lives on the board element.
+  // The board tracks which cards are face-up itself (data-open) rather than
+  // reading data-flipped: slide-motion.js animates A.flip and only sets
+  // data-flipped when the 3D turn finishes, so reading it synchronously saw
+  // one open card and a matching pair was never recognised until a third tap.
   A.memory = function (card) {
-    if (!card || card.dataset.done === "1" || card.dataset.flipped === "1") return;
+    if (!card || card.dataset.done === "1" || card.dataset.open === "1" || card.dataset.flipped === "1") return;
     const board = card.parentElement;
     if (board.dataset.busy === "1") return;
+    if (board.dataset.shuffled !== "1") {
+      // The generated board is deterministic (pairs sit side by side); deal a
+      // fresh random layout the first time someone taps, while all cards are
+      // still face down.
+      board.dataset.shuffled = "1";
+      const kids = Array.from(board.children);
+      for (let i = kids.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [kids[i], kids[j]] = [kids[j], kids[i]]; }
+      kids.forEach(function (k) { board.appendChild(k); });
+    }
+    card.dataset.open = "1";
     A.flip(card);
-    const open = Array.from(board.querySelectorAll("[data-pair][data-flipped='1']:not([data-done='1'])"));
+    const open = Array.from(board.querySelectorAll("[data-pair][data-open='1']:not([data-done='1'])"));
     if (open.length < 2) return;
     const [a, b] = open;
     if (a.dataset.pair === b.dataset.pair) {
@@ -109,7 +123,14 @@
       }
     } else {
       board.dataset.busy = "1";
-      setTimeout(function () { A.flip(a); A.flip(b); board.dataset.busy = "0"; }, 900);
+      setTimeout(function () {
+        // flip back only once both cards have actually landed face-up
+        const tryBack = function (n) {
+          if (n > 0 && (a.dataset.flipped !== "1" || b.dataset.flipped !== "1")) return setTimeout(function () { tryBack(n - 1); }, 100);
+          A.flip(a); A.flip(b); a.dataset.open = b.dataset.open = "0"; board.dataset.busy = "0";
+        };
+        tryBack(10);
+      }, 900);
     }
   };
 
