@@ -328,3 +328,13 @@ Done by three parallel workers (sync layer / teacher UI / student UI), merged an
 ## 4. Working style
 Test setup (scratchpad, recreate if lost): static site `python3 -m http.server 8810` from the repo; mock Apps Script `node verify/gsserver.js 8899 _docs/AppsScript-Code.gs` with `verify/lib.py` (seed, teacher_login, student_login). Artifacts for previews are private claude.ai pages (Version 5 slides, English Hub preview).
 Verify in a browser before claiming done; check files before writing prompts; never duplicate; fix in templates not per slide; say plainly what was NOT done; ask one specific question when ambiguous.
+
+## 3u. Reading Lab (12 Oct 2026)
+
+Reading-comprehension section, every third lesson (3, 6, 9, 12, 15, 18): **teens (L3–6)** after Build the Sentences, before Story Chain; **Level 2 (kids)** after Build the Sentences, before Dialogue (kid=True: bigger type, child wording). No full-passage audio by design -- teacher reads Part 1, student reads Part 2; only tapped words speak.
+
+- `lib/reading_passages.py` — the 24 passages (title EN/AR, tag, 2 image prompts, 2 pre-reading questions, 4 paragraphs, 2–3 new words glossed, 6 teacher questions: Find it / Think / You) + `RULES` (pronunciation rules). Inline marks `[word](rule)` make a word glow gold.
+- `lib/reading_slides.py` — builds opener / Z-layout passage / questions; studied words are detected automatically from `lessons/*/lessonNN.json` (all lower levels + this level up to this lesson), glow teal, tap → Arabic + where it was taught (`LumioAct.rlPop`). Listen buttons: `LumioAct.rlSpeak`.
+- CSS: `.rl-*` in `css/slide-styles.css` (classic) + `.v3 .rl-*` overrides in `css/slides-v3.css`.
+- Images: `assets/reading/<level>/NN-a.jpg|NN-b.jpg` (16:10, crop-to-cover; placeholder tile until present). Prompts: `_docs/reading-lab-image-prompts.md`.
+- Recap page gets a READING LAB block (title + new words). Rebuild: `regen_level.py <level> --no-pdfs` + `gen_slides_v3.py <level>`.

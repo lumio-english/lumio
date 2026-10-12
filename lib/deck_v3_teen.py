@@ -217,8 +217,9 @@ def slide_vocab_scene(image_path, sentence, bold_words, n, total, translation=No
         hl = re.sub(r"\b(" + re.escape(esc(w)) + r")\b", r'<span class="v3-key">\1</span>', hl, count=1, flags=re.I)
     sp = sentence.replace("'", "\\'")
     tr = f'<div class="v3-ar" dir="rtl" style="margin-top:10px">{esc(translation)}</div>' if translation else ''
-    return f'''<div class="v3-bg" style="background-image:url('{image_path}')"></div>
+    return f'''<div class="v3-bg scene-bg" style="background-image:url('{image_path}')"></div>
     <div class="v3-shade v3t-sceneshade"></div>
+    <button type="button" class="scene-only-btn" onclick="LumioAct.sceneOnly(this)" title="Scene only / show all" aria-label="Scene only"><span data-ico="eye"></span></button>
     {header("Scene &middot; " + " &amp; ".join(esc(w) for w in bold_words[:2]), n, total)}
     <div class="v3-caption v3t-caption">
       <div><div class="v3-quote">{hl}</div>{tr}</div>
@@ -652,7 +653,7 @@ def slide_describe_guess(vocab, bg, header_html, kid=False, char_html=""):
 def slide_story_chain(vocab, grammar_topic, bg, header_html, kid=False, char_html=""):
     if kid:
         return _orig_story(vocab, grammar_topic, bg, header_html, kid, char_html)
-    words = A._spread(vocab, 6)
+    words = A.grammar_fit_words(vocab, grammar_topic, 6)
     row = "".join(f'''
       <div data-say="{esc(w['en'])}" class="v3t-chain">
         <div class="ph"><img src="{A._img(w)}" alt="" onerror="this.style.display='none'"></div>
@@ -661,8 +662,11 @@ def slide_story_chain(vocab, grammar_topic, bg, header_html, kid=False, char_htm
       </div>''' for w in words)
     if grammar_topic:
         ex = (grammar_topic.get("examples") or [{}])[0]
+        prof = A.grammar_profile(grammar_topic) or {}
+        frame = f'<div class="t" style="margin-top:4px">{prof["frame"]}</div>' if prof.get("frame") else ""
+        tip = f'<div class="ex" style="font-style:normal;opacity:.8;font-size:.85rem">{esc(prof["tip"])}</div>' if prof.get("tip") else ""
         pattern = f'''<div class="v3-paper v3t-pattern">
-          <div><div class="v3-label">USE TODAY'S PATTERN</div><div class="t">{esc(grammar_topic.get("title", ""))}</div></div>
+          <div><div class="v3-label">USE TODAY'S PATTERN &middot; {esc(grammar_topic.get("title", ""))}</div>{frame}{tip}</div>
           <div class="ex">&ldquo;{esc(ex.get("en", ""))}&rdquo;</div></div>'''
     else:
         pattern = '<div class="v3-paper v3t-pattern"><div class="t">Start: <i>&ldquo;One day, &hellip;&rdquo;</i> &mdash; every sentence must use the lit word.</div></div>'
@@ -681,8 +685,9 @@ def slide_truth_or_lie(vocab, grammar_topic, bg, header_html, kid=False, char_ht
         return _orig_truth(vocab, grammar_topic, bg, header_html, kid, char_html)
     pool = "".join(f'''
       <div style="display:none" class="v3t-chain big"><div class="ph"><img src="{A._img(w)}" alt="" onerror="this.style.display='none'"></div>
-        <div class="w">{esc(w['en'])}</div><div class="ar">{w.get('ar', '')}</div></div>''' for w in vocab)
-    hint = f'<span class="v3t-hl">Use: {esc(grammar_topic.get("title", ""))}</span> &mdash; ' if grammar_topic else ""
+        <div class="w">{esc(w['en'])}</div><div class="ar">{w.get('ar', '')}</div></div>''' for w in (A.grammar_fit_words(vocab, grammar_topic, max(6, min(9, len(vocab)))) if grammar_topic else vocab))
+    _prof = (A.grammar_profile(grammar_topic) or {}) if grammar_topic else {}
+    hint = (f'<span class="v3t-hl">Use: {esc(grammar_topic.get("title", ""))}</span>' + (f' &middot; {_prof["frame"]}' if _prof.get("frame") else "") + ' &mdash; ') if grammar_topic else ""
     return (bg + header_html + _band(
         "Tap <b>Spin</b>: three words. Say three sentences about YOU using them &mdash; two true, one false. Your partner asks one question, then guesses the lie. Fool them = 2 points; they catch you = 1 point for them.",
         "Spin, then tell your teacher three sentences (two true, one false). The teacher asks one follow-up question and guesses. Then the teacher spins and you catch the lie!") + f'''

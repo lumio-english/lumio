@@ -399,8 +399,9 @@ def slide_vocab_scene(image_path, sentence, bold_words, n, total, seed, translat
     with them."""
     highlighted = highlight_words(esc(sentence), bold_words)
     speak_text = sentence.replace("'", "\\'")
-    return f'''<div style="position:absolute;inset:0;background:url('{image_path}') center/cover no-repeat"></div>
+    return f'''<div class="scene-bg" style="position:absolute;inset:0;background:url('{image_path}') center/cover no-repeat"></div>
     <div style="position:absolute;left:0;right:0;top:0;height:120px;background:linear-gradient(180deg,rgba(43,33,24,.55),transparent)"></div>
+    <button type="button" class="scene-only-btn" onclick="LumioAct.sceneOnly(this)" title="Scene only / show all" aria-label="Scene only"><span data-ico="eye"></span></button>
     {header("", n, total)}
     <div style="position:absolute;left:0;right:0;bottom:0;padding:22px 46px 64px;background:linear-gradient(0deg,rgba(43,33,24,.7) 10%,rgba(43,33,24,.35) 70%,transparent 100%)">
       <div style="display:flex;align-items:center;justify-content:center;gap:16px;max-width:1100px;margin:0 auto">
@@ -1438,6 +1439,17 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
             plan.append(("sound_match", i))
     if spelling_rules and lesson_num in spelling_rules:
         plan.append(("spelling_rule", spelling_rules[lesson_num]))
+    # Grammar (explanation + its exercises) straight after the phonics
+    # block and before any new words -- the day's rules are handled at the
+    # start of the class, then the new material comes (Eslam, 12 Oct).
+    if grammar_topic:
+        plan.append(("grammar_rule", grammar_topic))
+        plan.append(("grammar_practice", grammar_topic))
+        for qi, q in enumerate(grammar_topic.get("mcq", []), 1):
+            plan.append(("grammar_mcq", (grammar_topic, q, qi, len(grammar_topic["mcq"]))))
+        import common_mistakes as _cm
+        if _cm.mistakes_for(grammar_topic):
+            plan.append(("common_mistakes", grammar_topic))
     if tier == "preA":
         for w in lesson["vocab"]:
             plan.append(("tpr", tpr_action_for(w["en"])))
@@ -1458,59 +1470,52 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
             plan.append(("practice_phonics", (w, i)))
             if is_review_lesson and (i + 1) % BREAK_EVERY == 0 and (i + 1) < V:
                 plan.append(("review_break", (i + 1, V)))
+    # ---- Segment order (academic review, Oct 2026) ----------------------
+    # New words -> word game -> words in context (scenes) -> sentence
+    # structure -> grammar (where the lesson has a focus) -> dialogue ->
+    # memory game -> listening -> quick check (recognition) -> your turn
+    # (production) -> mystery picture -> teacher games -> quiz -> recap.
     # Activity 1 of 3 (lib/activity_slides.py): Flash Race -- straight after
-    # the new words, before grammar: say the word before the next picture.
+    # the new words: say the word before the next picture.
     if not is_abc_lesson:
         plan.append(("act_flash", None))
-    if grammar_topic:
-        plan.append(("grammar_rule", grammar_topic))
-        plan.append(("grammar_practice", grammar_topic))
-        for qi, q in enumerate(grammar_topic.get("mcq", []), 1):
-            plan.append(("grammar_mcq", (grammar_topic, q, qi, len(grammar_topic["mcq"]))))
-        import common_mistakes as _cm
-        if _cm.mistakes_for(grammar_topic):
-            plan.append(("common_mistakes", grammar_topic))
-    plan.append(("dialogue", None))
-    # Real scene images of our characters acting out this lesson's most
-    # important words, the sentence displayed with those words
-    # highlighted, right before the sentence-building slides -- seeing
-    # and hearing the words used together in a real scene first.
+    # Scenes straight after the word game: our characters acting out this
+    # lesson's most important words, the sentence displayed with those
+    # words highlighted -- seeing and hearing the words used together
+    # before the sentence-building slides.
     if scene_map and lesson_num in scene_map:
         for scene in scene_map[lesson_num]:
             plan.append(("vocab_scene", scene))
-
-    # Every vocab word already has a real, meaning-grounded example
-    # sentence in its own data -- previously only word 0 ever got turned
-    # into an actual exercise (build-the-sentence), leaving every other
-    # word's sentence sitting unused beyond its passive "SAY IT" quote on
-    # the vocab card. 2 slides of 3 sentences each, drawn from the
-    # lesson's own vocab in order; only 2 of 140 lessons have fewer than
-    # 6 words at all (Pre-A lessons 6 and 8, 5 and 4 words respectively),
-    # so those two cycle back to the start of the list rather than ever
-    # showing fewer than 3 per slide.
+    # Sentence structure: every vocab word has a meaning-grounded example
+    # sentence; 2 slides of 3 sentences each, in lesson order. Only 2 of
+    # 140 lessons have fewer than 6 words (Pre-A lessons 6 and 8), so
+    # those cycle back to the start rather than showing fewer than 3.
     sentence_indices = [i % V for i in range(6)]
     plan.append(("sentence_trio", sentence_indices[0:3]))
     plan.append(("sentence_trio", sentence_indices[3:6]))
+    # Reading Lab (Level 2, every third lesson -- lib/reading_passages.py):
+    # a short illustrated story with the words they know glowing, then
+    # teacher questions. Teacher reads Part 1, the child reads Part 2.
+    import reading_slides
+    if reading_slides.passage_for(level, lesson_num):
+        for _ri in range(3):
+            plan.append(("reading", _ri))
+    plan.append(("dialogue", None))
     # Activity 2 of 3: Memory Match (pairs take turns / student vs teacher).
     plan.append(("act_memory", None))
     plan.append(("sound_spot", None))
+    # Quick Check: live, age-calibrated in-class practice -- one round per
+    # vocab word, once through (recognition before production).
+    for i in range(V):
+        plan.append(("quick_check", (i, 0)))
     your_turn_n = min(5, V)
     _yt_idx = sorted({round(i * (V - 1) / max(1, your_turn_n - 1)) for i in range(your_turn_n)}) if V else []
     for i, _vi in enumerate(_yt_idx):
         plan.append(("your_turn", (lesson["vocab"][_vi], i + 1)))
-    # Quick Check: live, age-calibrated in-class practice -- one round per
-    # vocab word, once through (no repeat round -- that repetition is now
-    # a real teacher-led game instead, more engaging than seeing the same
-    # question format twice)
-    for i in range(V):
-        plan.append(("quick_check", (i, 0)))
     # Activity 3 of 3: Mystery Picture -- guess early for more points.
     plan.append(("act_mystery", None))
-    plan.append(("teacher_game", "teacher"))
-    plan.append(("teacher_game", "student"))
-    plan.append(("teacher_game", "partner"))
-    if V <= 4:
-        plan.append(("teacher_game", "group"))
+    # (Teacher & Student Game / Your Turn to Call It / Partner Challenge
+    # removed from every deck -- Eslam, 13 Oct 2026.)
     plan.append(("quiz", 1))
     plan.append(("quiz", 2))
     # Review lessons only: two fixed quiz slides is a reasonable capstone
@@ -1561,6 +1566,10 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
         elif kind == "common_mistakes":
             import common_mistakes as _cm
             slides.append(slide_common_mistakes_kid(_cm.mistakes_for(data), data.get("title", ""), n, total, pick_character("explain", lesson_num + 2)))
+        elif kind == "reading":
+            import reading_slides
+            slides.append(reading_slides.reading_slide(level, lesson_num, data, bg_study(),
+                                                       lambda t, _n=n: header(t, _n, total) + COLORSTRIP, kid=True))
         elif kind == "act_flash":
             import activity_slides
             slides.append(activity_slides.slide_flash_race(lesson["vocab"], bg_study(), header("Flash Race &bull; Speaking Game", n, total) + COLORSTRIP, char_html=char_img(pick_character("cheer", lesson_num), right=30, bottom=30, height=150)))

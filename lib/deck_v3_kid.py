@@ -284,8 +284,9 @@ def slide_dialogue(lines, n, total, lesson_num=0):
 
 def slide_vocab_scene(image_path, sentence, bold_words, n, total, seed, translation=None):
     hl = T.highlight_words(esc(sentence), bold_words).replace('class="vs-key"', 'class="v3-key"')
-    return f'''<div class="v3-bg" style="background-image:url('{image_path}')"></div>
+    return f'''<div class="v3-bg scene-bg" style="background-image:url('{image_path}')"></div>
     <div class="v3-shade" style="background:linear-gradient(180deg,rgba(30,15,0,.45),rgba(30,15,0,0) 22%,rgba(30,15,0,0) 60%,rgba(30,15,0,.55))"></div>
+    <button type="button" class="scene-only-btn" onclick="LumioAct.sceneOnly(this)" title="Scene only / show all" aria-label="Scene only"><span data-ico="eye"></span></button>
     {header("", n, total)}
     <div class="v3-caption">
       <div><div class="v3-quote">{hl}</div>{f'<div class="v3-ar" style="margin-top:8px;font-size:1.25rem">{esc(translation)}</div>' if translation else ''}</div>
