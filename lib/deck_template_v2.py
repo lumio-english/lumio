@@ -399,8 +399,9 @@ def slide_vocab_scene(image_path, sentence, bold_words, n, total, seed, translat
     with them."""
     highlighted = highlight_words(esc(sentence), bold_words)
     speak_text = sentence.replace("'", "\\'")
-    return f'''<div style="position:absolute;inset:0;background:url('{image_path}') center/cover no-repeat"></div>
+    return f'''<div class="scene-bg" style="position:absolute;inset:0;background:url('{image_path}') center/cover no-repeat"></div>
     <div style="position:absolute;left:0;right:0;top:0;height:120px;background:linear-gradient(180deg,rgba(43,33,24,.55),transparent)"></div>
+    <button type="button" class="scene-only-btn" onclick="LumioAct.sceneOnly(this)" title="Scene only / show all" aria-label="Scene only"><span data-ico="eye"></span></button>
     {header("", n, total)}
     <div style="position:absolute;left:0;right:0;bottom:0;padding:22px 46px 64px;background:linear-gradient(0deg,rgba(43,33,24,.7) 10%,rgba(43,33,24,.35) 70%,transparent 100%)">
       <div style="display:flex;align-items:center;justify-content:center;gap:16px;max-width:1100px;margin:0 auto">

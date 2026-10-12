@@ -213,5 +213,23 @@
     else if (window.speechSynthesis) { const u = new SpeechSynthesisUtterance(text); u.lang = "en-US"; u.rate = 0.9; speechSynthesis.cancel(); speechSynthesis.speak(u); }
   };
 
+  // ---- Scene only -------------------------------------------------------
+  // The eye button on a scene slide hides everything except the picture
+  // (slide text, header, caption, the presenter's bars and HUD) so the
+  // class can just look at the scene and talk. Tap again to bring it back.
+  A.sceneOnly = function (btn) {
+    const root = document.getElementById("stageContent") || (btn && btn.closest(".slideStage")) || document.body;
+    const bg = root.querySelector(".scene-bg");
+    const on = !document.body.classList.contains("scene-only");
+    document.body.classList.toggle("scene-only", on);
+    root.querySelectorAll("*").forEach(function (el) {
+      if (el === btn || el === bg || el.contains(btn) || (bg && (el.contains(bg) || bg.contains(el))) || btn.contains(el)) return;
+      if (on) { if (el.style.visibility === "hidden") el.dataset.soKeep = "1"; else el.style.visibility = "hidden"; }
+      else if (el.dataset.soKeep === "1") delete el.dataset.soKeep;
+      else el.style.visibility = "";
+    });
+    if (btn) btn.classList.toggle("on", on);
+  };
+
   window.LumioAct = A;
 })();
