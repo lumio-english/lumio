@@ -176,7 +176,7 @@ function charImg(name, opts) {
     <img class="char" src="assets/story/characters/${name}.png" style="right:${right}px;bottom:${bottom}px;height:${height}px">`;
 }
 const speakBtn = (word) => `onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('${esc(word).replace(/'/g, "\\'")}')"`;
-const speakPhonicsBtn = (token) => `onclick="typeof Lumio !== 'undefined' && Lumio.speakPhonicsSound && Lumio.speakPhonicsSound('${esc(token).replace(/'/g, "\\'")}')"`;
+const speakPhonicsBtn = (token, say) => `onclick="typeof Lumio !== 'undefined' && Lumio.speakPhonicsSound && Lumio.speakPhonicsSound('${esc(token).replace(/'/g, "\\'")}', 0.92${say ? `, '${esc(say).replace(/'/g, "\\'")}'` : ""})"`;
 
 /* ============================================================
    Per-type slide builders — one function per Hub tab, each
@@ -331,7 +331,7 @@ function buildPhonicsSlides(data) {
       const key = s.letter.split(",")[0].split("-")[0].trim().toLowerCase();
       return `
       <button style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:14px;padding:14px 18px;min-width:100px;
-                    text-align:center;box-shadow:0 8px 16px rgba(67,48,31,.14)" ${speakPhonicsBtn(s.letter.split(",")[0].split("-")[0].trim())}>
+                    text-align:center;box-shadow:0 8px 16px rgba(67,48,31,.14)" ${speakPhonicsBtn(s.audio || s.letter.split(",")[0].split("-")[0].trim(), s.say)}>
         <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.6rem;color:#F97316">${esc(s.letter)}</div>
         <div style="font-size:.8rem;color:#8A7160;margin-top:2px">${esc(s.sound)}</div>
         ${mouthImg(key, 52)}

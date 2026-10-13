@@ -195,18 +195,17 @@ const BUILD_LABELS = [
 
 // ---------- Curated phonics word bank (each entry has a confirmed real vocab image) ----------
 // Trimmed from phonics-hub/level1.json's own word lists down to the words that
-// have real illustrations -- a few sight words and some phonics-only words
-// (e.g. "top", "ink") don't have picture support, so those are left out here
-// rather than shown as a broken image.
+// have real illustrations; words without a picture are left out here rather
+// than shown as a broken image.
 const PHONICS_UNITS = [
-  { words: ["sun", "ant"] },              // Unit 1 (lesson 1): s,a,t,p
-  { words: ["map", "dad"] },              // Unit 2 (lesson 3): i,n,m,d
-  { words: ["cat", "kite"] },             // Unit 3 (lesson 5): g,o,c,k
-  { words: ["duck", "egg", "run"] },      // Unit 4 (lesson 7): ck,e,u,r
-  { words: ["hat", "bed", "leg"] },       // Unit 5 (lesson 9): h,b,f,l
-  { words: ["cat", "dog", "sun"] },       // Unit 6 (lesson 11): CVC blending
-  null,                                    // Unit 7 (lesson 13): sight words -- no picture support, skipped
-  { words: ["cat", "dog", "sun", "hat", "run", "leg"] }, // Unit 8 (lesson 15): review
+  { words: ["pat"] },                                   // Unit 1 (lesson 1): s, a, t, p
+  { words: ["pin", "sit", "map", "nap", "dad"] },        // Unit 2 (lesson 3): i, n, m, d
+  { words: ["dog", "cat", "pot", "cap"] },               // Unit 3 (lesson 5): g, o, c, k
+  { words: ["duck", "pen", "net", "sun", "cup", "run"] }, // Unit 4 (lesson 7): ck, e, u, r
+  { words: ["hat", "bed", "fan", "leg", "bell", "bag"] }, // Unit 5 (lesson 9): h, b, f, l (ff, ll, ss)
+  { words: ["jam", "van", "web", "box", "fox", "six"] }, // Unit 6 (lesson 11): j, v, w, x
+  { words: ["quiz"] },                                   // Unit 7 (lesson 13): y, z, qu
+  { words: ["pat", "fan", "van", "pen", "pin"] },        // Unit 8 (lesson 15): review -- sounds that sound alike
 ];
 // Phonics units land on lesson 1, 3, 5, 7... (unit i unlocks at lesson 2i-1) --
 // so a round never draws on a sound group the child hasn't reached yet.

@@ -767,7 +767,9 @@ const Lumio = (() => {
     try { fetch(`${ASSET_ROOT}assets/audio/${slug}.mp3`).catch(() => {}); } catch (e) {}
   };
 
-  const speakPhonicsSound = (token, rate = 0.92) => {
+  // fallbackText: what to say when no recording exists yet for this sound (e.g. "night" for igh),
+  // instead of the speech engine spelling the letters out
+  const speakPhonicsSound = (token, rate = 0.92, fallbackText) => {
     if (currentAudio) { try { currentAudio.pause(); } catch (e) {} currentAudio = null; }
     if ("speechSynthesis" in window) speechSynthesis.cancel();
     const slug = slugify(token);
@@ -775,7 +777,7 @@ const Lumio = (() => {
     const audio = new Audio(`${ASSET_ROOT}assets/audio/phonics-sound-${slug}.mp3`);
     currentAudio = audio;
     let fellBack = false;
-    const fallback = () => { if (fellBack) return; fellBack = true; speakSynth(token, rate); };
+    const fallback = () => { if (fellBack) return; fellBack = true; if (fallbackText) speak(fallbackText); else speakSynth(token, rate); };
     audio.addEventListener("error", fallback);
     const playResult = audio.play();
     if (playResult && typeof playResult.catch === "function") playResult.catch(fallback);

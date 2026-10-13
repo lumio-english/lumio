@@ -73,9 +73,12 @@
     try { L.speak ? L.speak(text) : null; } catch (e) {}
     if (el) setTimeout(function () { el.classList.remove("speaking", "on"); }, 1400);
   }
-  function sayPhonics(tok, el) {
+  // snd: a phonics-hub sound object; "audio" names its recording, "say" is spoken if that file is missing
+  function sayPhonics(snd, el) {
     if (el) { el.classList.add("speaking"); setTimeout(function () { el.classList.remove("speaking"); }, 900); }
-    try { L.speakPhonicsSound ? L.speakPhonicsSound(tok) : L.speak(tok); } catch (e) {}
+    var tok = typeof snd === "object" ? (snd.audio || String(snd.letter).split(",")[0].trim()) : snd;
+    var alt = typeof snd === "object" ? snd.say : undefined;
+    try { L.speakPhonicsSound ? L.speakPhonicsSound(tok, 0.92, alt) : L.speak(alt || tok); } catch (e) {}
   }
   function fx(kind) { try { if (L.beep) L.beep(kind === "right"); } catch (e) {} }
 
@@ -463,11 +466,14 @@
         return '<button class="card word' + (sight ? " sight" : "") + '" data-w="' + j + '"><img src="' + pic(w) + '" alt="" loading="lazy" onerror="this.parentNode.classList.add(\'nopic\')">' +
           '<span class="wt" aria-hidden="true"><span>' + soundLetters(w.en, u.sounds) + "</span></span><b>" + esc(w.en) + '</b><span class="ar" dir="rtl">' + esc(w.ar) + "</span></button>";
       }).join("") + "</div>" +
+      (u.tricky && u.tricky.length ? '<div class="sec-h"><h2>Tricky words</h2><span class="sub">read them whole</span></div><div class="words">' +
+        u.tricky.map(function (w, j) { return '<button class="card word sight" data-t="' + j + '"><b>' + esc(w.en) + '</b><span class="ar" dir="rtl">' + esc(w.ar) + "</span></button>"; }).join("") + "</div>" : "") +
       (u.story ? '<div class="sec-h"><h2>Read the story</h2></div><div class="card story"><button class="play" id="stPlay" aria-label="Listen">' + g("sound") + '</button><div><p>' + esc(u.story.en) + '</p><p class="ar" dir="rtl">' + esc(u.story.ar) + "</p></div></div>" : "") +
       (u.tip ? '<div class="box tip"><span class="lbl">Tip</span><div class="ar" dir="rtl" style="color:var(--ink)">' + esc(u.tip) + "</div></div>" : "") +
       '<button class="btn pri wide" id="phDone" style="margin-top:18px">' + g("check") + (P.sounds[u.unit] ? "Practised" : "I practised these sounds") + "</button>");
-    main.querySelectorAll(".sound").forEach(function (b) { b.onclick = function () { sayPhonics(u.sounds[b.dataset.j].letter, b); }; });
-    main.querySelectorAll(".word").forEach(function (b) { b.onclick = function () { say(u.words[b.dataset.w].en, b); }; });
+    main.querySelectorAll(".sound").forEach(function (b) { b.onclick = function () { sayPhonics(u.sounds[b.dataset.j], b); }; });
+    main.querySelectorAll(".word[data-w]").forEach(function (b) { b.onclick = function () { say(u.words[b.dataset.w].en, b); }; });
+    main.querySelectorAll(".word[data-t]").forEach(function (b) { b.onclick = function () { say(u.tricky[b.dataset.t].en, b); }; });
     var sp = $("#stPlay"); if (sp) sp.onclick = function () { say(u.story.en, sp); };
     $("#phDone").onclick = function () {
       if (!P.sounds[u.unit]) { P.sounds[u.unit] = today(); save(); addXP(5, "phonics"); }

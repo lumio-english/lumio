@@ -325,6 +325,11 @@ Done by three parallel workers (sync layer / teacher UI / student UI), merged an
 - Content: `bonus-classes/<level>/bonusNN.json` (plan, deck, homeworkMissions, printables). Generators: `gen_bonus_plans.py` (teacher-guide/bonus/), `gen_bonus_slides.py` + `lib/bonus_deck.py` + `css/bonus-slides.css` (slide-content-v5/<level>/bonus-NN/, assets/slides-v5/<level>/bonus-manifest.json), `gen_bonus_printables.py` (worksheets/<level>/bonusNN-worksheet.pdf, flashcards/<level>/bonusNN-cards.pdf). **After editing a bonus JSON, run all three.**
 - Pages: `present.html?level=&bonus=N`, `bonus-homework.html?level=&b=N` (mission board; `&preview=1` for teachers). Student map shows B1-B4 stops; teacher Materials tab lists Bonus Class rows. Quran mentions are descriptive only (no verse cited); if a verse is ever cited it must be Arabic with full Mushaf diacritics, no translation.
 
+## 3ee. Phonics rebuilt (13 Oct 2026)
+- `phonics-hub/level1.json` (8 units) + `level2.json` (9 units) rewritten as systematic synthetic phonics; plan + recording list in `_docs/phonics-scope-and-sequence.md`. Every word and story is decodable from the sounds taught so far (check with scratchpad `phon/check.py` logic: graphemes per unit + `tricky` words).
+- New unit fields: `tricky` [{en, ar}] (shown on the rule slide and in the Hub), per-sound `audio` (recording name) and `say` (example word spoken when that recording is missing), `graphemes`. `Lumio.speakPhonicsSound(token, rate, fallbackText)`.
+- Games `treehouse-builder` / `twelve-months-calendar` keep their own picture-word lists per unit; update them when units change.
+
 ## 4. Working style
 Test setup (scratchpad, recreate if lost): static site `python3 -m http.server 8810` from the repo; mock Apps Script `node verify/gsserver.js 8899 _docs/AppsScript-Code.gs` with `verify/lib.py` (seed, teacher_login, student_login). Artifacts for previews are private claude.ai pages (Version 5 slides, English Hub preview).
 Verify in a browser before claiming done; check files before writing prompts; never duplicate; fix in templates not per slide; say plainly what was NOT done; ask one specific question when ambiguous.

@@ -3,85 +3,18 @@
   "levelName": "Level 2 · My World",
   "units": [
     {
-      "unit": "Group 6: j, v, w, x, y, z",
-      "unitAr": "المجموعة 6: j, v, w, x, y, z",
-      "sounds": [
-        {
-          "letter": "j",
-          "sound": "/j/",
-          "ar": "كصوت الجيم الفصيحة"
-        },
-        {
-          "letter": "v",
-          "sound": "/v/",
-          "ar": "لا يوجد مقابل — أسنانك العلوية تلمس شفتك السفلى"
-        },
-        {
-          "letter": "w",
-          "sound": "/w/",
-          "ar": "كصوت الواو مع ضم الشفتين"
-        },
-        {
-          "letter": "x",
-          "sound": "/ks/",
-          "ar": "دمج صوتي k و s"
-        },
-        {
-          "letter": "y",
-          "sound": "/y/",
-          "ar": "كصوت الياء"
-        },
-        {
-          "letter": "z",
-          "sound": "/z/",
-          "ar": "كصوت الزاي"
-        }
-      ],
-      "words": [
-        {
-          "en": "jam",
-          "ar": "مربى"
-        },
-        {
-          "en": "van",
-          "ar": "شاحنة صغيرة"
-        },
-        {
-          "en": "web",
-          "ar": "شبكة عنكبوت"
-        },
-        {
-          "en": "box",
-          "ar": "صندوق"
-        },
-        {
-          "en": "yes",
-          "ar": "نعم"
-        },
-        {
-          "en": "zoo",
-          "ar": "حديقة حيوان"
-        }
-      ],
-      "tip": "نصيحة: صوت v يخلط معه كثير من متحدثي العربية مع f — درّب الطفل على استخدام صوته (اهتزاز الحبال الصوتية) مع v، بعكس f.",
-      "story": {
-        "en": "Dad has a van. We go to the zoo! Yes, yes, we see a big web. We see a fox in a box. We eat jam at the zoo.",
-        "ar": "لدى بابا شاحنة صغيرة. نذهب إلى حديقة الحيوان! نعم، نعم، نرى شبكة عنكبوت كبيرة. نرى ثعلباً في صندوق. نأكل المربى في حديقة الحيوان."
-      }
-    },
-    {
       "unit": "Digraphs: sh, ch",
-      "unitAr": "حروف مزدوجة: sh, ch",
+      "unitAr": "حرفان لصوت واحد: sh, ch",
       "sounds": [
         {
           "letter": "sh",
-          "sound": "/sh/",
-          "ar": "كصوت الشين"
+          "sound": "/ʃ/",
+          "ar": "كصوت الشين (ship)"
         },
         {
           "letter": "ch",
-          "sound": "/ch/",
-          "ar": "كصوت التش (كما في تشيز)"
+          "sound": "/tʃ/",
+          "ar": "صوتان ملتصقان: ت ثم ش، مثل «تش» (chip)"
         }
       ],
       "words": [
@@ -91,36 +24,70 @@
         },
         {
           "en": "fish",
-          "ar": "سمك"
+          "ar": "سمكة"
+        },
+        {
+          "en": "shop",
+          "ar": "متجر"
         },
         {
           "en": "chip",
           "ar": "رقاقة بطاطس"
         },
         {
-          "en": "chair",
-          "ar": "كرسي"
+          "en": "chin",
+          "ar": "ذقن"
+        },
+        {
+          "en": "lunch",
+          "ar": "غداء"
         }
       ],
-      "tip": "نصيحة: هذان الصوتان قريبان من نظيريهما في العربية، لذا سيجدهما الطفل سهلة نسبيا.",
+      "tricky": [
+        {
+          "en": "was",
+          "ar": "كان"
+        },
+        {
+          "en": "you",
+          "ar": "أنت"
+        }
+      ],
+      "tip": "نصيحة: حرفان يصنعان صوتًا واحدًا جديدًا! s و h معًا تصبحان «ش»، و c و h معًا تصبحان «تش». لا تنطق الحرفين منفصلين.",
       "story": {
-        "en": "Sam sat on a chair. Sam had a chip. Sam saw a ship and a fish. The fish swam past the ship.",
-        "ar": "جلس سام على كرسي. كان لدى سام رقاقة بطاطس. رأى سام سفينة وسمكة. سبحت السمكة بجانب السفينة."
+        "en": "A fish was in a ship. The fish had a chip. Shh! The fish got to a shop. You can get lunch in the shop. Chop, chop!",
+        "ar": "كانت سمكة في سفينة. كان مع السمكة رقاقة بطاطس. صه! وصلت السمكة إلى متجر. يمكنك أن تشتري الغداء من المتجر. بسرعة، بسرعة!"
       }
     },
     {
-      "unit": "Digraphs: th, ng",
-      "unitAr": "حروف مزدوجة: th, ng",
+      "unit": "Digraphs: th (two sounds), ng, nk",
+      "unitAr": "حرفان لصوت واحد: th (صوتان)، ng، nk",
       "sounds": [
         {
           "letter": "th",
-          "sound": "/th/",
-          "ar": "كصوت الثاء (thin) أو الذال (this)"
+          "sound": "/θ/",
+          "ar": "كصوت الثاء: اللسان بين الأسنان بلا اهتزاز (thin)",
+          "audio": "th",
+          "say": "thin"
+        },
+        {
+          "letter": "th",
+          "sound": "/ð/",
+          "ar": "كصوت الذال: اللسان بين الأسنان مع اهتزاز (this)",
+          "audio": "th-voiced",
+          "say": "this"
         },
         {
           "letter": "ng",
-          "sound": "/ng/",
-          "ar": "صوت أنفي في نهاية الكلمة، كصوت النون الساكنة قبل القاف"
+          "sound": "/ŋ/",
+          "ar": "صوت أنفي واحد، كالنون قبل القاف؛ لا يُنطق g بعده (ring)"
+        },
+        {
+          "letter": "nk",
+          "sound": "/ŋk/",
+          "ar": "الصوت الأنفي ng ثم k (pink)",
+          "audio": "nk",
+          "say": "pink"
         }
       ],
       "words": [
@@ -139,42 +106,152 @@
         {
           "en": "king",
           "ar": "ملك"
+        },
+        {
+          "en": "pink",
+          "ar": "وردي"
+        },
+        {
+          "en": "bank",
+          "ar": "بنك"
         }
       ],
-      "tip": "نصيحة: صوت th يشبه الثاء/الذال العربية، فهو أسهل من نظيره لمتحدثي لغات أخرى — استغل هذا التشابه!",
+      "tricky": [
+        {
+          "en": "they",
+          "ar": "هم"
+        },
+        {
+          "en": "are",
+          "ar": "يكونون"
+        }
+      ],
+      "tip": "نصيحة: th لها صوتان: ثاء بلا اهتزاز (thin) وذال مع اهتزاز (this). لا تنطقها سينًا أو زايًا! وفي ng لا تنطق g في الآخر: ring وليس «رينغ».",
       "story": {
-        "en": "This king is thin. The king has a gold ring. The king sings this song. This ring is for the king.",
-        "ar": "هذا الملك نحيف. لدى الملك خاتم ذهبي. يغني الملك هذه الأغنية. هذا الخاتم للملك."
+        "en": "This king is thin. The king has a pink ring. They sing in the bank. Are they thin? No! The king is thin, and the ring is pink.",
+        "ar": "هذا الملك نحيف. عند الملك خاتم وردي. هم يغنّون في البنك. هل هم نحاف؟ لا! الملك نحيف، والخاتم وردي."
       }
     },
     {
-      "unit": "L-Blends: bl, cl, fl, pl, sl",
-      "unitAr": "دمج مع L: bl, cl, fl, pl, sl",
+      "unit": "Ending Blends: nd, nt, mp, st, lk, sk",
+      "unitAr": "تجمّع ساكنين في آخر الكلمة: nd, nt, mp, st, lk, sk",
+      "sounds": [
+        {
+          "letter": "nd",
+          "sound": "/nd/",
+          "ar": "n ثم d بدون حركة بينهما (hand)",
+          "audio": "nd",
+          "say": "hand"
+        },
+        {
+          "letter": "nt",
+          "sound": "/nt/",
+          "ar": "n ثم t بدون حركة بينهما (tent)",
+          "audio": "nt",
+          "say": "tent"
+        },
+        {
+          "letter": "mp",
+          "sound": "/mp/",
+          "ar": "m ثم p بدون حركة بينهما (jump)",
+          "audio": "mp",
+          "say": "jump"
+        },
+        {
+          "letter": "st",
+          "sound": "/st/",
+          "ar": "s ثم t بدون حركة بينهما (nest)",
+          "say": "nest"
+        },
+        {
+          "letter": "lk",
+          "sound": "/lk/",
+          "ar": "l ثم k بدون حركة بينهما (milk)",
+          "audio": "lk",
+          "say": "milk"
+        },
+        {
+          "letter": "sk",
+          "sound": "/sk/",
+          "ar": "s ثم k بدون حركة بينهما (desk)",
+          "say": "desk"
+        }
+      ],
+      "words": [
+        {
+          "en": "hand",
+          "ar": "يد"
+        },
+        {
+          "en": "tent",
+          "ar": "خيمة"
+        },
+        {
+          "en": "jump",
+          "ar": "يقفز"
+        },
+        {
+          "en": "nest",
+          "ar": "عش"
+        },
+        {
+          "en": "milk",
+          "ar": "حليب"
+        },
+        {
+          "en": "desk",
+          "ar": "مكتب"
+        }
+      ],
+      "tricky": [
+        {
+          "en": "all",
+          "ar": "كلّ"
+        },
+        {
+          "en": "some",
+          "ar": "بعض"
+        }
+      ],
+      "tip": "نصيحة: المتحدثون بالعربية يضيفون حركة بين الساكنين أو يحذفون الأخير (milik، des). انطق الساكنين متتاليين بلا حركة، ولا تُسقط الصوت الأخير: hand وليس han.",
+      "story": {
+        "en": "I jump on the sand. Jump, jump, jump! Dad has a tent and a lamp. All the milk is in the tent. Some milk is on the desk!",
+        "ar": "أقفز على الرمل. قفز، قفز، قفز! عند أبي خيمة ومصباح. كل الحليب في الخيمة. بعض الحليب على المكتب!"
+      }
+    },
+    {
+      "unit": "Beginning Blends: bl, cl, fl, br, dr, tr",
+      "unitAr": "تجمّع ساكنين في أول الكلمة: bl, cl, fl, br, dr, tr",
       "sounds": [
         {
           "letter": "bl",
           "sound": "/bl/",
-          "ar": "دمج صوتي b و l"
+          "ar": "b ثم l بدون حركة بينهما (black)"
         },
         {
           "letter": "cl",
-          "sound": "/cl/",
-          "ar": "دمج صوتي k و l"
+          "sound": "/kl/",
+          "ar": "k ثم l بدون حركة بينهما (clap)"
         },
         {
           "letter": "fl",
           "sound": "/fl/",
-          "ar": "دمج صوتي f و l"
+          "ar": "f ثم l بدون حركة بينهما (flag)"
         },
         {
-          "letter": "pl",
-          "sound": "/pl/",
-          "ar": "دمج صوتي p و l"
+          "letter": "br",
+          "sound": "/br/",
+          "ar": "b ثم r بدون حركة بينهما (brush)"
         },
         {
-          "letter": "sl",
-          "sound": "/sl/",
-          "ar": "دمج صوتي s و l"
+          "letter": "dr",
+          "sound": "/dr/",
+          "ar": "d ثم r بدون حركة بينهما (drum)"
+        },
+        {
+          "letter": "tr",
+          "sound": "/tr/",
+          "ar": "t ثم r بدون حركة بينهما (trip)"
         }
       ],
       "words": [
@@ -184,66 +261,11 @@
         },
         {
           "en": "clap",
-          "ar": "يصفق"
+          "ar": "يصفّق"
         },
         {
           "en": "flag",
           "ar": "علم"
-        },
-        {
-          "en": "plum",
-          "ar": "برقوق"
-        },
-        {
-          "en": "slide",
-          "ar": "زحليقة"
-        }
-      ],
-      "tip": "نصيحة: دمج صوتين متتاليين في بداية الكلمة غير مألوف في العربية — درّب ببطء ثم بسرعة تدريجيا.",
-      "story": {
-        "en": "We clap and clap! We see a black flag. We go on the slide. We eat a plum on the slide. Clap for the black flag!",
-        "ar": "نصفق ونصفق! نرى علماً أسود. نذهب على الزحليقة. نأكل خوخاً على الزحليقة. صفقوا للعلم الأسود!"
-      }
-    },
-    {
-      "unit": "R-Blends: br, cr, dr, fr, gr, tr",
-      "unitAr": "دمج مع R: br, cr, dr, fr, gr, tr",
-      "sounds": [
-        {
-          "letter": "br",
-          "sound": "/br/",
-          "ar": "دمج صوتي b و r"
-        },
-        {
-          "letter": "cr",
-          "sound": "/cr/",
-          "ar": "دمج صوتي k و r"
-        },
-        {
-          "letter": "dr",
-          "sound": "/dr/",
-          "ar": "دمج صوتي d و r"
-        },
-        {
-          "letter": "fr",
-          "sound": "/fr/",
-          "ar": "دمج صوتي f و r"
-        },
-        {
-          "letter": "gr",
-          "sound": "/gr/",
-          "ar": "دمج صوتي g و r"
-        },
-        {
-          "letter": "tr",
-          "sound": "/tr/",
-          "ar": "دمج صوتي t و r"
-        }
-      ],
-      "words": [
-        {
-          "en": "brush",
-          "ar": "فرشاة"
         },
         {
           "en": "crab",
@@ -256,55 +278,57 @@
         {
           "en": "frog",
           "ar": "ضفدع"
-        },
-        {
-          "en": "grass",
-          "ar": "عشب"
-        },
-        {
-          "en": "tree",
-          "ar": "شجرة"
         }
       ],
-      "tip": "نصيحة: تذكّر أن r الإنجليزية أخف من الراء العربية حتى ضمن الدمج الصوتي.",
+      "tricky": [
+        {
+          "en": "come",
+          "ar": "تعال"
+        },
+        {
+          "en": "said",
+          "ar": "قال"
+        }
+      ],
+      "tip": "نصيحة: العربية لا تبدأ كلمة بساكنين، لذلك نضيف حركة دون أن ننتبه (bilack، firog). اجمع الساكنين بسرعة كأنهما صوت واحد: black. ونفس القاعدة مع cr و fr و gr و pl.",
       "story": {
-        "en": "A frog sits in the grass. A crab plays a drum near a tree. We brush the grass. The frog and the crab play by the tree.",
-        "ar": "يجلس ضفدع في العشب. يعزف سرطان البحر على الطبل بجانب شجرة. ننظف العشب. يلعب الضفدع وسرطان البحر بجانب الشجرة."
+        "en": "A black crab and a frog sit on a flag. The crab can drum. Clap, clap! \"Come and drum!\" said the frog. The crab and the frog drum and clap.",
+        "ar": "سلطعون أسود وضفدع يجلسان على علم. يستطيع السلطعون أن يقرع الطبل. صفّق، صفّق! قال الضفدع: «تعال واقرع الطبل!» السلطعون والضفدع يقرعان الطبل ويصفّقان."
       }
     },
     {
-      "unit": "S-Blends: sp, st, sk, sm, sn, sw",
-      "unitAr": "دمج مع S: sp, st, sk, sm, sn, sw",
+      "unit": "S-Blends: sp, st, sk, sn, sw, sm",
+      "unitAr": "تجمّع ساكنين يبدأ بـ s: sp, st, sk, sn, sw, sm",
       "sounds": [
         {
           "letter": "sp",
           "sound": "/sp/",
-          "ar": "دمج صوتي s و p"
+          "ar": "s ثم p بدون حركة قبلهما (spin)"
         },
         {
           "letter": "st",
           "sound": "/st/",
-          "ar": "دمج صوتي s و t"
+          "ar": "s ثم t بدون حركة قبلهما (stop)"
         },
         {
           "letter": "sk",
           "sound": "/sk/",
-          "ar": "دمج صوتي s و k"
-        },
-        {
-          "letter": "sm",
-          "sound": "/sm/",
-          "ar": "دمج صوتي s و m"
+          "ar": "s ثم k بدون حركة قبلهما (skip)"
         },
         {
           "letter": "sn",
           "sound": "/sn/",
-          "ar": "دمج صوتي s و n"
+          "ar": "s ثم n بدون حركة قبلهما (snap)"
         },
         {
           "letter": "sw",
           "sound": "/sw/",
-          "ar": "دمج صوتي s و w"
+          "ar": "s ثم w بدون حركة قبلهما (swim)"
+        },
+        {
+          "letter": "sm",
+          "sound": "/sm/",
+          "ar": "s ثم m بدون حركة قبلهما (smell)"
         }
       ],
       "words": [
@@ -313,50 +337,150 @@
           "ar": "يدور"
         },
         {
-          "en": "star",
-          "ar": "نجمة"
+          "en": "stop",
+          "ar": "يتوقف"
         },
         {
           "en": "skip",
-          "ar": "يقفز حبلا"
+          "ar": "يقفز بخفّة"
         },
         {
-          "en": "smile",
-          "ar": "ابتسامة"
-        },
-        {
-          "en": "snail",
-          "ar": "حلزون"
+          "en": "snap",
+          "ar": "يطقطق"
         },
         {
           "en": "swim",
           "ar": "يسبح"
+        },
+        {
+          "en": "smell",
+          "ar": "يشمّ"
         }
       ],
-      "tip": "نصيحة: كلمات تبدأ بـ s متبوعة بصوت ساكن آخر صعبة في العربية لأنها غالبا تحتاج همزة وصل — درّب النطق بدون إضافة صوت إضافي قبل s.",
+      "tricky": [
+        {
+          "en": "have",
+          "ar": "يملك"
+        },
+        {
+          "en": "there",
+          "ar": "هناك"
+        }
+      ],
+      "tip": "نصيحة: لا تضف همزة أو حركة قبل s: نقول stop وليس «إستوب»، و spin وليس «إسبين». ابدأ بصوت s مباشرة كصفير الثعبان: sss-top.",
       "story": {
-        "en": "We swim and skip! We see a star and a snail. Smile and spin! The snail and the star make us smile.",
-        "ar": "نسبح ونقفز! نرى نجمة وحلزوناً. ابتسم ودُر! الحلزون والنجمة يجعلاننا نبتسم."
+        "en": "I have a red spin top. Spin, spin! Stop! I skip to the pond and swim. Snap! There is a crab! I smell fish. Have a swim, crab!",
+        "ar": "عندي خذروف أحمر. دُر، دُر! توقّف! أقفز إلى البركة وأسبح. طق! هناك سلطعون! أشمّ رائحة سمك. اسبح قليلًا أيها السلطعون!"
       }
     },
     {
-      "unit": "Vowel Teams: ai, ee, oa",
-      "unitAr": "أزواج الحروف الصوتية: ai, ee, oa",
+      "unit": "Magic e: a_e, i_e, o_e, u_e",
+      "unitAr": "حرف e السحري: a_e, i_e, o_e, u_e",
+      "sounds": [
+        {
+          "letter": "a_e",
+          "sound": "/eɪ/",
+          "ar": "حرف e الصامت في الآخر يجعل a تنطق باسمها «إيه» (cake)",
+          "audio": "a-e",
+          "say": "cake",
+          "graphemes": "a_e"
+        },
+        {
+          "letter": "i_e",
+          "sound": "/aɪ/",
+          "ar": "حرف e الصامت يجعل i تنطق باسمها «آي» (kite)",
+          "audio": "i-e",
+          "say": "kite",
+          "graphemes": "i_e"
+        },
+        {
+          "letter": "o_e",
+          "sound": "/oʊ/",
+          "ar": "حرف e الصامت يجعل o تنطق باسمها «أو» (bone)",
+          "audio": "o-e",
+          "say": "bone",
+          "graphemes": "o_e"
+        },
+        {
+          "letter": "u_e",
+          "sound": "/juː/",
+          "ar": "حرف e الصامت يجعل u تنطق باسمها «يو» (cube)",
+          "audio": "u-e",
+          "say": "cube",
+          "graphemes": "u_e"
+        }
+      ],
+      "words": [
+        {
+          "en": "cake",
+          "ar": "كعكة"
+        },
+        {
+          "en": "game",
+          "ar": "لعبة"
+        },
+        {
+          "en": "kite",
+          "ar": "طائرة ورقية"
+        },
+        {
+          "en": "bike",
+          "ar": "دراجة"
+        },
+        {
+          "en": "five",
+          "ar": "خمسة"
+        },
+        {
+          "en": "bone",
+          "ar": "عظمة"
+        }
+      ],
+      "tricky": [
+        {
+          "en": "one",
+          "ar": "واحد"
+        },
+        {
+          "en": "like",
+          "ar": "يحب"
+        }
+      ],
+      "tip": "نصيحة: قارن الكلمتين: cap و cape، kit و kite. حرف e في الآخر لا يُنطق، لكنه يغيّر الحرف المتحرك قبله ليقول اسمه. هذه أهم قاعدة لقراءة الكلمات الطويلة.",
+      "story": {
+        "en": "Kate has a cake and Mike has a bike. Five kids ride to the lake. One kid has a kite. The kids like the game at the lake, and then they ate the cake!",
+        "ar": "عند كيت كعكة وعند مايك دراجة. خمسة أطفال يركبون إلى البحيرة. أحد الأطفال معه طائرة ورقية. أحبّ الأطفال اللعبة عند البحيرة، ثم أكلوا الكعكة!"
+      },
+      "names": [
+        "Kate",
+        "Mike"
+      ]
+    },
+    {
+      "unit": "Long Vowel Teams: ai, ee, igh, oa",
+      "unitAr": "حروف متحركة طويلة: ai, ee, igh, oa",
       "sounds": [
         {
           "letter": "ai",
-          "sound": "/ay/",
-          "ar": "صوت طويل يشبه الفتحة الممدودة"
+          "sound": "/eɪ/",
+          "ar": "صوت طويل «إيه» (rain)"
         },
         {
           "letter": "ee",
-          "sound": "/ee/",
-          "ar": "صوت طويل يشبه الكسرة الممدودة"
+          "sound": "/iː/",
+          "ar": "كسرة طويلة «إي» (tree)"
+        },
+        {
+          "letter": "igh",
+          "sound": "/aɪ/",
+          "ar": "ثلاثة حروف لصوت واحد «آي»؛ gh لا تُنطق (night)",
+          "audio": "igh",
+          "say": "night"
         },
         {
           "letter": "oa",
-          "sound": "/oh/",
-          "ar": "صوت طويل يشبه الضمة الممدودة"
+          "sound": "/oʊ/",
+          "ar": "صوت طويل «أو» تستدير معه الشفتان (boat)"
         }
       ],
       "words": [
@@ -365,139 +489,197 @@
           "ar": "مطر"
         },
         {
+          "en": "snail",
+          "ar": "حلزون"
+        },
+        {
           "en": "tree",
           "ar": "شجرة"
+        },
+        {
+          "en": "feet",
+          "ar": "أقدام"
+        },
+        {
+          "en": "night",
+          "ar": "ليل"
         },
         {
           "en": "boat",
           "ar": "قارب"
         }
       ],
-      "tip": "نصيحة: عندما يظهر حرفان صوتيان معا، غالبا الأول هو الذي 'يتكلم' والثاني يبقى صامتا — 'القاعدة: عندما يمشي حرفان صوتيان معا، الأول يتكلم!'",
-      "story": {
-        "en": "We see rain by the tree. We sail a boat in the rain. The tree and the boat are wet in the rain.",
-        "ar": "نرى المطر بجانب الشجرة. نُبحر بقارب في المطر. الشجرة والقارب مبللان في المطر."
-      }
-    },
-    {
-      "unit": "More Sight Words",
-      "unitAr": "مزيد من الكلمات البصرية",
-      "sounds": [],
-      "words": [
+      "tricky": [
         {
-          "en": "he",
-          "ar": "هو"
+          "en": "do",
+          "ar": "يفعل"
         },
         {
-          "en": "she",
-          "ar": "هي"
-        },
-        {
-          "en": "we",
-          "ar": "نحن"
-        },
-        {
-          "en": "they",
-          "ar": "هم"
-        },
-        {
-          "en": "was",
-          "ar": "كان"
-        },
-        {
-          "en": "are",
-          "ar": "(فعل الكينونة للجمع)"
-        },
-        {
-          "en": "you",
-          "ar": "أنت"
-        },
-        {
-          "en": "all",
-          "ar": "كل"
+          "en": "were",
+          "ar": "كانوا"
         }
       ],
-      "tip": "نصيحة: راجع كلمات المستوى الأول البصرية أولا (I, the, a, to, go) قبل إضافة هذه المجموعة الجديدة.",
+      "tip": "نصيحة: حرفان متحركان معًا غالبًا ينطقان صوتًا طويلًا واحدًا. قارن: bet و beet، got و goat. ابقَ على الصوت الطويل ولا تقصّره.",
       "story": {
-        "en": "He and she are here. We are all here too! They were here, and you are here. All of us are here together.",
-        "ar": "هو وهي هنا. نحن جميعاً هنا أيضاً! كانا هنا، وأنت هنا أيضاً. كلنا هنا معاً."
+        "en": "It is night. Rain hits the tree. A snail sits on a boat. Do you see the snail? The snail and the boat float in the rain. The snail and the frog were wet!",
+        "ar": "إنه الليل. المطر يضرب الشجرة. حلزون يجلس على قارب. هل ترى الحلزون؟ الحلزون والقارب يطفوان في المطر. كان الحلزون والضفدع مبتلّين!"
       }
     },
     {
-      "unit": "Review + Phonics Game",
-      "unitAr": "مراجعة + لعبة الأصوات",
+      "unit": "Vowel + r and oo: ar, or, ir, oo",
+      "unitAr": "الحرف المتحرك مع r، و oo: ar, or, ir, oo",
+      "sounds": [
+        {
+          "letter": "ar",
+          "sound": "/ɑːr/",
+          "ar": "صوت مفتوح طويل ثم r خفيفة (car)",
+          "audio": "ar",
+          "say": "car"
+        },
+        {
+          "letter": "or",
+          "sound": "/ɔːr/",
+          "ar": "«أو» مفتوحة ثم r خفيفة (fork)",
+          "audio": "or",
+          "say": "fork"
+        },
+        {
+          "letter": "ir, ur",
+          "sound": "/ɝː/",
+          "ar": "صوت واحد بين الفتحة والكسرة مع r ملتفّة (bird، nurse)",
+          "audio": "ur",
+          "say": "bird"
+        },
+        {
+          "letter": "oo",
+          "sound": "/uː/",
+          "ar": "ضمة طويلة (moon)",
+          "audio": "oo",
+          "say": "moon"
+        },
+        {
+          "letter": "oo",
+          "sound": "/ʊ/",
+          "ar": "ضمة قصيرة (book)",
+          "audio": "oo-short",
+          "say": "book"
+        }
+      ],
+      "words": [
+        {
+          "en": "star",
+          "ar": "نجمة"
+        },
+        {
+          "en": "car",
+          "ar": "سيارة"
+        },
+        {
+          "en": "fork",
+          "ar": "شوكة"
+        },
+        {
+          "en": "bird",
+          "ar": "طائر"
+        },
+        {
+          "en": "moon",
+          "ar": "قمر"
+        },
+        {
+          "en": "book",
+          "ar": "كتاب"
+        }
+      ],
+      "tricky": [
+        {
+          "en": "my",
+          "ar": "لي / خاصتي"
+        },
+        {
+          "en": "your",
+          "ar": "لك / خاصتك"
+        }
+      ],
+      "tip": "نصيحة: في النطق الأمريكي تُنطق r بعد الحرف المتحرك (car، fork). و oo لها صوتان: طويل (moon) وقصير (book) — اسمع الكلمة لتعرف أيهما.",
+      "story": {
+        "en": "Look at the moon and the star! A bird sat on my car. I took my book and a fork to the farm. Is this your book? No, it is my book!",
+        "ar": "انظر إلى القمر والنجمة! طائر جلس على سيارتي. أخذتُ كتابي وشوكة إلى المزرعة. هل هذا كتابك؟ لا، إنه كتابي!"
+      }
+    },
+    {
+      "unit": "Review: Read It All",
+      "unitAr": "مراجعة: اقرأ كل شيء",
       "sounds": [
         {
           "letter": "sh",
-          "sound": "/sh/",
-          "ar": "مراجعة"
-        },
-        {
-          "letter": "ch",
-          "sound": "/ch/",
-          "ar": "مراجعة"
+          "sound": "/ʃ/",
+          "ar": "كصوت الشين (ship)"
         },
         {
           "letter": "th",
-          "sound": "/th/",
-          "ar": "مراجعة"
+          "sound": "/θ/",
+          "ar": "كصوت الثاء (thin)",
+          "audio": "th",
+          "say": "thin"
         },
         {
           "letter": "ng",
-          "sound": "/ng/",
-          "ar": "مراجعة"
+          "sound": "/ŋ/",
+          "ar": "صوت أنفي واحد (ring)"
         },
         {
-          "letter": "bl",
-          "sound": "/bl/",
-          "ar": "مراجعة"
+          "letter": "a_e",
+          "sound": "/eɪ/",
+          "ar": "e الصامت يجعل a تقول اسمها (cake)",
+          "audio": "a-e",
+          "say": "cake",
+          "graphemes": "a_e"
         },
         {
-          "letter": "cr",
-          "sound": "/cr/",
-          "ar": "مراجعة"
+          "letter": "ee",
+          "sound": "/iː/",
+          "ar": "كسرة طويلة (tree)"
         },
         {
-          "letter": "st",
-          "sound": "/st/",
-          "ar": "مراجعة"
-        },
-        {
-          "letter": "sw",
-          "sound": "/sw/",
-          "ar": "مراجعة"
+          "letter": "ar",
+          "sound": "/ɑːr/",
+          "ar": "صوت مفتوح طويل ثم r (star)",
+          "audio": "ar",
+          "say": "star"
         }
       ],
       "words": [
         {
           "en": "fish",
-          "ar": "سمك"
+          "ar": "سمكة"
+        },
+        {
+          "en": "ring",
+          "ar": "خاتم"
         },
         {
           "en": "frog",
           "ar": "ضفدع"
         },
         {
-          "en": "star",
-          "ar": "نجمة"
+          "en": "cake",
+          "ar": "كعكة"
         },
         {
           "en": "tree",
           "ar": "شجرة"
         },
         {
-          "en": "king",
-          "ar": "ملك"
-        },
-        {
-          "en": "black",
-          "ar": "أسود"
+          "en": "star",
+          "ar": "نجمة"
         }
       ],
-      "tip": "نصيحة: هذه آخر مراجعة قبل الانتقال إلى قراءة جمل كاملة في المستوى القادم — احتفل بهذا الإنجاز مع الطفل!",
+      "tricky": [],
+      "tip": "نصيحة: للمراجعة: اطلب من الطفل أن يجد في كل كلمة الحرفين اللذين يصنعان صوتًا واحدًا، ثم يقرأ الكلمة كاملة. وإذا تردّد، عُد إلى المجموعة التي فيها هذا الصوت.",
       "story": {
-        "en": "The king sees a fish and a frog by the tree. A black star is in the sky. The fish, the frog, and the king all look at the black star.",
-        "ar": "يرى الملك سمكة وضفدعاً بجانب الشجرة. نجمة سوداء في السماء. السمكة والضفدع والملك ينظرون جميعاً إلى النجمة السوداء."
+        "en": "The king has a fish and a ring. A frog sits on a cake. Look at the star in the tree! Snap! The frog jumps. This is the end. Shh!",
+        "ar": "عند الملك سمكة وخاتم. ضفدع يجلس على كعكة. انظر إلى النجمة في الشجرة! طق! يقفز الضفدع. هذه هي النهاية. صه!"
       }
     }
   ]

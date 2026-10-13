@@ -928,19 +928,33 @@ def slide_quiz(target, distractors, idx, total_q, n, total, seed):
     {buttons}
     ''')
 
+def tricky_row(unit):
+    """Tricky words taught with this sound group: read as whole words, tap to hear."""
+    tw = unit.get("tricky", [])
+    if not tw:
+        return ""
+    chips = "".join(f'''<button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{jsq(w["en"])}')"
+          style="border:2px dashed #F59E0B;cursor:pointer;font-family:inherit;background:#FFFBEB;border-radius:12px;padding:6px 14px;margin:0 6px 6px 0">
+          <b style="font-family:'Baloo 2',sans-serif;font-size:1.15rem;color:#B45309">{esc(w["en"])}</b>
+          <span style="font-size:.75rem;color:#8A7160;font-weight:700"> {w["ar"]}</span></button>''' for w in tw)
+    return (f'<div style="margin:0 0 14px"><div style="font-size:.72rem;font-weight:800;color:#B45309;letter-spacing:1.2px;margin-bottom:6px">'
+            f'TRICKY WORDS &middot; READ THEM WHOLE <span dir="rtl" style="letter-spacing:0">(كلمات تُحفظ كاملة)</span></div>{chips}</div>')
+
+
 def slide_phonics_rule(unit, n, total, ch):
     sounds = unit.get("sounds", [])
     if sounds:
         tiles = ""
         for s in sounds:
-            speak_token = s["letter"].split(",")[0].split("-")[0].strip()
+            speak_token = s.get("audio") or s["letter"].split(",")[0].split("-")[0].strip()
+            say = f", 0.92, '{jsq(s['say'])}'" if s.get("say") else ""
             tiles += f'''
-          <button onclick="typeof Lumio !== 'undefined' && Lumio.speakPhonicsSound && Lumio.speakPhonicsSound('{esc(speak_token)}')"
+          <button onclick="typeof Lumio !== 'undefined' && Lumio.speakPhonicsSound && Lumio.speakPhonicsSound('{esc(speak_token)}'{say})"
                   style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:14px;padding:14px 18px;min-width:100px;
                         text-align:center;box-shadow:0 8px 16px rgba(67,48,31,.14)">
             <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.6rem;color:#F97316">{esc(s["letter"])}</div>
             <div style="font-size:.8rem;color:#8A7160;margin-top:2px">{esc(s["sound"])}</div>
-            {mouth_img(speak_token.lower(), 46)}
+            {mouth_img(speak_token.lower().split("-")[0], 46)}
           </button>'''
         tiles_block = f'<div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:18px">{tiles}</div>'
     else:
@@ -965,6 +979,7 @@ def slide_phonics_rule(unit, n, total, ch):
       <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;color:#43301F;margin-bottom:4px">{esc(unit["unit"])}</div>
       <div style="direction:rtl;text-align:right;font-size:.9rem;color:#8A7160;font-weight:700;margin-bottom:18px">{unit["unitAr"]}</div>
       {tiles_block}
+      {tricky_row(unit)}
       {f'<div style="background:#FFF3D6;border-radius:12px;padding:12px 16px;direction:rtl;text-align:right;font-size:.85rem;color:#43301F;line-height:1.6">{tip}</div>' if tip else ""}
     </div>
     ''' + char_img(ch, bottom=42, height=310))
