@@ -4,12 +4,14 @@ and the Parent Handbook, straight from the live app (served locally).
 
     python3.12 gen_marketing_media.py            # screenshots + videos
     python3.12 gen_marketing_media.py --shots    # screenshots only (fast)
+    python3.12 gen_marketing_media.py --site     # only the landing page: assets/site/shot-*.jpg + the Hub recording
 
 Outputs
   assets/marketing/real-lesson-screenshot.png   landing "This is what a real lesson looks like"
   assets/marketing/worksheet-sample.png         landing, page 1 of Pre-A L1 worksheet PDF
   assets/marketing/flashcard-sample.png         landing, page 1 of Pre-A L1 flashcards PDF
-  assets/marketing/demo-hub.{webm,mp4} + -poster.jpg    landing recording: browsing the Hub
+  assets/site/shot-{preview,lesson,homework,hub}.jpg   landing "How it works" + Hub poster (1400x787, --site)
+  assets/marketing/demo-hub.{webm,mp4} + -poster.jpg    landing recording: browsing the English Hub
   assets/marketing/demo-game.{webm,mp4} + -poster.jpg   landing recording: Level 3 Crew Chat
   assets/marketing/parent-handbook-cover.jpg    landing, page 1 of the handbook PDF (see gen_manuals.py)
   _docs/manuals-src/assets/hb-*.png             every screenshot the Parent Handbook embeds
@@ -32,6 +34,7 @@ CHROMIUM = os.environ.get("LUMIO_CHROMIUM") or ("/opt/pw-browsers/chromium" if o
 MK = "assets/marketing"
 HB = "_docs/manuals-src/assets"
 SHOTS_ONLY = "--shots" in sys.argv
+SITE_ONLY = "--site" in sys.argv
 
 STUDENT = {"name": "Yousef", "level": "pre-a", "t": 0}
 PROGRESS = {"Yousef": {"pre-a": {str(n): {"stars": 3 if n % 3 else 2, "score": 9, "total": 10, "date": "2026-09-20"} for n in range(1, 8)}}}
@@ -70,12 +73,84 @@ def find_v5(level, lesson, needle, default=5):
     return default
 
 
+# demo Hub progress for the landing shots: the first 34 words of Level 2's own Hub marked as known
+_L2_WORDS = [w["en"] for t in json.load(open("vocab-hub/level2.json", encoding="utf-8"))["themes"] for w in t["words"]][:34]
+HUB_DEMO = {"Lina": {"level2": {"known": {w: "2026-10-10" for w in _L2_WORDS},
+             "quiz": {}, "idioms": {}, "grammar": {}, "sounds": {}, "spelling": {}, "writing": {}, "xp": 340,
+             "days": ["2026-10-0" + str(d) for d in range(5, 10)] + ["2026-10-1" + str(d) for d in range(0, 4)]}}}
+
+
+def jpeg(png, out, w=1400):
+    from PIL import Image
+    im = Image.open(png).convert("RGB")
+    im = im.resize((w, round(im.height * w / im.width)), Image.LANCZOS)
+    im.save(out, "JPEG", quality=86, optimize=True, progressive=True)
+    print("site", out)
+
+
+def site_media(browser):
+    """The landing page's own screenshots (assets/site/shot-*.jpg, 1400x787) and the English Hub recording."""
+    tmp = "/tmp/lumio-site-shot.png"
+    student = lambda name, level: f"localStorage.setItem('lumio_user', JSON.stringify({{name:'{name}', level:'{level}', t:0}})); localStorage.removeItem('lumio_teacher');"
+    ctx = browser.new_context(viewport={"width": 1400, "height": 787}, device_scale_factor=2, locale="en")
+    pg = ctx.new_page()
+    pg.goto(f"{BASE}/login.html"); pg.wait_for_timeout(600)
+    # 1. prep in the app: Level 1, Lesson 1, the first new word
+    pg.evaluate(student("Yousef", "level1"))
+    pg.goto(f"{BASE}/lesson.html?level=level1&n=1"); pg.wait_for_timeout(2600)
+    pg.screenshot(path=tmp); jpeg(tmp, "assets/site/shot-preview.jpg")
+    # 2. the live class: the v5 slide the teacher shares, centred on a dark screen like a shared Teams window
+    pg.evaluate("localStorage.setItem('lumio_teacher','1')")
+    pg.goto(f"{BASE}/present.html?fx=0&level=level1&n=1"); pg.wait_for_timeout(2200)
+    pg.evaluate(f"loadSlide({find_v5('level1', 1, 'New Words')})"); pg.wait_for_timeout(1600)
+    pg.locator("#stage").screenshot(path=tmp)
+    from PIL import Image
+    slide = Image.open(tmp).convert("RGB"); W, H = 2800, 1574
+    sh = round(H * .86); slide = slide.resize((round(slide.width * sh / slide.height), sh), Image.LANCZOS)
+    canvas = Image.new("RGB", (W, H), (22, 22, 26)); canvas.paste(slide, ((W - slide.width) // 2, (H - slide.height) // 2))
+    canvas.save(tmp); jpeg(tmp, "assets/site/shot-lesson.jpg")
+    # 3. homework as the student sees it (preview banner hidden: same page, same content)
+    pg.goto(f"{BASE}/homework.html?level=level1&n=1&preview=1"); pg.wait_for_timeout(2200)
+    pg.evaluate("document.getElementById('hwPreviewBanner') && document.getElementById('hwPreviewBanner').remove()"); pg.wait_for_timeout(300)
+    pg.screenshot(path=tmp); jpeg(tmp, "assets/site/shot-homework.jpg")
+    # 4. the English Hub (also the poster of the recording below)
+    pg.evaluate(student("Lina", "level2") + f"localStorage.setItem('lumio_hub2', {json.dumps(json.dumps(HUB_DEMO))})")
+    pg.goto(f"{BASE}/english-hub.html?level=level2#/"); pg.wait_for_timeout(2400)
+    pg.screenshot(path=tmp); jpeg(tmp, "assets/site/shot-hub.jpg")
+    ctx.close()
+    # recording: home -> vocabulary topic -> learn words -> phonics -> idioms
+    vdir = "/tmp/lumio-rec-demo-hub"; shutil.rmtree(vdir, ignore_errors=True)
+    c = browser.new_context(viewport={"width": 1280, "height": 720}, record_video_dir=vdir, record_video_size={"width": 1280, "height": 720})
+    c.add_init_script(student("Lina", "level2") + f"if (!sessionStorage.getItem('seeded')) {{ localStorage.setItem('lumio_hub2', {json.dumps(json.dumps(HUB_DEMO))}); sessionStorage.setItem('seeded','1'); }}")
+    page = c.new_page()
+    page.goto(f"{BASE}/english-hub.html?level=level2#/"); page.wait_for_timeout(2600)
+    for hash_, wait in (("#/vocab", 2200), ("#/vocab/0", 2400), ("#/vocab/0/learn", 1800)):
+        page.evaluate(f"location.hash = '{hash_}'"); page.wait_for_timeout(wait)
+    for _ in range(3):
+        b = page.query_selector("#kYes")
+        if b: b.click()
+        page.wait_for_timeout(1500)
+    for hash_, wait in (("#/", 1800), ("#/phonics", 2200), ("#/phonics/0", 2600), ("#/idioms", 2400)):
+        page.evaluate(f"location.hash = '{hash_}'"); page.wait_for_timeout(wait)
+    for _ in range(2):
+        b = page.query_selector("#iNext")
+        if b: b.click()
+        page.wait_for_timeout(1600)
+    path = page.video.path(); page.close(); c.close()
+    webm = f"{MK}/demo-hub.webm"; shutil.move(path, webm)
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", webm, "-c:v", "libx264", "-pix_fmt", "yuv420p", "-movflags", "+faststart", "-an", f"{MK}/demo-hub.mp4"], check=True)
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-ss", "2", "-i", webm, "-frames:v", "1", "-q:v", "3", f"{MK}/demo-hub-poster.jpg"], check=True)
+    print("video", webm)
+
+
 def main():
     os.makedirs(MK, exist_ok=True); os.makedirs(HB, exist_ok=True)
     srv = serve()
     try:
         with sync_playwright() as p:
             browser = p.chromium.launch(executable_path=CHROMIUM) if CHROMIUM else p.chromium.launch()
+            if SITE_ONLY:
+                site_media(browser); browser.close(); return
             ctx = browser.new_context(viewport={"width": 1280, "height": 720}, device_scale_factor=2, locale="en")
             ctx.add_init_script(SEED)
             pg = ctx.new_page()
@@ -205,7 +280,7 @@ def main():
                                     break
                         page.wait_for_timeout(2200)
 
-                record("demo-hub", hub_steps)
+                site_media(browser)   # landing shots + the English Hub recording
                 record("demo-game", game_steps, size=(640, 720))
             browser.close()
     finally:
