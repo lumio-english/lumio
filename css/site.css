@@ -569,3 +569,14 @@ html[dir="rtl"] .plan .badges{justify-content:flex-start}
 [dir=rtl] .wrq,[dir=rtl] .wrpaper{direction:ltr;text-align:left}
 @media (max-width:900px){.wrgrid{grid-template-columns:1fr;gap:36px}.wrsec{padding-block:20px 80px}.wrcard,[dir=rtl] .wrcard{transform:none;padding:20px}.wrq{font-size:21px}}
 @media (prefers-reduced-motion:reduce){.wrcaret{animation:none}}
+
+/* inside every level (phonics, Reading Lab, grammar, Bonus Classes, level test) */
+.insec{background:linear-gradient(180deg,#FFF6EF,#fff);padding-block:30px 100px}
+.ingrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px;margin-top:34px}
+.incard{position:relative;background:#fff;border:1px solid #F3DCCB;border-radius:22px;padding:22px 22px 18px;box-shadow:0 18px 40px -34px rgba(194,65,12,.6);display:flex;flex-direction:column}
+.incard .inn{width:36px;height:36px;border-radius:50%;background:#F97316;color:#fff;display:flex;align-items:center;justify-content:center;font:800 17px/1 var(--display);margin-bottom:12px}
+.incard:nth-child(2n) .inn{background:#C2410C}
+.incard b{font:800 19px/1.25 var(--display);color:var(--ink)}
+.incard p{margin:8px 0 14px;color:var(--inksoft);font-size:15.5px;line-height:1.55;flex:1}
+.incard em{font-style:normal;align-self:flex-start;background:#FFF1E0;color:#C2410C;font-weight:800;font-size:13px;padding:4px 12px;border-radius:999px}
+@media (max-width:900px){.insec{padding-block:10px 70px}}

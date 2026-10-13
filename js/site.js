@@ -128,6 +128,11 @@
     return '<div class="node' + (i % 2 ? ' r' : '') + '"><div class="disc" style="background:' + (i % 2 ? '#C2410C' : '#F97316') + '">' + esc(l[0]) + '</div><div class="card"><b>' + esc(l[1]) + '</b><div class="m">' + esc(l[2]) + '</div><p>' + esc(l[3]) + '</p></div></div>';
   }).join('');
 
+  /* ---------- inside every level ---------- */
+  $('#ingrid').innerHTML = t('inside').map(function (c, i) {
+    return '<div class="incard"><span class="inn">' + (i + 1) + '</span><b>' + esc(c[0]) + '</b><p>' + esc(c[1]) + '</p><em>' + esc(c[2]) + '</em></div>';
+  }).join('');
+
   /* ---------- English Hub ---------- */
   var HUB_IC = [
     '<path d="M4 19V5a2 2 0 012-2h13v16H6a2 2 0 00-2 2zm0 0a2 2 0 002 2h13"/>',
@@ -136,7 +141,8 @@
     '<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>',
     '<path d="M3 18l4-12 4 12M4.5 14h5"/><path d="M14 6v12h3.5a3 3 0 000-6H14m0 0h3a3 3 0 000-6h-3"/>',
     '<path d="M6 8.5a6 6 0 1112 0c0 3.5-3 4.5-3 7.5a3.5 3.5 0 01-6.5 1.8"/><path d="M9.5 8.5a2.5 2.5 0 015 0"/>',
-    '<path d="M4 6h16M4 12h10M4 18h7"/><circle cx="18" cy="16" r="3"/>'
+    '<path d="M4 6h16M4 12h10M4 18h7"/><circle cx="18" cy="16" r="3"/>',
+    '<rect x="2" y="7" width="20" height="12" rx="4"/><path d="M7 11v4M5 13h4"/><circle cx="16" cy="12" r="1"/><circle cx="18" cy="15" r="1"/>'
   ];
   $('#hublist').innerHTML = t('hub').map(function (h, i) {
     return '<div class="hitem"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + HUB_IC[i] + '</svg></div><div><b>' + esc(h[0]) + '</b><span>' + esc(h[1]) + '</span></div><em>' + esc(h[2]) + '</em></div>';

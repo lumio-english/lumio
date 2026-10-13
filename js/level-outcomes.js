@@ -10,8 +10,12 @@ window.LUMIO_OUTCOMES = {
     "ar": "يلقي التحية ويودّع ويقول اسمه"
    },
    {
-    "en": "Recognize and say all 26 letters of the alphabet",
-    "ar": "يتعرف على حروف الأبجدية الـ26 وينطقها"
+    "en": "Recognize and say all 26 letters, and the sound each one makes",
+    "ar": "يتعرّف على الحروف الـ26 وينطقها، ويعرف صوت كل حرف"
+   },
+   {
+    "en": "Hear the first sound of a word and find its letter",
+    "ar": "يسمع الصوت الأول في الكلمة ويجد الحرف الذي يمثّله"
    },
    {
     "en": "Count from zero to ten",
@@ -53,8 +57,8 @@ window.LUMIO_OUTCOMES = {
     "ar": "يقول ما يحب وما لا يحب"
    },
    {
-    "en": "Name rooms, furniture, and clothes",
-    "ar": "يسمّي الغرف والأثاث والملابس"
+    "en": "Name rooms, furniture, clothes, and pets",
+    "ar": "يسمّي الغرف والأثاث والملابس والحيوانات الأليفة"
    },
    {
     "en": "Talk about the weather and days of the week",
@@ -65,12 +69,16 @@ window.LUMIO_OUTCOMES = {
     "ar": "يستخدم حروف الجر in/on/under"
    },
    {
-    "en": "Describe shapes and simple opposites",
-    "ar": "يصف الأشكال والأضداد البسيطة"
-   },
-   {
     "en": "Say what they can and can't do",
     "ar": "يقول ما يستطيع وما لا يستطيع فعله"
+   },
+   {
+    "en": "Read every single letter sound and blend short words (sat, dog, chick)",
+    "ar": "يقرأ صوت كل حرف ويدمج الأصوات ليقرأ كلمات قصيرة (sat، dog، chick)"
+   },
+   {
+    "en": "Read a short story using the sounds they know",
+    "ar": "يقرأ قصة قصيرة بالأصوات التي تعلّمها"
    }
   ]
  },
@@ -104,12 +112,16 @@ window.LUMIO_OUTCOMES = {
     "ar": "يصف روتينه اليومي صباحًا ومساءً"
    },
    {
-    "en": "Point things out with this/that/these/those",
-    "ar": "يشير إلى الأشياء بـ this/that/these/those"
+    "en": "Point things out with this/that/these/those and make plurals (s/es)",
+    "ar": "يشير إلى الأشياء بـ this/that/these/those ويكوّن الجمع (s/es)"
    },
    {
-    "en": "Make plurals correctly (s/es)",
-    "ar": "يكوّن الجمع بشكل صحيح"
+    "en": "Read words with sh, ch, th, blends, magic e, and vowel teams (rain, tree, boat)",
+    "ar": "يقرأ كلمات فيها sh وch وth والحروف المتجاورة وحرف e السحري وثنائيات الحروف المتحركة (rain، tree، boat)"
+   },
+   {
+    "en": "Read a short text and answer questions about it",
+    "ar": "يقرأ نصًا قصيرًا ويجيب عن أسئلة حوله"
    }
   ]
  },
@@ -131,20 +143,20 @@ window.LUMIO_OUTCOMES = {
     "ar": "يقول ما يستطيع وما لا يستطيع فعله"
    },
    {
-    "en": "Ask and answer questions about routines and skills",
-    "ar": "يسأل ويجيب عن الروتين والمهارات"
+    "en": "Ask and answer Wh- questions about routines and skills",
+    "ar": "يسأل ويجيب بأسئلة Wh- عن الروتين والمهارات"
    },
    {
-    "en": "Talk about ongoing actions (\"right now\")",
-    "ar": "يتحدث عن الأفعال الجارية الآن"
+    "en": "Compare things (\"faster\", \"bigger\")",
+    "ar": "يقارن بين الأشياء (faster، bigger)"
    },
    {
-    "en": "Follow classroom rules and school conversations",
-    "ar": "يتبع قواعد الفصل والمحادثات المدرسية"
+    "en": "Talk about what is happening right now",
+    "ar": "يتحدث عمّا يحدث الآن"
    },
    {
-    "en": "Read and understand a short story",
-    "ar": "يقرأ قصة قصيرة ويفهمها"
+    "en": "Read a short text and answer questions about it",
+    "ar": "يقرأ نصًا قصيرًا ويجيب عن أسئلة حوله"
    }
   ]
  },
@@ -154,32 +166,36 @@ window.LUMIO_OUTCOMES = {
   "ages": "11-13",
   "can": [
    {
-    "en": "Describe routines with frequency words (always, never, how often)",
-    "ar": "يصف الروتين بكلمات التكرار (always, never...)"
+    "en": "Ask and answer questions about routines (Do/Does)",
+    "ar": "يسأل ويجيب عن الروتين اليومي (Do/Does)"
    },
    {
-    "en": "Talk about sequence (before and after)",
-    "ar": "يتحدث عن التسلسل (قبل وبعد)"
+    "en": "Say how often they do things (always, never, how often)",
+    "ar": "يقول كم مرة يفعل الأشياء (always، never، how often)"
    },
    {
-    "en": "Ask politely and talk about possessions",
-    "ar": "يطلب بأدب ويتحدث عن ممتلكاته"
+    "en": "Talk about time and order (before, after)",
+    "ar": "يتحدث عن الوقت والترتيب (before، after)"
+   },
+   {
+    "en": "Talk about what belongs to whom (mine, yours)",
+    "ar": "يتحدث عن ملكية الأشياء (mine، yours)"
    },
    {
     "en": "Ask about prices and talk about saving money",
     "ar": "يسأل عن الأسعار ويتحدث عن الادخار"
    },
    {
-    "en": "Make polite requests (\"I'd like...\")",
-    "ar": "يقدّم طلبات مهذبة (I'd like...)"
+    "en": "Make polite requests (\"I'd like...\") and give advice (\"you should\")",
+    "ar": "يطلب بأدب (I'd like...) ويقدّم النصيحة (you should)"
    },
    {
-    "en": "Give and receive advice (\"you should\")",
-    "ar": "يعطي النصيحة ويتلقاها (you should)"
+    "en": "Talk about future goals and other cultures",
+    "ar": "يتحدث عن أهدافه المستقبلية وعن الثقافات الأخرى"
    },
    {
-    "en": "Talk about future plans and the wider world",
-    "ar": "يتحدث عن خططه المستقبلية والعالم من حوله"
+    "en": "Read a short text and answer questions about it",
+    "ar": "يقرأ نصًا قصيرًا ويجيب عن أسئلة حوله"
    }
   ]
  },
@@ -201,8 +217,8 @@ window.LUMIO_OUTCOMES = {
     "ar": "يصف كيف كان الشيء ولماذا حدث"
    },
    {
-    "en": "Tell a story with sequence (\"and then...\")",
-    "ar": "يروي قصة بتسلسل (and then...)"
+    "en": "Tell a story in order (first, then, finally)",
+    "ar": "يروي قصة بترتيب (first، then، finally)"
    },
    {
     "en": "Describe what was happening at a specific moment",
@@ -213,8 +229,8 @@ window.LUMIO_OUTCOMES = {
     "ar": "يتحدث عن رحلة أو حفلة أو يوم لا يُنسى"
    },
    {
-    "en": "Interview someone and recap a story",
-    "ar": "يجري مقابلة ويلخص قصة"
+    "en": "Read a short story and answer questions about it",
+    "ar": "يقرأ قصة قصيرة ويجيب عن أسئلة حولها"
    }
   ]
  },
@@ -224,24 +240,24 @@ window.LUMIO_OUTCOMES = {
   "ages": "13-15",
   "can": [
    {
-    "en": "Talk about future plans and predictions (\"will\", \"going to\")",
-    "ar": "يتحدث عن الخطط والتوقعات المستقبلية (will / going to)"
+    "en": "Talk about future plans and predictions (\"going to\", \"will\")",
+    "ar": "يتحدث عن خططه وتوقعاته للمستقبل (going to، will)"
    },
    {
     "en": "Describe what was happening while something else occurred",
     "ar": "يصف ما كان يحدث أثناء حدث آخر"
    },
    {
-    "en": "Talk about rules, duties, and obligations",
-    "ar": "يتحدث عن القواعد والواجبات والالتزامات"
+    "en": "Talk about rules and duties (\"have to\", \"don't have to\")",
+    "ar": "يتحدث عن القواعد والواجبات (have to، don't have to)"
    },
    {
-    "en": "Make comparisons (\"even better\", \"which is better?\")",
-    "ar": "يعقد المقارنات (even better / which is better?)"
+    "en": "Say how people do things (slowly, carefully)",
+    "ar": "يصف طريقة فعل الأشياء (slowly، carefully)"
    },
    {
-    "en": "Discuss multitasking and daily habits",
-    "ar": "يناقش تعدد المهام والعادات اليومية"
+    "en": "Compare things (\"more interesting\", \"the best\")",
+    "ar": "يقارن بين الأشياء (more interesting، the best)"
    },
    {
     "en": "Join a class debate and defend an opinion",
@@ -250,6 +266,10 @@ window.LUMIO_OUTCOMES = {
    {
     "en": "Compare cultures and traditions",
     "ar": "يقارن بين الثقافات والتقاليد"
+   },
+   {
+    "en": "Read a longer text and answer questions about it",
+    "ar": "يقرأ نصًا أطول ويجيب عن أسئلة حوله"
    }
   ]
  }

@@ -21,7 +21,7 @@ re-render the handbook, and commit the results together.
 Needs Chromium: LUMIO_CHROMIUM (default /opt/pw-browsers/chromium) and a
 free port 8799 (the script starts its own http.server).
 """
-import os, sys, subprocess, time, json, shutil, glob
+import os, re, sys, subprocess, time, json, shutil, glob
 from playwright.sync_api import sync_playwright
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -61,6 +61,15 @@ def find_slide(level, lesson, needle):
     return 1
 
 
+def find_v5(level, lesson, needle, default=5):
+    """First v5 slide (what present.html opens by default) whose page title contains `needle`."""
+    folder = f"slide-content-v5/{level}/{lesson}" if isinstance(lesson, str) else f"slide-content-v5/{level}/{lesson:02d}"
+    for f in sorted(glob.glob(f"{folder}/slide-*.html")):
+        if re.search(r'class="pagetitle[^"]*"[^>]*>\s*(?:<b>)?[^<]*' + re.escape(needle), open(f, encoding="utf-8").read()):
+            return int(os.path.basename(f)[6:-5])
+    return default
+
+
 def main():
     os.makedirs(MK, exist_ok=True); os.makedirs(HB, exist_ok=True)
     srv = serve()
@@ -79,8 +88,8 @@ def main():
                 print("shot", out)
 
             # --- Landing: a real lesson slide (Pre-A L1 vocab "hello")
-            n = find_slide("pre-a", 1, "Vocabulary &bull; hello") or find_slide("pre-a", 1, "hello")
-            shot("present.html?level=pre-a&n=1", f"{MK}/real-lesson-screenshot.png", js=f"loadSlide({n})")
+            n = find_v5("pre-a", 1, "New Words")
+            shot(f"present.html?fx=0&level=pre-a&n=1", f"{MK}/real-lesson-screenshot.png", js=f"loadSlide({n})")
             # --- Handbook screenshots
             shutil.copy(f"{MK}/real-lesson-screenshot.png", f"{HB}/hb-lesson.png")
             shot("placement-test.html", f"{HB}/hb-placement.png")
@@ -111,7 +120,16 @@ def main():
             shot("certificates.html", f"{HB}/hb-certificate.png", wait=1600)
             pg.evaluate(f"localStorage.setItem('lumio_progress', {json.dumps(json.dumps(PROGRESS))})")
             shot("present-trial.html?level=pre-a&names=Yousef,Layla,Omar,Sara", f"{HB}/hb-trial.png", js="document.getElementById('startTrialBtn').click(); setTimeout(()=>loadSlide(3), 400)")
-            shot("hub-present.html?type=vocab&level=pre-a", f"{HB}/hb-hub.png", wait=1800)
+            pg.set_viewport_size({"width": 400, "height": 780})
+            shot("english-hub.html?level=pre-a#/vocab", f"{HB}/hb-hub.png", wait=2200)
+            pg.set_viewport_size({"width": 1280, "height": 720})
+            # new parts of the course: phonics, Reading Lab, Bonus Class, bonus missions
+            shot(f"present.html?fx=0&level=level1&n=1", f"{HB}/hb-phonics.png", js=f"loadSlide({find_v5('level1', 1, 'Read the Story')})")
+            shot(f"present.html?fx=0&level=level3&n=3", f"{HB}/hb-reading.png", js=f"loadSlide({find_v5('level3', 3, 'Reading Lab') + 1})", wait=1800)
+            shot(f"present.html?fx=0&level=level1&bonus=2", f"{HB}/hb-bonus.png", js="loadSlide(3)", wait=1800)
+            pg.set_viewport_size({"width": 400, "height": 780})
+            shot("bonus-homework.html?level=level1&b=1&preview=1", f"{HB}/hb-bonus-homework.png", wait=2000)
+            pg.set_viewport_size({"width": 1280, "height": 720})
             # Curriculum Guide screenshots (same folder, names referenced by curriculum_guide.html)
             shutil.copy(f"{HB}/hb-hub.png", f"{HB}/hub_screenshot.png")
             pg.set_viewport_size({"width": 560, "height": 820})
@@ -121,9 +139,13 @@ def main():
             GAMES = {"pre-a": "lumis-pocket", "level1": "treehouse-builder", "level2": "twelve-months-calendar", "level3": "crew-chat",
                      "level4": "squad-budget", "level5": "story-detective", "level6": "crystal-ball"}
             for lvl, game in GAMES.items():
-                n = find_slide(lvl, 1, "SAY IT") if lvl in ("pre-a", "level1", "level2") else find_slide(lvl, 1, "EXAMPLE")
-                shot(f"present.html?level={lvl}&n=1", f"{HB}/lv-{lvl}-lesson.png", js=f"loadSlide({n})")
-                shot(f"hub-present.html?type=vocab&level={lvl}", f"{HB}/lv-{lvl}-hub.png", wait=1800)
+                n = find_v5(lvl, 1, "New Words")
+                shot(f"present.html?fx=0&level={lvl}&n=1", f"{HB}/lv-{lvl}-lesson.png", js=f"loadSlide({n})", wait=1800)
+                if lvl not in ("pre-a", "level1"):
+                    shot(f"present.html?fx=0&level={lvl}&n=3", f"{HB}/lv-{lvl}-reading.png", js=f"loadSlide({find_v5(lvl, 3, 'Reading Lab') + 1})", wait=1800)
+                pg.set_viewport_size({"width": 400, "height": 780})
+                shot(f"english-hub.html?level={lvl}#/vocab", f"{HB}/lv-{lvl}-hub.png", wait=2200)
+                pg.set_viewport_size({"width": 1280, "height": 720})
                 if game == "crew-chat":
                     pg.set_viewport_size({"width": 640, "height": 720})
                 shot(f"games/{game}.html?level={lvl}&n=3", f"{HB}/lv-{lvl}-game.png", wait=3200)

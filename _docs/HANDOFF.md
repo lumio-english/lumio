@@ -349,3 +349,9 @@ Reading-comprehension section, every third lesson (3, 6, 9, 12, 15, 18): **teens
 - CSS: `.rl-*` in `css/slide-styles.css` (classic) + `.v3 .rl-*` overrides in `css/slides-v3.css`.
 - Images: `assets/reading/<level>/NN-a.jpg|NN-b.jpg` (16:10, crop-to-cover; placeholder tile until present). Prompts: `_docs/reading-lab-image-prompts.md`.
 - Recap page gets a READING LAB block (title + new words). Rebuild: `regen_level.py <level> --no-pdfs` + `gen_slides_v3.py <level>`.
+
+## 3gg. Manuals, Parent Handbook and landing page refreshed (13 Oct 2026)
+- `gen_manuals.py` now builds the 7 level manuals (15-17 pages) AND the Curriculum Guide (`build_guide`, 16 pages) from live data; `_docs/manuals-src/curriculum_guide.html` is generated, do not hand-edit. Level manuals gained: "Inside a live class" (real slide order per track, `CLASS_FLOW`), Phonics (L1-L2, from phonics-hub), Reading Lab (L2-L6, from lib/reading_passages.py), and "Progress, Level Test & Certificate"; page numbers are computed. Prose/outcomes in `level_manuals.json`; `js/level-outcomes.js` (certificate) mirrors the outcomes EN+AR.
+- Parent Handbook (Arabic) is 16 pages: new pages for phonics + Reading Lab, Bonus Classes, booking & schedule; corrected test time (~8 min), stories (Pre-A to L3 only), level test + certificate rules. Copy to `downloads/` after each render (done).
+- `gen_marketing_media.py --shots`: v5 slides with `fx=0` (no chapter-card animation), English Hub v2 phone shots, new hb-phonics/reading/bonus/bonus-homework and lv-<level>-reading shots.
+- Landing: new "Inside every level" section (#inside, `inside` list in js/site-i18n.js, `.insec/.incard` in css/site.css), accurate level blurbs, Hub list + Word games (8 sections), game blurbs, trial (group or 1-on-1), 3 new FAQs, handbook 16 pages. Arabic strings with Latin words: avoid "وX" right after a Latin word (the display font garbles it); use isolates (⁦…⁩) or rephrase.
