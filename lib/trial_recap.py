@@ -48,10 +48,21 @@ def _action_block(label="ACTIONS WE DID"):
 
 
 # ---------------- kid track (Pre-A / L1 / L2) ----------------
-def kid_slides(n_start, total):
+def kid_slides(n_start, total, phonics_unit=None, letters=None):
+    """Words + the sentences the class actually practised (scenes, sentence
+    builders) + any phonics unit / letters taught. Each word's own example
+    sentence is left out: in a trial most of them were never said, and they
+    pushed the recap past the bottom of the v5 slide."""
     import deck_template_v2 as v2
-    pages = v2.today_i_learned_pages({"vocab": list(WORDS)}, scene_sentences=list(SENTENCES),
-                                     extra_blocks=_action_block())
+    import copy
+    words = [{k: v for k, v in w.items() if k != "example"} for w in WORDS]
+    saved = recap_pages.KID
+    recap_pages.KID = copy.copy(saved); recap_pages.KID.content_h = 500   # the v5 kid slide shows ~600px under the header
+    try:
+        pages = v2.today_i_learned_pages({"vocab": words}, scene_sentences=list(SENTENCES), extra_blocks=_action_block(),
+                                         phonics_unit=phonics_unit, letters=letters)
+    finally:
+        recap_pages.KID = saved
     return [v2.slide_today_i_learned(pg, i, len(pages), n_start + i - 1, total)
             for i, pg in enumerate(pages, 1)]
 
@@ -64,9 +75,9 @@ def teen_slides(level, grammar_line, dialogue_lines, n_start, total):
     sentence-builder sentence and the dialogue lines."""
     import deck_template_teen as v1
     from deck_template_teen import esc, ORANGE_DEEP, TEAL_DEEP, CARD_TEXT, INK_DIM
-    blocks = [{"kind": "sentences", "label": "SENTENCE PATTERNS",
-               "items": recap_pages.dedupe([w.get("example") for w in WORDS] + list(SENTENCES)),
-               "title": grammar_line}]
+    # the sentences the class built and read (grammar examples, sentence builders), then a few word examples
+    items = recap_pages.dedupe(list(SENTENCES) + [w.get("example") for w in WORDS])[:8]
+    blocks = [{"kind": "sentences", "label": "SENTENCE PATTERNS", "items": items, "title": grammar_line}]
     if dialogue_lines:
         blocks.append({"kind": "lines", "label": "DIALOGUE", "items": recap_pages.dedupe(dialogue_lines)})
     pages = recap_pages.paginate(blocks, recap_pages.TEEN)
@@ -88,7 +99,6 @@ def teen_slides(level, grammar_line, dialogue_lines, n_start, total):
       <div style="margin-top:22px;background:#fff;border-radius:16px;padding:16px 22px;box-shadow:0 8px 18px rgba(0,0,0,.08)">
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.8rem;letter-spacing:1.5px;color:{TEAL_DEEP};margin-bottom:6px">GRAMMAR YOU USED TODAY</div>
         <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.15rem;color:{CARD_TEXT}">{esc(grammar_line)}</div>
-        <div style="font-size:.95rem;color:{INK_DIM};margin-top:6px">This was one class. The full level has 24 classes (20 lessons + 4 Bonus Classes on how English works), a bonus game, printable worksheets and flashcards, and a story.</div>
       </div>
     </div>''')
     out = [first]

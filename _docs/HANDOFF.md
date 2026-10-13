@@ -330,6 +330,12 @@ Done by three parallel workers (sync layer / teacher UI / student UI), merged an
 - New unit fields: `tricky` [{en, ar}] (shown on the rule slide and in the Hub), per-sound `audio` (recording name) and `say` (example word spoken when that recording is missing), `graphemes`. `Lumio.speakPhonicsSound(token, rate, fallbackText)`.
 - Games `treehouse-builder` / `twelve-months-calendar` keep their own picture-word lists per unit; update them when units change.
 
+## 3ff. Trial classes rebuilt (13 Oct 2026)
+- Teen trials L3-L6 share `lib/trial_teen.py` (built on each level's lessons 1-3: Crew Talk, lesson-1 words, Describe It, Grammar Time + Common Mistakes + 3 hand-picked Grammar Checks + Build the Sentences, lesson 2-3 words, lesson-3 Reading Lab, Two Truths & a Lie, game, 5-min discussion, recap, "Your Level N Journey", finale). Each `gen_trial_level<N>.py` only holds a SPEC. 37 slides each.
+- Kids: Pre-A (41) adds C/D letters-and-sounds + Mystery Picture + Memory Match, ~12 words; L1 (40) = "This is..." + phonics Group 1 (s,a,t,p) + pets + "I can..."; L2 (40) = greetings + phonics sh/ch + family + Reading Lab "Omar's Big Family" + morning routine.
+- Shared: buzzer / Quick Answer / Your Turn blur the English until tapped; closing facts = 24 classes (20 + 4 Bonus) in ~3 months (no "140 lessons"); `TC.journey_slide` for parents; solo wording for one student; STAR_GOAL 8; chapter cards say "Trial class"; kid recap no longer overflows.
+- After changing slide counts, sync `TRIAL_TOTALS`/`SOLO_TOTALS` in present-trial.html with the file counts (classic and v5 must match).
+
 ## 4. Working style
 Test setup (scratchpad, recreate if lost): static site `python3 -m http.server 8810` from the repo; mock Apps Script `node verify/gsserver.js 8899 _docs/AppsScript-Code.gs` with `verify/lib.py` (seed, teacher_login, student_login). Artifacts for previews are private claude.ai pages (Version 5 slides, English Hub preview).
 Verify in a browser before claiming done; check files before writing prompts; never duplicate; fix in templates not per slide; say plainly what was NOT done; ask one specific question when ambiguous.

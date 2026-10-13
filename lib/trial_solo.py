@@ -29,7 +29,7 @@ Usage from a generator:   import trial_solo; trial_solo.build(sys.modules[__name
 import os, re, sys
 import trial_recap as TR
 
-STAR_GOAL = 10
+STAR_GOAL = 8   # reachable without a perfect class (keep in step with present-trial.html)
 
 
 def _is_teen(m):
@@ -82,10 +82,13 @@ def make_builders(m):
     H = lambda txt, size="1.3rem", color=INK: f'<div style="font-family:{FONT};font-weight:800;font-size:{size};color:{color};margin-bottom:10px">{txt}</div>'
     SUB = lambda txt: f'<div style="font-family:{FONT};font-weight:700;font-size:1rem;color:{INK_DIM};margin-bottom:12px;max-width:820px">{txt}</div>'
 
-    def word_card(w):
+    def word_card(w, hide_en=False):
+        # hide_en: the student must SAY the word, so the English stays blurred until the teacher taps it
         img = m.slug(w.get("image") or w["en"])
+        en = (f'<span onclick="this.style.filter=\'none\'" title="Tap to check" style="filter:blur(11px);cursor:pointer;user-select:none">{m.esc(w["en"])}</span>'
+              if hide_en else m.esc(w["en"]))
         return card(f'''<div data-say="{m.esc(w["en"])}" style="width:120px;height:120px;border-radius:14px;overflow:hidden;background:#FFFCF6;border:3px solid #FFE0B8;margin:0 auto 6px"><img src="assets/vocab/{img}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-          <div style="font-family:{FONT};font-weight:800;font-size:1.3rem;color:{CARD_TEXT}">{m.esc(w["en"])}</div>
+          <div style="font-family:{FONT};font-weight:800;font-size:1.3rem;color:{CARD_TEXT}">{en}</div>
           <div style="font-family:'Tajawal',sans-serif;font-weight:700;font-size:.95rem;color:#8A7160">{m.esc(w["ar"])}</div>''', "margin-bottom:12px")
 
     def welcome(n, total):
@@ -103,12 +106,12 @@ def make_builders(m):
         return shell("Let's Collect Stars!", n, total, body, "lumi-teen-wave" if teen else "lumi-celebrate")
 
     def quick_answer(w, n, total):   # replaces buzzer
-        body = (SUB("Say the word! Then tap how it went.") + word_card(w)
+        body = (SUB("Say the English word! Tap it to check, then tap how it went.") + word_card(w, True)
                 + f'<div data-challenge="solo-answer" id="soloAnswer"></div>')
         return shell("Quick Answer", n, total, body)
 
     def your_turn(w, question_line, n, total):   # replaces team relay
-        body = (H(question_line, "1.4rem") + word_card(w) + f'<div data-challenge="solo-answer" id="soloAnswer"></div>')
+        body = (H(question_line, "1.4rem") + word_card(w, True) + f'<div data-challenge="solo-answer" id="soloAnswer"></div>')
         return shell("Your Turn!", n, total, body, "lumi-teen-point" if teen else "lumi-point")
 
     def show_me(action_line, n, total):   # replaces copy-cat
@@ -134,7 +137,7 @@ def make_builders(m):
                 + f'<div data-challenge="solo-meter" style="margin:12px 0 10px;display:flex;justify-content:center"><div id="soloMeter" data-compact="1"></div></div>'
                 + card(f'<div style="font-size:.78rem;font-weight:800;color:{ORANGE};letter-spacing:1.5px;margin-bottom:8px">TODAY YOU LEARNED &nbsp;&middot;&nbsp; <span dir="rtl">تعلمت اليوم</span></div>'
                        f'<div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:820px">{chips}</div>'
-                       f'<div style="font-family:{FONT};font-weight:700;font-size:1rem;color:#8A7160;margin-top:10px">Thank you! Goodbye! &nbsp;<span dir="rtl" style="color:{TEAL}">شكراً لك! مع السلامة!</span> &mdash; this was one class out of 140 lessons across 7 levels.</div>', "margin-bottom:12px")
+                       f'<div style="font-family:{FONT};font-weight:700;font-size:1rem;color:#8A7160;margin-top:10px">Thank you! Goodbye! &nbsp;<span dir="rtl" style="color:{TEAL}">شكراً لك! مع السلامة!</span> &mdash; this was one class &mdash; the full level has 24 live classes (20 lessons + 4 Bonus Classes) in about 3 months.</div>', "margin-bottom:12px")
                 + card(f'<span style="font-family:{FONT};font-weight:700;font-size:1rem;color:{CARD_TEXT}">&#128172; Ask your teacher about starting the full course today!</span>'))
         return plain(body) if teen else plain(body) + m.char_img("lumi-celebrate", right=30, bottom=25, height=170)
 
@@ -163,7 +166,13 @@ def build(m, level):
     os.makedirs(out_dir, exist_ok=True)
     for f in os.listdir(out_dir):
         os.remove(os.path.join(out_dir, f))
+    # group wording that comes from shared builders (discussion, scoreboard headlines) -> one student
+    SOLO_WORDS = [("open class conversation &middot; talk to each other, not just to me", "just you and me &middot; answer in full sentences"),
+                  ("Interview your teammate", "Interview your teacher"), ("Convince the other team.", "Convince me."),
+                  ("Here's the score so far...", "Here are your stars so far..."), ("And the final score is...", "Your stars today...")]
     for i, html in enumerate(slides, start=1):
+        for a_, b_ in SOLO_WORDS:
+            html = html.replace(a_, b_)
         with open(f"{out_dir}/slide-{i:02d}.html", "w", encoding="utf-8") as f:
             f.write(html)
     print(f"Wrote {len(slides)} 1-on-1 trial slides to {out_dir}/")

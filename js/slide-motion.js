@@ -40,6 +40,7 @@
 
   var RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
   var LEVEL = qs("level") || "pre-a";
+  var TRIAL = /present-trial/.test(location.pathname);   // the free trial class is not "Lesson 1"
   var BONUS = parseInt(qs("bonus") || "0", 10) || 0;   // present.html?bonus=N: a Bonus Class deck
   var NUM = BONUS ? "bonus-" + String(BONUS).padStart(2, "0") : (qs("n") || "1");
   var TEEN = /^level[3-6]$/.test(LEVEL);
@@ -535,7 +536,7 @@
       var ov = mk("div", "lc-chapter");
       var letters = sec.label.split("").map(function (ch, i) { return '<span style="--i:' + i + '">' + (ch === " " ? "&nbsp;" : ch.replace(/[<>&]/g, "")) + "</span>"; }).join("");
       var cast = castFor(2);
-      ov.innerHTML = '<div class="lc-chBg"></div><div class="lc-chIn"><div class="lc-chIco">' + icon(sec.icon) + '</div><div class="lc-chTitle">' + letters + '</div><div class="lc-chSub">' + (BONUS ? "Bonus Class " + BONUS + (TEEN ? "" : " &middot; let's go!") : TEEN ? "Lesson " + NUM : "Lesson " + NUM + " &middot; let's go!") + '</div></div>' +
+      ov.innerHTML = '<div class="lc-chBg"></div><div class="lc-chIn"><div class="lc-chIco">' + icon(sec.icon) + '</div><div class="lc-chTitle">' + letters + '</div><div class="lc-chSub">' + (BONUS ? "Bonus Class " + BONUS + (TEEN ? "" : " &middot; let's go!") : TRIAL ? "Trial class" + (TEEN ? "" : " &middot; let's go!") : TEEN ? "Lesson " + NUM : "Lesson " + NUM + " &middot; let's go!") + '</div></div>' +
         cast.map(function (c, i) { return '<img class="lc-chCast lc-c' + i + '" alt="" src="assets/story/characters/' + c + "-" + (i === 0 ? "celebrate" : "thumbs") + '.png">'; }).join("");
       layer.appendChild(ov);
       ov.querySelectorAll(".lc-chCast").forEach(function (im) { im.onerror = function () { im.remove(); }; });

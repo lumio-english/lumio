@@ -100,13 +100,13 @@ def slide_buzzer_challenge(prompt_word, n, total):
     return (bg_theme() + header("Buzzer Challenge", n, total) + f'''
     <div data-challenge="buzzer" style="position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;padding:28px 40px 0">
       <div style="font-family:'Fredoka',sans-serif;font-weight:500;font-size:1rem;color:{INK_DIM};margin-bottom:14px;text-align:center">
-        Who says it first? Tap the name of whoever answers correctly!
+        Who says the English word first? Tap the word to check, then tap the winner&#39;s name!
       </div>
       {card_open(280, "padding:18px;text-align:center;margin-bottom:16px")}
         <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#F8FAFC;margin:0 auto 8px">
           <img src="assets/vocab/{slug(prompt_word.get("image") or prompt_word["en"])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
         </div>
-        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.3rem;color:{CARD_TEXT}">{esc(prompt_word["en"])}</div>
+        <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.3rem;color:{CARD_TEXT}"><span onclick="this.style.filter='none'" title="Tap to check" style="filter:blur(11px);cursor:pointer;user-select:none">{esc(prompt_word["en"])}</span></div>
         <div style="font-family:'Tajawal',sans-serif;font-weight:700;font-size:.95rem;color:{TEAL_DEEP}">{esc(prompt_word["ar"])}</div>
       </div>
       <div id="pickerZone" style="display:flex;flex-wrap:wrap;justify-content:center;max-width:900px"></div>
@@ -173,7 +173,7 @@ def slide_trial_finish(n, total):
       {name_chips_html()}
       <div style="font-family:'Fredoka',sans-serif;font-weight:500;font-size:1.05rem;color:{INK_DIM};margin:18px 0 22px;max-width:800px">
         Your weekend, a big trip, a party, and your feelings &mdash; all in one class! This is just a taste
-        of the 140 lessons and 7 levels waiting on the full Lumio adventure.
+        of the full level: 24 live classes (20 lessons + 4 Bonus Classes) in about 3 months.
       </div>
       {card_open(None, "padding:14px 28px")}
         <span style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:.95rem;color:{CARD_TEXT}">&#128172; Ask your teacher about starting the full course today!</span>
@@ -182,63 +182,20 @@ def slide_trial_finish(n, total):
     ''')
 
 
+# Built on this level's lessons 1-3 (lib/trial_teen.py has the shared structure).
+SPEC = dict(
+    l1_words=["played", "watched", "cleaned", "cooked", "visited"],
+    checks=[("I ___ football yesterday.", "played", ["played", "play", "playing", "plays"]),
+            ("We ___ to the mall last Friday.", "went", ["went", "goed", "go", "going"]),
+            ("___ you finish your homework?", "Did", ["Did", "Do", "Was", "Are"])],
+    trio=["I watched a movie last night.", "We went to the mall on Friday.", "Did you finish your homework?"],
+    more_words=[(2, "went"), (2, "saw"), (2, "ate"), (3, "forget"), (3, "reply")],
+    relay_q="What did you do last weekend? Answer in a full sentence!")
+
+
 def _build():
-    slides = []
-
-    slides.append(slide_trial_welcome(1, TOTAL))
-    slides.append(TC.meet_characters(sys.modules[__name__], "level5", len(slides) + 1, TOTAL))
-    slides.append(slide_team_assign(len(slides) + 1, TOTAL))
-    slides.append(TE.hook_slide("level5", len(slides) + 1, TOTAL))
-
-    deck_template_teen2.CURRENT_LESSON_BG = "assets/lesson-bg/level5/01.jpg"
-    weekend_words = [load_word("level5", 1, w) for w in ["played", "watched", "walked", "helped", "cleaned", "cooked"]]
-    for w in weekend_words:
-        slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "noor-teen-point"))
-    # Activity slide (lib/activity_slides.py): Describe It on the words just taught -- pairs and 1-on-1 modes on the slide.
-    import activity_slides as _AS
-    slides.append(_AS.slide_describe_guess(weekend_words, bg_theme(), header("Describe It &bull; Speaking Game", len(slides) + 1, TOTAL)))
-
-    slides.append(slide_copycat_challenge("Who can act out \u201ccooked\u201d the best? Show me!", len(slides) + 1, TOTAL))
-    slides.append(slide_copycat_challenge("Who can act out \u201ccleaned\u201d the best? Show me!", len(slides) + 1, TOTAL))
-    slides.append(slide_team_relay(weekend_words[1], "What did they do this weekend?", len(slides) + 1, TOTAL))
-    slides.append(slide_mini_celebrate("You're all Weekend Story Experts!", len(slides) + 1, TOTAL))
-    _d = TE.dialogue_slide("level5", 1, len(slides) + 1, TOTAL)
-    if _d: slides.append(_d)
-    _s = TE.sentence_slide(weekend_words[0], len(slides) + 1, TOTAL, TE.LEVEL_META["level5"]["ch"])
-    if _s: slides.append(_s)
-
-    slides.append(slide_trial_transition("Let's talk about a big trip!", "&#9992;&#65039;", len(slides) + 1, TOTAL))
-    deck_template_teen2.CURRENT_LESSON_BG = "assets/lesson-bg/level5/12.jpg"
-    trip_words = [load_word("level5", 12, w) for w in ["packed", "flew", "suitcase", "airport"]]
-    for w in trip_words:
-        slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "hamad-teen-wave"))
-    slides.append(slide_buzzer_challenge(trip_words[2], len(slides) + 1, TOTAL))
-    slides.append(slide_scoreboard("Halfway there! Here's the score so far...", len(slides) + 1, TOTAL))
-    for _sl in TE.grammar_slides(weekend_words + trip_words, len(slides) + 1, TOTAL, 2): slides.append(_sl)
-    for _sl in TE.vocab_quiz_slides(weekend_words + trip_words, len(slides) + 1, TOTAL, 2): slides.append(_sl)
-
-    slides.append(slide_trial_transition("Let's throw a party!", "&#127881;", len(slides) + 1, TOTAL))
-    deck_template_teen2.CURRENT_LESSON_BG = "assets/lesson-bg/level5/14.jpg"
-    party_words = [load_word("level5", 14, w) for w in ["guests", "cake", "gifts"]]
-    for w in party_words:
-        slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "sara-teen-explain"))
-    slides.append(slide_buzzer_challenge(party_words[1], len(slides) + 1, TOTAL))
-    slides.append(slide_mini_celebrate("You're all Party Planners!", len(slides) + 1, TOTAL))
-
-    deck_template_teen2.CURRENT_LESSON_BG = "assets/lesson-bg/level5/09.jpg"
-    for w_en in ["proud", "nervous", "surprised"]:
-        slides.append(slide_vocab(load_word("level5", 9, w_en), 0, len(slides) + 1, TOTAL, 1, "ziad-teen-happy"))
-    deck_template_teen2.CURRENT_LESSON_BG = None
-
-    slides.append(TC.game_slide(sys.modules[__name__], "level5", len(slides) + 1, TOTAL))
-    slides.append(slide_scoreboard("And the final score is...", len(slides) + 1, TOTAL))
-    slides.append(TE.discussion_slide("level5", len(slides) + 1, TOTAL))
-    _dlg = [l[0] for l in TE._dialogues("level5").get(1, [])[:4]]
-    slides.extend(TR.teen_slides("level5", TE.LEVEL_META["level5"]["grammar"], _dlg, len(slides) + 1, TOTAL))
-    slides.append(slide_finale(len(slides) + 1, TOTAL))
-    slides.append(slide_trial_finish(len(slides) + 1, TOTAL))
-
-    return slides
+    import trial_teen
+    return trial_teen.build(sys.modules[__name__], "level5", SPEC)
 
 
 def build():

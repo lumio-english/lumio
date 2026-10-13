@@ -26,37 +26,29 @@ from deck_template_teen2 import slide_hook, slide_vocab_mcq, slide_grammar_mcq, 
 
 LEVEL_META = {
     "level3": dict(gen="gen_slides_level3_v2.py", hook="What do you and your friends do together every week?",
-                   grammar="Present Simple - I play / She plays - and there is / there are",
+                   grammar="Present Simple - I play / She plays / I don't like ...",
                    ch="omar-teen-happy",
-                   discussion=["What is one thing your best friend does every day?",
-                               "Describe your room in three sentences - what is there?",
-                               "Which is harder for you: talking about yourself, or asking questions? Why?",
-                               "Tell us one thing you CAN do well and one thing you CAN'T do yet.",
-                               "If a new student joined today, what would you ask them first?"]),
+                   discussion=["What does your best friend do every weekend?",
+                               "What is something everyone loves that is not your thing?",
+                               "Gahwa or bubble tea - which do you like, and why?"]),
     "level4": dict(gen="gen_slides_level4_v2.py", hook="How often do you check your phone - and is that too much?",
-                   grammar="Questions with Do / Does, frequency words, and I'd like / You should",
+                   grammar="Do / Does questions, daily routines, and how often: always, usually, rarely, never",
                    ch="ziad-teen-happy",
-                   discussion=["What is one rule in your routine you never break?",
-                               "You have 50 riyals for the week. What do you buy first, and why?",
-                               "When did someone give you good advice? What did they say?",
-                               "Is it better to save money or enjoy it now? Convince the other team.",
-                               "What is one thing you want to be able to say in English by next month?"]),
+                   discussion=["What do you do every Friday?",
+                               "What is one habit you want to break?",
+                               "Does your routine change in Ramadan? How?"]),
     "level5": dict(gen="gen_slides_level5_teenv2.py", hook="What is the best thing that happened to you last weekend?",
-                   grammar="Past Simple - I went / We saw / Did you...? - and telling a story in order",
+                   grammar="Past Simple - I played / I went / Did you ...? / I didn't ...",
                    ch="sara-teen-happy",
-                   discussion=["Tell us about a day you will never forget. What happened first?",
-                               "What went wrong the last time you planned something? How did you fix it?",
-                               "Interview your teammate: three questions about their last holiday.",
-                               "Describe a party or celebration in your family, from start to finish.",
-                               "What is one story from this class you could tell at home tonight?"]),
+                   discussion=["What did you do last weekend? Tell it in order.",
+                               "What is something you forgot to do last week?",
+                               "Did you go anywhere special this month? What did you see?"]),
     "level6": dict(gen="gen_slides_level6_teenv2.py", hook="What are you going to do differently next year?",
-                   grammar="Going to / will for plans and predictions, have to / must, and comparatives",
+                   grammar="Future - going to (plans), will (predictions), present continuous (arrangements)",
                    ch="hamad-teen-happy",
-                   discussion=["Make one prediction about your class in five years.",
-                               "Which rule at home do you think is fair? Which one is not?",
-                               "Compare two things you love - which is better, and why?",
-                               "What do you have to do this week that you don't want to do?",
-                               "Describe your plan for one perfect weekend, step by step."]),
+                   discussion=["What are you doing this weekend?",
+                               "Make one prediction about your city in ten years.",
+                               "What are you going to do differently next year?"]),
 }
 
 
@@ -101,8 +93,9 @@ def vocab_quiz_slides(words, n_start, total, count=2):
 
 
 def discussion_slide(level, n, total):
+    """A short (about 5-minute) open speaking moment: 3 questions on what the trial taught."""
     m = LEVEL_META[level]
-    return slide_discussion(m["discussion"], n, total, m["ch"])
+    return slide_discussion(m["discussion"][:3], n, total, m["ch"]).replace("&#8776; 10 minutes", "&#8776; 5 minutes")
 
 
 # trial_words()/recap_slide() were replaced by lib/trial_recap.py: words are
