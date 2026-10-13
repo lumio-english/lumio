@@ -391,10 +391,10 @@ def homework_kid(p, density):
         keys.append(f"{n}) " + ", ".join(g[1] for g in gaps)); n += 1
     ps = p["passage"]
     if ps and density < 3:
-        paras = "".join(f"<p>{E(K.strip_marks(x))}</p>" for x in ps["paras"][:2 if density == 0 else 1])
+        paras = "".join(f"<p>{E(K.strip_marks(x))}</p>" for x in ps["paras"])   # whole text: questions may use any part
         qs = [q for k_, q in ps["questions"] if k_ == "find"][:2] + [q for k_, q in ps["questions"] if k_ == "you"][:1]
         qh = "".join(f"<li><b>{i}</b><span>{E(q)}</span></li>" for i, q in enumerate(qs, 1))
-        blocks.append(ex(n, f"Read: {ps['title']}", ps.get("title_ar", ""), f'<div class="passage">{paras}</div><ol class="items" style="margin-top:2mm">{qh}</ol>' + lines(2),
+        blocks.append(ex(n, f"Read: {ps['title']}", ps.get("title_ar", ""), f'<div class="passage" style="font-size:{[10.5, 10, 9.5, 9][density]}pt">{paras}</div><ol class="items" style="margin-top:2mm">{qh}</ol>' + lines(2),
                          "Read the Reading Lab text again, then read it aloud to your parent. Answer the questions.", who="both"))
         n += 1
     elif p["dialogue"] and density < 3:
@@ -529,10 +529,12 @@ def homework_teen(p, density):
     # ---- 3. reading
     ps = p["passage"]
     if ps:
-        paras = "".join(f"<p>{E(K.strip_marks(x))}</p>" for x in ps["paras"][: (4 if density == 0 else 3 if density == 1 else 2)])
+        # the whole text always prints (questions may refer to any paragraph); a tight page gets smaller type instead
+        paras = "".join(f"<p>{E(K.strip_marks(x))}</p>" for x in ps["paras"])
         qs = [q for k_, q in ps["questions"] if k_ == "find"][:2] + [q for k_, q in ps["questions"] if k_ == "think"][:1] + [q for k_, q in ps["questions"] if k_ == "you"][:1]
+        size = [10, 9.5, 9, 8.6][density]
         rd = ex(n, f"Reading: {ps['title']}", ps.get("title_ar", ""),
-                f'<div class="passage">{paras}</div><ol class="items" style="margin-top:2mm">' + "".join(f"<li><b>{i}</b><span>{E(q)}</span></li>" for i, q in enumerate(qs, 1)) + "</ol>" + lines(len(qs), 7),
+                f'<div class="passage" style="font-size:{size}pt">{paras}</div><ol class="items" style="margin-top:2mm">' + "".join(f"<li><b>{i}</b><span>{E(q)}</span></li>" for i, q in enumerate(qs, 1)) + "</ol>" + lines(len(qs) if density < 2 else 3, 7),
                 "Read the Reading Lab text again. Answer in full sentences.", who="self")
     else:
         dl = p["dialogue"][: (6 if density < 2 else 4)]

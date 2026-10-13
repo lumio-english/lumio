@@ -202,7 +202,9 @@ OVERFLOW_JS = """() => [...document.querySelectorAll('.page')].map((p, i) => {
   let worst = 0;
   // every block and every leaf inside it must end above the bottom margin (catches text pushed out of a box too)
   p.querySelectorAll('.flow > *, .flow .ex > *, .flow li, .ft, .cardgrid, .card > *').forEach(e => { worst = Math.max(worst, e.getBoundingClientRect().bottom); });
-  return worst > lim + 1 ? i + 1 : 0;
+  // ...and no exercise may be squeezed so that its own content spills over the next block
+  const squeezed = [...p.querySelectorAll('.flow > .ex')].some(e => e.scrollHeight > e.clientHeight + 2);
+  return (worst > lim + 1 || squeezed) ? i + 1 : 0;
 }).filter(Boolean)"""
 
 
