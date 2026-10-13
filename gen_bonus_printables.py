@@ -68,6 +68,7 @@ section .ar.sub { font-size:9.5pt; margin:0 0 6px; }
 .gap img { height:22mm; width:22mm; object-fit:contain; }
 .gap .w { font:800 17pt 'Baloo 2'; letter-spacing:.12em; }
 .gap .w i { display:inline-block; width:9mm; border-bottom:2px solid #2A2118; }
+.gap .w.long { font-size:13pt; letter-spacing:.02em; line-height:1.25; }
 .odds { display:grid; grid-template-columns:1fr 1fr; gap:6px 18px; font:800 14pt 'Baloo 2'; }
 .odds div span { display:inline-block; margin-right:16px; }
 .sort .letters { font:800 18pt 'Baloo 2'; letter-spacing:.35em; text-align:center; margin:2px 0 6px; }
@@ -113,7 +114,7 @@ def worksheet_html(d):
                 pre, post = it["frame"].split("_")
                 pic = img(it.get("image", ""))
                 cells.append(f'<div class="gap">{f"<img src={chr(34)}{pic}{chr(34)}>" if pic else ""}'
-                             f'<div class="w">{e(pre)}<i>&nbsp;</i>{e(post)}</div></div>')
+                             f'<div class="w{" long" if len(pre + post) > 5 else ""}">{e(pre)}<i>&nbsp;</i>{e(post)}</div></div>')
             body = '<div class="gaps">' + "".join(cells) + "</div>"
         elif t == "odd-one-out":
             body = '<div class="odds">' + "".join(
