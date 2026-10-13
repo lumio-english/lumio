@@ -362,6 +362,7 @@ const Lumio = (() => {
   };
   const saveGameBest = (name, levelId, lessonNum, game, rec) => {
     if (!name || !levelId || !lessonNum || !game) return { counted: false };
+    if (previewMode()) return { counted: false, reason: "preview" };
     const all = gameBestAll();
     all[name] = all[name] || {}; all[name][levelId] = all[name][levelId] || {};
     const lv = all[name][levelId], prev = lv[lessonNum] && lv[lessonNum][game];
@@ -372,7 +373,11 @@ const Lumio = (() => {
     pushExtras(name).catch(() => {});
     return { counted: true, first: !prev, lessonNum };
   };
-  const GAME_NAMES = { "memory-match": "Memory Match", "word-pop": "Word Pop", "word-builder": "Word Builder", "balloon-pop": "Balloon Pop" };
+  const GAME_NAMES = { "memory-match": "Memory Match", "word-pop": "Word Pop", "word-builder": "Word Builder", "balloon-pop": "Balloon Pop",
+    // each level's own game (the round that unlocks after every lesson), saved from games/kit/play.js
+    "lumis-pocket": "Lumi's Pocket", "treehouse-builder": "Treehouse Builder", "twelve-months-calendar": "Twelve Months Calendar",
+    "crew-chat": "Crew Chat", "squad-budget": "Squad Budget", "story-detective": "Story Detective", "crystal-ball": "Crystal Ball" };
+  const LEVEL_GAMES = ["lumis-pocket", "treehouse-builder", "twelve-months-calendar", "crew-chat", "squad-budget", "story-detective", "crystal-ball"];
 
   // Old deployments don't know pushExtras/pullExtras (a student call would
   // even read as "unauthorized"), so ask ?action=version once per tab and
@@ -549,6 +554,9 @@ const Lumio = (() => {
     && !bonusesMissing(name, levelId, attendedSet).length;
   // Teacher session on this device? (preview links, presenter, overrides)
   const isTeacherSession = () => { try { return localStorage.getItem("lumio_teacher") === "1"; } catch (e) { return false; } };
+  // Teacher preview / testing: a teacher device, or any page opened with ?preview=1. Nothing a preview does may
+  // reach a student's record (game bests, Hub progress, level-game results).
+  const previewMode = () => { try { if (new URLSearchParams(location.search).get("preview") === "1") return true; } catch (e) {} return isTeacherSession(); };
 
   /* ---------- Report send log ----------
      lumio_report_log = { studentName: "YYYY-MM-DD" }  -- the date a
@@ -1028,10 +1036,10 @@ const Lumio = (() => {
            speak, preloadSpeech, speakPhonicsSound, beep, confetti, sfx, music, setSound, soundOn, toast, shuffle, qs, letterTile,
            COUNTRY_CODES, combinePhone, splitPhone,
            pushProgressAndHomework, pullProgressAndHomework, retryPendingPush,
-           lessonCountFor, attendedSetFor, lessonDone, currentLesson, lessonsDoneCount, levelComplete, isTeacherSession,
+           lessonCountFor, attendedSetFor, lessonDone, currentLesson, lessonsDoneCount, levelComplete, isTeacherSession, previewMode,
            BONUS_AFTER, isBonus, bonusNumber, bonusLesson, levelSequence, classCountFor, nextInSequence, prevInSequence, lessonLabel, classesDoneCount, bonusesMissing,
            TEST_PASS_PCT, testBand, levelTestsAll, levelTestFor, saveLevelTest,
-           storyProgressFor, saveStoryPart, gameBestAll, gameBestFor, saveGameBest, GAME_NAMES,
+           storyProgressFor, saveStoryPart, gameBestAll, gameBestFor, saveGameBest, GAME_NAMES, LEVEL_GAMES,
            pushExtras, pullExtras, retryExtrasPush,
            TZ, TZ_LABEL, TZ_LABEL_AR, TZ_OFFSET_MIN, tzNow, tzToDate, tzAddDays, tzDayOfWeek,
            deviceTz, deviceDiffersFromTz, localClassTime, fmt12, fmtClassTime };

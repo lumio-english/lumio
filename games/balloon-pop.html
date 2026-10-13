@@ -89,7 +89,7 @@ const num = (() => {
   return tried.length ? Math.max(...tried) : 1;
 })();
 // Exit/Back go to where the game was launched from: the Hub, the lesson map, the trial deck or the presenter.
-const backHref = source === "hub" ? "../student.html#secHub" : source === "lesson" ? "../student.html" : source === "trial" ? `../present-trial.html?level=${level}` : `../present.html?level=${level}&n=${num}`;
+const backHref = source === "hub" && Lumio.qs("preview") === "1" ? `../english-hub.html?level=${encodeURIComponent(level)}&preview=1#/` : source === "hub" ? "../student.html#secHub" : source === "lesson" ? "../student.html" : source === "trial" ? `../present-trial.html?level=${level}` : `../present.html?level=${level}&n=${num}`;
 const lesson = window.LUMIO_LESSONS?.[level]?.[num];
 const vocab = lesson ? lesson.vocab : [];
 const GAME_TIME = 45, SEGS = 9;

@@ -11,7 +11,11 @@
   var LEVEL = qs("level") || (me && me.level) || "level1";
   var TEEN = ["level3", "level4", "level5", "level6", "level7", "level8", "level9"].indexOf(LEVEL) !== -1;
   document.documentElement.classList.add(TEEN ? "teen" : "kid");
-  var NAME = (me && me.name) || "guest";
+  // Teacher preview (?preview=1 from the teacher's Materials, or any teacher device): the whole Hub is open,
+  // progress lives in memory only (nothing is read from or written to any student's record) and every visit
+  // starts from zero XP.
+  var PREVIEW = qs("preview") === "1" || !!(L.isTeacherSession && L.isTeacherSession());
+  var NAME = PREVIEW ? "__teacher_preview__" : (me && me.name) || "guest";
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var main = $("#main");
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
@@ -45,15 +49,21 @@
   };
   var g = function (n) { return '<svg viewBox="0 0 24 24" aria-hidden="true">' + (G[n] || "") + "</svg>"; };
 
+  if (PREVIEW) {
+    var pb = document.createElement("div"); pb.className = "hb-preview";
+    pb.textContent = "Teacher preview · every section is open · nothing is saved";
+    var top = document.querySelector(".hb-top"); if (top) top.insertAdjacentElement("afterend", pb);
+  }
+
   /* ---------- progress ---------- */
   var KEY = "lumio_hub2";
-  function loadAll() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
+  function loadAll() { if (PREVIEW) return {}; try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
   var ALL = loadAll();
   ALL[NAME] = ALL[NAME] || {};
   var P = ALL[NAME][LEVEL] = ALL[NAME][LEVEL] || {};
   ["known", "quiz", "idioms", "grammar", "sounds", "spelling", "writing"].forEach(function (k) { P[k] = P[k] || {}; });
   P.xp = P.xp || 0; P.days = P.days || [];
-  function save() { try { localStorage.setItem(KEY, JSON.stringify(ALL)); } catch (e) {} }
+  function save() { if (PREVIEW) return; try { localStorage.setItem(KEY, JSON.stringify(ALL)); } catch (e) {} }
   function today() { try { return L.tzNow ? L.tzNow().date : new Date().toISOString().slice(0, 10); } catch (e) { return new Date().toISOString().slice(0, 10); } }
   function streak() {
     var d = P.days.slice().sort(), n = 0, cur = new Date(today() + "T12:00:00Z");
@@ -105,7 +115,7 @@
   }
   function setTop(small, title, back) {
     topSmall.textContent = small; topTitle.textContent = title;
-    backBtn.onclick = function () { if (back === "student") location.href = "student.html"; else location.hash = back; };
+    backBtn.onclick = function () { if (back === "student") location.href = PREVIEW ? "teacher.html" : "student.html"; else location.hash = back; };
   }
   function render(html) { main.innerHTML = '<div class="hb-view">' + html + "</div>"; window.scrollTo(0, 0); }
 
@@ -124,8 +134,8 @@
     { k: "phonics", t: "Phonics", s: "Letter sounds", gl: "abc", c1: "#5FD3C2", c2: "#139A88" },
     { k: "spelling", t: "Spelling", s: "The rules behind words", gl: "spell", c1: "#7FD3FF", c2: "#2C8FD8" },
     { k: "writing", t: "Writing", s: "Say it, then write it", gl: "pencil", c1: "#FFD166", c2: "#E8A400" },
-    { k: "songs", t: "Songs", s: "Sing your level's songs", gl: "music", c1: "#C79BFF", c2: "#8B4FE0", href: "songs.html?level=" + encodeURIComponent(LEVEL) },
-    { k: "games", t: "Games", s: "Word games", gl: "game", c1: "#7EE08C", c2: "#2FAE4A", href: "games/word-pop.html?level=" + encodeURIComponent(LEVEL) + "&from=hub" }
+    { k: "songs", t: "Songs", s: "Sing your level's songs", gl: "music", c1: "#C79BFF", c2: "#8B4FE0", href: "songs.html?level=" + encodeURIComponent(LEVEL) + (PREVIEW ? "&from=teacher" : "") },
+    { k: "games", t: "Games", s: "Word games", gl: "game", c1: "#7EE08C", c2: "#2FAE4A", href: "games/word-pop.html?level=" + encodeURIComponent(LEVEL) + "&from=hub" + (PREVIEW ? "&preview=1" : "") }
   ];
 
   /* how far along each section is: [done, total] */
