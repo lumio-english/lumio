@@ -357,12 +357,12 @@ def build_level(lvl, cfg, data, story, game):
   </div>{foot(lvl, cfg, P["hub"])}</div>'''
     # ---- printables
     fc = data["flashcards_teen" if teen else "flashcards_young"]
-    writing_sheet = lvl in ("pre-a", "level1", "level2", "level3")
+    writing_sheet = True   # every level has writing/<level>/lessonNN-writing.pdf (gen_printables.py)
     pages["print"] = f'''<div class="page">{bar("Printable Practice & Flashcards")}<div class="content">
   <div class="card"><h2>A printable page for every lesson</h2><p>Beyond the screen, every one of {label}'s {len(L)} lessons comes with its own homework sheet and flashcard set{", plus a writing sheet" if writing_sheet else ""}, ready to print. Each Bonus Class has a worksheet and cards too.</p></div>
   <div class="two"><div><div class="shot" style="height:300px"><img src="assets/lv-{lvl}-worksheet.png" alt=""></div><div class="cap">Lesson 1 homework sheet</div></div>
-  <div><div class="shot" style="height:300px"><img src="assets/lv-{lvl}-flashcards.png" alt=""></div><div class="cap">Lesson 1 flashcards (print double-sided)</div></div></div>
-  <div class="card" style="margin-top:13px"><h2>Who they're for, and why</h2><p><b>Writing practice:</b> {E(cfg["writing"])}</p><p style="margin-top:6px"><b>Flashcards:</b> {E(fc)}</p></div>
+  <div><div class="shot" style="height:300px"><img src="assets/lv-{lvl}-flashcards.png" alt=""></div><div class="cap">Lesson 1 flashcards (print double-sided, flip on the long edge)</div></div></div>
+  <div class="card" style="margin-top:13px"><h2>Made for home</h2><p><b>Homework and writing sheets:</b> {E(cfg["writing"])}</p><p style="margin-top:6px"><b>Flashcards:</b> {E(fc)}</p></div>
   </div>{foot(lvl, cfg, P["print"])}</div>'''
     # ---- game
     gsteps = "".join(f"<li>{E(s)}</li>" for s in cfg["game_steps"])

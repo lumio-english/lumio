@@ -1938,10 +1938,8 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
   const nextLessonNum = current;
   const awaitingClass = current <= total && isPrepDone(current) && !isLiveDone(current);
   const awaitingHomework = current <= total && isPrepDone(current) && isLiveDone(current) && !isHomeworkDone(current);
-  // Writing-practice sheets only exist for pre-a/level1/level2/level3 so far
-  // — hide the button entirely for level4-6 rather than link to a PDF that
-  // doesn't exist yet.
-  const hasWritingPractice = ["pre-a", "level1", "level2", "level3"].includes(level);
+  // Writing sheets (gen_printables.py) exist for every level: writing/<level>/lessonNN-writing.pdf.
+  const hasWritingPractice = ["pre-a", "level1", "level2", "level3", "level4", "level5", "level6"].includes(level);
   if (!hasWritingPractice) document.getElementById("writingBtn").style.display = "none";
   // A Bonus Class still owed after the last lesson (students who were mid-level when Bonus Classes started).
   const owedBonus = done >= total && Lumio.bonusesMissing ? Lumio.bonusesMissing(u.name, level, attendedSet)[0] : 0;

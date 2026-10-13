@@ -20,19 +20,19 @@ is not present (this container: /opt/pw-browsers/chromium).
 import os, subprocess, sys
 
 LEVELS = {
-    "pre-a":  dict(slides="gen_slides_prea_v2.py",       pdfs="gen_worksheets_flashcards_pre_a.py",  trial="gen_trial_prea.py"),
-    "level1": dict(slides="gen_slides_level1_v2.py",     pdfs="gen_worksheets_flashcards_level1.py", trial="gen_trial_level1.py"),
-    "level2": dict(slides="gen_slides_level2_v2.py",     pdfs="gen_worksheets_flashcards_level2.py", trial="gen_trial_level2.py"),
-    "level3": dict(slides="gen_slides_level3_teenv2.py", pdfs="gen_worksheets_flashcards_level3.py", trial="gen_trial_level3.py"),
-    "level4": dict(slides="gen_slides_level4_teenv2.py", pdfs="gen_worksheets_flashcards_level4.py", trial="gen_trial_level4.py"),
-    "level5": dict(slides="gen_slides_level5_teenv2.py", pdfs="gen_worksheets_flashcards_level5.py", trial="gen_trial_level5.py"),
-    "level6": dict(slides="gen_slides_level6_teenv2.py", pdfs="gen_worksheets_flashcards_level6.py", trial="gen_trial_level6.py"),
+    "pre-a":  dict(slides="gen_slides_prea_v2.py",       pdfs="gen_printables.py pre-a",  trial="gen_trial_prea.py"),
+    "level1": dict(slides="gen_slides_level1_v2.py",     pdfs="gen_printables.py level1", trial="gen_trial_level1.py"),
+    "level2": dict(slides="gen_slides_level2_v2.py",     pdfs="gen_printables.py level2", trial="gen_trial_level2.py"),
+    "level3": dict(slides="gen_slides_level3_teenv2.py", pdfs="gen_printables.py level3", trial="gen_trial_level3.py"),
+    "level4": dict(slides="gen_slides_level4_teenv2.py", pdfs="gen_printables.py level4", trial="gen_trial_level4.py"),
+    "level5": dict(slides="gen_slides_level5_teenv2.py", pdfs="gen_printables.py level5", trial="gen_trial_level5.py"),
+    "level6": dict(slides="gen_slides_level6_teenv2.py", pdfs="gen_printables.py level6", trial="gen_trial_level6.py"),
 }
 
 
 def run(script):
     print(f"\n=== {script}")
-    subprocess.run([sys.executable, script], check=True)
+    subprocess.run([sys.executable] + script.split(), check=True)
 
 
 def main():
