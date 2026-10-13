@@ -208,7 +208,7 @@ OVERFLOW_JS = """() => [...document.querySelectorAll('.page')].map((p, i) => {
 }).filter(Boolean)"""
 
 
-def render(build, out_path, title, tries=4):
+def render(build, out_path, title, tries=6):
     """build(density) -> list of page HTML strings; density goes 0, 1, 2... until nothing overflows."""
     pg = browser()
     tmp = os.path.join(CACHE, "_sheet.html")

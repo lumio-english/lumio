@@ -356,10 +356,30 @@ def homework_kid(p, density):
         b, k = phonics_block(p, n, r, lv); blocks.append(b)
         if k: keys.append(f"{n}) {k}")
         n += 1
-    if not p["phonics"] or density == 0:
-        mw = r.sample(p["words"], min(len(p["words"]), 5 if p["phonics"] else 6))
+    if (not p["phonics"] and density < 4) or density == 0:
+        mw = r.sample(p["words"], min(len(p["words"]), 5 if p["phonics"] or density >= 2 else 6))
         blocks.append(match_block(n, mw, r)); n += 1
+    def gaps_block(n, target):
+        """Sentence gaps from the lesson's own examples, each with a picture clue so only one word fits."""
+        gaps = []
+        for w in r.sample(p["words"], len(p["words"])):
+            g = gapped(w.get("example", ""), w["en"]) if w.get("example") else None
+            if g and len(gaps) < (5 if density < 2 else 4 if density < 4 else 3) and g[1].lower() not in [x[1].lower() for x in gaps]:
+                src = K.picture(w, 160)
+                clue = f'<img class="gpic" src="{src}" alt="">' if src else f'<span class="ar" style="margin-right:2mm;color:#8A7A6A">({E(w["ar"])})</span>'
+                gaps.append((clue + g[0], g[1]))
+        if not gaps:
+            return n
+        bank = '<div class="bank">' + "".join(f"<span>{E(x[1])}</span>" for x in sorted(gaps, key=lambda x: x[1].lower())) + "</div>"
+        items = "".join(f"<li><b>{i}</b><span>{g[0]}</span></li>" for i, g in enumerate(gaps, 1))
+        target.append(ex(n, "Complete the sentences", "أكمل الجمل", bank + f'<ol class="items" style="gap:1.2mm">{items}</ol>', "Look at the picture. Write the word from the box.", who="self"))
+        keys.append(f"{n}) " + ", ".join(g[1] for g in gaps))
+        return n + 1
+
     p1_blocks = blocks
+    # Lessons without a phonics group have room on page 1: the sentence gaps go there (numbering stays in order).
+    if not p["phonics"]:
+        n = gaps_block(n, p1_blocks)
     # ---- page 2: sentences, reading, writing
     blocks = []
     t, mistakes = p["topic"], p["mistakes"]
@@ -376,28 +396,17 @@ def homework_kid(p, density):
             body += f'<div class="pick" style="margin-top:2.4mm">{"".join(rows)}</div>'
         blocks.append(ex(n, f"Grammar: {t['title']}", t.get("titleAr", ""), body, "Read the rule with your parent (the Arabic helps). Then circle the correct sentence on your own." if mistakes else "Read the rule and the examples aloud.", who="both"))
         n += 1
-    # sentence gaps from the lesson's own examples
-    gaps = []
-    for w in r.sample(p["words"], len(p["words"])):
-        g = gapped(w.get("example", ""), w["en"]) if w.get("example") else None
-        if g and len(gaps) < (5 if density < 2 else 4) and g[1].lower() not in [x[1].lower() for x in gaps]:
-            src = K.picture(w, 160)
-            clue = f'<img class="gpic" src="{src}" alt="">' if src else f'<span class="ar" style="margin-right:2mm;color:#8A7A6A">({E(w["ar"])})</span>'
-            gaps.append((clue + g[0], g[1]))
-    if gaps:
-        bank = '<div class="bank">' + "".join(f"<span>{E(x[1])}</span>" for x in sorted(gaps, key=lambda x: x[1].lower())) + "</div>"
-        items = "".join(f"<li><b>{i}</b><span>{g[0]}</span></li>" for i, g in enumerate(gaps, 1))
-        blocks.append(ex(n, "Complete the sentences", "أكمل الجمل", bank + f'<ol class="items" style="gap:1.2mm">{items}</ol>', "Look at the picture. Write the word from the box.", who="self"))
-        keys.append(f"{n}) " + ", ".join(g[1] for g in gaps)); n += 1
+    if p["phonics"]:
+        n = gaps_block(n, blocks)
     ps = p["passage"]
     if ps and density < 3:
         paras = "".join(f"<p>{E(K.strip_marks(x))}</p>" for x in ps["paras"])   # whole text: questions may use any part
         qs = [q for k_, q in ps["questions"] if k_ == "find"][:2] + [q for k_, q in ps["questions"] if k_ == "you"][:1]
         qh = "".join(f"<li><b>{i}</b><span>{E(q)}</span></li>" for i, q in enumerate(qs, 1))
-        blocks.append(ex(n, f"Read: {ps['title']}", ps.get("title_ar", ""), f'<div class="passage" style="font-size:{[10.5, 10, 9.5, 9][density]}pt">{paras}</div><ol class="items" style="margin-top:2mm">{qh}</ol>' + lines(2),
+        blocks.append(ex(n, f"Read: {ps['title']}", ps.get("title_ar", ""), f'<div class="passage" style="font-size:{[10.5, 10, 9.5, 9, 9, 9][density]}pt">{paras}</div><ol class="items" style="margin-top:2mm">{qh}</ol>' + lines(2),
                          "Read the Reading Lab text again, then read it aloud to your parent. Answer the questions.", who="both"))
         n += 1
-    elif p["dialogue"] and density < 3:
+    elif p["dialogue"] and density < 5:
         dl = "".join(f"<div><b>{E(sp if len(sp) > 1 else ('Omar' if sp == 'L' else 'Sara'))}</b><span>{E(en)}</span></div>" for sp, en, *_ in p["dialogue"][:4])
         blocks.append(ex(n, "Read the dialogue", "اقرأ الحوار", f'<div class="dlg">{dl}</div><div style="font:600 8.6pt Nunito;margin-top:1.6mm"><span class="tick"></span>We read it together and took turns.</div>',
                          "Read it aloud with your parent: you read one person, your parent reads the other. Then swap.", who="parent"))
@@ -407,12 +416,15 @@ def homework_kid(p, density):
         blocks.append(ex(n, "Your turn: draw and write", "دورك: ارسم واكتب", '<div class="drawbox"></div>' + lines(2, 8.4),
                          "Draw something from today's lesson that is about you. Then write a sentence about it, like the sentences above.", cls="grow", who="self"))
     else:
-        blocks.append(ex(n, "Your turn: write", "دورك: اكتب", lines(3, 8.4) + '<div class="drawbox" style="min-height:18mm;margin-top:2mm"></div>',
-                         E(task) + " Then draw a small picture to go with it.", cls="grow", who="self"))
+        draw = '<div class="drawbox" style="min-height:18mm;margin-top:2mm"></div>' if density < 3 else ""
+        blocks.append(ex(n, "Your turn: write", "دورك: اكتب", lines(3 if density < 4 else 2, 8.4) + draw,
+                         E(task) + (" Then draw a small picture to go with it." if draw else ""), cls="grow", who="self"))
     words_en = '<span class="en">' + E(", ".join(w["en"] for w in p["words"][:8])) + "</span>"
     parent = parent_box(f'كلمات الدرس: {words_en}. التمارين المكتوب عليها <b>«وحدي»</b> يحلّها طفلكم بنفسه، والمكتوب عليها <b>«مع ولي الأمر»</b> تحتاج مشاركتكم: استمعوا إليه وهو يقرأ، وساعدوه في الكلمات الصعبة دون أن تعطوه الإجابة مباشرة. الإجابات مكتوبة مقلوبة أسفل الصفحة: صحّحوا معه في النهاية واحتفلوا بما أنجزه.')
-    page1 = K.header(kicker(p, "Homework"), p["title"], p["title_ar"]) + '<div class="flow kid">' + "".join(p1_blocks) + parent + "</div>" + foot(p, "Homework", 1, 2)
-    page2 = (K.header(kicker(p, "Homework"), p["title"], p["title_ar"], who=False) + '<div class="flow kid">' + "".join(blocks) + sign()
+    # the parent note sits on whichever page has room: page 1 in phonics lessons, page 2 when the gaps moved to page 1
+    p1_parent, p2_parent = (parent, "") if p["phonics"] else ("", parent)
+    page1 = K.header(kicker(p, "Homework"), p["title"], p["title_ar"]) + '<div class="flow kid">' + "".join(p1_blocks) + p1_parent + "</div>" + foot(p, "Homework", 1, 2)
+    page2 = (K.header(kicker(p, "Homework"), p["title"], p["title_ar"], who=False) + '<div class="flow kid">' + "".join(blocks) + p2_parent + sign()
              + key_strip([E(k) for k in keys]) + "</div>" + foot(p, "Homework", 2, 2))
     return [K.page(page1), K.page(page2)], SHEET_CSS
 
@@ -532,7 +544,7 @@ def homework_teen(p, density):
         # the whole text always prints (questions may refer to any paragraph); a tight page gets smaller type instead
         paras = "".join(f"<p>{E(K.strip_marks(x))}</p>" for x in ps["paras"])
         qs = [q for k_, q in ps["questions"] if k_ == "find"][:2] + [q for k_, q in ps["questions"] if k_ == "think"][:1] + [q for k_, q in ps["questions"] if k_ == "you"][:1]
-        size = [10, 9.5, 9, 8.6][density]
+        size = [10, 9.5, 9, 8.6, 8.6, 8.6][density]
         rd = ex(n, f"Reading: {ps['title']}", ps.get("title_ar", ""),
                 f'<div class="passage" style="font-size:{size}pt">{paras}</div><ol class="items" style="margin-top:2mm">' + "".join(f"<li><b>{i}</b><span>{E(q)}</span></li>" for i, q in enumerate(qs, 1)) + "</ol>" + lines(len(qs) if density < 2 else 3, 7),
                 "Read the Reading Lab text again. Answer in full sentences.", who="self")
