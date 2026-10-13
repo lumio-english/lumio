@@ -1,5 +1,7 @@
 # Bonus Classes: pictures to generate (8)
 
+**Done (13 Oct 2026):** all 8 pictures received, installed in assets/vocab/ and the cards rebuilt.
+
 All 8 are NEW (no file exists yet). Save each as a PNG named exactly as shown, then send them back. They go into
 `assets/vocab/<file name>` (max 600 px, transparent background), and the cards and worksheets that use them are
 rebuilt. Until then those cards print the word without a picture.
