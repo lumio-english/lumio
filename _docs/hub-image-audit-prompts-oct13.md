@@ -167,3 +167,11 @@ The Body
 Growing & Changing
 95. `grow.png` — a small plant growing in three steps: seed, sprout, small plant in a pot
 96. `fail.png` — CHAR: Omar looking at a test paper with a red mark, disappointed but not crying
+
+## G. Second-meaning pictures (3, NEW)
+
+The same word means two different things in two places, so it needs its own picture. When these arrive they are linked only where that meaning is taught; the existing picture stays for the other meaning.
+
+97. `clean-verb.png` (kids style; Level 1 Hub "Actions": clean = ينظف) — CHAR: Omar wiping a table with a cloth and a spray bottle, small sparkles where it is already clean
+98. `old-thing.png` (kids style; Level 2 Hub "How Things Are": old = قديم, paired with "new") — an old, worn teddy bear with a patched ear and faded colours, on its own (the existing old.png, an old grandfather, stays for "My grandpa is old")
+99. `hard-solid.png` (teen style; Level 5 Hub "Textures & Qualities": hard = صلب) — a solid grey rock with a hammer bouncing off it and a small "clink" spark (the existing hard.png, a difficult puzzle, stays for "hard = صعب")

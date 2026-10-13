@@ -49,7 +49,10 @@ def build_vocab_hub(level, theme_by_lesson):
             key = w["en"].lower()
             if key not in seen_globally:
                 seen_globally.add(key)
-                themes[name]["words"].append({"en": w["en"], "ar": w["ar"]})
+                hw = {"en": w["en"], "ar": w["ar"]}
+                if w.get("image"):
+                    hw["image"] = w["image"]  # the lesson's own picture for this meaning (e.g. watches-tv)
+                themes[name]["words"].append(hw)
 
     theme_order = ["Friends & Social Life", "My Room & Things", "School Life",
                    "Sports & Competition", "Games & Entertainment", "Money & Shopping", "Everyday Life"]

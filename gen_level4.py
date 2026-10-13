@@ -26,12 +26,12 @@ LESSONS = [
     "goal": "I can talk about routines using he/she.",
     "grammarFocus": "He/She + verb-s (Present Simple)",
     "vocab": [
-      {"en": "wakes up", "ar": "يستيقظ (هو)", "example": "He wakes up at six."},
-      {"en": "eats", "ar": "يأكل (هو)", "example": "She eats breakfast fast."},
-      {"en": "sleeps", "ar": "ينام (هو)", "example": "The baby sleeps a lot."},
-      {"en": "plays", "ar": "يلعب (هو)", "example": "He plays football."},
-      {"en": "reads", "ar": "يقرأ (هو)", "example": "She reads every night."},
-      {"en": "works", "ar": "يعمل (هو)", "example": "My dad works every day."},
+      {"en": "wakes up", "ar": "يستيقظ / تستيقظ (هو / هي)", "example": "He wakes up at six."},
+      {"en": "eats", "ar": "يأكل / تأكل (هو / هي)", "example": "She eats breakfast fast."},
+      {"en": "sleeps", "ar": "ينام / تنام (هو / هي)", "example": "The baby sleeps a lot."},
+      {"en": "plays", "ar": "يلعب / تلعب (هو / هي)", "example": "He plays football."},
+      {"en": "reads", "ar": "يقرأ / تقرأ (هو / هي)", "example": "She reads every night."},
+      {"en": "works", "ar": "يعمل / تعمل (هو / هي)", "example": "My dad works every day."},
     ],
   },
   {

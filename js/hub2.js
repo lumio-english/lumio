@@ -15,7 +15,8 @@
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var main = $("#main");
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
-  var pic = function (en) { return "assets/vocab/" + String(en).toLowerCase().replace(/'/g, "").replace(/ /g, "-") + ".png"; };
+  // a word object may name its own picture ("image": "watches-tv") when one spelling has two meanings
+  var pic = function (w) { var n = w && typeof w === "object" ? (w.image || w.en) : w; return "assets/vocab/" + String(n).toLowerCase().replace(/'/g, "").replace(/ /g, "-") + ".png"; };
   var shuffle = function (a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; };
   var MO = !(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
 
@@ -181,7 +182,7 @@
     setTop("English Hub", "Vocabulary", "#/");
     var cards = d.themes.map(function (t, i) {
       var k = t.words.filter(function (w) { return P.known[w.en]; }).length, best = P.quiz["v" + i];
-      return '<button class="card theme" data-i="' + i + '"><div class="collage">' + t.words.slice(0, 4).map(function (w) { return '<img src="' + pic(w.en) + '" alt="" loading="lazy" onerror="this.style.visibility=\'hidden\'">'; }).join("") + "</div>" +
+      return '<button class="card theme" data-i="' + i + '"><div class="collage">' + t.words.slice(0, 4).map(function (w) { return '<img src="' + pic(w) + '" alt="" loading="lazy" onerror="this.style.visibility=\'hidden\'">'; }).join("") + "</div>" +
         '<div class="meta"><div><b>' + esc(t.theme) + '</b><span class="ar" dir="rtl">' + esc(t.themeAr) + "</span>" +
         '<div class="bar"><i style="width:' + Math.round(k / t.words.length * 100) + '%"></i></div></div>' +
         (best ? '<span class="xpgain" title="best quiz">' + g("star") + best.stars + "</span>" : "") + "</div></button>";
@@ -199,7 +200,7 @@
       '<div class="actions"><button class="btn pri" id="goLearn">' + g("cards") + 'Learn</button><button class="btn sec" id="goQuiz">' + g("target") + "Quiz</button></div>" +
       '<div class="sec-h"><h2>All words</h2><span class="sub">tap to hear</span></div><div class="words">' +
       t.words.map(function (w, j) {
-        return '<button class="card word" data-j="' + j + '"><img src="' + pic(w.en) + '" alt="" loading="lazy" onerror="this.style.visibility=\'hidden\'">' +
+        return '<button class="card word" data-j="' + j + '"><img src="' + pic(w) + '" alt="" loading="lazy" onerror="this.style.visibility=\'hidden\'">' +
           (P.known[w.en] ? '<span class="ok">' + g("check") + "</span>" : "") + "<b>" + esc(w.en) + '</b><span class="ar" dir="rtl">' + esc(w.ar) + "</span></button>";
       }).join("") + "</div>");
     main.querySelectorAll(".word").forEach(function (b) { b.onclick = function () { say(t.words[b.dataset.j].en, b); }; });
@@ -218,7 +219,7 @@
       var w = t.words[order[pos]];
       render('<div class="deck-wrap"><div class="prog"><div class="bar"><i style="width:' + Math.round(pos / order.length * 100) + '%"></i></div><span>' + (pos + 1) + "/" + order.length + "</span></div>" +
         '<div class="card flash hb-card-anim" id="fc" style="--from:' + (dir < 0 ? "-40px" : "40px") + ";--rot:" + (dir < 0 ? "-2deg" : "2deg") + '">' +
-        '<img class="pic" src="' + pic(w.en) + '" alt="' + esc(w.en) + '" onerror="this.style.visibility=\'hidden\'">' +
+        '<img class="pic" src="' + pic(w) + '" alt="' + esc(w.en) + '" onerror="this.style.visibility=\'hidden\'">' +
         '<div class="w">' + esc(w.en) + '</div><div class="ar hide" id="fcAr" dir="rtl" title="Tap to see the Arabic">' + esc(w.ar) + "</div>" +
         '<div class="row"><button class="play big" id="fcPlay" aria-label="Listen">' + g("sound") + "</button></div></div>" +
         '<div class="know"><button class="btn no" id="kNo">' + g("redo") + 'Still learning</button><button class="btn yes" id="kYes">' + g("check") + "I know it</button></div>" +
@@ -280,10 +281,10 @@
       if (n >= qs.length) return result();
       var Q = qs[n], head = "";
       if (Q.kind === "hear") head = '<div class="q-head"><span class="lbl">Listen</span><div class="t">Which picture is it?</div><div class="row" style="display:flex;justify-content:center;margin-top:12px"><button class="play big" id="qPlay" aria-label="Listen again">' + g("sound") + "</button></div></div>";
-      else if (Q.kind === "see") head = '<div class="q-head"><span class="lbl">Look</span><div class="t">What is this?</div></div><img class="q-pic" src="' + pic(Q.w.en) + '" alt="">';
+      else if (Q.kind === "see") head = '<div class="q-head"><span class="lbl">Look</span><div class="t">What is this?</div></div><img class="q-pic" src="' + pic(Q.w) + '" alt="">';
       else head = '<div class="q-head"><span class="lbl">' + esc(Q.label || "Question") + '</span><div class="t">' + Q.prompt + "</div></div>";
       var opts = Q.opts.map(function (o, j) {
-        if (Q.kind === "hear") return '<button class="card opt picopt" data-j="' + j + '"><img src="' + pic(o.en) + '" alt="' + esc(o.en) + '"></button>';
+        if (Q.kind === "hear") return '<button class="card opt picopt" data-j="' + j + '"><img src="' + pic(o) + '" alt="' + esc(o.en) + '"></button>';
         if (Q.kind === "see") return '<button class="card opt" data-j="' + j + '">' + esc(o.en) + "</button>";
         return '<button class="card opt txt" data-j="' + j + '">' + esc(o.text) + "</button>";
       }).join("");
@@ -459,7 +460,7 @@
       u.words.map(function (w, j) {
         // sight words (the, a, to, we...) are taught as words, so their tile says so
         // words without a picture get a letter tile instead, with this group's sounds lit up
-        return '<button class="card word' + (sight ? " sight" : "") + '" data-w="' + j + '"><img src="' + pic(w.en) + '" alt="" loading="lazy" onerror="this.parentNode.classList.add(\'nopic\')">' +
+        return '<button class="card word' + (sight ? " sight" : "") + '" data-w="' + j + '"><img src="' + pic(w) + '" alt="" loading="lazy" onerror="this.parentNode.classList.add(\'nopic\')">' +
           '<span class="wt" aria-hidden="true"><span>' + soundLetters(w.en, u.sounds) + "</span></span><b>" + esc(w.en) + '</b><span class="ar" dir="rtl">' + esc(w.ar) + "</span></button>";
       }).join("") + "</div>" +
       (u.story ? '<div class="sec-h"><h2>Read the story</h2></div><div class="card story"><button class="play" id="stPlay" aria-label="Listen">' + g("sound") + '</button><div><p>' + esc(u.story.en) + '</p><p class="ar" dir="rtl">' + esc(u.story.ar) + "</p></div></div>" : "") +

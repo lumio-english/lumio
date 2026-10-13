@@ -3647,7 +3647,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
         <div class="sd-vocab-word-grid">
           ${theme.words.map(w => `
             <div class="sd-vocab-word-card">
-              <div class="sd-vocab-word-img"><img src="assets/vocab/${vocabSlug(w.en)}.png" onerror="this.parentElement.style.display='none'"></div>
+              <div class="sd-vocab-word-img"><img src="assets/vocab/${vocabSlug(w.image || w.en)}.png" onerror="this.parentElement.style.display='none'"></div>
               <div class="en">${w.en}</div>
               <div class="ar">${w.ar}</div>
               <button class="sd-vocab-listen" onclick="Lumio.speak('${w.en.replace(/'/g, "\\'")}')">🔊</button>
