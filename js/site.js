@@ -409,7 +409,10 @@
   G.to('#pImg', { yPercent: -6, ease: 'none', scrollTrigger: { trigger: '#crew', start: 'top bottom', end: 'bottom top', scrub: true } });
   ST.create({ trigger: '#crew', start: 'top 70%', end: 'bottom 30%', onEnter: runCrewTimer, onEnterBack: runCrewTimer, onLeave: function () { if (crewTimer) crewTimer.pause(); }, onLeaveBack: function () { if (crewTimer) crewTimer.pause(); } });
 
-  G.from('.plan', { y: 90, opacity: 0, duration: 1, ease: 'power3.out', stagger: .14, scrollTrigger: { trigger: '#plans', start: 'top 82%', once: true, onEnter: function () { countPrices(); } } });
+  // explicit end state + clearProps: the cards' CSS hover transition on transform otherwise leaves them stuck 90px low,
+  // on top of the price note under them
+  G.set('.plan', { transition: 'none' });
+  G.fromTo('.plan', { y: 90, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: 'power3.out', stagger: .14, clearProps: 'transform,opacity,transition', scrollTrigger: { trigger: '#plans', start: 'top 82%', once: true, onEnter: function () { countPrices(); } } });
   G.from('.fq', { y: 30, opacity: 0, duration: .7, ease: 'power3.out', stagger: .06, scrollTrigger: { trigger: '#faqs', start: 'top 85%' } });
 
   /* final: headline words rise, slow drifting embers */
