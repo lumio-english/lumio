@@ -190,7 +190,11 @@ def page(title, body, depth="../../"):
 <div class="crumb"><a href="index.html">Bonus Classes</a> · Teacher plans</div>
 <button class="btn noprint" style="margin-left:auto" onclick="print()">Print</button></header>
 {body}
-</main></body></html>
+</main>
+<script>/* every emoji -> a Lumio icon (js/lumio-emoji.js) */(function () {{ var b = "{depth}", v = "0";
+ try {{ var x = new XMLHttpRequest(); x.open("GET", b + "js/version.json?_=" + Date.now(), false); x.send(null); v = JSON.parse(x.responseText).v; }} catch (e) {{}}
+ document.write('<script src="' + b + 'js/lumio-icons.js?v=' + v + '"><\\/script>'); document.write('<script src="' + b + 'js/lumio-emoji.js?v=' + v + '"><\\/script>'); }})();</script>
+</body></html>
 """
 
 

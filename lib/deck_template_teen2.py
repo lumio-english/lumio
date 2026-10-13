@@ -950,4 +950,4 @@ def slide_crew_talk(lines, n, total, theme_key="default"):
     t = THEMES.get(theme_key, THEMES["default"])
     rows = [(who.upper(), f"{CHAR}/{who.lower()}-teen-happy.png", en, ar) for (who, en, ar) in lines]
     return (bg_theme(theme_key) + header_themed("Crew Talk", n, total, theme_key)
-            + chat_column(rows, t, "Read it in pairs, then swap roles.", "1-on-1: you read one character, your teacher reads the other -- then swap."))
+            + chat_column(rows, t, "Read it in pairs, then swap roles.", "1-on-1: you read one character, your teacher reads the other &mdash; then swap."))

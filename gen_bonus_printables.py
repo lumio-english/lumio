@@ -138,6 +138,10 @@ def worksheet_html(d):
             '</body></html>')
 
 
+SCISSORS = ('<svg width="11" height="11" viewBox="0 0 24 24" style="vertical-align:-1px" aria-hidden="true"><circle cx="6" cy="18" r="3" fill="none" stroke="#C2530A" stroke-width="2"/>'
+            '<circle cx="18" cy="18" r="3" fill="none" stroke="#C2530A" stroke-width="2"/><path d="M8 16L19 3M16 16L5 3" stroke="#C2530A" stroke-width="2" stroke-linecap="round"/></svg>')
+
+
 def cards_html(d):
     cards = []
     for c in d["printables"].get("cards", []):
@@ -149,7 +153,7 @@ def cards_html(d):
                      f'{f"<div class=s>{e(c["sub"])}</div>" if c.get("sub") else ""}'
                      f'{f"<div class=ar>{ea(c["ar"])}</div>" if c.get("ar") else ""}</div>')
     return (f'<!doctype html><html><head><meta charset="utf-8"><style>{font_css()}{BASE_CSS}</style></head><body>'
-            f'<div class="cut">✂ Cut along the dashed lines · {e(d["label"])}: {e(d["title"])}</div>'
+            f'<div class="cut">{SCISSORS} Cut along the dashed lines · {e(d["label"])}: {e(d["title"])}</div>'
             f'<div class="cards">{"".join(cards)}</div></body></html>')
 
 

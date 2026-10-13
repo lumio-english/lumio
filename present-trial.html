@@ -363,7 +363,7 @@ function renderChallengeUI() {
   if (kind === "solo-answer") {
     root.innerHTML = "";
     root.style.cssText = "display:flex;gap:12px;justify-content:center;flex-wrap:wrap";
-    root.appendChild(pillButton("⭐ Got it! (+1 star)", (btn) => addStars(1, btn), "#F97316"));
+    root.appendChild(pillButton("⭐ Got it! (+1 star)", (btn) => addStars(1, btn), "#C2410C"));
     root.appendChild(pillButton("🔁 Almost — say it with me", () => { const el = document.querySelector("[data-say]"); if (el && typeof Lumio !== "undefined" && Lumio.speak) Lumio.speak(el.dataset.say); }, "#0D9488"));
     return;
   }
@@ -613,5 +613,6 @@ fitStage();
 <script src="js/lumio-icons.js"></script>
 <script>window.LUMIO_SLIDE_FX = !!TDECK;   // the Live Class effects (page turns, chapter cards, host, star jar, finale) ship with the v5 trial decks</script>
 <script src="js/slide-motion.js"></script>
+<script>/* every emoji -> a Lumio icon (js/lumio-emoji.js) */(function () { var b = "", v = window.LUMIO_V; if (!v) { try { var x = new XMLHttpRequest(); x.open("GET", b + "js/version.json?_=" + Date.now(), false); x.send(null); v = JSON.parse(x.responseText).v; } catch (e) { v = "0"; } } if (!window.LumioIcons) document.write('<script src="' + b + 'js/lumio-icons.js?v=' + v + '"><\/script>'); document.write('<script src="' + b + 'js/lumio-emoji.js?v=' + v + '"><\/script>'); })();</script>
 </body>
 </html>

@@ -117,7 +117,7 @@ window.LUMIO_OUTCOMES = {
    },
    {
     "en": "Read words with sh, ch, th, blends, magic e, and vowel teams (rain, tree, boat)",
-    "ar": "يقرأ كلمات فيها sh وch وth والحروف المتجاورة وحرف e السحري وثنائيات الحروف المتحركة (rain، tree، boat)"
+    "ar": "يقرأ كلمات فيها sh، ch، th والحروف المتجاورة وحرف e السحري وثنائيات الحروف المتحركة (rain، tree، boat)"
    },
    {
     "en": "Read a short text and answer questions about it",

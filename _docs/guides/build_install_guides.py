@@ -288,6 +288,12 @@ def screenshots():
             b.close()
     finally: srv.terminate()
 
+def with_icons(html):
+    """No emoji in the guides: load the site's icon set + swapper (js/lumio-emoji.js) into the rendered page."""
+    tags = "".join(f'<script src="file://{ROOT / "js" / f}"></script>' for f in ("lumio-icons.js", "lumio-emoji.js"))
+    return html.replace("</body>", tags + "</body>", 1)
+
+
 def render(key, cfg):
     from playwright.sync_api import sync_playwright
     html = page(cfg["title"], cfg["sub_en"], cfg["sub_ar"], cfg["steps"](), cfg["tip_en"], cfg["tip_ar"])
@@ -299,7 +305,7 @@ def render(key, cfg):
         .replace('src="SHOT_PHONE"', f'src="{du(TMP / "login_phone.png")}"')
         .replace('src="SHOT_IPAD"', f'src="{du(TMP / "login_ipad.png")}"')
         .replace('src="SHOT_DESK"', f'src="{du(TMP / "login_desk.png")}"'))
-    inl = TMP / f"{key}.html"; inl.write_text(html)
+    inl = TMP / f"{key}.html"; inl.write_text(with_icons(html))
     frames = []
     with sync_playwright() as p:
         b = p.chromium.launch(executable_path="/opt/pw-browsers/chromium")

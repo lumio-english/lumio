@@ -53,6 +53,13 @@ def main(level):
             if 'class="v3 ' not in html[:200]:
                 html = V.finish(html); n += 1
             html = html.replace('class="v3 ', 'class="v3 v3-trial ', 1)
+            # dialogue instruction: one clear line per deck (group: pairs; 1-on-1: you + your teacher)
+            if "/trial-solo/" in d:
+                html = re.sub(r'(?:Listen first, then read it in pairs &mdash; swap roles!|Read it in pairs, then swap roles\.)\s*(<small>1-on-1:[^<]*</small>)?',
+                              lambda mm: ("Listen first, then read it with your teacher &mdash; swap roles!" if mm.group(0).startswith("Listen") else "Read it with your teacher, then swap roles."), html)
+                html = re.sub(r'<(small|span)[^>]*>1-on-1: you read one character[^<]*</\1>', '', html)
+            else:
+                html = re.sub(r'<(small|span)[^>]*>1-on-1: you read one character[^<]*</\1>', '', html)
             html = re.sub(r'(<div class="v3-lesson">.*?<small>[^<]*</small>)Lesson \d+', r'\1Trial class', html, count=1, flags=re.S)   # a trial is not "Lesson 1"
             open(f, "w", encoding="utf-8").write(html)
     print(f"{level}: wrapped {n} trial-only slides")

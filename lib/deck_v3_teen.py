@@ -123,7 +123,7 @@ def slide_meet_the_squad(n, total, theme_key="default"):
     <div class="v3-top"><div class="v3-lesson"><img src="assets/logo/lumio-logo.png" alt="Lumio English"><span><small>{_lvl()}</small>Lesson {STATE["lesson"]}</span></div></div>
     <div style="position:absolute;left:0;right:0;top:118px;text-align:center;z-index:8">
       <div class="v3-word" style="font-size:3.6rem">Meet the Squad</div>
-      <div class="v3-label" style="margin-top:10px">Your crew for this level</div>
+      <div class="v3-label" style="margin-top:10px;justify-content:center">Your crew for this level</div>
     </div>
     <div class="v3t-squad">{cards}</div>'''
 
@@ -170,7 +170,7 @@ def slide_first_listen(dialogue, n, total, theme_key="default", speakers=None):
 def slide_crew_talk(lines, n, total, theme_key="default"):
     rows = [(who.upper(), f"{CHAR}/{who.lower()}-teen-happy.png", en, ar) for (who, en, ar) in lines]
     return (_bg() + header("Crew Talk", n, total)
-            + chat_column(rows, None, "Read it in pairs, then swap roles.", "1-on-1: you read one character, your teacher reads the other -- then swap."))
+            + chat_column(rows, None, "Read it in pairs, then swap roles.", "1-on-1: you read one character, your teacher reads the other &mdash; then swap."))
 
 
 # ---------------------------------------------------------------- vocabulary

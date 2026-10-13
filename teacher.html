@@ -2664,7 +2664,7 @@ try { Object.keys(sessionStorage).forEach(k => { if (/^lumio_lc_(jar|parts)_/.te
         ? `Hi! Just checking in — we haven't seen ${f.student.name} start their English lessons on Lumio yet. Happy to help if you need a hand getting set up! 🌟`
         : `Hi! Just checking in on ${f.student.name}'s English lessons — it's been a little while since their last one. Let us know if there's anything we can help with! 🌟`;
       const action = f.student.phone
-        ? `<a class="td-wa-btn" target="_blank" rel="noopener" href="https://wa.me/${String(f.student.phone).replace(/\D/g, "")}?text=${encodeURIComponent(message)}">💬 WhatsApp</a>`
+        ? `<a class="td-wa-btn" target="_blank" rel="noopener" href="https://wa.me/${String(f.student.phone).replace(/\D/g, "")}?text=${encodeURIComponent((window.LumioEmoji ? LumioEmoji.strip(message) : message))}">💬 WhatsApp</a>`
         : `<span class="sub" style="font-size:.72rem;flex-shrink:0">No phone on file</span>`;
       return `<div class="td-inactive-row">
         <div><div class="who">${avInline(f.student.avatar || "")} ${escHtml(f.student.name)}</div><div class="meta">${label} · ${levelName(f.student.level)}</div></div>
@@ -6454,7 +6454,7 @@ try { Object.keys(sessionStorage).forEach(k => { if (/^lumio_lc_(jar|parts)_/.te
   function instWaLink(s, inst, daysLeft) {
     if (!s.phone) return "";
     const m = LumioProfiles.installmentMessage(s, inst, daysLeft);
-    return `https://wa.me/${String(s.phone).replace(/\D/g, "")}?text=${encodeURIComponent(m.ar + "\n\n" + m.en)}`;
+    return `https://wa.me/${String(s.phone).replace(/\D/g, "")}?text=${encodeURIComponent((window.LumioEmoji ? LumioEmoji.strip(m.ar + "\n\n" + m.en) : m.ar + "\n\n" + m.en))}`;
   }
   function dueRowHtml({ student: s, inst, daysLeft }) {
     const cls = daysLeft < 0 ? "over" : daysLeft === 0 ? "today" : "soon";
@@ -6548,7 +6548,7 @@ try { Object.keys(sessionStorage).forEach(k => { if (/^lumio_lc_(jar|parts)_/.te
       row.className = "td-class-row";
       const waMessage = `Hi! Just a heads up — ${s.name} has ${s.sessionsRemaining || 0} class${(s.sessionsRemaining || 0) === 1 ? "" : "es"} left. Would you like to renew?`;
       const waBtn = s.phone
-        ? `<a class="td-wa-btn" target="_blank" rel="noopener" href="https://wa.me/${String(s.phone).replace(/\D/g, "")}?text=${encodeURIComponent(waMessage)}">💬 WhatsApp</a>`
+        ? `<a class="td-wa-btn" target="_blank" rel="noopener" href="https://wa.me/${String(s.phone).replace(/\D/g, "")}?text=${encodeURIComponent((window.LumioEmoji ? LumioEmoji.strip(waMessage) : waMessage))}">💬 WhatsApp</a>`
         : `<span class="sub" style="font-size:.72rem">No phone on file</span>`;
       row.innerHTML = `
         <div class="td-class-time"><span style="color:var(--td-coral);font-weight:800;font-size:1rem">${s.sessionsRemaining || 0}</span><span>left</span></div>
