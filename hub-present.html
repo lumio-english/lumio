@@ -221,8 +221,12 @@ function buildGrammarSlides(data) {
   });
 }
 
+// Same sound, one picture: a doubled letter or a split vowel shows the mouth of the sound it makes.
+// Blends (nd, mp, qu...) have no picture of their own; the tile hides it (see _docs/phonics-hub-mouth-prompts.md).
+const MOUTH_SAME = { ff: "f", ll: "l", ss: "s", zz: "z", a_e: "ai", ay: "ai", o_e: "oa", ow: "oa", e_e: "ee", ea: "ee", i_e: "igh", u_e: "oo", ur: "ir", er: "ir" };
 function mouthImg(letter, size) {
   size = size || 76;
+  letter = MOUTH_SAME[letter] || letter;
   return `<img src="assets/spelling/mouth-${letter}.png" style="width:${size}px;height:${size}px;object-fit:contain;display:block;margin:6px auto 0" onerror="this.style.display='none'">`;
 }
 function spellingExampleHtml(ex) {
