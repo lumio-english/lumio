@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/logo/favicon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#F97316">
+<title>Bonus Mission — Lumio English</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/brand.css">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@600;700;800&family=Cairo:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/bonus-homework.css">
+</head>
+<body>
+<header class="bm-top">
+  <img class="bm-logo" src="assets/logo/lumio-logo.png" alt="Lumio English">
+  <span class="bm-spacer"></span>
+  <a href="student.html" id="bmBack">My dashboard</a>
+</header>
+<div class="bm-preview" id="bmPreview" hidden>Teacher preview: nothing is saved.</div>
+<main class="bm-wrap" id="bmApp"><p class="bm-loading">Loading your mission…</p></main>
+
+<script>
+(function () {
+  var v = "20260918a";
+  try {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "js/version.json?_=" + Date.now(), false);
+    xhr.send(null);
+    if (xhr.status === 200) { var p = JSON.parse(xhr.responseText); if (p && p.v) v = p.v; }
+  } catch (e) {}
+  document.write('<script src="js/app.js?v=' + v + '"><' + '/script>');
+  document.write('<script src="js/lumio-schedule.js?v=' + v + '"><' + '/script>');
+  document.write('<script src="js/bonus-homework.js?v=' + v + '"><' + '/script>');
+})();
+</script>
+<script>/* every emoji -> a Lumio icon (js/lumio-emoji.js) */(function () { var b = "", v = window.LUMIO_V; if (!v) { try { var x = new XMLHttpRequest(); x.open("GET", b + "js/version.json?_=" + Date.now(), false); x.send(null); v = JSON.parse(x.responseText).v; } catch (e) { v = "0"; } } if (!window.LumioIcons) document.write('<script src="' + b + 'js/lumio-icons.js?v=' + v + '"><\/script>'); document.write('<script src="' + b + 'js/lumio-emoji.js?v=' + v + '"><\/script>'); })();</script>
+</body>
+</html>

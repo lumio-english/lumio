@@ -656,7 +656,7 @@ def render(key, cfg, qr):
             .replace('src="LOGO"', f'src="{B.du(ROOT / "assets/logo/lumio-logo.png")}"')
             .replace('src="ICON"', f'src="{B.du(ROOT / "assets/logo/favicon-192.png")}"')
             .replace('src="QR"', f'src="{B.du(qr)}"'))
-    inl = TMP / f"{key}.html"; inl.write_text(html)
+    inl = TMP / f"{key}.html"; inl.write_text(B.with_icons(html))
     frames = []
     with sync_playwright() as p:
         b = p.chromium.launch(executable_path="/opt/pw-browsers/chromium")

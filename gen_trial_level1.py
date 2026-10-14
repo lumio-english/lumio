@@ -2,12 +2,10 @@
 """
 Trial class deck for Level 1 -- NOT a regular numbered lesson.
 
-Same proven structure and infrastructure as the Pre-A trial (see
-gen_trial_prea.py for the full history of why it's built this way --
-group-aware roster/teams, live challenge slides, 30-minute length).
-This file adapts it to Level 1's own real content: "I Like...", My
-Pets, Weather, and "I Can..." -- four different real lessons, not a
-single deep dive, matching the same "highlight reel" philosophy.
+Same challenge infrastructure as the Pre-A trial (group-aware roster/teams,
+live challenge slides). Content follows the start of the real course:
+Lesson 1 "This is...", the first phonics group (s, a, t, p -- blending and a
+decodable story from day one), My Pets and "I can...".
 
 Content pulled entirely from real Level 1 lessons -- nothing invented.
 """
@@ -96,13 +94,13 @@ def slide_buzzer_challenge(prompt_word, n, total):
     return (bg_clean() + header("Buzzer Challenge", n, total) + COLORSTRIP + f'''
     <div data-challenge="buzzer" style="position:absolute;inset:0;top:120px;display:flex;flex-direction:column;align-items:center">
       <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.05rem;color:#8A7160;margin-bottom:8px;text-align:center">
-        Who says it first? Tap the name of whoever answers correctly!
+        Who says the English word first? Tap the word to check, then tap the winner&#39;s name!
       </div>
       <div style="background:#fff;border-radius:20px;padding:14px 34px;box-shadow:0 10px 24px rgba(67,48,31,.12);margin-bottom:16px;text-align:center">
         <div style="width:130px;height:130px;border-radius:14px;overflow:hidden;background:#FFFCF6;border:3px solid #FFE0B8;margin:0 auto 8px">
           <img src="assets/vocab/{slug(prompt_word.get("image") or prompt_word["en"])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
         </div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.4rem;color:#43301F">{esc(prompt_word["en"])}</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.4rem;color:#43301F"><span onclick="this.style.filter='none'" title="Tap to check" style="filter:blur(11px);cursor:pointer;user-select:none">{esc(prompt_word["en"])}</span></div>
         <div style="font-family:'Tajawal',sans-serif;font-weight:700;font-size:1rem;color:#8A7160">{esc(prompt_word["ar"])}</div>
       </div>
       <div id="pickerZone" style="display:flex;flex-wrap:wrap;justify-content:center;max-width:900px"></div>
@@ -178,7 +176,7 @@ def slide_trial_finish(n, total):
       {name_chips_html()}
       <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.15rem;color:#8A7160;margin:20px 0 24px;max-width:820px">
         Food, pets, weather, and moving in English &mdash; all in one class! This is just a taste
-        of the 140 lessons and 7 levels waiting on the full Lumio adventure.
+        of the full level: 24 live classes (20 lessons + 4 Bonus Classes) in about 3 months.
       </div>
       <div style="background:#fff;border-radius:18px;padding:15px 28px;box-shadow:0 12px 26px rgba(67,48,31,.18);
                   font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1rem;color:#43301F">
@@ -189,73 +187,65 @@ def slide_trial_finish(n, total):
 
 
 def _build():
+    """Lesson 1 (This is...) + the course's first phonics group (s, a, t, p: blending from day one) +
+    pets (Lesson 16) + I can... (Lesson 14). Every section ends in speaking or a game."""
+    import activity_slides as _AS
+    import json as _json
     slides = []
+    n = lambda: len(slides) + 1
 
     slides.append(slide_trial_welcome(1, TOTAL))
-    slides.append(TC.meet_characters(sys.modules[__name__], "level1", len(slides) + 1, TOTAL))
-    slides.append(slide_team_assign(len(slides) + 1, TOTAL))
+    slides.append(TC.meet_characters(sys.modules[__name__], "level1", n(), TOTAL))
+    slides.append(slide_team_assign(n(), TOTAL))
 
-    # Food section -- market theme + the real apple/banana scene.
-    deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/market.jpg"
-    for w_en in ["apple", "banana", "juice", "milk", "cake", "ice cream", "pizza", "bread"]:
-        slides.append(slide_vocab(load_word("level1", 7, w_en), 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
-    slides.append(slide_vocab_scene("assets/vocab-scenes/level1/19.jpg", "I like apples. I like bananas.", ["apples", "bananas"], len(slides) + 1, TOTAL, 1))
+    # This is... -- the course's first sentence frame
+    deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/family-home.jpg"
+    people = [load_word("level1", 1, w) for w in ["boy", "girl", "teacher", "friend", "mom", "dad"]]
+    for w in people:
+        slides.append(slide_vocab(w, 0, n(), TOTAL, 1, "lumi-hero"))
+    slides.append(slide_vocab_scene("assets/vocab-scenes/level1/03.jpg", "My mom hugs me. My dad reads to me.", ["mom", "dad"], n(), TOTAL, 1))
+    slides.append(_AS.slide_flash_race(people, bg_study(), header("Flash Race &bull; Speaking Game", n(), TOTAL) + COLORSTRIP))
+    trio = ["This is my mom.", "This is my friend.", "This is my teacher."]
+    slides.append(deck_template_v2.slide_sentence_trio(trio, n(), TOTAL, "lumi-hero", 11))
+    for t in trio: TR.remember_sentence(t)
+    slides.append(slide_buzzer_challenge(people[3], n(), TOTAL))
 
-    slides.append(slide_trial_transition("Let's meet some pets!", "&#128054;", len(slides) + 1, TOTAL))
+    # Phonics Group 1 (phonics-hub/level1.json unit 1): sounds -> blend -> read a story -> listen and match
+    unit = _json.load(open("phonics-hub/level1.json", encoding="utf-8"))["units"][0]
+    slides.append(slide_trial_transition("Let's read our first words!", "&#128292;", n(), TOTAL))
+    slides.append(deck_template_v2.slide_phonics_rule(unit, n(), TOTAL, "lumi-point"))
+    slides.append(deck_template_v2.slide_phonics_practice(unit, n(), TOTAL, "lumi-books"))
+    slides.append(deck_template_v2.slide_phonics_story(unit, n(), TOTAL, "lumi-read"))
+    pw = unit["words"]
+    for i in range(2):
+        slides.append(deck_template_v2.slide_sound_match(pw[i + 1], [x for x in pw if x is not pw[i + 1]][:3], i + 1, 2, n(), TOTAL, 70 + i))
+    slides.append(slide_scoreboard("Halfway there! Here's the score so far...", n(), TOTAL))
 
-    # Pets section -- animals theme + the real dog/cat scene.
+    # Pets
     deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/animals.jpg"
-    pet_words = [load_word("level1", 16, w) for w in ["dog", "cat", "fish", "bird", "rabbit", "turtle"]]
+    pet_words = [load_word("level1", 16, w) for w in ["dog", "cat", "fish", "bird"]]
     for w in pet_words:
-        slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
-    # Activity slide (lib/activity_slides.py): Flash Race on the words just taught -- group and 1-on-1 modes on the slide.
-    import activity_slides as _AS
-    slides.append(_AS.slide_flash_race(pet_words, bg_study(), header("Flash Race &bull; Speaking Game", len(slides) + 1, TOTAL) + COLORSTRIP))
-    slides.append(slide_vocab_scene("assets/vocab-scenes/level1/46.jpg", "My dog and my cat play together.", ["dog", "cat"], len(slides) + 1, TOTAL, 1))
+        slides.append(slide_vocab(w, 0, n(), TOTAL, 1, "lumi-hero"))
+    slides.append(slide_vocab_scene("assets/vocab-scenes/level1/46.jpg", "My dog and my cat play together.", ["dog", "cat"], n(), TOTAL, 1))
+    slides.append(_AS.slide_mystery_picture(pet_words, bg_study(), header("Mystery Picture &bull; Guessing Game", n(), TOTAL) + COLORSTRIP))
+    slides.append(slide_team_relay(pet_words[3], "Which pet is this?", n(), TOTAL))
 
-    slides.append(slide_buzzer_challenge(pet_words[0], len(slides) + 1, TOTAL))
-    slides.append(slide_buzzer_challenge(pet_words[3], len(slides) + 1, TOTAL))
-    slides.append(slide_team_relay(pet_words[5], "Which pet is this?", len(slides) + 1, TOTAL))
-    slides.append(slide_mini_celebrate("You're all Pet Experts!", len(slides) + 1, TOTAL))
-
-    slides.append(slide_trial_transition("What's the weather like?", "&#9925;&#65039;", len(slides) + 1, TOTAL))
-
-    # Weather section -- weather-sky theme + the real sunny/hot scene.
-    deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/weather-sky.jpg"
-    weather_words = [load_word("level1", 12, w) for w in ["sunny", "rainy", "cloudy", "hot"]]
-    for w in weather_words:
-        slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
-    slides.append(slide_vocab_scene("assets/vocab-scenes/level1/34.jpg", "It is sunny. It is hot.", ["sunny", "hot"], len(slides) + 1, TOTAL, 1))
-    slides.append(slide_buzzer_challenge(weather_words[1], len(slides) + 1, TOTAL))
-    slides.append(slide_scoreboard("Halfway there! Here's the score so far...", len(slides) + 1, TOTAL))
-
-    slides.append(slide_trial_transition("Look what I can do!", "&#127939;", len(slides) + 1, TOTAL))
-
-    # Actions section -- park theme + the real sing/dance scene, since
-    # both those exact words appear as TPR activities right here.
+    # I can... -- say it, then show it
     deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/park.jpg"
-    unison_tpr = {
-        "swim": "Everyone pretend to swim! Say \u201cSwim!\u201d &#127946;",
-        "sing": "Everyone sing \u201cLa la la!\u201d together! &#127925;",
-    }
-    for w_en, line in unison_tpr.items():
-        slides.append(slide_tpr_activity(line, len(slides) + 1, TOTAL, "lumi-hero"))
-    TR.remember_actions(*unison_tpr, "run", "dance")
-    slides.append(slide_vocab_scene("assets/vocab-scenes/level1/42.jpg", "I can sing. I can dance.", ["sing", "dance"], len(slides) + 1, TOTAL, 1))
-
-    slides.append(slide_copycat_challenge("Who can run in place the fastest? Ready, go!", len(slides) + 1, TOTAL))
-    slides.append(slide_copycat_challenge("Who can dance the best? Show me your moves!", len(slides) + 1, TOTAL))
-
+    for w_en in ["read", "draw", "dance"]:
+        slides.append(slide_vocab(load_word("level1", 14, w_en), 0, n(), TOTAL, 1, "lumi-hero"))
+    slides.append(slide_vocab_scene("assets/vocab-scenes/level1/42.jpg", "I can sing. I can dance.", ["sing", "dance"], n(), TOTAL, 1))
+    slides.append(slide_copycat_challenge("Who can show \u201cI can dance!\u201d the best? Say it and do it!", n(), TOTAL))
+    slides.append(slide_copycat_challenge("Who can run in place the fastest? Say \u201cI can run!\u201d", n(), TOTAL))
+    TR.remember_actions("run", "dance")
     deck_template_v2.CURRENT_LESSON_BG = None
-    for w_en in ["read", "write", "draw"]:
-        slides.append(slide_vocab(load_word("level1", 14, w_en), 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
 
-    slides.append(TC.game_slide(sys.modules[__name__], "level1", len(slides) + 1, TOTAL))
-    slides.append(slide_scoreboard("And the final score is...", len(slides) + 1, TOTAL))
-    slides.extend(TR.kid_slides(len(slides) + 1, TOTAL))
-    slides.append(slide_finale(len(slides) + 1, TOTAL))
-    slides.append(slide_trial_finish(len(slides) + 1, TOTAL))
-
+    slides.append(TC.game_slide(sys.modules[__name__], "level1", n(), TOTAL))
+    slides.append(slide_scoreboard("And the final score is...", n(), TOTAL))
+    slides.extend(TR.kid_slides(n(), TOTAL, phonics_unit=unit))
+    slides.append(TC.journey_slide(sys.modules[__name__], "level1", n(), TOTAL))
+    slides.append(slide_finale(n(), TOTAL))
+    slides.append(slide_trial_finish(n(), TOTAL))
     return slides
 
 

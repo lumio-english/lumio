@@ -98,7 +98,7 @@
 const u = Lumio.user();
 const level = Lumio.qs("level") || (u && u.level) || "pre-a";
 const TEEN = ["level3", "level4", "level5", "level6"].includes(level);
-const backHref = "../student.html#secHub";
+const backHref = Lumio.qs("preview") === "1" ? `../english-hub.html?level=${encodeURIComponent(Lumio.qs("level") || "")}&preview=1#/` : "../student.html#secHub";
 // Starts as this generic fallback list; loadLessonVocabForGames() swaps it for the real lesson words.
 const FALLBACK_WORD_BANK = [
   { en: "Cat", ar: "قطة", em: "🐱" }, { en: "Dog", ar: "كلب", em: "🐶" },
@@ -164,6 +164,7 @@ async function loadLessonVocabForGames() {
 // pushed to the Sheet (Lumio.pushExtras) and shown to the teacher per lesson.
 function saveGameResultToLesson(stars, score, total) {
   if (!gamesUsingRealVocab || !gamesLessonNum || !u) return { counted: false, reason: "no-lesson" };
+  if (Lumio.previewMode && Lumio.previewMode()) return { counted: false, reason: "preview" };   // teacher preview: never saved
   const KEY = "lumio_game_best";
   let all; try { all = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { all = {}; }
   const game = location.pathname.split("/").pop().replace(/\.html$/, "");
@@ -419,5 +420,6 @@ LP.title({ kicker: TEEN ? "English Hub · Mini game" : "English Hub · Play", ti
   ar: "انظر إلى الصورة، ثم افقع الفقاعة التي فيها الكلمة الصحيحة", actor: TEEN ? { char: "noor-teen", pose: "wave", cheer: "laugh" } : { char: "noor", pose: "wave", cheer: "jump" }
 }).then(() => ready).then(() => startWordPop());
 </script>
+<script>/* every emoji -> a Lumio icon (js/lumio-emoji.js) */(function () { var b = "../", v = window.LUMIO_V; if (!v) { try { var x = new XMLHttpRequest(); x.open("GET", b + "js/version.json?_=" + Date.now(), false); x.send(null); v = JSON.parse(x.responseText).v; } catch (e) { v = "0"; } } if (!window.LumioIcons) document.write('<script src="' + b + 'js/lumio-icons.js?v=' + v + '"><\/script>'); document.write('<script src="' + b + 'js/lumio-emoji.js?v=' + v + '"><\/script>'); })();</script>
 </body>
 </html>

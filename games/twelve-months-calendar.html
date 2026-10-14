@@ -209,19 +209,18 @@ const vocab = lesson ? lesson.vocab : [];
 
 // ---------- Curated phonics word bank (each entry has a confirmed real vocab image) ----------
 // Trimmed from phonics-hub/level2.json's own word lists down to the words that
-// have real illustrations -- several phonics-only words (e.g. "jam", "frog")
-// and all the sight-word units don't have picture support, so those are left
-// out here rather than shown as a broken image.
+// have real illustrations; words without a picture are left out here rather
+// than shown as a broken image.
 const PHONICS_UNITS = [
-  { words: ["van", "box", "zoo"] },          // Unit 1 (lesson 1): j,v,w,x,y,z
-  { words: ["ship", "fish", "chair"] },      // Unit 2 (lesson 3): sh, ch
-  null,                                       // Unit 3 (lesson 5): th, ng -- only "this" has an image, skipped
-  { words: ["black", "clap", "slide"] },     // Unit 4 (lesson 7): l-blends
-  { words: ["crab", "tree"] },               // Unit 5 (lesson 9): r-blends
-  { words: ["star", "swim"] },               // Unit 6 (lesson 11): s-blends
-  { words: ["rain", "tree", "boat"] },       // Unit 7 (lesson 13): vowel teams
-  null,                                       // Unit 8 (lesson 15): sight words -- no picture support, skipped
-  { words: ["fish", "star", "tree", "black"] }, // Unit 9 (lesson 17): review
+  { words: ["ship", "fish", "shop", "chip", "lunch"] },  // Unit 1 (lesson 1): sh, ch
+  { words: ["thin", "ring", "king", "pink", "bank"] },   // Unit 2 (lesson 3): th, ng, nk
+  { words: ["hand", "jump", "milk", "desk"] },           // Unit 3 (lesson 5): ending blends
+  { words: ["black", "clap", "flag", "crab", "drum", "frog"] }, // Unit 4 (lesson 7): beginning blends
+  { words: ["spin", "skip", "swim"] },                   // Unit 5 (lesson 9): s-blends
+  { words: ["cake", "kite", "bike", "five", "bone"] },   // Unit 6 (lesson 11): magic e
+  { words: ["rain", "snail", "tree", "night", "boat"] }, // Unit 7 (lesson 13): ai, ee, igh, oa
+  { words: ["star", "car", "fork", "bird", "moon", "book"] }, // Unit 8 (lesson 15): ar, or, ir, oo
+  { words: ["fish", "ring", "frog", "cake", "tree", "star"] }, // Unit 9 (lesson 17): review
 ];
 // Phonics units land on lesson 1, 3, 5, 7... (unit i unlocks at lesson 2i-1) --
 // so a round never draws on a sound group the child hasn't reached yet.
@@ -474,5 +473,6 @@ if (!vocab.length) {
     ar: "استمع واختر الصورة الصحيحة لتقلب صفحة التقويم", actor: { char: "lumi", pose: "wave-book", cheer: "celebrate" } }).then(() => { noor.enter("bottom"); drawRound(); });
 }
 </script>
+<script>/* every emoji -> a Lumio icon (js/lumio-emoji.js) */(function () { var b = "../", v = window.LUMIO_V; if (!v) { try { var x = new XMLHttpRequest(); x.open("GET", b + "js/version.json?_=" + Date.now(), false); x.send(null); v = JSON.parse(x.responseText).v; } catch (e) { v = "0"; } } if (!window.LumioIcons) document.write('<script src="' + b + 'js/lumio-icons.js?v=' + v + '"><\/script>'); document.write('<script src="' + b + 'js/lumio-emoji.js?v=' + v + '"><\/script>'); })();</script>
 </body>
 </html>

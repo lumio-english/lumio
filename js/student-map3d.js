@@ -18,7 +18,8 @@
       var cls = ['done', 'current', 'awaiting', 'awaiting-hw', 'locked'].filter(function (c) { return el.classList.contains(c); })[0] || 'locked';
       var st = el.querySelector('.n-stars'), stars = 0;
       if (st) { var off = st.querySelector('.star-off'); stars = (st.textContent.match(/★/g) || []).length - (off ? (off.textContent.match(/★/g) || []).length : 0); }
-      return { n: i + 1, state: cls, stars: stars, href: el.getAttribute('href'), hint: el.getAttribute('title') || '' };
+      // data-label / data-name come from js/dashboard.js (Bonus Classes: 'B1' / 'Bonus Class 1'); older pages: the position.
+      return { n: el.dataset.label || String(i + 1), name: el.dataset.name || ('Lesson ' + (i + 1)), bonus: el.classList.contains('bonus'), state: cls, stars: stars, href: el.getAttribute('href'), hint: el.getAttribute('title') || '' };
     });
   }
   function loadThree(cb) {
@@ -70,16 +71,18 @@
     if (node.state === 'locked') { x.lineWidth = 6; x.strokeStyle = P.badgeLocked[2]; x.stroke(); }
     x.fillStyle = fg; x.textAlign = 'center'; x.textBaseline = 'middle';
     x.font = '800 92px "Bricolage Grotesque", Nunito, sans-serif';
+    if (String(node.n).length > 2) x.font = '800 70px "Bricolage Grotesque", Nunito, sans-serif';
     x.fillText(String(node.n), 128, node.stars ? 66 : 84);
     if (node.stars) { x.font = '800 36px sans-serif'; x.fillStyle = '#FFE3CC'; x.fillText('★'.repeat(node.stars) + '☆'.repeat(3 - node.stars), 128, 126); }
     var t = new T.CanvasTexture(c); t.anisotropy = 4; return t;
   }
   function labelFor(node) {
-    if (node.state === 'done') return 'Lesson ' + node.n + ' · done ' + '★'.repeat(node.stars || 0);
-    if (node.state === 'current') return 'Lesson ' + node.n + ' · your next lesson';
-    if (node.state === 'awaiting') return 'Lesson ' + node.n + ' · prep done, class soon';
-    if (node.state === 'awaiting-hw') return 'Lesson ' + node.n + ' · homework time';
-    return node.hint || ('Lesson ' + node.n + ' · locked');
+    if (node.bonus) return node.name + ' · ' + (node.hint || node.state);
+    if (node.state === 'done') return node.name + ' · done ' + '★'.repeat(node.stars || 0);
+    if (node.state === 'current') return node.name + ' · your next lesson';
+    if (node.state === 'awaiting') return node.name + ' · prep done, class soon';
+    if (node.state === 'awaiting-hw') return node.name + ' · homework time';
+    return node.hint || (node.name + ' · locked');
   }
 
   function build(nodes) {

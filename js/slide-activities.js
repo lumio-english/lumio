@@ -91,12 +91,26 @@
 
   // Memory pairs: cards carry data-pair; two face-up non-matching cards flip
   // back after a moment, matches stay up. State lives on the board element.
+  // The board tracks which cards are face-up itself (data-open) rather than
+  // reading data-flipped: slide-motion.js animates A.flip and only sets
+  // data-flipped when the 3D turn finishes, so reading it synchronously saw
+  // one open card and a matching pair was never recognised until a third tap.
   A.memory = function (card) {
-    if (!card || card.dataset.done === "1" || card.dataset.flipped === "1") return;
+    if (!card || card.dataset.done === "1" || card.dataset.open === "1" || card.dataset.flipped === "1") return;
     const board = card.parentElement;
     if (board.dataset.busy === "1") return;
+    if (board.dataset.shuffled !== "1") {
+      // The generated board is deterministic (pairs sit side by side); deal a
+      // fresh random layout the first time someone taps, while all cards are
+      // still face down.
+      board.dataset.shuffled = "1";
+      const kids = Array.from(board.children);
+      for (let i = kids.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [kids[i], kids[j]] = [kids[j], kids[i]]; }
+      kids.forEach(function (k) { board.appendChild(k); });
+    }
+    card.dataset.open = "1";
     A.flip(card);
-    const open = Array.from(board.querySelectorAll("[data-pair][data-flipped='1']:not([data-done='1'])"));
+    const open = Array.from(board.querySelectorAll("[data-pair][data-open='1']:not([data-done='1'])"));
     if (open.length < 2) return;
     const [a, b] = open;
     if (a.dataset.pair === b.dataset.pair) {
@@ -109,7 +123,14 @@
       }
     } else {
       board.dataset.busy = "1";
-      setTimeout(function () { A.flip(a); A.flip(b); board.dataset.busy = "0"; }, 900);
+      setTimeout(function () {
+        // flip back only once both cards have actually landed face-up
+        const tryBack = function (n) {
+          if (n > 0 && (a.dataset.flipped !== "1" || b.dataset.flipped !== "1")) return setTimeout(function () { tryBack(n - 1); }, 100);
+          A.flip(a); A.flip(b); a.dataset.open = b.dataset.open = "0"; board.dataset.busy = "0";
+        };
+        tryBack(10);
+      }, 900);
     }
   };
 
@@ -148,6 +169,67 @@
 
   // Simple show/hide toggle for a reveal panel.
   A.show = function (id) { const e = document.getElementById(id); if (e) e.style.display = ""; };
+
+  // ---- Reading Lab (lib/reading_slides.py) ----------------------------
+  // Tap a glowing word -> a dark pop card near it (meaning + where it was
+  // taught, or the pronunciation rule). Tap anywhere on the card, or the
+  // same word again, to close. Listen buttons read a half of the passage.
+  A.rlClose = function () {
+    document.querySelectorAll(".rl-pop.on").forEach(function (p) { p.classList.remove("on"); });
+    document.querySelectorAll(".rl-known.on, .rl-rule.on").forEach(function (w) { w.classList.remove("on"); });
+  };
+  A.rlPop = function (el) {
+    if (!el) return;
+    const stage = el.closest("[data-rl-stage]") || el.closest(".rl");
+    const pop = stage && stage.querySelector(".rl-pop");
+    const wasOn = el.classList.contains("on");
+    A.rlClose();
+    if (wasOn || !pop) { if (!pop && window.Lumio && Lumio.speak) Lumio.speak(el.dataset.rlWord || el.textContent); return; }
+    el.classList.add("on");
+    const d = el.dataset;
+    if (d.rlKind === "rule") {
+      pop.className = "rl-pop rule on";
+      pop.innerHTML = "<b>" + d.rlWord + "</b><small>" + d.rlTitle + "</small><em>" + d.rlEn + "</em><em dir='rtl'>" + d.rlAr + "</em><em class='ex'>" + d.rlEx + "</em>";
+    } else {
+      pop.className = "rl-pop word on";
+      pop.innerHTML = "<b>" + d.rlWord + "</b><span class='ar' dir='rtl'>" + d.rlAr + "</span><small>You learned this in " + d.rlSrc + "</small>";
+    }
+    // place it under the word, kept inside the stage
+    const sr = stage.getBoundingClientRect(), r = el.getBoundingClientRect();
+    const sx = sr.width / stage.offsetWidth || 1, sy = sr.height / stage.offsetHeight || 1;
+    let left = (r.left - sr.left) / sx, top = (r.bottom - sr.top) / sy + 8;
+    pop.style.left = "0px"; pop.style.top = "0px";
+    const pw = pop.offsetWidth, ph = pop.offsetHeight;
+    if (left + pw > stage.offsetWidth - 8) left = Math.max(8, stage.offsetWidth - pw - 8);
+    if (top + ph > stage.offsetHeight - 8) top = Math.max(8, (r.top - sr.top) / sy - ph - 8);
+    pop.style.left = left + "px"; pop.style.top = top + "px";
+    if (window.Lumio && Lumio.speak && d.rlWord) Lumio.speak(d.rlWord);
+  };
+  A.rlSpeak = function (btn, text) {
+    if (!text) return;
+    document.querySelectorAll(".rl-btn.on").forEach(function (b) { b.classList.remove("on"); });
+    if (btn && btn.classList) { btn.classList.add("on"); setTimeout(function () { btn.classList.remove("on"); }, Math.min(60000, 350 * text.split(/\s+/).length)); }
+    if (window.Lumio && Lumio.speak) Lumio.speak(text);
+    else if (window.speechSynthesis) { const u = new SpeechSynthesisUtterance(text); u.lang = "en-US"; u.rate = 0.9; speechSynthesis.cancel(); speechSynthesis.speak(u); }
+  };
+
+  // ---- Scene only -------------------------------------------------------
+  // The eye button on a scene slide hides everything except the picture
+  // (slide text, header, caption, the presenter's bars and HUD) so the
+  // class can just look at the scene and talk. Tap again to bring it back.
+  A.sceneOnly = function (btn) {
+    const root = document.getElementById("stageContent") || (btn && btn.closest(".slideStage")) || document.body;
+    const bg = root.querySelector(".scene-bg");
+    const on = !document.body.classList.contains("scene-only");
+    document.body.classList.toggle("scene-only", on);
+    root.querySelectorAll("*").forEach(function (el) {
+      if (el === btn || el === bg || el.contains(btn) || (bg && (el.contains(bg) || bg.contains(el))) || btn.contains(el)) return;
+      if (on) { if (el.style.visibility === "hidden") el.dataset.soKeep = "1"; else el.style.visibility = "hidden"; }
+      else if (el.dataset.soKeep === "1") delete el.dataset.soKeep;
+      else el.style.visibility = "";
+    });
+    if (btn) btn.classList.toggle("on", on);
+  };
 
   window.LumioAct = A;
 })();

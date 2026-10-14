@@ -139,10 +139,14 @@
   // ---- gate: every lesson done (prep + class + homework) ----
   const done = preview ? meta.lessons : Lumio.lessonsDoneCount(u.name, level);
   document.getElementById("levelBadge").textContent = meta.name;
-  if (!preview && done < meta.lessons) {
+  // Bonus Classes count too: the test opens after all 24 classes (20 lessons + 4 Bonus Classes).
+  const bonusLeft = preview || !Lumio.bonusesMissing ? [] : Lumio.bonusesMissing(u.name, level);
+  if (!preview && (done < meta.lessons || bonusLeft.length)) {
     document.getElementById("stepIntro").style.display = "none";
     const L = document.getElementById("stepLocked"); L.style.display = "";
-    document.getElementById("lockText").textContent = `The ${meta.name} test opens after all ${meta.lessons} lessons — ${done} done so far.`;
+    document.getElementById("lockText").textContent = done < meta.lessons
+      ? `The ${meta.name} test opens after all 24 classes (${meta.lessons} lessons + 4 Bonus Classes) — ${done} lessons done so far.`
+      : `Almost there! Finish Bonus Class ${bonusLeft.join(", ")} first — then the ${meta.name} test opens.`;
     return;
   }
   // ---- intro content ----
@@ -234,5 +238,6 @@
   S("startBtn").onclick = () => { S("stepIntro").style.display = "none"; S("stepTest").style.display = ""; render(); };
 })();
 </script>
+<script>/* every emoji -> a Lumio icon (js/lumio-emoji.js) */(function () { var b = "", v = window.LUMIO_V; if (!v) { try { var x = new XMLHttpRequest(); x.open("GET", b + "js/version.json?_=" + Date.now(), false); x.send(null); v = JSON.parse(x.responseText).v; } catch (e) { v = "0"; } } if (!window.LumioIcons) document.write('<script src="' + b + 'js/lumio-icons.js?v=' + v + '"><\/script>'); document.write('<script src="' + b + 'js/lumio-emoji.js?v=' + v + '"><\/script>'); })();</script>
 </body>
 </html>

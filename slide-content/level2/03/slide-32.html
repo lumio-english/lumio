@@ -1,61 +1,10 @@
 <div style="position:absolute;inset:0;background:url('assets/lesson-bg-kid/family-home.jpg') center/cover no-repeat"></div><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,251,245,.2) 0%,rgba(255,243,214,.28) 62%,rgba(232,197,143,.4) 100%)"></div><div class="spark" style="left:375px;top:135px;font-size:1.6rem">&#10022;</div><div class="spark" style="left:415px;top:105px;font-size:1.1rem">&#10022;</div><div class="spark" style="left:392px;top:178px;font-size:1.3rem">&#10022;</div><div class="header">
       <div class="brand"><img src="assets/logo/lumio-logo.png" alt="Lumio English" style="height:70px"></div>
-      <div class="pagetitle">Sound &amp; Spot</div>
+      <div class="pagetitle">Reading Lab &middot; Let&#39;s Talk</div>
       <div class="counter">32 / 51</div>
     </div><div class="colorstrip"><div class="c1"></div><div class="c2"></div><div class="c3"></div><div class="c4"></div><div class="c5"></div></div>
-    <div style="position:absolute;left:0;right:0;top:158px;text-align:center">
-      <div style="display:inline-block;background:#fff;padding:8px 20px;border-radius:14px;box-shadow:0 6px 14px rgba(67,48,31,.1);font-family:'Baloo 2',sans-serif;font-weight:700;
-                font-size:1.05rem;color:#8A7160">Tap any word to hear it &mdash; can you say it before it plays?</div>
+    <div class="rl rl-ask rl-kid">
+      <div class="rl-askhead"><h2>Let&#39;s Talk About It</h2><p>Teacher asks, you answer. Short answers are fine &mdash; then try a full sentence!</p></div>
+      <div class="rl-tiers"><div class="rl-tier t-find"><div class="rl-lab">FIND IT <small>it is in the story</small></div><div class="rl-q"><b>1</b><span>Who has got twins?</span></div><div class="rl-q"><b>2</b><span>Where does the family go every Friday?</span></div></div><div class="rl-tier t-think"><div class="rl-lab">THINK <small>why?</small></div><div class="rl-q"><b>1</b><span>Why does Omar say his family is noisy?</span></div><div class="rl-q"><b>2</b><span>Is Omar happy with his big family? How do you know?</span></div></div><div class="rl-tier t-you"><div class="rl-lab">YOU <small>about you</small></div><div class="rl-q"><b>1</b><span>Have you got cousins? How many?</span></div><div class="rl-q"><b>2</b><span>Tell me about your family: This is my...</span></div></div></div>
+      <div class="rl-askfoot"><span dir="rtl">المعلّم يسأل والطالب يجيب شفهيًا</span> &middot; <b>Omar&#39;s Big Family</b></div>
     </div>
-    <!-- Review lessons can carry 40+ words -- a plain flex-wrap with no
-         height limit let extra rows run past the bottom nav bar,
-         invisible and unreachable rather than just off-screen. Capping
-         the box height and adding its own scroll keeps every word
-         reachable regardless of how many there are, without changing
-         card size lesson to lesson. -->
-    <div style="position:absolute;left:0;right:400px;top:210px;bottom:96px;overflow-y:auto;display:flex;flex-wrap:wrap;align-content:flex-start;gap:16px;justify-content:center;padding:4px 30px 12px">
-      
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('parents')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/parents.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">parents</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">الوالدان</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('grandparents')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/grandparents.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">grandparents</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">الأجداد</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('uncle')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/uncle.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">uncle</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">عم / خال</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('aunt')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/aunt.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">aunt</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">عمة / خالة</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('cousin')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/cousin.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">cousin</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">ابن / ابنة العم أو الخال</div>
-      </button>
-      <button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('twins')"
-              style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:16px;padding:10px;
-                    box-shadow:0 8px 16px rgba(67,48,31,.14);display:flex;flex-direction:column;align-items:center;gap:6px;width:150px">
-        <div style="width:110px;height:110px;border-radius:12px;overflow:hidden;background:#FFFCF6"><img src="assets/vocab/twins.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#43301F">twins</div>
-        <div style="font-size:.78rem;color:#0D9488;font-weight:800">توأم</div>
-      </button>
-    </div>
-    <div class="floorshadow" style="right:90px;bottom:33px;width:230px;height:36px"></div><img class="char" src="assets/story/characters/sara-clap.png" style="right:90px;bottom:40px;height:320px" onerror="this.style.display='none'; this.previousElementSibling.style.display='none'">

@@ -156,7 +156,7 @@ const DECK_DIR = SOLO ? "trial-solo" : "trial";
 // version-5 "show stage" trial decks (slide-content-v5/trial*/, same content as the classic ones)
 const TDECK = qs("deck") === "classic" ? "" : "-v5";   // v5 "show stage" is the default; ?deck=classic opens the old trial slides
 if (TDECK) document.documentElement.classList.add("deck-v3", "deck-trial", /^level[3-6]$/.test(qs("level") || "") ? "deck-teen" : "deck-kid");
-let stars = 0; const STAR_GOAL = 10; const badgesEarned = {};
+let stars = 0; const STAR_GOAL = 8; const badgesEarned = {};
 
 // ---------- roster (no fixed limit -- add/remove any time, including
 // mid-class for latecomers, which is routine on a live Zoom trial) ----------
@@ -240,8 +240,8 @@ if (SOLO) {
 // Pre-A / L1 / L2 decks had grown (48/43/41) but these stale counts made
 // the player stop early, so the closing slides were never reachable.
 // (Re-checked: the closing slide is slide-NN = the file count below.)
-const TRIAL_TOTALS = { "pre-a": 56, "level1": 47, "level2": 46, "level3": 51, "level4": 46, "level5": 44, "level6": 44 };
-const SOLO_TOTALS = { "pre-a": 56, "level1": 47, "level2": 46, "level3": 51, "level4": 46, "level5": 44, "level6": 44 };
+const TRIAL_TOTALS = { "pre-a": 41, "level1": 40, "level2": 40, "level3": 37, "level4": 37, "level5": 37, "level6": 37 };
+const SOLO_TOTALS = { "pre-a": 41, "level1": 40, "level2": 40, "level3": 37, "level4": 37, "level5": 37, "level6": 37 };
 total = (SOLO ? SOLO_TOTALS : TRIAL_TOTALS)[level] || 1;
 
 if (roster.length) {
@@ -363,7 +363,7 @@ function renderChallengeUI() {
   if (kind === "solo-answer") {
     root.innerHTML = "";
     root.style.cssText = "display:flex;gap:12px;justify-content:center;flex-wrap:wrap";
-    root.appendChild(pillButton("⭐ Got it! (+1 star)", (btn) => addStars(1, btn), "#F97316"));
+    root.appendChild(pillButton("⭐ Got it! (+1 star)", (btn) => addStars(1, btn), "#C2410C"));
     root.appendChild(pillButton("🔁 Almost — say it with me", () => { const el = document.querySelector("[data-say]"); if (el && typeof Lumio !== "undefined" && Lumio.speak) Lumio.speak(el.dataset.say); }, "#0D9488"));
     return;
   }
@@ -613,5 +613,6 @@ fitStage();
 <script src="js/lumio-icons.js"></script>
 <script>window.LUMIO_SLIDE_FX = !!TDECK;   // the Live Class effects (page turns, chapter cards, host, star jar, finale) ship with the v5 trial decks</script>
 <script src="js/slide-motion.js"></script>
+<script>/* every emoji -> a Lumio icon (js/lumio-emoji.js) */(function () { var b = "", v = window.LUMIO_V; if (!v) { try { var x = new XMLHttpRequest(); x.open("GET", b + "js/version.json?_=" + Date.now(), false); x.send(null); v = JSON.parse(x.responseText).v; } catch (e) { v = "0"; } } if (!window.LumioIcons) document.write('<script src="' + b + 'js/lumio-icons.js?v=' + v + '"><\/script>'); document.write('<script src="' + b + 'js/lumio-emoji.js?v=' + v + '"><\/script>'); })();</script>
 </body>
 </html>

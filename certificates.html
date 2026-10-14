@@ -203,7 +203,7 @@
     const nd = document.getElementById("notDone"); nd.style.display = "block";
     if (done < meta.lessons) {
       document.getElementById("lockTitle").textContent = "Finish the level first";
-      document.getElementById("lockText").textContent = `All ${meta.lessons} lessons of ${meta.name}, then the level test — ${done} lessons done so far.`;
+      document.getElementById("lockText").textContent = `All 24 classes of ${meta.name} (${meta.lessons} lessons + 4 Bonus Classes), then the level test — ${done} lessons done so far.`;
     } else {
       document.getElementById("lockTitle").textContent = test ? "One more try" : "One last step: the level test";
       document.getElementById("lockText").textContent = test ? `Your best score is ${test.pct}% — you need ${Lumio.TEST_PASS_PCT}% to earn the certificate.` : `You finished every lesson! Take the ${meta.name} level test to earn this certificate.`;
@@ -213,5 +213,6 @@
   }
 })();
 </script>
+<script>/* every emoji -> a Lumio icon (js/lumio-emoji.js) */(function () { var b = "", v = window.LUMIO_V; if (!v) { try { var x = new XMLHttpRequest(); x.open("GET", b + "js/version.json?_=" + Date.now(), false); x.send(null); v = JSON.parse(x.responseText).v; } catch (e) { v = "0"; } } if (!window.LumioIcons) document.write('<script src="' + b + 'js/lumio-icons.js?v=' + v + '"><\/script>'); document.write('<script src="' + b + 'js/lumio-emoji.js?v=' + v + '"><\/script>'); })();</script>
 </body>
 </html>

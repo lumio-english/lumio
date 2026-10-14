@@ -12,9 +12,9 @@
   'use strict';
   var GRADE_POINTS = { 'A+': 4.3, 'A': 4.0, 'A-': 3.7, 'B+': 3.3, 'B': 3.0, 'B-': 2.7, 'C+': 2.3, 'C': 2.0, 'C-': 1.7, 'D': 1.0, 'F': 0.0 };
   // Printable PDFs that exist: worksheets/<lv>/lessonNN-homework.pdf for every level,
-  // writing/<lv>/lessonNN-writing.pdf only for Pre-A to L3 so far.
+  // writing/<lv>/lessonNN-writing.pdf for every level (gen_printables.py).
   var HW_SHEETS = ['pre-a', 'level1', 'level2', 'level3', 'level4', 'level5', 'level6'];
-  var WRITING_SHEETS = ['pre-a', 'level1', 'level2', 'level3'];
+  var WRITING_SHEETS = ['pre-a', 'level1', 'level2', 'level3', 'level4', 'level5', 'level6'];
   var filter = 'all';
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }

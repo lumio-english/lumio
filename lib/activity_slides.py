@@ -43,8 +43,75 @@ def _spread(vocab, n):
     V = len(vocab)
     if V <= n:
         return list(vocab)
+    if n <= 1:
+        return list(vocab[:n])
     idx = sorted({round(i * (V - 1) / (n - 1)) for i in range(n)})
     return [vocab[i] for i in idx]
+
+
+# ---------------------------------------------------------------- grammar-fit word picking
+# A sentence game that says "use today's pattern" must hand the student words
+# the pattern can actually take: verbs for a tense or a modal, adjectives for
+# comparatives, nouns for plurals/articles/this-that, adverbs for adverbs of
+# manner/frequency. Each family also gets a sentence frame to say out loud.
+_GRAMMAR_FAMILIES = [
+    (("past simple", "was / were", "there was", "feelings in the past", "used to", "past perfect"),
+     dict(pos=("verb", "time", "phrase"), frame="Yesterday / Last week, I <b>___</b>.", tip="Say what happened -- use the past form of the verb.")),
+    (("time expressions", "sequencing"),
+     dict(pos=("time", "connector", "verb", "phrase"), frame="<b>First</b>, I ... <b>Then</b> ... / Two days <b>ago</b>, I ...", tip="Start every sentence with a time word.")),
+    (("past continuous",),
+     dict(pos=("verb", "phrase"), frame="At 8 o'clock I <b>was ___ing</b> while ...", tip="was / were + verb-ing for the action in progress.")),
+    (("present perfect",),
+     dict(pos=("verb", "phrase"), frame="I <b>have ___ed</b> / I have never <b>___</b>.", tip="have / has + past participle.")),
+    (("present continuous for future", "going to", "will", "want to", "future"),
+     dict(pos=("verb", "phrase"), frame="This weekend I'm <b>___ing</b> / I'm going to <b>___</b> / I will <b>___</b>.", tip="Talk about the future with the verb.")),
+    (("present continuous",),
+     dict(pos=("verb", "phrase"), frame="Right now, I am <b>___ing</b>.", tip="am / is / are + verb-ing.")),
+    (("adverbs of frequency", "routines", "present simple"),
+     dict(pos=("verb", "adverb", "phrase"), frame="I <b>always / usually / never</b> <b>___</b> on Fridays.", tip="Put the frequency word before the verb.")),
+    (("adverbs of manner",),
+     dict(pos=("adverb", "verb"), frame="She <b>___</b> (verb) <b>___ly</b>.", tip="verb + -ly adverb: say HOW.")),
+    (("can / can't", "should", "have to", "would like", "modal", "might", "may", "imperatives", "commands"),
+     dict(pos=("verb", "phrase"), frame="I <b>can / should / have to</b> <b>___</b>.", tip="Modal + the base verb (no -s, no -ing).")),
+    (("comparatives", "superlatives", "as...as", "too / enough"),
+     dict(pos=("adjective",), frame="A is <b>___er than</b> B / A is <b>the ___est</b>.", tip="Compare two things with the adjective.")),
+    (("plural", "articles", "this / that", "there is", "countable", "some / any", "how much", "possessive", "object pronouns", "prepositions", "reflexive"),
+     dict(pos=("noun",), frame="There are two <b>___s</b> / This is my <b>___</b>.", tip="Use the noun with the rule: a / an / the, -s, this / these.")),
+    (("questions", "wh-", "question tags", "do / does"),
+     dict(pos=("verb", "phrase", "noun"), frame="<b>Do you ___?</b> / <b>Where</b> do you <b>___</b>?", tip="Ask a question, then answer it.")),
+    (("because", "linking", "although"),
+     dict(pos=("verb", "adjective", "phrase"), frame="I <b>___</b> <b>because</b> ...", tip="Join two ideas with the linking word.")),
+    (("conditional", "wish"),
+     dict(pos=("verb", "phrase"), frame="<b>If</b> I <b>___</b>, I will ...", tip="if-clause + result.")),
+    (("passive",),
+     dict(pos=("verb", "noun"), frame="The <b>___</b> <b>is / was ___ed</b> by ...", tip="be + past participle.")),
+    (("reported", "relative", "phrasal", "gerund"),
+     dict(pos=("verb", "phrase"), frame="She said that she <b>___</b> / the boy <b>who ___</b>.", tip="Use the verb inside the structure.")),
+]
+
+
+def grammar_profile(grammar_topic):
+    """{'pos': preferred parts of speech, 'frame': html, 'tip': str} for a topic, or None."""
+    if not grammar_topic:
+        return None
+    t = (grammar_topic.get("title") or "").lower()
+    for keys, prof in _GRAMMAR_FAMILIES:
+        if any(k in t for k in keys):
+            return prof
+    return dict(pos=("verb", "phrase"), frame="", tip="")
+
+
+def grammar_fit_words(vocab, grammar_topic, n):
+    """n words the topic can be applied to: preferred parts of speech first (in
+    lesson order, spread), then the rest to fill. Falls back to _spread."""
+    prof = grammar_profile(grammar_topic)
+    if not prof:
+        return _spread(vocab, n)
+    pref = [w for w in vocab if (w.get("pos") or "noun") in prof["pos"]]
+    rest = [w for w in vocab if w not in pref]
+    if len(pref) >= n:
+        return _spread(pref, n)
+    return pref + _spread(rest, n - len(pref))
 
 
 def _font(kid):
@@ -259,7 +326,7 @@ def slide_story_chain(vocab, grammar_topic, bg, header_html, kid=False, char_htm
     word; the speaker adds ONE sentence to the story using that word
     (and today's grammar pattern). Pairs/groups go round; 1-on-1 the
     student and teacher alternate."""
-    words = _spread(vocab, 6)
+    words = grammar_fit_words(vocab, grammar_topic, 6)
     row = "".join(f'''
       <div data-say="{esc(w['en'])}" style="width:150px;{_card(kid, "padding:10px 8px")};display:flex;flex-direction:column;align-items:center;gap:6px;transition:transform .15s,outline .15s">
         <div style="width:96px;height:96px"><img src="{_img(w)}" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
@@ -268,9 +335,11 @@ def slide_story_chain(vocab, grammar_topic, bg, header_html, kid=False, char_htm
       </div>''' for w in words)
     if grammar_topic:
         ex = (grammar_topic.get("examples") or [{}])[0]
-        pattern = f'''<div style="{_card(kid, "padding:12px 18px")};display:flex;align-items:center;gap:16px;max-width:760px">
-          <div><div style="font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#F97316">USE TODAY'S PATTERN</div>
-          <div style="font-family:{_font(kid)};font-weight:700;color:{_ink(kid)};font-size:1rem">{esc(grammar_topic.get("title", ""))}</div></div>
+        prof = grammar_profile(grammar_topic) or {}
+        frame = f'<div style="font-family:{_font(kid)};font-weight:700;color:{_ink(kid)};font-size:1rem;margin-top:4px">{prof.get("frame", "")}</div>' if prof.get("frame") else ""
+        pattern = f'''<div style="{_card(kid, "padding:12px 18px")};display:flex;align-items:center;gap:16px;max-width:900px">
+          <div><div style="font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#F97316">USE TODAY'S PATTERN &middot; {esc(grammar_topic.get("title", ""))}</div>
+          {frame}<div style="font-size:.82rem;color:{_muted(kid)};font-weight:700">{esc(prof.get("tip", ""))}</div></div>
           <div style="border-left:2px solid #EEF0F4;padding-left:16px;font-style:italic;color:{_muted(kid)};font-weight:700;font-size:.92rem">&ldquo;{esc(ex.get("en", ""))}&rdquo;</div>
         </div>'''
     else:
@@ -298,10 +367,12 @@ def slide_truth_or_lie(vocab, grammar_topic, bg, header_html, kid=False, char_ht
         <div style="width:110px;height:110px"><img src="{_img(w)}" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
         <div style="font-family:{_font(kid)};font-weight:700;color:{_ink(kid)};font-size:1.05rem">{esc(w['en'])}</div>
         <div style="font-size:.8rem;color:#0D9488;font-weight:800">{w.get('ar', '')}</div>
-      </div></div>''' for w in vocab)
+      </div></div>''' for w in (grammar_fit_words(vocab, grammar_topic, max(6, min(9, len(vocab)))) if grammar_topic else vocab))
     hint = ""
     if grammar_topic:
-        hint = f'<span style="color:#F97316">Use: {esc(grammar_topic.get("title", ""))}</span> &mdash; '
+        prof = grammar_profile(grammar_topic) or {}
+        hint = (f'<span style="color:#F97316">Use: {esc(grammar_topic.get("title", ""))}</span>'
+                + (f' &middot; {prof["frame"]}' if prof.get("frame") else "") + ' &mdash; ')
     return (bg + header_html + mode_band(kid, "Two Truths &amp; a Lie",
         "Tap <b>Spin</b>: three words. Say three sentences about YOU using them &mdash; two true, one false. Your partner asks one question, then guesses the lie. Fool them = 2 points; they catch you = 1 point for them.",
         "Spin, then tell your teacher three sentences (two true, one false). The teacher asks one follow-up question and guesses. Then the teacher spins and you catch the lie!") + f'''

@@ -1025,7 +1025,7 @@
   // 2026 polish layer, versioned like every shared file via js/version.json.
   var v = "20261004f";
   try { var x = new XMLHttpRequest(); x.open("GET", "js/version.json?_=" + Date.now(), false); x.send(null); if (x.status === 200) { var p = JSON.parse(x.responseText); if (p && p.v) v = p.v; } } catch (e) {}
-  document.write('<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/teacher-2026.css?v=' + v + '">');
+  document.write('<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/teacher-2026.css?v=' + v + '"><link rel="stylesheet" href="css/teacher-progress.css?v=' + v + '">');
 })();
 </script>
 </head>
@@ -2131,7 +2131,11 @@
   document.write('<script src="js/lumio-backup.js?v=' + v + '"><' + '/script>');
   document.write('<script src="js/lumio-icons.js?v=' + v + '"><' + '/script>');
   document.write('<script src="js/lumio-emoji.js?v=' + v + '"><' + '/script>');
+  document.write('<script src="js/teacher-progress.js?v=' + v + '"><' + '/script>');
 })();
+// Back on the dashboard = the materials are closed: the next class starts with an empty star / XP jar and fresh
+// chapter cards (present.html keeps them per tab only while a deck is open or a game was opened from it).
+try { Object.keys(sessionStorage).forEach(k => { if (/^lumio_lc_(jar|parts)_/.test(k)) sessionStorage.removeItem(k); }); } catch (e) {}
 </script>
 <script>
 (() => {
@@ -2581,7 +2585,7 @@
       row.className = "td-arow";
       const initials = a.name.slice(0, 2).toUpperCase();
       // a "lesson" entry is a saved prep result (the live class and homework are separate)
-      const verb = a.type === "homework" ? `completed homework for Lesson ${escHtml(String(a.lessonId))} in` : `finished prep for Lesson ${escHtml(String(a.lessonId))} in`;
+      const verb = a.type === "homework" ? `completed homework for ${escHtml(Lumio.lessonLabel(a.lessonId))} in` : `finished prep for ${escHtml(Lumio.lessonLabel(a.lessonId))} in`;
       row.innerHTML = `<div class="td-avatar">${initials}</div>
         <div><div class="who">${escHtml(a.name)}</div><div class="what">${a.type === "homework" ? "📝 " : ""}${verb} ${levelName(a.lvl)} · ★${a.stars}</div></div>
         <div class="when">${a.date}</div>`;
@@ -2660,7 +2664,7 @@
         ? `Hi! Just checking in — we haven't seen ${f.student.name} start their English lessons on Lumio yet. Happy to help if you need a hand getting set up! 🌟`
         : `Hi! Just checking in on ${f.student.name}'s English lessons — it's been a little while since their last one. Let us know if there's anything we can help with! 🌟`;
       const action = f.student.phone
-        ? `<a class="td-wa-btn" target="_blank" rel="noopener" href="https://wa.me/${String(f.student.phone).replace(/\D/g, "")}?text=${encodeURIComponent(message)}">💬 WhatsApp</a>`
+        ? `<a class="td-wa-btn" target="_blank" rel="noopener" href="https://wa.me/${String(f.student.phone).replace(/\D/g, "")}?text=${encodeURIComponent((window.LumioEmoji ? LumioEmoji.strip(message) : message))}">💬 WhatsApp</a>`
         : `<span class="sub" style="font-size:.72rem;flex-shrink:0">No phone on file</span>`;
       return `<div class="td-inactive-row">
         <div><div class="who">${avInline(f.student.avatar || "")} ${escHtml(f.student.name)}</div><div class="meta">${label} · ${levelName(f.student.level)}</div></div>
@@ -2762,13 +2766,14 @@
       const tr = document.createElement("tr");
       tr.className = "td-clickable";
       tr.innerHTML = `
-        <td><div class="td-name-cell"><div class="td-avatar">${escHtml(r.name.slice(0,2).toUpperCase())}</div><b>${escHtml(r.name)}</b>${r.onRoster ? "" : ' <span class="td-badge grey" title="Finished a lesson but is not on your roster yet">guest</span>'}</div></td>
+        <td><div class="td-name-cell"><div class="td-avatar">${escHtml(r.name.slice(0,2).toUpperCase())}</div><b>${escHtml(r.name)}</b>${r.onRoster ? "" : ' <span class="td-badge grey" title="Finished a lesson but is not on your roster yet">guest</span>'}<button type="button" class="tp-open" data-tp title="Prep, classes, homework and games, class by class">📊 Progress</button></div></td>
         <td><span class="td-badge teal">${levelName(r.lvl)}</span></td>
         <td><span class="td-mini-track"><span class="td-mini-fill" style="width:${pct}%"></span></span>${r.done}/${total}</td>
         <td><span class="td-badge amber">★ ${r.stars}</span></td>
         <td>${r.avg}%</td>
         <td>${r.last}</td>`;
       tr.onclick = () => openDrawer(r);
+      tr.querySelector("[data-tp]").onclick = e => { e.stopPropagation(); window.LumioTeacherProgress && LumioTeacherProgress.open(r.name, r.lvl); };
       tb.appendChild(tr);
     });
   }
@@ -2812,6 +2817,10 @@
     document.getElementById("drawerAvg").textContent = r.avg + "%";
     const body = document.getElementById("drawerBody");
     body.innerHTML = "";
+    const tpBtn = document.createElement("button");
+    tpBtn.type = "button"; tpBtn.className = "tp-open big"; tpBtn.textContent = "📊 Open full progress: prep, classes, homework and games";
+    tpBtn.onclick = () => window.LumioTeacherProgress && LumioTeacherProgress.open(r.name, r.lvl);
+    body.appendChild(tpBtn);
     // Story parts read + level test (synced from the student's devices, StudentExtras tab)
     const extrasHead = drawerExtrasSummary(r.name, r.lvl);
     if (extrasHead) { const h = document.createElement("div"); h.className = "td-dp-extras"; h.innerHTML = extrasHead; body.appendChild(h); }
@@ -2828,7 +2837,7 @@
         const row = document.createElement("div");
         row.style.cssText = "display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--td-border-soft);font-size:.82rem";
         row.innerHTML = `<div style="width:26px;height:26px;border-radius:8px;background:var(--td-indigo-soft);color:var(--td-indigo-dark);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.72rem;flex-shrink:0">${escHtml(lessonId)}</div>
-          <div style="flex:1;font-weight:600">Lesson ${escHtml(lessonId)}${games.length ? `<div class="td-dp-games" style="font-weight:600;font-size:.74rem;color:var(--td-ink-soft);margin-top:2px">🎮 Word games: ${games.join(" · ")}</div>` : ""}</div>
+          <div style="flex:1;font-weight:600">${escHtml(Lumio.lessonLabel(lessonId))}${games.length ? `<div class="td-dp-games" style="font-weight:600;font-size:.74rem;color:var(--td-ink-soft);margin-top:2px">🎮 Word games: ${games.join(" · ")}</div>` : ""}</div>
           <div style="color:var(--td-amber);font-weight:700">${res ? `★ ${res.stars || 0}` : `<span style="color:var(--td-ink-soft);font-weight:600">no prep yet</span>`}</div>`;
         body.appendChild(row);
       });
@@ -3236,7 +3245,7 @@
       const attPct = attStats.total ? Math.round((attStats.present / attStats.total) * 100) : null;
       const grades = LumioSchedule.gradesForStudent(r.name, r.lvl);
       const gradesHtml = grades.length
-        ? grades.map(g => `Lesson ${g.lessonNumber || "–"}: ${escHtml(g.grade || "–")}${g.comment ? ` (“${escHtml(g.comment)}”)` : ""}`).join(" · ")
+        ? grades.map(g => `${g.lessonNumber ? Lumio.lessonLabel(g.lessonNumber) : "Lesson –"}: ${escHtml(g.grade || "–")}${g.comment ? ` (“${escHtml(g.comment)}”)` : ""}`).join(" · ")
         : "No grades recorded yet.";
       extraSection = `
         <div class="pr-section">
@@ -3453,6 +3462,7 @@
         <div class="cell" data-l="Sessions"><span class="sess ${left <= 0 ? "zero" : left <= 3 ? "low" : ""}">${left}</span></div>
         <div class="acts">
           <button type="button" class="primary" data-act="edit">Edit</button>
+          <button type="button" class="ghost" data-act="progress" title="Prep, classes, homework and games, class by class">Progress</button>
           <a data-act="report" class="ghost" title="Open report">Report</a>
           <details class="more">
             <summary aria-label="More actions for ${escHtml(p.name)}">⋯</summary>
@@ -3479,6 +3489,7 @@
       }
       card.querySelector('[data-act="edit"]').onclick = () => openStudentModal(p);
       card.querySelector('[data-act="recordings"]').onclick = () => openRecordingsModal(p.name);
+      card.querySelector('[data-act="progress"]').onclick = () => window.LumioTeacherProgress && LumioTeacherProgress.open(p.name, p.level || "pre-a");
       card.querySelector('[data-act="report"]').href = `report.html?student=${encodeURIComponent(p.id)}`;
       card.querySelector('[data-act="pin"]').onclick = async (e) => {
         await withLoading(e.currentTarget, async () => {
@@ -3582,7 +3593,7 @@
     c.students.forEach(ref => {
       const s = ref.studentId ? LumioProfiles.getStudent(ref.studentId) : LumioProfiles.findByName(ref.studentName);
       if (!s) return;
-      const lesson = c.lessonNumber ? `Lesson ${c.lessonNumber}` : "your next lesson";
+      const lesson = c.lessonNumber ? Lumio.lessonLabel(c.lessonNumber) : "your next lesson";
       LumioProfiles.addMessageOnce(s.id, `booked_${c.id}`, {
         type: "class_booked",
         text: `📅 A class was booked for you: ${lesson} on ${fmtClassWhen(c)}.`,
@@ -3600,7 +3611,7 @@
     c.students.forEach(ref => {
       const s = ref.studentId ? LumioProfiles.getStudent(ref.studentId) : LumioProfiles.findByName(ref.studentName);
       if (!s) return;
-      const lesson = c.lessonNumber ? `Lesson ${c.lessonNumber}` : "your class";
+      const lesson = c.lessonNumber ? Lumio.lessonLabel(c.lessonNumber) : "your class";
       LumioProfiles.addMessageOnce(s.id, `cancelled_${c.id}`, {
         type: "class_cancelled",
         text: `❌ ${lesson} on ${fmtClassWhen(c)} was cancelled by your teacher. Please book another time from your dashboard.`,
@@ -3613,7 +3624,7 @@
     if (!c || !window.LumioProfiles) return;
     const s = ref.studentId ? LumioProfiles.getStudent(ref.studentId) : LumioProfiles.findByName(ref.studentName);
     if (!s) return;
-    const lesson = c.lessonNumber ? `Lesson ${c.lessonNumber}` : "today's lesson";
+    const lesson = c.lessonNumber ? Lumio.lessonLabel(c.lessonNumber) : "today's lesson";
     // Attendance opens the homework only. The level game is already open up
     // to the current lesson, and a story part (after Lessons 5/10/15/20)
     // opens once that lesson's homework is done too (student.html).
@@ -4255,7 +4266,7 @@
     if (!c || !window.LumioProfiles) return;
     const s = ref.studentId ? LumioProfiles.getStudent(ref.studentId) : LumioProfiles.findByName(ref.studentName);
     if (!s) return;
-    const lesson = c.lessonNumber ? `Lesson ${c.lessonNumber}` : "your class";
+    const lesson = c.lessonNumber ? Lumio.lessonLabel(c.lessonNumber) : "your class";
     const who = c.teacherName ? ` from ${c.teacherName}` : "";
     const text = `⭐ ${lesson} evaluation${who}: ${grade ? `Grade ${grade}` : "no grade"}${comment ? `\n💬 "${comment}"` : ""}\nتقييم ${c.lessonNumber ? "الدرس " + c.lessonNumber : "الحصة"}: ${grade ? "الدرجة " + grade : ""}${comment ? " — ملاحظة المعلّم أعلاه" : ""}`;
     // one message per class, replaced if the teacher edits the evaluation
@@ -5091,12 +5102,15 @@
     const lvlMeta = level && typeof Lumio !== "undefined" ? (Lumio.LEVELS || []).find(l => l.id === level) : null;
     const N = (lvlMeta && lvlMeta.lessons) || 20;
     clsLessonSelect.innerHTML = "";
-    for (let n = 1; n <= N; n++) {
+    // The level's class order: Lessons 1-20 with Bonus Classes 1-4 (stored as 4.5, 8.5, 12.5, 16.5).
+    const seq = (typeof Lumio !== "undefined" && Lumio.levelSequence) ? Lumio.levelSequence(level || "level1")
+      : Array.from({ length: N }, (_, i) => i + 1);
+    seq.forEach(n => {
       const opt = document.createElement("option");
       opt.value = String(n);
-      opt.textContent = `Lesson ${n}`;
+      opt.textContent = (typeof Lumio !== "undefined" && Lumio.lessonLabel) ? Lumio.lessonLabel(n) : `Lesson ${n}`;
       clsLessonSelect.appendChild(opt);
-    }
+    });
     if (presetLessonNumber) {
       clsLessonSelect.value = String(presetLessonNumber);
       return;
@@ -5340,7 +5354,7 @@
     }
     if (failed.length) { setClassModalTab("class"); clsStudentError.textContent = failed.join(" · "); showToast(failed[0], "error"); renderSlotChecks(); renderScheduleActive(); queueSync(); return; }
     closeClassModal(); renderScheduleActive(); queueSync();
-    showToast(added.length ? `Booked ${added.join(", ")} into the slot (Lesson ${cls.lessonNumber}).` : "Slot updated.", "success");
+    showToast(added.length ? `Booked ${added.join(", ")} into the slot (${Lumio.lessonLabel(cls.lessonNumber)}).` : "Slot updated.", "success");
   }
   document.getElementById("classModalSave").onclick = async () => {
     if (!window.LumioSchedule || !window.LumioProfiles) { closeClassModal(); return; }
@@ -6008,10 +6022,10 @@
     const level = currentMatLevel;
     const hasSlides = LEVELS_WITH_SLIDES.includes(level);
     const meta = LEVEL_NAMES.find(l => l.id === level);
-    matBadge.textContent = `${meta ? meta.name : level} · ${(meta && meta.lessons) || 20} lessons`;
+    matBadge.textContent = `${meta ? meta.name : level} · 24 classes (${(meta && meta.lessons) || 20} lessons + 4 Bonus Classes)`;
     const token = ++matRenderToken; // guards against an older fetch resolving after a newer level switch
     matGrid.innerHTML = `<div class="td-empty">Loading…</div>`;
-    const titles = await getLessonTitles(level);
+    const [titles, bonusTitles] = await Promise.all([getLessonTitles(level), getBonusTitles(level)]);
     if (token !== matRenderToken) return;
     matGrid.innerHTML = "";
 
@@ -6051,6 +6065,19 @@
       </div>`;
     matGrid.appendChild(songsRow);
 
+    // English Hub: the whole Hub of this level, every section open, as a teacher preview (nothing is saved and the
+    // XP starts at zero every time it is opened).
+    const hubRow = document.createElement("div");
+    hubRow.className = "td-mat-row";
+    hubRow.style.borderColor = "#7C3AED";
+    hubRow.style.gridColumn = "1 / -1";
+    hubRow.innerHTML = `<div class="td-mat-top"><div class="num" style="background:#7C3AED;color:#fff">H</div><b>English Hub</b></div>
+      <div style="font-size:.78rem;color:var(--td-muted);margin:-4px 0 8px">Everything the students have for this level: vocabulary by theme, idioms, ${["level3","level4","level5","level6"].includes(level) ? "grammar rules" : level === "pre-a" ? "spelling" : "phonics sounds"}, writing prompts, songs and word games. Teacher preview: every section is open and nothing is saved to any student.</div>
+      <div class="td-mat-actions">
+        <a class="act present" href="english-hub.html?level=${level}&preview=1" target="_blank" rel="noopener">📚 Open the English Hub</a>
+      </div>`;
+    matGrid.appendChild(hubRow);
+
     // Level test + certificate: what the student sees after the 20th
     // lesson. Teacher preview is always open and never saves a score.
     const testRow = document.createElement("div");
@@ -6058,7 +6085,7 @@
     testRow.style.borderColor = "#1E4FA3";
     testRow.style.gridColumn = "1 / -1";
     testRow.innerHTML = `<div class="td-mat-top"><div class="num" style="background:#1E4FA3;color:#fff">✓</div><b>Level test &amp; certificate</b></div>
-      <div style="font-size:.78rem;color:var(--td-muted);margin:-4px 0 8px">After all 20 lessons the student takes a 30-question level test (pass mark 70%, best score kept); the certificate shows the test score, result band, teacher-grade average, attendance and what the student can now do.</div>
+      <div style="font-size:.78rem;color:var(--td-muted);margin:-4px 0 8px">After all 24 classes (20 lessons + 4 Bonus Classes) the student takes a 30-question level test (pass mark 70%, best score kept); the certificate shows the test score, result band, teacher-grade average, attendance and what the student can now do.</div>
       <div class="td-mat-actions">
         <a class="act present" href="level-test.html?level=${level}&preview=1" target="_blank" rel="noopener">📝 Preview level test</a>
         <a class="act pptx" href="certificates.html?level=${level}&preview=1" target="_blank" rel="noopener">🏆 Preview certificate</a>
@@ -6080,12 +6107,41 @@
         <div class="td-mat-secondary">
           <a class="act homework" href="homework.html?level=${level}&n=${n}&preview=1" target="_blank" title="Open interactive homework (teacher preview -- nothing is saved)">Homework</a>
           <a class="act worksheet" href="worksheets/${level}/lesson${num}-homework.pdf" download title="Download homework worksheet">Worksheet</a>
+          <a class="act worksheet" href="writing/${level}/lesson${num}-writing.pdf" download title="Download the writing sheet">Writing</a>
           <a class="act flashcards" href="flashcards/${level}/lesson${num}-flashcards.pdf" download title="Download printable flashcards">Flashcards</a>
         </div>
         </div>`;
       matGrid.appendChild(row);
+      // Bonus Class after Lessons 4, 8, 12 and 16 (same order the students book them in).
+      const bIdx = [4, 8, 12, 16].indexOf(n);
+      if (bIdx >= 0) {
+        const b = bIdx + 1, bn = String(b).padStart(2, "0"), bt = bonusTitles[b - 1] || "";
+        if (q && !bt.toLowerCase().includes(q) && !("bonus " + b).includes(q) && !("b" + b).includes(q)) return;
+        const brow = document.createElement("div");
+        brow.className = "td-mat-row";
+        brow.style.borderColor = "#F59E0B";
+        brow.innerHTML = `<div class="td-mat-top"><div class="num" style="background:#F59E0B;color:#fff">B${b}</div><b>Bonus Class ${b}${bt ? ": " + escHtml(bt) : ""}</b></div>
+          <div class="td-mat-actions">
+          <a class="act present" href="present.html?level=${level}&bonus=${b}">&#9654; Present</a>
+          <div class="td-mat-secondary">
+            <a class="act homework" href="bonus-homework.html?level=${level}&b=${b}&preview=1" target="_blank" title="Bonus mission homework (teacher preview -- nothing is saved)">Homework</a>
+            <a class="act worksheet" href="teacher-guide/bonus/${level}-bonus${bn}.html" target="_blank" title="The full lesson plan for the teacher">Lesson plan</a>
+            <a class="act worksheet" href="worksheets/${level}/bonus${bn}-worksheet.pdf" download title="Download the worksheet">Worksheet</a>
+            <a class="act flashcards" href="flashcards/${level}/bonus${bn}-cards.pdf" download title="Download the cut-out class cards">Cards</a>
+          </div>
+          </div>`;
+        matGrid.appendChild(brow);
+      }
     });
     if (!matGrid.children.length) matGrid.innerHTML = `<div class="td-empty">No lessons match your search.</div>`;
+  }
+  // Bonus Class titles for the Materials list (bonus-classes/<level>/bonusNN.json), cached per level.
+  const bonusTitleCache = {};
+  async function getBonusTitles(level) {
+    if (bonusTitleCache[level]) return bonusTitleCache[level];
+    const out = await Promise.all([1, 2, 3, 4].map(b =>
+      fetch(`bonus-classes/${level}/bonus${String(b).padStart(2, "0")}.json`).then(r => r.ok ? r.json() : null).then(d => (d && d.title) || "").catch(() => "")));
+    return (bonusTitleCache[level] = out);
   }
   try { renderMaterials(); } catch (e) { console.error('Lumio init error (renderMaterials();):', e); }
   document.getElementById("matSearch").addEventListener("input", e => renderMaterials(e.target.value));
@@ -6139,13 +6195,13 @@
   const MANUALS = [
     { badge: "ALL", name: "The Complete Curriculum Guide", desc: "The full roadmap — every level, how learning works, the English Hub, and more.", file: "Lumio_English_Curriculum_Guide.pdf" },
     { badge: "\u2764", name: "Parent Handbook (Arabic)", desc: "For parents \u2014 meet Lumi, how a lesson works, what to expect, and how to support your child at home.", file: "Lumio_Parent_Handbook_AR.pdf" },
-    { badge: "Pre-A", name: "Pre-A · First Words", desc: "Ages 4-6 · 20 lessons, lesson by lesson, plus this level's bonus game.", file: "Lumio_English_Pre-A_First_Words_Manual.pdf" },
-    { badge: "L1", name: "Level 1 · About Me", desc: "Ages 6-8 · 20 lessons, lesson by lesson, plus this level's bonus game.", file: "Lumio_English_Level1_About_Me_Manual.pdf" },
-    { badge: "L2", name: "Level 2 · My World", desc: "Ages 8-10 · 20 lessons, lesson by lesson, plus this level's bonus game.", file: "Lumio_English_Level2_My_World_Manual.pdf" },
-    { badge: "L3", name: "Level 3 · Everyday Life", desc: "Ages 10-12 · 20 lessons, lesson by lesson, plus this level's bonus game.", file: "Lumio_English_Level3_Everyday_Life_Manual.pdf" },
-    { badge: "L4", name: "Level 4 · Smart Choices", desc: "Ages 11-13 · 20 lessons, lesson by lesson, plus this level's bonus game.", file: "Lumio_English_Level4_Smart_Choices_Manual.pdf" },
-    { badge: "L5", name: "Level 5 · Telling My Story", desc: "Ages 12-14 · 20 lessons, lesson by lesson, plus this level's bonus game.", file: "Lumio_English_Level5_Telling_My_Story_Manual.pdf" },
-    { badge: "L6", name: "Level 6 · Looking Ahead", desc: "Ages 13-15 · 20 lessons, lesson by lesson, plus this level's bonus game.", file: "Lumio_English_Level6_Looking_Ahead_Manual.pdf" },
+    { badge: "Pre-A", name: "Pre-A · First Words", desc: "Ages 4-6 · 20 lessons + 4 Bonus Classes, lesson by lesson, plus this level's bonus game.", file: "Lumio_English_Pre-A_First_Words_Manual.pdf" },
+    { badge: "L1", name: "Level 1 · About Me", desc: "Ages 6-8 · 20 lessons + 4 Bonus Classes, lesson by lesson, plus this level's bonus game.", file: "Lumio_English_Level1_About_Me_Manual.pdf" },
+    { badge: "L2", name: "Level 2 · My World", desc: "Ages 8-10 · 20 lessons + 4 Bonus Classes, lesson by lesson, plus this level's bonus game.", file: "Lumio_English_Level2_My_World_Manual.pdf" },
+    { badge: "L3", name: "Level 3 · Everyday Life", desc: "Ages 10-12 · 20 lessons + 4 Bonus Classes, lesson by lesson, plus this level's bonus game.", file: "Lumio_English_Level3_Everyday_Life_Manual.pdf" },
+    { badge: "L4", name: "Level 4 · Smart Choices", desc: "Ages 11-13 · 20 lessons + 4 Bonus Classes, lesson by lesson, plus this level's bonus game.", file: "Lumio_English_Level4_Smart_Choices_Manual.pdf" },
+    { badge: "L5", name: "Level 5 · Telling My Story", desc: "Ages 12-14 · 20 lessons + 4 Bonus Classes, lesson by lesson, plus this level's bonus game.", file: "Lumio_English_Level5_Telling_My_Story_Manual.pdf" },
+    { badge: "L6", name: "Level 6 · Looking Ahead", desc: "Ages 13-15 · 20 lessons + 4 Bonus Classes, lesson by lesson, plus this level's bonus game.", file: "Lumio_English_Level6_Looking_Ahead_Manual.pdf" },
   ];
   const manualsGrid = document.getElementById("manualsGrid");
   if (manualsGrid) {
@@ -6398,7 +6454,7 @@
   function instWaLink(s, inst, daysLeft) {
     if (!s.phone) return "";
     const m = LumioProfiles.installmentMessage(s, inst, daysLeft);
-    return `https://wa.me/${String(s.phone).replace(/\D/g, "")}?text=${encodeURIComponent(m.ar + "\n\n" + m.en)}`;
+    return `https://wa.me/${String(s.phone).replace(/\D/g, "")}?text=${encodeURIComponent((window.LumioEmoji ? LumioEmoji.strip(m.ar + "\n\n" + m.en) : m.ar + "\n\n" + m.en))}`;
   }
   function dueRowHtml({ student: s, inst, daysLeft }) {
     const cls = daysLeft < 0 ? "over" : daysLeft === 0 ? "today" : "soon";
@@ -6492,7 +6548,7 @@
       row.className = "td-class-row";
       const waMessage = `Hi! Just a heads up — ${s.name} has ${s.sessionsRemaining || 0} class${(s.sessionsRemaining || 0) === 1 ? "" : "es"} left. Would you like to renew?`;
       const waBtn = s.phone
-        ? `<a class="td-wa-btn" target="_blank" rel="noopener" href="https://wa.me/${String(s.phone).replace(/\D/g, "")}?text=${encodeURIComponent(waMessage)}">💬 WhatsApp</a>`
+        ? `<a class="td-wa-btn" target="_blank" rel="noopener" href="https://wa.me/${String(s.phone).replace(/\D/g, "")}?text=${encodeURIComponent((window.LumioEmoji ? LumioEmoji.strip(waMessage) : waMessage))}">💬 WhatsApp</a>`
         : `<span class="sub" style="font-size:.72rem">No phone on file</span>`;
       row.innerHTML = `
         <div class="td-class-time"><span style="color:var(--td-coral);font-weight:800;font-size:1rem">${s.sessionsRemaining || 0}</span><span>left</span></div>

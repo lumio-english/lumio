@@ -443,6 +443,15 @@
     const total = o.total || 1, score = o.score || 0, pct = score / total;
     const stars = o.stars != null ? o.stars : pct >= .9 ? 3 : pct >= .6 ? 2 : score > 0 ? 1 : 0;
     const head = o.title || (stars === 3 ? "Amazing!" : stars === 2 ? "Great job!" : "Good try!");
+    // A level game played by the student from their map (?from=lesson&n=N) keeps its best result per lesson
+    // (lumio_game_best, synced to the teacher). Presenter, trial, Hub and teacher-preview plays never save
+    // (Lumio.saveGameBest refuses on a teacher device or with ?preview=1).
+    try {
+      const q = new URLSearchParams(location.search), game = location.pathname.split("/").pop().replace(/\.html$/, "");
+      const Lu = window.Lumio, u = Lu && Lu.user && Lu.user(), n = parseInt(q.get("n") || "", 10);
+      if (q.get("from") === "lesson" && Lu.LEVEL_GAMES && Lu.LEVEL_GAMES.indexOf(game) !== -1 && u && u.name && n > 0)
+        Lu.saveGameBest(u.name, q.get("level") || u.level, n, game, { stars, score, total });
+    } catch (e) {}
     if (streakEl) streakEl.remove(), streakEl = null;
     document.body.classList.add("lp-done");
     const r = el("section", "lp-results"); r.setAttribute("role", "dialog"); r.setAttribute("aria-label", head);

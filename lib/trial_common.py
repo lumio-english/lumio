@@ -101,3 +101,47 @@ def number_challenges(slides):
                  f'letter-spacing:1px;padding:6px 18px;border-radius:999px;box-shadow:0 6px 14px rgba(0,0,0,.25)">&#11088; Question {k} of {total}</div>')
         out[i] = badge + out[i]
     return out
+
+
+LEVEL_NAMES = {"pre-a": "Pre-A", "level1": "Level 1", "level2": "Level 2", "level3": "Level 3",
+               "level4": "Level 4", "level5": "Level 5", "level6": "Level 6"}
+STORY_LEVELS = ("pre-a", "level1", "level2", "level3")
+
+
+def journey_items(level):
+    """What the full level holds -- current facts only (see _docs/HANDOFF.md, Bonus Classes / Reading Lab)."""
+    mins = 45 if level == "pre-a" else 60
+    items = [("&#128197;", "24 live classes", f"20 lessons + 4 Bonus Classes &middot; about 3 months, 2&ndash;3 classes a week, {mins} minutes each",
+              "24 حصة مباشرة: 20 درسًا + 4 حصص إضافية، خلال 3 أشهر تقريبًا")]
+    if level == "pre-a":
+        items.append(("&#128292;", "Letters &amp; sounds", "the whole alphabet: names, sounds and first words", "الحروف وأصواتها وأول الكلمات"))
+    elif level in ("level1", "level2"):
+        items.append(("&#128292;", "Phonics step by step", "sounds, blending and reading real little stories", "صوتيات خطوة بخطوة حتى قراءة قصص قصيرة"))
+    if level != "pre-a" and level != "level1":
+        items.append(("&#128214;", "Reading Lab", "a real reading passage every third lesson", "مختبر القراءة: نص للقراءة كل ثالث درس"))
+    items.append(("&#127919;", "Homework missions", "a short, fun mission after every class", "مهمة منزلية ممتعة بعد كل حصة"))
+    items.append(("&#128241;", "English Hub &amp; games", "words, grammar, pronunciation and word games, any time", "مركز اللغة والألعاب متاح في أي وقت"))
+    extra = "the level game" + (" and story" if level in STORY_LEVELS else "")
+    items.append(("&#127942;", "Level test &amp; certificate", f"plus {extra}, printable worksheets and flashcards", "اختبار المستوى وشهادة في النهاية"))
+    return items
+
+
+def journey_slide(m, level, n, total):
+    """Parent-facing: what the full level gives, right before the goodbye."""
+    dark = _teen(m)   # teen decks are dark: light text on a glass card
+    card_bg, c_t, c_sub, c_ar = (("rgba(255,255,255,.07)", "#FFE7A8", "#E9E2D6", "#6EE7D8") if dark
+                                 else ("#fff", "#2A2118", "#6B5040", "#0F766E"))
+    rows = "".join(
+        f'<div style="display:flex;gap:14px;align-items:center;background:{card_bg};border-radius:16px;padding:11px 18px;box-shadow:0 6px 14px rgba(0,0,0,.08)">'
+        f'<div style="font-size:1.9rem;width:44px;text-align:center">{ic}</div>'
+        f'<div style="flex:1;text-align:left"><div style="font-weight:800;font-size:1.15rem;color:{c_t}">{t}</div>'
+        f'<div style="font-size:.95rem;font-weight:700;color:{c_sub}">{sub}</div></div>'
+        f'<div dir="rtl" style="font-family:\'Tajawal\',\'Cairo\',sans-serif;font-weight:700;font-size:.9rem;color:{c_ar};max-width:300px;text-align:right">{ar}</div></div>'
+        for ic, t, sub, ar in journey_items(level))
+    body = (f'<div style="position:absolute;left:80px;right:80px;top:130px;display:flex;flex-direction:column;gap:10px;z-index:5">'
+            f'<div style="font-weight:800;font-size:.85rem;letter-spacing:2px;color:#C2530A">WHAT&#39;S NEXT &middot; <span dir="rtl" style="letter-spacing:0">ماذا بعد؟</span></div>'
+            f'{rows}</div>')
+    title = f"Your {LEVEL_NAMES[level]} Journey"
+    if _teen(m):
+        return m.bg_theme() + m.header(title, n, total) + body
+    return m.bg_study() + m.header(title, n, total) + m.COLORSTRIP + body

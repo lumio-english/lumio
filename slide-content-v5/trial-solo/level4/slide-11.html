@@ -1,7 +1,65 @@
-<div class="v3 v3-trial v3-teen"><div data-qnum style="position:absolute;top:34px;right:150px;z-index:6;background:#43301F;color:#FFC93C;font-family:'Baloo 2','Fredoka',sans-serif;font-weight:800;font-size:1rem;letter-spacing:1px;padding:6px 18px;border-radius:999px;box-shadow:0 6px 14px rgba(0,0,0,.25)"><i class="v3-ico" data-ico="star"></i> Question 1 of 7</div><div class="v3-bg v3-mesh m1"></div><div class="v3-shade"></div><div class="v3-top">
+<div class="v3 v3-trial v3-teen"><div class="v3-bg v3-mesh m1"></div><div class="v3-shade"></div><div class="v3-top">
       <div class="v3-lesson"><img src="assets/logo/lumio-logo.png" alt="Lumio English"><span><small>Level 4</small>Trial class</span></div>
-      <div class="pagetitle v3-ribbon"><b>Quick Answer</b></div>
-      <div class="counter v3-page">11 / 46</div>
-    </div><div style="position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;padding:26px 40px 0;text-align:center"><div style="font-family:'Fredoka',sans-serif;font-weight:700;font-size:1rem;color:#C6BBF2;margin-bottom:12px;max-width:820px">Say the word! Then tap how it went.</div><div style="background:#FFFFFF;border-radius:12px;border:1px solid rgba(0,0,0,.06);box-shadow:0 12px 26px rgba(0,0,0,.28);padding:16px 26px;margin-bottom:12px"><div data-say="message" style="width:120px;height:120px;border-radius:14px;overflow:hidden;background:#FFFCF6;border:3px solid #FFE0B8;margin:0 auto 6px"><img src="assets/vocab/message.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
-          <div style="font-family:'Fredoka',sans-serif;font-weight:800;font-size:1.3rem;color:#2B2640">message</div>
-          <div style="font-family:'Tajawal',sans-serif;font-weight:700;font-size:.95rem;color:#8A7160">رسالة</div></div><div data-challenge="solo-answer" id="soloAnswer"></div></div></div>
+      <div class="pagetitle v3-ribbon"><b>Describe It</b> &bull; <i>Speaking Game</i></div>
+      <div class="counter v3-page">11 / 37</div>
+    </div>
+    <div class="v3t-band">
+      <div class="v3-paper"><div class="v3-label"><i class="v3-ico" data-ico="people"></i> PAIRS / GROUP</div><div class="tx">Partner A flips a card and describes the word in English &mdash; <b>without saying it</b>. Partner B guesses. Swap after each card. 60 seconds, most cards wins.</div></div>
+      <div class="v3-paper"><div class="v3-label"><i class="v3-ico" data-ico="user"></i> 1-ON-1 WITH YOUR TEACHER</div><div class="tx">Your teacher flips a card and describes it &mdash; you guess in English. Then swap: you describe, the teacher guesses. Use a full sentence: <i>It's a place where&hellip; / You do this when&hellip;</i></div></div>
+    </div>
+    <div class="v3t-act">
+      <div class="v3t-flips">
+      <div onclick="LumioAct.flip(this)" class="v3t-flip">
+        <div class="act-front" style="display:none"><div class="in">
+          <img src="assets/vocab/wake-up.png" alt="" onerror="this.style.display='none'">
+          <div class="w">wake up</div>
+        </div></div>
+        <div class="act-back"><div class="q">?</div><div class="v3-label">TAP TO FLIP</div></div>
+      </div>
+      <div onclick="LumioAct.flip(this)" class="v3t-flip">
+        <div class="act-front" style="display:none"><div class="in">
+          <img src="assets/vocab/study.png" alt="" onerror="this.style.display='none'">
+          <div class="w">study</div>
+        </div></div>
+        <div class="act-back"><div class="q">?</div><div class="v3-label">TAP TO FLIP</div></div>
+      </div>
+      <div onclick="LumioAct.flip(this)" class="v3t-flip">
+        <div class="act-front" style="display:none"><div class="in">
+          <img src="assets/vocab/practice.png" alt="" onerror="this.style.display='none'">
+          <div class="w">practice</div>
+        </div></div>
+        <div class="act-back"><div class="q">?</div><div class="v3-label">TAP TO FLIP</div></div>
+      </div>
+      <div onclick="LumioAct.flip(this)" class="v3t-flip">
+        <div class="act-front" style="display:none"><div class="in">
+          <img src="assets/vocab/relax.png" alt="" onerror="this.style.display='none'">
+          <div class="w">relax</div>
+        </div></div>
+        <div class="act-back"><div class="q">?</div><div class="v3-label">TAP TO FLIP</div></div>
+      </div>
+      <div onclick="LumioAct.flip(this)" class="v3t-flip">
+        <div class="act-front" style="display:none"><div class="in">
+          <img src="assets/vocab/routine.png" alt="" onerror="this.style.display='none'">
+          <div class="w">routine</div>
+        </div></div>
+        <div class="act-back"><div class="q">?</div><div class="v3-label">TAP TO FLIP</div></div>
+      </div></div>
+      <div class="v3t-side">
+        <div class="v3-paper"><div class="v3-label">TIMER</div>
+          <button class="v3-btn" style="width:100%;margin-top:12px" onclick="LumioAct.timer(this,60)"><span class="v3-gl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span><span class="v3-bl">Start 60s</span></button></div>
+        <div class="v3-paper"><div class="v3-label">SCORE</div>
+      <div class="v3t-score">
+        <span class="lb">A / You</span>
+        <span data-act-score class="val">0</span>
+        <button class="v3-btn s" onclick="LumioAct.score(this,1)"><span class="v3-bl">+</span></button>
+        <button class="v3-btn s ghost" onclick="LumioAct.score(this,-1)"><span class="v3-bl">&minus;</span></button>
+      </div>
+      <div class="v3t-score">
+        <span class="lb">B / Teacher</span>
+        <span data-act-score class="val">0</span>
+        <button class="v3-btn s" onclick="LumioAct.score(this,1)"><span class="v3-bl">+</span></button>
+        <button class="v3-btn s ghost" onclick="LumioAct.score(this,-1)"><span class="v3-bl">&minus;</span></button>
+      </div></div>
+        <div class="v3t-small" style="text-align:center">Rule: no Arabic, no spelling, no pointing &mdash; English only!</div>
+      </div>
+    </div></div>

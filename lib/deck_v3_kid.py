@@ -151,17 +151,29 @@ def mouth(letter, size=60):
     return f'<img src="assets/spelling/mouth-{letter}.png" style="width:{size}px;height:{size}px;object-fit:contain;display:block;margin:6px auto 0" alt="" onerror="this.style.display=\'none\'">'
 
 
+def tricky_row(unit):
+    """Tricky words taught with this sound group: read as whole words, tap to hear."""
+    tw = unit.get("tricky", [])
+    if not tw:
+        return ""
+    chips = "".join(f'<button class="v3-chip" style="font-size:1.4rem;padding:8px 18px;cursor:pointer;border:2px dashed var(--orange-d)" onclick="{speak(w["en"])}"><b>{esc(w["en"])}</b> <span class="ar" style="font-size:1rem">{w["ar"]}</span></button>' for w in tw)
+    return (f'<div style="margin-top:18px;text-align:center"><div class="v3-label">{ico("star")} Tricky words &middot; read them whole</div>'
+            f'<div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:8px">{chips}</div></div>')
+
+
 def slide_phonics_rule(unit, n, total, ch):
     sounds = unit.get("sounds", [])
     tiles = ""
+    many = len(sounds) > 4 or (len(sounds) > 3 and unit.get("tricky"))   # 5-6 sounds (+ tricky words): smaller tiles so it fits
     if sounds:
         for s in sounds:
-            tok = s["letter"].split(",")[0].split("-")[0].strip()
+            tok = s.get("audio") or s["letter"].split(",")[0].split("-")[0].strip()
+            say = f", 0.92, '{jsq(s['say'])}'" if s.get("say") else ""
             tiles += f'''
-          <button class="v3-card" style="width:150px;padding:14px 10px" onclick="typeof Lumio !== 'undefined' && Lumio.speakPhonicsSound && Lumio.speakPhonicsSound('{esc(tok)}')">
-            <div style="font-size:3rem;line-height:1;color:var(--orange-d)">{esc(s["letter"])}</div>
+          <button class="v3-card" style="width:{"124px;padding:10px 8px" if many else "150px;padding:14px 10px"}" onclick="typeof Lumio !== 'undefined' && Lumio.speakPhonicsSound && Lumio.speakPhonicsSound('{esc(tok)}'{say})">
+            <div style="font-size:{"2.4rem" if many else "3rem"};line-height:1;color:var(--orange-d)">{esc(s["letter"])}</div>
             <div style="font-family:var(--read);font-size:1rem;color:var(--ink2)">{esc(s["sound"])}</div>
-            {mouth(tok.lower())}
+            {mouth(tok.lower().split("-")[0], 44 if many else 60)}
           </button>'''
     else:
         for w in unit.get("words", []):
@@ -173,6 +185,7 @@ def slide_phonics_rule(unit, n, total, ch):
       <div class="v3-quote" style="font-size:2.3rem;margin:8px 0 2px">{esc(unit["unit"])}</div>
       <div class="v3-arline" style="margin-bottom:16px">{unit["unitAr"]}</div>
       <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center">{tiles}</div>
+      {tricky_row(unit)}
     </div>
     ''' + (note("Teacher tip", f'<div dir="rtl" style="text-align:right;font-family:var(--arf)">{tip}</div>', "left:930px;top:150px;width:300px") if tip else "") + char_img(ch, bottom=42, height=290)
 
@@ -284,8 +297,9 @@ def slide_dialogue(lines, n, total, lesson_num=0):
 
 def slide_vocab_scene(image_path, sentence, bold_words, n, total, seed, translation=None):
     hl = T.highlight_words(esc(sentence), bold_words).replace('class="vs-key"', 'class="v3-key"')
-    return f'''<div class="v3-bg" style="background-image:url('{image_path}')"></div>
+    return f'''<div class="v3-bg scene-bg" style="background-image:url('{image_path}')"></div>
     <div class="v3-shade" style="background:linear-gradient(180deg,rgba(30,15,0,.45),rgba(30,15,0,0) 22%,rgba(30,15,0,0) 60%,rgba(30,15,0,.55))"></div>
+    <button type="button" class="scene-only-btn" onclick="LumioAct.sceneOnly(this)" title="Scene only / show all" aria-label="Scene only"><span data-ico="eye"></span></button>
     {header("", n, total)}
     <div class="v3-caption">
       <div><div class="v3-quote">{hl}</div>{f'<div class="v3-ar" style="margin-top:8px;font-size:1.25rem">{esc(translation)}</div>' if translation else ''}</div>
@@ -346,7 +360,7 @@ def your_turn_html(w, idx, total_rounds, teen, chars_html=""):
     </div>
     <div style="position:absolute;left:640px;width:520px;top:600px;display:flex;justify-content:center;gap:18px;z-index:20">
       <button class="v3-btn teal" onclick="typeof Lumio!=='undefined' && Lumio.speak && Lumio.speak({esc(_json.dumps(en))})">&#9654; Play the word</button>
-      <button class="v3-btn" onclick="document.getElementById('ytMystery{idx}').style.display='none';document.getElementById('ytImg{idx}').style.display='block';document.getElementById('ytAsk{idx}').style.display='none';document.getElementById('ytAns{idx}').style.display='block';this.disabled=true;this.style.opacity=.55">&#128064; Reveal</button>
+      <button class="v3-btn" onclick="document.getElementById('ytMystery{idx}').style.display='none';(function(i){{if(i.naturalWidth)i.style.display='block'}})(document.getElementById('ytImg{idx}'));document.getElementById('ytAsk{idx}').style.display='none';document.getElementById('ytAns{idx}').style.display='block';this.disabled=true;this.style.opacity=.55">&#128064; Reveal</button>
     </div>
     {chars_html}'''
 

@@ -281,3 +281,7 @@ html.kid .word .wt i { color: #E5590B; }
 .word .wt { position: relative; }
 .word.sight.nopic .wt::before { content: "Sight word"; position: absolute; top: 10px; left: 0; right: 0; text-align: center; font-family: var(--label); font-size: 10px; letter-spacing: var(--labelTrack); text-transform: uppercase; font-weight: 800; color: var(--ink2); }
 .word.sight.nopic .wt i { color: inherit; }
+
+/* teacher preview banner (?preview=1): nothing is saved */
+.hb-preview { position: sticky; top: 58px; z-index: 19; margin: 0; padding: 7px 16px; text-align: center; font: 800 .82rem/1.3 Nunito, sans-serif; color: #7B3F00; background: #FFE7B8; border-bottom: 1px solid #F5C878; }
+html.teen .hb-preview { color: #FFD66B; background: #2A2210; border-color: #4A3A16; }

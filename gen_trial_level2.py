@@ -94,13 +94,13 @@ def slide_buzzer_challenge(prompt_word, n, total):
     return (bg_clean() + header("Buzzer Challenge", n, total) + COLORSTRIP + f'''
     <div data-challenge="buzzer" style="position:absolute;inset:0;top:120px;display:flex;flex-direction:column;align-items:center">
       <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.05rem;color:#8A7160;margin-bottom:8px;text-align:center">
-        Who says it first? Tap the name of whoever answers correctly!
+        Who says the English word first? Tap the word to check, then tap the winner&#39;s name!
       </div>
       <div style="background:#fff;border-radius:20px;padding:14px 34px;box-shadow:0 10px 24px rgba(67,48,31,.12);margin-bottom:16px;text-align:center">
         <div style="width:130px;height:130px;border-radius:14px;overflow:hidden;background:#FFFCF6;border:3px solid #FFE0B8;margin:0 auto 8px">
           <img src="assets/vocab/{slug(prompt_word.get("image") or prompt_word["en"])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
         </div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.4rem;color:#43301F">{esc(prompt_word["en"])}</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.4rem;color:#43301F"><span onclick="this.style.filter='none'" title="Tap to check" style="filter:blur(11px);cursor:pointer;user-select:none">{esc(prompt_word["en"])}</span></div>
         <div style="font-family:'Tajawal',sans-serif;font-weight:700;font-size:1rem;color:#8A7160">{esc(prompt_word["ar"])}</div>
       </div>
       <div id="pickerZone" style="display:flex;flex-wrap:wrap;justify-content:center;max-width:900px"></div>
@@ -176,7 +176,7 @@ def slide_trial_finish(n, total):
       {name_chips_html()}
       <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.15rem;color:#8A7160;margin:20px 0 24px;max-width:820px">
         Family, food, the classroom, and daily routines in English &mdash; all in one class! This is just a taste
-        of the 140 lessons and 7 levels waiting on the full Lumio adventure.
+        of the full level: 24 live classes (20 lessons + 4 Bonus Classes) in about 3 months.
       </div>
       <div style="background:#fff;border-radius:18px;padding:15px 28px;box-shadow:0 12px 26px rgba(67,48,31,.18);
                   font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1rem;color:#43301F">
@@ -187,76 +187,65 @@ def slide_trial_finish(n, total):
 
 
 def _build():
+    """Lesson 1 greetings + the first Level 2 phonics group (sh, ch) + My Family Tree (Lesson 3) with its Reading Lab
+    passage + a short morning-routine round. Every section ends in speaking, reading or a game."""
+    import activity_slides as _AS
+    import reading_slides as _RS
+    import json as _json
     slides = []
+    n = lambda: len(slides) + 1
 
     slides.append(slide_trial_welcome(1, TOTAL))
-    slides.append(TC.meet_characters(sys.modules[__name__], "level2", len(slides) + 1, TOTAL))
-    slides.append(slide_team_assign(len(slides) + 1, TOTAL))
+    slides.append(TC.meet_characters(sys.modules[__name__], "level2", n(), TOTAL))
+    slides.append(slide_team_assign(n(), TOTAL))
 
-    # Family Tree section -- family-home theme + the real parents/grandparents scene.
+    # Lesson 1: greetings and introductions
+    deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/school.jpg"
+    greet = [load_word("level2", 1, w) for w in ["hello", "please", "thank you", "sorry", "nice to meet you"]]
+    for w in greet:
+        slides.append(slide_vocab(w, 0, n(), TOTAL, 1, "lumi-hero"))
+    trio = ["Hello, my name is Sara.", "Nice to meet you!", "Thank you very much!"]
+    slides.append(deck_template_v2.slide_sentence_trio(trio, n(), TOTAL, "lumi-hero", 21))
+    for t in trio: TR.remember_sentence(t)
+    slides.append(slide_buzzer_challenge(greet[3], n(), TOTAL))
+
+    # Phonics (phonics-hub/level2.json unit 1): sh, ch
+    unit = _json.load(open("phonics-hub/level2.json", encoding="utf-8"))["units"][0]
+    slides.append(slide_trial_transition("Two letters, one sound!", "&#128292;", n(), TOTAL))
+    slides.append(deck_template_v2.slide_phonics_rule(unit, n(), TOTAL, "lumi-point"))
+    slides.append(deck_template_v2.slide_phonics_practice(unit, n(), TOTAL, "lumi-books"))
+    slides.append(deck_template_v2.slide_phonics_story(unit, n(), TOTAL, "lumi-read"))
+    pw = unit["words"]
+    for i in range(2):
+        slides.append(deck_template_v2.slide_sound_match(pw[i], [x for x in pw if x is not pw[i]][:3], i + 1, 2, n(), TOTAL, 80 + i))
+    slides.append(slide_scoreboard("Halfway there! Here's the score so far...", n(), TOTAL))
+
+    # Lesson 3: My Family Tree -> its Reading Lab passage
     deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/family-home.jpg"
     family_words = [load_word("level2", 3, w) for w in ["parents", "grandparents", "uncle", "aunt", "cousin", "twins"]]
     for w in family_words:
-        slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
-    # Activity slide (lib/activity_slides.py): Flash Race on the words just taught -- group and 1-on-1 modes on the slide.
-    import activity_slides as _AS
-    slides.append(_AS.slide_flash_race(family_words, bg_study(), header("Flash Race &bull; Speaking Game", len(slides) + 1, TOTAL) + COLORSTRIP))
-    slides.append(slide_vocab_scene("assets/vocab-scenes/level2/07.jpg", "These are my parents. These are my grandparents.", ["parents", "grandparents"], len(slides) + 1, TOTAL, 1))
+        slides.append(slide_vocab(w, 0, n(), TOTAL, 1, "lumi-hero"))
+    slides.append(slide_vocab_scene("assets/vocab-scenes/level2/07.jpg", "These are my parents. These are my grandparents.", ["parents", "grandparents"], n(), TOTAL, 1))
+    slides.append(_AS.slide_memory_match(family_words, bg_study(), header("Memory Match &bull; Game", n(), TOTAL) + COLORSTRIP))
+    slides.append(slide_team_relay(family_words[0], "Who are they?", n(), TOTAL))
+    for idx in (1, 2):   # the passage, then "Let's Talk About It"
+        slides.append(_RS.reading_slide("level2", 3, idx, bg_study(), lambda t, _n=n(): header(t, _n, TOTAL) + COLORSTRIP, kid=True))
 
-    slides.append(slide_buzzer_challenge(family_words[2], len(slides) + 1, TOTAL))
-    slides.append(slide_buzzer_challenge(family_words[4], len(slides) + 1, TOTAL))
-    slides.append(slide_team_relay(family_words[0], "Who is this in the family?", len(slides) + 1, TOTAL))
-    slides.append(slide_mini_celebrate("You're all Family Tree Experts!", len(slides) + 1, TOTAL))
-
-    slides.append(slide_trial_transition("What do you eat every day?", "&#127869;&#65039;", len(slides) + 1, TOTAL))
-
-    # Food section -- kitchen theme + the real breakfast/lunch scene.
-    deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/kitchen.jpg"
-    food_words = [load_word("level2", 16, w) for w in ["breakfast", "lunch", "dinner", "snack", "water"]]
-    for w in food_words:
-        slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
-    slides.append(slide_vocab_scene("assets/vocab-scenes/level2/45.jpg", "I eat breakfast. I eat lunch.", ["breakfast", "lunch"], len(slides) + 1, TOTAL, 1))
-    slides.append(slide_buzzer_challenge(food_words[1], len(slides) + 1, TOTAL))
-    slides.append(slide_scoreboard("Halfway there! Here's the score so far...", len(slides) + 1, TOTAL))
-
-    slides.append(slide_trial_transition("Welcome to my classroom!", "&#127891;", len(slides) + 1, TOTAL))
-
-    # Classroom section -- school theme + the real classroom/board scene.
-    deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/school.jpg"
-    room_words = [load_word("level2", 8, w) for w in ["board", "classroom"]]
-    for w in room_words:
-        slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
-    slides.append(slide_vocab_scene("assets/vocab-scenes/level2/21.jpg", "This is my classroom. This is the board.", ["classroom", "board"], len(slides) + 1, TOTAL, 1))
-    slides.append(slide_team_relay(room_words[0], "What's this classroom object?", len(slides) + 1, TOTAL))
-    slides.append(slide_mini_celebrate("You know your classroom!", len(slides) + 1, TOTAL))
-
-    slides.append(slide_trial_transition("Let's follow classroom commands!", "&#128077;", len(slides) + 1, TOTAL))
-    unison_tpr = {
-        "stand up": "Everyone stand up! Say \u201cStand up!\u201d &#128694;",
-        "sit down": "Now sit back down! Say \u201cSit down!\u201d &#128719;",
-        "listen": "Put your hand to your ear and listen! Say \u201cListen!\u201d &#128066;",
-    }
-    for w_en, line in unison_tpr.items():
-        slides.append(slide_tpr_activity(line, len(slides) + 1, TOTAL, "lumi-hero"))
-    TR.remember_actions(*unison_tpr, "raise your hand", "look around")
-
-    slides.append(slide_copycat_challenge("Who can raise their hand the fastest?", len(slides) + 1, TOTAL))
-    slides.append(slide_copycat_challenge("Who can look around the room the silliest?", len(slides) + 1, TOTAL))
-
-    # Morning routine -- bedroom theme + the real brush-teeth/get-dressed scene,
-    # since both those exact words appear in this closing vocab set.
+    # Morning routine: say it, then act it
     deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/bedroom.jpg"
     for w_en in ["wake up", "brush my teeth", "get dressed"]:
-        slides.append(slide_vocab(load_word("level2", 14, w_en), 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
-    slides.append(slide_vocab_scene("assets/vocab-scenes/level2/40.jpg", "I brush my teeth. I get dressed.", ["brush my teeth", "get dressed"], len(slides) + 1, TOTAL, 1))
+        slides.append(slide_vocab(load_word("level2", 14, w_en), 0, n(), TOTAL, 1, "lumi-hero"))
+    slides.append(slide_vocab_scene("assets/vocab-scenes/level2/40.jpg", "I brush my teeth. I get dressed.", ["brush my teeth", "get dressed"], n(), TOTAL, 1))
+    slides.append(slide_copycat_challenge("Who can act out \u201cI brush my teeth\u201d the best? Say it and do it!", n(), TOTAL))
+    TR.remember_actions("wake up", "brush my teeth")
     deck_template_v2.CURRENT_LESSON_BG = None
 
-    slides.append(TC.game_slide(sys.modules[__name__], "level2", len(slides) + 1, TOTAL))
-    slides.append(slide_scoreboard("And the final score is...", len(slides) + 1, TOTAL))
-    slides.extend(TR.kid_slides(len(slides) + 1, TOTAL))
-    slides.append(slide_finale(len(slides) + 1, TOTAL))
-    slides.append(slide_trial_finish(len(slides) + 1, TOTAL))
-
+    slides.append(TC.game_slide(sys.modules[__name__], "level2", n(), TOTAL))
+    slides.append(slide_scoreboard("And the final score is...", n(), TOTAL))
+    slides.extend(TR.kid_slides(n(), TOTAL, phonics_unit=unit))
+    slides.append(TC.journey_slide(sys.modules[__name__], "level2", n(), TOTAL))
+    slides.append(slide_finale(n(), TOTAL))
+    slides.append(slide_trial_finish(n(), TOTAL))
     return slides
 
 

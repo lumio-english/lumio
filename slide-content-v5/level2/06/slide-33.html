@@ -1,27 +1,63 @@
 <div class="v3 v3-kid"><div class="v3-bg v3-mesh m2"></div><div class="v3-shade"></div><div class="v3-top">
       <div class="v3-lesson"><img src="assets/logo/lumio-logo.png" alt="Lumio English"><span><small>Level 2</small>Lesson 6</span></div>
-      <div class="pagetitle v3-ribbon"><b>Your Turn</b> &bull; <i>Round 2 of 5</i></div>
+      <div class="pagetitle v3-ribbon"><b>Memory Match</b> &bull; <i>Game</i></div>
       <div class="counter v3-page"><i class="v3-ico" data-ico="book"></i>33 / 52</div>
     </div>
-    <div class="v3-photo" style="left:150px;top:160px;width:420px;height:420px"><div class="pic" id="ytCard2" style="display:grid;place-items:center">
-      <div id="ytMystery2" style="font-family:var(--display);font-weight:800;font-size:13rem;line-height:1;background:linear-gradient(180deg,#FFA43A,#F2600C);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 20px 24px rgba(242,96,12,.35))">?</div>
-      <img id="ytImg2" src="assets/vocab/glasses.png" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;padding:14px" alt="" onerror="this.style.display='none'">
-    </div></div>
-    <div class="v3-paper" style="left:640px;top:170px;width:520px;padding:30px 34px;text-align:center">
-      <div id="ytAsk2">
-        <div class="v3-quote" style="font-size:2.3rem">Listen &mdash; say it in Arabic!</div>
-        <div class="v3-arline" style="text-align:center;font-size:1.4rem">استمعوا ثم قولوا الكلمة بالعربية</div>
-        <div style="display:flex;justify-content:center;gap:8px;margin-top:14px;flex-wrap:wrap"><span class="v3-chip" style="background:#fff">1 Play the word</span><span class="v3-chip" style="background:#fff">2 Say the Arabic</span><span class="v3-chip" style="background:#fff">3 Reveal</span></div>
-        <div style="margin-top:14px;font-weight:700;font-size:1.05rem;color:var(--ink2);line-height:1.45">Pairs: the first to say the Arabic wins the point.<br>1-on-1: your teacher plays the word, you answer.</div>
+    <div style="position:absolute;left:60px;right:60px;top:122px;z-index:6;display:flex;gap:18px">
+      <div class="v3-note" style="position:relative;width:auto;flex:1"><b class="k"><i class="v3-ico" data-ico="people"></i>Pairs / group</b>Take turns: tap two cards. A match? Say the word and keep going. No match? Next player. Most pairs wins.</div>
+      <div class="v3-note" style="position:relative;width:auto;flex:1;background:linear-gradient(180deg,rgba(214,244,250,.9),rgba(190,234,244,.84));color:#0B4F5C"><b class="k" style="color:#0B7A6F"><i class="v3-ico" data-ico="user"></i>1-on-1 with your teacher</b>You vs your teacher! Tap two cards; say the word when you find a pair. Count your pairs &mdash; can you beat the teacher?</div>
+    </div>
+    <div style="position:absolute;left:0;right:0;top:214px;bottom:56px;z-index:6;display:flex;align-items:center;justify-content:center;gap:40px">
+      <div id="mmBoard" style="display:grid;grid-template-columns:repeat(4,150px);gap:14px">
+      <div data-pair="1" data-say="glasses" onclick="LumioAct.memory(this)" style="position:relative;width:150px;height:150px;border-radius:18px;overflow:hidden;cursor:pointer;background:rgba(255,255,255,.76);-webkit-backdrop-filter:blur(24px) saturate(1.7);backdrop-filter:blur(24px) saturate(1.7);border-radius:28px;border:1px solid rgba(255,255,255,.85);box-shadow:0 30px 60px -30px rgba(40,24,8,.55),0 10px 24px -12px rgba(40,24,8,.25);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff;padding:8px"><img src="assets/vocab/glasses.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F97316,#FBBF24);color:#fff;font-size:3rem;font-weight:900">?</div>
       </div>
-      <div id="ytAns2" style="display:none">
-        <div class="v3-bigar">نظارة</div>
-        <div class="v3-word m" style="color:var(--orange-d);margin-top:6px">glasses</div>
-        <div class="v3-quote" style="font-size:1.4rem;margin-top:10px;color:var(--ink2)">&ldquo;My dad has got glasses.&rdquo;</div>
+      <div data-pair="1" data-say="glasses" onclick="LumioAct.memory(this)" style="position:relative;width:150px;height:150px;border-radius:18px;overflow:hidden;cursor:pointer;background:rgba(255,255,255,.76);-webkit-backdrop-filter:blur(24px) saturate(1.7);backdrop-filter:blur(24px) saturate(1.7);border-radius:28px;border:1px solid rgba(255,255,255,.85);box-shadow:0 30px 60px -30px rgba(40,24,8,.55),0 10px 24px -12px rgba(40,24,8,.25);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff;padding:8px"><img src="assets/vocab/glasses.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F97316,#FBBF24);color:#fff;font-size:3rem;font-weight:900">?</div>
+      </div>
+      <div data-pair="0" data-say="phone" onclick="LumioAct.memory(this)" style="position:relative;width:150px;height:150px;border-radius:18px;overflow:hidden;cursor:pointer;background:rgba(255,255,255,.76);-webkit-backdrop-filter:blur(24px) saturate(1.7);backdrop-filter:blur(24px) saturate(1.7);border-radius:28px;border:1px solid rgba(255,255,255,.85);box-shadow:0 30px 60px -30px rgba(40,24,8,.55),0 10px 24px -12px rgba(40,24,8,.25);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff;padding:8px"><img src="assets/vocab/phone.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F97316,#FBBF24);color:#fff;font-size:3rem;font-weight:900">?</div>
+      </div>
+      <div data-pair="0" data-say="phone" onclick="LumioAct.memory(this)" style="position:relative;width:150px;height:150px;border-radius:18px;overflow:hidden;cursor:pointer;background:rgba(255,255,255,.76);-webkit-backdrop-filter:blur(24px) saturate(1.7);backdrop-filter:blur(24px) saturate(1.7);border-radius:28px;border:1px solid rgba(255,255,255,.85);box-shadow:0 30px 60px -30px rgba(40,24,8,.55),0 10px 24px -12px rgba(40,24,8,.25);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff;padding:8px"><img src="assets/vocab/phone.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F97316,#FBBF24);color:#fff;font-size:3rem;font-weight:900">?</div>
+      </div>
+      <div data-pair="3" data-say="camera" onclick="LumioAct.memory(this)" style="position:relative;width:150px;height:150px;border-radius:18px;overflow:hidden;cursor:pointer;background:rgba(255,255,255,.76);-webkit-backdrop-filter:blur(24px) saturate(1.7);backdrop-filter:blur(24px) saturate(1.7);border-radius:28px;border:1px solid rgba(255,255,255,.85);box-shadow:0 30px 60px -30px rgba(40,24,8,.55),0 10px 24px -12px rgba(40,24,8,.25);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff;padding:8px"><img src="assets/vocab/camera.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F97316,#FBBF24);color:#fff;font-size:3rem;font-weight:900">?</div>
+      </div>
+      <div data-pair="3" data-say="camera" onclick="LumioAct.memory(this)" style="position:relative;width:150px;height:150px;border-radius:18px;overflow:hidden;cursor:pointer;background:rgba(255,255,255,.76);-webkit-backdrop-filter:blur(24px) saturate(1.7);backdrop-filter:blur(24px) saturate(1.7);border-radius:28px;border:1px solid rgba(255,255,255,.85);box-shadow:0 30px 60px -30px rgba(40,24,8,.55),0 10px 24px -12px rgba(40,24,8,.25);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff;padding:8px"><img src="assets/vocab/camera.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F97316,#FBBF24);color:#fff;font-size:3rem;font-weight:900">?</div>
+      </div>
+      <div data-pair="2" data-say="key" onclick="LumioAct.memory(this)" style="position:relative;width:150px;height:150px;border-radius:18px;overflow:hidden;cursor:pointer;background:rgba(255,255,255,.76);-webkit-backdrop-filter:blur(24px) saturate(1.7);backdrop-filter:blur(24px) saturate(1.7);border-radius:28px;border:1px solid rgba(255,255,255,.85);box-shadow:0 30px 60px -30px rgba(40,24,8,.55),0 10px 24px -12px rgba(40,24,8,.25);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff;padding:8px"><img src="assets/vocab/key.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F97316,#FBBF24);color:#fff;font-size:3rem;font-weight:900">?</div>
+      </div>
+      <div data-pair="2" data-say="key" onclick="LumioAct.memory(this)" style="position:relative;width:150px;height:150px;border-radius:18px;overflow:hidden;cursor:pointer;background:rgba(255,255,255,.76);-webkit-backdrop-filter:blur(24px) saturate(1.7);backdrop-filter:blur(24px) saturate(1.7);border-radius:28px;border:1px solid rgba(255,255,255,.85);box-shadow:0 30px 60px -30px rgba(40,24,8,.55),0 10px 24px -12px rgba(40,24,8,.25);;transition:transform .15s">
+        <div class="act-front" style="display:none;position:absolute;inset:0;background:#fff;padding:8px"><img src="assets/vocab/key.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>
+        <div class="act-back" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F97316,#FBBF24);color:#fff;font-size:3rem;font-weight:900">?</div>
+      </div></div>
+      <div style="width:260px;background:rgba(255,255,255,.76);-webkit-backdrop-filter:blur(24px) saturate(1.7);backdrop-filter:blur(24px) saturate(1.7);border-radius:28px;border:1px solid rgba(255,255,255,.85);box-shadow:0 30px 60px -30px rgba(40,24,8,.55),0 10px 24px -12px rgba(40,24,8,.25);padding:14px 16px">
+        <div style="font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#0D9488;margin-bottom:8px">WORDS TO FIND</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"><span style="font-family:'Nunito',system-ui,sans-serif;font-weight:800;color:#1D1D1F;background:#fff;padding:4px 10px;border-radius:999px;font-size:.85rem">phone</span><span style="font-family:'Nunito',system-ui,sans-serif;font-weight:800;color:#1D1D1F;background:#fff;padding:4px 10px;border-radius:999px;font-size:.85rem">glasses</span><span style="font-family:'Nunito',system-ui,sans-serif;font-weight:800;color:#1D1D1F;background:#fff;padding:4px 10px;border-radius:999px;font-size:.85rem">key</span><span style="font-family:'Nunito',system-ui,sans-serif;font-weight:800;color:#1D1D1F;background:#fff;padding:4px 10px;border-radius:999px;font-size:.85rem">camera</span></div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.76);-webkit-backdrop-filter:blur(24px) saturate(1.7);backdrop-filter:blur(24px) saturate(1.7);border-radius:28px;border:1px solid rgba(255,255,255,.85);box-shadow:0 30px 60px -30px rgba(40,24,8,.55),0 10px 24px -12px rgba(40,24,8,.25);padding:6px 10px 6px 14px">
+        <span style="font-family:'Nunito',system-ui,sans-serif;font-weight:800;color:#F97316;font-size:.9rem">Player 1</span>
+        <span data-act-score style="display:inline-block;min-width:34px;text-align:center;font-family:'Nunito',system-ui,sans-serif;font-weight:800;font-size:1.3rem;color:#1D1D1F;transition:transform .15s">0</span>
+        <button onclick="LumioAct.score(this,1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#F97316;color:#fff;font-weight:900;font-size:1rem">+</button>
+        <button onclick="LumioAct.score(this,-1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#E5E7EB;color:#6B7280;font-weight:900;font-size:1rem">&minus;</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.76);-webkit-backdrop-filter:blur(24px) saturate(1.7);backdrop-filter:blur(24px) saturate(1.7);border-radius:28px;border:1px solid rgba(255,255,255,.85);box-shadow:0 30px 60px -30px rgba(40,24,8,.55),0 10px 24px -12px rgba(40,24,8,.25);padding:6px 10px 6px 14px">
+        <span style="font-family:'Nunito',system-ui,sans-serif;font-weight:800;color:#0D9488;font-size:.9rem">Player 2</span>
+        <span data-act-score style="display:inline-block;min-width:34px;text-align:center;font-family:'Nunito',system-ui,sans-serif;font-weight:800;font-size:1.3rem;color:#1D1D1F;transition:transform .15s">0</span>
+        <button onclick="LumioAct.score(this,1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#0D9488;color:#fff;font-weight:900;font-size:1rem">+</button>
+        <button onclick="LumioAct.score(this,-1)" style="cursor:pointer;border:none;width:30px;height:30px;border-radius:50%;background:#E5E7EB;color:#6B7280;font-weight:900;font-size:1rem">&minus;</button>
+      </div></div>
+        <div data-act-memory-done="mmBoard" style="display:none;text-align:center;font-family:'Nunito',system-ui,sans-serif;font-weight:800;color:#0D9488;margin-top:10px"><i class="v3-ico" data-ico="sparkle"></i> All pairs found!</div>
       </div>
     </div>
-    <div style="position:absolute;left:640px;width:520px;top:600px;display:flex;justify-content:center;gap:18px;z-index:20">
-      <button class="v3-btn teal" onclick="typeof Lumio!=='undefined' && Lumio.speak && Lumio.speak(&quot;glasses&quot;)"><span class="v3-gl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor" stroke="none"/></svg></span><span class="v3-bl">Play the word</span></button>
-      <button class="v3-btn" onclick="document.getElementById('ytMystery2').style.display='none';document.getElementById('ytImg2').style.display='block';document.getElementById('ytAsk2').style.display='none';document.getElementById('ytAns2').style.display='block';this.disabled=true;this.style.opacity=.55"><span class="v3-gl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/></svg></span><span class="v3-bl">Reveal</span></button>
     </div>
-    <div class="v3-floor" style="right:20px;bottom:-4px;width:163px"></div><img class="char v3-host" src="assets/story/characters/omar-wave.png" style="right:40px;bottom:10px;height:264px" alt="" onerror="this.style.display='none'; this.previousElementSibling.style.display='none'"></div>

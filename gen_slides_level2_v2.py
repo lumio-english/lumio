@@ -177,7 +177,7 @@ GRAMMAR_UNITS = {
         "title": "He is / She is",
         "titleAr": "هو... / هي...",
         "explanation": "We use \"he\" for a boy or a man, and \"she\" for a girl or a woman. Both use \"is\": He is... / She is... For more than one person we use \"we are\" and \"they are\".",
-        "explanationAr": "نستخدم he للولد أو الرجل، وshe للبنت أو المرأة. كلاهما يأتي معه is: هو... / هي... ولأكثر من شخص نستخدم we are (نحن) وthey are (هم).",
+        "explanationAr": "نستخدم he للولد أو الرجل، و she للبنت أو المرأة. كلاهما يأتي معه is: هو... / هي... ولأكثر من شخص نستخدم we are (نحن)، they are (هم).",
         "examples": [
             {"en": "He is my brother.", "ar": "هو أخي."},
             {"en": "She is my sister.", "ar": "هي أختي."},
@@ -213,7 +213,7 @@ GRAMMAR_UNITS = {
         "title": "There is / There are",
         "titleAr": "يوجد / توجد",
         "explanation": "We use \"There is\" for one thing and \"There are\" for many things, to say what is in a place.",
-        "explanationAr": "نستخدم There is لشيء واحد وThere are لأشياء كثيرة، لنقول ماذا يوجد في مكان ما.",
+        "explanationAr": "نستخدم There is لشيء واحد و There are لأشياء كثيرة، لنقول ماذا يوجد في مكان ما.",
         "examples": [
             {"en": "There is a board in my classroom.", "ar": "يوجد لوح في صفي."},
             {"en": "There is a playground at my school.", "ar": "يوجد ملعب في مدرستي."},

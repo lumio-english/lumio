@@ -1,14 +1,27 @@
 <div class="v3 v3-kid"><div class="v3-bg v3-mesh m1"></div><div class="v3-shade"></div><div class="v3-top">
       <div class="v3-lesson"><img src="assets/logo/lumio-logo.png" alt="Lumio English"><span><small>Level 2</small>Lesson 9</span></div>
-      <div class="pagetitle v3-ribbon"><b>Teacher & Student Game</b></div>
+      <div class="pagetitle v3-ribbon"><b>Your Turn</b> &bull; <i>Round 4 of 5</i></div>
       <div class="counter v3-page"><i class="v3-ico" data-ico="book"></i>48 / 55</div>
-    </div><div class="v3-prompt" style="top:122px;"><div>Teacher says a word out loud &mdash; first student to tap it wins!</div></div>
-    <div class="v3-board" style="left:30px;right:30px;top:206px;bottom:64px;overflow-y:auto;align-content:flex-start;padding:10px 120px 20px;gap:20px"><button class="v3-card" style="width:176px" onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('stand up')">
-        <div class="ph"><img src="assets/vocab/stand-up.png" alt="" onerror="this.style.display='none'"></div>stand up</button><button class="v3-card" style="width:176px" onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('sit down')">
-        <div class="ph"><img src="assets/vocab/sit-down.png" alt="" onerror="this.style.display='none'"></div>sit down</button><button class="v3-card" style="width:176px" onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('listen')">
-        <div class="ph"><img src="assets/vocab/listen.png" alt="" onerror="this.style.display='none'"></div>listen</button><button class="v3-card" style="width:176px" onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('look')">
-        <div class="ph"><img src="assets/vocab/look.png" alt="" onerror="this.style.display='none'"></div>look</button><button class="v3-card" style="width:176px" onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('open your book')">
-        <div class="ph"><img src="assets/vocab/open-your-book.png" alt="" onerror="this.style.display='none'"></div>open your book</button><button class="v3-card" style="width:176px" onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('raise your hand')">
-        <div class="ph"><img src="assets/vocab/raise-your-hand.png" alt="" onerror="this.style.display='none'"></div>raise your hand</button><button class="v3-card" style="width:176px" onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('desk')">
-        <div class="ph"><img src="assets/vocab/desk.png" alt="" onerror="this.style.display='none'"></div>desk</button></div>
-    <div class="v3-floor" style="right:0px;bottom:-4px;width:122px"></div><img class="char v3-host" src="assets/story/characters/omar-wave.png" style="right:20px;bottom:10px;height:198px" alt="" onerror="this.style.display='none'; this.previousElementSibling.style.display='none'"></div>
+    </div>
+    <div class="v3-photo" style="left:150px;top:160px;width:420px;height:420px"><div class="pic" id="ytCard4" style="display:grid;place-items:center">
+      <div id="ytMystery4" style="font-family:var(--display);font-weight:800;font-size:13rem;line-height:1;background:linear-gradient(180deg,#FFA43A,#F2600C);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 20px 24px rgba(242,96,12,.35))">?</div>
+      <img id="ytImg4" src="assets/vocab/open-your-book.png" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;padding:14px" alt="" onerror="this.style.display='none'">
+    </div></div>
+    <div class="v3-paper" style="left:640px;top:170px;width:520px;padding:30px 34px;text-align:center">
+      <div id="ytAsk4">
+        <div class="v3-quote" style="font-size:2.3rem">Listen &mdash; say it in Arabic!</div>
+        <div class="v3-arline" style="text-align:center;font-size:1.4rem">استمعوا ثم قولوا الكلمة بالعربية</div>
+        <div style="display:flex;justify-content:center;gap:8px;margin-top:14px;flex-wrap:wrap"><span class="v3-chip" style="background:#fff">1 Play the word</span><span class="v3-chip" style="background:#fff">2 Say the Arabic</span><span class="v3-chip" style="background:#fff">3 Reveal</span></div>
+        <div style="margin-top:14px;font-weight:700;font-size:1.05rem;color:var(--ink2);line-height:1.45">Pairs: the first to say the Arabic wins the point.<br>1-on-1: your teacher plays the word, you answer.</div>
+      </div>
+      <div id="ytAns4" style="display:none">
+        <div class="v3-bigar">افتح كتابك</div>
+        <div class="v3-word m" style="color:var(--orange-d);margin-top:6px">open your book</div>
+        <div class="v3-quote" style="font-size:1.4rem;margin-top:10px;color:var(--ink2)">&ldquo;Open your book, please.&rdquo;</div>
+      </div>
+    </div>
+    <div style="position:absolute;left:640px;width:520px;top:600px;display:flex;justify-content:center;gap:18px;z-index:20">
+      <button class="v3-btn teal" onclick="typeof Lumio!=='undefined' && Lumio.speak && Lumio.speak(&quot;open your book&quot;)"><span class="v3-gl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor" stroke="none"/></svg></span><span class="v3-bl">Play the word</span></button>
+      <button class="v3-btn" onclick="document.getElementById('ytMystery4').style.display='none';(function(i){if(i.naturalWidth)i.style.display='block'})(document.getElementById('ytImg4'));document.getElementById('ytAsk4').style.display='none';document.getElementById('ytAns4').style.display='block';this.disabled=true;this.style.opacity=.55"><span class="v3-gl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/></svg></span><span class="v3-bl">Reveal</span></button>
+    </div>
+    <div class="v3-floor" style="right:20px;bottom:-4px;width:163px"></div><img class="char v3-host" src="assets/story/characters/omar-wave.png" style="right:40px;bottom:10px;height:264px" alt="" onerror="this.style.display='none'; this.previousElementSibling.style.display='none'"></div>

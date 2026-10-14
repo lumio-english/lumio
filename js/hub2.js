@@ -11,11 +11,16 @@
   var LEVEL = qs("level") || (me && me.level) || "level1";
   var TEEN = ["level3", "level4", "level5", "level6", "level7", "level8", "level9"].indexOf(LEVEL) !== -1;
   document.documentElement.classList.add(TEEN ? "teen" : "kid");
-  var NAME = (me && me.name) || "guest";
+  // Teacher preview (?preview=1 from the teacher's Materials, or any teacher device): the whole Hub is open,
+  // progress lives in memory only (nothing is read from or written to any student's record) and every visit
+  // starts from zero XP.
+  var PREVIEW = !!(L.previewMode && L.previewMode());   // a signed-in student is never a preview (js/app.js)
+  var NAME = PREVIEW ? "__teacher_preview__" : (me && me.name) || "guest";
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var main = $("#main");
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
-  var pic = function (en) { return "assets/vocab/" + String(en).toLowerCase().replace(/'/g, "").replace(/ /g, "-") + ".png"; };
+  // a word object may name its own picture ("image": "watches-tv") when one spelling has two meanings
+  var pic = function (w) { var n = w && typeof w === "object" ? (w.image || w.en) : w; return "assets/vocab/" + String(n).toLowerCase().replace(/'/g, "").replace(/ /g, "-") + ".png"; };
   var shuffle = function (a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; };
   var MO = !(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
 
@@ -44,15 +49,21 @@
   };
   var g = function (n) { return '<svg viewBox="0 0 24 24" aria-hidden="true">' + (G[n] || "") + "</svg>"; };
 
+  if (PREVIEW) {
+    var pb = document.createElement("div"); pb.className = "hb-preview";
+    pb.textContent = "Teacher preview · every section is open · nothing is saved";
+    var top = document.querySelector(".hb-top"); if (top) top.insertAdjacentElement("afterend", pb);
+  }
+
   /* ---------- progress ---------- */
   var KEY = "lumio_hub2";
-  function loadAll() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
+  function loadAll() { if (PREVIEW) return {}; try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
   var ALL = loadAll();
   ALL[NAME] = ALL[NAME] || {};
   var P = ALL[NAME][LEVEL] = ALL[NAME][LEVEL] || {};
   ["known", "quiz", "idioms", "grammar", "sounds", "spelling", "writing"].forEach(function (k) { P[k] = P[k] || {}; });
   P.xp = P.xp || 0; P.days = P.days || [];
-  function save() { try { localStorage.setItem(KEY, JSON.stringify(ALL)); } catch (e) {} }
+  function save() { if (PREVIEW) return; try { localStorage.setItem(KEY, JSON.stringify(ALL)); } catch (e) {} }
   function today() { try { return L.tzNow ? L.tzNow().date : new Date().toISOString().slice(0, 10); } catch (e) { return new Date().toISOString().slice(0, 10); } }
   function streak() {
     var d = P.days.slice().sort(), n = 0, cur = new Date(today() + "T12:00:00Z");
@@ -72,9 +83,12 @@
     try { L.speak ? L.speak(text) : null; } catch (e) {}
     if (el) setTimeout(function () { el.classList.remove("speaking", "on"); }, 1400);
   }
-  function sayPhonics(tok, el) {
+  // snd: a phonics-hub sound object; "audio" names its recording, "say" is spoken if that file is missing
+  function sayPhonics(snd, el) {
     if (el) { el.classList.add("speaking"); setTimeout(function () { el.classList.remove("speaking"); }, 900); }
-    try { L.speakPhonicsSound ? L.speakPhonicsSound(tok) : L.speak(tok); } catch (e) {}
+    var tok = typeof snd === "object" ? (snd.audio || String(snd.letter).split(",")[0].trim()) : snd;
+    var alt = typeof snd === "object" ? snd.say : undefined;
+    try { L.speakPhonicsSound ? L.speakPhonicsSound(tok, 0.92, alt) : L.speak(alt || tok); } catch (e) {}
   }
   function fx(kind) { try { if (L.beep) L.beep(kind === "right"); } catch (e) {} }
 
@@ -101,7 +115,7 @@
   }
   function setTop(small, title, back) {
     topSmall.textContent = small; topTitle.textContent = title;
-    backBtn.onclick = function () { if (back === "student") location.href = "student.html"; else location.hash = back; };
+    backBtn.onclick = function () { if (back === "student") location.href = PREVIEW ? "teacher.html" : "student.html"; else location.hash = back; };
   }
   function render(html) { main.innerHTML = '<div class="hb-view">' + html + "</div>"; window.scrollTo(0, 0); }
 
@@ -120,8 +134,8 @@
     { k: "phonics", t: "Phonics", s: "Letter sounds", gl: "abc", c1: "#5FD3C2", c2: "#139A88" },
     { k: "spelling", t: "Spelling", s: "The rules behind words", gl: "spell", c1: "#7FD3FF", c2: "#2C8FD8" },
     { k: "writing", t: "Writing", s: "Say it, then write it", gl: "pencil", c1: "#FFD166", c2: "#E8A400" },
-    { k: "songs", t: "Songs", s: "Sing your level's songs", gl: "music", c1: "#C79BFF", c2: "#8B4FE0", href: "songs.html?level=" + encodeURIComponent(LEVEL) },
-    { k: "games", t: "Games", s: "Word games", gl: "game", c1: "#7EE08C", c2: "#2FAE4A", href: "games/word-pop.html?level=" + encodeURIComponent(LEVEL) + "&from=hub" }
+    { k: "songs", t: "Songs", s: "Sing your level's songs", gl: "music", c1: "#C79BFF", c2: "#8B4FE0", href: "songs.html?level=" + encodeURIComponent(LEVEL) + (PREVIEW ? "&from=teacher" : "") },
+    { k: "games", t: "Games", s: "Word games", gl: "game", c1: "#7EE08C", c2: "#2FAE4A", href: "games/word-pop.html?level=" + encodeURIComponent(LEVEL) + "&from=hub" + (PREVIEW ? "&preview=1" : "") }
   ];
 
   /* how far along each section is: [done, total] */
@@ -181,7 +195,7 @@
     setTop("English Hub", "Vocabulary", "#/");
     var cards = d.themes.map(function (t, i) {
       var k = t.words.filter(function (w) { return P.known[w.en]; }).length, best = P.quiz["v" + i];
-      return '<button class="card theme" data-i="' + i + '"><div class="collage">' + t.words.slice(0, 4).map(function (w) { return '<img src="' + pic(w.en) + '" alt="" loading="lazy" onerror="this.style.visibility=\'hidden\'">'; }).join("") + "</div>" +
+      return '<button class="card theme" data-i="' + i + '"><div class="collage">' + t.words.slice(0, 4).map(function (w) { return '<img src="' + pic(w) + '" alt="" loading="lazy" onerror="this.style.visibility=\'hidden\'">'; }).join("") + "</div>" +
         '<div class="meta"><div><b>' + esc(t.theme) + '</b><span class="ar" dir="rtl">' + esc(t.themeAr) + "</span>" +
         '<div class="bar"><i style="width:' + Math.round(k / t.words.length * 100) + '%"></i></div></div>' +
         (best ? '<span class="xpgain" title="best quiz">' + g("star") + best.stars + "</span>" : "") + "</div></button>";
@@ -199,7 +213,7 @@
       '<div class="actions"><button class="btn pri" id="goLearn">' + g("cards") + 'Learn</button><button class="btn sec" id="goQuiz">' + g("target") + "Quiz</button></div>" +
       '<div class="sec-h"><h2>All words</h2><span class="sub">tap to hear</span></div><div class="words">' +
       t.words.map(function (w, j) {
-        return '<button class="card word" data-j="' + j + '"><img src="' + pic(w.en) + '" alt="" loading="lazy" onerror="this.style.visibility=\'hidden\'">' +
+        return '<button class="card word" data-j="' + j + '"><img src="' + pic(w) + '" alt="" loading="lazy" onerror="this.style.visibility=\'hidden\'">' +
           (P.known[w.en] ? '<span class="ok">' + g("check") + "</span>" : "") + "<b>" + esc(w.en) + '</b><span class="ar" dir="rtl">' + esc(w.ar) + "</span></button>";
       }).join("") + "</div>");
     main.querySelectorAll(".word").forEach(function (b) { b.onclick = function () { say(t.words[b.dataset.j].en, b); }; });
@@ -218,7 +232,7 @@
       var w = t.words[order[pos]];
       render('<div class="deck-wrap"><div class="prog"><div class="bar"><i style="width:' + Math.round(pos / order.length * 100) + '%"></i></div><span>' + (pos + 1) + "/" + order.length + "</span></div>" +
         '<div class="card flash hb-card-anim" id="fc" style="--from:' + (dir < 0 ? "-40px" : "40px") + ";--rot:" + (dir < 0 ? "-2deg" : "2deg") + '">' +
-        '<img class="pic" src="' + pic(w.en) + '" alt="' + esc(w.en) + '" onerror="this.style.visibility=\'hidden\'">' +
+        '<img class="pic" src="' + pic(w) + '" alt="' + esc(w.en) + '" onerror="this.style.visibility=\'hidden\'">' +
         '<div class="w">' + esc(w.en) + '</div><div class="ar hide" id="fcAr" dir="rtl" title="Tap to see the Arabic">' + esc(w.ar) + "</div>" +
         '<div class="row"><button class="play big" id="fcPlay" aria-label="Listen">' + g("sound") + "</button></div></div>" +
         '<div class="know"><button class="btn no" id="kNo">' + g("redo") + 'Still learning</button><button class="btn yes" id="kYes">' + g("check") + "I know it</button></div>" +
@@ -280,10 +294,10 @@
       if (n >= qs.length) return result();
       var Q = qs[n], head = "";
       if (Q.kind === "hear") head = '<div class="q-head"><span class="lbl">Listen</span><div class="t">Which picture is it?</div><div class="row" style="display:flex;justify-content:center;margin-top:12px"><button class="play big" id="qPlay" aria-label="Listen again">' + g("sound") + "</button></div></div>";
-      else if (Q.kind === "see") head = '<div class="q-head"><span class="lbl">Look</span><div class="t">What is this?</div></div><img class="q-pic" src="' + pic(Q.w.en) + '" alt="">';
+      else if (Q.kind === "see") head = '<div class="q-head"><span class="lbl">Look</span><div class="t">What is this?</div></div><img class="q-pic" src="' + pic(Q.w) + '" alt="">';
       else head = '<div class="q-head"><span class="lbl">' + esc(Q.label || "Question") + '</span><div class="t">' + Q.prompt + "</div></div>";
       var opts = Q.opts.map(function (o, j) {
-        if (Q.kind === "hear") return '<button class="card opt picopt" data-j="' + j + '"><img src="' + pic(o.en) + '" alt="' + esc(o.en) + '"></button>';
+        if (Q.kind === "hear") return '<button class="card opt picopt" data-j="' + j + '"><img src="' + pic(o) + '" alt="' + esc(o.en) + '"></button>';
         if (Q.kind === "see") return '<button class="card opt" data-j="' + j + '">' + esc(o.en) + "</button>";
         return '<button class="card opt txt" data-j="' + j + '">' + esc(o.text) + "</button>";
       }).join("");
@@ -459,14 +473,17 @@
       u.words.map(function (w, j) {
         // sight words (the, a, to, we...) are taught as words, so their tile says so
         // words without a picture get a letter tile instead, with this group's sounds lit up
-        return '<button class="card word' + (sight ? " sight" : "") + '" data-w="' + j + '"><img src="' + pic(w.en) + '" alt="" loading="lazy" onerror="this.parentNode.classList.add(\'nopic\')">' +
+        return '<button class="card word' + (sight ? " sight" : "") + '" data-w="' + j + '"><img src="' + pic(w) + '" alt="" loading="lazy" onerror="this.parentNode.classList.add(\'nopic\')">' +
           '<span class="wt" aria-hidden="true"><span>' + soundLetters(w.en, u.sounds) + "</span></span><b>" + esc(w.en) + '</b><span class="ar" dir="rtl">' + esc(w.ar) + "</span></button>";
       }).join("") + "</div>" +
+      (u.tricky && u.tricky.length ? '<div class="sec-h"><h2>Tricky words</h2><span class="sub">read them whole</span></div><div class="words">' +
+        u.tricky.map(function (w, j) { return '<button class="card word sight" data-t="' + j + '"><b>' + esc(w.en) + '</b><span class="ar" dir="rtl">' + esc(w.ar) + "</span></button>"; }).join("") + "</div>" : "") +
       (u.story ? '<div class="sec-h"><h2>Read the story</h2></div><div class="card story"><button class="play" id="stPlay" aria-label="Listen">' + g("sound") + '</button><div><p>' + esc(u.story.en) + '</p><p class="ar" dir="rtl">' + esc(u.story.ar) + "</p></div></div>" : "") +
       (u.tip ? '<div class="box tip"><span class="lbl">Tip</span><div class="ar" dir="rtl" style="color:var(--ink)">' + esc(u.tip) + "</div></div>" : "") +
       '<button class="btn pri wide" id="phDone" style="margin-top:18px">' + g("check") + (P.sounds[u.unit] ? "Practised" : "I practised these sounds") + "</button>");
-    main.querySelectorAll(".sound").forEach(function (b) { b.onclick = function () { sayPhonics(u.sounds[b.dataset.j].letter, b); }; });
-    main.querySelectorAll(".word").forEach(function (b) { b.onclick = function () { say(u.words[b.dataset.w].en, b); }; });
+    main.querySelectorAll(".sound").forEach(function (b) { b.onclick = function () { sayPhonics(u.sounds[b.dataset.j], b); }; });
+    main.querySelectorAll(".word[data-w]").forEach(function (b) { b.onclick = function () { say(u.words[b.dataset.w].en, b); }; });
+    main.querySelectorAll(".word[data-t]").forEach(function (b) { b.onclick = function () { say(u.tricky[b.dataset.t].en, b); }; });
     var sp = $("#stPlay"); if (sp) sp.onclick = function () { say(u.story.en, sp); };
     $("#phDone").onclick = function () {
       if (!P.sounds[u.unit]) { P.sounds[u.unit] = today(); save(); addXP(5, "phonics"); }

@@ -32,7 +32,7 @@
   // and count as done. Students may open their own level only, up to the
   // first lesson that is not fully done (prep + class + homework); a
   // teacher session (presenter/preview) can open anything.
-  if (!Lumio.isTeacherSession()) {
+  if (!teacherPreview) {   // a signed-in student on a device a teacher once used still follows the course order
     const lockCard = (title, text, href, label) => {
       stage.innerHTML = `<div class="card center"><div style="font-size:3rem">🔒</div><h1 class="mt">${title}</h1><p class="mt" style="font-weight:700">${text}</p><div class="row mt" style="justify-content:center"><a class="btn btn-teal" href="${href}">${label}</a></div></div>`;
     };

@@ -399,8 +399,9 @@ def slide_vocab_scene(image_path, sentence, bold_words, n, total, seed, translat
     with them."""
     highlighted = highlight_words(esc(sentence), bold_words)
     speak_text = sentence.replace("'", "\\'")
-    return f'''<div style="position:absolute;inset:0;background:url('{image_path}') center/cover no-repeat"></div>
+    return f'''<div class="scene-bg" style="position:absolute;inset:0;background:url('{image_path}') center/cover no-repeat"></div>
     <div style="position:absolute;left:0;right:0;top:0;height:120px;background:linear-gradient(180deg,rgba(43,33,24,.55),transparent)"></div>
+    <button type="button" class="scene-only-btn" onclick="LumioAct.sceneOnly(this)" title="Scene only / show all" aria-label="Scene only"><span data-ico="eye"></span></button>
     {header("", n, total)}
     <div style="position:absolute;left:0;right:0;bottom:0;padding:22px 46px 64px;background:linear-gradient(0deg,rgba(43,33,24,.7) 10%,rgba(43,33,24,.35) 70%,transparent 100%)">
       <div style="display:flex;align-items:center;justify-content:center;gap:16px;max-width:1100px;margin:0 auto">
@@ -679,7 +680,7 @@ def your_turn_html(w, idx, total_rounds, teen, chars_html=""):
     <div style="position:absolute;left:0;right:0;bottom:84px;display:flex;justify-content:center;gap:18px;z-index:20">
       <button onclick="typeof Lumio!=='undefined' && Lumio.speak && Lumio.speak({esc(_json.dumps(en))})"
               style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,{accent2},#0B7A6F);color:#fff;font-weight:800;padding:13px 28px;border-radius:999px;font-size:1.02rem;box-shadow:0 8px 18px rgba(13,148,136,.35)">&#9654; Play the word</button>
-      <button onclick="document.getElementById('ytMystery{idx}').style.display='none';document.getElementById('ytImg{idx}').style.display='block';document.getElementById('ytAsk{idx}').style.display='none';document.getElementById('ytAns{idx}').style.display='block';this.disabled=true;this.style.opacity=.55"
+      <button onclick="document.getElementById('ytMystery{idx}').style.display='none';(function(i){{if(i.naturalWidth)i.style.display='block'}})(document.getElementById('ytImg{idx}'));document.getElementById('ytAsk{idx}').style.display='none';document.getElementById('ytAns{idx}').style.display='block';this.disabled=true;this.style.opacity=.55"
               style="cursor:pointer;border:none;font-family:inherit;background:linear-gradient(135deg,{accent},{'#5B3FD9' if teen else '#EA580C'});color:#fff;font-weight:800;padding:13px 28px;border-radius:999px;font-size:1.02rem;box-shadow:0 8px 18px rgba(0,0,0,.25)">&#128064; Reveal</button>
     </div>
     {chars_html}'''
@@ -927,19 +928,33 @@ def slide_quiz(target, distractors, idx, total_q, n, total, seed):
     {buttons}
     ''')
 
+def tricky_row(unit):
+    """Tricky words taught with this sound group: read as whole words, tap to hear."""
+    tw = unit.get("tricky", [])
+    if not tw:
+        return ""
+    chips = "".join(f'''<button onclick="typeof Lumio !== 'undefined' && Lumio.speak && Lumio.speak('{jsq(w["en"])}')"
+          style="border:2px dashed #F59E0B;cursor:pointer;font-family:inherit;background:#FFFBEB;border-radius:12px;padding:6px 14px;margin:0 6px 6px 0">
+          <b style="font-family:'Baloo 2',sans-serif;font-size:1.15rem;color:#B45309">{esc(w["en"])}</b>
+          <span style="font-size:.75rem;color:#8A7160;font-weight:700"> {w["ar"]}</span></button>''' for w in tw)
+    return (f'<div style="margin:0 0 14px"><div style="font-size:.72rem;font-weight:800;color:#B45309;letter-spacing:1.2px;margin-bottom:6px">'
+            f'TRICKY WORDS &middot; READ THEM WHOLE <span dir="rtl" style="letter-spacing:0">(كلمات تُحفظ كاملة)</span></div>{chips}</div>')
+
+
 def slide_phonics_rule(unit, n, total, ch):
     sounds = unit.get("sounds", [])
     if sounds:
         tiles = ""
         for s in sounds:
-            speak_token = s["letter"].split(",")[0].split("-")[0].strip()
+            speak_token = s.get("audio") or s["letter"].split(",")[0].split("-")[0].strip()
+            say = f", 0.92, '{jsq(s['say'])}'" if s.get("say") else ""
             tiles += f'''
-          <button onclick="typeof Lumio !== 'undefined' && Lumio.speakPhonicsSound && Lumio.speakPhonicsSound('{esc(speak_token)}')"
+          <button onclick="typeof Lumio !== 'undefined' && Lumio.speakPhonicsSound && Lumio.speakPhonicsSound('{esc(speak_token)}'{say})"
                   style="border:none;cursor:pointer;font-family:inherit;background:#fff;border-radius:14px;padding:14px 18px;min-width:100px;
                         text-align:center;box-shadow:0 8px 16px rgba(67,48,31,.14)">
             <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.6rem;color:#F97316">{esc(s["letter"])}</div>
             <div style="font-size:.8rem;color:#8A7160;margin-top:2px">{esc(s["sound"])}</div>
-            {mouth_img(speak_token.lower(), 46)}
+            {mouth_img(speak_token.lower().split("-")[0], 46)}
           </button>'''
         tiles_block = f'<div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:18px">{tiles}</div>'
     else:
@@ -964,6 +979,7 @@ def slide_phonics_rule(unit, n, total, ch):
       <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;color:#43301F;margin-bottom:4px">{esc(unit["unit"])}</div>
       <div style="direction:rtl;text-align:right;font-size:.9rem;color:#8A7160;font-weight:700;margin-bottom:18px">{unit["unitAr"]}</div>
       {tiles_block}
+      {tricky_row(unit)}
       {f'<div style="background:#FFF3D6;border-radius:12px;padding:12px 16px;direction:rtl;text-align:right;font-size:.85rem;color:#43301F;line-height:1.6">{tip}</div>' if tip else ""}
     </div>
     ''' + char_img(ch, bottom=42, height=310))
@@ -1438,6 +1454,17 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
             plan.append(("sound_match", i))
     if spelling_rules and lesson_num in spelling_rules:
         plan.append(("spelling_rule", spelling_rules[lesson_num]))
+    # Grammar (explanation + its exercises) straight after the phonics
+    # block and before any new words -- the day's rules are handled at the
+    # start of the class, then the new material comes (Eslam, 12 Oct).
+    if grammar_topic:
+        plan.append(("grammar_rule", grammar_topic))
+        plan.append(("grammar_practice", grammar_topic))
+        for qi, q in enumerate(grammar_topic.get("mcq", []), 1):
+            plan.append(("grammar_mcq", (grammar_topic, q, qi, len(grammar_topic["mcq"]))))
+        import common_mistakes as _cm
+        if _cm.mistakes_for(grammar_topic):
+            plan.append(("common_mistakes", grammar_topic))
     if tier == "preA":
         for w in lesson["vocab"]:
             plan.append(("tpr", tpr_action_for(w["en"])))
@@ -1458,59 +1485,52 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
             plan.append(("practice_phonics", (w, i)))
             if is_review_lesson and (i + 1) % BREAK_EVERY == 0 and (i + 1) < V:
                 plan.append(("review_break", (i + 1, V)))
+    # ---- Segment order (academic review, Oct 2026) ----------------------
+    # New words -> word game -> words in context (scenes) -> sentence
+    # structure -> grammar (where the lesson has a focus) -> dialogue ->
+    # memory game -> listening -> quick check (recognition) -> your turn
+    # (production) -> mystery picture -> teacher games -> quiz -> recap.
     # Activity 1 of 3 (lib/activity_slides.py): Flash Race -- straight after
-    # the new words, before grammar: say the word before the next picture.
+    # the new words: say the word before the next picture.
     if not is_abc_lesson:
         plan.append(("act_flash", None))
-    if grammar_topic:
-        plan.append(("grammar_rule", grammar_topic))
-        plan.append(("grammar_practice", grammar_topic))
-        for qi, q in enumerate(grammar_topic.get("mcq", []), 1):
-            plan.append(("grammar_mcq", (grammar_topic, q, qi, len(grammar_topic["mcq"]))))
-        import common_mistakes as _cm
-        if _cm.mistakes_for(grammar_topic):
-            plan.append(("common_mistakes", grammar_topic))
-    plan.append(("dialogue", None))
-    # Real scene images of our characters acting out this lesson's most
-    # important words, the sentence displayed with those words
-    # highlighted, right before the sentence-building slides -- seeing
-    # and hearing the words used together in a real scene first.
+    # Scenes straight after the word game: our characters acting out this
+    # lesson's most important words, the sentence displayed with those
+    # words highlighted -- seeing and hearing the words used together
+    # before the sentence-building slides.
     if scene_map and lesson_num in scene_map:
         for scene in scene_map[lesson_num]:
             plan.append(("vocab_scene", scene))
-
-    # Every vocab word already has a real, meaning-grounded example
-    # sentence in its own data -- previously only word 0 ever got turned
-    # into an actual exercise (build-the-sentence), leaving every other
-    # word's sentence sitting unused beyond its passive "SAY IT" quote on
-    # the vocab card. 2 slides of 3 sentences each, drawn from the
-    # lesson's own vocab in order; only 2 of 140 lessons have fewer than
-    # 6 words at all (Pre-A lessons 6 and 8, 5 and 4 words respectively),
-    # so those two cycle back to the start of the list rather than ever
-    # showing fewer than 3 per slide.
+    # Sentence structure: every vocab word has a meaning-grounded example
+    # sentence; 2 slides of 3 sentences each, in lesson order. Only 2 of
+    # 140 lessons have fewer than 6 words (Pre-A lessons 6 and 8), so
+    # those cycle back to the start rather than showing fewer than 3.
     sentence_indices = [i % V for i in range(6)]
     plan.append(("sentence_trio", sentence_indices[0:3]))
     plan.append(("sentence_trio", sentence_indices[3:6]))
+    # Reading Lab (Level 2, every third lesson -- lib/reading_passages.py):
+    # a short illustrated story with the words they know glowing, then
+    # teacher questions. Teacher reads Part 1, the child reads Part 2.
+    import reading_slides
+    if reading_slides.passage_for(level, lesson_num):
+        for _ri in range(3):
+            plan.append(("reading", _ri))
+    plan.append(("dialogue", None))
     # Activity 2 of 3: Memory Match (pairs take turns / student vs teacher).
     plan.append(("act_memory", None))
     plan.append(("sound_spot", None))
+    # Quick Check: live, age-calibrated in-class practice -- one round per
+    # vocab word, once through (recognition before production).
+    for i in range(V):
+        plan.append(("quick_check", (i, 0)))
     your_turn_n = min(5, V)
     _yt_idx = sorted({round(i * (V - 1) / max(1, your_turn_n - 1)) for i in range(your_turn_n)}) if V else []
     for i, _vi in enumerate(_yt_idx):
         plan.append(("your_turn", (lesson["vocab"][_vi], i + 1)))
-    # Quick Check: live, age-calibrated in-class practice -- one round per
-    # vocab word, once through (no repeat round -- that repetition is now
-    # a real teacher-led game instead, more engaging than seeing the same
-    # question format twice)
-    for i in range(V):
-        plan.append(("quick_check", (i, 0)))
     # Activity 3 of 3: Mystery Picture -- guess early for more points.
     plan.append(("act_mystery", None))
-    plan.append(("teacher_game", "teacher"))
-    plan.append(("teacher_game", "student"))
-    plan.append(("teacher_game", "partner"))
-    if V <= 4:
-        plan.append(("teacher_game", "group"))
+    # (Teacher & Student Game / Your Turn to Call It / Partner Challenge
+    # removed from every deck -- Eslam, 13 Oct 2026.)
     plan.append(("quiz", 1))
     plan.append(("quiz", 2))
     # Review lessons only: two fixed quiz slides is a reasonable capstone
@@ -1561,6 +1581,10 @@ def build_deck(lesson_num, lesson, prev_lesson, phonics_unit=None, grammar_topic
         elif kind == "common_mistakes":
             import common_mistakes as _cm
             slides.append(slide_common_mistakes_kid(_cm.mistakes_for(data), data.get("title", ""), n, total, pick_character("explain", lesson_num + 2)))
+        elif kind == "reading":
+            import reading_slides
+            slides.append(reading_slides.reading_slide(level, lesson_num, data, bg_study(),
+                                                       lambda t, _n=n: header(t, _n, total) + COLORSTRIP, kid=True))
         elif kind == "act_flash":
             import activity_slides
             slides.append(activity_slides.slide_flash_race(lesson["vocab"], bg_study(), header("Flash Race &bull; Speaking Game", n, total) + COLORSTRIP, char_html=char_img(pick_character("cheer", lesson_num), right=30, bottom=30, height=150)))

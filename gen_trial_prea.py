@@ -127,13 +127,13 @@ def slide_buzzer_challenge(prompt_word, n, total):
     return (bg_clean() + header("Buzzer Challenge", n, total) + COLORSTRIP + f'''
     <div data-challenge="buzzer" style="position:absolute;inset:0;top:120px;display:flex;flex-direction:column;align-items:center">
       <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.05rem;color:#8A7160;margin-bottom:8px;text-align:center">
-        Who says it first? Tap the name of whoever answers correctly!
+        Who says the English word first? Tap the word to check, then tap the winner&#39;s name!
       </div>
       <div style="background:#fff;border-radius:20px;padding:14px 34px;box-shadow:0 10px 24px rgba(67,48,31,.12);margin-bottom:16px;text-align:center">
         <div style="width:130px;height:130px;border-radius:14px;overflow:hidden;background:#FFFCF6;border:3px solid #FFE0B8;margin:0 auto 8px">
           <img src="assets/vocab/{slug(prompt_word.get("image") or prompt_word["en"])}.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
         </div>
-        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.4rem;color:#43301F">{esc(prompt_word["en"])}</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.4rem;color:#43301F"><span onclick="this.style.filter='none'" title="Tap to check" style="filter:blur(11px);cursor:pointer;user-select:none">{esc(prompt_word["en"])}</span></div>
         <div style="font-family:'Tajawal',sans-serif;font-weight:700;font-size:1rem;color:#8A7160">{esc(prompt_word["ar"])}</div>
       </div>
       <div id="pickerZone" style="display:flex;flex-wrap:wrap;justify-content:center;max-width:900px"></div>
@@ -213,7 +213,7 @@ def slide_trial_finish(n, total):
           {"".join(f'<span style="background:#FFF3D6;color:#7B3F1B;padding:6px 14px;border-radius:999px;font-weight:800;font-size:.95rem">{w}</span>' for w in [x["en"] for x in TR.WORDS] + TR.ACTIONS)}
         </div>
         <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1rem;color:#8A7160;margin-top:10px">
-          Thank you! Goodbye! &nbsp;<span dir="rtl" style="color:#0D9488">شكراً لك! مع السلامة!</span> &mdash; this was one class out of 140 lessons across 7 levels.
+          Thank you! Goodbye! &nbsp;<span dir="rtl" style="color:#0D9488">شكراً لك! مع السلامة!</span> &mdash; this was one class &mdash; the full level has 24 live classes (20 lessons + 4 Bonus Classes) in about 3 months.
         </div>
       </div>
       <div style="background:#fff;border-radius:18px;padding:15px 28px;box-shadow:0 12px 26px rgba(67,48,31,.18);
@@ -225,91 +225,68 @@ def slide_trial_finish(n, total):
 
 
 def _build():
+    """45 minutes: greetings (said and done), animals, the level's core skill -- letters and their sounds
+    (C is for cat, D is for dog, as in the ABC lessons) -- colors, movement, the game. About 12 words, every
+    section ends in a game or an action; nothing on screen asks a pre-reader to read."""
+    import activity_slides as _AS
     slides = []
+    n = lambda: len(slides) + 1
 
     slides.append(slide_trial_welcome(1, TOTAL))
-    slides.append(TC.meet_characters(sys.modules[__name__], "pre-a", len(slides) + 1, TOTAL))
-    slides.append(slide_team_assign(len(slides) + 1, TOTAL))
+    slides.append(TC.meet_characters(sys.modules[__name__], "pre-a", n(), TOTAL))
+    slides.append(slide_team_assign(n(), TOTAL))
 
-    # Greetings section -- classroom theme + the real "hello/hi" scene,
-    # same assets already used in Pre-A's own Lesson 1.
+    # Greetings: say it and do it
     deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/classroom.jpg"
-    for w_en in ["hello", "hi", "good morning", "good night", "goodbye", "thank you"]:
-        slides.append(slide_vocab(load_word("pre-a", 1, w_en), 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
-    slides.append(slide_vocab_scene("assets/vocab-scenes/pre-a/01.jpg", "Hello! Hi, friend!", ["Hello", "Hi"], len(slides) + 1, TOTAL, 1, "مرحباً! أهلاً يا صديقي! — Hello and Hi both mean a friendly greeting"))
+    for w_en in ["hello", "goodbye", "thank you"]:
+        slides.append(slide_vocab(load_word("pre-a", 1, w_en), 0, n(), TOTAL, 1, "lumi-hero"))
+    slides.append(slide_vocab_scene("assets/vocab-scenes/pre-a/01.jpg", "Hello! Hi, friend!", ["Hello", "Hi"], n(), TOTAL, 1, "مرحباً! أهلاً يا صديقي!"))
+    slides.append(slide_tpr_activity("Wave to a friend and say \u201cHello!\u201d &#128075;", n(), TOTAL, "lumi-hero"))
+    TR.remember_actions("wave")
 
-    slides.append(slide_trial_transition("Let's meet some animal friends!", "&#128062;", len(slides) + 1, TOTAL))
-
-    # Animals section -- animals theme + a real animal-lesson scene.
+    # Animals
     deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/animals.jpg"
-    animal_words = [load_word("pre-a", 12, w) for w in ["cat", "dog", "bird", "fish", "rabbit", "duck"]]
+    animal_words = [load_word("pre-a", 12, w) for w in ["cat", "dog", "fish", "duck"]]
     for w in animal_words:
-        slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
-    # Activity slide (lib/activity_slides.py): Flash Race on the words just taught -- group and 1-on-1 modes on the slide.
-    import activity_slides as _AS
-    slides.append(_AS.slide_flash_race(animal_words, bg_study(), header("Flash Race &bull; Speaking Game", len(slides) + 1, TOTAL) + COLORSTRIP))
-    slides.append(slide_vocab_scene("assets/vocab-scenes/pre-a/29.jpg", "The cat and the dog play together.", ["cat", "dog"], len(slides) + 1, TOTAL, 1, "القطة والكلب يلعبان معاً"))
+        slides.append(slide_vocab(w, 0, n(), TOTAL, 1, "lumi-hero"))
+    slides.append(_AS.slide_flash_race(animal_words, bg_study(), header("Flash Race &bull; Speaking Game", n(), TOTAL) + COLORSTRIP))
+    slides.append(slide_vocab_scene("assets/vocab-scenes/pre-a/29.jpg", "The cat and the dog play together.", ["cat", "dog"], n(), TOTAL, 1, "القطة والكلب يلعبان معاً"))
+    slides.append(slide_buzzer_challenge(animal_words[3], n(), TOTAL))
 
-    slides.append(slide_buzzer_challenge(animal_words[0], len(slides) + 1, TOTAL))
-    slides.append(slide_buzzer_challenge(animal_words[3], len(slides) + 1, TOTAL))
-    # Quick Check (translation-based, same mechanic as the main deck): the
-    # trial now mirrors the level's primary materials, not only games.
-    slides.append(slide_quick_check(animal_words[1], [animal_words[4]], 1, 2, len(slides) + 1, TOTAL, 11, "preA"))
-    slides.append(slide_quick_check(animal_words[2], [animal_words[0]], 2, 2, len(slides) + 1, TOTAL, 12, "preA"))
-    slides.append(slide_team_relay(animal_words[5], "Which animal is this?", len(slides) + 1, TOTAL))
-    slides.append(slide_mini_celebrate("You're all Animal Experts!", len(slides) + 1, TOTAL))
-
-    slides.append(slide_trial_transition("Let's paint with colors!", "&#127752;", len(slides) + 1, TOTAL))
-
-    # Colors section -- playroom theme + the real red/blue scene.
-    deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/playroom.jpg"
-    color_words = [load_word("pre-a", 8, w) for w in ["red", "blue", "yellow", "green"]]
-    for w in color_words:
-        slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
-    slides.append(slide_vocab_scene("assets/vocab-scenes/pre-a/19.jpg", "A red balloon and a blue balloon!", ["red", "blue"], len(slides) + 1, TOTAL, 1, "بالون أحمر وبالون أزرق!"))
-    slides.append(slide_buzzer_challenge(color_words[1], len(slides) + 1, TOTAL))
-    slides.append(slide_quick_check(color_words[0], [color_words[2]], 1, 1, len(slides) + 1, TOTAL, 13, "preA"))
-    slides.append(slide_scoreboard("Halfway there! Here's the score so far...", len(slides) + 1, TOTAL))
-
-    slides.append(slide_trial_transition("Let's meet my family!", "&#128106;", len(slides) + 1, TOTAL))
-
-    # Family section -- family-home theme + the real mom/dad scene.
-    deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/family-home.jpg"
-    family_words = [load_word("pre-a", 10, w) for w in ["mom", "dad", "brother", "sister"]]
-    for w in family_words:
-        slides.append(slide_vocab(w, 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
-    slides.append(slide_vocab_scene("assets/vocab-scenes/pre-a/23.jpg", "I love my mom and dad.", ["mom", "dad"], len(slides) + 1, TOTAL, 1, "أحب أمي وأبي"))
-    slides.append(slide_team_relay(family_words[0], "Who is this?", len(slides) + 1, TOTAL))
-    slides.append(slide_mini_celebrate("You're a Family Friend!", len(slides) + 1, TOTAL))
-
-    # Actions/closing section reverts to the plain background -- no
-    # single real lesson theme fits a mixed action/song/playground
-    # closing beat as naturally as the four topic sections above did.
+    # Letters and sounds (the ABC lessons' own 3-step sequence): C is for cat, D is for dog
     deck_template_v2.CURRENT_LESSON_BG = None
-    slides.append(slide_trial_transition("Let's move like Lumi!", "&#127939;", len(slides) + 1, TOTAL))
-    unison_tpr = {
-        "sit": "Sit down quickly! Say \u201cSit!\u201d &#128994;",
-        "stand": "Now stand back up! Say \u201cStand!\u201d &#128993;",
-        "sing": "Everyone sing \u201cLa la la!\u201d together! &#127925;",
-    }
-    for w_en, line in unison_tpr.items():
-        slides.append(slide_tpr_activity(line, len(slides) + 1, TOTAL, "lumi-hero"))
-    TR.remember_actions(*unison_tpr, "run", "jump")
+    slides.append(slide_trial_transition("Let's meet two letters!", "&#128292;", n(), TOTAL))
+    pairs = [("c", load_word("pre-a", 3, "cat")), ("d", load_word("pre-a", 3, "dog"))]
+    for letter, w in pairs:
+        slides.append(deck_template_v2.slide_meet_the_letter(letter, n(), TOTAL, "sara-explain"))
+        slides.append(deck_template_v2.slide_hear_the_sound(letter, n(), TOTAL, "sara-explain"))
+        slides.append(deck_template_v2.slide_letter_word(w, letter, n(), TOTAL, "lumi-point"))
+    slides.append(deck_template_v2.slide_letter_chunk_recap(pairs, n(), TOTAL, "lumi-celebrate"))
+    slides.append(_AS.slide_mystery_picture(animal_words, bg_study(), header("Mystery Picture &bull; Guessing Game", n(), TOTAL) + COLORSTRIP))
+    slides.append(slide_scoreboard("Halfway there! Here's the score so far...", n(), TOTAL))
 
-    slides.append(slide_copycat_challenge("Who can run in place the best? Ready, go!", len(slides) + 1, TOTAL))
-    slides.append(slide_copycat_challenge("Who can jump like a bunny the highest?", len(slides) + 1, TOTAL))
+    # Colors
+    deck_template_v2.CURRENT_LESSON_BG = "assets/lesson-bg-kid/playroom.jpg"
+    color_words = [load_word("pre-a", 8, w) for w in ["red", "blue", "yellow"]]
+    for w in color_words:
+        slides.append(slide_vocab(w, 0, n(), TOTAL, 1, "lumi-hero"))
+    slides.append(slide_vocab_scene("assets/vocab-scenes/pre-a/19.jpg", "A red balloon and a blue balloon!", ["red", "blue"], n(), TOTAL, 1, "بالون أحمر وبالون أزرق!"))
+    slides.append(_AS.slide_memory_match(animal_words + color_words[:2], bg_study(), header("Memory Match &bull; Game", n(), TOTAL) + COLORSTRIP))
+    slides.append(slide_team_relay(color_words[2], "What color is this?", n(), TOTAL))
 
-    for w_en in ["song", "playground"]:
-        slides.append(slide_vocab(load_word("pre-a", 18, w_en), 0, len(slides) + 1, TOTAL, 1, "lumi-hero"))
+    # Move and sing
+    deck_template_v2.CURRENT_LESSON_BG = None
+    slides.append(slide_tpr_activity("Sing together: \u201cHello, hello, how are you?\u201d &#127925;", n(), TOTAL, "lumi-hero"))
+    slides.append(slide_copycat_challenge("Who can jump like a bunny the highest?", n(), TOTAL))
+    slides.append(slide_copycat_challenge("Who can swim like a fish? Say \u201cFish!\u201d", n(), TOTAL))
+    TR.remember_actions("sing", "jump")
 
-    # Sound & Spot recap of every word met in the trial (tap to hear).
-    slides.append(slide_sound_spot(animal_words + color_words + family_words, len(slides) + 1, TOTAL, "lumi-hero"))
-    slides.append(TC.game_slide(sys.modules[__name__], "pre-a", len(slides) + 1, TOTAL))
-    slides.append(slide_scoreboard("And the final score is...", len(slides) + 1, TOTAL))
-    slides.extend(TR.kid_slides(len(slides) + 1, TOTAL))
-    slides.append(slide_finale(len(slides) + 1, TOTAL))
-    slides.append(slide_trial_finish(len(slides) + 1, TOTAL))
-
+    slides.append(TC.game_slide(sys.modules[__name__], "pre-a", n(), TOTAL))
+    slides.append(slide_scoreboard("And the final score is...", n(), TOTAL))
+    slides.extend(TR.kid_slides(n(), TOTAL, letters=["C", "D"]))
+    slides.append(TC.journey_slide(sys.modules[__name__], "pre-a", n(), TOTAL))
+    slides.append(slide_finale(n(), TOTAL))
+    slides.append(slide_trial_finish(n(), TOTAL))
     return slides
 
 

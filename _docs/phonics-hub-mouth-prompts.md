@@ -117,3 +117,23 @@ That leaves **26 real new images**: 20 individual letters, 3 true digraphs
 
 **`mouth-oa.jpg`** — *the long "oh" sound (as in "boat")*
 > lips rounded into a small circle and pushed slightly forward, jaw relaxed and open. Simple friendly cartoon close-up of a child's mouth and lower face only (no eyes, no full face, no nose), clearly showing lip shape, teeth, and tongue position for the sound. Thick clean black outlines, warm soft skin tone, bright cheerful simple coloring consistent with a children's English-learning app, plain white background, no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 5-8.
+
+
+## Batch 4 — Level 2 vowel sounds (added 14 Oct) (5)
+
+Found by the 14 Oct image test: the Level 2 Phonics Hub asks for these and they did not exist. Same sound, one picture: `i_e` uses `mouth-igh`, `u_e` uses `mouth-oo`, `ur`/`er` use `mouth-ir`, `a_e` uses `mouth-ai`, `o_e` uses `mouth-oa`, `ff` uses `mouth-f` (set in `hub-present.html`). Blends (`nd, nt, mp, lk, nk, qu`) stay without a picture, as above.
+
+**`mouth-ar.png`** — *the "ar" sound (as in "car")*
+> mouth wide open and relaxed, jaw dropped low, lips neutral and unrounded, tongue lying low and flat at the back. Simple friendly cartoon close-up of a child's mouth and lower face only (no eyes, no full face, no nose), clearly showing lip shape, teeth, and tongue position for the sound. Thick clean black outlines, warm soft skin tone, bright cheerful simple coloring consistent with a children's English-learning app, plain white background, no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 5-8.
+
+**`mouth-or.png`** — *the "or" sound (as in "fork")*
+> lips rounded into a medium oval and pushed slightly forward, jaw moderately open, tongue pulled back. Simple friendly cartoon close-up of a child's mouth and lower face only (no eyes, no full face, no nose), clearly showing lip shape, teeth, and tongue position for the sound. Thick clean black outlines, warm soft skin tone, bright cheerful simple coloring consistent with a children's English-learning app, plain white background, no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 5-8.
+
+**`mouth-ir.png`** — *the "ir / er / ur" sound (as in "bird")*
+> lips slightly apart and relaxed in a neutral shape, teeth a little apart, tongue bunched up in the middle of the mouth without touching the teeth. Simple friendly cartoon close-up of a child's mouth and lower face only (no eyes, no full face, no nose), clearly showing lip shape, teeth, and tongue position for the sound. Thick clean black outlines, warm soft skin tone, bright cheerful simple coloring consistent with a children's English-learning app, plain white background, no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 5-8.
+
+**`mouth-oo.png`** — *the long "oo" sound (as in "moon")*
+> lips pushed forward into a small tight round circle, as if blowing out a candle, teeth hidden, jaw only slightly open. Simple friendly cartoon close-up of a child's mouth and lower face only (no eyes, no full face, no nose), clearly showing lip shape, teeth, and tongue position for the sound. Thick clean black outlines, warm soft skin tone, bright cheerful simple coloring consistent with a children's English-learning app, plain white background, no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 5-8.
+
+**`mouth-igh.png`** — *the long "i" sound (as in "night", also "i_e" in "kite")*
+> mouth opening wide like a big 'ah', then sliding toward a smile, shown mid-glide: jaw open, lips beginning to stretch to the sides. Simple friendly cartoon close-up of a child's mouth and lower face only (no eyes, no full face, no nose), clearly showing lip shape, teeth, and tongue position for the sound. Thick clean black outlines, warm soft skin tone, bright cheerful simple coloring consistent with a children's English-learning app, plain white background, no text or letters anywhere in the image, no watermark, square 1:1 composition, friendly and warm, aimed at Arabic-speaking kids ages 5-8.

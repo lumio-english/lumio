@@ -499,11 +499,11 @@
       <div class="bar-track"><div class="bar-fill" style="width:${gradeAvgPct}%"></div></div>
       <div class="skill-text-block">
         <div class="label">Grades by session</div>
-        <p class="en">${grades.slice().reverse().map(g => `Lesson ${g.lessonNumber || "?"} (${g.date}): <b>${esc(g.grade)}</b>`).join(" · ")}</p>
+        <p class="en">${grades.slice().reverse().map(g => `${g.lessonNumber ? Lumio.lessonLabel(g.lessonNumber) : "Lesson ?"} (${g.date}): <b>${esc(g.grade)}</b>`).join(" · ")}</p>
       </div>
       ${gradeEntries.some(g => g.comment) ? `<div class="skill-text-block">
         <div class="label">Teacher's comments · ملاحظات المعلّم</div>
-        ${gradeEntries.filter(g => g.comment).slice().reverse().map(g => `<p class="en"><b>Lesson ${g.lessonNumber || "?"}</b> (${g.date}${g.teacherName ? ", " + esc(g.teacherName) : ""}): ${esc(g.comment)}</p>`).join("")}
+        ${gradeEntries.filter(g => g.comment).slice().reverse().map(g => `<p class="en"><b>${g.lessonNumber ? Lumio.lessonLabel(g.lessonNumber) : "Lesson ?"}</b> (${g.date}${g.teacherName ? ", " + esc(g.teacherName) : ""}): ${esc(g.comment)}</p>`).join("")}
       </div>` : ""}
       ${ratingsGiven.length ? `<div class="cohort-row">⭐ ${esc(student.name)} has rated ${ratingsGiven.length} class${ratingsGiven.length === 1 ? "" : "es"} with their teacher, averaging ${(ratingsGiven.reduce((s, r) => s + r.stars, 0) / ratingsGiven.length).toFixed(1)}/5 — a good sign of engagement, not a performance score.</div>` : ""}
     </div>` : ""}
@@ -546,7 +546,7 @@
     });
     if (grades.length) {
       lines.push(`Teacher's average grade across ${grades.length} session${grades.length === 1 ? "" : "s"}: ${gradeAvgPct}%`);
-      lines.push(grades.slice().reverse().map(g => `Lesson ${g.lessonNumber || "?"}: ${g.grade}`).join(", "));
+      lines.push(grades.slice().reverse().map(g => `${g.lessonNumber ? Lumio.lessonLabel(g.lessonNumber) : "Lesson ?"}: ${g.grade}`).join(", "));
       lines.push("");
     }
     try {
@@ -562,5 +562,6 @@
   };
 })();
 </script>
+<script>/* every emoji -> a Lumio icon (js/lumio-emoji.js) */(function () { var b = "", v = window.LUMIO_V; if (!v) { try { var x = new XMLHttpRequest(); x.open("GET", b + "js/version.json?_=" + Date.now(), false); x.send(null); v = JSON.parse(x.responseText).v; } catch (e) { v = "0"; } } if (!window.LumioIcons) document.write('<script src="' + b + 'js/lumio-icons.js?v=' + v + '"><\/script>'); document.write('<script src="' + b + 'js/lumio-emoji.js?v=' + v + '"><\/script>'); })();</script>
 </body>
 </html>
