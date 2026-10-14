@@ -580,3 +580,13 @@ html[dir="rtl"] .plan .badges{justify-content:flex-start}
 .incard p{margin:8px 0 14px;color:var(--inksoft);font-size:15.5px;line-height:1.55;flex:1}
 .incard em{font-style:normal;align-self:flex-start;background:#FFF1E0;color:#C2410C;font-weight:800;font-size:13px;padding:4px 12px;border-radius:999px}
 @media (max-width:900px){.insec{padding-block:10px 70px}}
+
+/* ---- Oct 14 2026 layout fixes ---- */
+/* phone, Arabic: the RTL hero veil (above) replaced the phone's top-to-bottom one, so letter tiles showed through the text */
+@media (max-width:700px){html[dir="rtl"] .hero .veil{background:linear-gradient(180deg,rgba(255,255,255,.3) 0%,rgba(255,255,255,.86) 42%,rgba(255,255,255,.95) 100%)}}
+/* phone: the six currency buttons fit on one line */
+@media (max-width:480px){.curs{gap:4px}.curs button{padding:7px 10px;font-size:12.5px}}
+/* tablet: the three plans side by side (the featured 3-level bundle in the middle), not 2 + 1 */
+@media (min-width:740px) and (max-width:1099px){.plans{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.plan{padding:20px;border-radius:24px;gap:12px}.plan .pr b{font-size:clamp(30px,4.6vw,44px)}.plan li{font-size:14px}}
+/* phone: a smaller WhatsApp button, and room at the end of the page so it never sits on the last buttons */
+@media (max-width:700px){.wafab{width:48px;height:48px;bottom:14px;right:14px}html[dir="rtl"] .wafab{right:auto;left:14px}.wafab svg{width:24px;height:24px}footer{padding-bottom:72px}}

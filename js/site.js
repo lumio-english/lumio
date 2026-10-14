@@ -226,13 +226,14 @@
 
   /* ---------- pricing: same prices and currencies as the previous site ---------- */
   var CUR = ['SAR', 'USD', 'AED', 'KWD', 'OMR', 'QAR'], SYM = { SAR: 'SAR', USD: '$', AED: 'AED', KWD: 'KD', OMR: 'OMR', QAR: 'QAR' };
+  // order: Single level · 3-Level Bundle (featured: the best choice) · 6-Level Bundle -- same order as the plans lists in js/site-i18n.js
   var PRICE = [
     { SAR: 730.00, USD: 194.67, AED: 714.91, KWD: 59.96, OMR: 74.85, QAR: 708.59 },
-    { SAR: 3499.99, USD: 933.33, AED: 3427.66, KWD: 287.47, OMR: 358.87, QAR: 3397.32 },
-    { SAR: 1949.99, USD: 520.00, AED: 1909.69, KWD: 160.16, OMR: 199.94, QAR: 1892.79 }
+    { SAR: 1949.99, USD: 520.00, AED: 1909.69, KWD: 160.16, OMR: 199.94, QAR: 1892.79 },
+    { SAR: 3499.99, USD: 933.33, AED: 3427.66, KWD: 287.47, OMR: 358.87, QAR: 3397.32 }
   ];
-  var PER = [null, { SAR: 583.33, USD: 155.56, AED: 571.28, KWD: 47.91, OMR: 59.81, QAR: 566.22 }, { SAR: 650.00, USD: 173.33, AED: 636.56, KWD: 53.39, OMR: 66.65, QAR: 630.93 }];
-  var SAVE = [0, 20, 11], FEAT = 1, cur = 'SAR';
+  var PER = [null, { SAR: 650.00, USD: 173.33, AED: 636.56, KWD: 53.39, OMR: 66.65, QAR: 630.93 }, { SAR: 583.33, USD: 155.56, AED: 571.28, KWD: 47.91, OMR: 59.81, QAR: 566.22 }];
+  var SAVE = [0, 11, 20], FEAT = 1, cur = 'SAR';
   var money = function (n) { return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
   var ck = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>';
   $('#curs').innerHTML = CUR.map(function (c) { return '<button type="button" data-cur="' + c + '" aria-pressed="' + (c === cur) + '"' + (c === cur ? ' class="on"' : '') + '>' + c + '</button>'; }).join('');
