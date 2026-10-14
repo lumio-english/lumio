@@ -2384,7 +2384,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
           const c = LumioSchedule.getClass(btn.dataset.cancel);
           if (!c) return;
           const later = LumioSchedule.laterBookings(c.id, u.name);
-          const laterNote = later.length ? ` Lesson${later.length === 1 ? "" : "s"} ${later.map(x => x.lessonNumber).sort((a, b) => a - b).join(", ")} booked after it will be cancelled too (lessons go in order).` : "";
+          const laterNote = later.length ? ` ${later.map(x => Number(x.lessonNumber)).sort((a, b) => a - b).map(n => Lumio.lessonLabel(n)).join(", ")} booked after it will be cancelled too (lessons go in order).` : "";
           if (!(await askBooking("Cancel this class?", `${c.lessonNumber ? Lumio.lessonLabel(c.lessonNumber) : "Class"} on ${fmtSchedDay(c.date)} at ${fmtSchedTime(c.startTime, c.date)} — your seat opens up for someone else and you can book another time.${laterNote}`, "Yes, cancel it"))) return;
           btn.disabled = true;
           try {

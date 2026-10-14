@@ -4362,7 +4362,7 @@ try { Object.keys(sessionStorage).forEach(k => { if (/^lumio_lc_(jar|parts)_/.te
             ${c.status === "cancelled" ? '<span class="td-badge grey">cancelled</span>' : ""}
           </div>
           <div class="td-class-students-list">${studentsHtml}</div>
-          <div class="meta">${escHtml(teacher ? teacher.name : (c.teacherName || "Unassigned"))}${c.lessonNumber ? " · Lesson " + c.lessonNumber : ""}${c.cohort ? " · " + escHtml(c.cohort) : ""}${c.notes ? " · " + escHtml(c.notes) : ""}</div>
+          <div class="meta">${escHtml(teacher ? teacher.name : (c.teacherName || "Unassigned"))}${c.lessonNumber ? " · " + escHtml(Lumio.lessonLabel(c.lessonNumber)) : ""}${c.cohort ? " · " + escHtml(c.cohort) : ""}${c.notes ? " · " + escHtml(c.notes) : ""}</div>
           ${c.meetingLink ? `<div class="meta"><a href="${safeUrl(c.meetingLink)}" target="_blank" rel="noopener">🔗 Join meeting link</a></div>` : ""}
           ${c.status === "completed" ? `<textarea class="td-session-notes" placeholder="What did you cover this session? Any homework given?">${escHtml(c.sessionNotes || "")}</textarea>` : ""}
           ${evalPanelHtml(c)}
@@ -4554,7 +4554,7 @@ try { Object.keys(sessionStorage).forEach(k => { if (/^lumio_lc_(jar|parts)_/.te
         const attnClass = classNeedsAttention(c) ? "needs-attn" : (c.status !== "cancelled" && LumioSchedule.hasEnded(c) && c.students.some(s => s.attendance === "present" && !s.grade) ? "needs-eval" : "");
         const capacityWarn = c.status !== "cancelled" && (c.students.length < 2 || c.students.length > 4);
         const capClass = capacityWarn ? "capacity-warn" : "";
-        const title = `English Club${c.level ? " · " + levelName(c.level) : ""}${c.lessonNumber ? " · Lesson " + c.lessonNumber : ""}${capacityWarn ? " — ⚠ group size outside 2–4" : ""}`;
+        const title = `English Club${c.level ? " · " + levelName(c.level) : ""}${c.lessonNumber ? " · " + escHtml(Lumio.lessonLabel(c.lessonNumber)) : ""}${capacityWarn ? " — ⚠ group size outside 2–4" : ""}`;
         col += `<div class="td-cal-block ${statusClass} ${attnClass} ${capClass}" style="top:${top}px;height:${height}px" data-class-id="${c.id}" title="${escHtml(fmtTimeTz(c.date, c.startTime) + ' · ' + title + ' — ' + c.students.map(s=>s.studentName).join(', '))}">
           <div class="cb-title">${c.patternId ? "🔁 " : ""}${capacityWarn ? "⚠ " : ""}${fmtTime(c.startTime)}</div>
           <div class="cb-meta">${c.students.length} student${c.students.length===1?"":"s"}${(() => { const marked = c.students.filter(s => s.attendance).length; return marked ? ` · ${marked}/${c.students.length} ✓` : ""; })()}${c.status !== "cancelled" && LumioSchedule.hasEnded(c) && c.students.some(s => s.attendance === "present" && !s.grade) ? " · 📝 grade" : ""}</div>
@@ -4694,7 +4694,7 @@ try { Object.keys(sessionStorage).forEach(k => { if (/^lumio_lc_(jar|parts)_/.te
       <div class="td-cd-row">
         <div class="ic">🎯</div>
         <div class="val">
-          <div class="main">${escHtml(c.level ? levelName(c.level) : "English Club")}${c.lessonNumber ? " · Lesson " + c.lessonNumber : ""}</div>
+          <div class="main">${escHtml(c.level ? levelName(c.level) : "English Club")}${c.lessonNumber ? " · " + escHtml(Lumio.lessonLabel(c.lessonNumber)) : ""}</div>
           <div class="sub">${fmtDayLabel(c.date)} (${c.date}) ${fmtTime(c.startTime)}${c.durationMinutes ? " – " + fmtTime(minutesToHM(classEndMinutes(c))) : ""} · Saudi time${Lumio.deviceDiffersFromTz(c.date, c.startTime) ? ` <span style="opacity:.75">${fmtTimeTz(c.date, c.startTime).replace(/^[^(]*/, "")}</span>` : ""}</div>
         </div>
       </div>
@@ -5371,8 +5371,13 @@ try { Object.keys(sessionStorage).forEach(k => { if (/^lumio_lc_(jar|parts)_/.te
     if (bulkBookingActive) {
       const slots = Array.from(bulkSelections).map(k => { const [date, time] = k.split("|"); return { date, time }; }).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
       const baseLesson = clsLessonSelect.value ? Number(clsLessonSelect.value) : null;
+      // Each slot is the next class in the level's order (Bonus Classes included: 4, 4.5, 5 ...), not base + i.
+      const bulkLevel = first ? first.level : "";
+      let nextNum = baseLesson;
       let created = 0;
-      slots.forEach((slot, i) => {
+      slots.forEach((slot) => {
+        const lessonNumber = nextNum;
+        if (nextNum) nextNum = (Lumio.nextInSequence && Lumio.nextInSequence(bulkLevel, nextNum)) || nextNum;
         try {
           const createdCls = LumioSchedule.addClass({
             students: picked.map(s => ({ studentId: s.id, studentName: s.name })),
@@ -5381,7 +5386,7 @@ try { Object.keys(sessionStorage).forEach(k => { if (/^lumio_lc_(jar|parts)_/.te
             date: slot.date, startTime: slot.time,
             durationMinutes: clsDurationSelect.value,
             level: first ? first.level : "", cohort: first ? first.cohort : "",
-            lessonNumber: baseLesson ? baseLesson + i : null,
+            lessonNumber,
             meetingLink: document.getElementById("clsMeetingLink").value.trim(),
             notes: clsNotesInput.value.trim(),
           });

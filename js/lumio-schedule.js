@@ -1020,7 +1020,7 @@
       students: students.map(s => ({ studentId: s.studentId || null, studentName: s.studentName })),
       startDate: startDate || todayStr(), // first date the pattern is eligible to generate from
       endDate: null,                       // set by cancelPatternFromDate() to stop the series
-      lessonStart: lessonStart ? Number(lessonStart) : null, // lesson number for the first generated week, +1 each week after
+      lessonStart: lessonStart ? Number(lessonStart) : null, // lesson number for the first generated week, then the next class in the level's order each week
       active: true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -1170,9 +1170,11 @@
   //  - holidays: a not-yet-started, unmarked session on a blocked date is
   //    cancelled (cancelReason "holiday"); one whose holiday was removed
   //    is put back;
-  //  - lesson numbers: Nth non-cancelled session = lessonStart + N - 1,
-  //    recomputed for sessions that haven't started/been marked, so a
-  //    removed holiday or a session generated late never duplicates one;
+  //  - lesson numbers: the first session = lessonStart, every later one =
+  //    the next class in the level's order (Bonus Classes included) after
+  //    the highest lesson already held; recomputed for sessions that haven't
+  //    started/been marked, so a removed holiday or a session generated late
+  //    never duplicates one;
   //  - duplicates of one pattern+date are folded together.
   function generateUpcoming(weeks) {
     weeks = weeks || 4;
@@ -1239,20 +1241,38 @@
     // each date -- not calendar weeks -- so a start date that isn't on the
     // pattern's weekday, a holiday or a skipped week never leaves a gap,
     // and a holiday removed later never produces two "Lesson 3"s.
+    // Each upcoming session is the next class in the level's order (Bonus
+    // Classes included: 4, 4.5, 5 ...) after the highest one this pattern
+    // has already held. Counting positions from lessonStart instead would
+    // count Bonus Classes 1-2 for groups that were taught Lessons 5 and 9
+    // before Bonus Classes existed, and pull their next class back
+    // (Lesson 11 -> 9). Anchoring on what was taught also repairs upcoming
+    // sessions that were renumbered that way, and never goes backwards.
     Object.values(legacy).forEach(p => {
       if (!p.lessonStart) return;
       const mine = data.classes.filter(c => c.patternId === p.id)
-        .sort((x, y) => (x.date + x.startTime).localeCompare(y.date + y.startTime));
-      let n = 0;
-      // Sessions follow the level's class order, Bonus Classes included (4, 4.5, 5 ...).
+        // id breaks ties so every device numbers two same-time sessions the same way
+        .sort((x, y) => (x.date + x.startTime).localeCompare(y.date + y.startTime) || String(x.id).localeCompare(String(y.id)));
       const seq = (global.Lumio && Lumio.levelSequence) ? Lumio.levelSequence(p.level) : null;
-      const startAt = seq ? Math.max(0, seq.indexOf(Number(p.lessonStart))) : 0;
+      const valid = n => Number.isFinite(n) && n > 0 && (!seq || seq.includes(n));
+      const start = Number(p.lessonStart);
+      // lessonStart that isn't a class of this level (typo, "Lesson 5", 21) -> the nearest class from there, else 1
+      const first = valid(start) ? start
+        : (seq ? (Number.isFinite(start) && seq.find(v => v >= start)) || seq[0] : 1);
+      const after = top => seq
+        ? ((global.Lumio.nextInSequence && Lumio.nextInSequence(p.level, top)) || seq[seq.length - 1])
+        : top + 1;
+      let top = null; // highest lesson number held so far (a re-taught lesson never lowers it)
       mine.forEach(c => {
         if (c.status === "cancelled") return;
-        const want = seq ? (seq[startAt + n] || seq[seq.length - 1]) : Number(p.lessonStart) + n;
-        n++;
+        const want = top === null ? first : after(top);
+        if (c.lessonNumber && (hasStarted(c) || !unmarked(c))) { // what was taught stays on record
+          const held = Number(c.lessonNumber);
+          if (valid(held)) top = top === null ? held : Math.max(top, held); // an unreadable number doesn't move the anchor
+          return;
+        }
+        top = top === null ? want : Math.max(top, want);
         if (Number(c.lessonNumber) === want) return;
-        if (c.lessonNumber && (hasStarted(c) || !unmarked(c))) return; // what was taught stays on record
         c.lessonNumber = want;
         if (!created.includes(c)) { c.updatedAt = new Date().toISOString(); renumbered++; }
       });
