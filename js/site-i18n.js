@@ -149,11 +149,11 @@ window.LUMIO_SITE_I18N = {
     ],
     plans: [
       { name: 'Single Level', sub: 'About 3 months · 24 classes', per: 'per level', li: ['1 full level, start to finish', 'Full English Hub access for that level', 'Grouped with peers at your level', 'Teacher + supervisor support'] },
-      { name: '6-Level Bundle', sub: 'About 18 months · 144 classes', badges: ['Most popular', 'Best value'], li: ['6 full levels: nearly the whole path', 'Full English Hub access, every level included', 'Grouped with peers at your level', 'Teacher + supervisor support'] },
-      { name: '3-Level Bundle', sub: 'About 9 months · 72 classes', li: ['3 full levels, back to back', 'Full English Hub access, every level included', 'Grouped with peers at your level', 'Teacher + supervisor support'] }
+      { name: '3-Level Bundle', sub: 'About 9 months · 72 classes', badges: ['Best choice', 'Most popular'], li: ['3 full levels, back to back', 'Full English Hub access, every level included', 'Grouped with peers at your level', 'Teacher + supervisor support'] },
+      { name: '6-Level Bundle', sub: 'About 18 months · 144 classes', li: ['6 full levels: nearly the whole path', 'Full English Hub access, every level included', 'Grouped with peers at your level', 'Teacher + supervisor support'] }
     ],
     faq: [
-      ['What age is Lumio for?', 'From 4 all the way to 15. The curriculum spans 7 levels, each built for a specific age range, from a child’s very first English words to real conversation.'],
+      ['What age is Lumio for?', 'From 4 all the way to 15. Lumio has 7 levels, each built for a specific age range, from a child’s very first English words to real conversation.'],
       ['Is there a real teacher, or is this just an app?', 'Both. Your child prepares in the app, then joins a real, live class with their teacher on Microsoft Teams. The app isn’t a replacement for the teacher; it’s what makes the time with the teacher count.'],
       ['My child has never studied English. Where do they start?', '<a href="lumio-pro-test.html">Take the free placement test</a>. It’s quick, and it places your child at the right level automatically based on their real result.'],
       ['Can we try a class before paying anything?', 'Yes. <a href="#free">Pick your child’s age group</a> and book a free trial class, in the same format as a real Lumio lesson. No card, no commitment.'],
@@ -311,11 +311,11 @@ window.LUMIO_SITE_I18N = {
     ],
     plans: [
       { name: 'مستوى واحد', sub: 'نحو 3 أشهر · 24 حصة', per: 'لكل مستوى', li: ['مستوى كامل، من البداية للنهاية', 'وصول كامل لمكتبة ذلك المستوى', 'ضمن مجموعة من زملاء بنفس مستواك', 'دعم من معلم ومشرف'] },
-      { name: 'باقة 6 مستويات', sub: 'نحو 18 شهراً · 144 حصة', badges: ['الأكثر طلباً', 'الأفضل قيمة'], li: ['6 مستويات كاملة — تقريباً المسار بأكمله', 'وصول كامل للمكتبة، بكل المستويات', 'ضمن مجموعة من زملاء بنفس مستواك', 'دعم من معلم ومشرف'] },
-      { name: 'باقة 3 مستويات', sub: 'نحو 9 أشهر · 72 حصة', li: ['3 مستويات كاملة، متتالية', 'وصول كامل للمكتبة، بكل المستويات', 'ضمن مجموعة من زملاء بنفس مستواك', 'دعم من معلم ومشرف'] }
+      { name: 'باقة 3 مستويات', sub: 'نحو 9 أشهر · 72 حصة', badges: ['الخيار الأفضل', 'الأكثر طلباً'], li: ['3 مستويات كاملة، متتالية', 'وصول كامل للمكتبة، بكل المستويات', 'ضمن مجموعة من زملاء بنفس مستواك', 'دعم من معلم ومشرف'] },
+      { name: 'باقة 6 مستويات', sub: 'نحو 18 شهراً · 144 حصة', li: ['6 مستويات كاملة — تقريباً المسار بأكمله', 'وصول كامل للمكتبة، بكل المستويات', 'ضمن مجموعة من زملاء بنفس مستواك', 'دعم من معلم ومشرف'] }
     ],
     faq: [
-      ['لأي عمر مناسب لوميو؟', 'من عمر 4 حتى 15 عاماً — يمتد المنهج عبر 7 مستويات، كل منها مصمم لفئة عمرية محددة، بدءاً من أولى كلمات الطفل بالإنجليزية وصولاً إلى محادثة حقيقية.'],
+      ['لأي عمر مناسب لوميو؟', 'من عمر 4 حتى 15 عاماً — لوميو فيه 7 مستويات، كل منها مصمم لفئة عمرية محددة، بدءاً من أولى كلمات الطفل بالإنجليزية وصولاً إلى محادثة حقيقية.'],
       ['هل يوجد معلم حقيقي، أم أنه مجرد تطبيق؟', 'كلاهما. يحضّر طفلك في التطبيق، ثم ينضم إلى حصة حقيقية مباشرة مع معلمه عبر Microsoft Teams — التطبيق ليس بديلاً عن المعلم، بل هو ما يجعل وقت الحصة أكثر فائدة.'],
       ['طفلي لم يدرس الإنجليزية من قبل. من أين يبدأ؟', '<a href="lumio-pro-test.html">جرّب اختبار تحديد المستوى المجاني</a> — إنه سريع، ويضع طفلك في المستوى المناسب تلقائياً بناءً على نتيجته الحقيقية.'],
       ['هل يمكننا تجربة حصة قبل دفع أي شيء؟', 'نعم — <a href="#free">اختر الفئة العمرية لطفلك</a> واحجز حصة تجريبية مجانية، بنفس صيغة درس لوميو الحقيقي. بدون بطاقة، وبدون أي التزام.'],
