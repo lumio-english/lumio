@@ -360,7 +360,7 @@ def your_turn_html(w, idx, total_rounds, teen, chars_html=""):
     </div>
     <div style="position:absolute;left:640px;width:520px;top:600px;display:flex;justify-content:center;gap:18px;z-index:20">
       <button class="v3-btn teal" onclick="typeof Lumio!=='undefined' && Lumio.speak && Lumio.speak({esc(_json.dumps(en))})">&#9654; Play the word</button>
-      <button class="v3-btn" onclick="document.getElementById('ytMystery{idx}').style.display='none';document.getElementById('ytImg{idx}').style.display='block';document.getElementById('ytAsk{idx}').style.display='none';document.getElementById('ytAns{idx}').style.display='block';this.disabled=true;this.style.opacity=.55">&#128064; Reveal</button>
+      <button class="v3-btn" onclick="document.getElementById('ytMystery{idx}').style.display='none';(function(i){{if(i.naturalWidth)i.style.display='block'}})(document.getElementById('ytImg{idx}'));document.getElementById('ytAsk{idx}').style.display='none';document.getElementById('ytAns{idx}').style.display='block';this.disabled=true;this.style.opacity=.55">&#128064; Reveal</button>
     </div>
     {chars_html}'''
 
