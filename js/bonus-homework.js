@@ -16,7 +16,7 @@
   var TEEN = /^level[3-6]$/.test(level);
   if (TEEN) document.body.classList.add("bm-teen");
   if (preview) document.getElementById("bmPreview").hidden = false;
-  if (teacherDevice) { var bk = document.getElementById("bmBack"); bk.textContent = "Close"; bk.href = "teacher.html"; }
+  if (preview) { var bk = document.getElementById("bmBack"); bk.textContent = "Close"; bk.href = "teacher.html"; }
 
   var app = document.getElementById("bmApp");
   var data = null, cls = null, state = [];
@@ -107,7 +107,7 @@
     }
     try { if (L.confetti) L.confetti(sc.pct); } catch (e) {}
     app.querySelector(".bm-finish").innerHTML = '<div class="bm-badge">🎉</div><h2>' + (preview ? "Preview finished" : "Sent! Great work, " + esc(user.name.split(" ")[0]) + "!") + '</h2>' +
-      '<p>' + "★".repeat(st) + ' · ' + sc.pct + '%</p><a class="bm-btn" href="' + (teacherDevice ? "teacher.html" : "student.html") + '">Back</a>';
+      '<p>' + "★".repeat(st) + ' · ' + sc.pct + '%</p><a class="bm-btn" href="' + (preview ? "teacher.html" : "student.html") + '">Back</a>';
   }
 
   /* ---------------- one mission ---------------- */

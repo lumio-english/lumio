@@ -1842,7 +1842,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
     const ltIcon = document.getElementById("levelTestIcon");
     const ltMeta = document.getElementById("levelTestMeta");
     const lt = Lumio.levelTestFor ? Lumio.levelTestFor(u.name, level) : null;
-    const unlocked = (done >= total && !(Lumio.bonusesMissing && Lumio.bonusesMissing(u.name, level, attendedSet).length)) || (Lumio.isTeacherSession && Lumio.isTeacherSession());
+    const unlocked = (done >= total && !(Lumio.bonusesMissing && Lumio.bonusesMissing(u.name, level, attendedSet).length)) || (Lumio.previewMode && Lumio.previewMode());
     ltLink.className = "sd-cert-link sd-test-link";
     ltCard.className = "sd-test-card";
     document.getElementById("levelTestBar").style.width = Math.min(100, Math.round((done / total) * 100)) + "%";

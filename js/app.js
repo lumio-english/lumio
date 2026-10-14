@@ -556,7 +556,14 @@ const Lumio = (() => {
   const isTeacherSession = () => { try { return localStorage.getItem("lumio_teacher") === "1"; } catch (e) { return false; } };
   // Teacher preview / testing: a teacher device, or any page opened with ?preview=1. Nothing a preview does may
   // reach a student's record (game bests, Hub progress, level-game results).
-  const previewMode = () => { try { if (new URLSearchParams(location.search).get("preview") === "1") return true; } catch (e) {} return isTeacherSession(); };
+  // Teacher preview needs the teacher sign-in on this device AND either an explicit ?preview=1 (opened from the
+  // teacher portal) or no student signed in. A signed-in student is always a student: a device a teacher once
+  // used must never turn a student's pages into teacher pages (no saving, exits to the teacher portal).
+  const previewMode = () => {
+    if (!isTeacherSession()) return false;
+    try { if (new URLSearchParams(location.search).get("preview") === "1") return true; } catch (e) {}
+    return !user();
+  };
 
   /* ---------- Report send log ----------
      lumio_report_log = { studentName: "YYYY-MM-DD" }  -- the date a

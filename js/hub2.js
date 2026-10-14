@@ -14,7 +14,7 @@
   // Teacher preview (?preview=1 from the teacher's Materials, or any teacher device): the whole Hub is open,
   // progress lives in memory only (nothing is read from or written to any student's record) and every visit
   // starts from zero XP.
-  var PREVIEW = qs("preview") === "1" || !!(L.isTeacherSession && L.isTeacherSession());
+  var PREVIEW = !!(L.previewMode && L.previewMode());   // a signed-in student is never a preview (js/app.js)
   var NAME = PREVIEW ? "__teacher_preview__" : (me && me.name) || "guest";
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var main = $("#main");
