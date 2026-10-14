@@ -39,10 +39,11 @@
   if (!stage || !content) return;
 
   var RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var LEVEL = qs("level") || "pre-a";
+  // level and n come from the link and end up in fetch paths and innerHTML (chapter card): accept only real values
+  var LEVEL = /^(pre-a|level[1-9])$/.test(qs("level") || "") ? qs("level") : "pre-a";
   var TRIAL = /present-trial/.test(location.pathname);   // the free trial class is not "Lesson 1"
   var BONUS = parseInt(qs("bonus") || "0", 10) || 0;   // present.html?bonus=N: a Bonus Class deck
-  var NUM = BONUS ? "bonus-" + String(BONUS).padStart(2, "0") : (qs("n") || "1");
+  var NUM = BONUS ? "bonus-" + String(BONUS).padStart(2, "0") : String(parseInt(qs("n") || "1", 10) || 1);
   var TEEN = /^level[3-6]$/.test(LEVEL);
   var SW = 1467, SH = 825;
   var DECK = (location.pathname.match(/present-trial/) ? "trial-" : "") + LEVEL + "-" + NUM;

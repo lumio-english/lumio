@@ -107,7 +107,7 @@ if (typeof localStorage === "undefined" || !localStorage.getItem("lumio_teacher"
   throw new Error("Not a teacher session -- redirecting.");
 }
 const qs = k => new URLSearchParams(location.search).get(k);
-const level = qs("level") || "pre-a";
+const level = /^(pre-a|level[1-9])$/.test(qs("level") || "") ? qs("level") : "pre-a";   // goes into fetch paths: only real levels
 // ?bonus=N opens Bonus Class N of the level (slide-content-v5/<level>/bonus-NN/, built by gen_bonus_slides.py).
 const BONUS = parseInt(qs("bonus") || "0", 10) || 0;
 const num = BONUS || parseInt(qs("n") || "1", 10);

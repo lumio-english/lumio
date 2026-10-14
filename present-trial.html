@@ -147,7 +147,7 @@
 </script>
 <script>
 const qs = k => new URLSearchParams(location.search).get(k);
-const level = qs("level") || "pre-a";
+const level = /^(pre-a|level[1-6])$/.test(qs("level") || "") ? qs("level") : "pre-a";   // goes into fetch paths: only real trial levels
 // mode=solo: the 1-on-1 trial (slide-content/trial-solo/, built by
 // lib/trial_solo.py) -- one student, no teams, a star meter instead of
 // the scoreboard, and solo challenge slides (see renderChallengeUI).
@@ -161,8 +161,12 @@ let stars = 0; const STAR_GOAL = 8; const badgesEarned = {};
 // ---------- roster (no fixed limit -- add/remove any time, including
 // mid-class for latecomers, which is routine on a live Zoom trial) ----------
 let roster = []; // [{name, team: null|"A"|"B"}]
-const seedNames = (qs("names") || "").split(",").map(s => s.trim()).filter(Boolean);
-seedNames.forEach(n => roster.push({ name: n, team: null }));
+// Names come from the link (?names=, built from a lead's name -- which a
+// stranger can type on the public form) and from the roster box, so they
+// are untrusted: always escape them before they go into innerHTML.
+const escHtml = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const cleanName = s => Array.from(String(s || "").replace(/[\u0000-\u001f<>]/g, "").replace(/\s+/g, " ").trim()).slice(0, 40).join("").trim();
+(qs("names") || "").split(",").forEach(n => addRosterName(roster, n));   // same rules as the roster box (clean, no duplicates)
 
 const TEAMS = {
   A: { name: "Team Sun", emoji: "☀️", color: "#F97316" },
@@ -172,6 +176,7 @@ let scores = { A: 0, B: 0 };
 let shoutouts = {}; // name -> count of points individually credited, for the finale
 
 function addRosterName(list, name) {
+  name = cleanName(name);
   if (!name) return;
   if (list.some(s => s.name.toLowerCase() === name.toLowerCase())) return;
   list.push({ name, team: null });
@@ -194,8 +199,8 @@ function autoAssignTeams() {
 function renderRosterEditor(container, onChange) {
   container.innerHTML = roster.map(s => `
     <div style="display:flex;align-items:center;justify-content:space-between;background:#FAF9FC;border-radius:10px;padding:8px 12px">
-      <span style="font-weight:700;color:#2B2640">${s.name}</span>
-      <button data-remove="${s.name}" style="background:none;border:none;color:#C4433D;font-size:1.1rem;cursor:pointer;font-weight:800">✕</button>
+      <span style="font-weight:700;color:#2B2640">${escHtml(s.name)}</span>
+      <button data-remove="${escHtml(s.name)}" style="background:none;border:none;color:#C4433D;font-size:1.1rem;cursor:pointer;font-weight:800">✕</button>
     </div>`).join("") || `<div style="color:#9385C4;font-size:.85rem;padding:8px 0">No students added yet.</div>`;
   container.querySelectorAll("[data-remove]").forEach(btn => {
     btn.onclick = () => { removeRosterName(roster, btn.dataset.remove); onChange(); };
@@ -251,7 +256,7 @@ if (roster.length) {
   document.getElementById("stageWrap").style.visibility = "hidden";
 }
 document.getElementById("startTrialBtn").onclick = () => {
-  if (SOLO) { const nm = rosterNameInput.value.trim(); if (nm) { roster.length = 0; roster.push({ name: nm, team: null }); } }
+  if (SOLO) { const nm = cleanName(rosterNameInput.value); if (nm) { roster.length = 0; roster.push({ name: nm, team: null }); } }
   if (!roster.length) { rosterNameInput.focus(); return; }
   nameOverlay.style.display = "none";
   document.getElementById("stageWrap").style.visibility = "visible";
@@ -391,7 +396,7 @@ function renderChallengeUI() {
     const zone = root.querySelector("#soloBadges") || root; 
     const BADGES = ["⚡ Fast Thinker", "🗣️ Brave Speaker", "👂 Super Listener", "🏃 Action Hero", "🌟 Star Collector", "😊 Big Smile"];
     zone.innerHTML = BADGES.map(b => `<label style="display:flex;align-items:center;gap:12px;background:#fff;border-radius:14px;padding:12px 18px;margin-bottom:8px;box-shadow:0 4px 12px rgba(0,0,0,.08);cursor:pointer;font-weight:800;color:#2B2640;font-size:1rem">
-        <input type="checkbox" ${badgesEarned[b] ? "checked" : ""} onchange="badgesEarned[${JSON.stringify(b)}]=this.checked" style="width:20px;height:20px;accent-color:#F97316">${b}</label>`).join("");
+        <input type="checkbox" ${badgesEarned[b] ? "checked" : ""} onchange="badgesEarned[${escHtml(JSON.stringify(b))}]=this.checked" style="width:20px;height:20px;accent-color:#F97316">${b}</label>`).join("");
     return;
   }
 
@@ -455,7 +460,7 @@ function renderChallengeUI() {
         <span style="font-weight:800;color:#2B2640">${cat}</span>
         <select data-finale-idx="${i}" style="border-radius:8px;border:2px solid #E5E1F5;padding:6px 10px;font-family:inherit;font-weight:700">
           <option value="">Pick a student…</option>
-          ${roster.map(s => `<option value="${s.name}">${s.name}</option>`).join("")}
+          ${roster.map(s => `<option value="${escHtml(s.name)}">${escHtml(s.name)}</option>`).join("")}
         </select>
       </div>`).join("");
   }
@@ -487,7 +492,7 @@ function renderTrialNames() {
   if (!roster.length) { el.style.display = "none"; return; }
   el.innerHTML = roster.map(s => `
     <div style="background:#fff;border-radius:999px;padding:8px 20px;font-family:'Baloo 2',sans-serif;
-                font-weight:800;font-size:1.05rem;color:#43301F;box-shadow:0 6px 14px rgba(67,48,31,.14)">${s.name}</div>
+                font-weight:800;font-size:1.05rem;color:#43301F;box-shadow:0 6px 14px rgba(67,48,31,.14)">${escHtml(s.name)}</div>
   `).join("");
 }
 
