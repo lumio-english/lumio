@@ -102,7 +102,8 @@
     var rec = state.map(function (s, i) { return { type: data.missions[i].type, correct: s.correct, total: s.total, extra: s.extra || null }; });
     if (!preview && L.saveHomework) {
       L.saveHomework(user.name, level, BONUS_KEY, {
-        stars: st, score: sc.c, total: sc.t, bonus: B, missions: rec, date: new Date().toISOString().slice(0, 10)
+        // Riyadh calendar day, like every other record (a UTC date was a day early after midnight Saudi time)
+        stars: st, score: sc.c, total: sc.t, bonus: B, missions: rec, date: L.tzNow ? L.tzNow().date : new Date().toISOString().slice(0, 10)
       });
     }
     try { if (L.confetti) L.confetti(sc.pct); } catch (e) {}

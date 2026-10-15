@@ -464,6 +464,7 @@ body { overflow-x: hidden; -webkit-text-size-adjust: 100%; }
   <div class="splash-card" style="max-width:440px;margin:0 auto;text-align:center">
     <div style="font-size:2.4rem;margin-bottom:6px">🎉</div>
     <h2 style="margin-bottom:6px">You're all set, <span id="showIdName"></span>!</h2>
+    <p id="showIdRenamed" style="display:none;color:#8A7160;font-weight:700;font-size:.85rem;margin-bottom:10px"></p>
     <p style="color:#8A7160;font-weight:700;margin-bottom:16px">This is your Student ID — save it! You'll need it to log in next time.</p>
     <div style="background:#FFF8EC;border:2px dashed #F97316;border-radius:16px;padding:18px;margin-bottom:8px">
       <div style="font-size:.75rem;font-weight:800;color:#8A7160;letter-spacing:1px;margin-bottom:4px">YOUR STUDENT ID</div>
@@ -1132,15 +1133,19 @@ async function handleRegPinComplete(){
     if (caps.auth) {
       // The script creates the pending account itself and hands back the
       // login ID; this page never holds anyone else's data.
+      const regHash = await LumioProfiles.hashPin(regFirstPin);
       const out = await LumioProfiles.postAction('registerStudent', {
-        name: studentName, phone: studentId, pinHash: await LumioProfiles.hashPin(regFirstPin),
+        name: studentName, phone: studentId, pinHash: regHash,
       });
       if (!out || !out.ok || !out.student) {
         throw new Error(out && out.error === 'exists'
           ? 'This phone number is already registered — log in from the student page instead.'
           : "Couldn't create your account — please check your connection and try again.");
       }
-      registeredStudent = { id: out.student.id, name: out.student.name, loginCode: out.student.loginCode, phone: studentId, remote: true };
+      // pinHash: proves to the script (v14 placementUpdate) that the level
+      // sent after the test is for THIS new account. renamed: another
+      // student already has this name, so the script saved "Name (2)".
+      registeredStudent = { id: out.student.id, name: out.student.name, loginCode: out.student.loginCode, phone: studentId, remote: true, pinHash: regHash, renamed: !!out.renamed };
     } else {
     registeredStudent = await LumioProfiles.addStudent({
       name: studentName,
@@ -1181,6 +1186,11 @@ async function handleRegPinComplete(){
     return;
   }
   document.getElementById('showIdName').textContent = studentName;
+  const renamedEl = document.getElementById('showIdRenamed');
+  if (renamedEl && registeredStudent && registeredStudent.renamed && registeredStudent.name) {
+    renamedEl.textContent = 'Another student already has this name, so your account is saved as "' + registeredStudent.name + '". Your teacher can change it.';
+    renamedEl.style.display = '';
+  }
   document.getElementById('showIdCode').textContent = registeredStudent.loginCode;
   showPage('showid');
 }
@@ -1729,7 +1739,11 @@ function saveResultLocally(data){
   // ready for a trial class. Best-effort: never blocks showing the
   // student their result if this fails for any reason.
   if (registeredStudent && registeredStudent.remote && window.LumioProfiles) {
-    LumioProfiles.postAction('placementUpdate', { phone: registeredStudent.phone, level: mapProTestLevelToLumioId(data.levelNum), age: data.age || '' }).catch(()=>{});
+    // pinHash (when this page just created the account): the script (v14)
+    // only takes a level for an account whose PIN hash matches, or for one
+    // made in the last 3 hours by an older page. v13 ignores it.
+    LumioProfiles.postAction('placementUpdate', Object.assign({ phone: registeredStudent.phone, level: mapProTestLevelToLumioId(data.levelNum), age: data.age || '' },
+      registeredStudent.pinHash ? { pinHash: registeredStudent.pinHash } : {})).catch(()=>{});
   } else if (registeredStudent && window.LumioProfiles) {
     LumioProfiles.updateStudent(registeredStudent.id, { level: mapProTestLevelToLumioId(data.levelNum) })
       .then(() => { LumioProfiles.syncNow().catch(() => {}); })

@@ -119,13 +119,35 @@ const Lumio = (() => {
     all[name] = all[name] || {};
     const prev = all[name][levelId];
     const pct = total ? Math.round((score / total) * 100) : 0;
-    const rec = { score, total, pct, band: testBand(pct), date: new Date().toISOString().slice(0, 10), attempts: (prev ? prev.attempts || 1 : 0) + 1 };
+    const rec = { score, total, pct, band: testBand(pct), date: tzNow().date, attempts: (prev ? prev.attempts || 1 : 0) + 1 }; // Riyadh calendar day
     if (!prev || pct >= (prev.pct || 0)) { all[name][levelId] = rec; }
     else { all[name][levelId] = Object.assign({}, prev, { attempts: rec.attempts, lastPct: pct }); }
     set("lumio_level_tests", all);
     pushExtras(name).catch(() => {});   // best-effort; certificate gate on other devices + teacher
     return all[name][levelId];
   };
+
+  /* ---------- One "best result" rule (Oct 2026, same as the script's betterRecord_ in v14) ----------
+     Lesson progress, homework, game boosts and the Sheet merge all keep the better of two records:
+     more stars first (stars outside 0-3 count as nothing, so a broken old record never blocks a real
+     one), then the higher score ratio (score/total, or the score when there is no total), then the
+     newer date. isBetterRecord(a, b): a strictly beats b (true when there is no b). */
+  const recStars_ = (r) => { const s = Number(r && r.stars); return Number.isFinite(s) && s >= 0 && s <= 3 ? s : -1; };
+  const recRatio_ = (r) => {
+    const sc = Number(r && r.score), t = Number(r && r.total);
+    if (!Number.isFinite(sc) || sc < 0) return -1;
+    return Number.isFinite(t) && t > 0 ? sc / t : sc;
+  };
+  const isBetterRecord = (a, b) => {
+    if (!a) return false;
+    if (!b) return true;
+    const sa = recStars_(a), sb = recStars_(b);
+    if (sa !== sb) return sa > sb;
+    const ra = recRatio_(a), rb = recRatio_(b);
+    if (Math.abs(ra - rb) > 1e-9) return ra > rb;
+    return String(a.date || "") > String(b.date || "");
+  };
+  const betterRecord = (a, b) => (isBetterRecord(a, b) ? a : (b || a));
 
   /* ---------- Progress ----------
      lumio_progress = { studentName: { levelId: { lessonNum: {stars, score, total, date} } } } */
@@ -136,11 +158,9 @@ const Lumio = (() => {
     all[name] = all[name] || {};
     all[name][levelId] = all[name][levelId] || {};
     const prev = all[name][levelId][lessonNum];
-    // A malformed earlier record (non-numeric stars) must never block a
-    // real result from saving.
-    if (!prev || Number(stars) >= (Number.isFinite(Number(prev.stars)) ? Number(prev.stars) : -1)) {
-      all[name][levelId][lessonNum] = { stars, score, total, date: tzNow().date }; // Riyadh calendar day
-    }
+    const rec = { stars, score, total, date: tzNow().date }; // Riyadh calendar day
+    // The better record stays (see isBetterRecord).
+    if (isBetterRecord(rec, prev)) all[name][levelId][lessonNum] = rec;
     set("lumio_progress", all);
     pushProgressAndHomework(name).catch(() => {}); // best-effort, never blocks the lesson
   };
@@ -153,7 +173,9 @@ const Lumio = (() => {
     const all = homeworkAll();
     all[name] = all[name] || {};
     all[name][levelId] = all[name][levelId] || {};
-    all[name][levelId][lessonNum] = record;
+    // A redo that went worse keeps the better homework (the Sheet keeps it too).
+    const prev = all[name][levelId][lessonNum];
+    if (isBetterRecord(record, prev)) all[name][levelId][lessonNum] = record;
     set("lumio_homework", all);
     pushProgressAndHomework(name).catch(() => {});
   };
@@ -182,11 +204,17 @@ const Lumio = (() => {
   // so homework done there never reached the Sheet.
   const authQuery = () => {
     if (window.LumioProfiles && LumioProfiles.authQuery) return LumioProfiles.authQuery();
-    const pairs = [["lumio_teacher_auth", "tid", "th"], ["lumio_student_auth", "sid", "sh"]];
-    for (const [k, a, b] of pairs) {
+    // + the device token (v14, lumio_auth_tokens "t:<id>"/"s:<id>", see
+    // js/lumio-profiles.js) when this device has one.
+    const pairs = [["lumio_teacher_auth", "tid", "th", "t:"], ["lumio_student_auth", "sid", "sh", "s:"]];
+    for (const [k, a, b, kind] of pairs) {
       try {
         const v = JSON.parse(localStorage.getItem(k) || "null");
-        if (v && v.id && v.pinHash) return `&${a}=${encodeURIComponent(v.id)}&${b}=${encodeURIComponent(v.pinHash)}`;
+        if (v && v.id && v.pinHash) {
+          let tk = "";
+          try { const o = JSON.parse(localStorage.getItem("lumio_auth_tokens") || "null"); tk = (o && typeof o[kind + v.id] === "string" && /^[\w=-]{8,128}$/.test(o[kind + v.id])) ? o[kind + v.id] : ""; } catch (e) {}
+          return `&${a}=${encodeURIComponent(v.id)}&${b}=${encodeURIComponent(v.pinHash)}` + (tk ? `&tk=${encodeURIComponent(tk)}` : "");
+        }
       } catch (e) {}
     }
     return "";
@@ -259,8 +287,8 @@ const Lumio = (() => {
     // After the page (and lumio-profiles.js, if it loads) has settled.
     window.addEventListener("load", () => setTimeout(() => { retryPendingPush().catch(() => {}); }, 2000));
   }
-  // Pull everyone's (or one student's) records and merge: higher stars win,
-  // then the newer date. Returns how many local records changed.
+  // Pull everyone's (or one student's) records and merge with isBetterRecord
+  // (stars, then score ratio, then date). Returns how many local records changed.
   const pullProgressAndHomework = async (name) => {
     let changed = 0;
     try {
@@ -272,8 +300,7 @@ const Lumio = (() => {
         prog[row.studentName] = prog[row.studentName] || {}; prog[row.studentName][row.level] = prog[row.studentName][row.level] || {};
         const prev = prog[row.studentName][row.level][row.lesson];
         const inc = { stars: Number(row.stars) || 0, score: Number(row.score) || 0, total: Number(row.total) || 0, date: String(row.date || "") };
-        const prevStars = prev && Number.isFinite(Number(prev.stars)) ? Number(prev.stars) : -1;
-        if (!prev || inc.stars > prevStars || (inc.stars === prevStars && inc.date > String(prev.date || ""))) { prog[row.studentName][row.level][row.lesson] = inc; changed++; }
+        if (isBetterRecord(inc, prev)) { prog[row.studentName][row.level][row.lesson] = inc; changed++; }
       });
       set("lumio_progress", prog);
       const hw = homeworkAll();
@@ -293,7 +320,7 @@ const Lumio = (() => {
           inc[k] = k === "skillType" ? String(v) : (Number(v) || 0);
         });
         const prevStars = prev && Number.isFinite(Number(prev.stars)) ? Number(prev.stars) : -1;
-        if (!prev || inc.stars > prevStars || (inc.stars === prevStars && inc.date > String(prev.date || ""))) {
+        if (isBetterRecord(inc, prev)) {
           hw[row.studentName][row.level][row.lesson] = Object.assign({}, prev || {}, inc); changed++;
         } else if (HW_EXTRA_FIELDS.some(k => inc[k] !== undefined && prev[k] === undefined) && inc.stars === prevStars && inc.date === String(prev.date || "")) {
           // Same result, but this device's copy predates the breakdown.
@@ -1037,7 +1064,7 @@ const Lumio = (() => {
   };
 
   return { LEVELS, AVAILABLE_LEVELS, login, user, logout, requireUser,
-           progressAll, progressFor, saveResult, homeworkAll, homeworkFor, saveHomework,
+           progressAll, progressFor, saveResult, homeworkAll, homeworkFor, saveHomework, betterRecord, isBetterRecord,
            saveRecording, listRecordingsFor, listAllRecordings,
            lastReportDateFor, logReportSent,
            speak, preloadSpeech, speakPhonicsSound, beep, confetti, sfx, music, setSound, soundOn, toast, shuffle, qs, letterTile,

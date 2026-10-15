@@ -1598,6 +1598,26 @@
     };
     data.classes.push(record); save(data); return record;
   }
+  // Which later bookings the script drops with a student's cancellation:
+  // v14 drops those later IN TIME, v13 and older those with a bigger lesson
+  // number (so cancelling an owed Bonus Class N.5 booked after Lessons 11
+  // and 12 took them with it). Read from the script's version the device
+  // remembers (lumio_srv_caps / lumio_srv_caps_v2, see LumioProfiles.serverCaps):
+  // "time" | "number" | "both" (version not known yet: name every class either
+  // rule could drop, so nothing goes without a word). A teacher's own
+  // cancellation is pushed as it is, so it always uses the time rule.
+  function cascadeRule() {
+    const cfg = getSyncConfig();
+    if (!cfg.enabled || !cfg.url) return "time";
+    let v = 0;
+    try { const c = JSON.parse(sessionStorage.getItem("lumio_srv_caps") || "null"); if (c && c.version) v = Number(c.version) || 0; } catch (e) {}
+    if (!v) try { const k = JSON.parse(safeGet("lumio_srv_caps_v2") || "null"); if (k && k.url === cfg.url && k.c && k.c.version) v = Number(k.c.version) || 0; } catch (e) {}
+    return v >= 14 ? "time" : v ? "number" : "both";
+  }
+  function cascades(c, x, rule) {
+    const byTime = startMs(x) > startMs(c), byNumber = Number(x.lessonNumber) > Number(c.lessonNumber);
+    return rule === "number" ? byNumber : rule === "both" ? (byTime || byNumber) : byTime;
+  }
   // Student-side cancellation: up to CANCEL_MIN_BEFORE minutes before start.
   // Removes the student; an emptied class is cancelled so the slot reopens.
   function cancelBooking(classId, studentName, { byTeacher } = {}) {
@@ -1616,13 +1636,20 @@
     if (!c.students.length) c.status = "cancelled";
     c.updatedAt = new Date().toISOString();
     // Lessons are booked in sequence, so dropping lesson N also drops the
-    // student's later bookings (N+1, N+2...) in the same level -- they
-    // can't happen before N anyway. Returned as `cascaded` for the UI.
+    // student's later bookings in the same level -- they can't happen
+    // before N anyway. "Later" means later IN TIME (v14, same rule as the
+    // script's cancelSlot_): a bigger lesson number booked BEFORE this
+    // class (e.g. a Bonus Class N.5 or a re-booked lesson) is not touched,
+    // and a seat the teacher already marked is never dropped. Returned as
+    // `cascaded` for the UI. On a script older than v14 a student's cancel
+    // follows that script's lesson-number rule (see cascadeRule).
     const n = Number(c.lessonNumber) || 0;
     const cascaded = [];
+    const rule = byTeacher ? "time" : cascadeRule();
     if (n) data.classes.forEach(x => {
-      if (x.id === c.id || x.status !== "scheduled" || x.level !== c.level || !(Number(x.lessonNumber) > n)) return;
+      if (x.id === c.id || x.status !== "scheduled" || x.level !== c.level || !cascades(c, x, rule)) return;
       if (!byTeacher && startMs(x) - Date.now() < CANCEL_MIN_BEFORE * 60000) return;
+      if (x.students.some(s => normName(s.studentName) === normName(studentName) && s.attendance)) return;
       const b = x.students.length;
       x.students = x.students.filter(s => normName(s.studentName) !== normName(studentName));
       if (x.students.length === b) return;
@@ -1633,10 +1660,14 @@
     c.cascaded = cascaded.map(x => x.id);
     save(data); return c;
   }
-  // Later lessons that would be dropped with this one (for the confirm text).
-  function laterBookings(classId, studentName) {
+  // Later lessons that would be dropped with this one (for the confirm
+  // text): the same level, starting later in time -- or, on a script older
+  // than v14, with a bigger lesson number (see cascadeRule / cancelBooking).
+  function laterBookings(classId, studentName, { byTeacher } = {}) {
     const c = getClass(classId); if (!c || !c.lessonNumber) return [];
-    return listClasses({ studentName, status: "scheduled" }).filter(x => x.id !== c.id && x.level === c.level && Number(x.lessonNumber) > Number(c.lessonNumber));
+    const rule = byTeacher ? "time" : cascadeRule();
+    return listClasses({ studentName, status: "scheduled" }).filter(x => x.id !== c.id && x.level === c.level && cascades(c, x, rule))
+      .sort((a, b) => startMs(a) - startMs(b));
   }
   // Can this student actually join (open the meeting link for) this class?
   // Lesson N's class needs lesson N-1's homework done first.

@@ -2384,7 +2384,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
           const c = LumioSchedule.getClass(btn.dataset.cancel);
           if (!c) return;
           const later = LumioSchedule.laterBookings(c.id, u.name);
-          const laterNote = later.length ? ` ${later.map(x => Number(x.lessonNumber)).sort((a, b) => a - b).map(n => Lumio.lessonLabel(n)).join(", ")} booked after it will be cancelled too (lessons go in order).` : "";
+          const laterNote = later.length ? ` ${later.map(x => Lumio.lessonLabel(Number(x.lessonNumber))).join(", ")} booked after it will be cancelled too (lessons go in order).` : "";
           if (!(await askBooking("Cancel this class?", `${c.lessonNumber ? Lumio.lessonLabel(c.lessonNumber) : "Class"} on ${fmtSchedDay(c.date)} at ${fmtSchedTime(c.startTime, c.date)} — your seat opens up for someone else and you can book another time.${laterNote}`, "Yes, cancel it"))) return;
           btn.disabled = true;
           try {
@@ -2592,7 +2592,8 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
     ]).then(([r1, r2, r3, r4]) => {
       // The PIN was changed or the account removed by the teacher: sign
       // this device out rather than keep showing an old copy.
-      if (r1 && (r1.reason === "unauthorized" || r1.reason === "deleted")) { Lumio.logout(); return; }
+      // "pending_approval" (script v14): the account isn't activated, same as signed out.
+      if (r1 && (r1.reason === "unauthorized" || r1.reason === "deleted" || r1.reason === "pending_approval")) { Lumio.logout(); return; }
       if ((r1.ok || r2.ok || (r3 && r3.changed) || (r4 && r4.changed)) && snapshot() !== before) reloadWhenIdle();
     }).catch(() => {});
   })();
@@ -3560,10 +3561,13 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
     try { all = JSON.parse(localStorage.getItem("lumio_progress") || "{}"); } catch (e) { all = {}; }
     const existing = ((all[u.name] || {})[level] || {})[gamesLessonNum];
     if (!existing) return { counted: false, reason: "not-attempted" };
-    if (stars < existing.stars) return { counted: false, reason: "not-better", lessonNum: gamesLessonNum };
+    const rec = { stars, score, total, date: Lumio.tzNow().date };
+    // Same "better result" rule as everywhere else (Lumio.isBetterRecord, js/app.js).
+    const better = Lumio.isBetterRecord ? Lumio.isBetterRecord(rec, existing) : !(stars < existing.stars);
+    if (!better) return { counted: false, reason: "not-better", lessonNum: gamesLessonNum };
     all[u.name] = all[u.name] || {};
     all[u.name][level] = all[u.name][level] || {};
-    all[u.name][level][gamesLessonNum] = { stars, score, total, date: Lumio.tzNow().date };
+    all[u.name][level][gamesLessonNum] = rec;
     try { localStorage.setItem("lumio_progress", JSON.stringify(all)); } catch (e) { return { counted: false, reason: "storage-failed" }; }
     return { counted: true, lessonNum: gamesLessonNum };
   }

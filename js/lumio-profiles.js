@@ -823,7 +823,9 @@
     if (s.rewardPoints < cost) throw new Error(`Needs ${cost} points — has ${s.rewardPoints}.`);
     s.rewardPoints -= cost;
     if (!Array.isArray(s.redemptions)) s.redemptions = [];
-    s.redemptions.push({ date: new Date().toISOString(), label: item.label, cost, hours: 0 });
+    // itemId lets the script (v14) look the price up in the Sheet's
+    // RewardCatalog instead of trusting the cost sent from here.
+    s.redemptions.push({ date: new Date().toISOString(), label: item.label, cost, hours: 0, itemId: item.id });
     s.updatedAt = new Date().toISOString();
     save(data);
     return s;
@@ -859,20 +861,24 @@
   // Internal: appends to an already-loaded student object. Callers that
   // hold `data` save it themselves; addMessage() below is the public,
   // load-and-save version.
+  // 1500 = the longest text the script (v14 MSG_TEXT_MAX_) keeps, so this device's copy matches the Sheet's.
+  const MSG_TEXT_MAX = 1500;
+  function capText_(t) { return typeof t === "string" && t.length > MSG_TEXT_MAX ? t.slice(0, MSG_TEXT_MAX) : t; }
   function pushMessage_(s, type, text, meta, fixedId) {
     if (!Array.isArray(s.messages)) s.messages = [];
     if (fixedId && s.messages.some(m => m && m.id === fixedId)) return;
     s.messages.push({
       id: fixedId || ("m_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7)),
       type: type,
-      text: text,
+      text: capText_(text),
       meta: meta || null,
       date: new Date().toISOString(),
       read: false,
     });
     // Keep the inbox from growing without bound on a long-lived account
     // (every class reminder, every content alert...). Oldest drop off.
-    if (s.messages.length > 200) s.messages = s.messages.slice(-200);
+    // 150 = what the script (v14 capMessages_) keeps in the Sheet cell.
+    if (s.messages.length > 150) s.messages = s.messages.slice(-150);
   }
   function addMessage(studentId, { type, text, meta } = {}) {
     const data = load();
@@ -892,6 +898,7 @@
     const m = s.messages.find(x => x && x.id === msgId);
     if (!m) return null;
     Object.assign(m, patch || {});
+    if (patch && "text" in patch) m.text = capText_(m.text);
     s.updatedAt = new Date().toISOString();
     save(data);
     return m;
@@ -1345,7 +1352,10 @@
     if (caps.auth && normalizePin(pin)) {
       const pinHash = await hashPin(normalizePin(pin));
       let out = null;
-      try { out = await postAction("studentLogin", { identifier: String(identifier || "").trim(), pinHash }); } catch (e) { out = null; }
+      // tks: tokens this device got from earlier sign-ins (v14), so a
+      // stranger's wrong PINs can't lock a child out here. Ignored by v13.
+      const tks = studentTokens_();
+      try { out = await postAction("studentLogin", Object.assign({ identifier: String(identifier || "").trim(), pinHash }, tks.length ? { tks } : {})); } catch (e) { out = null; }
       if (out === null) throw offlineError();   // no answer is not a wrong PIN
       if (out && out.error === "busy") throw busyError(out);
       if (out && out.ok && out.student) {
@@ -1364,6 +1374,7 @@
         if (Array.isArray(out.rewardCatalog)) data.rewardCatalog = out.rewardCatalog.map(r => ({ ...r, cost: Number(r.cost) || 0 }));
         save(data, { noStamp: true });
         setStudentAuth(me.id, pinHash);
+        if (out.token) setAuthToken("s", me.id, out.token);
         return data.students.find(x => x.id === me.id);
       }
       if (out && out.error === "pending_approval") {
@@ -1522,11 +1533,16 @@
       // The teacher list a device gets before sign-in has no PIN hashes,
       // so the script checks the PIN.
       let out = null;
-      try { out = await postAction("teacherLogin", { id: t.id, pinHash }); } catch (e) { out = null; }
+      // name: used only by a brand-new installation's very first sign-in
+      // (v14 creates the owner row from it); tk: this device's token, so a
+      // stranger's wrong PINs can't lock it out. v13 ignores both.
+      const tk = getAuthToken("t", t.id);
+      try { out = await postAction("teacherLogin", Object.assign({ id: t.id, pinHash, name: t.name }, tk ? { tk } : {})); } catch (e) { out = null; }
       if (out === null) throw offlineError();   // no answer is not a wrong PIN
       if (out && out.error === "busy") throw busyError(out);
       if (out && out.ok) {
         setTeacherAuth(t.id, pinHash);
+        if (out.token) setAuthToken("t", t.id, out.token);
         if (out.teacher) {
           const data = load();
           data.teachers = data.teachers.map(x => x.id === t.id ? Object.assign({}, x, out.teacher) : x);
@@ -1632,12 +1648,45 @@
   function setStudentAuth(id, pinHash) { safeSet(STUDENT_AUTH_KEY, JSON.stringify({ id, pinHash })); }
   function clearTeacherAuth() { try { localStorage.removeItem(TEACHER_AUTH_KEY); } catch (e) {} }
   function clearStudentAuth() { try { localStorage.removeItem(STUDENT_AUTH_KEY); } catch (e) {} }
+  // ---- device tokens (Apps Script v14) ----
+  // After a right PIN the script hands this device a token (signed by the
+  // script, tied to that account + its current PIN). It travels as &tk=
+  // next to the PIN hash, so a stranger typing wrong PINs for this account
+  // can no longer lock THIS device out. Useless without the PIN hash and
+  // dead after a PIN change. Kept on sign-out on purpose (the next sign-in
+  // on this device is then never "locked"). Keys: "t:<teacherId>",
+  // "s:<studentId>". An older script sends no token: nothing is stored and
+  // every request looks exactly as before.
+  const AUTH_TOKENS_KEY = "lumio_auth_tokens";
+  const TOKEN_RE = /^[\w=-]{8,128}$/;
+  function readTokens_() {
+    try { const o = JSON.parse(safeGet(AUTH_TOKENS_KEY) || "null"); return o && typeof o === "object" && !Array.isArray(o) ? o : {}; } catch (e) { return {}; }
+  }
+  function getAuthToken(kind, id) {
+    const tk = id ? readTokens_()[kind + ":" + id] : "";
+    return typeof tk === "string" && TOKEN_RE.test(tk) ? tk : "";
+  }
+  function setAuthToken(kind, id, tk) {
+    if (!id || typeof tk !== "string" || !TOKEN_RE.test(tk)) return;
+    const o = readTokens_(), k = kind + ":" + id;
+    if (o[k] === tk) return;
+    delete o[k]; o[k] = tk;              // newest last
+    const keys = Object.keys(o);
+    keys.slice(0, Math.max(0, keys.length - 20)).forEach(x => { delete o[x]; });   // a shared tablet: the 20 newest
+    safeSet(AUTH_TOKENS_KEY, JSON.stringify(o));
+  }
+  // Up to 5 student tokens this device holds (newest first), sent with a
+  // student login so a device that signed in before is never locked out.
+  function studentTokens_() {
+    const o = readTokens_();
+    return Object.keys(o).filter(k => k.indexOf("s:") === 0 && typeof o[k] === "string" && TOKEN_RE.test(o[k])).map(k => o[k]).reverse().slice(0, 5);
+  }
   function authQuery() {
     const enc = encodeURIComponent;
     const t = getTeacherAuth();
-    if (t) return "&tid=" + enc(t.id) + "&th=" + enc(t.pinHash);
+    if (t) { const tk = getAuthToken("t", t.id); return "&tid=" + enc(t.id) + "&th=" + enc(t.pinHash) + (tk ? "&tk=" + enc(tk) : ""); }
     const st = getStudentAuth();
-    if (st) return "&sid=" + enc(st.id) + "&sh=" + enc(st.pinHash);
+    if (st) { const tk = getAuthToken("s", st.id); return "&sid=" + enc(st.id) + "&sh=" + enc(st.pinHash) + (tk ? "&tk=" + enc(tk) : ""); }
     return "";
   }
   // A device that is not signed in as a teacher. It only ever holds its
@@ -2055,8 +2104,11 @@
       data = load();
       if (remote && remote.ok === false) {
         // The script refused: wrong/old PIN, or this student was deleted.
+        // "pending_approval" (v14): this account isn't activated (yet), so
+        // the student is signed out like after a PIN change and the login
+        // page says why. "locked" and "busy" keep the sign-in (they pass).
         const reason = remote.error || "refused";
-        if (reason === "deleted" || reason === "unauthorized") {
+        if (reason === "deleted" || reason === "unauthorized" || reason === "pending_approval") {
           const st = getStudentAuth();
           if (st && !getTeacherAuth()) {
             clearStudentAuth();
@@ -2065,11 +2117,18 @@
               data.students = data.students.filter(x => x.id !== st.id);
               save(data);
             }
-          } else if (getTeacherAuth()) {
+          } else if (getTeacherAuth() && reason !== "pending_approval") {
             clearTeacherAuth();
           }
         }
         return { ok: false, reason };
+      }
+      // A fresh device token (v14) for whoever this device is signed in as
+      // (devices that signed in before v14 get theirs here).
+      if (remote && remote.authToken) {
+        const ta = getTeacherAuth(), sa = getStudentAuth();
+        if (ta) setAuthToken("t", ta.id, remote.authToken);
+        else if (sa) setAuthToken("s", sa.id, remote.authToken);
       }
       // Fold the SHARED tombstone list into this device's own local one
       // before anything else. This is what makes a deletion actually
@@ -2171,6 +2230,23 @@
       let pushed = null;
       try { pushed = await pushRes.json(); } catch (e) { pushed = null; }
       if (!pushed || pushed.ok === false) return { ok: false, reason: (pushed && pushed.error) || "push-failed" };
+      // Deletions the script refused (v14 `refused`: a regular teacher may
+      // delete only their own students; nobody deletes the owner): forget
+      // them on this device too, so the record comes back with the next
+      // pull instead of hiding here only. An older script sends no list.
+      if (Array.isArray(pushed.refused) && pushed.refused.length) {
+        const ids = type => pushed.refused.filter(r => r && r.id && (r.type || "student") === type).map(r => String(r.id));
+        const back = { deletedStudentIds: ids("student"), deletedTeacherIds: ids("teacher"), deletedRewardIds: ids("reward") };
+        const fresh = load();
+        let changed = false;
+        Object.keys(back).forEach(k => {
+          if (!back[k].length || !Array.isArray(fresh[k])) return;
+          const n = fresh[k].length;
+          fresh[k] = fresh[k].filter(id => !back[k].includes(id));
+          if (fresh[k].length !== n) changed = true;
+        });
+        if (changed) save(fresh, { noStamp: true });
+      }
       // An older script ignores `renames`; keep them until one confirms.
       if (pushed.renamed !== undefined) { try { localStorage.removeItem(PENDING_RENAMES_KEY); } catch (e) {} }
       return { ok: true, at: new Date().toISOString() };
@@ -2294,5 +2370,6 @@
     getTeacherName, setTeacherName,
     getSyncConfig, configureSync, syncNow, pushStudentPatch, retryPendingPatches, serverMissingFields,
     authQuery, serverCaps, postAction, getTeacherAuth, getStudentAuth, setTeacherAuth, clearTeacherAuth, clearStudentAuth, hashPin,
+    getAuthToken, setAuthToken,
   };
 })(window);

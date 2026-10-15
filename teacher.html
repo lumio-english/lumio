@@ -3071,7 +3071,7 @@ try { Object.keys(sessionStorage).forEach(k => { if (/^lumio_lc_(jar|parts)_/.te
       </div>`).join("") : `<div class="td-empty" style="padding:8px 0">Nothing sent to ${escHtml(p.name)} yet.</div>`;
     wrap.innerHTML = `
       <div style="margin-bottom:12px">
-        <textarea id="msgComposer" rows="3" placeholder="Write a message to ${escHtml(p.name)}… (they'll see it under 📬 Messages on their dashboard)" style="width:100%;box-sizing:border-box;padding:9px 11px;border-radius:10px;border:1px solid var(--td-border);font-family:inherit;font-size:.86rem;resize:vertical"></textarea>
+        <textarea id="msgComposer" rows="3" maxlength="1500" placeholder="Write a message to ${escHtml(p.name)}… (they'll see it under 📬 Messages on their dashboard)" style="width:100%;box-sizing:border-box;padding:9px 11px;border-radius:10px;border:1px solid var(--td-border);font-family:inherit;font-size:.86rem;resize:vertical"></textarea>
         <div style="display:flex;justify-content:flex-end;margin-top:6px">
           <button type="button" class="td-btn td-btn-primary" id="msgSendBtn">📨 Send message</button>
         </div>
@@ -3520,6 +3520,15 @@ try { Object.keys(sessionStorage).forEach(k => { if (/^lumio_lc_(jar|parts)_/.te
       // so this destructive action is never blocked by any overlay
       // rendering issue -- a native prompt always shows.
       card.querySelector('[data-act="remove"]').onclick = async () => {
+        // The script only lets the owner, or the student's own teacher,
+        // delete a student (it quietly refused anyone else, so the student
+        // just came back later). Say so instead of pretending.
+        const meDel = LumioProfiles.getCurrentTeacher();
+        if (meDel && !meDel.isOwner && p.teacherId !== meDel.id) {
+          const theirs = p.teacherId ? LumioProfiles.getTeacher(p.teacherId) : null;
+          showToast(theirs ? `Only the owner or ${theirs.name} can delete this student.` : "Only the owner can delete this student.", "error");
+          return;
+        }
         if (p.deletionConfirmed) {
           // Student already confirmed from their side -- finalize now.
           if (!confirm(`${p.name} confirmed the deletion. Delete their account permanently now?`)) return;
@@ -5693,8 +5702,8 @@ try { Object.keys(sessionStorage).forEach(k => { if (/^lumio_lc_(jar|parts)_/.te
   // Progress lives in localStorage["lumio_progress"] as
   //   { studentName: { levelId: { lessonNum: {stars, score, total, date} } } }
   // — confirmed directly from your real js/app.js. Pulling merges using the
-  // exact same rule Lumio.saveResult() uses locally (keep whichever score
-  // has more stars), so a sync can never downgrade a student's best result.
+  // exact same rule Lumio.saveResult() uses locally (Lumio.isBetterRecord:
+  // stars, then score, then date), so a sync never downgrades a best result.
   function loadLocalProgress() {
     try { return JSON.parse(localStorage.getItem("lumio_progress") || "{}") || {}; }
     catch (e) { return {}; }
@@ -5715,14 +5724,11 @@ try { Object.keys(sessionStorage).forEach(k => { if (/^lumio_lc_(jar|parts)_/.te
       local[name] = local[name] || {};
       local[name][level] = local[name][level] || {};
       const prev = local[name][level][lesson];
-      const incomingStars = Number(row.stars) || 0;
-      if (!prev || incomingStars >= Number(prev.stars || 0)) {
-        local[name][level][lesson] = {
-          stars: incomingStars,
-          score: Number(row.score) || 0,
-          total: Number(row.total) || 0,
-          date: row.date || "",
-        };
+      const inc = { stars: Number(row.stars) || 0, score: Number(row.score) || 0, total: Number(row.total) || 0, date: row.date || "" };
+      // One "better result" rule everywhere (Lumio.isBetterRecord in js/app.js).
+      const better = (typeof Lumio !== "undefined" && Lumio.isBetterRecord) ? Lumio.isBetterRecord(inc, prev) : (!prev || inc.stars >= Number(prev.stars || 0));
+      if (better) {
+        local[name][level][lesson] = inc;
         merged++;
       }
     });
@@ -5754,7 +5760,17 @@ try { Object.keys(sessionStorage).forEach(k => { if (/^lumio_lc_(jar|parts)_/.te
     // The script no longer accepts this device's sign-in (PIN changed on
     // another device, teacher removed, or never signed in since the
     // update): back to the portal instead of pretending the sync worked.
-    if ([rosterRes, scheduleRes, leadsRes].some(r => r && (r.reason === "unauthorized" || r.reason === "locked"))) {
+    // "locked" is different (Oct 2026): someone typed wrong PINs for this
+    // teacher id, the PIN here is still right -- keep the sign-in and try
+    // again later (a device with a v14 token is never locked).
+    const syncLocked = [rosterRes, scheduleRes, leadsRes].some(r => r && r.reason === "locked");
+    if (syncLocked && ![rosterRes, scheduleRes, leadsRes].some(r => r && r.reason === "unauthorized")) {
+      syncStatus.textContent = "Sync paused: too many wrong PINs were tried for this account. Try again in a few minutes.";
+      if (!silent || !performFullSync.lockedShown) showToast("Sync paused for a few minutes (too many wrong PINs were tried for your account). You stay signed in; your changes are kept on this device.", "info");
+      performFullSync.lockedShown = true;
+      return;
+    }
+    if ([rosterRes, scheduleRes, leadsRes].some(r => r && r.reason === "unauthorized")) {
       syncStatus.textContent = "Please sign in again with your personal PIN.";
       showToast("Your sign-in has expired — please sign in again with your personal PIN.", "error");
       setTimeout(() => {
@@ -6331,7 +6347,7 @@ try { Object.keys(sessionStorage).forEach(k => { if (/^lumio_lc_(jar|parts)_/.te
     if (!missing.length) { el.style.display = "none"; return; }
     const pretty = { photoDataUrl: "profile photos", meetingLink: "classroom (Teams) links", installments: "installment plans", referrals: "referrals" };
     el.style.display = "";
-    el.innerHTML = `⚠️ <b>The Google Sheet script needs updating.</b> It doesn't store ${missing.map(k => pretty[k] || k).join(" and ")} yet, so those changes stay on this device only and don't reach students or other teachers. ${IS_OWNER ? `Paste <code>_docs/AppsScript-Code.live-patched.gs</code> into the Apps Script project, Deploy → Manage deployments → New version, then run <code>repairSheetTypes</code> once. Student self-booking needs the same update.` : "Ask the owner to redeploy it."}`;
+    el.innerHTML = `⚠️ <b>The Google Sheet script needs updating.</b> It doesn't store ${missing.map(k => pretty[k] || k).join(" and ")} yet, so those changes stay on this device only and don't reach students or other teachers. ${IS_OWNER ? `Paste <code>_docs/AppsScript-Code.gs</code> into the Apps Script project, Deploy → Manage deployments → New version, then run <code>repairSheetTypes</code> once. Student self-booking needs the same update.` : "Ask the owner to redeploy it."}`;
   }
   try { renderServerBanner(); } catch (e) {}
 

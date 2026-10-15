@@ -370,17 +370,42 @@ const LUMIO_API_KEY = '504bc50951590970a9faf630'; // see js/lumio-profiles.js
 function proAuth() {
   try {
     const a = JSON.parse(localStorage.getItem('lumio_teacher_auth') || 'null');
-    return a && a.id && a.pinHash ? '&tid=' + encodeURIComponent(a.id) + '&th=' + encodeURIComponent(a.pinHash) : '';
+    if (!(a && a.id && a.pinHash)) return '';
+    const tk = proToken(a.id);
+    return '&tid=' + encodeURIComponent(a.id) + '&th=' + encodeURIComponent(a.pinHash) + (tk ? '&tk=' + encodeURIComponent(tk) : '');
   } catch (e) { return ''; }
+}
+// Device token from the script (v14), same store as js/lumio-profiles.js
+// (lumio_auth_tokens, "t:<teacherId>"): with it a stranger's wrong PINs
+// can't lock this device out. An older script sends none.
+const PRO_TOKEN_RE = /^[\w=-]{8,128}$/;
+function proToken(id) {
+  try {
+    const o = JSON.parse(localStorage.getItem('lumio_auth_tokens') || 'null');
+    const tk = o && typeof o === 'object' ? o['t:' + id] : '';
+    return typeof tk === 'string' && PRO_TOKEN_RE.test(tk) ? tk : '';
+  } catch (e) { return ''; }
+}
+function proSaveToken(id, tk) {
+  if (!id || typeof tk !== 'string' || !PRO_TOKEN_RE.test(tk)) return;
+  try {
+    let o = JSON.parse(localStorage.getItem('lumio_auth_tokens') || 'null');
+    if (!o || typeof o !== 'object' || Array.isArray(o)) o = {};
+    if (o['t:' + id] === tk) return;
+    delete o['t:' + id]; o['t:' + id] = tk;
+    localStorage.setItem('lumio_auth_tokens', JSON.stringify(o));
+  } catch (e) {}
 }
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxlKY07coAR_Uj6UQf2bvy6yi6I3cG9WsnTROvKI5v_l9MhhXIbP3Ke8jxbYx5btZzAGA/exec';
 
-// AI writing feedback uses a SEPARATE, standalone Apps Script project
-// (see _docs/AI-Feedback-Standalone.gs) — kept isolated from the main
-// backend above so a broken authorization state on one never affects
-// the other. Paste your deployed URL here once you've set that
-// project up; leave blank to keep the feature showing a clear
-// "not set up yet" message instead of failing silently.
+// AI writing feedback goes through the main backend above (action
+// writingFeedback, Groq key in its Script Properties; v14 answers only a
+// signed-in teacher). The old standalone AI project
+// (_docs/AI-Feedback-Standalone.gs) answers anyone, so it is used ONLY when
+// the main script says its Groq key isn't set up yet -- so feedback keeps
+// working until the owner has confirmed GROQ_API_KEY in the main project
+// (HANDOFF 3jj). Once that is confirmed: archive the standalone deployment
+// and set this to ''.
 const AI_FEEDBACK_URL = 'https://script.google.com/macros/s/AKfycbyNz4VuLuthHBk0bdcPYoi1b1vUt0Uge63ITE0ID4CVkHeV-Cwndyq2TLv7FpgHX7GT/exec';
 
 // ══════════════════════════════════════════
@@ -502,9 +527,12 @@ async function pullLumioTeachersForLogin() {
     let data = await fetch(SCRIPT_URL + '?key=' + LUMIO_API_KEY + '&action=pullRoster' + proAuth()).then(r => r.json());
     // A saved sign-in that no longer matches (PIN changed elsewhere) gets refused -- and each refusal
     // counts toward the 15-minute lockout. Forget it and fetch the public teacher list instead.
+    // "locked"/"busy" are not a wrong PIN: keep the sign-in, just read the public list this time.
     if (data && data.ok === false && proAuth()) {
-      try { localStorage.removeItem('lumio_teacher_auth'); } catch (e) {}
+      if (data.error !== 'locked' && data.error !== 'busy') { try { localStorage.removeItem('lumio_teacher_auth'); } catch (e) {} }
       data = await fetch(SCRIPT_URL + '?key=' + LUMIO_API_KEY + '&action=pullRoster').then(r => r.json());
+    } else if (data && data.authToken) {
+      try { const a = JSON.parse(localStorage.getItem('lumio_teacher_auth') || 'null'); if (a && a.id) proSaveToken(a.id, data.authToken); } catch (e) {}
     }
     if (data && Array.isArray(data.teachers)) LUMIO_TEACHERS_CACHE = data.teachers;
   } catch (e) { /* offline is fine — falls back to admin-only login below */ }
@@ -577,9 +605,10 @@ async function resolveLogin(user, pass) {
       if (!pinOk) {
         try {
           const r = await fetch(SCRIPT_URL + '?key=' + LUMIO_API_KEY + '&action=teacherLogin', { method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ id: teacher.id, pinHash: enteredPinHash }) });
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(Object.assign({ id: teacher.id, pinHash: enteredPinHash }, proToken(teacher.id) ? { tk: proToken(teacher.id) } : {})) });
           const j = await r.json();
           pinOk = !!(j && j.ok);
+          if (pinOk && j.token) proSaveToken(teacher.id, j.token);   // v14 device token
           if (!pinOk) LOGIN_FAIL_REASON = j && j.error === 'locked' ? 'locked' : j && j.error === 'busy' ? 'busy' : 'pin';
         } catch (e) { pinOk = false; }
       }
@@ -957,25 +986,31 @@ async function runAI(si,wi,btn){
   const w=(r.answers_writing||[])[wi]; if(!w)return;
   const el=document.getElementById('ar-'+si+'-'+wi); if(!el)return;
   el.style.display='block';
-  if(!AI_FEEDBACK_URL){
-    el.innerHTML='<div style="background:#FFF3D6;border:1px solid #F97316;border-radius:8px;padding:10px 12px;font-size:.8rem;color:#43301F">ℹ️ AI feedback isn\'t set up yet — deploy the backend (_docs/AppsScript-Code.gs) and paste its URL into AI_FEEDBACK_URL near the top of this file. Same URL as your main roster Sync settings.</div>';
+  if(!SCRIPT_URL){
+    el.innerHTML='<div style="background:#FFF3D6;border:1px solid #F97316;border-radius:8px;padding:10px 12px;font-size:.8rem;color:#43301F">ℹ️ AI feedback isn\'t set up yet — deploy the backend (_docs/AppsScript-Code.gs) and paste its URL into SCRIPT_URL near the top of this file. Same URL as your main roster Sync settings.</div>';
     return;
   }
   btn.disabled=true; btn.textContent='⏳ AI reviewing…';
   el.innerHTML='<div style="color:var(--mu);font-style:italic;font-size:.81rem;padding:8px 0">🤖 Getting AI feedback via Groq…</div>';
   try{
-    // Route through the standalone Apps Script (keeps the Groq API key
-    // secure, never sent to or stored in the browser)
-    // The main backend (SCRIPT_URL) is tried first: it is rate-limited and is where the feature
-    // now lives. The old standalone project is only a fallback while its Groq key is set up
-    // there and not yet in the main project (Script Properties -> GROQ_API_KEY).
-    const ask = url => fetch(url + '?key=' + LUMIO_API_KEY + '&action=writingFeedback', {
+    // Through the main backend (keeps the Groq API key on the server, never
+    // in the browser). proAuth(): the script (v14) answers only a signed-in
+    // Lumio teacher, rate-limited; an older script ignores it.
+    const ask = url => fetch(url, {
       method: 'POST',
       headers: {'Content-Type':'text/plain;charset=utf-8'},
       body: JSON.stringify({ prompt: w.prompt||'', answer: w.text||'', minWords: w.minWords||0 })
-    }).then(x => x.json());
-    let d = await ask(SCRIPT_URL).catch(() => null);
-    if ((!d || (!d.ok && /Groq API key|Unknown action/i.test(d.error || ''))) && AI_FEEDBACK_URL && AI_FEEDBACK_URL !== SCRIPT_URL) d = await ask(AI_FEEDBACK_URL);
+    }).then(x => x.json()).catch(() => null);
+    let d = await ask(SCRIPT_URL + '?key=' + LUMIO_API_KEY + '&action=writingFeedback' + proAuth());
+    // Main script without a Groq key yet: the standalone project (no sign-in sent there).
+    if(d && !d.ok && /Groq API key/i.test(d.error||'') && AI_FEEDBACK_URL && AI_FEEDBACK_URL !== SCRIPT_URL){
+      const d2 = await ask(AI_FEEDBACK_URL + '?key=' + LUMIO_API_KEY + '&action=writingFeedback');
+      if(d2 && d2.ok) d = d2;
+    }
+    if(!d) throw new Error('Couldn\'t reach the Lumio server. Check the connection and try again.');
+    if(!d.ok && d.error === 'unauthorized') throw new Error('AI feedback needs a Lumio teacher sign-in: sign out, then sign in here with your teacher name and PIN.');
+    if(!d.ok && d.error === 'locked') throw new Error('Too many wrong PINs were tried for your account. Please wait 15 minutes and try again.');
+    if(!d.ok && d.error === 'busy') throw new Error(d.message || 'AI feedback is busy right now. Please wait a few minutes and try again.');
     if(!d.ok) throw new Error(d.error||'API error');
     el.innerHTML = '<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 14px;font-size:.82rem;color:#374151;line-height:1.7;white-space:pre-wrap">'+h(d.feedback)+'</div>';
     aiN++; updStats(); btn.textContent='🔄 Re-run';
