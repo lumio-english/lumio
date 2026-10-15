@@ -1,0 +1,1262 @@
+# Lumio re-record list - 2026-10-15 - 1167 lines - voice: Artlist "Bright" (same settings as the September/October batches)
+# FORMAT: <file name><TAB><what to say>, like recording/artlist/*.txt, but the first column is the FILE NAME (slug), NOT a line number.
+# Save every recording as <first column>.mp3 (e.g. "it-is-sunny-it-is-hot.mp3"). Never number the downloads (0001.mp3...):
+# a slug name ties each clip to its own text, so a skipped or extra download cannot shift every clip after it again (that is what broke report item 7).
+# Column 1 = slugify(the text the site speaks) = assets/audio/<column 1>.mp3. Column 2 = the words to type into Artlist (a single word is written as its own sentence, "Bat.", as in voice-batches.py).
+# Lines starting with # are comments (group headers and notes) - do not record them.
+# Groups A and B REPLACE files that are wrong today (wrong words / old voice). C, D, E are new files. O (last) is optional.
+# Import: python3 _docs/import-rerecord.py <folder with the takes>  (exact file-name match only; same trim + -16 LUFS chain as _docs/import-voice.py)
+
+# ===== A  WRONG WORDS - replaces a clip that says something else - 1 lines
+#   note for the next line: Level 3 story tap-word. Old completely.mp3 held "cookies"; the real take was lost when the batch shifted. Clip deleted -> device voice until recorded.
+completely	Completely.
+
+# ===== B  OLD 'AMY' VOICE - replaces an old Piper clip (report item 20) - 78 lines
+always	Always.
+apples	Apples.
+bear	Bear.
+between	Between.
+bigger	Bigger.
+books	Books.
+climb	Climb.
+club	Club.
+come-here-please	Come here, please.
+day	Day.
+down	Down.
+eggs	Eggs.
+far	Far.
+favorite	Favorite.
+forest	Forest.
+friends	Friends.
+full	Full.
+funny	Funny.
+he-likes-reading-books	He likes reading books.
+healthy	Healthy.
+hers	Hers.
+how	How.
+i-am-hungry	I am hungry.
+i-come-home-at-four	I come home at four.
+i-do-my-homework-after-school	I do my homework after school.
+i-drink-water-every-day	I drink water every day.
+i-eat-eggs-for-breakfast	I eat eggs for breakfast.
+i-eat-soup-for-dinner	I eat soup for dinner.
+i-have-a-snack-after-school	I have a snack after school.
+i-like-painting-pictures	I like painting pictures.
+i-play-on-the-swing	I play on the swing.
+i-play-with-a-ball	I play with a ball.
+i-read-a-book-before-bed	I read a book before bed.
+it	It.
+jumping	Jumping.
+me	Me.
+mine	Mine.
+more	More.
+near	Near.
+nurse	Nurse.
+octopus	Octopus.
+open	Open.
+out	Out.
+pay	Pay.
+pig	Pig.
+play	Play.
+right	Right.
+see	See.
+she-likes-singing	She likes singing.
+sky	Sky.
+smart	Smart.
+snake	Snake.
+some	Some.
+tall	Tall.
+that-is-your-bag	That is your bag.
+the-babies-are-sleeping	The babies are sleeping.
+the-ball-is-in-the-box	The ball is in the box.
+the-room-is-clean	The room is clean.
+the-turtle-is-slow	The turtle is slow.
+them	Them.
+those-are-your-shoes	Those are your shoes.
+together	Together.
+touch	Touch.
+us	Us.
+vegetables	Vegetables.
+village	Village.
+warm	Warm.
+wash-your-feet	Wash your feet.
+we-have-dinner-together	We have dinner together.
+we-like-dancing	We like dancing.
+what	What.
+when	When.
+where	Where.
+who	Who.
+whose	Whose.
+work	Work.
+yours	Yours.
+yummy	Yummy.
+
+# ===== C1 Grammar 'Read & Repeat' sentences, Pre-A/L1/L2 class decks (item 13; 4 lines also item 22) - 38 lines
+you-are-tired	You are tired.
+you-are-great	You are great.
+it-is-an-apple	It is an apple.
+what-is-it-it-is-an-elephant	What is it? It is an elephant.
+is-it-big-yes-it-is	Is it big? Yes, it is.
+is-it-small-no-it-isn-t	Is it small? No, it isn't.
+what-is-it-it-is-a-mouse-it-is-small	What is it? It is a mouse. It is small.
+we-are-a-family	We are a family.
+they-are-my-parents	They are my parents.
+his-shirt-is-blue-her-dress-is-pink	His shirt is blue. Her dress is pink.
+our-house-is-big-their-car-is-red	Our house is big. Their car is red.
+i-have-got-a-watch	I have got a watch.
+i-have-got-glasses	I have got glasses.
+have-you-got-a-key	Have you got a key?
+yes-i-have-no-i-haven-t	Yes, I have. No, I haven't.
+there-are-ten-students-in-my-class	There are ten students in my class.
+is-there-a-clock-yes-there-is	Is there a clock? Yes, there is.
+it-s-in-may	It's in May.
+my-birthday-is-in-june	My birthday is in June.
+her-birthday-is-in-december	Her birthday is in December.
+it-s-three-o-clock	It's three o'clock.
+it-s-half-past-two	It's half past two.
+it-s-quarter-past-four	It's quarter past four.
+it-s-quarter-to-five	It's quarter to five.
+do-you-like-singing	Do you like singing?
+reading-is-fun	Reading is fun.
+cooking-is-my-favorite	Cooking is my favorite.
+this-is-my-book	This is my book.
+that-is-your-book	That is your book.
+these-are-my-pens	These are my pens.
+those-are-your-pens	Those are your pens.
+i-have-two-cats-and-three-boxes	I have two cats and three boxes.
+the-children-have-two-feet	The children have two feet.
+three-men-and-two-women-are-here	Three men and two women are here.
+a-banana	A banana.
+an-apple	An apple.
+an-egg	An egg.
+i-like-an-apple-and-a-banana	I like an apple and a banana.
+
+# ===== C2 Teen 'Grammar Check' answer words (item 23) - 28 lines
+it-s-half-past-seven	It's half past seven.
+what-time-is-it	What time is it?
+writing	Writing.
+boys	Boys.
+doesn-t	Doesn't.
+fly	Fly.
+am	Am.
+leveled	Leveled.
+reached	Reached.
+scored	Scored.
+does	Does.
+doing	Doing.
+practicing	Practicing.
+test	Test.
+moved	Moved.
+traveled	Traveled.
+checked	Checked.
+missed	Missed.
+started	Started.
+worked	Worked.
+matter	Matter.
+becoming	Becoming.
+answered	Answered.
+presented	Presented.
+interesting	Interesting.
+partly	Partly.
+i-ll	I'll.
+submitting	Submitting.
+
+# ===== C3 Rebuilt trial classes (item 129) - 4 lines
+i-sat-tap-tap-tap-i-tap-pat-pat-pat-i-pat-i-sat	I sat. Tap, tap, tap! I tap. Pat, pat, pat! I pat. I sat.
+a-fish-was-in-a-ship-the-fish-had-a-chip-shh-the-fish-got-to-a-shop-you-can-get-lunch-in-the-shop-chop-chop	A fish was in a ship. The fish had a chip. Shh! The fish got to a shop. You can get lunch in the shop. Chop, chop!
+appetite	Appetite.
+thinks	Thinks.
+
+# ===== C4 Story tap-word 'compass' (item 159) - 1 lines
+compass	Compass.
+
+# ===== C5 English Hub L1-2 phonics: 17 stories, 10 words, 'ff, ll, ss', 'cube' (item 113) - 27 lines
+dad-and-sam-sit-sam-taps-the-map-dad-naps-sam-and-dad-sit-and-nap	Dad and Sam sit. Sam taps the map. Dad naps. Sam and Dad sit and nap.
+kid	Kid.
+dig	Dig.
+a-dog-and-a-kid-dig-in-the-pit-the-cat-is-on-a-cot-the-cat-naps-the-dog-got-to-the-top	A dog and a kid dig in the pit. The cat is on a cot. The cat naps. The dog got to the top!
+a-red-duck-sat-in-the-sun-get-up-duck-run-duck-run-go-go-go-the-duck-got-to-a-cup-no-it-is-not-a-cup-it-is-a-pot	A red duck sat in the sun. Get up, duck! Run, duck, run! Go, go, go! The duck got to a cup. No, it is not a cup. It is a pot!
+#   note for the next line: sound clip: say the three sounds /f/ /l/ /s/ (IPA input, like the 51 sounds of 8 Oct); its file name is not slugify() of the text
+phonics-sound-double-letters	/f/ ... /l/ ... /s/
+a-big-hen-sat-on-a-log-the-hen-had-a-bell-is-it-a-big-bell-no-the-hen-hops-off-the-log-and-into-a-bag-fuss-fuss-fuss	A big hen sat on a log. The hen had a bell. Is it a big bell? No! The hen hops off the log and into a bag. Fuss, fuss, fuss!
+a-fox-got-in-a-red-van-he-had-a-big-box-in-the-box-jam-he-met-a-duck-she-had-six-bugs-in-a-web-jam-jam-jam-the-fox-and-the-duck-had-a-picnic	A fox got in a red van. He had a big box. In the box: jam! He met a duck. She had six bugs in a web. Jam, jam, jam! The fox and the duck had a picnic.
+yak	Yak.
+zip	Zip.
+buzz	Buzz.
+quack	Quack.
+we-had-a-quiz-yes-buzz-buzz-a-bug-got-in-quack-quack-a-duck-got-in-zip-up-the-bag-mom-can-a-duck-be-in-a-quiz	We had a quiz. Yes! Buzz, buzz! A bug got in. Quack, quack! A duck got in. Zip up the bag, Mom! Can a duck be in a quiz?
+bat	Bat.
+a-big-cat-sat-in-a-red-van-the-cat-had-a-pen-and-a-pin-is-it-hot-yes-the-big-cat-got-a-fan-is-the-fan-in-the-van-yes-it-is-a-bat-no-a-cat	A big cat sat in a red van. The cat had a pen and a pin. Is it hot? Yes! The big cat got a fan. Is the fan in the van? Yes, it is! A bat? No, a cat!
+this-king-is-thin-the-king-has-a-pink-ring-they-sing-in-the-bank-are-they-thin-no-the-king-is-thin-and-the-ring-is-pink	This king is thin. The king has a pink ring. They sing in the bank. Are they thin? No! The king is thin, and the ring is pink.
+tent	Tent.
+nest	Nest.
+i-jump-on-the-sand-jump-jump-jump-dad-has-a-tent-and-a-lamp-all-the-milk-is-in-the-tent-some-milk-is-on-the-desk	I jump on the sand. Jump, jump, jump! Dad has a tent and a lamp. All the milk is in the tent. Some milk is on the desk!
+a-black-crab-and-a-frog-sit-on-a-flag-the-crab-can-drum-clap-clap-come-and-drum-said-the-frog-the-crab-and-the-frog-drum-and-clap	A black crab and a frog sit on a flag. The crab can drum. Clap, clap! "Come and drum!" said the frog. The crab and the frog drum and clap.
+snap	Snap.
+i-have-a-red-spin-top-spin-spin-stop-i-skip-to-the-pond-and-swim-snap-there-is-a-crab-i-smell-fish-have-a-swim-crab	I have a red spin top. Spin, spin! Stop! I skip to the pond and swim. Snap! There is a crab! I smell fish. Have a swim, crab!
+kate-has-a-cake-and-mike-has-a-bike-five-kids-ride-to-the-lake-one-kid-has-a-kite-the-kids-like-the-game-at-the-lake-and-then-they-ate-the-cake	Kate has a cake and Mike has a bike. Five kids ride to the lake. One kid has a kite. The kids like the game at the lake, and then they ate the cake!
+it-is-night-rain-hits-the-tree-a-snail-sits-on-a-boat-do-you-see-the-snail-the-snail-and-the-boat-float-in-the-rain-the-snail-and-the-frog-were-wet	It is night. Rain hits the tree. A snail sits on a boat. Do you see the snail? The snail and the boat float in the rain. The snail and the frog were wet!
+look-at-the-moon-and-the-star-a-bird-sat-on-my-car-i-took-my-book-and-a-fork-to-the-farm-is-this-your-book-no-it-is-my-book	Look at the moon and the star! A bird sat on my car. I took my book and a fork to the farm. Is this your book? No, it is my book!
+the-king-has-a-fish-and-a-ring-a-frog-sits-on-a-cake-look-at-the-star-in-the-tree-snap-the-frog-jumps-this-is-the-end-shh	The king has a fish and a ring. A frog sits on a cake. Look at the star in the tree! Snap! The frog jumps. This is the end. Shh!
+cube	Cube.
+
+# ===== C6 The 16 phonics sounds on the repo's 'still to record' list (known; isolated sounds) - 16 lines
+#   note for the next line: sound clip: say /ð/ on its own (IPA input), as in 'this'
+phonics-sound-th-voiced	/ð/
+#   note for the next line: sound clip: say /ŋk/ on its own (IPA input), as in 'pink'
+phonics-sound-nk	/ŋk/
+#   note for the next line: sound clip: say /nd/ on its own (IPA input), as in 'hand'
+phonics-sound-nd	/nd/
+#   note for the next line: sound clip: say /nt/ on its own (IPA input), as in 'tent'
+phonics-sound-nt	/nt/
+#   note for the next line: sound clip: say /mp/ on its own (IPA input), as in 'jump'
+phonics-sound-mp	/mp/
+#   note for the next line: sound clip: say /lk/ on its own (IPA input), as in 'milk'
+phonics-sound-lk	/lk/
+#   note for the next line: sound clip: say /eɪ/ on its own (IPA input), as in 'cake'
+phonics-sound-a-e	/eɪ/
+#   note for the next line: sound clip: say /aɪ/ on its own (IPA input), as in 'kite'
+phonics-sound-i-e	/aɪ/
+#   note for the next line: sound clip: say /oʊ/ on its own (IPA input), as in 'bone'
+phonics-sound-o-e	/oʊ/
+#   note for the next line: sound clip: say /juː/ on its own (IPA input), as in 'cube'
+phonics-sound-u-e	/juː/
+#   note for the next line: sound clip: say /aɪ/ on its own (IPA input), as in 'night'
+phonics-sound-igh	/aɪ/
+#   note for the next line: sound clip: say /ɑːr/ on its own (IPA input), as in 'car'
+phonics-sound-ar	/ɑːr/
+#   note for the next line: sound clip: say /ɔːr/ on its own (IPA input), as in 'fork'
+phonics-sound-or	/ɔːr/
+#   note for the next line: sound clip: say /ɝː/ on its own (IPA input), as in 'bird'
+phonics-sound-ur	/ɝː/
+#   note for the next line: sound clip: say /uː/ on its own (IPA input), as in 'moon'
+phonics-sound-oo	/uː/
+#   note for the next line: sound clip: say /ʊ/ on its own (IPA input), as in 'book'
+phonics-sound-oo-short	/ʊ/
+
+# ===== D1 Bonus Classes: homework missions + Bonus deck speakers (item 112) - 711 lines
+em	Em.
+kay	Kay.
+hello-my-name-is	Hello! My name is ...
+aitch	Aitch.
+badr	Badr.
+fatima	Fatima.
+sun-six	Sun, six.
+ten-red	Ten, red.
+cat-kite	Cat, kite.
+van-five	Van, five.
+fish-four	Fish, four.
+three-tree	Three, tree.
+zebra-seven	Zebra, seven.
+nose-nine	Nose, nine.
+big-blue-ball	Big blue ball!
+six-silly-suns	Six silly suns!
+five-funny-fish	Five funny fish!
+ten-tall-trees	Ten tall trees!
+sara-s-sun-ziad-s-zebra	Sara's sun! Ziad's zebra!
+big-blue	Big blue.
+six-silly	Six silly.
+five-funny	Five funny.
+ten-tall	Ten tall.
+ziad-s	Ziad's.
+cat-hat	Cat, hat.
+dog-frog	Dog, frog.
+fish-five	Fish, five.
+kite-white	Kite, white.
+head-bed	Head, bed.
+hands-feet	Hands, feet.
+moon-spoon	Moon, spoon.
+cat-cake	Cat, cake.
+mat	Mat.
+log	Log.
+jog	Jog.
+a-cat-in-a-hat	A cat in a hat!
+a-dog-on-a-log	A dog on a log!
+a-fish-on-a-dish	A fish on a dish!
+a-duck-in-a-truck	A duck in a truck!
+fish-dish	Fish, dish.
+nose-toes	Nose, toes.
+bird-mom	Bird, mom.
+two-blue	Two, blue.
+a-cat-in-a	A cat in a.
+a-fish-on-a	A fish on a.
+a-duck-in-a	A duck in a.
+my-nose-and-my	My nose and my.
+my-kite-is	My kite is.
+one-two-my-hat-is	One, two, my hat is.
+pink-black	Pink, black.
+mouth-mom	Mouth, mom.
+muhammad	Muhammad.
+letter-a	Letter A.
+letter-b	Letter B.
+letter-g	Letter G.
+letter-r	Letter R.
+letter-e	Letter E.
+letter-q	Letter Q.
+letter-d	Letter D.
+letter-m	Letter M.
+big-a-small-a-apple	Big A, small a: apple!
+big-b-small-b-banana	Big B, small b: banana!
+b-e-d-bed	B, e, d: bed!
+left-to-right	Left to right!
+letter-c	Letter C.
+letter-f	Letter F.
+letter-h	Letter H.
+we-write-from-left-to-right	We write from left to right.
+there-are-no-big-letters	There are no big letters.
+a-letter-changes-shape-at-the-start-in-the-middle-or-at-the-end-of-a-word	A letter changes shape at the start, in the middle or at the end of a word.
+in-a-book-the-letters-stand-apart	In a book, the letters stand apart.
+most-letters-join-the-next-letter	Most letters join the next letter.
+a-name-starts-with-a-big-letter-sara	A name starts with a big letter: Sara.
+lazy-a-sat-on-a-mat	Lazy A sat on a mat.
+quick-e-met-ten-men	Quick E met ten men.
+smiley-i-sits-in-a-big-pit	Smiley I sits in a big pit.
+pan-pen-pin	Pan, pen, pin.
+bag-beg-big	Bag, beg, big.
+sat-set-sit	Sat, set, sit.
+tan-ten-tin	Tan, ten, tin.
+mat-sat-sit	Mat, sat, sit.
+pen-ten-pan	Pen, ten, pan.
+pin-tin-ten	Pin, tin, ten.
+bed-red-bad	Bed, red, bad.
+pan	Pan.
+beg	Beg.
+tan	Tan.
+tin	Tin.
+bin	Bin.
+puffy-p-puts-pink-peas-in-a-pot	Puffy P puts pink peas in a pot.
+bouncy-b-has-a-big-blue-bag	Bouncy B has a big blue bag.
+seven-vans-very-fast	Seven vans, very fast!
+grumpy-u-runs-up-in-the-sun	Grumpy U runs up in the sun.
+bet	Bet.
+pin-bin	Pin, bin.
+pig-big	Pig, big.
+pat-bat	Pat, bat.
+pet-bet	Pet, bet.
+pizza-pink-peas	Pizza, pink, peas.
+apple-lips-close-a-small-puff	Apple: lips close, a small puff.
+cab	Cab.
+vet	Vet.
+sev-en-e-lev-en-twelve	Sev-en, e-lev-en, twelve.
+five-f-at-the-start-v-at-the-end	Five: f at the start, v at the end.
+five-vans-very-fast	Five vans, very fast!
+hut	Hut.
+cot	Cot.
+cut	Cut.
+dug	Dug.
+nut	Nut.
+rat	Rat.
+rock	Rock.
+hen	Hen.
+cat-cap	Cat, cap.
+cap-map	Cap, map.
+map-mop	Map, mop.
+mop-hop	Mop, hop.
+hop-hot	Hop, hot.
+hot-hut	Hot, hut.
+hug-bug	Hug, bug.
+bug-bun	Bug, bun.
+a-red-hen-got-a-big-hat	A red hen got a big hat.
+the-pup-can-run-in-the-sun	The pup can run in the sun.
+dad-got-a-hot-cup	Dad got a hot cup.
+bog	Bog.
+bug	Bug.
+pit	Pit.
+lip	Lip.
+fog	Fog.
+hop	Hop.
+he-said-i-can-run	He said, "I can run."
+the-dog-was-in-the-box	The dog was in the box.
+the-to-was-said	The, to, was, said.
+you-he-my-have	You, he, my, have.
+sock	Sock.
+bath	Bath.
+thank-you-thank-you-three-times-thank-you	Thank you, thank you, three times thank you!
+this-is-my-mother-that-is-my-brother	This is my mother, that is my brother.
+a-fish-and-a-chip-on-a-ship	A fish and a chip on a ship.
+dish	Dish.
+thank-you-thank-you	Thank you, thank you,.
+three-times-thank-you	Three times thank you!
+this-is-my-mother	This is my mother,.
+that-is-my-brother	That is my brother.
+back	Back.
+kin	Kin.
+thing	Thing.
+sung	Sung.
+wing	Wing.
+sport	Sport.
+black-flag-clap-clap	Black flag, clap clap!
+please-play-slide-slide	Please play, slide slide!
+glasses-in-the-classroom-students-in-the-playground	Glasses in the classroom, students in the playground!
+the-king-can-sing-a-long-song-ding-dong	The king can sing a long song. Ding dong!
+bi-lack	Bi-lack.
+pi-lease	Pi-lease.
+fi-lag	Fi-lag.
+lack	Lack.
+glasses-in-the-classroom	Glasses in the classroom,.
+students-in-the-playground	Students in the playground!
+e-student	E-student.
+king-g	King-g.
+cape	Cape.
+kit	Kit.
+tub	Tub.
+tube	Tube.
+coat	Coat.
+toast	Toast.
+grape	Grape.
+cap-cape-kit-kite-hop-hope	Cap, cape. kit, kite. hop, hope.
+happy-birthday-i-made-a-cake	Happy birthday! I made a cake.
+you-are-nine-smile	You are nine. Smile!
+a-snail-in-the-rain-on-a-green-tree	A snail in the rain on a green tree.
+cute	Cute.
+cake-not-caap-smile-at-the-end	Cake, not caap: smile at the end!
+home-not-hoom-round-your-lips	Home, not hoom: round your lips!
+rain-not-ra-in-two-letters-one-sound	Rain, not ra-in: two letters, one sound!
+cak-eh-no-the-e-is-silent	Cak-eh? No! The e is silent!
+cub	Cub.
+tape	Tape.
+pine	Pine.
+road	Road.
+cats	Cats.
+keys	Keys.
+dishes	Dishes.
+snacks	Snacks.
+bags	Bags.
+lunches	Lunches.
+pens	Pens.
+cakes	Cakes.
+i-have-breakfast-at-seven	I have breakfast at seven.
+it-s-thirteen-minutes-past-three	It's thirteen minutes past three.
+it-s-three-thirty	It's three thirty.
+i-have-got-two-pens-three-books-and-two-boxes	I have got two pens, three books and two boxes.
+i-have-break-fast-at-se-ven	I. Have. Break. Fast. At. Se. Ven.
+a-present	A present.
+to-present	To present.
+clocks	Clocks.
+dogs	Dogs.
+buses	Buses.
+minutes	Minutes.
+candles	Candles.
+oranges	Oranges.
+we-chat-a-lot	We chat a lot.
+this-game-is-cool	This game is cool.
+he-is-a-teacher	He is a teacher.
+my-friends-are-awesome	My friends are awesome.
+the-lamp-is-on-the-desk	The lamp is on the desk.
+there-is-a-rug-under-my-desk	There is a rug under my desk.
+we-are-in-the-same-class	We are in the same class.
+my-room-is-very-big	My room is very big.
+i-text-my-cousin-every-day	I text my cousin every day.
+our-group-chat-is-so-funny	Our group chat is so funny.
+they-joke-all-the-time	They joke all the time.
+ziad-has-a-cool-laugh	Ziad has a cool laugh.
+i-got-a-long-text-from-noor	I got a long text from Noor.
+we-chat-after-school	We chat after school.
+the-meme-is-funny	The meme is funny.
+there-are-posters-on-the-wall	There are posters on the wall.
+the-blorks-zibbed-under-the-frim-desk	The blorks zibbed under the frim desk.
+makes	Makes.
+she-plays-basketball	She plays basketball.
+noor-helps-sara	Noor helps Sara.
+sara-helps-noor	Sara helps Noor.
+the-dog-follows-ziad	The dog follows Ziad.
+ziad-follows-the-dog	Ziad follows the dog.
+hamad-calls-omar-every-night	Hamad calls Omar every night.
+omar-calls-hamad-every-night	Omar calls Hamad every night.
+this-is-sara-s-phone	This is Sara's phone.
+sara-texts-noor-every-day	Sara texts Noor every day.
+i-like-sara-s-new-hoodie	I like Sara's new hoodie.
+sara-is-my-cousin	Sara is my cousin.
+where-is-sara-s-charger	Where is Sara's charger?
+sara-wears-cool-sunglasses	Sara wears cool sunglasses.
+english	English.
+japanese	Japanese.
+welsh	Welsh.
+chinese	Chinese.
+turkish	Turkish.
+irish	Irish.
+spanish	Spanish.
+korean	Korean.
+formal-arabic	Formal Arabic.
+hindi	Hindi.
+much-to-learn-you-still-have	Much to learn you still have.
+you-still-have-much-to-learn	You still have much to learn.
+omar-wears-a-black-hoodie	Omar wears a black hoodie.
+these-are-my-new-sneakers	These are my new sneakers.
+sara-s-phone-is-next-to-my-charger	Sara's phone is next to my charger.
+sara-texts-noor	Sara texts Noor.
+noor-texts-sara	Noor texts Sara.
+ziad-follows-hamad	Ziad follows Hamad.
+hamad-follows-ziad	Hamad follows Ziad.
+my-cousins	My cousins.
+wears	Wears.
+charges	Charges.
+a-black-hoodie	A black hoodie.
+new-sneakers	New sneakers.
+her-phone	Her phone.
+is-noor-shy	Is Noor shy?
+are-they-friendly	Are they friendly?
+do-your-cousins-live-near-school	Do your cousins live near school?
+does-sara-play-tennis	Does Sara play tennis?
+where-do-you-hang-out	Where do you hang out?
+what-does-hamad-collect	What does Hamad collect?
+why-is-the-newcomer-nervous	Why is the newcomer nervous?
+when-does-the-race-start	When does the race start?
+can-you-climb	Can you climb?
+where-is-the-gym	Where is the gym?
+is-the-new-kid-friendly	Is the new kid friendly?
+do-you-like-riddles	Do you like riddles?
+why-are-you-nervous	Why are you nervous?
+ni-hao-ma	Ni hao ma?
+desu-ka	Desu ka?
+can-you-code	Can you code?
+spielst-du	Spielst du?
+you-re-coming	You're coming?
+mi	Mi?
+are-you-tired-today	Are you tired today?
+can-you-speak-three-languages	Can you speak three languages?
+does-grandma-watch-the-news	Does Grandma watch the news?
+where-do-you-usually-go-on-fridays	Where do you usually go on Fridays?
+my-cousin	My cousin.
+omar-and-ziad	Omar and Ziad.
+is-it-big	Is it big?
+what-does-it-mean	What does it mean?
+does-omar-like-riddles	Does Omar like riddles?
+my-sister-is-cooking-dinner-right-now	My sister is cooking dinner right now.
+we-visit-grandma-every-friday	We visit Grandma every Friday.
+look-the-cat-is-sleeping-on-my-bed	Look! The cat is sleeping on my bed.
+hamad-usually-trains-after-school	Hamad usually trains after school.
+listen-somebody-is-singing	Listen! Somebody is singing.
+i-always-check-my-phone-in-the-morning	I always check my phone in the morning.
+look-ziad-is-playing-the-game	Look! Ziad is playing the game.
+we-usually-play-on-fridays	We usually play on Fridays.
+omar-usually-plays-with-his-cousins	Omar usually plays with his cousins.
+shh-my-cousins-are-playing-a-quiz-game-now	Shh! My cousins are playing a quiz game now.
+i-never-play-games-at-night	I never play games at night.
+right-now-sara-is-playing-online	Right now Sara is playing online.
+want	Want.
+hi-followers-right-now-i-am-drawing-a-comic	Hi followers! Right now I am drawing a comic.
+usually-i-draw-on-fridays-but-today-is-special	Usually I draw on Fridays, but today is special.
+my-brother-is-playing-a-multiplayer-game	My brother is playing a multiplayer game.
+i-know-the-best-strategy	I know the best strategy!
+what-are-you-doing-right-now	What are you doing right now?
+every-day	Every day.
+on-fridays	On Fridays.
+after-school	After school.
+right-now	Right now.
+at-the-moment	At the moment.
+laughs	Laughs.
+judges	Judges.
+cooks	Cooks.
+fixes	Fixes.
+gets	Gets.
+goes	Goes.
+washes	Washes.
+carries	Carries.
+relaxes	Relaxes.
+worries	Worries.
+brushes	Brushes.
+7-o-clock	7 o'clock.
+new-year-s-day	New Year's Day.
+my-birthday	My birthday.
+the-evening	The evening.
+2027	2027.
+next-month	Next month.
+every-sunday	Every Sunday.
+ziad-wakes-up-at-six-and-brushes-his-teeth	Ziad wakes up at six and brushes his teeth.
+he-packs-his-bag-and-catches-the-bus-at-seven	He packs his bag and catches the bus at seven.
+on-fridays-he-plays-football-in-the-afternoon	On Fridays he plays football in the afternoon.
+at-bedtime-he-relaxes-and-watches-videos	At bedtime he relaxes and watches videos.
+he-cometh-he-comes	He cometh, he comes.
+he-comes	He comes.
+i-come-thou-comest-he-cometh	I come, thou comest, he cometh.
+she-maketh-a-schedule	She maketh a schedule.
+he-hath-a-nap-after-lunch	He hath a nap after lunch.
+she-studieth-every-night	She studieth every night.
+naps	Naps.
+wakes	Wakes.
+hangs	Hangs.
+packs	Packs.
+ziad-wakes-up-and-brushes-his-teeth	Ziad wakes up and brushes his teeth.
+he-packs-his-bag-and-plays-football	He packs his bag and plays football.
+information	Information.
+receipts	Receipts.
+suitcases	Suitcases.
+furniture	Furniture.
+news	News.
+ingredient	Ingredient.
+how-many-bottles-of-juice-do-we-need	How many bottles of juice do we need?
+how-much-rice-is-there-in-the-cupboard	How much rice is there in the cupboard?
+we-don-t-need-any-bread-we-have-some-leftovers	We don't need any bread. We have some leftovers.
+here-s-a-piece-of-advice-always-check-your-receipt	Here's a piece of advice: always check your receipt!
+careless	Careless.
+unhappiness	Unhappiness.
+rewrites	Rewrites.
+unhelpful	Unhelpful.
+players	Players.
+carelessness	Carelessness.
+unhelpfulness	Unhelpfulness.
+improvements	Improvements.
+improvement	Improvement.
+useful	Useful.
+sadness	Sadness.
+hopeful	Hopeful.
+payment	Payment.
+darkness	Darkness.
+helpful	Helpful.
+hopeless	Hopeless.
+recommendation	Recommendation.
+impatient	Impatient.
+lumi-that-was-the-funniest-dance-tonight	Lumi, that was the funniest dance tonight!
+you-were-fearless-and-unstoppable	You were fearless and unstoppable.
+i-can-see-a-big-improvement-since-last-week	I can see a big improvement since last week.
+you-should-work-on-your-timing	You should work on your timing.
+hey-guys-what-s-up	Hey guys, what's up?
+dear-mr-adams	Dear Mr. Adams,.
+hi-everyone-practice-is-at-five-tomorrow	Hi everyone, practice is at five tomorrow.
+i-look-forward-to-hearing-from-you	I look forward to hearing from you.
+thanks-so-much-bro	Thanks so much, bro!
+can-someone-share-the-notes-thanks	Can someone share the notes? Thanks!
+kind-regards-noor	Kind regards, Noor.
+sorry-i-m-late-guys	Sorry I'm late, guys!
+it-s-a-bit-noisy-in-here	It's a bit noisy in here.
+can-you-take-the-corner-kick	Can you take the corner kick?
+your-room-is-a-bit-messy	Your room is a bit messy.
+i-don-t-have-a-pen	I don't have a pen.
+does-anyone-have-the-homework	Does anyone have the homework?
+it-s-a-bit-cold-in-here	It's a bit cold in here.
+give-me-water	Give me water.
+could-i-have-some-water-please	Could I have some water, please?
+i-want-a-burger	I want a burger.
+i-d-like-a-burger-please	I'd like a burger, please.
+give-me-the-bill-please	Give me the bill, please.
+could-we-have-the-bill-please	Could we have the bill, please?
+can-i-get-an-orange-juice-please	Can I get an orange juice, please?
+excuse-me-could-i-see-the-menu-please	Excuse me, could I see the menu, please?
+i-d-like-the-chicken-and-an-orange-juice-please	I'd like the chicken and an orange juice, please.
+sorry-but-i-think-this-isn-t-what-i-ordered	Sorry, but I think this isn't what I ordered.
+could-we-have-the-bill-please-thank-you	Could we have the bill, please? Thank you!
+give-me-water-please	Give me water, please.
+pass-the-ball	Pass the ball!
+pass-the-ball-please	Pass the ball, please.
+can-you-pass-the-ball	Can you pass the ball?
+could-you-pass-me-the-ball-please	Could you pass me the ball, please?
+would-you-mind-passing-me-the-ball	Would you mind passing me the ball?
+o-m-g-that-s-so-funny	O M G, that's so funny!
+dear-ms-lina	Dear Ms. Lina,.
+hi-everyone-practice-is-at-5-tomorrow	Hi everyone, practice is at 5 tomorrow.
+thanks-bro-see-you-later	Thanks, bro, see you later.
+best-wishes-omar	Best wishes, Omar.
+i-would-like-to-ask-about-my-grade	I would like to ask about my grade.
+could-you-try-to-come-on-time-it-helps-the-team	Could you try to come on time? It helps the team.
+what-if-we-combine-both-ideas	What if we combine both ideas?
+would-you-mind-lending-me-your-notebook	Would you mind lending me your notebook?
+stopped	Stopped.
+lived	Lived.
+texted	Texted.
+scrolled	Scrolled.
+attended	Attended.
+drink-drank	Drink, drank.
+bring-brought	Bring, brought.
+go-went	Go, went.
+ride-rode	Ride, rode.
+think-thought	Think, thought.
+swim-swam	Swim, swam.
+catch-caught	Catch, caught.
+be-was	Be, was.
+take-took	Take, took.
+caught	Caught.
+taught	Taught.
+i-walked-i-watched-i-helped-i-cooked	I walked, I watched, I helped, I cooked.
+i-played-i-cleaned-i-called-i-lived	I played, I cleaned, I called, I lived.
+i-wanted-i-needed-i-visited-i-rested	I wanted, I needed, I visited, I rested.
+last-weekend-i-went-out-bought-a-snack-and-saw-a-movie	Last weekend I went out, bought a snack and saw a movie.
+on-friday-i-walked-to-the-mall-with-ziad	On Friday I walked to the mall with Ziad.
+we-watched-a-movie-and-i-bought-popcorn	We watched a movie and I bought popcorn.
+then-we-played-football-it-was-amazing	Then we played football. It was amazing.
+in-the-evening-i-helped-my-dad-he-cooked-dinner	In the evening I helped my dad. He cooked dinner,.
+and-we-visited-my-grandma-i-wanted-to-sleep-early	And we visited my grandma. I wanted to sleep early,.
+but-i-needed-to-finish-my-homework	But I needed to finish my homework.
+walked-played-wanted	Walked, played, wanted.
+wanted	Wanted.
+delivered	Delivered.
+replied	Replied.
+danced	Danced.
+sing-sang	Sing, sang.
+buy-bought	Buy, bought.
+sing-sang-sung	Sing, sang, sung.
+drink-drank-drunk	Drink, drank, drunk.
+ride-rode-ridden	Ride, rode, ridden.
+buy-bought-think-thought	Buy, bought, think, thought.
+last-weekend-i-visited-my-cousins	Last weekend I visited my cousins.
+we-played-video-games-and-watched-a-match	We played video games and watched a match.
+then-we-went-to-a-restaurant	Then we went to a restaurant.
+i-ate-a-huge-burger	I ate a huge burger.
+last-summer-my-family-went-to-the-beach-near-our-grandparents-house	Last summer, my family went to the beach near our grandparents' house.
+we-took-a-small-boat-but-then-the-wind-got-stronger-and-the-waves-got-bigger	We took a small boat, but then the wind got stronger and the waves got bigger.
+suddenly-a-huge-wave-hit-our-boat	Suddenly, a huge wave hit our boat!
+my-dad-turned-the-boat-around-and-we-went-back-to-the-beach	My dad turned the boat around, and we went back to the beach.
+in-the-end-we-were-wet-but-safe-and-we-laughed-about-it	In the end, we were wet but safe, and we laughed about it.
+because-of	Because of.
+last-friday-there-was-a-big-storm-in-our-city	Last Friday, there was a big storm in our city.
+first-the-lights-went-out-so-we-found-some-candles	First, the lights went out, so we found some candles.
+then-we-heard-a-strange-noise-outside	Then we heard a strange noise outside.
+suddenly-someone-knocked-on-the-door-and	Suddenly, someone knocked on the door, and...
+once-upon-a-time	Once upon a time.
+last-friday-two-days-ago	Last Friday. Two days ago.
+last-friday-there-was-a-big-football-match-in-the-city-hamad-and-omar-had-two-tickets-and-they-were-very-excited	Last Friday, there was a big football match in the city. Hamad and Omar had two tickets and they were very excited.
+first-they-took-the-bus-but-there-was-a-lot-of-traffic-so-they-were-late	First, they took the bus, but there was a lot of traffic, so they were late.
+when-they-arrived-at-the-stadium-there-was-a-long-queue	When they arrived at the stadium, there was a long queue.
+suddenly-hamad-checked-his-pocket-his-ticket-wasn-t-there	Suddenly, Hamad checked his pocket. His ticket wasn't there!
+they-ran-back-to-the-bus-stop-the-bus-driver-found-the-ticket-on-a-seat-and-gave-it-back	They ran back to the bus stop. The bus driver found the ticket on a seat and gave it back.
+in-the-end-they-watched-the-match-and-their-team-won-it-was-unforgettable	In the end, they watched the match and their team won. It was unforgettable!
+now-hamad-always-checks-his-pocket-twice	Now Hamad always checks his pocket twice!
+last-summer-there-was-a-new-museum-in-our-city	Last summer, there was a new museum in our city.
+the-driver-found-the-ticket-and-gave-it-back	The driver found the ticket and gave it back.
+in-the-end-we-were-tired-but-happy	In the end, we were tired but happy.
+suddenly-i-opened-the-door-and	Suddenly, I opened the door and...
+then-my-phone-rang-it-was-a-number-i-didn-t-know	Then my phone rang. It was a number I didn't know...
+i-heard-a-strange-noise-so-i-turned-around-and	I heard a strange noise, so I turned around and...
+the-sun-was-shining-and-the-birds-were-singing	The sun was shining and the birds were singing.
+suddenly-the-door-opened	Suddenly, the door opened.
+thousands-of-fans-were-cheering	Thousands of fans were cheering.
+omar-scored-a-goal	Omar scored a goal.
+my-little-sister-was-sleeping-on-the-sofa	My little sister was sleeping on the sofa.
+the-phone-rang	The phone rang.
+it-was-snowing-in-the-mountains	It was snowing in the mountains.
+we-arrived-at-the-hotel-at-midnight	We arrived at the hotel at midnight.
+i-was-studying-when-the-phone-rang	I was studying when the phone rang.
+my-dad-read-the-newspaper-every-morning	My dad read the newspaper every morning.
+they-were-playing-when-it-started-to-rain	They were playing when it started to rain.
+we-used-to-travel-to-egypt-every-summer	We used to travel to Egypt every summer.
+mom-was-cooking-when-we-arrived	Mom was cooking when we arrived.
+my-grandpa-walked-in-the-park-every-evening	My grandpa walked in the park every evening.
+we-were-running-to-the-shelter	We were running to the shelter.
+noor-was-swimming-when-it-started-to-rain	Noor was swimming when it started to rain.
+mom-was-shopping-at-the-mall	Mom was shopping at the mall.
+they-were-planning-a-trip-to-cairo	They were planning a trip to Cairo.
+the-bus-was-stopping-when-i-saw-ziad	The bus was stopping when I saw Ziad.
+i-was-beginning-to-feel-nervous	I was beginning to feel nervous.
+it-was-a-cold-night-and-the-wind-was-blowing	It was a cold night and the wind was blowing.
+my-brother-was-sleeping-and-i-was-reading	My brother was sleeping and I was reading.
+i-was-a-little-nervous	I was a little nervous.
+suddenly-someone-knocked-on-the-door	Suddenly, someone knocked on the door!
+at-8-pm-i-was-studying-for-my-exam	At 8 pm I was studying for my exam.
+it-was-raining	It was raining.
+people-were-waiting	People were waiting.
+the-bus-arrived	The bus arrived.
+the-lights-went-out	The lights went out.
+it-was-a-hot-morning-and-hundreds-of-people-were-waiting-at-the-airport	It was a hot morning, and hundreds of people were waiting at the airport.
+a-waiter-was-cleaning-the-tables-and-holding-a-small-piece-of-paper	A waiter was cleaning the tables and holding a small piece of paper.
+he-smiled-and-gave-her-the-boarding-pass-sara-felt-so-relieved	He smiled and gave her the boarding pass. Sara felt so relieved!
+it-was-raining-and-the-wind-was-blowing	It was raining and the wind was blowing.
+everybody-was-writing	Everybody was writing.
+in-the-last-minute-omar-scored	In the last minute, Omar scored!
+when-the-storm-started-omar-ran-to-the-shelter	When the storm started, Omar ran to the shelter.
+when-the-storm-started-omar-was-running-to-the-shelter	When the storm started, Omar was running to the shelter.
+while-we-were-exploring-the-old-town-it-started-to-rain	While we were exploring the old town, it started to rain.
+while-i-was-studying-the-phone-rang	While I was studying, the phone rang.
+when-i-watched-tv-the-phone-rang	When I watched TV, the phone rang.
+it-was-raining-hard	It was raining hard.
+people-were-running-to-the-shelter	People were running to the shelter.
+i-was-waiting-for-the-bus-and-i-was-very-calm	I was waiting for the bus and I was very calm.
+suddenly-there-was-a-huge-clap-of-thunder-and	Suddenly, there was a huge clap of thunder and...
+it-was-amazing	It was amazing.
+was-it-fun-yes-it-was	Was it fun? Yes, it was!
+we-went-to-the-party	We went to the party.
+who-were-you-talking-to	Who were you talking to?
+i-can-t-dance-but-my-sister-can	I can't dance, but my sister can.
+she-is-from-cairo	She is from Cairo.
+where-are-you-from	Where are you from?
+decoration	Decoration.
+last-friday-was-a-day-to-remember	Last Friday was a day to remember.
+when-i-woke-up-the-house-was-quiet	When I woke up, the house was quiet.
+in-the-evening-i-opened-the-door-and-surprise	In the evening, I opened the door and... surprise!
+there-were-lots-of-balloons-lanterns-and-a-huge-cake	There were lots of balloons, lanterns and a huge cake.
+i-was-at-the-par-ty	I. WAS. AT. THE. PAR. TY.
+and-there-were-lots-of-bal-loons	AND. THERE. WERE. LOTS. OF. BAL. LOONS.
+i-was-at-the-party-and-there-were-lots-of-balloons	I was at the PARty, and there were LOTS of balLOONS!
+cats-chase-mice	CATS, CHASE, MICE.
+the-cats-have-chased-the-mice	The CATS have CHASED the MICE.
+the-cats-will-have-chased-the-mice	The CATS will have CHASED the MICE.
+there-were-balloons-and-lanterns-everywhere	There were balloons and lanterns everywhere.
+we-were-waiting-for-the-guests	We were waiting for the guests.
+my-cousin-brought-a-huge-cake	My cousin brought a huge cake.
+it-was-the-best-party-of-the-year	It was the best party of the year.
+i-was-texting-my-friend-when-the-lights-went-out	I was texting my friend when the lights went out.
+everyone-was-laughing-and-giggling	Everyone was laughing and giggling.
+we-celebrated-my-grandparents-anniversary	We celebrated my grandparents' anniversary.
+i-didn-t-want-to-leave	I didn't want to leave.
+of-guests	Of guests.
+lots-of-guests	Lots of guests.
+there-were-lots-of-guests	There were lots of guests.
+the-party-was-amazing	The party was amazing.
+we-were-waiting-for-an-hour	We were waiting for an hour.
+i-went-to-the-celebration	I went to the celebration.
+there-were-lots-of-sweets	There were lots of sweets.
+we-had-cake-and-juice	We had cake and juice.
+where-did-the-guests-come-from	Where did the guests come from?
+got-up-early	Got up early.
+lots-of-balloons	Lots of balloons.
+an-hour	An hour.
+picked-up-the-gifts	Picked up the gifts.
+came-in	Came in.
+left-at-eight	Left at eight.
+full-of-guests	Full of guests.
+when-i-woke-up-the-house-was-quiet-and-everyone-was-sleeping	When I woke up, the house was quiet, and everyone was sleeping.
+suddenly-the-lights-went-out-and-somebody-whispered-my-name	Suddenly, the lights went out, and somebody whispered my name.
+mom-was-cooking-and-my-brothers-were-whispering-in-the-garden	Mom was cooking and my brothers were whispering in the garden.
+nobody-said-happy-birthday-and-i-was-so-disappointed	Nobody said happy birthday, and I was so disappointed.
+it-was-the-best-memory-of-my-life	It was the best memory of my life.
+i-ll-text-you-tonight	I'll text you tonight.
+i-text-my-cousins-every-day	I text my cousins every day.
+they-ll-win-the-final	They'll win the final.
+we-study-together-on-mondays	We study together on Mondays.
+i-won-t-tell-anyone	I won't tell anyone.
+i-want-to-tell-everyone	I want to tell everyone.
+he-won-t-be-late	He won't be late.
+we-want-to-join-the-team	We want to join the team.
+won-t	Won't.
+arrangement	Arrangement.
+tense	Tense.
+grammar	Grammar.
+i-ll-get-it	I'll get it!
+i-won-t-be-late	I won't be late.
+it-s-going-to-rain	It's going to rain.
+she-s-going-to-apply	She's going to apply.
+i-m-meeting-noor-at-4	I'm meeting Noor at 4.
+we-re-going-to-the-mall-at-5	We're going to the mall at 5.
+the-bus-leaves-at-7	The bus leaves at 7.
+the-match-starts-at-8	The match starts at 8.
+they-re-flying-to-cairo-on-friday	They're flying to Cairo on Friday.
+robots-will-do-our-homework	Robots will do our homework.
+i-ll-call-you-later	I'll call you later.
+i-want-to-go-but-i-won-t-go	I want to go, but I won't go.
+i-m-meeting-the-coach-at-4-tomorrow	I'm meeting the coach at 4 tomorrow.
+look-at-those-clouds-it-s-going-to-rain	Look at those clouds! It's going to rain.
+cars-will-probably-fly-but-paper-books-definitely-won-t-disappear	Cars will probably fly, but paper books definitely won't disappear.
+walks	Walks.
+will-walk	Will walk.
+is-going-to-walk	Is going to walk.
+is-walking-tomorrow	Is walking tomorrow.
+i-ll-call-you	I'll call you.
+you-ll	You'll.
+she-ll	She'll.
+i-won-t-go	I won't go.
+i-m-gonna-study	I'm gonna study.
+i-m-going-to-the-mall	I'm going to the mall.
+i-call-my-grandma-every-friday	I call my grandma every Friday.
+we-ll-help-you-with-the-project	We'll help you with the project.
+i-won-t-go-to-the-party	I won't go to the party.
+i-want-to-go-to-the-party	I want to go to the party.
+she-won-t-eat-fish	She won't eat fish.
+you-mustn-t-use-your-phone-in-the-exam	You mustn't use your phone in the exam.
+you-don-t-have-to-come-it-s-optional	You don't have to come. It's optional.
+you-have-to-wear-a-seatbelt-in-the-car	You have to wear a seatbelt in the car.
+students-don-t-have-to-wear-a-uniform-on-thursday	Students don't have to wear a uniform on Thursday.
+you-mustn-t-share-your-password	You mustn't share your password.
+visitors-must-sign-in-at-the-front-desk	Visitors must sign in at the front desk.
+he-doesn-t-have-to-pay-entry-is-free	He doesn't have to pay. Entry is free.
+fans-mustn-t-throw-bottles-onto-the-pitch	Fans mustn't throw bottles onto the pitch.
+terribly	Terribly.
+basically	Basically.
+dramatically	Dramatically.
+use-a-phone-in-the-exam	Use a phone in the exam.
+share-your-password	Share your password.
+feed-the-pigeons-in-st-mark-s-square	Feed the pigeons in St Mark's Square.
+bring-food-brunch-is-free	Bring food: brunch is free.
+join-the-charity-club-it-s-optional	Join the charity club: it's optional.
+pay-for-school-lunch-in-finland	Pay for school lunch in Finland.
+show-your-ticket-at-the-door	Show your ticket at the door.
+wear-a-seatbelt-in-the-car	Wear a seatbelt in the car.
+you-must-close-the-airlock-carefully	You must close the airlock carefully.
+you-mustn-t-run-in-the-lab	You mustn't run in the lab.
+you-don-t-have-to-exercise-at-night-but-you-can	You don't have to exercise at night, but you can.
+yesterday-we-had-to-repair-the-solar-panels	Yesterday we had to repair the solar panels.
+the-captain-speaks-clearly-calmly-and-patiently	The captain speaks clearly, calmly and patiently.
+simply	Simply.
+publicly	Publicly.
+hardly	Hardly.
+lucky	Lucky.
+simple	Simple.
+terrible	Terrible.
+basic	Basic.
+dramatic	Dramatic.
+cotton	Cotton.
+algebra	Algebra.
+safari	Safari.
+magazine	Magazine.
+coffee	Coffee.
+german	German.
+dutch	Dutch.
+swedish	Swedish.
+french	French.
+italian	Italian.
+arabic	Arabic.
+hebrew	Hebrew.
+amharic	Amharic.
+maltese	Maltese.
+english-is-a-germanic-language-and-arabic-is-a-semitic-language	English is a Germanic language, and Arabic is a Semitic language.
+algebra-was-born-in-baghdad-and-traveled-to-europe-through-latin	Algebra was born in Baghdad and traveled to Europe through Latin.
+coffee-came-into-english-through-turkish-italian-and-dutch	Coffee came into English through Turkish, Italian and Dutch.
+with-friends-i-buy-things-but-on-a-website-i-purchase-them	With friends I buy things, but on a website I purchase them.
+goodbye-from-algebra-born-in-baghdad	Goodbye from algebra, born in Baghdad!
+on-saturday-morning-hamad-sat-on-the-sofa	On Saturday morning, Hamad sat on the sofa.
+with-a-cup-of-coffee-with-lots-of-sugar	With a cup of coffee with lots of sugar.
+he-was-reading-a-magazine-about-a-safari-in-kenya	He was reading a magazine about a safari in Kenya,.
+with-a-photo-of-a-giraffe	With a photo of a giraffe.
+then-he-opened-his-algebra-homework	Then he opened his algebra homework.
+and-got-zero-on-the-first-question	And got zero on the first question!
+persian	Persian.
+as-a-doctor-for-twenty-years-i-can-tell-you-this-works	As a doctor for twenty years, I can tell you this works.
+imagine-your-best-friend-sitting-alone-at-lunch-every-day	Imagine your best friend sitting alone at lunch every day.
+eighty-percent-of-the-students-in-our-survey-agreed	Eighty percent of the students in our survey agreed.
+if-we-recycle-more-we-will-need-fewer-landfills	If we recycle more, we will need fewer landfills.
+i-have-coached-this-team-for-five-years-so-i-know-what-it-needs	I have coached this team for five years, so I know what it needs.
+think-how-proud-your-parents-will-feel-on-graduation-day	Think how proud your parents will feel on graduation day.
+this-phone-is-cheaper-and-its-battery-lasts-twice-as-long	This phone is cheaper, and its battery lasts twice as long.
+as-a-student-who-uses-this-app-every-day-i-really-trust-it	As a student who uses this app every day, I really trust it.
+however	However.
+moreover	Moreover.
+firstly	Firstly.
+rhetoric	Rhetoric.
+persuade	Persuade.
+secondly	Secondly.
+what-s-more	What's more.
+on-the-other-hand	On the other hand.
+for-example	For example.
+for-instance	For instance.
+in-conclusion	In conclusion.
+to-sum-up	To sum up.
+firstly-i-d-like-to-explain-why-our-school-should-start-later	Firstly, I'd like to explain why our school should start later.
+it-seems-that-many-teenagers-don-t-get-enough-sleep	It seems that many teenagers don't get enough sleep.
+that-s-a-fair-point-but-have-you-thought-about-the-buses	That's a fair point, but have you thought about the buses?
+i-agree-partly-but-i-m-not-sure-it-will-work	I agree partly, but I'm not sure it will work.
+in-conclusion-i-believe-a-later-start-is-better-for-our-health	In conclusion, I believe a later start is better for our health.
+i-m-a-teacher-with-ten-years-of-experience-and-i-use-this-app-with-all-my-students	I'm a teacher with ten years of experience, and I use this app with all my students.
+imagine-the-night-before-an-exam-you-re-tired-stressed-and-scrolling-focustimer-gives-you-back-your-calm	Imagine the night before an exam: you're tired, stressed and scrolling. FocusTimer gives you back your calm.
+in-our-class-test-students-who-used-it-studied-40-minutes-longer-with-fewer-distractions	In our class test, students who used it studied 40 minutes longer with fewer distractions.
+ethos	Ethos.
+pathos	Pathos.
+logos	Logos.
+also	Also.
+that-s-a-fair-point-but	That's a fair point, but...
+i-agree-partly-but	I agree partly, but...
+i-see-what-you-mean-but-have-you-thought-about	I see what you mean, but have you thought about...?
+i-m-not-sure-i-agree-because	I'm not sure I agree, because...
+watch-watches	Watch, watches.
+does-says	Does, says.
+
+# ===== D2 Level 4-6 class games: overheard dialogue lines + 1 prompt (item 14) - 81 lines
+not-really-exciting-honestly-i-played-video-games-and-watched-a-movie	Not really exciting, honestly. I played video games and watched a movie.
+wow-productive-weekend-did-anyone-help-you-with-all-of-that	Wow, productive weekend. Did anyone help you with all of that?
+okay-tell-me-everything-where-did-you-even-go	Okay, tell me everything. Where did you even go?
+what-was-it-and-please-tell-me-you-took-a-picture	What was it? And please tell me you took a picture.
+i-almost-forgot-honestly-but-i-checked-my-planner-last-night-just-in-time	I almost forgot, honestly, but I checked my planner last night just in time.
+that-s-rough-did-you-at-least-call-the-teacher-to-explain-what-happened	That's rough. Did you at least call the teacher to explain what happened?
+honestly-it-was-incredibly-crowded-but-the-music-itself-was-amazing	Honestly, it was incredibly crowded, but the music itself was amazing.
+a-little-but-not-boring-at-all-worth-every-uncomfortable-moment-honestly	A little, but not boring at all. Worth every uncomfortable moment, honestly.
+don-t-remind-me-the-line-alone-took-almost-an-hour-and-then-the-traffic	Don't remind me. The line alone took almost an hour, and then the traffic.
+true-that-made-the-whole-problem-worth-it-looking-back-now	True, that made the whole problem worth it, looking back now.
+honestly-something-from-last-summer-still-randomly-pops-into-my-head-sometimes	Honestly, something from last summer still randomly pops into my head sometimes.
+really-what-happened-two-days-ago-that-was-so-memorable	Really? What happened two days ago that was so memorable?
+okay-so-first-we-warmed-up-then-we-ran-through-the-whole-routine-twice	Okay, so first we warmed up, then we ran through the whole routine twice.
+after-that-yeah-but-honestly-it-was-helpful-feedback-not-harsh-at-all	After that, yeah, but honestly it was helpful feedback, not harsh at all.
+honestly-since-my-alarm-didn-t-go-off-i-just-completely-overslept	Honestly, since my alarm didn't go off, I just completely overslept.
+i-did-so-at-least-everyone-knew-i-was-on-my-way-and-not-just-ignoring-it	I did, so at least everyone knew I was on my way and not just ignoring it.
+nervous-the-whole-time-but-honestly-relieved-once-i-actually-saw-my-score	Nervous the whole time, but honestly relieved once I actually saw my score.
+a-little-but-mostly-just-surprised-it-went-better-than-i-expected-at-all	A little, but mostly just surprised it went better than I expected at all.
+sorry-i-was-studying-and-completely-lost-track-of-everything-around-me	Sorry, I was studying and completely lost track of everything around me.
+exactly-and-my-parents-were-talking-in-the-kitchen-while-my-mom-was-cooking	Exactly, and my parents were talking in the kitchen while my mom was cooking.
+honestly-i-reviewed-my-notes-every-single-night-even-when-i-didn-t-feel-like-it	Honestly, I reviewed my notes every single night, even when I didn't feel like it.
+a-mix-but-mostly-i-practiced-explaining-it-out-loud-until-it-made-sense	A mix, but mostly I practiced explaining it out loud until it made sense.
+honestly-chaotic-we-packed-way-too-much-and-almost-missed-our-flight	Honestly chaotic. We packed way too much and almost missed our flight.
+completely-we-explored-so-much-more-than-i-expected-in-just-one-week	Completely. We explored so much more than I expected in just one week.
+where-do-i-even-start-i-spilled-coffee-on-my-notes-right-before-class	Where do I even start. I spilled coffee on my notes right before class.
+i-also-lost-my-bus-pass-and-showed-up-late-because-of-it-honestly	I also lost my bus pass and showed up late because of it, honestly.
+even-more-honestly-the-decorations-looked-amazing-once-everyone-arrived	Even more, honestly. The decorations looked amazing once everyone arrived.
+both-actually-we-played-games-for-hours-before-we-even-got-to-the-cake	Both, actually. We played games for hours before we even got to the cake.
+honestly-the-day-i-woke-up-and-just-knew-something-good-was-coming	Honestly, the day I woke up and just knew something good was coming.
+we-ended-up-celebrating-something-completely-unexpected-with-the-whole-family	We ended up celebrating something completely unexpected with the whole family.
+honestly-i-was-thinking-about-something-completely-unrelated-at-that-exact-moment	Honestly, I was thinking about something completely unrelated at that exact moment.
+they-were-watching-closely-but-i-was-laughing-at-something-on-my-phone-instead	They were watching closely, but I was laughing at something on my phone instead.
+honestly-probably-the-challenge-i-overcame-during-that-group-project-earlier	Honestly, probably the challenge I overcame during that group project earlier.
+learning-to-speak-up-more-actually-that-felt-like-a-real-adventure-for-me	Learning to speak up more, actually. That felt like a real adventure for me.
+i-chose-a-comedy-and-honestly-we-laughed-way-more-than-i-expected	I chose a comedy, and honestly we laughed way more than I expected.
+of-course-my-brother-did-while-he-was-still-texting-someone-the-whole-time	Of course, my brother did, while he was still texting someone the whole time.
+my-backpack-actually-i-searched-everywhere-and-started-getting-really-worried	My backpack, actually. I searched everywhere and started getting really worried.
+found-it-thankfully-under-a-bench-where-i-d-forgotten-i-sat-down	Found it, thankfully, under a bench where I'd forgotten I sat down.
+honestly-i-d-say-i-went-from-nervous-to-excited-because-i-finally-understood-past-tense	Honestly, I'd say I went from nervous to excited because I finally understood past tense.
+probably-realizing-i-could-actually-tell-a-whole-story-without-stopping-to-translate	Probably realizing I could actually tell a whole story without stopping to translate.
+honestly-i-m-thinking-about-applying-to-a-program-abroad-if-i-m-brave-enough	Honestly, I'm thinking about applying to a program abroad, if I'm brave enough.
+move-eventually-i-think-but-i-d-start-by-joining-a-summer-program-first	Move eventually, I think, but I'd start by joining a summer program first.
+honestly-i-believe-it-ll-probably-change-faster-than-we-can-even-imagine	Honestly, I believe it'll probably change faster than we can even imagine.
+that-s-kind-of-exciting-but-also-a-little-terrifying-if-i-m-being-honest	That's kind of exciting, but also a little terrifying if I'm being honest.
+i-m-traveling-friday-then-attending-my-cousin-s-graduation-on-saturday	I'm traveling Friday, then attending my cousin's graduation on Saturday.
+early-morning-honestly-i-m-also-hosting-a-small-get-together-sunday-night	Early morning, honestly. I'm also hosting a small get-together Sunday night.
+tell-me-did-something-interrupt-your-walk-or-did-you-just-get-soaked	Tell me! Did something interrupt your walk, or did you just get soaked?
+classic-timing-what-were-you-doing-meanwhile-just-running-for-shelter	Classic timing. What were you doing meanwhile, just running for shelter?
+required-unfortunately-my-parents-say-it-s-part-of-my-responsibility	Required, unfortunately. My parents say it's part of my responsibility.
+that-s-a-mature-way-to-look-at-it-i-usually-complain-before-i-even-start	That's a mature way to look at it. I usually complain before I even start.
+carefully-always-i-d-rather-do-something-slowly-than-redo-it-because-i-rushed	Carefully, always. I'd rather do something slowly than redo it because I rushed.
+honestly-that-sounds-stressful-doesn-t-that-make-things-harder-eventually	Honestly, that sounds stressful. Doesn't that make things harder eventually?
+science-definitely-but-math-is-way-more-interesting-to-me-personally	Science, definitely, but math is way more interesting to me personally.
+probably-just-getting-home-and-finally-sitting-in-the-most-comfortable-chair-i-own	Probably just getting home and finally sitting in the most comfortable chair I own.
+mostly-yeah-i-want-to-sleep-in-and-just-catch-up-on-everything-i-ve-missed	Mostly, yeah. I want to sleep in and just catch up on everything I've missed.
+we-could-do-both-hang-out-there-saturday-and-volunteer-together-sunday	We could do both, hang out there Saturday and volunteer together Sunday.
+honestly-i-believe-we-will-i-think-our-friendship-will-only-change-a-little	Honestly, I believe we will. I think our friendship will only change a little.
+that-s-kind-of-you-i-actually-think-you-ll-succeed-at-inventing-something-useful	That's kind of you. I actually think you'll succeed at inventing something useful.
+a-little-more-independent-now-honestly-since-i-ve-earned-more-of-their-trust	A little more independent now, honestly, since I've earned more of their trust.
+mostly-as-long-as-i-still-do-my-chores-and-let-them-know-where-i-am	Mostly, as long as I still do my chores and let them know where I am.
+honestly-nervously-at-first-but-i-try-to-speak-clearly-no-matter-how-i-feel	Honestly, nervously at first, but I try to speak clearly no matter how I feel.
+politely-but-still-honestly-you-can-be-kind-and-truthful-at-the-same-time	Politely, but still honestly. You can be kind and truthful at the same time.
+honestly-the-more-expensive-one-seems-more-reliable-so-probably-worth-it	Honestly, the more expensive one seems more reliable, so probably worth it.
+both-but-the-most-useful-option-usually-wins-for-me-in-the-end	Both, but the most useful option usually wins for me in the end.
+honestly-i-was-studying-while-chatting-a-little-which-probably-wasn-t-smart	Honestly, I was studying while chatting a little, which probably wasn't smart.
+same-but-i-still-try-yesterday-i-was-scrolling-while-my-mom-was-cooking-nearby	Same, but I still try. Yesterday I was scrolling while my mom was cooking nearby.
+i-do-honestly-my-resolution-is-to-challenge-myself-more-instead-of-staying-comfortable	I do, honestly. My resolution is to challenge myself more instead of staying comfortable.
+probably-my-confidence-if-i-m-being-completely-honest-about-it	Probably my confidence, if I'm being completely honest about it.
+i-can-try-i-think-i-have-a-fair-point-even-if-you-don-t-fully-agree	I can try. I think I have a fair point, even if you don't fully agree.
+that-s-fine-i-m-not-trying-to-argue-you-into-total-agreement-anyway	That's fine, I'm not trying to argue you into total agreement anyway.
+honestly-i-ve-practiced-enough-i-just-need-to-organize-my-notes-and-rest	Honestly, I've practiced enough. I just need to organize my notes and rest.
+exactly-over-preparing-without-resting-just-makes-tomorrow-harder-not-easier	Exactly, over-preparing without resting just makes tomorrow harder, not easier.
+actually-pretty-smoothly-i-finally-did-the-whole-process-correctly-and-efficiently	Actually, pretty smoothly. I finally did the whole process correctly and efficiently.
+safely-properly-all-of-it-honestly-i-even-kept-my-notes-neatly-organized	Safely, properly, all of it, honestly. I even kept my notes neatly organized.
+honestly-pretty-different-but-we-still-keep-the-most-traditional-customs-alive	Honestly, pretty different, but we still keep the most traditional customs alive.
+probably-our-biggest-holiday-it-s-genuinely-the-most-colorful-event-of-the-year	Probably our biggest holiday, it's genuinely the most colorful event of the year.
+excited-honestly-but-something-unexpected-happened-that-made-it-even-more-memorable	Excited, honestly, but something unexpected happened that made it even more memorable.
+close-actually-but-the-teacher-handled-it-so-calmly-it-barely-felt-like-a-crisis	Close, actually, but the teacher handled it so calmly it barely felt like a crisis.
+honestly-i-predict-i-ll-achieve-something-i-couldn-t-even-imagine-at-the-start-of-this-level	Honestly, I predict I'll achieve something I couldn't even imagine at the start of this level.
+there-s-time-but-i-don-t-want-to-waste-it-either-if-i-m-being-honest	There's time, but I don't want to waste it either, if I'm being honest.
+which-sentence-fits-the-chat	Which sentence fits the chat?
+
+# ===== D3 Placement test listening passages (item 25) - short key names, see note - 36 lines
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 86 characters); lumio-pro-test.html must play assets/audio/placement-a1-tom-is-a-happy-boy-he-loves-the-colour.mp3
+placement-a1-tom-is-a-happy-boy-he-loves-the-colour	Tom is a happy boy. He loves the colour blue. His bag is blue and his shoes are blue too!
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 89 characters); lumio-pro-test.html must play assets/audio/placement-a1-my-name-is-sara-i-live-in-a-big-city-my.mp3
+placement-a1-my-name-is-sara-i-live-in-a-big-city-my	My name is Sara. I live in a big city. My house is near a park. I play in the park every day.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 87 characters); lumio-pro-test.html must play assets/audio/placement-a1-every-morning-ali-eats-bread-and-drinks.mp3
+placement-a1-every-morning-ali-eats-bread-and-drinks	Every morning, Ali eats bread and drinks milk for breakfast. Sometimes he eats an egg too.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 98 characters); lumio-pro-test.html must play assets/audio/placement-a1-lina-loves-animals-she-has-two-cats-at.mp3
+placement-a1-lina-loves-animals-she-has-two-cats-at	Lina loves animals. She has two cats at home. Their names are Mimi and Bibo. She feeds them every day.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 103 characters); lumio-pro-test.html must play assets/audio/placement-a1-omar-loves-sport-he-plays-football.mp3
+placement-a1-omar-loves-sport-he-plays-football	Omar loves sport. He plays football every Saturday with his friends in the park. He is a very fast runner.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 104 characters); lumio-pro-test.html must play assets/audio/placement-a1-hi-my-name-is-maya-my-favourite-subject.mp3
+placement-a1-hi-my-name-is-maya-my-favourite-subject	Hi! My name is Maya. My favourite subject at school is art. I love drawing and painting pictures of animals.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 107 characters); lumio-pro-test.html must play assets/audio/placement-a1-the-supermarket-is-on-green-street-it.mp3
+placement-a1-the-supermarket-is-on-green-street-it	The supermarket is on Green Street. It is next to the post office and opposite the bank. It is open every day.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 98 characters); lumio-pro-test.html must play assets/audio/placement-a1-my-name-is-sam-i-am-nine-years-old-i.mp3
+placement-a1-my-name-is-sam-i-am-nine-years-old-i	My name is Sam. I am nine years old. I live with my mum, dad and little sister. We have a small garden.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 120 characters); lumio-pro-test.html must play assets/audio/placement-a1-nadia-loves-animals-and-science-she.mp3
+placement-a1-nadia-loves-animals-and-science-she	Nadia loves animals and science. She wants to be a vet when she grows up. She already helps look after her neighbour's dog.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 110 characters); lumio-pro-test.html must play assets/audio/placement-a1-look-at-my-new-school-bag-it-is-red.mp3
+placement-a1-look-at-my-new-school-bag-it-is-red	Look at my new school bag! It is red with yellow stars on it. I got it as a birthday present from my grandmother.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 143 characters); lumio-pro-test.html must play assets/audio/placement-a2-hello-everyone-our-school-trip-to-the.mp3
+placement-a2-hello-everyone-our-school-trip-to-the	Hello everyone! Our school trip to the zoo is on Friday. Please bring your lunch and wear comfortable shoes. We will leave at eight in the morning.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 120 characters); lumio-pro-test.html must play assets/audio/placement-a2-the-school-bus-leaves-at-eight-in-the.mp3
+placement-a2-the-school-bus-leaves-at-eight-in-the	The school bus leaves at eight in the morning. Do not be late! If you miss the bus, ask your parents to drive you to school.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 137 characters); lumio-pro-test.html must play assets/audio/placement-a2-good-morning-students-today-the-weather.mp3
+placement-a2-good-morning-students-today-the-weather	Good morning students! Today the weather is sunny and warm. The temperature is twenty-five degrees. It is a great day to go outside and play!
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 132 characters); lumio-pro-test.html must play assets/audio/placement-a2-mr-ahmed-is-our-favourite-teacher-he.mp3
+placement-a2-mr-ahmed-is-our-favourite-teacher-he	Mr. Ahmed is our favourite teacher. He teaches us science. Every Friday, we do a fun experiment in the science lab. We all love his class!
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 159 characters); lumio-pro-test.html must play assets/audio/placement-a2-excuse-me-can-you-tell-me-where-the.mp3
+placement-a2-excuse-me-can-you-tell-me-where-the	Excuse me, can you tell me where the library is? Of course! Go straight down this road, then turn left at the traffic lights. The library is next to the post office.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 161 characters); lumio-pro-test.html must play assets/audio/placement-a2-hi-nour-what-are-you-doing-this-weekend.mp3
+placement-a2-hi-nour-what-are-you-doing-this-weekend	Hi Nour! What are you doing this weekend? I am going to visit my grandparents in the countryside. We will have a barbecue and play in the garden. I am really excited!
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 144 characters); lumio-pro-test.html must play assets/audio/placement-a2-jake-went-to-the-market-with-his-mother.mp3
+placement-a2-jake-went-to-the-market-with-his-mother	Jake went to the market with his mother. He bought some fresh oranges and a bag of apples. He also got a bottle of juice. Everything was very cheap.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 156 characters); lumio-pro-test.html must play assets/audio/placement-a2-we-were-planning-to-play-in-the-park.mp3
+placement-a2-we-were-planning-to-play-in-the-park	We were planning to play in the park this afternoon, but it was closed. A notice on the gate said it was closed for cleaning and would reopen tomorrow morning.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 183 characters); lumio-pro-test.html must play assets/audio/placement-a2-last-night-my-family-watched-a-film.mp3
+placement-a2-last-night-my-family-watched-a-film	Last night, my family watched a film together. We chose an adventure film about explorers in the jungle. It was two hours long and very exciting. My favourite part was the waterfall scene.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 150 characters); lumio-pro-test.html must play assets/audio/placement-a2-layla-lives-far-from-school-every.mp3
+placement-a2-layla-lives-far-from-school-every	Layla lives far from school. Every morning, her father drops her off by car. Her friend Sara takes the bus, but Layla prefers the car because it is faster.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 185 characters); lumio-pro-test.html must play assets/audio/placement-b1-maya-was-absent-from-school-on-monday.mp3
+placement-b1-maya-was-absent-from-school-on-monday	Maya was absent from school on Monday because she had a bad cold. She had a high temperature and her mum told her to stay in bed and drink lots of water. She felt much better by Wednesday.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 227 characters); lumio-pro-test.html must play assets/audio/placement-b1-scientists-say-that-plastic-bags-are.mp3
+placement-b1-scientists-say-that-plastic-bags-are	Scientists say that plastic bags are one of the biggest environmental problems today. They take hundreds of years to break down, and many end up in the ocean where they harm sea animals. Using reusable bags is a simple way to help.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 227 characters); lumio-pro-test.html must play assets/audio/placement-b1-a-new-health-report-says-that-teenagers.mp3
+placement-b1-a-new-health-report-says-that-teenagers	A new health report says that teenagers who spend more than three hours a day on screens are more likely to have sleep problems and feel anxious. Experts recommend taking regular breaks and turning off devices an hour before bed.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 224 characters); lumio-pro-test.html must play assets/audio/placement-b1-visitors-to-the-annual-lantern-festival.mp3
+placement-b1-visitors-to-the-annual-lantern-festival	Visitors to the annual lantern festival in Taiwan were amazed by how the sky looked. Thousands of paper lanterns filled the air, creating a magical orange glow. Many said it was more beautiful than they had imagined from photos.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 218 characters); lumio-pro-test.html must play assets/audio/placement-b1-the-new-community-centre-in-our-town-is.mp3
+placement-b1-the-new-community-centre-in-our-town-is	The new community centre in our town is now open. It offers free evening classes in cooking, photography and computing for all residents. There is also a café and a reading room. You can register online or at the front desk.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 242 characters); lumio-pro-test.html must play assets/audio/placement-b1-we-apologise-for-the-delay-on-the-seven.mp3
+placement-b1-we-apologise-for-the-delay-on-the-seven	We apologise for the delay on the seven-fifteen service to Central Station. The delay is due to a signal fault between Riverside and the city. Engineers are working to fix the problem. We expect services to resume in approximately thirty minutes.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 238 characters); lumio-pro-test.html must play assets/audio/placement-b1-if-you-really-want-to-learn-a-language.mp3
+placement-b1-if-you-really-want-to-learn-a-language	If you really want to learn a language quickly, the best thing you can do is practise every single day — even just fifteen minutes. Watching films, listening to music and talking with native speakers are all fantastic ways to improve naturally.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 230 characters); lumio-pro-test.html must play assets/audio/placement-b1-this-saturday-our-school-is-hosting-a.mp3
+placement-b1-this-saturday-our-school-is-hosting-a	This Saturday, our school is hosting a charity run to raise money for a local children's hospital. Students can get sponsored for each kilometre they run. All money raised will go towards buying new medical equipment for the hospital.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 296 characters); lumio-pro-test.html must play assets/audio/placement-b2-the-evidence-overwhelmingly-suggests.mp3
+placement-b2-the-evidence-overwhelmingly-suggests	The evidence overwhelmingly suggests that remote working, when implemented correctly, leads to higher productivity and greater employee satisfaction. While some managers fear a loss of oversight, the data consistently shows that trust-based management produces far better results than micromanagement.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 290 characters); lumio-pro-test.html must play assets/audio/placement-b2-despite-its-undeniable-benefits-in.mp3
+placement-b2-despite-its-undeniable-benefits-in	Despite its undeniable benefits in connecting people across the globe, social media platforms have been shown to contribute to increased anxiety and depression, particularly among teenagers. The curated nature of online content creates unrealistic comparisons and fosters a sense of inadequacy.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 243 characters); lumio-pro-test.html must play assets/audio/placement-b2-rather-than-banning-smartphones-in.mp3
+placement-b2-rather-than-banning-smartphones-in	Rather than banning smartphones in schools outright, we should focus on teaching students digital literacy — helping them understand how to use technology responsibly, critically evaluate online information, and manage their screen time effectively.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 257 characters); lumio-pro-test.html must play assets/audio/placement-b2-a-recent-longitudinal-study-tracking.mp3
+placement-b2-a-recent-longitudinal-study-tracking	A recent longitudinal study tracking ten thousand participants over fifteen years found that people who engaged in regular physical exercise were not only physically healthier but also demonstrated significantly lower rates of cognitive decline as they aged.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 274 characters); lumio-pro-test.html must play assets/audio/placement-b2-effective-climate-policy-cannot-rely.mp3
+placement-b2-effective-climate-policy-cannot-rely	Effective climate policy cannot rely solely on individual behavioral changes. Systemic transformation — including investment in renewable energy infrastructure, regulatory reform, and international cooperation — is essential if we are to meet the targets set by the Paris Agreement.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 301 characters); lumio-pro-test.html must play assets/audio/placement-b2-artificial-intelligence-presents-both.mp3
+placement-b2-artificial-intelligence-presents-both	Artificial intelligence presents both extraordinary opportunities and serious risks. While AI can accelerate medical research and improve efficiency across industries, unchecked development without ethical guidelines risks amplifying biases and threatening employment in ways we are not yet prepared for.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 287 characters); lumio-pro-test.html must play assets/audio/placement-b2-throughout-history-every-major.mp3
+placement-b2-throughout-history-every-major	Throughout history, every major technological revolution — from the printing press to the industrial revolution to the internet — has initially caused widespread disruption and fear, yet ultimately resulted in higher living standards and the creation of entirely new industries and professions.
+#   note for the next line: placement passage: the file name is a short key (the full-text slug would be 305 characters); lumio-pro-test.html must play assets/audio/placement-b2-modern-cities-must-be-redesigned-with.mp3
+placement-b2-modern-cities-must-be-redesigned-with	Modern cities must be redesigned with human wellbeing at their core. This means prioritizing pedestrian zones, green spaces, and efficient public transport over car-centric infrastructure. Cities that have made this shift, such as Amsterdam and Copenhagen, consistently rank among the most liveable in the world.
+
+# ===== E  Idiom meanings, English Hub Pre-A to Level 6 (known open item) - 139 lines
+something-very-easy	Something very easy.
+it-s-raining-very-hard	It's raining very hard.
+very-calm-and-relaxed	Very calm and relaxed.
+feeling-nervous-or-excited	Feeling nervous or excited.
+feeling-very-happy	Feeling very happy.
+sleep-well	Sleep well.
+working-very-hard	Working very hard.
+an-important-person	An important person.
+very-happy-and-content	Very happy and content.
+making-no-noise-at-all	Making no noise at all.
+someone-who-loves-reading	Someone who loves reading.
+loving-sweet-food	Loving sweet food.
+listening-carefully	Listening carefully.
+to-help-someone	To help someone.
+wait-and-be-patient	Wait and be patient.
+feeling-a-little-sick	Feeling a little sick.
+someone-who-copies-others	Someone who copies others.
+hoping-for-good-luck	Hoping for good luck.
+warm-and-cozy	Warm and cozy.
+very-very-easy	Very, very easy.
+good-luck	Good luck!
+we-meet-familiar-people-in-surprising-places	We meet familiar people in surprising places.
+to-tell-a-secret-by-mistake	To tell a secret by mistake.
+very-rarely	Very rarely.
+very-expensive	Very expensive.
+to-go-to-bed	To go to bed.
+to-tell-someone-honestly-you-re-upset	To tell someone honestly you're upset.
+feeling-sad	Feeling sad.
+good-at-growing-plants	Good at growing plants.
+to-get-some-sleep	To get some sleep.
+the-one-who-starts-early-succeeds	The one who starts early succeeds.
+two-people-very-alike	Two people very alike.
+to-release-stress-or-anger	To release stress or anger.
+practical-and-modest	Practical and modest.
+to-watch-carefully	To watch carefully.
+a-time-of-future-need	A time of future need.
+to-stop-working-for-now	To stop working for now.
+in-trouble	In trouble.
+a-clever-idea	A clever idea.
+daydreaming-not-paying-attention	Daydreaming, not paying attention.
+it-s-better-to-do-something-late-than-not-do-it-at-all	It's better to do something late than not do it at all.
+the-person-we-just-talked-about-appears	The person we just talked about appears.
+being-too-curious-can-get-you-into-trouble	Being too curious can get you into trouble.
+to-ignore-someone-on-purpose	To ignore someone on purpose.
+to-study-hard	To study hard.
+the-more-you-practice-something-the-better-you-become-at-it	The more you practice something, the better you become at it.
+to-joke-with-someone	To joke with someone.
+a-good-thing-that-seemed-bad-at-first	A good thing that seemed bad at first.
+both-people-are-responsible-for-something-that-happens-between-them	Both people are responsible for something that happens between them.
+extremely-happy	Extremely happy.
+to-take-on-too-much	To take on too much.
+a-share-of-something	A share of something.
+children-are-often-similar-to-their-parents	Children are often similar to their parents.
+a-very-rare-chance	A very rare chance.
+stay-positive-in-hard-times	Stay positive in hard times.
+what-you-do-matters-more-than-what-you-say	What you do matters more than what you say.
+the-final-problem-that-ends-patience	The final problem that ends patience.
+to-be-undecided	To be undecided.
+to-become-uncontrollable	To become uncontrollable.
+an-event-that-makes-you-change	An event that makes you change.
+to-start-a-conversation-comfortably	To start a conversation comfortably.
+in-agreement-or-understanding	In agreement or understanding.
+to-reveal-a-secret	To reveal a secret.
+to-get-along-instantly	To get along instantly.
+to-sound-familiar	To sound familiar.
+to-do-something-cheaply-or-carelessly	To do something cheaply or carelessly.
+don-t-decide-what-something-is-like-based-only-on-how-it-looks	Don't decide what something is like based only on how it looks.
+to-start-something	To start something.
+don-t-bring-up-an-old-problem-that-has-already-been-solved	Don't bring up an old problem that has already been solved.
+to-miss-a-chance	To miss a chance.
+to-accept-the-consequences	To accept the consequences.
+in-the-same-difficult-situation	In the same difficult situation.
+to-judge-too-quickly	To judge too quickly.
+to-stay-calm	To stay calm.
+without-checking-or-planning	Without checking or planning.
+to-make-extra-effort	To make extra effort.
+to-improvise-as-things-happen	To improvise as things happen.
+a-narrow-escape	A narrow escape.
+to-start-over-again	To start over again.
+to-try-very-hard-to-help	To try very hard to help.
+time-passes-very-quickly	Time passes very quickly.
+to-keep-money-for-future-needs	To keep money for future needs.
+to-do-something-hard-bravely	To do something hard bravely.
+to-change-your-opinion	To change your opinion.
+to-deal-with-a-problem-later	To deal with a problem later.
+to-work-or-study-late-at-night	To work or study late at night.
+to-not-fully-believe-something	To not fully believe something.
+to-calm-down-and-regain-control	To calm down and regain control.
+in-a-risky-situation	In a risky situation.
+a-rough-estimate	A rough estimate.
+to-get-to-the-point	To get to the point.
+to-become-nervous-before-an-event	To become nervous before an event.
+to-be-exactly-right	To be exactly right.
+to-not-commit-yet	To not commit yet.
+something-with-good-and-bad-sides	Something with good and bad sides.
+to-learn-how-something-works	To learn how something works.
+to-think-and-react-quickly-in-a-difficult-situation	To think and react quickly in a difficult situation.
+to-survive-a-hard-time	To survive a hard time.
+to-firmly-refuse-or-insist	To firmly refuse or insist.
+a-hopeful-side-to-a-bad-situation	A hopeful side to a bad situation.
+to-summarize	To summarize.
+something-nostalgic	Something nostalgic.
+to-make-a-fresh-start	To make a fresh start.
+to-surprise-someone-unprepared	To surprise someone unprepared.
+a-past-problem-now-forgiven	A past problem now forgiven.
+to-make-peace-after-a-fight	To make peace after a fight.
+a-small-visible-part-of-a-big-problem	A small visible part of a big problem.
+while-too-emotional-to-think-clearly	While too emotional to think clearly.
+to-return-to-the-start-after-change	To return to the start after change.
+a-brave-risky-decision	A brave, risky decision.
+to-make-a-bad-situation-worse	To make a bad situation worse.
+to-stop-yourself-from-speaking	To stop yourself from speaking.
+a-wild-guess	A wild guess.
+to-occur-to-you-as-a-thought	To occur to you as a thought.
+to-set-a-limit	To set a limit.
+to-manage-money-enough-to-live	To manage money enough to live.
+a-skill-done-without-thinking	A skill done without thinking.
+to-finally-do-something-risky	To finally do something risky.
+advantages-of-two-situations	Advantages of two situations.
+to-meet-a-challenge-successfully	To meet a challenge successfully.
+the-truth-will-be-known-in-the-future	The truth will be known in the future.
+better-things-will-happen	Better things will happen.
+to-join-a-popular-trend	To join a popular trend.
+to-find-a-hidden-meaning	To find a hidden meaning.
+to-think-creatively	To think creatively.
+it-s-your-decision-now	It's your decision now.
+to-become-organized-and-focused	To become organized and focused.
+something-that-helps-you-progress	Something that helps you progress.
+to-create-a-high-standard	To create a high standard.
+to-stay-focused-on-the-goal	To stay focused on the goal.
+something-that-changes-everything	Something that changes everything.
+to-improve-significantly	To improve significantly.
+doing-things-correctly-toward-a-goal	Doing things correctly toward a goal.
+to-do-something-innovative	To do something innovative.
+despite-great-difficulty	Despite great difficulty.
+to-reverse-a-situation	To reverse a situation.
+a-completely-new-situation	A completely new situation.
+to-make-future-progress-possible	To make future progress possible.
+there-is-no-limit-to-what-s-possible	There is no limit to what's possible.
+
+# ===== O  OPTIONAL - right words, a faint end click was left in place (clean-up work); a new take replaces the file - 7 lines
+#   note for the next line: optional: quiet end burst -27 dB at 2.04 s
+a-true-leader-accepts-both	A true leader accepts both.
+#   note for the next line: optional: quiet end burst -30 dB at 4.43 s
+the-group-project-deadline-is-friday-and-we-disagree-on-everything	The group project deadline is Friday and we disagree on everything.
+#   note for the next line: sound clip: say the sound /sk/ on its own (IPA input), like the other phonics-sound clips; optional: quiet end burst -32 dB at 0.66 s
+phonics-sound-sk	/sk/
+#   note for the next line: optional: quiet end burst -34 dB at 1.73 s
+i-have-some-coins-in-my-pocket	I have some coins in my pocket.
+#   note for the next line: optional: quiet end burst -34 dB at 0.95 s
+who-is-that	Who is that?
+#   note for the next line: optional: quiet end burst -37 dB at 2.65 s
+set-a-reminder-for-the-dentist-appointment	Set a reminder for the dentist appointment.
+#   note for the next line: optional: quiet end burst -37 dB at 2.33 s
+curiosity-killed-the-cat	Curiosity killed the cat.
