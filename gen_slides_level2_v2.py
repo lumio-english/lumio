@@ -206,7 +206,7 @@ GRAMMAR_UNITS = {
             {"en": "I have got a watch.", "ar": "عندي ساعة."},
             {"en": "I have got glasses.", "ar": "عندي نظارة."},
             {"en": "Have you got a key?", "ar": "هل عندك مفتاح؟"},
-            {"en": "Yes, I have. / No, I haven't.", "ar": "نعم، عندي. / لا، ليس عندي."},
+            {"en": "Yes, I have. No, I haven't.", "ar": "نعم، عندي. / لا، ليس عندي."},
         ],
     },
     8: {  # Lesson 8: "My Classroom" -- the lesson's own focus (There is / There are) finally gets its rule slide
@@ -287,10 +287,10 @@ GRAMMAR_UNITS = {
         "explanation": "This = one thing near me. That = one thing far from me. These = many things near me. Those = many things far from me. Near: this / these. Far: that / those. One: this / that. Many: these / those.",
         "explanationAr": "This = شيء واحد قريب مني. That = شيء واحد بعيد عني. These = أشياء كثيرة قريبة. Those = أشياء كثيرة بعيدة. القريب: this / these. البعيد: that / those. المفرد: this / that. الجمع: these / those.",
         "examples": [
-            {"en": "This is my book. (near, one)", "ar": "هذا كتابي. (قريب، واحد)"},
-            {"en": "That is your book. (far, one)", "ar": "ذلك كتابك. (بعيد، واحد)"},
-            {"en": "These are my pens. (near, many)", "ar": "هذه أقلامي. (قريب، كثير)"},
-            {"en": "Those are your pens. (far, many)", "ar": "تلك أقلامك. (بعيد، كثير)"},
+            {"en": "This is my book.", "ar": "هذا كتابي. (قريب، واحد)"},
+            {"en": "That is your book.", "ar": "ذلك كتابك. (بعيد، واحد)"},
+            {"en": "These are my pens.", "ar": "هذه أقلامي. (قريب، كثير)"},
+            {"en": "Those are your pens.", "ar": "تلك أقلامك. (بعيد، كثير)"},
         ],
         "mcq": [
             {"q": "One apple in my hand: ___ is an apple.", "qAr": "تفاحة واحدة في يدي:", "options": ["This", "That", "These", "Those"], "answer": "This"},

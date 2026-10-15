@@ -4065,11 +4065,9 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
       c.classList.toggle("sd-buddy-active", ci === i && !c.classList.contains("sd-buddy-active"));
     });
     const name = document.querySelector(`#buddy-${i} .name`).textContent;
-    // Lumio.speak tries assets/audio/<name>.mp3 first; no buddy name has a
-    // recording there (each tap was a 404), so names without a clip go
-    // straight to the device voice. Add a name here once its clip exists.
-    const BUDDY_CLIPS = [];
-    if (BUDDY_CLIPS.includes(name.toLowerCase()) && typeof Lumio !== "undefined" && Lumio.speak) { Lumio.speak(name); return; }
+    // Lumio.speak plays the recorded name (assets/audio/lumi|omar|sara|noor|ziad|hamad.mp3)
+    // and falls back to the device voice by itself if a clip is ever missing.
+    if (typeof Lumio !== "undefined" && Lumio.speak) { Lumio.speak(name); return; }
     if (!("speechSynthesis" in window)) return;
     try {
       speechSynthesis.cancel();

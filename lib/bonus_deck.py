@@ -286,7 +286,7 @@ class Deck:
 
     def s_chant(self, s):
         lines = "".join(
-            f'<div class="bx-line">{speak_btn(l["en"])}<div><div class="en">{esc(l["en"])}</div>{ar(l.get("ar"))}</div></div>'
+            f'<div class="bx-line">{speak_btn(l.get("say") or l["en"])}<div><div class="en">{esc(l["en"])}</div>{ar(l.get("ar"))}</div></div>'
             for l in s["lines"])
         inner = (f'<div class="v3-paper bx-chant{" many" if sum(1.5 if l.get("ar") else 1 for l in s["lines"]) + (1 if s.get("tip") else 0) > 5.5 else ""}" style="left:60px;top:150px;width:{960 if s.get("host") else 1340}px">'
                  f'<div class="v3-label">{ico("music")} {esc(s.get("title", "Say it with me"))}</div>{lines}'

@@ -125,9 +125,11 @@ if (!vocab.length && !eligibleLetters.length) {
   if (!eligibleLetters.length) plan.forEach(p => p.type = "sentence");
 
   let currentTargetWord = "", currentSpeakText = "";
-  // what this game has already asked, so no word (or letter) comes back in a later round
+  // what this game has already asked, so no word (or letter) comes back in a later round.
+  // Both kinds of round store the lower-case word TEXT, so a letter round and a sentence round see each other.
   const usedTargets = new Set(), usedLetters = new Set();
-  const fresh = (list, used) => { const f = list.filter(x => !used.has(x)); return f.length ? f : list; };
+  const fresh = (list, used, key = x => x) => { const f = list.filter(x => !used.has(key(x))); return f.length ? f : list; };
+  const wordKey = w => String(w.en || w).toLowerCase();
   const playPrompt = () => LP.say(currentSpeakText, hearBtn);
 
   async function drawRound() {
@@ -140,9 +142,9 @@ if (!vocab.length && !eligibleLetters.length) {
       const L = Lumio.shuffle(fresh(eligibleLetters, usedLetters))[0];
       usedLetters.add(L);
       words = Lumio.shuffle(LETTER_BANK[L]).slice(0, Math.min(3, LETTER_BANK[L].length));
-      const tw = words.find(w => !usedTargets.has(w)) || words[0];   // the asked word is one not asked before
+      const tw = words.find(w => !usedTargets.has(wordKey(w))) || words[0];   // the asked word is one not asked before
       words = [tw].concat(words.filter(w => w !== tw));
-      usedTargets.add(tw);
+      usedTargets.add(wordKey(tw));
       currentTargetWord = currentSpeakText = words[0];
       if (Lumio.preloadSpeech) Lumio.preloadSpeech(currentSpeakText);
       letterBadge.hidden = false; letterBadge.textContent = L; letterBadge.setAttribute("aria-label", "Letter " + L);
@@ -152,20 +154,23 @@ if (!vocab.length && !eligibleLetters.length) {
     } else {
       // Sentence/vocabulary round: this lesson's own real vocab + sentence pattern
       letterBadge.hidden = true;
-      const target = Lumio.shuffle(fresh(vocab, usedTargets))[0];
-      usedTargets.add(target);
+      const target = Lumio.shuffle(fresh(vocab, usedTargets, wordKey))[0];
+      usedTargets.add(wordKey(target));
       // two words of a lesson can share one sentence ("friend" / "you": "You are my friend."; "clap" / "hands"):
-      // then the sentence can't tell the child which picture, and it would play twice -- say the word itself
+      // then the sentence can't tell the child which picture, and it would play twice -- say the word itself.
+      // Greetings ("good morning" -> "Good morning, teacher!") are phrases already: say the greeting itself too.
       const lineOf = v => v.example || `This is a ${v.en}`, norm = s => s.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
       const shared = vocab.some(v => v !== target && norm(lineOf(v)) === norm(lineOf(target)));
-      const line = shared ? target.en : lineOf(target);
+      const line = shared || target.pos === "phrase" ? target.en : lineOf(target);
       if (Lumio.preloadSpeech) Lumio.preloadSpeech(line);
-      // never offer a distractor that the spoken sentence also names ("You are my friend." → not "friend")
-      const said = (target.example || "").toLowerCase();
-      const pool = vocab.filter(v => v.en !== target.en && v.image !== target.image && !new RegExp("\\b" + v.en.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b").test(said));
-      // never two cards with the same-looking picture (e.g. Pre-A Lesson 2 draws "I", "you" and "boy" as the same Omar)
+      // never offer a distractor that the spoken line also names ("The cat is on the box." -> not "cat"; plurals count too)
+      const said = line.toLowerCase();
+      const named = v => new RegExp("\\b" + v.en.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(s|es)?\\b").test(said);
+      const pool = vocab.filter(v => v.en !== target.en && !named(v));
+      // never two cards with the same-looking picture (e.g. Pre-A Lesson 2 draws "I", "you" and "boy" as the same Omar);
+      // with too few safe words deal 2 cards rather than a card the child just heard named
       const picked = [target];
-      for (const v of Lumio.shuffle(pool.length >= 2 ? pool : vocab.filter(v => v.en !== target.en))) {
+      for (const v of Lumio.shuffle(pool)) {
         if (picked.length >= 3) break;
         if (!picked.some(x => lookAlike(x, v))) picked.push(v);
       }
