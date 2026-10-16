@@ -2267,7 +2267,9 @@ try { Object.keys(sessionStorage).forEach(k => { if (/^lumio_lc_(jar|parts)_/.te
     : LEVEL_NAMES_ALL;
   const LEVEL_LESSON_COUNT = {};
   LEVEL_NAMES.forEach(l => LEVEL_LESSON_COUNT[l.id] = l.lessons || 20);
-  const levelName = id => (LEVEL_NAMES_ALL.find(l => l.id === id) || {}).name || id;
+  // An unknown level id comes from a student's device (progress/homework rows) and lands in innerHTML on
+  // several screens: keep only id characters so it can never carry markup.
+  const levelName = id => (LEVEL_NAMES_ALL.find(l => l.id === id) || {}).name || String(id == null ? "" : id).replace(/[^A-Za-z0-9_-]/g, "");
   // Shared avatar renderer: a photo, if the student has uploaded one,
   // otherwise their emoji exactly as before. Used anywhere a roster card
   // shows a circular ".av" avatar -- the img fills that same circle via
@@ -4365,7 +4367,7 @@ try { Object.keys(sessionStorage).forEach(k => { if (/^lumio_lc_(jar|parts)_/.te
             </span>` : ""}
         </div>`).join("");
       row.innerHTML = `
-        <div class="td-class-time" title="${fmtTimeTz(c.date, c.startTime)}">${fmtTime(c.startTime)}<span>${c.durationMinutes} min</span></div>
+        <div class="td-class-time" title="${escHtml(fmtTimeTz(c.date, c.startTime))}">${fmtTime(c.startTime)}<span>${escHtml(c.durationMinutes)} min</span></div>
         <div class="td-class-info">
           <div class="who">
             ${c.status === "cancelled" ? '<span class="td-badge grey">cancelled</span>' : ""}
@@ -4704,7 +4706,7 @@ try { Object.keys(sessionStorage).forEach(k => { if (/^lumio_lc_(jar|parts)_/.te
         <div class="ic">🎯</div>
         <div class="val">
           <div class="main">${escHtml(c.level ? levelName(c.level) : "English Club")}${c.lessonNumber ? " · " + escHtml(Lumio.lessonLabel(c.lessonNumber)) : ""}</div>
-          <div class="sub">${fmtDayLabel(c.date)} (${c.date}) ${fmtTime(c.startTime)}${c.durationMinutes ? " – " + fmtTime(minutesToHM(classEndMinutes(c))) : ""} · Saudi time${Lumio.deviceDiffersFromTz(c.date, c.startTime) ? ` <span style="opacity:.75">${fmtTimeTz(c.date, c.startTime).replace(/^[^(]*/, "")}</span>` : ""}</div>
+          <div class="sub">${fmtDayLabel(c.date)} (${escHtml(c.date)}) ${fmtTime(c.startTime)}${c.durationMinutes ? " – " + fmtTime(minutesToHM(classEndMinutes(c))) : ""} · Saudi time${Lumio.deviceDiffersFromTz(c.date, c.startTime) ? ` <span style="opacity:.75">${fmtTimeTz(c.date, c.startTime).replace(/^[^(]*/, "")}</span>` : ""}</div>
         </div>
       </div>
       <div class="td-cd-row">
