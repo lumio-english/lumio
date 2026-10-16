@@ -749,8 +749,8 @@ const BANK_GRAMMAR = [
   {type:'mcq',level:'A2',text:'Choose the correct tense: "Yesterday, she ___ her homework."',options:['do','does','did','doing'],answer:2},
   {type:'mcq',level:'A2',text:'Fill in the blank: "He is taller ___ his brother."',options:['that','then','than','as'],answer:2},
   {type:'mcq',level:'A2',text:'Choose the correct form: "They ___ football when it started to rain."',options:['played','were playing','are playing','play'],answer:1},
-  {type:'mcq',level:'A2',text:'Which sentence is correct?',options:['I have a informations.','I have some information.','I have informations.','I have a informations.'],answer:1},
-  {type:'mcq',level:'A2',text:'Choose the correct word: "Can you pass me ___ salt, please?"',options:['a','an','the','some'],answer:3},
+  {type:'mcq',level:'A2',text:'Which sentence is correct?',options:['I have a informations.','I have some information.','I have informations.','I have an information.'],answer:1},
+  {type:'mcq',level:'A2',text:'Choose the correct word: "Can you pass me ___ salt, please?"',options:['a','an','the','any'],answer:2},
   {type:'mcq',level:'A2',text:'Choose the correct preposition: "She arrived ___ the airport at noon."',options:['in','on','at','by'],answer:2},
   {type:'mcq',level:'A2',text:'Fill in: "If it rains tomorrow, we ___ stay at home."',options:['would','will','are','were'],answer:1},
   {type:'mcq',level:'A2',text:'Choose the correct form: "I have lived here ___ five years."',options:['since','for','during','ago'],answer:1},
@@ -782,9 +782,9 @@ const BANK_GRAMMAR = [
   {type:'mcq',level:'B2',text:'Which sentence uses the subjunctive correctly?',options:['I suggest that he goes home.','I suggest that he go home.','I suggest that he went home.','I suggest that he is going home.'],answer:1},
   {type:'mcq',level:'B2',text:'Choose the correct form: "Not only ___ the project late, but it was also over budget."',options:['it was delivered','was it delivered','it delivered','delivered it'],answer:1},
   {type:'mcq',level:'B2',text:'Select the most appropriate connector: "The experiment failed; ___, the researchers learned valuable lessons."',options:['therefore','nevertheless','moreover','consequently'],answer:1},
-  {type:'mcq',level:'B2',text:'Choose the correct option: "___ to his popularity, the candidate won by a large margin."',options:['Due','Owing','Because','Thanks'],answer:3},
+  {type:'mcq',level:'B2',text:'Choose the correct option: "___ to his popularity, the candidate won by a large margin."',options:['Since','Despite','Because','Thanks'],answer:3},
   {type:'mcq',level:'B2',text:'Which sentence is grammatically correct?',options:['The data shows a clear trend.','The data show a clear trend.','The data are showing a clear trend.','Both A and B are correct.'],answer:3},
-  {type:'mcq',level:'B2',text:'Choose the correct passive form: "They are currently ___ the building."',options:['renovating','being renovated','renovated','being renovating'],answer:1},
+  {type:'mcq',level:'B2',text:'Choose the correct passive form: "The building is currently ___."',options:['renovating','being renovated','renovate','being renovating'],answer:1},
   {type:'mcq',level:'B2',text:'Select the correct word: "Her argument was so ___ that everyone agreed immediately."',options:['convince','convincingly','convincing','convinced'],answer:2},
   {type:'mcq',level:'B2',text:'Choose the correct option: "I wish I ___ harder when I was at university."',options:['study','studied','had studied','have studied'],answer:2},
   {type:'mcq',level:'B2',text:'Which sentence uses "despite" correctly?',options:['Despite of the rain, we continued.','Despite the rain, we continued.','Despite it rained, we continued.','Despite to rain, we continued.'],answer:1},
@@ -816,7 +816,14 @@ function pickByLevel(bank, counts) {
     const pool = bank.filter(q => q.level === lvl);
     result = result.concat(shuffle(pool).slice(0, n));
   }
-  return shuffle(result);
+  // Answers come in a fresh order every test (QA #110: in the banks the right one was almost always B or C, so
+  // tapping C every time scored Level 2-4). Copies only; an option that names others by letter keeps its order.
+  return shuffle(result).map(withShuffledOptions);
+}
+function withShuffledOptions(q) {
+  if (!Array.isArray(q.options) || typeof q.answer !== 'number' || q.options.some(o => /[A-D] and [A-D]/.test(String(o)))) return q;
+  const order = shuffle(q.options.map((_, i) => i));
+  return Object.assign({}, q, { options: order.map(i => q.options[i]), answer: order.indexOf(q.answer) });
 }
 
 // ═══════════════════════════════════════════════════════════
