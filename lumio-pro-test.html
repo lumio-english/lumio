@@ -1380,7 +1380,7 @@ function updateWordCount(qIdx){
 }
 
 // ═══════════════════════════════════════════════════════════
-//  REAL VOICE PLAYBACK — uses the device's best built-in voice
+//  DEVICE VOICE (fallback) — uses the device's best built-in voice
 //  (e.g. iOS/Siri-quality neural voices), with reliability fixes
 //  for the known iOS Safari speechSynthesis bugs.
 // ═══════════════════════════════════════════════════════════
@@ -1428,13 +1428,79 @@ if (synth) {
   setTimeout(initVoices, 1000);
 }
 
+// ═══════════════════════════════════════════════════════════
+//  RECORDED PASSAGES — assets/audio/<short key>.mp3 (36 clips, Artlist
+//  "Bright"). Played first on one shared <audio> element (unlocked on the
+//  first tap, as js/app.js does); the device voice below is only the
+//  fallback when a clip is missing, fails or never starts.
+// ═══════════════════════════════════════════════════════════
+// Short key (the full slug would be 86-227 characters): "placement-<level>" plus
+// whole words of slugify(passage) while the key stays within 52 characters.
+// Must match recording/rerecord-2026-10-15.txt (group D3).
+function passageKey(q){
+  const slug=String(q.audio).toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+  let key='placement-'+String(q.level).toLowerCase();
+  for(const w of slug.split('-')){ if(key.length+w.length+1>52) break; key+='-'+w; }
+  return key;
+}
+const PT_SILENT='data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwLjE2LjEwMAAAAAAAAAAAAAAA//NwwAAAAAAAAAAAAEluZm8AAAAPAAAACAAAA/oAR0dHR0dHR0dHR0dHYmJiYmJiYmJiYmJifHx8fHx8fHx8fHx8fJaWlpaWlpaWlpaWlrGxsbGxsbGxsbGxsbHLy8vLy8vLy8vLy8vl5eXl5eXl5eXl5eXl////////////////AAAAAExhdmM2MC4zMQAAAAAAAAAAAAAAACQC1AAAAAAAAAP6yysejgAAAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NCxKMAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NAxKQAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy4xMDBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/80LEowAAA0gAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy4xMDBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/80DEpAAAA0gAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsSjAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVQ==';
+let ptAudio=null, ptAudioUnlocked=false, ptSeq=0;
+function unlockPassageAudio(){
+  if(ptAudioUnlocked) return;
+  ptAudioUnlocked=true;
+  try{ ptAudio=ptAudio||new Audio(); ptAudio.src=PT_SILENT; const pr=ptAudio.play(); if(pr&&pr.catch) pr.catch(()=>{}); }catch(e){}
+  // the device voice may start later (after a missing clip), outside this tap: wake it now too
+  if(synth){ try{ const u=new SpeechSynthesisUtterance(' '); u.volume=0; synth.speak(u); synth.cancel(); }catch(e){} }
+}
+['pointerdown','touchstart','keydown'].forEach(ev=>document.addEventListener(ev,unlockPassageAudio,{passive:true,capture:true}));
+// stops the recording and the device voice (new passage, Next/Back, end of test)
+function stopPassage(){
+  ptSeq++;
+  if(speechUtterance){ speechUtterance.onend=null; speechUtterance.onerror=null; }   // an old passage must not reset the new one's button
+  if(ptAudio){ try{ ptAudio.onended=null; ptAudio.onerror=null; ptAudio.pause(); }catch(e){} }
+  if(synth&&synth.speaking) try{ synth.cancel(); }catch(e){}
+  clearInterval(window._iosResumeInterval);
+}
+
 function playAudio(qIdx){
   const q=ALL_QUESTIONS[qIdx];
   const btn=document.getElementById('play-btn-'+qIdx);
   const pauseIcon='<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
   const playIcon='<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>';
 
-  if(!synth){ console.warn('speechSynthesis not supported on this device.'); return; }
+  stopPassage();
+  const my=ptSeq;
+  let fellBack=false;
+  const fallback=()=>{ if(fellBack||my!==ptSeq) return; fellBack=true; try{ audio.onerror=null; audio.pause(); }catch(e){} playAudioSynth(q,btn,pauseIcon,playIcon); };
+  const audio=ptAudio||new Audio();
+  ptAudio=audio;
+  try{
+    audio.src='assets/audio/'+passageKey(q)+'.mp3';
+    audio.playbackRate=1;
+    if(btn) btn.innerHTML=pauseIcon;
+    audio.onended=()=>{ if(my===ptSeq&&btn) btn.innerHTML=playIcon; };
+    audio.onerror=()=>{ audio.onerror=null; fallback(); };   // 404: no recording -> device voice
+    // watchdog: play() accepted but nothing buffered after 1.5s (4s while still downloading) -> device voice
+    let watchdog=0;
+    const check=(late)=>{
+      if(my!==ptSeq||fellBack) return;
+      if(audio.readyState>=2&&!audio.error) return;
+      if(!late&&!audio.error){ watchdog=setTimeout(()=>check(true),2500); return; }
+      fallback();
+    };
+    watchdog=setTimeout(()=>check(false),1500);
+    audio.addEventListener('playing',()=>clearTimeout(watchdog),{once:true});
+    const pr=audio.play();
+    if(pr&&typeof pr.catch==='function') pr.catch(err=>{
+      if(err&&err.name==='AbortError') return;   // a newer passage took over
+      fallback();
+    });
+  }catch(e){ fallback(); }
+}
+
+// Device-voice fallback (the original player, unchanged).
+function playAudioSynth(q,btn,pauseIcon,playIcon){
+  if(!synth){ console.warn('speechSynthesis not supported on this device.'); if(btn) btn.innerHTML=playIcon; return; }
 
   // Always cancel first — iOS can get stuck mid-utterance if a new one starts too soon
   try{ synth.cancel(); }catch(e){}
@@ -1451,8 +1517,9 @@ function playAudio(qIdx){
     if (bestVoice) speechUtterance.voice = bestVoice;
 
     let resetDone = false;
+    const mySeq = ptSeq;   // a newer passage owns the button and the resume interval
     const resetBtn = () => {
-      if (resetDone) return;
+      if (resetDone || mySeq !== ptSeq) return;
       resetDone = true;
       if (btn) btn.innerHTML = playIcon;
       clearInterval(window._iosResumeInterval);
@@ -1492,7 +1559,7 @@ function playAudio(qIdx){
 //  NAVIGATION
 // =============================================
 function navigate(dir){
-  if(synth&&synth.speaking)try{synth.cancel();}catch(e){}
+  stopPassage();
   const nextQ=currentQ+dir;
   if(nextQ<0)return;
   if(nextQ>=TOTAL){showResult();return;}
@@ -1756,7 +1823,7 @@ function showResult(){
   if(window._resultShown) return;  // prevent double submission
   window._resultShown = true;
   clearInterval(timerInterval);
-  if(synth&&synth.speaking)try{synth.cancel();}catch(e){}
+  stopPassage();
   const {total,level,rawLevel,listenScore,readScore,writeScore,gramScore}=calcScore();
   const info=LEVEL_INFO[level];
   const aboveTop = rawLevel > level;

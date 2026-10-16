@@ -348,7 +348,7 @@
         '<div class="card idiom hb-card-anim" id="ic" style="--from:' + (dir < 0 ? "-40px" : "40px") + '"><span class="lbl">Idiom ' + (pos + 1) + "</span>" +
         '<div class="ph">' + esc(it.phrase) + '</div><div class="ph-ar" dir="rtl">' + esc(it.phraseAr) + "</div>" +
         '<div style="display:flex;justify-content:center;margin-top:12px"><button class="play big" id="iPlay" aria-label="Listen">' + g("sound") + "</button></div>" +
-        '<div class="reveal" id="iRev"' + (known ? "" : " hidden") + '><div class="box"><span class="lbl">What it means</span><div class="en">' + esc(it.meaning) + '</div><div class="ar" dir="rtl">' + esc(it.meaningAr) + "</div></div>" +
+        '<div class="reveal" id="iRev"' + (known ? "" : " hidden") + '><div class="box"><span class="lbl">What it means</span><div style="display:flex;gap:12px;align-items:center"><button class="play s" id="iMean" aria-label="Listen to the meaning">' + g("sound") + '</button><div><div class="en">' + esc(it.meaning) + '</div><div class="ar" dir="rtl">' + esc(it.meaningAr) + "</div></div></div></div>" +
         '<div class="box ex"><button class="play s" id="iEx" aria-label="Listen to the example">' + g("sound") + '</button><div><div class="en">“' + esc(it.example) + '”</div><div class="ar" dir="rtl">' + esc(it.exampleAr) + "</div></div></div></div>" +
         (known ? "" : '<button class="btn sec wide" id="iShow" style="margin-top:16px">' + g("eye") + "What does it mean?</button>") + "</div>" +
         '<div class="know"><button class="btn no" id="iPrev">' + g("back") + 'Back</button><button class="btn yes" id="iNext">' + (known ? g("next") + "Next" : g("check") + "Got it") + "</button></div>" +
@@ -356,6 +356,7 @@
       var pl = $("#iPlay"); pl.onclick = function () { say(it.phrase, pl); };
       setTimeout(function () { say(it.phrase, pl); }, 300);
       var sh = $("#iShow"); if (sh) sh.onclick = function () { $("#iRev").hidden = false; sh.remove(); };
+      var mn = $("#iMean"); mn.onclick = function () { say(it.meaning, mn); };   // assets/audio/<slug of the meaning>.mp3 (Pre-A to Level 6), else the device voice
       var ex = $("#iEx"); ex.onclick = function () { say(it.example, ex); };
       $("#iPrev").onclick = function () { if (pos > 0) { pos--; card(-1); } else location.hash = "#/"; };
       $("#iNext").onclick = function () {

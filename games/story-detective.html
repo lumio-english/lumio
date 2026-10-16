@@ -191,18 +191,10 @@ function picImg(en) {
 const normAr = s => String(s || "").replace(/[ً-ْـ]/g, "").replace(/[أإآ]/g, "ا").replace(/ى/g, "ي").replace(/ة/g, "ه").trim();
 const distinctFrom = t => v => v.en !== t.en && normAr(v.ar) !== normAr(t.ar);
 
-/* dialogue lines have no recordings: speak them with the browser voice directly (no 404 round trip) */
+/* dialogue lines: the recording in assets/audio when there is one (Lumio.speak falls back to the device voice by itself) */
 function sayLine(text, btn) {
   if (btn) { btn.classList.add("talking"); clearTimeout(btn._t); btn._t = setTimeout(() => btn.classList.remove("talking"), 2400); }
-  try {
-    if (!("speechSynthesis" in window)) return;
-    speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text); u.lang = "en-US"; u.rate = 0.92;
-    const vs = speechSynthesis.getVoices().filter(v => /^en/i.test(v.lang));
-    const v = vs.find(v => /natural|neural|online|Google US|Samantha|Aria|Jenny/i.test(v.name)) || vs.find(v => /en-US/i.test(v.lang)) || vs[0];
-    if (v) u.voice = v;
-    speechSynthesis.speak(u);
-  } catch (e) {}
+  try { Lumio.speak(text); } catch (e) {}
 }
 
 /* ---------- flashlight that follows the pointer (drifts on its own when idle) ---------- */
