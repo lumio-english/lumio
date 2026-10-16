@@ -818,9 +818,15 @@ const Lumio = (() => {
     if (!slug) { speakSynth(token, rate); return; }
     const audio = new Audio(`${ASSET_ROOT}assets/audio/phonics-sound-${slug}.mp3`);
     currentAudio = audio;
+    // Numbered like speak(): when a newer word cuts this sound off, its play() rejects (AbortError) --
+    // that must not make the device voice read the OLD sound over the new recording.
+    const my = ++speakSeq;
     let fellBack = false;
-    const fallback = () => { if (fellBack) return; fellBack = true; if (fallbackText) speak(fallbackText); else speakSynth(token, rate); };
-    audio.addEventListener("error", fallback);
+    const fallback = (err) => {
+      if (fellBack || my !== speakSeq || (err && err.name === "AbortError")) return;
+      fellBack = true; if (fallbackText) speak(fallbackText); else speakSynth(token, rate);
+    };
+    audio.addEventListener("error", () => fallback());
     const playResult = audio.play();
     if (playResult && typeof playResult.catch === "function") playResult.catch(fallback);
   };

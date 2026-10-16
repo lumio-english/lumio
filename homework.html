@@ -620,7 +620,7 @@ function renderGrammarPractice() {
     <div class="hw-word-row" style="flex-wrap:wrap">
       <input class="hw-input" id="gr-${i}" style="max-width:140px" placeholder="?" autocomplete="off" autocapitalize="off" spellcheck="false">
       <div style="flex:1;min-width:160px;font-weight:700">${esc(b.rest)}</div>
-      <button class="hw-check-btn" id="grBtn-${i}" onclick="checkGrammar(${i}, '${esc(b.firstWord).replace(/'/g, "\\'")}')">Check</button>
+      <button class="hw-check-btn" id="grBtn-${i}" onclick="checkGrammar(${i}, '${esc(b.firstWord).replace(/'/g, "\\'")}', '${esc(b.rest.split(" ")[0] || "").replace(/'/g, "\\'")}')">Check</button>
       <div style="width:100%;direction:rtl;text-align:right;color:var(--cocoa-soft);font-size:.85rem;font-weight:700">${b.ar}</div>
     </div>`).join("");
   document.getElementById("hwSections").innerHTML = `
@@ -637,16 +637,34 @@ const PRONOUN_EQUIVALENCE_GROUPS = [
   ["this", "that"],
   ["these", "those"],
 ];
-function isEquivalentAnswer(given, correct) {
-  const g = given.trim().toLowerCase();
+// Subject pronouns that agree with the word right after the blank ("am" -> I, "was" -> I/he/she/it ...).
+// Another pronoun is only accepted when it keeps the sentence correct: "We was" / "I were" / "You am" are wrong.
+const SUBJECTS = ["i", "you", "we", "they", "he", "she", "it"];
+const MODALS = ["can", "can't", "cannot", "will", "won't", "would", "should", "could", "must", "may", "might", "shall", "did", "didn't"];
+function pronounsAgreeingWith(nextWord, correct) {
+  const w = String(nextWord || "").toLowerCase().replace(/[’]/g, "'").replace(/[^a-z']/g, "");
+  if (w === "am") return ["i"];
+  if (["is", "isn't", "has", "hasn't", "does", "doesn't"].includes(w)) return ["he", "she", "it"];
+  if (["was", "wasn't"].includes(w)) return ["i", "he", "she", "it"];
+  if (["are", "aren't", "were", "weren't"].includes(w)) return ["you", "we", "they"];
+  if (["have", "haven't", "do", "don't"].includes(w)) return ["i", "you", "we", "they"];
+  if (MODALS.includes(w)) return SUBJECTS;
+  if (/[^s]s$/.test(w) || /(ch|sh|x|ss)es$/.test(w)) return ["he", "she", "it"];   // likes, goes, watches
+  // any other verb: past ("played") fits everyone; a bare verb ("play") only I/you/we/they.
+  // We can't tell those apart reliably, so keep to the answer's own side.
+  return ["he", "she", "it"].includes(correct) ? SUBJECTS : ["i", "you", "we", "they"];
+}
+function isEquivalentAnswer(given, correct, nextWord) {
+  const g = given.trim().toLowerCase().replace(/[’]/g, "'");
   const c = correct.trim().toLowerCase();
   if (g === c) return true;
+  if (SUBJECTS.includes(g) && SUBJECTS.includes(c)) return pronounsAgreeingWith(nextWord, c).includes(g);
   return PRONOUN_EQUIVALENCE_GROUPS.some(group => group.includes(g) && group.includes(c));
 }
-function checkGrammar(i, correctWord) {
+function checkGrammar(i, correctWord, nextWord) {
   const input = document.getElementById(`gr-${i}`);
   const btn = document.getElementById(`grBtn-${i}`);
-  const correct = isEquivalentAnswer(input.value, correctWord);
+  const correct = isEquivalentAnswer(input.value, correctWord, nextWord);
   input.classList.remove("correct", "wrong");
   input.classList.add(correct ? "correct" : "wrong");
   btn.classList.toggle("correct", correct);

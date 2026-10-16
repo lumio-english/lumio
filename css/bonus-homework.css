@@ -79,8 +79,10 @@ h1, h2 { font-family:'Baloo 2',system-ui,sans-serif; line-height:1.1; margin:0; 
 .bm-opt:hover { transform:translateY(-2px); border-color:var(--bm-acc); }
 .bm-opt.ok { border-color:var(--bm-ok); background:var(--lumio-teal-soft); color:var(--lumio-ink); }
 .bm-opt.no { border-color:var(--bm-no); opacity:.45; }
-.bm-frame { display:flex; gap:10px; }
-.bm-frame span { width:86px; height:96px; border-radius:18px; display:grid; place-items:center; font:800 3.2rem 'Baloo 2'; background:var(--bm-bg); border:3px solid var(--bm-line); }
+.bm-frame { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; max-width:100%; }
+/* a box holds a letter OR a whole word/phrase ("build" missions): it grows with its text and the row wraps */
+.bm-frame span { min-width:86px; max-width:100%; min-height:96px; padding:4px 14px; box-sizing:border-box; border-radius:18px; display:grid; place-items:center; font:800 3.2rem/1.1 'Baloo 2'; text-align:center; overflow-wrap:anywhere; background:var(--bm-bg); border:3px solid var(--bm-line); }
+@media (max-width:600px) { .bm-frame span { min-width:56px; min-height:64px; padding:4px 10px; font-size:2rem; } }
 .bm-frame .gap { border-style:dashed; border-color:var(--bm-acc); color:var(--bm-acc); }
 .bm-frame .gap.ok { border-style:solid; border-color:var(--bm-ok); background:var(--bm-ok); color:#fff; }
 .bm-q { font-family:'Baloo 2'; font-size:1.7rem; text-align:center; margin:0; }

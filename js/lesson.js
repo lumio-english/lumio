@@ -413,7 +413,7 @@
               ${target.map((l, i) => i < nextIdx ? l : "_").join(" ")}
             </div>
             <div class="row mt" style="justify-content:center;flex-wrap:wrap" id="blendLetters">
-              ${tiles.map((t, i) => `<button class="btn btn-sun BL" data-i="${i}" style="font-size:1.5rem;min-width:56px">${t.l}</button>`).join("")}
+              ${tiles.map((t, i) => `<button class="btn btn-sun BL" data-i="${i}" style="font-size:1.5rem;min-width:56px${t.used ? ";opacity:.35" : ""}"${t.used ? " disabled" : ""}>${t.l}</button>`).join("")}
             </div>
           </div>`;
         document.getElementById("hearSounds").onclick = () => {
@@ -422,8 +422,9 @@
         document.querySelectorAll(".BL").forEach(b => {
           b.onclick = () => {
             const tile = tiles[+b.dataset.i];
-            if (tile.correctPos === nextIdx) {
-              b.disabled = true; b.style.opacity = "0.35";
+            // Any unused tile with the next letter counts: in "book" or "three" either copy of the letter is right.
+            if (!tile.used && tile.l === target[nextIdx]) {
+              tile.used = true; b.disabled = true; b.style.opacity = "0.35";
               Lumio.beep(true); Lumio.speakPhonicsSound && Lumio.speakPhonicsSound(tile.l);
               nextIdx++;
               if (nextIdx === target.length) {
