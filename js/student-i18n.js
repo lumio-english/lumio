@@ -230,7 +230,16 @@
     [/^(\w{3}) (\d+) – (\w{3}) (\d+) · this week$/, function (m) { return m[2] + " " + (MONTHS[m[1]] || m[1]) + " – " + m[4] + " " + (MONTHS[m[3]] || m[3]) + " · هذا الأسبوع"; }],
     [/^This tour will walk you through (.+)'s real dashboard, section by section\.$/, function (m) { return "ستأخذك هذه الجولة في صفحة " + iso(m[1]) + " الحقيقية، قسمًا قسمًا."; }],
     [/^Let's start (.+) with Lesson (\d+): “(.+)”\. Follow the glowing path: every stop is a chapter of your English adventure\.$/, function (m) { return "لنبدأ " + lv(m[1]) + " بالدرس " + m[2] + ": «" + iso(m[3]) + "». اتبع المسار المضيء: كل محطة فصل من مغامرتك في الإنجليزية."; }],
-    [/^(.+) Follow the glowing path: every stop is a chapter of your English adventure\.$/, function (m) { return tr(m[1]) + " اتبع المسار المضيء: كل محطة فصل من مغامرتك في الإنجليزية."; }],
+    // the cover's lead sentence (js/student-hero.js) -- lesson titles stay English, isolated
+    [/^You finished (.+)! Your level test and certificate are waiting\.$/, function (m) { return "أنهيت " + lv(m[1]) + "! اختبار المستوى والشهادة بانتظارك."; }],
+    [/^Your Lesson (\d+) class is done\. Next: your homework!$/, function (m) { return "انتهت حصة الدرس " + m[1] + ". التالي: واجبك!"; }],
+    [/^Your Lesson (\d+) prep is done\. Next: your live class with your teacher!$/, function (m) { return "انتهى تحضير الدرس " + m[1] + ". التالي: حصتك المباشرة مع معلمك!"; }],
+    [/^Let's start (.+) with Lesson (\d+): “(.+)”\.$/, function (m) { return "لنبدأ " + lv(m[1]) + " بالدرس " + m[2] + ": " + iso("“" + m[3] + "”") + "."; }],
+    [/^Let's start (.+) with Lesson (\d+)\.$/, function (m) { return "لنبدأ " + lv(m[1]) + " بالدرس " + m[2] + "."; }],
+    [/^You're on Lesson (\d+) of (\d+)(?:: “(.+)”)?\. (?:(\d+) lessons to go\.|The last one!)$/, function (m) {
+      return "أنت في الدرس " + m[1] + " من " + m[2] + (m[3] ? ": " + iso("“" + m[3] + "”") : "") + ". " + (m[4] ? "بقي " + m[4] + " دروس." : "إنه الأخير!"); }],
+    // anything the patterns above don't know stays English rather than printing "null"
+    [/^(.+) Follow the glowing path: every stop is a chapter of your English adventure\.$/, function (m) { var t = tr(m[1]); return (t == null ? iso(m[1]) : t) + " اتبع المسار المضيء: كل محطة فصل من مغامرتك في الإنجليزية."; }],
     [/^Unlocks after Lesson (\d+) — (\d+)\/(\d+) so far!$/, function (m) { return "يُفتح بعد الدرس " + m[1] + " — " + m[2] + "/" + m[3] + " حتى الآن!"; }],
     [/^Locked — (\d+) lessons? to go$/, function (m) { return "مقفل — باقٍ " + m[1] + " " + PLURAL(m[1], "درس", "درسان", "دروس", "درسًا"); }],
     [/^Opens after your (live class|homework) for Lesson (\d+)$/, function (m) { return "يُفتح بعد " + (m[1] === "homework" ? "واجب" : "حصتك المباشرة في") + " الدرس " + m[2]; }],

@@ -1941,6 +1941,11 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
   // Writing sheets (gen_printables.py) exist for every level: writing/<level>/lessonNN-writing.pdf.
   const hasWritingPractice = ["pre-a", "level1", "level2", "level3", "level4", "level5", "level6"].includes(level);
   if (!hasWritingPractice) document.getElementById("writingBtn").style.display = "none";
+  // These start as href="#" + download: until a real PDF link is set, a tap must not download this page itself.
+  ["worksheetBtn", "writingBtn", "flashcardsBtn"].forEach(id => {
+    const a = document.getElementById(id);
+    if (a && !a.dataset.noSelfDownload) { a.dataset.noSelfDownload = "1"; a.addEventListener("click", e => { if ((a.getAttribute("href") || "#") === "#") e.preventDefault(); }); }
+  });
   // A Bonus Class still owed after the last lesson (students who were mid-level when Bonus Classes started).
   const owedBonus = done >= total && Lumio.bonusesMissing ? Lumio.bonusesMissing(u.name, level, attendedSet)[0] : 0;
   const bonusNow = isBonusNow ? Lumio.bonusNumber(current) : owedBonus;
@@ -2118,7 +2123,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
     if (!fxPicks.length && saved && saved.picks) fxPicks = saved.picks.slice();
     const teacherOf = id => { try { return LumioProfiles.getTeacher(id) || null; } catch (e) { return null; } };
     const pickKey = pk => `${pk.dayOfWeek}|${pk.startTime}`;
-    const picksHtml = fxPicks.length ? fxPicks.map((pk, i) => { const t = teacherOf(pk.teacherId); return `<div class="sd-pick"><div class="face">${teacherFace(t)}</div><div><b>${FX_DAYS[pk.dayOfWeek]} · ${Lumio.fmt12(pk.startTime)}${yourTime(nextDateOfDow(pk.dayOfWeek), pk.startTime) ? ` <span class="yt">(${yourTime(nextDateOfDow(pk.dayOfWeek), pk.startTime)})</span>` : ""}</b><small>${(t && t.name) || pk.teacherName || "Teacher"}</small></div><button type="button" data-unpick="${i}" aria-label="Remove">✕</button></div>`; }).join("")
+    const picksHtml = fxPicks.length ? fxPicks.map((pk, i) => { const t = teacherOf(pk.teacherId); return `<div class="sd-pick"><div class="face">${teacherFace(t)}</div><div><b>${FX_DAYS[pk.dayOfWeek]} · ${Lumio.fmt12(pk.startTime)}${yourTime(nextDateOfDow(pk.dayOfWeek), pk.startTime) ? ` <span class="yt">(${yourTime(nextDateOfDow(pk.dayOfWeek), pk.startTime)})</span>` : ""}</b><small>${sdEsc((t && t.name) || pk.teacherName || "Teacher")}</small></div><button type="button" data-unpick="${i}" aria-label="Remove">✕</button></div>`; }).join("")
       : `<div class="sd-book-note">No weekly times yet — pick up to ${LumioSchedule.MAX_PER_WEEK} below. Each one becomes a class every week, lesson after lesson, for as long as your package lasts.</div>`;
     const canAdd = fxPicks.length < LumioSchedule.MAX_PER_WEEK;
     const dayHtml = W.days.map(d => `<div class="sd-day fx${fxDay === d ? " active" : ""}${fxPicks.some(p => p.dayOfWeek === d) ? " picked" : ""}" data-fxday="${d}"><div class="dw">${FX_DAYS[d].slice(0, 3)}</div><div class="dn">${fxPicks.filter(p => p.dayOfWeek === d).length ? "✓" : "·"}</div><div class="ct">every week</div></div>`).join("");
@@ -2648,7 +2653,7 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
       const banner = document.createElement("div");
       banner.id = "installmentBanner";
       banner.style.cssText = `margin:0 auto 14px;max-width:1120px;padding:12px 16px;border-radius:14px;background:${sum.nextDays < 0 ? "#FEE2E2" : "#FFF7E0"};border:2px solid ${sum.nextDays < 0 ? "#EF4444" : "#F59E0B"};color:#7A3F0B;font-weight:800;display:flex;gap:10px;align-items:flex-start;line-height:1.5`;
-      banner.innerHTML = `<span style="font-size:1.3rem">💳</span><span><span dir="rtl" style="display:block">${m.ar}</span><span style="display:block;font-weight:700;font-size:.85rem;opacity:.85">${m.en}</span></span>`;
+      banner.innerHTML = `<span style="font-size:1.3rem">💳</span><span><span dir="rtl" style="display:block">${sdEsc(m.ar)}</span><span style="display:block;font-weight:700;font-size:.85rem;opacity:.85">${sdEsc(m.en)}</span></span>`;
       const anchor = document.querySelector("#secToday") || document.querySelector(".sd-hero");
       if (anchor) anchor.parentElement.insertBefore(banner, anchor); else document.body.prepend(banner);
     } catch (e) { console.error("installment banner", e); }
@@ -3128,24 +3133,24 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
       const levelMeta = (Lumio.LEVELS || []).find(l => l.id === p.level) || { name: p.level || "—" };
       document.getElementById("mpLevel").textContent = levelMeta.name;
       const avatarEl = document.getElementById("mpAvatar");
-      if (p.photoDataUrl) { avatarEl.style.backgroundImage = `url(${p.photoDataUrl})`; avatarEl.textContent = ""; }
+      if (/^data:image\/[a-z+.-]+;base64,[A-Za-z0-9+/=]+$/i.test(String(p.photoDataUrl || ""))) { avatarEl.style.backgroundImage = `url("${p.photoDataUrl}")`; avatarEl.textContent = ""; }
       else { avatarEl.style.backgroundImage = "none"; avatarEl.innerHTML = (window.LumioProfiles && LumioProfiles.avatarHtml ? LumioProfiles.avatarHtml(p.avatar || "🦊") : sdEsc(p.avatar || "🦊")); }
 
       document.getElementById("mpFields").innerHTML = `
-        <div class="mp-field"><div class="lbl">Age</div><div class="val">${p.age != null ? p.age : "<i>Not set</i>"}</div></div>
+        <div class="mp-field"><div class="lbl">Age</div><div class="val">${p.age != null ? sdEsc(p.age) : "<i>Not set</i>"}</div></div>
         <div class="mp-field"><div class="lbl">Gender</div><div class="val">${p.gender === "M" ? "Male" : p.gender === "F" ? "Female" : "<i>Not set</i>"}</div></div>
-        <div class="mp-field"><div class="lbl">Grade</div><div class="val">${p.grade || "<i>Not set</i>"}</div></div>
-        <div class="mp-field"><div class="lbl">Country</div><div class="val">${p.country || "<i>Not set</i>"}</div></div>
+        <div class="mp-field"><div class="lbl">Grade</div><div class="val">${p.grade ? sdEsc(p.grade) : "<i>Not set</i>"}</div></div>
+        <div class="mp-field"><div class="lbl">Country</div><div class="val">${p.country ? sdEsc(p.country) : "<i>Not set</i>"}</div></div>
       `;
       document.getElementById("mpSubBanner").outerHTML = `
         <div class="mp-subbanner ${p.subscribed ? "yes" : "no"}" id="mpSubBanner">
           <span class="dot"></span><span>${p.subscribed ? "Subscribed & active" : "Not currently subscribed"}</span>
         </div>`;
       document.getElementById("mpTiles").innerHTML = `
-        <div class="mp-tile blue"><span class="ic">💳</span><b>${p.amountPaid || 0} ${p.currency || "KWD"}</b><span>Amount paid</span></div>
-        <div class="mp-tile purple"><span class="ic">📚</span><b>${p.levelsPurchased || 0}</b><span>Levels bought</span></div>
-        <div class="mp-tile ${(p.sessionsRemaining || 0) <= 3 ? "coral" : "teal"}"><span class="ic">🎟️</span><b>${p.sessionsRemaining || 0}</b><span>Sessions left</span></div>
-        <div class="mp-tile teal"><span class="ic">🏆</span><b>${p.rewardPoints || 0}</b><span>Reward points</span></div>
+        <div class="mp-tile blue"><span class="ic">💳</span><b>${sdEsc(p.amountPaid || 0)} ${sdEsc(p.currency || "KWD")}</b><span>Amount paid</span></div>
+        <div class="mp-tile purple"><span class="ic">📚</span><b>${sdEsc(p.levelsPurchased || 0)}</b><span>Levels bought</span></div>
+        <div class="mp-tile ${(p.sessionsRemaining || 0) <= 3 ? "coral" : "teal"}"><span class="ic">🎟️</span><b>${sdEsc(p.sessionsRemaining || 0)}</b><span>Sessions left</span></div>
+        <div class="mp-tile teal"><span class="ic">🏆</span><b>${sdEsc(p.rewardPoints || 0)}</b><span>Reward points</span></div>
         ${(() => { try { const D = window.LumioStudentProgress && LumioStudentProgress.collect(); if (!D) return "";
           return `<div class="mp-tile purple"><span class="ic">🎥</span><b>${D.attended}</b><span>Classes attended</span></div>
             <div class="mp-tile blue"><span class="ic">✅</span><b>${D.finished}/${D.total}</b><span>Lessons finished</span></div>
@@ -3170,8 +3175,8 @@ function sdUrl(u) { const s = String(u || "").trim(); return /^https?:\/\//i.tes
               const cls = i.paidAt ? "paid" : dl < 0 ? "over" : dl <= 3 ? "soon" : "";
               const st = i.paidAt ? `✓ Paid${added ? ` · +${added} sessions` : ""}` : dl < 0 ? "Overdue · متأخر" : dl === 0 ? "Due today · اليوم" : `In ${dl} day${dl === 1 ? "" : "s"}`;
               const sub = i.paidAt
-                ? `Paid ${String(i.paidAt).slice(0, 10)}${added ? ` · <span class="mp-pay-ar">أُضيفت ${added} حصص</span>` : ""}`
-                : `Due ${i.dueDate}${Number(i.sessions) ? ` · adds ${Number(i.sessions)} sessions · <span class="mp-pay-ar">يضيف ${Number(i.sessions)} حصص</span>` : ""}`;
+                ? `Paid ${sdEsc(String(i.paidAt).slice(0, 10))}${added ? ` · <span class="mp-pay-ar">أُضيفت ${added} حصص</span>` : ""}`
+                : `Due ${sdEsc(i.dueDate)}${Number(i.sessions) ? ` · adds ${Number(i.sessions)} sessions · <span class="mp-pay-ar">يضيف ${Number(i.sessions)} حصص</span>` : ""}`;
               return `<div class="mp-pay-row ${cls}"><div class="n">${k + 1}</div><div><b>${amt}</b><small>${sub}</small></div><div class="st">${st}</div></div>`;
             }).join("");
         }

@@ -213,6 +213,8 @@ body.s26-has3d.s26-list .s26-map3d canvas,body.s26-has3d.s26-list .s26-maplegend
 .s26-toolhead{margin-top:20px;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--s-mut)}
 .s26-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
 a.s26-tool{display:flex!important;align-items:center;gap:12px;margin:0!important;padding:12px!important;border-radius:16px!important;background:#fff!important;border:1px solid #F1E4DA!important;color:#111!important;text-decoration:none;box-shadow:none!important;transition:border-color .2s,transform .2s,box-shadow .2s;min-width:0}
+/* the flex!important above must not bring back a tile the dashboard hid (inline display:none / [hidden]) */
+a.s26-tool[style*="display: none"],a.s26-tool[style*="display:none"],a.s26-tool[hidden]{display:none!important}
 a.s26-tool:hover{border-color:var(--s-o)!important;transform:translateY(-2px);box-shadow:0 12px 24px -18px rgba(194,65,12,.7)!important}
 a.s26-tool .ic{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;flex-shrink:0;background:#FFF1E6;color:var(--s-od)}
 a.s26-tool:first-child .ic{background:var(--s-o);color:#fff}
