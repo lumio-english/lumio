@@ -10,6 +10,7 @@ import re, random, json as _json
 
 import deck_template_v2 as T
 import activity_slides as A
+import recap_pages
 
 CHAR = T.CHAR
 esc, jsq, slug = T.esc, T.jsq, T.slug
@@ -545,5 +546,12 @@ def install(level):
 
     def build_deck(lesson_num, *args, **kw):
         STATE["lesson"] = lesson_num
-        return [finish(h) for h in orig_build(lesson_num, *args, **kw)]
+        # the "Today I Learned" pages are split by recap_pages.paginate from estimated heights: use the v5 card's
+        # real type sizes, or the bigger v5 text runs past the bottom of the card (QA #114)
+        saved = recap_pages.KID
+        recap_pages.KID = recap_pages.KID_V5
+        try:
+            return [finish(h) for h in orig_build(lesson_num, *args, **kw)]
+        finally:
+            recap_pages.KID = saved
     T.build_deck = build_deck
